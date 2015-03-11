@@ -1,9 +1,9 @@
-C     TEST THE READ_MAIN ROUTINE      
+C     TEST THE READ_MAIN ROUTINE
       PROGRAM TEST_READ_MAIN
       USE COMMONS
-      
+
       CALL READ_MAIN('test_read_main.dat')
-        
+
       WRITE(*, *)
       WRITE(*, *) 'TITRAV = ', TITRAV
       WRITE(*, *) 'ECRIT = ', ECRIT
@@ -24,5 +24,11 @@ C     TEST THE READ_MAIN ROUTINE
       WRITE(*, *) 'LLZERO = ', LLZERO
       WRITE(*, *) 'LLFIN = ', LLFIN
       WRITE(*, *) 'AINT = ', AINT
-      WRITE(*, *) 'FILETOHY = ', FILETOHY
- 	  
+
+
+      DO IH = 1, 10
+        WRITE(*, *) 'FILETOHY(', IH, ') = ', FILETOHY(IH)
+      END DO
+
+
+      END
