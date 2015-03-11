@@ -2,6 +2,8 @@ C     TEST THE READ_MAIN ROUTINE
       PROGRAM TEST_READ_MAIN
       USE COMMONS
 
+      NMETAL = 18  ! This must be set in order to read line 07
+
       CALL READ_MAIN('test_read_main.dat')
 
       WRITE(*, *)
