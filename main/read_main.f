@@ -40,9 +40,9 @@ C /IO_MAIN/ FILETOHY
 
 C line 01: object name, e.g. "sun"
 C =======
-      PRINT *,' ENTRER UN TITRE'
+*      PRINT *,' ENTRER UN TITRE'
       READ(4,'(20A4)') TITRAV
-      WRITE(6,'(1H1, 20X, 20A4)') TITRAV
+*      WRITE(6,'(1H1, 20X, 20A4)') TITRAV
 
 C line 02: ???
 C =======
@@ -73,7 +73,7 @@ C line 04
 C =======
 C Example:      5777  4.44  0       0.1  1
       READ(4,*) TEFF, GLOG, ASALOG, NHE, INUM
-      print *, TEFF, GLOG, ASALOG, NHE, INUM
+*      print *, TEFF, GLOG, ASALOG, NHE, INUM
 
 
 C line 05
@@ -108,8 +108,8 @@ C line 09 --
 C =======
 C Example:      4800    4820   50
       READ(4,*) LLZERO, LLFIN, AINT
-711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
-      write(6,711) LLZERO,LLFIN,AINT
+*711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
+*      write(6,711) LLZERO,LLFIN,AINT
 
 
 C      lines 10-19 -- file names in sync with variable LLHY
@@ -127,7 +127,7 @@ C          thalpha
 
       DO IH = 1, 10
         READ(4, '(A)') FILETOHY(IH)
-        print *,IH,filetohy(IH)
+*        print *,IH,filetohy(IH)
       END DO
 
       RETURN
