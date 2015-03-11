@@ -31,10 +31,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="commons.f" />
-		<Unit filename="main_calc.f" />
-		<Unit filename="main_io.f" />
-		<Unit filename="main_pkapgeralgrade.f" />
+		<Unit filename="commons.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="main_calc.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="main_io.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="main_pkapgeralgrade.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="read_dissoc.f">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="read_main.f">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

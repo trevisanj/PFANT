@@ -1,5 +1,3 @@
-C IO routines
-
 
 C  Variables "returned" (in reading order)
 C /IO_MAIN/ TITRAV
@@ -23,38 +21,33 @@ C /IO_MAIN/ LLFIN
 C /IO_MAIN/ AINT
 C /IO_MAIN/ FILETOHY
 
+C IMPORTANT: You must set global NMETAL first
+
+
       SUBROUTINE READ_MAIN(fileName)
       USE COMMONS
-      CHARACTER*64 fileName
+      INTEGER UNIT_
+      PARAMETER(UNIT_=4)
+      CHARACTER*256 fileName
 
-
-*      COMMON /COM6/ TETAEF, GLOG, ASASOL, NHE, TIT(5)
-*
-*      COMMON /ALOG/ ASALOG
-*
-*      COMMON /PRT/   ECRIT
-*      LOGICAL ECRIT
-
-
-      OPEN(UNIT=4,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
 
 C line 01: object name, e.g. "sun"
 C =======
 *      PRINT *,' ENTRER UN TITRE'
-      READ(4,'(20A4)') TITRAV
+      READ(UNIT_, '(20A)') TITRAV
 *      WRITE(6,'(1H1, 20X, 20A4)') TITRAV
 
 C line 02: ???
 C =======
 C Example:  T      0.02 5.0   1.    .12
-      READ(4,*) ECRIT, PAS, ECHX, ECHY, FWHM
-
+      READ(UNIT_, *) ECRIT, PAS, ECHX, ECHY, FWHM
 
 C line 03:
 C =======
 C Example: 0.9
 
-      READ(4,*) VVT(1)
+      READ(UNIT_, *) VVT(1)
       IVTOT=1
 C ISSUE: it seems that here there are three conditional lines;
 C ISSUE: these are present/read only if the value in the third line
@@ -72,25 +65,27 @@ C      END IF
 C line 04
 C =======
 C Example:      5777  4.44  0       0.1  1
-      READ(4,*) TEFF, GLOG, ASALOG, NHE, INUM
+      READ(UNIT_, *) TEFF, GLOG, ASALOG, NHE, INUM
 *      print *, TEFF, GLOG, ASALOG, NHE, INUM
 
 
 C line 05
 C =======
 C Example:      F       1.
-      READ(4,*) PTDISK, MU
+      READ(UNIT_, *) PTDISK, MU
 
 C line 06
 C =======
 C Example: 0
-      READ(4,*) AFSTAR  ! metallicity of the star (in log scale)
+      READ(UNIT_, *) AFSTAR  ! metallicity of the star (in log scale)
 
 
 
 C line 07 -- XXCOR(I)
 C =======
-      READ(4,*)(XXCOR(I), I=1, 10)
+C ISSUE: Should be a column in dissoc.dat !!!!!
+C ISSUE: Is this actually used?
+      READ(UNIT_, *)(XXCOR(I), I=1, NMETAL)
 
 
 
@@ -100,20 +95,20 @@ C This line will define the names of other three files to be read:
 C   cont.<FILEFLUX>
 C   norm.<FILEFLUX>
 C   spec.<FILEFLUX>
-      READ(4, '(A)') FILEFLUX
+      READ(UNIT_, '(A)') FILEFLUX
 
 
 
 C line 09 --
 C =======
 C Example:      4800    4820   50
-      READ(4,*) LLZERO, LLFIN, AINT
+      READ(UNIT_, *) LLZERO, LLFIN, AINT
 *711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
 *      write(6,711) LLZERO,LLFIN,AINT
 
 
-C      lines 10-19 -- file names in sync with variable LLHY
-C      ===========
+C lines 10-19 -- file names, in sync with variable LLHY
+C ===========
 C Example: thkappa
 C          thiota
 C          ththeta
@@ -126,9 +121,11 @@ C          thbeta
 C          thalpha
 
       DO IH = 1, 10
-        READ(4, '(A)') FILETOHY(IH)
+        READ(UNIT_, '(A)') FILETOHY(IH)
 *        print *,IH,filetohy(IH)
       END DO
+
+      CLOSE(UNIT=UNIT_)
 
       RETURN
       END
