@@ -43,6 +43,7 @@
 		<Unit filename="main_pkapgeralgrade.f">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="read_abonds.f" />
 		<Unit filename="read_dissoc.f">
 			<Option weight="1" />
 		</Unit>
