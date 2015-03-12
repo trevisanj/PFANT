@@ -106,13 +106,13 @@ cp Nov03    INTEGER DHM,DHP
      6 CORCH(NR),CVdW(NR),ABONDR(NR),
      7 FI(1501),TFI(1501),
      8 ECARTM(NMOL)
-      CHARACTER*2 ELEMS, ELE, ELEM, EL
+      CHARACTER*2 ELEMS, ELEM, EL
         DIMENSION ELEMS(18),DM(8)
       DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
       DIMENSION EL(85),TINI(85),PA(85),JKMAX(85),TABU(85,3,63),
      1 M(85),KI1(85),KI2(85),P(3,85,50)
-      dimension ELE(100),ABOL(100),ABO(100)
+      DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
       DIMENSION FL(NP), TTD(NP), FCONT(NP), FN(NP)
 cp Nov03    DIMENSION LLAMBDH(100),TAUH(NP,50),TTH(100,50),IHH(500),
@@ -377,20 +377,20 @@ C  *****************************************************************
 C
             J=1
             DO WHILE (FINAB.LT.1)
-            READ(30,105) FINAB,ELE(J),ABOL(J)
+            READ(30,105) FINAB,abonds_ELE(J),abonds_ABOL(J)
             J=J+1
             END DO
-      NABOND=J-2
+      abonds_NABOND=J-2
 C
         DO K=1,NNMETAL
-        DO J=1,NABOND
-        IF(ELE(J).EQ.ELEMS(K)) ABOL(J)=ABOL(J)+XXCOR(K)
+        DO J=1,abonds_NABOND
+        IF(abonds_ELE(J).EQ.ELEMS(K)) abonds_ABOL(J)=abonds_ABOL(J)+XXCOR(K)
         END DO
       end do
 c
 
-      DO J=1,NABOND
-            ABO(J)=10.**(ABOL(J)-12.)
+      DO J=1,abonds_NABOND
+            ABO(J)=10.**(abonds_ABOL(J)-12.)
       ABO(J)=ABO(J)*fstar
       END DO
 
@@ -562,7 +562,7 @@ C
 C
 
 
-      CALL ABONDRAIH(ELE,ABO,NABOND,ELEM,ABOND,NBLEND)
+      CALL ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,ELEM,ABOND,NBLEND)
 
 C  *************************************************************
 
@@ -2119,17 +2119,17 @@ c Dez 03-P. Coelho - calculate the continuum and normalized spectra
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE ABONDRAIH(ELE,ABO,NABOND,ELEM,ABOND,NBLEND)
-      CHARACTER*2 ELE, ELEM
+      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,ELEM,ABOND,NBLEND)
+      CHARACTER*2 abonds_ELE, ELEM
       REAL ABO, ABOND
-      INTEGER NABOND, NBLEND, NR
+      INTEGER abonds_NABOND, NBLEND, NR
       PARAMETER(NR=8000)
-      DIMENSION ELE(100),ABO(100),ELEM(8000),ABOND(8000)
+      DIMENSION abonds_ELE(100),ABO(100),ELEM(8000),ABOND(8000)
 
       DO  K=1,NBLEND
-            DO  J=1,NABOND
-C           print 1035, ele(J), elem(k), ALOG10(abo(j))-0.37+12
-            IF(ELE(J).EQ.ELEM(K))  GO TO 14
+            DO  J=1,abonds_NABOND
+C           print 1035, abonds_ELE(J), elem(k), ALOG10(abo(j))-0.37+12
+            IF(abonds_ELE(J).EQ.ELEM(K))  GO TO 14
             END DO   !FIN BCLE SUR J
       WRITE(6,106)     ELEM(K)
       STOP

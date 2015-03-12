@@ -2,7 +2,6 @@ C TODO I will probably move most of these declarations to the main
 C calculation file
 
       MODULE COMMONS
-C      PARAMETER(maxNMETAL=50)
 
 
 C     COMMON definitions
@@ -191,12 +190,24 @@ C        The original mixes reading and logic, and I don't want to track down th
 C        variables that are read right now. It seems, BTW, that many of them aren't used.
 C ISSUE: this may be temporary, or to test not using COMMON, or remain just like this
 
+
+C RESULT: common blocks are really not needed!!!
+
+      PARAMETER(maxNMETAL=50)  ! Limit number of element lines in dissoc.dat
+      INTEGER NMETAL
       CHARACTER*2 DISSOC_SYMBOL
       INTEGER DISSOC_N, DISSOC_IG0, DISSOC_IG1
       REAL*8 DISSOC_IP, DISSOC_CCLOG
-      COMMON /DISSOC/ DISSOC_SYMBOL(50), DISSOC_N(50),
-     1          DISSOC_IP(50), DISSOC_IG0(50),
-     2          DISSOC_IG1(50), DISSOC_CCLOG(50)
+      DIMENSION DISSOC_SYMBOL(maxNMETAL), DISSOC_N(maxNMETAL),
+     1          DISSOC_IP(maxNMETAL), DISSOC_IG0(maxNMETAL),
+     2          DISSOC_IG1(maxNMETAL), DISSOC_CCLOG(maxNMETAL)
+
+
+C Variables filled by READ_ABONDS
+      PARAMETER(maxNABOND=100)  ! Limit number of abundances in abonds.dat
+      INTEGER abonds_NABOND
+      CHARACTER*2 abonds_ELE
+      DIMENSION abonds_ELE(maxNABOND), abonds_ABOL(maxNABOND)
 
 
       SAVE
