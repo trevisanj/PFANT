@@ -195,7 +195,6 @@ C main, SAT4, DIE
       COMMON /COM8/  NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
 C     Variant: COMMON /COM8/   NH, TETA, PE, PG, T5L
 C main, SAT4
-      COMMON /COR/ dissoc_ELEMS, main_XXCOR, NNMETAL
       DIMENSION main_XXCOR(MAX_dissoc_NMETAL)
 
 C     COMMON'S AVEC LE SP KAPMOL
@@ -380,7 +379,7 @@ C
             END DO
       abonds_NABOND=J-2
 C
-        DO K=1,NNMETAL
+        DO K = 1, dissoc_NMETAL
         DO J=1,abonds_NABOND
 C ISSUE: This is the thing that Beatriz mentioned that is not used anymore
         IF(abonds_ELE(J).EQ.dissoc_ELEMS(K)) abonds_ABOL(J)=abonds_ABOL(J)+main_XXCOR(K)
@@ -3151,6 +3150,8 @@ C     EST MAXIMUM.
       RETURN
       END
 
+
+
 C-------------------------------------------------------------------------------
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       SUBROUTINE SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,pig,pfe,IT)
@@ -3170,14 +3171,15 @@ C
      3                KP(100),
      4                NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
       COMMON /VAL/    PPG(600,50)
-      COMMON /COR/    dissoc_ELEMS, main_XXCOR, NNMETAL
 
-      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, dissoc_ELEMS
+
+C ISSUE Careful with all this ELE<something> variables, this is messy
+      CHARACTER*2 ELEMNT, ELEMXI, YA
       CHARACTER*3 MOL
       DIMENSION   TO(50)
       DIMENSION YA(525), YB(525), YC(525), YD(525),ELEMNT(100),
      2      CCLOG(100),G0(100),G1(100),NATOMM(5),NELEMM(5),
-     3      XP(50,20),ELEM(99),main_XXCOR(50)
+     3      XP(50,20)
       DATA ELEMNT(99),ELEMNT(100)/'E-','H*'/
 C
 C
@@ -3189,43 +3191,37 @@ C*****IMPUT A
       AHE=0.100E 00
         IND = 1
       ECONST = 4.342945E-1
-C
-C*****IMPUT B
-C        NMETAL    NUMBER OF ELEMENTS CONSIDERED IN CHEMICAL EQUILIBRIU
-C        NIMAX     MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
-C        EPS       IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
-C        IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
-C        IF SWITER .LE. 0;   X(I+1)=X(I+1)
-      READ(23,5000) dissoc_NMETAL,NIMAX,EPS,SWITER
-        NNMETAL=dissoc_NMETAL
-         PRINT 6102
-      READ(4,*)(main_XXCOR(I),I=1,dissoc_NMETAL)
-C
-C*****IMPUT C
 
 
 C (JT2015) This fragment is already adapted
       CALL READ_DISSOC('dissoc.dat')
+C (JT2015) This fragment is already adapted
+      ! Infers other variables from the metal rows of dissoc.dat
       DO I = 1, dissoc_NMETAL
-      READ(23,5001) ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI
-            CCLOGI = dissoc_CCLOG(I)+main_AFSTAR
+*        READ(23,5001) ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI
+*        elems(i)=elemxi
 
+          CCLOGI = dissoc_CCLOG(I)+main_AFSTAR
 C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
-            CCLOGI = CCLOGI+main_XXCOR(I)
+          CCLOGI = CCLOGI+main_XXCOR(I)
+          IF(I .EQ .1) CCLOGI = 0.0
+          IF(I .EQ .2) CCLOGI = -1.0
 
-            IF(I .EQ .1) CCLOGI = 0.0
-            IF(I .EQ .2) CCLOGI = -1.0
+          NELEMXI = dissoc_NELEMX(I)
+          IG0I = dissoc_IG0(I)
+          IG1I = dissoc_IG1(I)
 
-      ELEMNT(NELEMI) = ELEMXI
-      IP(NELEMI) = IPI
-      UIIDUI(NELEMI) = IG1 * 0.661 / IG0
-      G0(NELEMI)=IG0
-      G1(NELEMI)=IG1
-      CCLOG(NELEMI) = CCLOGI
-      CCOMP(NELEMI) = EXP(CCLOGI/ECONST)
-         PRINT 6103,ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI-main_AFSTAR
+          ELEMNT(NELEMXI) = dissoc_ELEMS(I)
+          IP(NELEMI) = dissoc_IP(I)
+          UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
+          G0(NELEMXI) = IG0I
+          G1(NELEMXI) = IG1I
+          CCLOG(NELEMXI) = CCLOGI
+          CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
+          WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
+     1          dissoc_ELEMS(I), NELEMXI, dissoc_IP(I),
+                IG0I, IG1I, CCLOGI-main_AFSTAR
       END DO
-      nnmetal=nmetal
 C
 C*****IMPUT D
       J = 0
@@ -3423,7 +3419,7 @@ c 6091 FORMAT (/,10X,'LOG PG =',F8.4,20X,'LOG PE =',F8.4,20X,'PE =',E13.
 c     2     6/,10X,'TETA=',F8.4,20X,'TEMP=',F8.0,20X,'T0=',E14.6/)
  6102 FORMAT(1H0, 61H ELEMENT    ATOMIC NUMBER     I.P.        G(0)   G(
      11)   LOG N/)
- 6103 FORMAT(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)
+
  6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
      1///)
 c 6301 FORMAT(1H0,'ELEMENT',3X,'LOG N(E)/N(H)',4X,'P(E)',6X,'LOG P(E)',2
@@ -3458,7 +3454,6 @@ C-------------------------------------------------------------------------------
                       CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
                       NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
 
-      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, dissoc_ELEMS
       CHARACTER*3 MOL
       DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
       ECONST = 4.342945E-1
@@ -3639,6 +3634,9 @@ C     ATOMIC NUMBER 99 = ELECTRON
       END DO
       RETURN
       END
+
+
+
 
 
 C-------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 
 C     TEST THE READ_MAIN ROUTINE
       PROGRAM TEST_READ_ABONDS
-      USE COMMONS
+      USE READ_FILES
 
       CALL READ_ABONDS('abonds.dat')
 
@@ -13,5 +13,8 @@ C     TEST THE READ_MAIN ROUTINE
       DO I = 1, abonds_NABOND
         WRITE(*, '(1X, A2, F10.3)') abonds_ELE(I), abonds_ABOL(I)
       END DO
+
+
+
 
       END
