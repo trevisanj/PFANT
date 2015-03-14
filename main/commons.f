@@ -70,8 +70,8 @@ C main, SAT4, DIE
       COMMON /COM8/  NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
 C     Variant: COMMON /COM8/   NH, TETA, PE, PG, T5L
 C main, SAT4
-      COMMON /COR/ ELEMS, XXCOR, NNMETAL
-      DIMENSION XXCOR(50)
+      COMMON /COR/ XXCOR
+      DIMENSION XXCOR(MAX_dissoc_NMETAL)
 C main, SAT4
       COMMON /FANSAT/ FSTAR
 
@@ -154,60 +154,49 @@ C FLINH, FLIN1
       COMMON /CCC/  AMF(50), AMF2(50), FX1(50), FX2(50)
 
 
+
+
+
+
+
+
+      COMMON /VAL/    PPG(MAX_dissoc_NMOL,50)
+
+
+
+
+
 C     First appeared in subroutine SAT4
 C SAT4, DIE
-      COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
-     1                PPMOL(600), APMLOG(600),MOL(600), IP(100),
+      COMMON /COMFH1/ C(MAX_dissoc_NMOL,5), NELEM(5,MAX_dissoc_NMOL), NATOM(5,MAX_dissoc_NMOL), MMAX(MAX_dissoc_NMOL),
+     1                PPMOL(MAX_dissoc_NMOL), APMLOG(MAX_dissoc_NMOL),MOL(MAX_dissoc_NMOL), IP(100),
      2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER, NMETAL, NMOL
+     3                NELEMX(50), NIMAX, EPS, SWITER
 C SAT4 only
-      COMMON /VAL/    PPG(600,50)
-
-
-
-C      Variables read by subroutine READ_MAIN and not present in other blocks
-      COMMON /IO_MAIN/ TITRAV, PAS, ECHX, ECHY, FWHM, VVT(20),
-     1                 TEFF, IVTOT, PTDISK, MU, AFSTAR,
-     2                 FILEFLUX, LLZERO, LLFIN, AINT, FILETOHY
-      DIMENSION TITRAV(20)
-      CHARACTER TITRAV*10
-      CHARACTER FILEFLUX*64
-      LOGICAL   PTDISK
-      REAL*8    PAS, ECHX, ECHY, FWHM, TEFF, MU, AFSTAR,
-     1          LLZERO, LLFIN, AINT
-      INTEGER   IVTOT
-      CHARACTER FILETOHY*64
-      DIMENSION FILETOHY(10)
+      COMMON /VAL/    PPG(MAX_dissoc_NMOL,50)
 
 
 
 
-C Variables filled by READ_DISSOC()
-C Number of elements actually used is specified by variable NMETAL <= maxNMETAL
-
-C ISSUE: I created new variables to decouple from logic while reading this file.
-C        The original mixes reading and logic, and I don't want to track down the
-C        variables that are read right now. It seems, BTW, that many of them aren't used.
-C ISSUE: this may be temporary, or to test not using COMMON, or remain just like this
 
 
-C RESULT: common blocks are really not needed!!!
 
-      PARAMETER(maxNMETAL=50)  ! Limit number of element lines in dissoc.dat
-      INTEGER NMETAL
-      CHARACTER*2 DISSOC_SYMBOL
-      INTEGER DISSOC_N, DISSOC_IG0, DISSOC_IG1
-      REAL*8 DISSOC_IP, DISSOC_CCLOG
-      DIMENSION DISSOC_SYMBOL(maxNMETAL), DISSOC_N(maxNMETAL),
-     1          DISSOC_IP(maxNMETAL), DISSOC_IG0(maxNMETAL),
-     2          DISSOC_IG1(maxNMETAL), DISSOC_CCLOG(maxNMETAL)
+
+
+
+
+
+
+
+
 
 
 C Variables filled by READ_ABONDS
-      PARAMETER(maxNABOND=100)  ! Limit number of abundances in abonds.dat
+      PARAMETER(MAX_abonds_NABOND=100)  ! Limit number of abundances in abonds.dat
       INTEGER abonds_NABOND
       CHARACTER*2 abonds_ELE
-      DIMENSION abonds_ELE(maxNABOND), abonds_ABOL(maxNABOND)
+      DIMENSION abonds_ELE(MAX_abonds_NABOND),
+     1          abonds_ABOL(MAX_abonds_NABOND)
 
 
       SAVE
