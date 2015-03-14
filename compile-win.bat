@@ -1,3 +1,5 @@
+
+
 @rem Generates pfantgrade.exe
 mingw32-gfortran -c -g pfantgrade.f
 mingw32-gfortran -c -g pkapgeralgrade.f
