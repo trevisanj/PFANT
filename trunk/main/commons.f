@@ -2,6 +2,7 @@ C TODO I will probably move most of these declarations to the main
 C calculation file
 
       MODULE COMMONS
+      USE READ_FILES
 
 
 C     COMMON definitions
@@ -155,17 +156,6 @@ C FLINH, FLIN1
 
 
 
-
-
-
-
-
-      COMMON /VAL/    PPG(MAX_dissoc_NMOL,50)
-
-
-
-
-
 C     First appeared in subroutine SAT4
 C SAT4, DIE
       COMMON /COMFH1/ C(MAX_dissoc_NMOL,5), NELEM(5,MAX_dissoc_NMOL), NATOM(5,MAX_dissoc_NMOL), MMAX(MAX_dissoc_NMOL),
@@ -174,29 +164,6 @@ C SAT4, DIE
      3                NELEMX(50), NIMAX, EPS, SWITER
 C SAT4 only
       COMMON /VAL/    PPG(MAX_dissoc_NMOL,50)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-C Variables filled by READ_ABONDS
-      PARAMETER(MAX_abonds_NABOND=100)  ! Limit number of abundances in abonds.dat
-      INTEGER abonds_NABOND
-      CHARACTER*2 abonds_ELE
-      DIMENSION abonds_ELE(MAX_abonds_NABOND),
-     1          abonds_ABOL(MAX_abonds_NABOND)
 
 
       SAVE

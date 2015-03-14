@@ -12,12 +12,14 @@ C ISSUE: this may be temporary, or to test not using COMMON, or remain just like
 
 C RESULT: common blocks are really not needed!!!
 
+C Variables filled by READ_DISSOC() (file dissoc.dat)
+C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
+      ! dissoc.dat, metals part
       PARAMETER(MAX_dissoc_NMETAL=50)  ! Limit number of metal rows in dissoc.dat
-C dissoc.dat, metals part
-      INTEGER dissoc_NMETAL
+      INTEGER*4 dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
 
-      CHARACTER*2 dissoc_SYMBOL
-      INTEGER dissoc_NELEM, dissoc_IG0, dissoc_IG1
+      CHARACTER*2 dissoc_ELEMS
+      INTEGER dissoc_IG0, dissoc_IG1
       REAL*8 dissoc_IP, dissoc_CCLOG
       DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
      1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
@@ -27,19 +29,16 @@ C dissoc.dat, metals part
      4          dissoc_IG1(MAX_dissoc_NMETAL),     ! within SAT4()
      5          dissoc_CCLOG(MAX_dissoc_NMETAL)    !
 
-
-C dissoc.dat, molecules part
+      ! dissoc.dat, molecules part
       PARAMETER(MAX_dissoc_NMOL=600)  ! Limit number of molecule rows
-      INTEGER dissoc_MOL
-      DIMENSION dissoc_C(MAX_dissoc_NMOL,5),
-                NELEM(5,MAX_dissoc_NMOL),
-      NATOM(5,MAX_dissoc_NMOL),
-      MMAX(MAX_dissoc_NMOL),
-      PPMOL(MAX_dissoc_NMOL),
-      APMLOG(MAX_dissoc_NMOL),
-      MOL(MAX_dissoc_NMOL), IP(100),
-     2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER
+      CHARACTER dissoc_MOL*3
+      INTEGER*4 dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
+      DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
+     1          dissoc_C(MAX_dissoc_NMOL, 5),
+     2          dissoc_MMAX(MAX_dissoc_NMOL),
+     3          dissoc_NELEM(5, MAX_dissoc_NMOL),
+     4          dissoc_NATOM(5, MAX_dissoc_NMOL)
+
 
 
 C Variables filled by READ_MAIN() (file main.dat)
@@ -84,7 +83,6 @@ C IMPORTANT: Depends on variable dissoc_NMETAL (this variable is filled
 C            by READ_DISSOC())
 C-----------------------------------------------------------------------
       SUBROUTINE READ_MAIN(fileName)
-      USE COMMONS
       INTEGER UNIT_
       PARAMETER(UNIT_=4)
       CHARACTER*256 fileName
@@ -182,9 +180,10 @@ C          thbeta
 C          thalpha
 
       DO IH = 1, 10
-        READ(UNIT_, '(A)') FILETOHY(IH)
-*        print *,IH,filetohy(IH)
+          READ(UNIT_, '(A)') main_FILETOHY(IH)
       END DO
+*1560  FORMAT(A20)
+
 
       CLOSE(UNIT=UNIT_)
 
@@ -210,7 +209,6 @@ C-----------------------------------------------------------------------
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ABONDS(fileName)
-      USE COMMONS
       INTEGER UNIT_
       INTEGER FINAB
       PARAMETER(UNIT_=199)
@@ -246,12 +244,12 @@ C-----------------------------------------------------------------------
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_DISSOC(fileName)
-      USE COMMONS
       INTEGER UNIT_
       INTEGER I
       PARAMETER(UNIT_=199)
       CHARACTER*256 fileName
 
+      INTEGER*4 NATOMM, NELEMM
       DIMENSION NATOMM(5), NELEMM(5)  ! Auxiliary temp variables for reading file
 
       OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
@@ -279,10 +277,12 @@ C   col 5 -- (?)
 C   col 6 -- (?)
       DO I = 1, dissoc_NMETAL
         READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
-     1        dissoc_ELEMS(I), dissoc_NELEM(I), dissoc_IP(I),
+     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc_IP(I),
      2        dissoc_IG0(I), dissoc_IG1(I), dissoc_CCLOG(I)
       END DO
 
+
+      WRITE(*,*) 'sadkjhfdskjhdfskjlfdshkjfdshkdjfsh'
 
 C rows NMETAL+2 till end-of-file
 C ==============================
@@ -294,13 +294,25 @@ C                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J)
       J = 0
  1010 J = J + 1
 C ISSUE: This 1X does not appear in my sample dissoc.dat file
-      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+C ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
+C ISSUE: THere is no 1X
+*      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, I1, 4(I2,I1))')
      1             dissoc_MOL(J),
      2             (dissoc_C(J, K), K=1,5),
      3             dissoc_MMAX(J),
      4             (NELEMM(M), NATOMM(M), M=1,4)
-*      print 5011, MOL(J),(C(J,K),K=1,5)
-*     1   ,MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
+
+
+*
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (NELEMM(M), NATOMM(M), M=1,4)
+
+
+
       MMAXJ = dissoc_MMAX(J)
       IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
       DO M = 1, MMAXJ
@@ -308,8 +320,19 @@ C ISSUE: This 1X does not appear in my sample dissoc.dat file
           dissoc_NATOM(M,J) = NATOMM(M)
 
       END DO
- 1110 GO TO 1010
- 1014 CONTINUE
+
+
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (dissoc_NELEM(M, J), dissoc_NATOM(M, J), M=1,4)
+
+
+
+      GO TO 1010
+
+ 1014 dissoc_NMOL = J-1
 
       CLOSE(UNIT=UNIT_)
 
