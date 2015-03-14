@@ -92,11 +92,11 @@ cp Nov03    INTEGER DHM,DHP
       character FILEFLUX2*72,FILEFLUX3*72
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
-      REAL NH,M,KI1,KI2,KIEX,KB,KC,MU,LAMBD,
+      REAL NH,M,KI1,KI2,KIEX,KB,KC,main_MU,LAMBD,
      1   NHE,KC1,KC2,KCD,MM, ABOND, ABO
       LOGICAL CONVOL,GAUSS,IDENTH
       REAL*8 LZERO,LFIN,LAMBDA,LMBDAM, LLHY(10)
-      REAL*8 LLAMBDH,PAS,ECART,ECARTM,L0,LF,lllhy
+      REAL*8 LLAMBDH,main_PAS,ECART,ECARTM,L0,LF,lllhy
       DIMENSION NH(50),PE(50),TETA(50),PG(50),T5L(50),
      1 KC(50),ALPH(50),PHN(50),PH2(50),
      2 KC1(50),KC2(50),KCD(NP,50),
@@ -106,8 +106,8 @@ cp Nov03    INTEGER DHM,DHP
      6 CORCH(NR),CVdW(NR),ABONDR(NR),
      7 FI(1501),TFI(1501),
      8 ECARTM(NMOL)
-      CHARACTER*2 ELEMS, ELEM, EL
-        DIMENSION ELEMS(18),DM(8)
+      CHARACTER*2 dissoc_ELEMS, ELEM, EL
+        DIMENSION dissoc_ELEMS(18),DM(8)
       DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
       DIMENSION EL(85),TINI(85),PA(85),JKMAX(85),TABU(85,3,63),
@@ -195,10 +195,8 @@ C main, SAT4, DIE
       COMMON /COM8/  NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
 C     Variant: COMMON /COM8/   NH, TETA, PE, PG, T5L
 C main, SAT4
-      COMMON /COR/ ELEMS, XXCOR, NNMETAL
-      DIMENSION XXCOR(50)
-C main, SAT4
-      COMMON /FANSAT/ FSTAR
+      COMMON /COR/ dissoc_ELEMS, main_XXCOR, NNMETAL
+      DIMENSION main_XXCOR(MAX_dissoc_NMETAL)
 
 C     COMMON'S AVEC LE SP KAPMOL
 C main, SELEKFH,
@@ -261,7 +259,7 @@ C     First appeared in subroutine SAT4
       COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
      1                PPMOL(600), APMLOG(600),MOL(600), IP(100),
      2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER, NMETAL, NMOL
+     3                NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
       COMMON /VAL/    PPG(600,50)
 
 
@@ -297,18 +295,18 @@ C                 INITIALISATIONS DIVERSES
 C         LECTURE ET CALCUL  DE LA FONCTION DE CONVOLUTION
 C  *****************************************************************
       PRINT *,' ENTRER UN TITRE'
-      READ(4,127) TITRAV
-      WRITE(6,128)   TITRAV
+      READ(4,127) main_TITRAV
+      WRITE(6,128)   main_TITRAV
          ICLE=0
       CONVOL=.FALSE.
-      READ(4,*)   ECRIT,PAS,ECHX,ECHY,FWHM
+      READ(4,*)   ECRIT,main_PAS,main_ECHX,main_ECHY,main_FWHM
 C
         NOXIG=1
 C        AGGF=-9.72
 C
 C     AA EST LA 1/2 LARGEUR DU PROFIL GAUSSIEN POUR Y=1/E
-      DPAS=PAS
-      AA=FWHM/1.6651092
+      DPAS=main_PAS
+      AA=main_FWHM/1.6651092
 C
 
 C  ****************************************************************
@@ -335,12 +333,12 @@ C ------------2) DES DONNEES ABSORPTION CONTINUE
       A0=AMET
 
 C ------------3) DU MODELE
-      READ(4,*) VVT(1)
+      READ(4,*) main_VVT(1)
       IVTOT=1
-            IF(VVT(1).GT.900)  THEN   ! VT VARIABLE AVEC LA PROFONDEUR
+            IF(main_VVT(1).GT.900)  THEN   ! VT VARIABLE AVEC LA PROFONDEUR
             READ(4,*) IVTOT
             READ(4,*) (TOLV(I),I=1,IVTOT)
-            READ(4,*) (VVT(I),I=1,IVTOT)
+            READ(4,*) (main_VVT(I),I=1,IVTOT)
             END IF
       CALL READER06(NH,TETA,PE,PG,T5L,NTOT)
 
@@ -349,12 +347,12 @@ C ------------3) DU MODELE
 c     fstar=asasol
 C
       INTERP=1  ! interp. lineaire de vt (si parabolique 2)
-      CALL TURBUL(INTERP,IVTOT,TOLV,VVT,NTOT,T5L,VT)
+      CALL TURBUL(INTERP,IVTOT,TOLV,main_VVT,NTOT,T5L,VT)
             IF(IVTOT.EQ.1)   THEN
-            WRITE(6,131) VVT(1)
+            WRITE(6,131) main_VVT(1)
             ELSE
             WRITE(6,132)
-cpc         WRITE(6,133) ((TOLV(I),VVT(I)),I=1,IVTOT)
+cpc         WRITE(6,133) ((TOLV(I),main_VVT(I)),I=1,IVTOT)
             END IF
 
 C  *****************************************************************
@@ -369,9 +367,9 @@ C                       IV
 C           CALCUL DES QUANTITES NE DEPENDANT QUE DU
 C           MODELE ET DE LAMBDA : B(N)   KC(N)   FC
 C  *****************************************************************
-        READ(4,*) PTDISK ,MU
-        READ(4,*) afstar  ! metallicity of the star (in log scale)
-      fstar=10**afstar
+        READ(4,*) main_PTDISK ,main_MU
+        READ(4,*) main_AFSTAR  ! metallicity of the star (in log scale)
+      fstar=10**main_AFSTAR
 
       CALL SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,PIG,PFE,NTOT)
 C
@@ -384,7 +382,8 @@ C
 C
         DO K=1,NNMETAL
         DO J=1,abonds_NABOND
-        IF(abonds_ELE(J).EQ.ELEMS(K)) abonds_ABOL(J)=abonds_ABOL(J)+XXCOR(K)
+C ISSUE: This is the thing that Beatriz mentioned that is not used anymore
+        IF(abonds_ELE(J).EQ.dissoc_ELEMS(K)) abonds_ABOL(J)=abonds_ABOL(J)+main_XXCOR(K)
         END DO
       end do
 c
@@ -396,13 +395,15 @@ c
 
 
 
-      READ(4,1500) FILEFLUX
-      FILEFLUX2 = 'cont.'//FILEFLUX
-      FILEFLUX3 = 'norm.'//FILEFLUX
-      FILEFLUX = 'spec.'//FILEFLUX
+      READ(4,1500) main_FILEFLUX
+      FILEFLUX2 = 'cont.'//main_FILEFLUX
+      FILEFLUX3 = 'norm.'//main_FILEFLUX
+
+C ISSUE: this cannot happen: change value of this global here, check what is supposed to happen instead.
+      main_FILEFLUX = 'spec.'//main_FILEFLUX
 
 
-        OPEN(UNIT=17,FILE=FILEFLUX,STATUS='unknown')
+        OPEN(UNIT=17,FILE=main_FILEFLUX,STATUS='unknown')
       OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
         OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
       IK=1
@@ -447,7 +448,7 @@ C
       IF(LFIN.GT.(LLFIN+20.)) LFIN=LLFIN+20.
 667     CONTINUE
 C
-      DTOT=(LFIN-LZERO) / PAS  + 1.0005
+      DTOT=(LFIN-LZERO) / main_PAS  + 1.0005
       WRITE(6,117) LZERO,LFIN,DTOT
             IF(DTOT .GT. 40000) THEN
             STOP
@@ -459,11 +460,11 @@ C
       ZLZERO = LFIN - ILZERO
 C
       DO D=1,DTOT
-      TTD(D)=ALZERO+PAS*(D-1)
+      TTD(D)=ALZERO+main_PAS*(D-1)
       END DO
 C
       CALL BK(NH,TETA,PE,PG,NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
-     1 FC,KC,KC1,KC2,KCD,TTD,DTOT,PTDISK,MU,KIK,LZERO,LFIN)
+     1 FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
 
       WRITE(6,501) LLZERO,LLFIN,LZERO,LFIN,LAMBD
 
@@ -573,17 +574,17 @@ C  ***************************************************************
 C
 45          DO K=1,NBLEND
             GFAL(K) = GF(K) * C2 * (LAMBDA(K)*1.E-8)**2
-            ECART(K)= LAMBDA(K)-LZERO+PAS
+            ECART(K)= LAMBDA(K)-LZERO+main_PAS
             END DO ! fin bcle sur K
 88    continue
         CALL KAPMOL(NH,TETA,NTOT)
       WRITE (6,704) MBLEND
         IF(MBLEND.EQ.0) GO TO 65
         DO 60 L=1,MBLEND
- 60     ECARTM(L)=LMBDAM(L)-LZERO + PAS
+ 60     ECARTM(L)=LMBDAM(L)-LZERO + main_PAS
  65     continue
 
-46    CALL SELEKFH(PTDISK,MU,KIK,DTOT,PAS,NBLEND,GFAL,ZINF,
+46    CALL SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,NBLEND,GFAL,ZINF,
      1 ABOND,ECART,elem,LAMBDA,TAUH,DHM,DHP,VT,NTOT,NH,TETA,B,
      2 B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
 
@@ -593,15 +594,14 @@ C
          if(nblend.ne.0) then
             DO K=1,NBLEND
             WRITE(32,125) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
+     1      alog10(ABOND(K))-main_AFSTAR+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
             WRITE(91,121) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
+     1      alog10(ABOND(K))-main_AFSTAR+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
             END DO
         end if
 
 
-
-        AMG=XXCOR(8) ! I think this is just for debugging purposes
+        AMG=main_XXCOR(8) ! I think this is just for debugging purposes
         LI=10./DPAS
       I1=LI + 1
         I2=DTOT - LI
@@ -621,21 +621,21 @@ C
       open(unit=31, file = 'log.log', status = 'unknown')
       print *, DTOT, ITOT, I1, I2
       write(31,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
-     1 L0,LF,LZERO,LFIN,ITOT,DPAS,ECHX,ECHY,FWHM
+     1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       do D = I1,I2
         write(31, *) L0 + (D-1) * DPAS, FL(D)
       end do
 
       write(17,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
-     1 L0,LF,LZERO,LFIN,ITOT,DPAS,ECHX,ECHY,FWHM
+     1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(17,1132) (FL(D),D=I1,I2)
 
       write(19,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
-     1 L0,LF,LZERO,LFIN,ITOT,DPAS,ECHX,ECHY,FWHM
+     1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(19,1132) (FCONT(D),D=I1,I2)
 
       write(20,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
-     1 L0,LF,LZERO,LFIN,ITOT,DPAS,ECHX,ECHY,FWHM
+     1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(20,1132) (FN(D),D=I1,I2)
 
 1130  FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
@@ -1703,9 +1703,9 @@ C     CE S.P. LIT SUR DISQUE ACCES DIRECT NH,TETA,PE,PG,T5L,NTOT
      1    FILE='modeles.mod', RECL = 1200)
       ID=1
       IDEF=211939
-10    READ(4,*) TEFF,GLOG,ASALOG,NHE,INUM
-        print *, TEFF,GLOG,ASALOG,NHE,INUM
-        TETAEF=5040/TEFF
+10    READ(4,*) main_TEFF,GLOG,ASALOG,NHE,INUM
+        print *, main_TEFF,GLOG,ASALOG,NHE,INUM
+        TETAEF=5040/main_TEFF
       IF(INUM.GT.0)   ID=INUM
       WRITE(6,102)TETAEF,GLOG,ASALOG,NHE,INUM
 C   SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
@@ -1714,7 +1714,7 @@ C   SUR LE FICHIER ACCES DIRECT
       WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
         write(6,108) TIABS
       IF(NTOT.EQ.9999)   GO TO 6
-      DDT  = ABS(TEFF-DETEF)
+      DDT  = ABS(main_TEFF-DETEF)
 C     DDTA  = ABS(TETAEF-DETAEF)
       DDG = ABS(GLOG-DGLOG)
       DDAB = ABS(ASALOG-DSALOG)
@@ -1749,11 +1749,11 @@ c     ID=ID-1
 
 C-------------------------------------------------------------------------------
       SUBROUTINE BK(NH,TETA,PE,PG,NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
-     1              FC,KC,KC1,KC2,KCD,TTD,DTOT,PTDISK,MU,KIK,LZERO,LFIN)
+     1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
       PARAMETER(NP=7000)
       INTEGER D,DTOT,CAVA
-      LOGICAL PTDISK,ECRIT
-      REAL LAMBD,NH,MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
+      LOGICAL main_PTDISK,ECRIT
+      REAL LAMBD,NH,main_MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
      1 LAMBDC,KCJ,KCN
       REAL*8 LZERO,LFIN
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
@@ -1821,7 +1821,7 @@ c     1 znh(nmeta+2),t
       T=5040./TET0
       ALPH01=EXP(-AHNU1/(KB*T))
       B1(0)=C31 * (ALPH01/(1.-ALPH01))
-      CALL FLIN1(KC1,B1,NH,NTOT,PTDISK,MU,FC1,KIK,CAVA)
+      CALL FLIN1(KC1,B1,NH,NTOT,main_PTDISK,main_MU,FC1,KIK,CAVA)
       IF(CAVA. GT.0) THEN
       WRITE(6,132) CAVA
       WRITE(6,135) (I, TO_TOTO(I),ERR(I),I=1,NTOT)
@@ -1829,7 +1829,7 @@ c     1 znh(nmeta+2),t
       END IF
       ALPH02=EXP(-AHNU2/(KB*T))
       B2(0)=C32 * (ALPH02/(1.-ALPH02))
-      CALL FLIN1(KC2,B2,NH,NTOT,PTDISK,MU,FC2,KIK,CAVA)
+      CALL FLIN1(KC2,B2,NH,NTOT,main_PTDISK,main_MU,FC2,KIK,CAVA)
       IF(CAVA. GT.0) THEN
       WRITE(6,132) CAVA
       WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,NTOT)
@@ -1837,7 +1837,7 @@ c     1 znh(nmeta+2),t
       END IF
       ALPH0=EXP(-AHNU/(KB*T))
       B(0)=C3 * (ALPH0/(1.-ALPH0))
-      CALL FLIN1(KC,B,NH,NTOT,PTDISK,MU,FC,KIK,CAVA)
+      CALL FLIN1(KC,B,NH,NTOT,main_PTDISK,main_MU,FC,KIK,CAVA)
       IF(CAVA. GT.0) THEN
       WRITE(6,132) CAVA
       WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,NTOT)
@@ -1882,7 +1882,7 @@ C     IF(.NOT.ECRIT) GO TO 10
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE LECTAUH(NH,NTOT,PAS,JJMAX,LLAMBDH,TTH,
+      SUBROUTINE LECTAUH(NH,NTOT,main_PAS,JJMAX,LLAMBDH,TTH,
      1 DTOT,TTD,LZERO,LFIN,TAUH,DHM,DHP,FILETOH)
       PARAMETER(NP=7000)
       LOGICAL ECRIT
@@ -1977,15 +1977,15 @@ C
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE SELEKFH(PTDISK,MU,KIK,DTOT,PAS,NBLEND,
+      SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,NBLEND,
      1 GFAL,ZINF,ABOND,ECART,elem,LAMBDA,TAUH,DHM,DHP,VT,
      2 NTOT,NH,TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
       PARAMETER(NR=8000,NMOL=50000,NP=7000)
-      LOGICAL PTDISK,ECRIT
+      LOGICAL main_PTDISK,ECRIT
       INTEGER D, DTOT, CAVA,DHM,DHP
       REAL lambi
-      REAL MU,KAPPA,KA,KAP,NH,KCD,KCI,KAM,KAPPAM,KAPPT,MM
-      REAL*8 LAMBDA,PAS,ECART,ECAR,ECARTM,ECARM,LMBDAM
+      REAL main_MU,KAPPA,KA,KAP,NH,KCD,KCI,KAM,KAPPAM,KAPPT,MM
+      REAL*8 LAMBDA,main_PAS,ECART,ECAR,ECARTM,ECARM,LMBDAM
       DIMENSION NH(50),TETA(50),VT(50)
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50),BI(0:50)
       DIMENSION ECART(NR),ECAR(NR), ZINF(NR),ECARTL(NR),
@@ -2024,13 +2024,13 @@ C
       lambi = (6270+(D-1)*0.02)
       if(nblend.ne.0) then
             DO K=1,NBLEND
-            ECAR(K)=ECAR(K)-PAS
+            ECAR(K)=ECAR(K)-main_PAS
             ECARTL(K)=ECAR(K)
             END DO
       end if
       if(mblend.ne.0) then
             DO K=1,MBLEND
-            ECARM(K)=ECARM(K)-PAS
+            ECARM(K)=ECARM(K)-main_PAS
             ECARTLM(K)=ECARM(K)
             END DO
       end if
@@ -2089,7 +2089,7 @@ c     WRITE(6,152) KAPPAM(1),KAPPAM(NTOT)
       IF(D.EQ.DTOT)WRITE(6,152)KAPPAM(1),KAPPAM(NTOT)
 
       IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
-      CALL FLIN1 (KAP,BI,NH,NTOT,PTDISK,MU,FL(D),KIK,CAVA)
+      CALL FLIN1 (KAP,BI,NH,NTOT,main_PTDISK,main_MU,FL(D),KIK,CAVA)
                   IF(CAVA.GT.1)   THEN
                   WRITE(6,131) TTD(D),CAVA
                   STOP
@@ -2099,14 +2099,14 @@ c     FN(D) = FL(D) / FCONT(D)
             DO N=1,NTOT
             TAUHD(N)=TAUH(D,N)
             END DO
-      CALL FLINH (KAP,BI,NH,NTOT,PTDISK,MU,TAUHD,FL(D),KIK,CAVA)
+      CALL FLINH (KAP,BI,NH,NTOT,main_PTDISK,main_MU,TAUHD,FL(D),KIK,CAVA)
                   IF(CAVA.GT.1)   THEN
                   WRITE(6,131) TTD(D),CAVA
                   STOP
                   END IF
       END IF
 c Dez 03-P. Coelho - calculate the continuum and normalized spectra
-      CALL FLIN1 (KCI,BI,NH,NTOT,PTDISK,MU,FCONT(D),KIK,CAVA)
+      CALL FLIN1 (KCI,BI,NH,NTOT,main_PTDISK,main_MU,FCONT(D),KIK,CAVA)
       END DO  ! fin bcle sur D
 131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
      1   ' A LAMBD=',F10.3,'     CAVA=',I3)
@@ -2338,13 +2338,13 @@ C
       end
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE FLINH (KAP,B,NH,NTOT,PTDISK,MU,TAUHD,F,IOP,CAVA)
+      SUBROUTINE FLINH (KAP,B,NH,NTOT,main_PTDISK,main_MU,TAUHD,F,IOP,CAVA)
 c     calcul du flux ou de l'intensite par la methode d'integration
 c     a 6 pts (ou 13pts) de R.Cayrel (these).
 c     nouvelle methode de calcul de to . TO(1)est calcule et
 c     est different de 0 (On pose TO(0)=0)   -Avril 1988-
-      LOGICAL PTDISK
-      REAL   NH,KAP,MU
+      LOGICAL main_PTDISK
+      REAL   NH,KAP,main_MU
       INTEGER CAVA
       DIMENSION B(0:50),  TO_TOTO(0:50)
       DIMENSION NH(50),KAP(50),BBB(26),TD2(26),
@@ -2385,7 +2385,7 @@ C
 C           CALCUL DU FLUX
       IF(IOP.EQ.0)   THEN
 C               FORMULE A 6 OU 7 PTS
-            IF(PTDISK) THEN
+            IF(main_PTDISK) THEN
             IPOINT=7
             TOLIM=4.0
                      ELSE
@@ -2402,8 +2402,8 @@ c     on verifie que le modele n'est pas trop court
       END IF
 c
 2     DO  L=1,IPOINT
-            IF(PTDISK) THEN
-            TT(L) = TP(L)*MU
+            IF(main_PTDISK) THEN
+            TT(L) = TP(L)*main_MU
             CC(L)=CP(L)
                      ELSE
             TT(L) = TD(L)
@@ -2422,7 +2422,7 @@ C
                         ELSE
 C     FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
 C           (13PTS +PTS MILIEU)
-            IF(PTDISK)   then
+            IF(main_PTDISK)   then
             WRITE(6,1500)
             STOP
             END IF
@@ -2468,15 +2468,15 @@ c     STOP
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE FLIN1 (KAP,B,NH,NTOT,PTDISK,MU,F,IOP,CAVA)
+      SUBROUTINE FLIN1 (KAP,B,NH,NTOT,main_PTDISK,main_MU,F,IOP,CAVA)
 c     calcul du flux ou de l'intensite par la methode d'integration
 c     a 6 pts (ou 13pts) de R.Cayrel (these).
 c     nouvelle methode de calcul de to . TO_TOTO(1) est calcule et
 c     est different de 0 (On pose TO_TOTO(0)=0)   -Avril 1988-
 C (JT2015) dubbed TO_TOTO because the 2-letter variable that I won't
 C          mention is a reserved word
-      LOGICAL PTDISK
-      REAL   NH,KAP,MU
+      LOGICAL main_PTDISK
+      REAL   NH,KAP,main_MU
       INTEGER CAVA
       DIMENSION B(0:50),  TO_TOTO(0:50)
       DIMENSION NH(50),KAP(50),T5L(50),BBB(26),TD2(26),
@@ -2521,7 +2521,7 @@ C
 C           CALCUL DU FLUX
       IF(IOP.EQ.0)   THEN
 C               FORMULE A 6 OU 7 PTS
-            IF(PTDISK) THEN
+            IF(main_PTDISK) THEN
             IPOINT=7
             TOLIM=4.0
                      ELSE
@@ -2539,8 +2539,8 @@ c     on verifie que le modele n'est pas trop court
       END IF
 
 2     DO  L=1,IPOINT
-            IF(PTDISK) THEN
-            TT(L) = TP(L)*MU
+            IF(main_PTDISK) THEN
+            TT(L) = TP(L)*main_MU
             CC(L)=CP(L)
                      ELSE
             TT(L) = TD(L)
@@ -2562,7 +2562,7 @@ C
       IF(IOP.EQ.1) THEN
 C     FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
 C           (13PTS +PTS MILIEU)
-            IF(PTDISK)   then
+            IF(main_PTDISK)   then
             WRITE(6,1500)
             STOP
             END IF
@@ -2963,22 +2963,22 @@ C
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,VVT,NTOT,TOL,VT)
-      DIMENSION VVT(20),TOLV(20),VT(50),TOL(50)
+      SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
+      DIMENSION main_VVT(20),TOLV(20),VT(50),TOL(50)
       PRINT *,'   ENTREE DS TURBUL'
       IF(IVTOT.EQ.1)   THEN
             WRITE(6,*) ' VT CONSTANT'
             DO N=1,NTOT
-            VT(N)=VVT(1) * 1E5
+            VT(N)=main_VVT(1) * 1E5
             END DO
                    ELSE
             WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
             WRITE(6,*) '     LOG TO'
             WRITE(6,101) (TOLV(I),I=1,IVTOT)
             WRITE(6,*) '     VT'
-            WRITE(6,101) (VVT(I),I=1,IVTOT)
-            IF(INTERP.EQ.1) CALL FTLIN3(IVTOT,TOLV,VVT,NTOT,TOL,VT)
-            IF(INTERP.GT.1) CALL FT2   (IVTOT,TOLV,VVT,NTOT,TOL,VT)
+            WRITE(6,101) (main_VVT(I),I=1,IVTOT)
+            IF(INTERP.EQ.1) CALL FTLIN3(IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
+            IF(INTERP.GT.1) CALL FT2   (IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
             NT2=NTOT-2
             DO N=1,NT2,3
             WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
@@ -3158,26 +3158,26 @@ C
       REAL  IP,KP,KPLOG,IPI,NH,NNH
       REAL  CCOMP, UIIDUI, P, FP,NELEMX
       REAL  EPS,SWITER, C
-      INTEGER NIMAX, NMETAL, NMOL, NATOM, NELEM,MMAX
+      INTEGER NIMAX, dissoc_NMETAL, NMOL, NATOM, NELEM,MMAX
         DIMENSION PPH(50),PPC2(50),
      1      PO(50),PTI(50),PMG(50),PC13(50),PN(50),
      2      PNG(50),pig(50),pfe(50)
-        dimension elems(18)
-      COMMON /FANSAT/ FSTAR
+        dimension dissoc_ELEMS(18)
       COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
       COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
      1                PPMOL(600), APMLOG(600),MOL(600), IP(100),
-     2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER, NMETAL, NMOL
+     2                CCOMP(100), UIIDUI(100), COMFH1_P(100), FP(100),
+     3                KP(100),
+     4                NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
       COMMON /VAL/    PPG(600,50)
-      COMMON /COR/    ELEMS, XXCOR, NNMETAL
+      COMMON /COR/    dissoc_ELEMS, main_XXCOR, NNMETAL
 
-      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, ELEMS
+      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, dissoc_ELEMS
       CHARACTER*3 MOL
       DIMENSION   TO(50)
       DIMENSION YA(525), YB(525), YC(525), YD(525),ELEMNT(100),
      2      CCLOG(100),G0(100),G1(100),NATOMM(5),NELEMM(5),
-     3      XP(50,20),ELEM(99),XXCOR(50)
+     3      XP(50,20),ELEM(99),main_XXCOR(50)
       DATA ELEMNT(99),ELEMNT(100)/'E-','H*'/
 C
 C
@@ -3196,22 +3196,26 @@ C        NIMAX     MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
 C        EPS       IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
 C        IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
 C        IF SWITER .LE. 0;   X(I+1)=X(I+1)
-      READ(23,5000) NMETAL,NIMAX,EPS,SWITER
-        NNMETAL=NMETAL
+      READ(23,5000) dissoc_NMETAL,NIMAX,EPS,SWITER
+        NNMETAL=dissoc_NMETAL
          PRINT 6102
-      AFSTAR=ALOG10(FSTAR)
-      READ(4,*)(XXCOR(I),I=1,NMETAL)
+      READ(4,*)(main_XXCOR(I),I=1,dissoc_NMETAL)
 C
 C*****IMPUT C
-      DO 1002 I = 1,NMETAL
+
+
+C (JT2015) This fragment is already adapted
+      CALL READ_DISSOC('dissoc.dat')
+      DO I = 1, dissoc_NMETAL
       READ(23,5001) ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI
-        elems(i)=elemxi
-      CCLOGI=CCLOGI+AFSTAR
-      CCLOGI=CCLOGI+XXCOR(I)
-      IF(I.EQ.1)CCLOGI=0.0
-      IF(I.EQ.2)CCLOGI=-1.0
-      NELEMX(I) = NELEMI
-      ELEM(I) = ELEMXI
+            CCLOGI = dissoc_CCLOG(I)+main_AFSTAR
+
+C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
+            CCLOGI = CCLOGI+main_XXCOR(I)
+
+            IF(I .EQ .1) CCLOGI = 0.0
+            IF(I .EQ .2) CCLOGI = -1.0
+
       ELEMNT(NELEMI) = ELEMXI
       IP(NELEMI) = IPI
       UIIDUI(NELEMI) = IG1 * 0.661 / IG0
@@ -3219,8 +3223,8 @@ C*****IMPUT C
       G1(NELEMI)=IG1
       CCLOG(NELEMI) = CCLOGI
       CCOMP(NELEMI) = EXP(CCLOGI/ECONST)
-         PRINT 6103,ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI-afstar
- 1002 CONTINUE
+         PRINT 6103,ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI-main_AFSTAR
+      END DO
       nnmetal=nmetal
 C
 C*****IMPUT D
@@ -3239,7 +3243,7 @@ C*****IMPUT D
  1110 GO TO 1010
 C     STARTING VALUE OF THE SOLUTION
  1014 NMOL = J - 1
-      DO 1400 I=1,NMETAL
+      DO 1400 I=1,dissoc_NMETAL
       NELEMI=NELEMX(I)
       P(NELEMI)=1.0E-20
  1400 CONTINUE
@@ -3263,7 +3267,7 @@ C     PRINT OUT OF THE RESULTS
 C        PRINT 6300
 C     PRINT 6091,   PGLOG, PELOG,PE, THETA, TEM, TO(ITO)
 C     PRINT 6301
-      DO 1303 I=1,NMETAL
+      DO 1303 I=1,dissoc_NMETAL
       NELEMI=NELEMX(I)
       FPLOG=ALOG10(FP(NELEMI))
       XP(ITO,I) = P(NELEMI)+1.0E-30
@@ -3283,7 +3287,7 @@ C     PUNCH 710,NH,THETA,PE
 C 710 FORMAT(2X,E11.5,2X,F6.4,2X,E11.5,46X)
 C        PRINT 6992
       IRL = 120
-      DO 1184 I=1,NMETAL
+      DO 1184 I=1,dissoc_NMETAL
       NELEMI=NELEMX(I)
       YA(I)  =  ELEMNT(NELEMI)
       PLOG=ALOG10(P(NELEMI)+1.0E-30)
@@ -3294,9 +3298,9 @@ C        PRINT 6992
       XLOG = PIONL - PGLOG
       YC(I)  =  XLOG
 C
-      IF (  I.NE.NMETAL )  GO TO 1450
+      IF (  I.NE.dissoc_NMETAL )  GO TO 1450
        IQ = I / 120
-      IR  =  NMETAL  -  IQ * 120
+      IR  =  dissoc_NMETAL  -  IQ * 120
       IRL  =  IR / 3
       GO TO 1460
  1450 IF ( MOD(I,120) )  1184,1460,1184
@@ -3446,15 +3450,15 @@ C-------------------------------------------------------------------------------
       REAL  IP,KP,KPLOG,IPI,NH,NNH
       REAL  CCOMP, UIIDUI, P, FP,NELEMX
       REAL  EPS,SWITER, C
-      INTEGER NIMAX, NMETAL, NMOL, NATOM, NELEM,MMAX
+      INTEGER NIMAX, dissoc_NMETAL, NMOL, NATOM, NELEM,MMAX
 
       COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
       COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
                       PPMOL(600), APMLOG(600), MOL(600), IP(100),
                       CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-                      NELEMX(50), NIMAX, EPS, SWITER, NMETAL, NMOL
+                      NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
 
-      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, ELEMS
+      CHARACTER*2 ELEMNT, ELEMXI, YA, ELEM, dissoc_ELEMS
       CHARACTER*3 MOL
       DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
       ECONST = 4.342945E-1
@@ -3480,7 +3484,7 @@ C     EVALUATION OF LOG KP(MOL)
 C
 C     EVALUATION OF THE IONIZATION CONSTANTS
       TEM25 = TEM**2*SQRT(TEM)
-      DO 1060 I = 1,NMETAL
+      DO 1060 I = 1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
  1060 CONTINUE
@@ -3529,7 +3533,7 @@ C     P(100)=PH+
       P(100)=PPH
 C
 C     EVALUATION OF THE FICTITIOUSPRESSURE OF EACH ELEMENT
-      DO 1070 I=1,NMETAL
+      DO 1070 I=1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       FP(NELEMI) = CCOMP(NELEMI)*FPH
  1070 CONTINUE
@@ -3537,7 +3541,7 @@ C
 C     CHECK OF INITIALIZATION
       PE=P(99)
       IF(PH-P(1)) 1402,1402,1401
- 1401 DO 1403 I=1,NMETAL
+ 1401 DO 1403 I=1,dissoc_NMETAL
       NELEMI=NELEMX(I)
       P(NELEMI)=FP(NELEMI)*EXP(-5.0*T/ECONST)
  1403 CONTINUE
@@ -3547,7 +3551,7 @@ C     RUSSELL EQUATIONS
  1402 CONTINUE
  6003 FORMAT(1H0)
       NITER = 0
- 1040 DO 1030 I =1,NMETAL
+ 1040 DO 1030 I =1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE)
       DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
@@ -3574,7 +3578,7 @@ C     RUSSELL EQUATIONS
       NATOMJ = NATOM(M,J)
       ATOMJ = FLOAT(NATOMJ)
       IF(NELEMJ.EQ.99) SPNION=SPNION + PMOLJ
-      DO 1043 I=1,NMETAL
+      DO 1043 I=1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       IF(NELEMJ.EQ.NELEMI) GO TO 1045
       GO TO 1043
@@ -3586,14 +3590,14 @@ C     RUSSELL EQUATIONS
  1041 CONTINUE
 C
 C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
-      DO 2001 I=1,NMETAL
+      DO 2001 I=1,dissoc_NMETAL
       NELEMI=NELEMX(I)
       WA(I)=ALOG10(P(NELEMI)+1.0E-30)
  2001 CONTINUE
-      IMAXP1=NMETAL+1
+      IMAXP1=dissoc_NMETAL+1
       WA(IMAXP1)=ALOG10(PE+1.0E-30)
       DELTA = 0.0
-      DO 1050 I=1,NMETAL
+      DO 1050 I=1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       PREV(NELEMI) = P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
       PREV(NELEMI) = ABS(PREV(NELEMI))
@@ -3607,7 +3611,7 @@ C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
  1050 CONTINUE
 C     IONIZATION EQUILIBRIUM
       PEREV = 0.0
-      DO 1061 I=1,NMETAL
+      DO 1061 I=1,dissoc_NMETAL
       NELEMI = NELEMX(I)
       PEREV = PEREV + KP(NELEMI)*P(NELEMI)
  1061 CONTINUE
