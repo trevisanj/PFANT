@@ -1,5 +1,10 @@
       MODULE READ_FILES
 
+      ! Error code if any array index blow maximum number of elements
+      ! allowed while reading from file
+      INTEGER ERROR_EXCEEDED
+      PARAMETER(ERROR_EXCEEDED=111)
+
 
 C Variables filled by READ_DISSOC() (file dissoc.dat)
 C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
@@ -16,18 +21,19 @@ C Variables filled by READ_DISSOC() (file dissoc.dat)
 C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
       ! dissoc.dat, metals part
       PARAMETER(MAX_dissoc_NMETAL=50)  ! Limit number of metal rows in dissoc.dat
-      INTEGER*4 dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
 
+      INTEGER*4 dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
       CHARACTER*2 dissoc_ELEMS
-      INTEGER dissoc_IG0, dissoc_IG1
-      REAL*8 dissoc_IP, dissoc_CCLOG
+      INTEGER dissoc__IG0, dissoc__IG1
+      REAL*8 dissoc__IP, dissoc__CCLOG
       DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
      1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
-
-     2          dissoc_IP(MAX_dissoc_NMETAL),      ! These other 4 variables are used
-     3          dissoc_IG0(MAX_dissoc_NMETAL),     ! for filling local variables
-     4          dissoc_IG1(MAX_dissoc_NMETAL),     ! within SAT4()
-     5          dissoc_CCLOG(MAX_dissoc_NMETAL)    !
+      ! JT2015 I introduced these variables, double underscore to emphasize that they
+      !        are not just old variables that had a prefix added.
+     2          dissoc__IP(MAX_dissoc_NMETAL),      ! These other 4 variables are used
+     3          dissoc__IG0(MAX_dissoc_NMETAL),     ! for filling local variables
+     4          dissoc__IG1(MAX_dissoc_NMETAL),     ! within SAT4()
+     5          dissoc__CCLOG(MAX_dissoc_NMETAL)    !
 
       ! dissoc.dat, molecules part
       PARAMETER(MAX_dissoc_NMOL=600)  ! Limit number of molecule rows
@@ -66,9 +72,51 @@ C Variables filled by READ_ABONDS() (file abonds.dat)
 
 
 
+C Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
+
+      ! Half of the maximum the number of rows in atomgrade.dat
+      PARAMETER(MAX_atomgrade__NBLEND=13000)
+
+      ! Maximum number of spectral lines possible within the interval LZERO, LFIN
+      PARAMETER(MAX_atomgrade_NBLEND=8000)
+
+      INTEGER*4 atomgrade_NBLEND, atomgrade__NBLEND
+      CHARACTER*2 atomgrade_ELEM, atomgrade__ELEM
+      INTEGER*4 atomgrade_IONI, atomgrade__IONI
+
+      ! Only these variables had their sizes specified originally
 
 
+C ISSUE: Can I just declare everything as DOUBLE PRECISION (by default!!)??
+      REAL atomgrade_KIEX, atomgrade__KIEX
+      REAL*8 atomgrade_GR, atomgrade_LAMBDA, atomgrade__LAMBDA
 
+
+      ! Filtered variables
+C ISSUE: nobody cares about ABONDR
+      DIMENSION atomgrade_ELEM(MAX_atomgrade_NBLEND),
+     1          atomgrade_IONI(MAX_atomgrade_NBLEND),
+     2          atomgrade_LAMBDA(MAX_atomgrade_NBLEND),
+     3          atomgrade_KIEX(MAX_atomgrade_NBLEND),
+     4          atomgrade_ALGF(MAX_atomgrade_NBLEND),
+     5          atomgrade_GF(MAX_atomgrade_NBLEND),
+     6          atomgrade_CH(MAX_atomgrade_NBLEND),
+     7          atomgrade_GR(MAX_atomgrade_NBLEND),
+     8          atomgrade_GE(MAX_atomgrade_NBLEND),
+     9          atomgrade_ZINF(MAX_atomgrade_NBLEND),
+     +          atomgrade_ABONDR(MAX_atomgrade_NBLEND)
+
+      ! File originals
+      DIMENSION atomgrade__ELEM(MAX_atomgrade__NBLEND),
+     1          atomgrade__IONI(MAX_atomgrade__NBLEND),
+     2          atomgrade__LAMBDA(MAX_atomgrade__NBLEND),
+     3          atomgrade__KIEX(MAX_atomgrade__NBLEND),
+     4          atomgrade__ALGF(MAX_atomgrade__NBLEND),
+     5          atomgrade__CH(MAX_atomgrade__NBLEND),
+     6          atomgrade__GR(MAX_atomgrade__NBLEND),
+     7          atomgrade__GE(MAX_atomgrade__NBLEND),
+     8          atomgrade__ZINF(MAX_atomgrade__NBLEND),
+     9          atomgrade__ABONDR(MAX_atomgrade__NBLEND)
 
       SAVE
 
@@ -249,8 +297,9 @@ C PROPOSE: use READ()'s "END=" option
       PARAMETER(UNIT_=199)
       CHARACTER*256 fileName
 
+      ! Auxiliary temp variables for reading file
       INTEGER*4 NATOMM, NELEMM
-      DIMENSION NATOMM(5), NELEMM(5)  ! Auxiliary temp variables for reading file
+      DIMENSION NATOMM(5), NELEMM(5)
 
       OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
 
@@ -277,12 +326,9 @@ C   col 5 -- (?)
 C   col 6 -- (?)
       DO I = 1, dissoc_NMETAL
         READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
-     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc_IP(I),
-     2        dissoc_IG0(I), dissoc_IG1(I), dissoc_CCLOG(I)
+     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc__IP(I),
+     2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
       END DO
-
-
-      WRITE(*,*) 'sadkjhfdskjhdfskjlfdshkjfdshkdjfsh'
 
 C rows NMETAL+2 till end-of-file
 C ==============================
@@ -338,5 +384,149 @@ C ISSUE: THere is no 1X
 
       RETURN
       END
+
+
+
+
+
+
+C-------------------------------------------------------------------------
+C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade_*
+C
+C This file has 2 types of alternating rows:
+C   odd row
+C     col 1 -- 2-letter atomgrade_ELEM(K) FILLDOC
+C     col 2 -- atomgrade_IONI(K) FILLDOC
+C     col 3 -- atomgrade_LAMBDA(K) FILLDOC
+C   even row
+C     col 1 --
+C     col 2 --
+C     col 3 --
+C     col 4 --
+C     col 5 --
+C     col 6 --
+C     col 7 --
+C     col 8 -- signals end-of-file. If "1", reading stops
+C-------------------------------------------------------------------------
+
+
+C TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
+C TODO: including other reading routines!!!!!!!!!!!!!!
+
+C ISSUE: Cannot cope with empty file (tested).
+
+C PROPOSE: use READ()'s "END=" option
+
+      SUBROUTINE READ_ATOMGRADE(fileName)
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 fileName
+
+      INTEGER FINRAI, K
+
+      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+
+C orig ******************************************************************
+C orig                      V
+C orig     QUANTITES DEPENDANT DE LA RAIE ET DU MODELE
+C orig *******************************************************************
+
+      K = 1
+
+9     READ(UNIT_, '(A2, I1, 1X, F10.3)') atomgrade__ELEM(K),
+     1                                   atomgrade__IONI(K),
+     2                                   atomgrade__LAMBDA(K)
+
+      READ(UNIT_, *) atomgrade__KIEX(K),
+     1               atomgrade__ALGF(K),
+     2               atomgrade__CH(K),
+     3               atomgrade__GR(K),
+     4               atomgrade__GE(K),
+     5               atomgrade__ZINF(K),
+     6               atomgrade__ABONDR(K), FINRAI
+
+      IF (atomgrade_GR(K) .LT. 1E-37)
+     1    atomgrade_GR(K) = 2.21E15 / atomgrade_LAMBDA(K)**2
+
+      IF (FINRAI .EQ. 1) GO TO 10
+      K = K+1
+
+          ! Checks if exceeds maximum number of elements allowed
+          IF (K .GT. MAX_atomgrade__NBLEND) THEN
+            WRITE(*,*) 'READ_ATOMGRADE(): exceeded maximum of',
+     1                 MAX_atomgrade__NBLEND, ' spectral lines'
+            STOP ERROR_EXCEEDED
+          END IF
+
+      GO TO 9
+
+10    atomgrade__NBLEND = K  ! ISSUE: check this K, K-1, if ignoring last row was on purpose (no longer ignoring)
+
+      CLOSE(UNIT=UNIT_)
+
+      RETURN
+
+      END
+
+C ISSUE: I gotta check with BLB, it seems that the last 2 rows were being ignored, look:
+
+*      K=1
+*9     READ(14,103)atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K)
+*      READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
+*     1 ABONDR(K),FINRAI
+*      write(34,103)atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K)
+*      GF(K)=10.**ALGF(K)
+*C        IF(K.EQ.1) GF(K)=10**AGGF
+*      IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / atomgrade_LAMBDA(K)**2
+*      IF(FINRAI.EQ.1) GO TO 10
+*      IF(((atomgrade_LAMBDA(K).GT.LFIN).OR.(atomgrade_LAMBDA(K).LT.LZERO))) GO TO 205
+*      K=K+1
+*205   CONTINUE
+*      GO TO 9
+*10    NBLEND=K-1
+
+
+
+
+C-------------------------------------------------------------------------
+C FILTER_ATOMGRADE(): selects only spectral lines within range LZERO, LFIN
+C
+C Populates variables atomgrade_* (single underscore)
+C-------------------------------------------------------------------------
+      SUBROUTINE FILTER_ATOMGRADE(LZERO, LFIN)
+      REAL*8 LZERO, LFIN
+
+      K = 0
+      DO J = 1, atomgrade__NBLEND
+        IF((atomgrade__LAMBDA(J).LE.LFIN) .AND.
+     1     (atomgrade__LAMBDA(J) .GE. LZERO)) THEN
+          K = K+1
+
+
+          ! Checks if exceeds maximum number of elements allowed
+          IF (K .GT. MAX_atomgrade_NBLEND) THEN
+            WRITE(*,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
+     1                 MAX_atomgrade_NBLEND, ' spectral lines'
+            STOP ERROR_EXCEEDED
+          END IF
+          !Filters in!
+          atomgrade_ELEM(K)   = atomgrade__ELEM(J)
+          atomgrade_IONI(K)   = atomgrade__IONI(J)
+          atomgrade_LAMBDA(K) = atomgrade__LAMBDA(J)
+          atomgrade_KIEX(K)   = atomgrade__KIEX(J)
+          atomgrade_ALGF(K)   = atomgrade__ALGF(J)
+          atomgrade_GF(K)     = 10.**atomgrade__ALGF(J)
+          atomgrade_CH(K)     = atomgrade__CH(J)
+          atomgrade_GR(K)     = atomgrade__GR(J)
+          atomgrade_GE(K)     = atomgrade__GE(J)
+          atomgrade_ZINF(K)   = atomgrade__ZINF(J)
+          atomgrade_ABONDR(K) = atomgrade__ABONDR(J)
+        END IF
+      END DO
+
+      atomgrade_NBLEND = K
+
+      END
+
 
       END MODULE READ_FILES

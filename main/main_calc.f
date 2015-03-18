@@ -84,7 +84,7 @@ C       calcul possible de 100 A en 100 A
 C       Flux sortant est en nu: Fnu x lambda
 C       Flux absolu sortant a ete multiplie par 10**5
 
-      PARAMETER(NR=8000,NMOL=50000,NP=7000,NT=10000)
+      PARAMETER(MAX_atomgrade_NBLEND=8000,PARAMETER_NMOL=50000,NP=7000,NT=10000)
       INTEGER FINPAR,FINRAI,FINAB,D,DTOT
 cp Nov03    INTEGER DHM,DHP
       INTEGER DHM,DHP,DHMY,DHPY,DHMI,DHPI, NTOT
@@ -92,21 +92,21 @@ cp Nov03    INTEGER DHM,DHP
       character FILEFLUX2*72,FILEFLUX3*72
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
-      REAL NH,M,KI1,KI2,KIEX,KB,KC,main_MU,LAMBD,
+      REAL NH,M,KI1,KI2,atomgrade_KIEX,KB,KC,main_MU,LAMBD,
      1   NHE,KC1,KC2,KCD,MM, ABOND, ABO
       LOGICAL CONVOL,GAUSS,IDENTH
-      REAL*8 LZERO,LFIN,LAMBDA,LMBDAM, LLHY(10)
+      REAL*8 LZERO,LFIN,atomgrade_LAMBDA,LMBDAM, LLHY(10)
       REAL*8 LLAMBDH,main_PAS,ECART,ECARTM,L0,LF,lllhy
       DIMENSION NH(50),PE(50),TETA(50),PG(50),T5L(50),
      1 KC(50),ALPH(50),PHN(50),PH2(50),
      2 KC1(50),KC2(50),KCD(NP,50),
-     3 LAMBDA(NR),DELTA(NR,50),ABOND(NR),ELEM(NR),IONI(NR),
-     4 KIEX(NR),ALGF(NR),GF(NR),CH(NR),GR(NR),GE(NR),
-     5 POP(NR,50),A(NR,50),GFAL(NR),ECART(NR),ZINF(NR),
-     6 CORCH(NR),CVdW(NR),ABONDR(NR),
+     3 atomgrade_LAMBDA(MAX_atomgrade_NBLEND),DELTA(MAX_atomgrade_NBLEND,50),ABOND(MAX_atomgrade_NBLEND),atomgrade_ELEM(MAX_atomgrade_NBLEND),atomgrade_IONI(MAX_atomgrade_NBLEND),
+     4 atomgrade_KIEX(MAX_atomgrade_NBLEND),atomgrade_ALGF(MAX_atomgrade_NBLEND),atomgrade_GF(MAX_atomgrade_NBLEND),atomgrade_CH(MAX_atomgrade_NBLEND),atomgrade_GR(MAX_atomgrade_NBLEND),atomgrade_GE(MAX_atomgrade_NBLEND),
+     5 POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),atomgrade_ZINF(MAX_atomgrade_NBLEND),
+     6 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_ABONDR(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
-     8 ECARTM(NMOL)
-      CHARACTER*2 dissoc_ELEMS, ELEM, EL
+     8 ECARTM(PARAMETER_NMOL)
+      CHARACTER*2 dissoc_ELEMS, atomgrade_ELEM, EL
         DIMENSION dissoc_ELEMS(18),DM(8)
       DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
@@ -122,150 +122,13 @@ cp Nov03    1 FILETOHY(4)
       DIMENSION DHMY(10),DHPY(10)
       DIMENSION PPH(50),PPC2(50),PN(50),PC13(50),PMG(50),
      1 PO(50),PTI(50),PNG(50),PIG(50),pfe(50)
-            DIMENSION LMBDAM(NMOL),GFM(NMOL),PNVJ(NMOL,50),
-     1 ALARGM(NMOL)
+            DIMENSION LMBDAM(PARAMETER_NMOL),GFM(PARAMETER_NMOL),PNVJ(PARAMETER_NMOL,50),
+     1 ALARGM(PARAMETER_NMOL)
 C
 
 
 
 
-C     COMMON definitions
-C
-C     Rules for working with COMMON blocks:
-C
-C       1) Include all COMMON definitions here, even if used only in
-C          subroutines!
-C
-C       2) Keep consistent!!!
-C          Don't change variable names in subroutines!!!
-C
-C       3) Keep clean! Only one block definition per statement!
-
-
-
-C     COMMON AVEC LE SP READER ET LE SP DE TRACE
-C (main), READER06
-      COMMON /COM6/ TETAEF,GLOG, ASASOL, NHE, TIT(5)
-      REAL*8 NHE
-
-C main, READER06
-      COMMON /ALOG/ASALOG
-
-
-C     COMMON AVEC LE SP D ABSORPTION CONTINUE
-C main, ABSORU, BK, LECTUR
-      COMMON /LECT1/ AMET, BHE
-C main, ABSORU, BK, LECTUR
-      COMMON /LECT2/ ZP(30), ZM(30), WI(41,2), NUMSET(2), CAL
-C     History
-C     =========
-C     I found occurrences of the LECT2 block being defined as
-C     The variable "BIDA"is never used, so I guess it just reserves
-C     the allocation space for WI+NUMSET+C whose space indeed sum up
-C     to 85
-C     COMMON /LECT2/ZP(30),ZM(30),BIDA(85)
-
-
-
-C main, LECTUR, ABSORU, IONIPE, SAHATH, BK
-      COMMON /ABSO1/ NM
-c main, LECTUR, ABSORU, IONIPE, SAHATH, ATHYHE, BK
-      COMMON /ABSO2/ NMETA
-
-C main, ABSORU, IONIPE, BK
-      COMMON /SAPE/   AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-C     Variant: COMMON /SAPE/  BIDB(5), ZNU(30)
-
-
-C main, ABSORU, IONIPE, BK
-      COMMON /SAPU/   PE, RHO, TOC, ZNH(12)
-C     Variant: COMMON /SAPU/  BIDC(3), ZNH(12)
-
-
-C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
-C main, BK, SELEKFH, FLINH, FLIN1
-      COMMON /TOTO/ TO_TOTO
-      COMMON /FAIL/ ERR(50)
-C main, BK, SELEKFH, FLINH, FLIN1
-      DIMENSION TO_TOTO(0:50)
-
-
-C     COMMON AVEC LA SUBROUTINE D EQUILIBRE DISSOCIATIF SAT4
-C main, SAT4, DIE
-      COMMON /COM8/  NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
-C     Variant: COMMON /COM8/   NH, TETA, PE, PG, T5L
-C main, SAT4
-      DIMENSION main_XXCOR(MAX_dissoc_NMETAL)
-
-C     COMMON'S AVEC LE SP KAPMOL
-C main, SELEKFH,
-      COMMON /KAPM1/ MM, MBLEND
-      COMMON /KAPM2/ LMBDAM, GFM, PNVJ, ALARGM
-      COMMON /KAPM4/ ECARTM
-      COMMON /OPTIM/ LZERO,LFIN
-      COMMON /TOTAL/ MMC,MBLENQ
-
-C     COMMON'S AVEC LE SP KAPMOL ET POPADELH
-      COMMON /KAPM3/ PPH, PPC2, PN, PC13, PMG, PO, PTI, PNG, PIG, PFE
-      COMMON /PRT/   ECRIT
-      LOGICAL ECRIT
-
-
-
-C     COMMON AVEC SELEKFH ET POPADELH
-      COMMON /CNO/ DM
-
-
-
-C     First appeared in subroutine LECTUR
-      COMMON /SAHT/  ZK(11), ZKM(30,9), NR(30)
-      COMMON /SAHTP/ XI(30,9), PF(30,9)
-      COMMON /UNI/   IUNITE(2)
-      COMMON /NOM/   NOMET(30)
-      COMMON /TIT/   TITRE(17)
-
-
-
-C     `First appeared in subroutine ABSORU
-      COMMON /GBF/   ZLH(19)
-      COMMON /GBFH/  G2D(2,19), JSHYD(2), JH
-      COMMON /TETA/  AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
-      COMMON /TEHE/  ZLHEM(5), ZLHE(10)
-      COMMON /TEMPE/ STWTM(5)
-      COMMON /THE/   ZEUH(20), ZEUHEP(20), ZEXPM(5), ZEXP(10), UL
-      COMMON /ABSO3/ JFZ
-
-
-C     ISSUE!!!! RHOG APPERS
-      COMMON /HYHE/  GRDM(46), V1(46), U2(46), WINV(46), YY(4),
-     1               ZLETAG(18), G3D(12,18), AA(4), ZEFF4(10),
-     2               RHOG(12), ZLHEP(19)
-      COMMON /ZION/  AC, AC1(3), AC2(30,9)
-      COMMON /ABME/  STIMU
-      COMMON /SOMAB/  SUM1
-
-C     First appeared in subroutine SAHATH
-c NOT USED!!!!!!
-      COMMON /D1/ TET(7), ALP(9), TAB(9,7), MMAX_D1, NMAX
-
-
-C     First appeared in subroutine FLINH
-      COMMON /FCO/  FP_FCO(13),CC(13),TT(13),BB(13)
-      COMMON /CCC/  AMF(50), AMF2(50), FX1(50), FX2(50)
-
-
-C     First appeared in subroutine SAT4
-      COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
-     1                PPMOL(600), APMLOG(600),MOL(600), IP(100),
-     2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
-      COMMON /VAL/    PPG(600,50)
-
-
-
-
-
-C
       KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
 C  *****************************************************************
         data tti/'ti'/,mgg/'mg'/,cc1/' c'/,cc2/'c '/,
@@ -298,7 +161,7 @@ C  *****************************************************************
       WRITE(6,128)   main_TITRAV
          ICLE=0
       CONVOL=.FALSE.
-      READ(4,*)   ECRIT,main_PAS,main_ECHX,main_ECHY,main_FWHM
+      READ(4,*)   main_ECRIT,main_PAS,main_ECHX,main_ECHY,main_FWHM
 C
         NOXIG=1
 C        AGGF=-9.72
@@ -526,25 +389,12 @@ C  ******************************************************************
 C                       V
 C     QUANTITES DEPENDANT DE LA RAIE ET DU MODELE
 C  *******************************************************************
-      K=1
-9     READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
-      READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
-     1 ABONDR(K),FINRAI
-      write(34,103)ELEM(K),IONI(K),LAMBDA(K)
-      GF(K)=10.**ALGF(K)
-C        IF(K.EQ.1) GF(K)=10**AGGF
-      IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / LAMBDA(K)**2
-      IF(FINRAI.EQ.1) GO TO 10
-      IF(((LAMBDA(K).GT.LFIN).OR.(LAMBDA(K).LT.LZERO))) GO TO 205
-      K=K+1
-205   CONTINUE
-      GO TO 9
-10    NBLEND=K-1
-c     NBLEND = 0
+      CALL FILTER_ATOMGRADE(LZERO, LFIN)
+
 
 1036  format(A4, I10)
-cpc   write(6,455) NBLEND
-      if(nblend.eq.0) go to 88
+cpc   write(6,455) atomgrade_NBLEND
+      if(atomgrade_NBLEND.eq.0) go to 88
 C
       read(cc1,1510)dm(1)
       read(cc2,1510)dm(2)
@@ -556,13 +406,13 @@ C
       read(tti,1510)dm(8)
 
 
-      CALL POPADELH (NPAR,EL,KI1,KI2,M,NBLEND,ELEM,
-     1 LAMBDA,KIEX,CH,CORCH,CVdW,GR,GE,IONI,NTOT,TETA,PE,ALPH,
+      CALL POPADELH (NPAR,EL,KI1,KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,NTOT,TETA,PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
 C
 
 
-      CALL ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,ELEM,ABOND,NBLEND)
+      CALL ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
 
 C  *************************************************************
 
@@ -571,9 +421,9 @@ C     CALCUL DU COEFFICIENT D ABSORPTION SELECTIF
 C     ET CALCUL DU SPECTRE
 C  ***************************************************************
 C
-45          DO K=1,NBLEND
-            GFAL(K) = GF(K) * C2 * (LAMBDA(K)*1.E-8)**2
-            ECART(K)= LAMBDA(K)-LZERO+main_PAS
+45          DO K=1,atomgrade_NBLEND
+            GFAL(K) = atomgrade_GF(K) * C2 * (atomgrade_LAMBDA(K)*1.E-8)**2
+            ECART(K)= atomgrade_LAMBDA(K)-LZERO+main_PAS
             END DO ! fin bcle sur K
 88    continue
         CALL KAPMOL(NH,TETA,NTOT)
@@ -583,19 +433,19 @@ C
  60     ECARTM(L)=LMBDAM(L)-LZERO + main_PAS
  65     continue
 
-46    CALL SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,NBLEND,GFAL,ZINF,
-     1 ABOND,ECART,elem,LAMBDA,TAUH,DHM,DHP,VT,NTOT,NH,TETA,B,
+46    CALL SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,GFAL,atomgrade_ZINF,
+     1 ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,NTOT,NH,TETA,B,
      2 B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
 
 
       OPEN(UNIT=32, FILE='lines.pfant', STATUS='UNKNOWN')
       WRITE(32,122)
-         if(nblend.ne.0) then
-            DO K=1,NBLEND
-            WRITE(32,125) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-main_AFSTAR+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
-            WRITE(91,121) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-main_AFSTAR+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
+         if(atomgrade_NBLEND.ne.0) then
+            DO K=1,atomgrade_NBLEND
+            WRITE(32,125) atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K),atomgrade_KIEX(K),atomgrade_ALGF(K),
+     1      alog10(ABOND(K))-main_AFSTAR+12,atomgrade_CH(K),atomgrade_GR(K),atomgrade_GE(K),atomgrade_ZINF(K),CORCH(K)
+            WRITE(91,121) atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K),atomgrade_KIEX(K),atomgrade_ALGF(K),
+     1      alog10(ABOND(K))-main_AFSTAR+12,atomgrade_CH(K),atomgrade_GR(K),atomgrade_GE(K),atomgrade_ZINF(K),CORCH(K)
             END DO
         end if
 
@@ -619,21 +469,21 @@ C
 
       open(unit=31, file = 'log.log', status = 'unknown')
       print *, DTOT, ITOT, I1, I2
-      write(31,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
+      write(31,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,NHE,AMG,
      1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       do D = I1,I2
         write(31, *) L0 + (D-1) * DPAS, FL(D)
       end do
 
-      write(17,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
+      write(17,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,NHE,AMG,
      1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(17,1132) (FL(D),D=I1,I2)
 
-      write(19,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
+      write(19,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,NHE,AMG,
      1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(19,1132) (FCONT(D),D=I1,I2)
 
-      write(20,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,GLOG,ASALOG,NHE,AMG,
+      write(20,1130)IKEYtot,(TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,NHE,AMG,
      1 L0,LF,LZERO,LFIN,ITOT,DPAS,main_ECHX,main_ECHY,main_FWHM
       write(20,1132) (FN(D),D=I1,I2)
 
@@ -641,21 +491,24 @@ C
 1132  FORMAT(40000F15.5)
 
 C
-        WRITE(6,707)IKEY,LZERO,LFIN,I1,I2
-        IKEY=IKEY+1
-        IF(IKEY.GT.IKEYTOT)GO TO 669
-      WRITE(6,708) IKEY,IRH
-      IDENTH=.FALSE.
+      WRITE(6,707) IKEY, LZERO, LFIN, I1, I2
+
+      IKEY = IKEY+1
+
+      IF (IKEY .GT. IKEYTOT) GO TO 669
+      WRITE(6, 708) IKEY, IRH
+      IDENTH = .FALSE.
       REWIND 14
-        GO TO 666
-669     CONTINUE
+      GO TO 666
+
+669   CONTINUE
       close(17)
 
-        write(6,800)
-        write(6,801)
+      write(6,800)
+      write(6,801)
 
 
-C
+
 C  ****************************************************************
 C                       XI
 C           ZONE DE DEFINITION DES FORMATS
@@ -666,7 +519,7 @@ C  *******************************************************************
      1 2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
 102   FORMAT(2X,'INTENSITE CONTINUE A ',F10.3,' ANGSTROM  ET MU=',
      1  F4.1,3X,E20.7/)
-103   FORMAT(A2,I1,1X,F10.3)
+
 104   FORMAT('    INITIALE =',F6.3,' Angstrom')
 105   FORMAT(I1,A2,F6.3)
 106   FORMAT(' Pas du calcul=',F6.3)
@@ -733,16 +586,35 @@ C3333   FORMAT(F15.8)
 5555  FORMAT(2F10.3,2I5,F8.3,E20.7)
       STOP
       END
+C--- END MAIN ------------------------------------------------------------------
+C--- END MAIN ------------------------------------------------------------------
+C--- END MAIN ------------------------------------------------------------------
+C--- END MAIN ------------------------------------------------------------------
+C--- END MAIN ------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 C-------------------------------------------------------------------------------
       SUBROUTINE LECTUR(CALMET)
       INTEGER*4 PMAX,PNAX,P,CAL,CALMET
       CHARACTER*2 VELEM
-      DIMENSION ZEF4(5,11),GAU(5,11),ZN(5,11),ELEM(5),NMIN(5), VELEM(5)
+      DIMENSION ZEF4(5,11),GAU(5,11),ZN(5,11),atomgrade_ELEM(5),NMIN(5), VELEM(5)
 
       COMMON /LECT1/ ABMET, ABHEL
       COMMON /LECT2/ ZP(30),ZM(30), WI(41,2), NUMSET(2), CAL
-      COMMON /SAHT/  ZK(11), ZKM(30,9), NR(30)
+      COMMON /SAHT/  ZK(11), ZKM(30,9), NR_SAHT(30)
       COMMON /SAHTP/ XI(30,9), PF(30,9)
       COMMON /ABSO2/ NMETA
       COMMON /UNI/   IUNITE(2)
@@ -779,21 +651,21 @@ C
 C     LECTURE DE LA TABLE D'IONISATION CHOISIE
 C     ----------------------------------------
       DO 4092 J=1,NM
-      READ (15,45) NR(J),ZP(J),ZM(J)
+      READ (15,45) NR_SAHT(J),ZP(J),ZM(J)
 45    FORMAT (3X,I3,2E16.5)
       ZP(J) = 10**(ZP(J))
 
 C
-C     NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
+C     NR_SAHT=DEGRE MAXIMUM D'IONISATION CONSIDERE
 C     ZP=NBR. D'ABONDANCE DE L'ELEMENT
 C     ZM=POIDS MOLECULAIRE DE L'ELEMENT
 C
-      NRR=NR(J)
+      NRR=NR_SAHT(J)
       DO 4092 I=1,NRR
       READ (15,46) NEANT,NOMET(J),NION,XI(J,I),PF(J,I)
 46    FORMAT (A3,A2,I1,2E16.5)
 C
-C     ON LIT NR CARTES CONTENANT CHACUNE LE POTENTIEL D'IONISATION ET LA
+C     ON LIT NR_SAHT CARTES CONTENANT CHACUNE LE POTENTIEL D'IONISATION ET LA
 C     FONCTION DE PARTITION(LOG10(2UI+1)/UI)DE CHAQUE DEGRE D'IONISATION
 C     CES VALEURS SONT LUES DANS L'ORDRE CROISSANT DU DEGRE D'IONISATION
 C     NOMET  =NOM DE L'ELEMENT
@@ -820,6 +692,12 @@ C
       RETURN
       END
 
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE ABSORU (WL,TH,ZLPE,CALLAM,CALTH,CALPE,CALMET,CALU,CALSO
      1R,KKK,TOTKAP)
@@ -834,7 +712,7 @@ C-------------------------------------------------------------------------------
       COMMON /TEHE/   ZLHEM(5), ZLHE(10)
       COMMON /TEMPE/  STWTM(5)
       COMMON /THE/    ZEUH(20), ZEUHEP(20), ZEXPM(5), ZEXP(10), UL
-      COMMON /SAHT/   ZK(11), ZKM(30,9), NR(30)
+      COMMON /SAHT/   ZK(11), ZKM(30,9), NR_SAHT(30)
       COMMON /SAHTP/  XI(30,9), PF(30,9)
       COMMON /ABSO2/  NMETA
       COMMON /ABSO3/  JFZ
@@ -963,6 +841,10 @@ C     LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
       RETURN
       END
 
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
 C
@@ -973,7 +855,7 @@ C
       DIMENSION PHI(30),PA(10)
       COMMON /SAPE/ AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
       COMMON /ZION/ AC, AC1(3), AC2(30,9)
-      COMMON /SAHT/ ZK(11), ZKM(30,9), NR(30)
+      COMMON /SAHT/ ZK(11), ZKM(30,9), NR_SAHT(30)
       COMMON /SAPU/ PE, RHO, TOC, ZNH(12)
       COMMON /SAPDIV/ ZMU, PG
       COMMON /ABSO1/ NM
@@ -999,7 +881,7 @@ C     6.956948E-13=1.38024E-16*5040.39
       PE=EXP(ZLPE*2.302585)
       SIGM3=0.0
       DO 2380 J=1,NM
-      NRR=NR(J)
+      NRR=NR_SAHT(J)
       SIGM1=0.0
       SIGM2=0.0
       PA(1)=1.0
@@ -1116,7 +998,7 @@ C
       DIMENSION POTION(6),C1(3),C2(3),C3(3),C4(3)
 
       COMMON /ABSO2/ NMETA
-      COMMON /SAHT/ ZK(11), ZKM(30,9), NR(30)
+      COMMON /SAHT/ ZK(11), ZKM(30,9), NR_SAHT(30)
       COMMON /SAHTP/ XI(30,9), PF(30,9)
       COMMON /ABSO1/ NM
 
@@ -1129,7 +1011,7 @@ C
       DO 1 N=2,3
 1     ZK(NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))
 C
-C     LOI DE SAHA=LOG((NR+1)/NR)*PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
+C     LOI DE SAHA=LOG((NR_SAHT+1)/NR_SAHT)*PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
 C     LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
 C     CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
 C     31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
@@ -1146,7 +1028,7 @@ C
 12    ZK(NMETA+N)=EXP(-ZK(NMETA+N))
 2     CONTINUE
       DO 2270 J=1,NM
-      NRR=NR(J)
+      NRR=NR_SAHT(J)
       DO 2270 I=1,NRR
       ZKM(J,I)=TH*XI(J,I)-PF(J,I)-TEMPO
       IF (ZKM(J,I).LT.100.0) GO TO 2269
@@ -1691,8 +1573,8 @@ C     CE S.P. LIT SUR DISQUE ACCES DIRECT NH,TETA,PE,PG,T5L,NTOT
       REAL NH,NHE, DETEF, DGLOG, DSALOG, ASALALF
       CHARACTER*4 BLC, TIT
 
-      COMMON /COM6/ TETAEF, GLOG, ASASOL, NHE, TIT(5)
-      COMMON /ALOG/ ASALOG
+      COMMON /COM6/ TETAEF, main_GLOG, ASASOL, NHE, TIT(5)
+      COMMON /ALOG/ main_ASALOG
 
       DATA   BLC/'    '/
       DO 7 I=1,5
@@ -1702,27 +1584,31 @@ C     CE S.P. LIT SUR DISQUE ACCES DIRECT NH,TETA,PE,PG,T5L,NTOT
      1    FILE='modeles.mod', RECL = 1200)
       ID=1
       IDEF=211939
-10    READ(4,*) main_TEFF,GLOG,ASALOG,NHE,INUM
-        print *, main_TEFF,GLOG,ASALOG,NHE,INUM
+10    READ(4,*) main_TEFF,main_GLOG,main_ASALOG,NHE,INUM
+        print *, main_TEFF,main_GLOG,main_ASALOG,NHE,INUM
         TETAEF=5040/main_TEFF
       IF(INUM.GT.0)   ID=INUM
-      WRITE(6,102)TETAEF,GLOG,ASALOG,NHE,INUM
+      WRITE(6,102)TETAEF,main_GLOG,main_ASALOG,NHE,INUM
+
 C   SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
 C   SUR LE FICHIER ACCES DIRECT
+
+C ISSUE: Variable NHE read again from a different file!!!!!!!!!
+
 9     READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
       WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
         write(6,108) TIABS
       IF(NTOT.EQ.9999)   GO TO 6
       DDT  = ABS(main_TEFF-DETEF)
 C     DDTA  = ABS(TETAEF-DETAEF)
-      DDG = ABS(GLOG-DGLOG)
-      DDAB = ABS(ASALOG-DSALOG)
+      DDG = ABS(main_GLOG-DGLOG)
+      DDAB = ABS(main_ASALOG-DSALOG)
       DDHE= ABS(NHE-DNHE)
 C     DDIF = DDTA+DDG+DDAB+DDHE
 5     IF(DDT.GT.1.0)   GO TO 9
       IF(DDG.GT.0.01)   GO TO 9
       IF(DDAB.GT.0.01)   GO TO 9
-      ASASOL=10.**ASALOG
+      ASASOL=10.**main_ASALOG
 c     ID=ID-1
       READ(18, REC=ID)BID,(NH(I),TETA(I),PE(I),PG(I),T5L(I),I=1,NTOT)
       WRITE(6,110) NTOT
@@ -1751,7 +1637,7 @@ C-------------------------------------------------------------------------------
      1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
       PARAMETER(NP=7000)
       INTEGER D,DTOT,CAVA
-      LOGICAL main_PTDISK,ECRIT
+      LOGICAL main_PTDISK,main_ECRIT
       REAL LAMBD,NH,main_MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
      1 LAMBDC,KCJ,KCN
       REAL*8 LZERO,LFIN
@@ -1774,7 +1660,7 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
 C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
-      COMMON /PRT/   ECRIT
+      COMMON /PRT/   main_ECRIT
       LLZERO=LZERO
       LLFIN=LFIN
       C=2.997929E+10
@@ -1862,7 +1748,7 @@ cpc   WRITE(6,150) KC(1),KC(NTOT),B(0),B(1),B(NTOT),FC
             KCD(D,N)=FTTC(D)
             END DO
       END DO
-C     IF(.NOT.ECRIT) GO TO 10
+C     IF(.NOT.main_ECRIT) GO TO 10
       WRITE(6,153) KCD(1,1),KCD(1,NTOT)
       WRITE(6,154) KCD(DTOT,1),KCD(DTOT,NTOT)
 10    CONTINUE
@@ -1884,7 +1770,7 @@ C-------------------------------------------------------------------------------
       SUBROUTINE LECTAUH(NH,NTOT,main_PAS,JJMAX,LLAMBDH,TTH,
      1 DTOT,TTD,LZERO,LFIN,TAUH,DHM,DHP,FILETOH)
       PARAMETER(NP=7000)
-      LOGICAL ECRIT
+      LOGICAL main_ECRIT
       INTEGER D,DTOT,DHM,DHP
       REAL NH
       REAL*8 LAMBDH,LLAMBDH,LZERO,LFIN
@@ -1894,7 +1780,7 @@ C-------------------------------------------------------------------------------
 c p 20/11/04 M-N  DIMENSION TTD(DTOT),FTTH(NP),TAUHN(100),TAUH(DTOT,50)
       DIMENSION TTD(NP),FTTH(NP),TAUHN(100),TAUH(NP,50)
 
-      COMMON /PRT/ ECRIT
+      COMMON /PRT/ main_ECRIT
 C
 C     LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
       OPEN(UNIT=16,FILE=FILETOH,STATUS='OLD')
@@ -1929,7 +1815,7 @@ C
       WRITE(6,1501) TTT
       WRITE(6,1552)JMAX
       WRITE(6,1553)(LLAMBDH(JJ),JJ=1,JJMAX)
-      IF(.NOT.ECRIT) GO TO 15
+      IF(.NOT.main_ECRIT) GO TO 15
       WRITE(6,1553)(LLAMBDH(JJ),JJ=1,JJMAX)
       DO N=1,NTOT,5
       WRITE(6,1556)N
@@ -1976,41 +1862,41 @@ C
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,NBLEND,
-     1 GFAL,ZINF,ABOND,ECART,elem,LAMBDA,TAUH,DHM,DHP,VT,
+      SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,
+     1 GFAL,atomgrade_ZINF,ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,
      2 NTOT,NH,TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
-      PARAMETER(NR=8000,NMOL=50000,NP=7000)
-      LOGICAL main_PTDISK,ECRIT
+      PARAMETER(MAX_atomgrade_NBLEND=8000,PARAMETER_NMOL=50000,NP=7000)
+      LOGICAL main_PTDISK,main_ECRIT
       INTEGER D, DTOT, CAVA,DHM,DHP
       REAL lambi
       REAL main_MU,KAPPA,KA,KAP,NH,KCD,KCI,KAM,KAPPAM,KAPPT,MM
-      REAL*8 LAMBDA,main_PAS,ECART,ECAR,ECARTM,ECARM,LMBDAM
+      REAL*8 atomgrade_LAMBDA,main_PAS,ECART,ECAR,ECARTM,ECARM,LMBDAM
       DIMENSION NH(50),TETA(50),VT(50)
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50),BI(0:50)
-      DIMENSION ECART(NR),ECAR(NR), ZINF(NR),ECARTL(NR),
-     1 GFAL(NR),ABOND(NR),KA(NR),KAP(50),elem(NR),
-     2 KAPPA(50),LAMBDA(NR),KCD(NP,50),KCI(50),
-     3 POP(NR,50),DELTA(NR,50),A(NR,50)
+      DIMENSION ECART(MAX_atomgrade_NBLEND),ECAR(MAX_atomgrade_NBLEND), atomgrade_ZINF(MAX_atomgrade_NBLEND),ECARTL(MAX_atomgrade_NBLEND),
+     1 GFAL(MAX_atomgrade_NBLEND),ABOND(MAX_atomgrade_NBLEND),KA(MAX_atomgrade_NBLEND),KAP(50),atomgrade_ELEM(MAX_atomgrade_NBLEND),
+     2 KAPPA(50),atomgrade_LAMBDA(MAX_atomgrade_NBLEND),KCD(NP,50),KCI(50),
+     3 POP(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50)
 cp 20/11/04 M-N   DIMENSION TTD(DTOT),FL(DTOT),TAUHD(50),TAUH(DTOT,50)
       DIMENSION TTD(NP),FL(NP),TAUHD(50),TAUH(NP,50)
       DIMENSION FCONT(NP)
-      DIMENSION DELTAM(NMOL,50),ECARTM(NMOL),ECARM(NMOL),
-     1 ECARTLM(NMOL),KAM(NMOL),KAPPAM(50),KAPPT(50)
-      DIMENSION LMBDAM(NMOL),GFM(NMOL),PNVJ(NMOL,50),
-     1 ALARGM(NMOL),dm(8)
+      DIMENSION DELTAM(PARAMETER_NMOL,50),ECARTM(PARAMETER_NMOL),ECARM(PARAMETER_NMOL),
+     1 ECARTLM(PARAMETER_NMOL),KAM(PARAMETER_NMOL),KAPPAM(50),KAPPT(50)
+      DIMENSION LMBDAM(PARAMETER_NMOL),GFM(PARAMETER_NMOL),PNVJ(PARAMETER_NMOL,50),
+     1 ALARGM(PARAMETER_NMOL),dm(8)
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
       COMMON /KAPM1/ MM,MBLEND
       COMMON /KAPM2/ LMBDAM,GFM,PNVJ,ALARGM
       COMMON /KAPM4/ ECARTM
-      COMMON /PRT/   ECRIT
+      COMMON /PRT/   main_ECRIT
       COMMON /CNO/   DM
 
       DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
 C
 
-      if(nblend.ne.0) then
-            DO K=1,NBLEND
+      if(atomgrade_NBLEND.ne.0) then
+            DO K=1,atomgrade_NBLEND
             ECAR(K)=ECART(K)
             END DO
       end if
@@ -2021,8 +1907,8 @@ C
       end if
       DO D=1,DTOT
       lambi = (6270+(D-1)*0.02)
-      if(nblend.ne.0) then
-            DO K=1,NBLEND
+      if(atomgrade_NBLEND.ne.0) then
+            DO K=1,atomgrade_NBLEND
             ECAR(K)=ECAR(K)-main_PAS
             ECARTL(K)=ECAR(K)
             END DO
@@ -2038,10 +1924,10 @@ C
             KAPPAM(N) =0.
             T=5040./TETA(N)
 c     atomes
-      if(nblend.eq.0) go to 260
+      if(atomgrade_NBLEND.eq.0) go to 260
 
-       DO  K=1,NBLEND
-         IF( ABS(ECARTL(K)) .GT. ZINF(K) )  THEN
+       DO  K=1,atomgrade_NBLEND
+         IF( ABS(ECARTL(K)) .GT. atomgrade_ZINF(K) )  THEN
            KA(K)=0.
            ELSE
              V=ABS(ECAR(K)*1.E-8/DELTA(K,N))
@@ -2118,19 +2004,19 @@ c Dez 03-P. Coelho - calculate the continuum and normalized spectra
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,ELEM,ABOND,NBLEND)
-      CHARACTER*2 abonds_ELE, ELEM
+      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
+      CHARACTER*2 abonds_ELE, atomgrade_ELEM
       REAL ABO, ABOND
-      INTEGER abonds_NABOND, NBLEND, NR
-      PARAMETER(NR=8000)
-      DIMENSION abonds_ELE(100),ABO(100),ELEM(8000),ABOND(8000)
+      INTEGER abonds_NABOND, atomgrade_NBLEND, MAX_atomgrade_NBLEND
+      PARAMETER(MAX_atomgrade_NBLEND=8000)
+      DIMENSION abonds_ELE(100),ABO(100),atomgrade_ELEM(8000),ABOND(8000)
 
-      DO  K=1,NBLEND
+      DO  K=1,atomgrade_NBLEND
             DO  J=1,abonds_NABOND
-C           print 1035, abonds_ELE(J), elem(k), ALOG10(abo(j))-0.37+12
-            IF(abonds_ELE(J).EQ.ELEM(K))  GO TO 14
+C           print 1035, abonds_ELE(J), atomgrade_ELEM(k), ALOG10(abo(j))-0.37+12
+            IF(abonds_ELE(J).EQ.atomgrade_ELEM(K))  GO TO 14
             END DO   !FIN BCLE SUR J
-      WRITE(6,106)     ELEM(K)
+      WRITE(6,106)     atomgrade_ELEM(K)
       STOP
 14    ABOND(K)=ABO(J)
       END DO   !FIN BCLE SUR K
@@ -2203,23 +2089,22 @@ C105  FORMAT(7F10.3)
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE POPADELH (NPAR,EL,KI1,KI2,M,NBLEND,ELEM,
-     1 LAMBDA,KIEX,CH,CORCH,CVdW,GR,GE,IONI,NTOT,TETA,PE,ALPH,
+      SUBROUTINE POPADELH (NPAR,EL,KI1,KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,NTOT,TETA,PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
 C     ***calcule la population au niveau inferieur de la transition
 C     ***la largeur doppler DELTA et le coefficient d'elargissement
 C     ***le "A" utilise dans le calcul de H(A,V)
-      PARAMETER(NR=8000)
+      PARAMETER(MAX_atomgrade_NBLEND=8000)
       CHARACTER*1 ISI(1), ISS(1)
-      CHARACTER*2 ELEM, EL
-      INTEGER NBLEND, NPAR, J, K
-        real KI1,KI2,KIEX,M,KB,KIES,KII,NUL
-        real*8 LAMBDA(NBLEND)
+      CHARACTER*2 atomgrade_ELEM, EL
+      INTEGER atomgrade_NBLEND, NPAR, J, K
+        real KI1,KI2,atomgrade_KIEX,M,KB,KIES,KII,NUL
       DIMENSION PE(50),TETA(50),VT(50),ALPH(50),PHN(50),PH2(50),
      1 EL(85),M(85),KI1(85),KI2(85),P(3,85,50),ALPHL(50),
-     2 ELEM(NR),IONI(NR),KIEX(NR),
-     3 CH(NR),CORCH(NR),CVdW(NR),GR(NR),
-     4 GE(NR),POP(NR,50),A(NR,50),DELTA(NR,50)
+     2 atomgrade_ELEM(MAX_atomgrade_NBLEND),atomgrade_IONI(MAX_atomgrade_NBLEND),atomgrade_KIEX(MAX_atomgrade_NBLEND),
+     3 atomgrade_CH(MAX_atomgrade_NBLEND),CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_GR(MAX_atomgrade_NBLEND),
+     4 atomgrade_GE(MAX_atomgrade_NBLEND),POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
       DIMENSION PPH(50),PPC2(50),PN(50),PC13(50),PMG(50),
      1 PO(50),PTI(50),PNG(50),PIG(50),pfe(50),dm(8)
       CHARACTER*2 TTI, CC, OO, NN, MGG
@@ -2234,31 +2119,31 @@ C     ***le "A" utilise dans le calcul de H(A,V)
       C5= 2.*PI* (3.*PI**2/2.44)**0.4
 C     C6=4 * Pi * C
 c
-        DO  K=1,NBLEND
+        DO  K=1,atomgrade_NBLEND
             corch(k)=0.
             CVdW(K)=0
                 DO  J=1,NPAR
-                IF(EL(J).EQ.ELEM(K)) GO TO 15
+                IF(EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
                 END DO
-        WRITE(6,104) ELEM(K)
+        WRITE(6,104) atomgrade_ELEM(K)
         STOP
-15      IOO=IONI(K)
+15      IOO=atomgrade_IONI(K)
 C
-            write(77,*)elem(k),lambda(k)
-                IF(CH(K).LT.1.E-37)  THEN
-                KIES=(12398.54/LAMBDA(K)) + KIEX(K)
+            write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
+                IF(atomgrade_CH(K).LT.1.E-37)  THEN
+                KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
                 IF(IOO.EQ.1)   KII=KI1(J)
                 IF(IOO.EQ.2)   KII=KI2(J)
                         IF(CORCH(K).LT.1.E-37)   THEN
-                        CORCH(K)=0.67 * KIEX(K) +1
+                        CORCH(K)=0.67 * atomgrade_KIEX(K) +1
                         END IF   ! FIN DE IF CORCH(K)=0
-C               WRITE(6,125)  LAMBDA(K), CORCH(K)
-                CVdW(K)= CALCH(KII,IOO,KIEX(K),ISI,KIES,ISS)
-            CH(K)= CVdW(K) * CORCH(K)
-                END IF  ! FIN DE IF CH=0.
+C               WRITE(6,125)  atomgrade_LAMBDA(K), CORCH(K)
+                CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
+            atomgrade_CH(K)= CVdW(K) * CORCH(K)
+                END IF  ! FIN DE IF atomgrade_CH=0.
 
 C
-            IF(CH(K) .LT. 1.E-20) then
+            IF(atomgrade_CH(K) .LT. 1.E-20) then
             IOPI=1
             else
             IOPI=2
@@ -2266,62 +2151,62 @@ C
         DO  N=1,NTOT
         T=5040./TETA(N)
 
-      NUL= C* 1.E+8 /LAMBDA(K)
+      NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
       AHNUL= H*NUL
       ALPHL(N)=EXP(-AHNUL/(KB*T))
 
         TAP = 1.-ALPHL(N)
-        TOP = 10.**(-KIEX(K)*TETA(N))
+        TOP = 10.**(-atomgrade_KIEX(K)*TETA(N))
         POP(K,N) = P(IOO,J,N)*TOP*TAP
 C NOXIG:
         IF(K.eq.1) POP(K,N)=TOP*TAP*P(IOO,J,N)*PO(N)/PPH(N)
 c     C
-c       if((elem(k).eq.dm(1)).or.(elem(k).eq.dm(2))) then
+c       if((atomgrade_ELEM(k).eq.dm(1)).or.(atomgrade_ELEM(k).eq.dm(2))) then
 c       POP(K,N)=TOP*TAP*P(IOO,J,N)*PPC2(N)/PPH(N)
-c        write(48,488)lambda(k),elem(k),dm(3),ioo,pop(k,n)
-c        write(48,488)lambda(k),elem(k),dm(4),ioo,pop(k,n)
+c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(3),ioo,pop(k,n)
+c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(4),ioo,pop(k,n)
 c        end if
 c     N
-c       if((elem(k).eq.dm(3)).or.(elem(k).eq.dm(4))) then
+c       if((atomgrade_ELEM(k).eq.dm(3)).or.(atomgrade_ELEM(k).eq.dm(4))) then
 c     POP(K,N)=TOP*TAP*P(IOO,J,N)*PN(N)/PPH(N)
 c     end if
 c     O
-c       if((elem(k).eq.dm(5)).or.(elem(k).eq.dm(6))) then
+c       if((atomgrade_ELEM(k).eq.dm(5)).or.(atomgrade_ELEM(k).eq.dm(6))) then
 c        POP(K,N)=TOP*TAP*P(IOO,J,N)*PO(N)/PPH(N)
-c        write(48,488)lambda(k),elem(k),dm(5),ioo,pop(k,n)
-c        write(48,488)lambda(k),elem(k),dm(6),ioo,pop(k,n)
+c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(5),ioo,pop(k,n)
+c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(6),ioo,pop(k,n)
 c        end if
 c     Mg
-c       if(elem(k).eq.dm(7)) then
+c       if(atomgrade_ELEM(k).eq.dm(7)) then
 c     POP(K,N)=TOP*TAP*P(IOO,J,N)*PMG(N)/PPH(N)
 c     end if
 c     Ti
-c       if(elem(k).eq.dm(8)) then
+c       if(atomgrade_ELEM(k).eq.dm(8)) then
 c        POP(K,N)=TOP*TAP*P(IOO,J,N)*PTI(N)/PPH(N)
-c       write(48,488)lambda(k),elem(k),dm(1),ioo,pop(k,n)
+c       write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(1),ioo,pop(k,n)
 c        end if
 
-        DELTA(K,N) =(1.E-8*LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/M(J))
+        DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/M(J))
         VREL    = SQRT(C4*T*(1.+1./M(J)))
             IF (IOPI.EQ.1)  then
-            GH   =C5*CH(K)**0.4*VREL   **0.6
+            GH   =C5*atomgrade_CH(K)**0.4*VREL   **0.6
 C                 if (N.EQ.10)  write (6,100) GH
             else
-            GH = CH(K) + Corch(K)*T
+            GH = atomgrade_CH(K) + Corch(K)*T
 C                 if (N.EQ.10) write(6, 101) GH
             END IF
-        GAMMA = GR(K)+(GE(K)*PE (N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
-        A(K,N) =GAMMA*(1.E-8*LAMBDA(K))**2 / (C6*DELTA(K,N))
+        GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*PE (N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
+        A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
 c     if((k.le.3).and.(n.eq.1)) then
-c     write(6,*) lambda(k),gr(k),ge(k),gh,gamma
+c     write(6,*) atomgrade_LAMBDA(k),atomgrade_GR(k),atomgrade_GE(k),gh,gamma
 c     write(6,*) alphl(n),p(ioo,j,n),top,tap
-c     write(6,*) vrel,m(j),ch(k),corch(k)
+c     write(6,*) vrel,m(j),atomgrade_CH(k),corch(k)
 c     write(6,*) n,pe(n),phn(n),ph2(n),t
 c     end if
 c     if((k.le.3).and.(n.eq.ntot)) then
-c     write(6,*) lambda(k),gr(k),ge(k),gh,gamma
+c     write(6,*) atomgrade_LAMBDA(k),atomgrade_GR(k),atomgrade_GE(k),gh,gamma
 c     write(6,*) alphl(n),p(ioo,j,n),top,tap
-c     write(6,*) vrel,m(j),ch(k),corch(k)
+c     write(6,*) vrel,m(j),atomgrade_CH(k),corch(k)
 c     write(6,*) n,pe(n),phn(n),ph2(n),t
 c     end if
         END DO    !FIN BCLE SUR N
@@ -2966,26 +2851,27 @@ C-------------------------------------------------------------------------------
       DIMENSION main_VVT(20),TOLV(20),VT(50),TOL(50)
       PRINT *,'   ENTREE DS TURBUL'
       IF(IVTOT.EQ.1)   THEN
-            WRITE(6,*) ' VT CONSTANT'
-            DO N=1,NTOT
-            VT(N)=main_VVT(1) * 1E5
-            END DO
-                   ELSE
-            WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
-            WRITE(6,*) '     LOG TO'
-            WRITE(6,101) (TOLV(I),I=1,IVTOT)
-            WRITE(6,*) '     VT'
-            WRITE(6,101) (main_VVT(I),I=1,IVTOT)
-            IF(INTERP.EQ.1) CALL FTLIN3(IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
-            IF(INTERP.GT.1) CALL FT2   (IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
+        WRITE(6,*) ' VT CONSTANT'
+        DO N = 1, NTOT
+          VT(N) = main_VVT(1)*1E5
+        END DO
+      ELSE
+        WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
+        WRITE(6,*) '     LOG TO'
+        WRITE(6,101) (TOLV(I),I=1,IVTOT)
+        WRITE(6,*) '     VT'
+        WRITE(6,101) (main_VVT(I),I=1,IVTOT)
+        IF(INTERP.EQ.1) CALL FTLIN3(IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
+          IF(INTERP.GT.1) CALL FT2(IVTOT,TOLV,main_VVT,NTOT,TOL,VT)
             NT2=NTOT-2
             DO N=1,NT2,3
-            WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
-     1       (N+2),TOL(N+2),VT(N+2)
+              WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
+     1                     (N+2),TOL(N+2),VT(N+2)
             END DO
-                  DO N=1,NTOT
-                  VT(N)=VT(N) * 1E5
-                  END DO
+
+            DO N = 1, NTOT
+              VT(N) = VT(N)*1E5
+            END DO
       END IF
 C
       RETURN
@@ -3059,6 +2945,9 @@ c     ***TETA2      "             "      sur les pts 2 3 et 4
 c     ***TETA3      "        lineaire    sur les 2 derniers pts
 c     (ici seul TETA3 est utilise)
       REAL*4 PG(50), TETA(50), PP1(5),TT1(5),PP2(5),TT2(5)
+
+C ISSUE: it this ECRIT a flag to turn verbose on/off? If so, it is not being respected throughout!!!
+
       LOGICAL ECRIT
       ECRIT=.FALSE.
       PP1(1)=PG(1)
@@ -3152,490 +3041,6 @@ C     EST MAXIMUM.
 
 
 
-C-------------------------------------------------------------------------------
-C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
-      SUBROUTINE SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,pig,pfe,IT)
-C
-      REAL  IP,KP,KPLOG,IPI,NH,NNH
-      REAL  CCOMP, UIIDUI, P, FP,NELEMX
-      REAL  EPS,SWITER, C
-      INTEGER NIMAX, dissoc_NMETAL, NMOL, NATOM, NELEM,MMAX
-        DIMENSION PPH(50),PPC2(50),
-     1      PO(50),PTI(50),PMG(50),PC13(50),PN(50),
-     2      PNG(50),pig(50),pfe(50)
-        dimension dissoc_ELEMS(18)
-      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
-      COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
-     1                PPMOL(600), APMLOG(600),MOL(600), IP(100),
-     2                CCOMP(100), UIIDUI(100), COMFH1_P(100), FP(100),
-     3                KP(100),
-     4                NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
-      COMMON /VAL/    PPG(600,50)
-
-
-C ISSUE Careful with all this ELE<something> variables, this is messy
-      CHARACTER*2 ELEMNT, ELEMXI, YA
-      CHARACTER*3 MOL
-      DIMENSION   TO(50)
-      DIMENSION YA(525), YB(525), YC(525), YD(525),ELEMNT(100),
-     2      CCLOG(100),G0(100),G1(100),NATOMM(5),NELEMM(5),
-     3      XP(50,20)
-      DATA ELEMNT(99),ELEMNT(100)/'E-','H*'/
-C
-C
-C*****IMPUT A
-
-      AVO=0.602217E 24
-      SPA=0.196E-01
-      GRA=0.275423E 05
-      AHE=0.100E 00
-        IND = 1
-      ECONST = 4.342945E-1
-
-
-C (JT2015) This fragment is already adapted
-      CALL READ_DISSOC('dissoc.dat')
-C (JT2015) This fragment is already adapted
-      ! Infers other variables from the metal rows of dissoc.dat
-      DO I = 1, dissoc_NMETAL
-*        READ(23,5001) ELEMXI,NELEMI,IPI,IG0,IG1,CCLOGI
-*        elems(i)=elemxi
-
-          CCLOGI = dissoc_CCLOG(I)+main_AFSTAR
-C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
-          CCLOGI = CCLOGI+main_XXCOR(I)
-          IF(I .EQ .1) CCLOGI = 0.0
-          IF(I .EQ .2) CCLOGI = -1.0
-
-          NELEMXI = dissoc_NELEMX(I)
-          IG0I = dissoc_IG0(I)
-          IG1I = dissoc_IG1(I)
-
-          ELEMNT(NELEMXI) = dissoc_ELEMS(I)
-          IP(NELEMI) = dissoc_IP(I)
-          UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
-          G0(NELEMXI) = IG0I
-          G1(NELEMXI) = IG1I
-          CCLOG(NELEMXI) = CCLOGI
-          CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
-          WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
-     1          dissoc_ELEMS(I), NELEMXI, dissoc_IP(I),
-                IG0I, IG1I, CCLOGI-main_AFSTAR
-      END DO
-C
-C*****IMPUT D
-      J = 0
- 1010 J = J + 1
-      READ(23,5011)MOL(J),(C(J,K),K=1,5)
-     1   ,MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
-      print 5011, MOL(J),(C(J,K),K=1,5)
-     1   ,MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
-      MMAXJ = MMAX(J)
-      IF(MMAXJ.EQ.0) GO TO 1014
-      DO 1012 M=1,MMAXJ
-      NELEM(M,J) = NELEMM(M)
-      NATOM(M,J) = NATOMM(M)
- 1012 CONTINUE
- 1110 GO TO 1010
-C     STARTING VALUE OF THE SOLUTION
- 1014 NMOL = J - 1
-      DO 1400 I=1,dissoc_NMETAL
-      NELEMI=NELEMX(I)
-      P(NELEMI)=1.0E-20
- 1400 CONTINUE
-      P(99)=1.0E-10
-C
-C*****IMPUT E
-      DO 1020  ITO=1,IT
- 1023 THETA=TETA(ITO)
-      TEM=5040.0/THETA
- 1024 PG=PGG(ITO)
-      PGLOG=ALOG10(PG)
-      NH=NNH(ITO)
-      TO(ITO)=10.**T5L(ITO)
-C
-
-      CALL DIE(TEM,PG)
-      PE=P(99)
-      PELOG=ALOG10(PE)
-C
-C     PRINT OUT OF THE RESULTS
-C        PRINT 6300
-C     PRINT 6091,   PGLOG, PELOG,PE, THETA, TEM, TO(ITO)
-C     PRINT 6301
-      DO 1303 I=1,dissoc_NMETAL
-      NELEMI=NELEMX(I)
-      FPLOG=ALOG10(FP(NELEMI))
-      XP(ITO,I) = P(NELEMI)+1.0E-30
-      PLOG = ALOG10( XP(ITO,I) )
-      PDFPL = PLOG - FPLOG
-C     WRITE(6,6302) ELEMNT(NELEMI),NELEMI,CCLOG(NELEMI),FP(NELEMI),
-C    1FPLOG,PLOG,PDFPL
-      IF(MOD(I,5)) 1303,1304,1303
- 1304 CONTINUE
-C1304    PRINT 6305
- 1303 CONTINUE
-C        PRINT 6307
-C     PRINT 6031, (DD(K),K=1,20)
- 1231 CONTINUE
-C1231 WRITE(6,6091) PGLOG,PELOG,PE,THETA,TEM, TO(ITO)
-C     PUNCH 710,NH,THETA,PE
-C 710 FORMAT(2X,E11.5,2X,F6.4,2X,E11.5,46X)
-C        PRINT 6992
-      IRL = 120
-      DO 1184 I=1,dissoc_NMETAL
-      NELEMI=NELEMX(I)
-      YA(I)  =  ELEMNT(NELEMI)
-      PLOG=ALOG10(P(NELEMI)+1.0E-30)
-      KPLOG=ALOG10(KP(NELEMI)+1.0E-30)
-      YD(I)  =  KPLOG
-      PIONL = PLOG + KPLOG - PELOG
-      YB(I) = PIONL
-      XLOG = PIONL - PGLOG
-      YC(I)  =  XLOG
-C
-      IF (  I.NE.dissoc_NMETAL )  GO TO 1450
-       IQ = I / 120
-      IR  =  dissoc_NMETAL  -  IQ * 120
-      IRL  =  IR / 3
-      GO TO 1460
- 1450 IF ( MOD(I,120) )  1184,1460,1184
-C
- 1460 NBL = 0
-      DO 1470  K1=1,120,3
-      NBL = NBL + 1
-      K2 = K1 + 1
-      K3 = K1 + 2
-      IF ( NBL.EQ.IRL + 1)  GO TO 1480
- 1475 CONTINUE
-C1475 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2),
-C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
-      IF ( MOD(NBL,5) ) 1470,1500,1470
- 1500 CONTINUE
-C1500    PRINT 6089
- 1470 CONTINUE
-      GO TO 1184
- 1480 IRR  =  IR  -  IRL * 3
-      IF ( IRR.EQ.0 )  GO TO 1184
-      GO TO (1482,1484), IRR
- 1482 CONTINUE
-C1482 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1) )
-      GO TO 1184
- 1484 CONTINUE
-C1484 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
- 1184 CONTINUE
-C
-      IRL = 120
-      KD =-119
-      DO 1084 J=1,NMOL
-         YA(J)  =  MOL(J)
-      JCOUNT = JCOUNT + 1
-      PMOLL=ALOG10(PPMOL(J)+1.0E-30)
-         YB(J) = PMOLL
-      XLOG = PMOLL - PGLOG
-         YC(J)  =  XLOG
-      PPG(J,ITO)  =  XLOG
-          YD(J)  =  APMLOG(J)
-C
-      IF ( J.NE.NMOL ) GO TO 2450
-       IQ = J / 120
-      IR  =  NMOL    -  IQ * 120
-      IRL  =  IR / 3
-      GO TO 2460
- 2450 IF ( MOD(J,120) )  2184,2460,2184
- 2460 NBL = 0
-C        PRINT 6092
-      KD = KD + 120
-      KF = KD + 119
-      DO 2470  K1=KD,KF,3
-      NBL = NBL + 1
-      K2 = K1 + 1
-      K3 = K1 + 2
-      IF ( NBL.EQ.IRL + 1)  GO TO 2480
- 2475 CONTINUE
-C2475 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2),
-C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
-      IF ( MOD(NBL,5) ) 2470,2500,2470
- 2500 CONTINUE
-C2500  PRINT 6089
- 2470 CONTINUE
-      GO TO 2184
- 2480 IRR  =  IR  -  IRL * 3
-      IF ( IRR.EQ.0 )  GO TO 2184
-      GO TO (2482,2484), IRR
- 2482 CONTINUE
-C2482 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1) )
-      GO TO 2184
- 2484 CONTINUE
-C2484 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
- 2184 CONTINUE
- 1084 CONTINUE
-C     PRINT 6600
-C
- 1020  CONTINUE
-cpc      WRITE(6,100) (TO(ITO),ITO=1,IT)
-  100 FORMAT(' TO=',5E15.5)
-C
-C1111  PUNCH 700,   ELEM(I),( XP(ITX,I),ITX=1,IT )
-      DO 1111 I=1,4
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
- 1111 PRINT 50, (XP(ITX,I),ITX=1,IT)
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
-   50 FORMAT(7E11.4)
-cpc      write(40,*) IT
-      DO 51 ITX=1,IT
-      PPH(ITX)=XP(ITX,1)
-       PPC2(ITX)=XP(ITX,3)
-cpc        write(40,300) PPC2(ITX)
-       PN(ITX)=XP(ITX,4)
-       PO(ITX)=XP(ITX,5)
-       PC13(ITX)=XP(ITX,6)
-          PTI(ITX)=XP(ITX,15)
-C        write(90,300) PTI(ITX)
-        PMG(ITX)=XP(ITX,8)
-        PNG(ITX)=XP(ITX,9)
-        PIG(ITX)=XP(ITX,10)
-        pfe(ITX)=XP(ITX,16)
-   51  CONTINUE
- 1100  CONTINUE
-  300  Format('  PPC2 SAT4 ', E11.3)
-C   FORMATS
-C
-  700  FORMAT ( A3,7E11.4,/(7E11.4) )
-  701 FORMAT(1X,A3,7E11.4,/(7E11.4))
- 500  FORMAT (20I5)
-  501  FORMAT (I4)
-
- 5011 FORMAT(A3,5X,E11.5,4E12.5,1X,I1,4(I2,I1) )
- 5021 FORMAT (F10.3,E12.5,E12.6)
- 5030 FORMAT(20A4)
-C
- 6031 FORMAT(1H1,20A4/)
-c 6091 FORMAT (/,10X,'LOG PG =',F8.4,20X,'LOG PE =',F8.4,20X,'PE =',E13.
-c     2     6/,10X,'TETA=',F8.4,20X,'TEMP=',F8.0,20X,'T0=',E14.6/)
- 6102 FORMAT(1H0, 61H ELEMENT    ATOMIC NUMBER     I.P.        G(0)   G(
-     11)   LOG N/)
-
- 6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
-     1///)
-c 6301 FORMAT(1H0,'ELEMENT',3X,'LOG N(E)/N(H)',4X,'P(E)',6X,'LOG P(E)',2
-c     1     X,'LOG P(A)',2X,'LOG P(A)/P(E)'/)
- 6302 FORMAT(1H ,1X,A4,1X,I2,4X,F10.3,1X,E11.4,2F10.3,4X,F10.3)
- 6305 FORMAT(1H )
- 6307 FORMAT('   P(E) 8888 FICTITIUS PRESSURE OF THE
-     1      NUCLEUS OF THE ELEMENT',/'P(A) **** PARTIAL PRESSURE OF THE
-     2      MONOATOMIC GAS OF THE ELEMENT')
- 6089 FORMAT (1H )
- 6092 FORMAT (1H1,3(5X,'MOLECULE  LOG P   LOG P/PG  LOG KP  ')//)
- 6495 FORMAT ( 3(8X,A4,'+',3F9.3) )
- 6496 FORMAT ( 3(9X,A4,3F9.3) )
- 6600 FORMAT (1H1)
- 6992 FORMAT (///,3(9X,'ION   LOG P   LOG P/PG  LOG KP ')//)
-      RETURN
-      END
-
-
-C*****DIE9
-
-C-------------------------------------------------------------------------------
-      SUBROUTINE DIE(TEM,PG)
-      REAL  IP,KP,KPLOG,IPI,NH,NNH
-      REAL  CCOMP, UIIDUI, P, FP,NELEMX
-      REAL  EPS,SWITER, C
-      INTEGER NIMAX, dissoc_NMETAL, NMOL, NATOM, NELEM,MMAX
-
-      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
-      COMMON /COMFH1/ C(600,5), NELEM(5,600), NATOM(5,600), MMAX(600),
-                      PPMOL(600), APMLOG(600), MOL(600), IP(100),
-                      CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-                      NELEMX(50), NIMAX, EPS, SWITER, dissoc_NMETAL, NMOL
-
-      CHARACTER*3 MOL
-      DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
-      ECONST = 4.342945E-1
-      EPSDIE=5.0E-3
-      T=5040.0/TEM
-      PGLOG=ALOG10(PG)
-C
-C     HEH=HELIUM TO HYDROGEN RATIO BY NUMBER
-      HEH=CCOMP(2)/CCOMP(1)
-C
-C     EVALUATION OF LOG KP(MOL)
-      DO 1025 J =1,NMOL
-      APLOGJ = C(J,5)
-      DO 1026 K=1,4
-      KM5=5-K
-      APLOGJ = APLOGJ*T     + C(J,KM5)
- 1026 CONTINUE
-      APMLOG(J) = APLOGJ
- 1025 CONTINUE
-      DHH = (((0.1196952E-02*T-0.2125713E-01)*T+0.1545253E+00)*
-     1  (-0.5161452E+01))*T+0.1277356E+02
-      DHH=EXP(DHH/ECONST)
-C
-C     EVALUATION OF THE IONIZATION CONSTANTS
-      TEM25 = TEM**2*SQRT(TEM)
-      DO 1060 I = 1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
- 1060 CONTINUE
-      HKP=KP(1)
-      IF(T-0.6) 1084,1072,1072
-C
-C     PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
- 1084 PPH=SQRT(HKP *(PG/(1.0+HEH)+HKP ))-HKP
-      PH=PPH**2/HKP
-      GO TO 1102
-C
-C     PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
- 1072 IF(PG/DHH-  0.1 ) 1073,1073,1074
- 1073 PH=PG/(1.0+HEH)
-      GO TO 1102
- 1074 PH=0.5*(SQRT(DHH*(DHH+4.0*PG/(1.0+HEH)))-DHH)
-C
-C     EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
- 1102 U=(1.0+2.0*HEH)/DHH
-      Q=1.0+HEH
-      R=(2.0+HEH)*SQRT(HKP )
-      S=-1.0*PG
-      X=SQRT(PH)
-      ITERAT=0
- 1103 F=((U*X**2+Q)*X+R)*X+S
-      DF=2.0*(2.0*U*X**2+Q)*X+R
-      XR=X-F/DF
-      IF(ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
- 1106 ITERAT=ITERAT+1
-      IF(ITERAT-50) 1104,1104,1107
- 1107   PRINT 6108, TEM,PG,X,XR,PH
- 6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
-     1'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
-      GO TO 1105
- 1104 X=XR
-      GO TO 1103
- 1105 PH=XR**2
-      PHH=PH**2/DHH
-      PPH=SQRT(HKP *PH)
-      FPH  =PH+2.0*PHH+PPH
-C      PRINT 6109,  TEM,T,PG,FPH,PH
-c 6109      FORMAT(1X,'TEM=',F10.2,10X,'THETA=',F8.4
-c     1     ,10X,'PG=',E13.5,10X,'FPH',E12.3,10X,'PH=',E12.3)
-C     P(100)=PH+
-      P(100)=PPH
-C
-C     EVALUATION OF THE FICTITIOUSPRESSURE OF EACH ELEMENT
-      DO 1070 I=1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      FP(NELEMI) = CCOMP(NELEMI)*FPH
- 1070 CONTINUE
-C
-C     CHECK OF INITIALIZATION
-      PE=P(99)
-      IF(PH-P(1)) 1402,1402,1401
- 1401 DO 1403 I=1,dissoc_NMETAL
-      NELEMI=NELEMX(I)
-      P(NELEMI)=FP(NELEMI)*EXP(-5.0*T/ECONST)
- 1403 CONTINUE
-      P(1)=PH
-C
-C     RUSSELL EQUATIONS
- 1402 CONTINUE
- 6003 FORMAT(1H0)
-      NITER = 0
- 1040 DO 1030 I =1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE)
-      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
- 1030 CONTINUE
-      SPNION=0.0
-      DO 1041 J=1,NMOL
-      MMAXJ = MMAX(J)
-      PMOLJL=-APMLOG(J)
-      DO 1042 M =1,MMAXJ
-      NELEMJ = NELEM(M,J)
-      NATOMJ = NATOM(M,J)
-      PMOLJL = PMOLJL + FLOAT(NATOMJ)*ALOG10(P(NELEMJ))
- 1042 CONTINUE
-      IF(PMOLJL - (PGLOG+1.0) ) 1046,1046,1047
- 1047 DO 1048 M =1,MMAXJ
-      NELEMJ = NELEM(M,J)
-      NATOMJ = NATOM(M,J)
-      P(NELEMJ)=1.0E-2*P(NELEMJ)
-      PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
- 1048 CONTINUE
- 1046 PMOLJ = EXP(PMOLJL/ECONST)
-      DO 1044 M =1,MMAXJ
-      NELEMJ = NELEM(M,J)
-      NATOMJ = NATOM(M,J)
-      ATOMJ = FLOAT(NATOMJ)
-      IF(NELEMJ.EQ.99) SPNION=SPNION + PMOLJ
-      DO 1043 I=1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      IF(NELEMJ.EQ.NELEMI) GO TO 1045
-      GO TO 1043
- 1045 FX(NELEMI) = FX(NELEMI) + ATOMJ*PMOLJ
-      DFX(NELEMI) = DFX(NELEMI) + ATOMJ**2*PMOLJ/P(NELEMI)
- 1043 CONTINUE
- 1044 CONTINUE
-      PPMOL(J)= PMOLJ
- 1041 CONTINUE
-C
-C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
-      DO 2001 I=1,dissoc_NMETAL
-      NELEMI=NELEMX(I)
-      WA(I)=ALOG10(P(NELEMI)+1.0E-30)
- 2001 CONTINUE
-      IMAXP1=dissoc_NMETAL+1
-      WA(IMAXP1)=ALOG10(PE+1.0E-30)
-      DELTA = 0.0
-      DO 1050 I=1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      PREV(NELEMI) = P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
-      PREV(NELEMI) = ABS(PREV(NELEMI))
-      IF(PREV(NELEMI).LT.1.0E-30)PREV(NELEMI)=1.0E-30
-      Z(NELEMI) = PREV(NELEMI)/P(NELEMI)
-      DELTA = DELTA + ABS(Z(NELEMI) - 1.0)
-      IF(SWITER) 2500,2500,2501
- 2501 P(NELEMI) = (PREV(NELEMI) + P(NELEMI) )*0.5
-      GO TO 1050
- 2500 P(NELEMI)=PREV(NELEMI)
- 1050 CONTINUE
-C     IONIZATION EQUILIBRIUM
-      PEREV = 0.0
-      DO 1061 I=1,dissoc_NMETAL
-      NELEMI = NELEMX(I)
-      PEREV = PEREV + KP(NELEMI)*P(NELEMI)
- 1061 CONTINUE
-      PEREV=SQRT( PEREV/(1.0+SPNION/PE) )
-      DELTA = DELTA + ABS((PE-PEREV)/PE)
-      PE =(PEREV + PE )*0.5
-      P(99)=PE
-      IF(DELTA - EPS) 1051,1051,1052
- 1052 NITER = NITER + 1
-      IF(NITER-NIMAX)1040,1040,1054
- 1054    PRINT 6055,  NIMAX
- 6055 FORMAT(1H0,39H *DOES NOT CONVERGE AFTER ITERATIONS OF,I4/////)
-C     ATOMIC NUMBER 99 = ELECTRON
- 1051 RETURN
-      END
-
-      FUNCTION MINI(IFA,NTOT,IA,IZ)
-      DIMENSION IFA(NTOT)
-      MINI=IFA(IA)
-      IA2=IA+1
-      DO I=IA2,IZ
-      IF(IFA(I).LT.MINI) THEN
-      MINI=IFA(I)
-      END IF
-      END DO
-      RETURN
-      END
-
-
 
 
 
@@ -3672,7 +3077,7 @@ C      CALCUL DE PNVJ ET GFM -
       DATA H/6.6252E-27/,C/2.997929E+10/,KB/1.38046E-16/,
      -CK/2.85474E-04/,C2/8.8525E-13/
        OPEN(UNIT=12,FILE='moleculagrade.dat',STATUS='OLD')
-      NMOL=1
+      NMOL_KAPMOL=1
       K=1
       I=1
       L=1
@@ -3696,121 +3101,121 @@ cpc   WRITE(6,1001) (NV(J),J=1,NUMBER)
       GO TO 999
   996 READ(12,61) TITULO
       WRITE(6,61) TITULO
- 102  IF(NMOL.NE.2) GO TO 103
+ 102  IF(NMOL_KAPMOL.NE.2) GO TO 103
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PPC2(N)
         END DO
       GO TO 999
- 103  IF(NMOL.NE.3) GO TO 104
+ 103  IF(NMOL_KAPMOL.NE.3) GO TO 104
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PN(N)
         END DO
       GO TO 999
- 104  IF(NMOL.NE.4) GO TO 105
+ 104  IF(NMOL_KAPMOL.NE.4) GO TO 105
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PN(N)
         END DO
       GO TO 999
- 105  IF(NMOL.NE.5) GO TO 106
+ 105  IF(NMOL_KAPMOL.NE.5) GO TO 106
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PN(N)
         END DO
         GO TO 999
- 106    IF(NMOL.NE.6) GO TO 107
+ 106    IF(NMOL_KAPMOL.NE.6) GO TO 107
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 107    IF(NMOL.NE.7) GO TO 108
+ 107    IF(NMOL_KAPMOL.NE.7) GO TO 108
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 108    IF(NMOL.NE.8) GO TO 109
+ 108    IF(NMOL_KAPMOL.NE.8) GO TO 109
       DO  N=1,NTOT
       PPA(N)=PPC2(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 109    IF(NMOL.NE.9) GO TO 110
+ 109    IF(NMOL_KAPMOL.NE.9) GO TO 110
         DO N=1,NTOT
         PPA(N)=PC13(N)
         PB(N)=PPH(N)
         END DO
         GO TO 999
- 110    IF(NMOL.NE.10) GO TO 111
+ 110    IF(NMOL_KAPMOL.NE.10) GO TO 111
         DO N=1,NTOT
         PPA(N)=PPC2(N)
         PB(N)=PO(N)
         END DO
         GO TO 999
- 111    IF(NMOL.NE.11) go to 112
+ 111    IF(NMOL_KAPMOL.NE.11) go to 112
       DO  N=1,NTOT
       PPA(N)=PN(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 112    IF(NMOL.NE.12) go to 113
+ 112    IF(NMOL_KAPMOL.NE.12) go to 113
       DO  N=1,NTOT
       PPA(N)=PO(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 113    IF(NMOL.NE.13) go to 114
+ 113    IF(NMOL_KAPMOL.NE.13) go to 114
       DO  N=1,NTOT
       PPA(N)=PO(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 114    IF(NMOL.NE.14) go to 115
+ 114    IF(NMOL_KAPMOL.NE.14) go to 115
       DO  N=1,NTOT
       PPA(N)=PFE(N)
       PB(N)=PPH(N)
         END DO
         GO TO 999
- 115    IF(NMOL.NE.15) go to 116
+ 115    IF(NMOL_KAPMOL.NE.15) go to 116
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 116    IF(NMOL.NE.16) go to 117
+ 116    IF(NMOL_KAPMOL.NE.16) go to 117
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 117    IF(NMOL.NE.17) go to 118
+ 117    IF(NMOL_KAPMOL.NE.17) go to 118
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 118    IF(NMOL.NE.18) go to 119
+ 118    IF(NMOL_KAPMOL.NE.18) go to 119
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 119    IF(NMOL.NE.19) go to 120
+ 119    IF(NMOL_KAPMOL.NE.19) go to 120
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 120    IF(NMOL.NE.20) go to 121
+ 120    IF(NMOL_KAPMOL.NE.20) go to 121
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
         END DO
         GO TO 999
- 121    IF(NMOL.NE.21) go to 23
+ 121    IF(NMOL_KAPMOL.NE.21) go to 23
       DO  N=1,NTOT
       PPA(N)=PTI(N)
       PB(N)=PO(N)
@@ -3832,8 +3237,8 @@ cpc   WRITE(6,*) (BBV(I),I=1,NNV)
         END DO
 cpc   WRITE(6,*) (DDV(I),I=1,NNV)
       READ(12,*) (FACT(I),I=1,NNV)
-      IF(NMOL.EQ.1) L=1
-      IF(NMOL.GE.2) L=MBLENQ(K-1)+1
+      IF(NMOL_KAPMOL.EQ.1) L=1
+      IF(NMOL_KAPMOL.GE.2) L=MBLENQ(K-1)+1
 C    EX.: GGV(I),I=1,2,3,4...   ITRANS=0,1,2,3....
       I=1
    15  READ(12,*) LMBDAM(L),SJ(L),JJ(L),  IZ,  NUMLIN
@@ -3947,8 +3352,8 @@ cpc   WRITE(6,1021) MBLEND
       PSI=10.**PSI
    12 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
    20 CONTINUE
-      IF(NMOL.GT.1) L=MBLENQ(K-1)+1
-      IF(NMOL.EQ.1) L=1
+      IF(NMOL_KAPMOL.GT.1) L=MBLENQ(K-1)+1
+      IF(NMOL_KAPMOL.EQ.1) L=1
       I=1
    40 LL=ITRANS(L)
       QV=QQV(I)
@@ -3963,9 +3368,9 @@ cpc   WRITE(6,1021) MBLEND
       GO TO 40
 cpc   24    PRINT 57
    24 L=L+1
-      IF(NMOL.LT.NUMBER) GO TO 994
+      IF(NMOL_KAPMOL.LT.NUMBER) GO TO 994
       GO TO 23
-  994 NMOL=NMOL+1
+  994 NMOL_KAPMOL=NMOL_KAPMOL+1
       K=K+1
       J=J+1
       GO TO 996
@@ -4000,3 +3405,589 @@ c     1     'B(VSEC)=',E12.5)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C Subroutines SAT4 and DIE
+
+
+      MODULE SAT4_DIE
+
+C     ========
+      CONTAINS
+C     ========
+
+C-------------------------------------------------------------------------------
+C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
+      SUBROUTINE SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,pig,pfe,IT)
+C
+      REAL  IP,KP,KPLOG,IPI,NH,NNH
+      REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
+      REAL  dissoc_EPS,dissoc_SWITER, dissoc_C
+      INTEGER dissoc_NIMAX, dissoc_NMETAL, dissoc_NMOL, dissoc_NATOM, dissoc_NELEM,dissoc_MMAX
+        DIMENSION PPH(50),PPC2(50),
+     1      PO(50),PTI(50),PMG(50),PC13(50),PN(50),
+     2      PNG(50),pig(50),pfe(50)
+        dimension dissoc_ELEMS(18)
+      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
+      COMMON /COMFH1/ dissoc_C(600,5), dissoc_NELEM(5,600), dissoc_NATOM(5,600), dissoc_MMAX(600),
+     1                PPMOL(600), APMLOG(600),dissoc_MOL(600), IP(100),
+     2                CCOMP(100), UIIDUI(100), COMFH1_P(100), FP(100),
+     3                KP(100),
+     4                dissoc_NELEMX(50), dissoc_NIMAX, dissoc_EPS, dissoc_SWITER, dissoc_NMETAL, dissoc_NMOL
+      COMMON /VAL/    PPG(600,50)
+
+
+C ISSUE Careful with all this ELE<something> variables, this is messy
+      CHARACTER*2 ELEMNT, ELEMXI, YA
+      CHARACTER*3 dissoc_MOL
+      DIMENSION   TO(50)
+      DIMENSION YA(525), YB(525), YC(525), YD(525),ELEMNT(100),
+     2      CCLOG(100),G0(100),G1(100),NATOMM(5),NELEMM(5),
+     3      XP(50,20)
+      DATA ELEMNT(99),ELEMNT(100)/'E-','H*'/
+C
+C
+C*****IMPUT A
+
+      AVO=0.602217E 24
+      SPA=0.196E-01
+      GRA=0.275423E 05
+      AHE=0.100E 00
+        IND = 1
+      ECONST = 4.342945E-1
+
+
+C (JT2015) This fragment is already adapted
+      CALL READ_DISSOC('dissoc.dat')
+C (JT2015) This fragment is already adapted
+      ! Infers other variables from the metal rows of dissoc.dat
+      DO I = 1, dissoc_NMETAL
+
+          CCLOGI = dissoc__CCLOG(I)+main_AFSTAR
+C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
+          CCLOGI = CCLOGI+main_XXCOR(I)
+          IF(I .EQ .1) CCLOGI = 0.0
+          IF(I .EQ .2) CCLOGI = -1.0
+
+          NELEMXI = dissoc_NELEMX(I)
+          IG0I = dissoc__IG0(I)
+          IG1I = dissoc__IG1(I)
+
+          ELEMNT(NELEMXI) = dissoc_ELEMS(I)
+          IP(NELEMI) = dissoc__IP(I)
+          UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
+          G0(NELEMXI) = IG0I
+          G1(NELEMXI) = IG1I
+          CCLOG(NELEMXI) = CCLOGI
+          CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
+          WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
+     1          dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
+                IG0I, IG1I, CCLOGI-main_AFSTAR
+      END DO
+C
+C*****IMPUT D
+      J = 0
+ 1010 J = J + 1
+      READ(23,5011)dissoc_MOL(J),(dissoc_C(J,K),K=1,5)
+     1   ,dissoc_MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
+      print 5011, dissoc_MOL(J),(dissoc_C(J,K),K=1,5)
+     1   ,dissoc_MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
+      MMAXJ = dissoc_MMAX(J)
+      IF(MMAXJ.EQ.0) GO TO 1014
+      DO 1012 M=1,MMAXJ
+      dissoc_NELEM(M,J) = NELEMM(M)
+      dissoc_NATOM(M,J) = NATOMM(M)
+ 1012 CONTINUE
+ 1110 GO TO 1010
+C     STARTING VALUE OF THE SOLUTION
+ 1014 dissoc_NMOL = J - 1
+      DO 1400 I=1,dissoc_NMETAL
+      NELEMI=dissoc_NELEMX(I)
+      P(NELEMI)=1.0E-20
+ 1400 CONTINUE
+      P(99)=1.0E-10
+C
+C*****IMPUT E
+      DO 1020  ITO=1,IT
+ 1023 THETA=TETA(ITO)
+      TEM=5040.0/THETA
+ 1024 PG=PGG(ITO)
+      PGLOG=ALOG10(PG)
+      NH=NNH(ITO)
+      TO(ITO)=10.**T5L(ITO)
+C
+
+      CALL DIE(TEM,PG)
+      PE=P(99)
+      PELOG=ALOG10(PE)
+C
+C     PRINT OUT OF THE RESULTS
+C        PRINT 6300
+C     PRINT 6091,   PGLOG, PELOG,PE, THETA, TEM, TO(ITO)
+C     PRINT 6301
+      DO 1303 I=1,dissoc_NMETAL
+      NELEMI=dissoc_NELEMX(I)
+      FPLOG=ALOG10(FP(NELEMI))
+      XP(ITO,I) = P(NELEMI)+1.0E-30
+      PLOG = ALOG10( XP(ITO,I) )
+      PDFPL = PLOG - FPLOG
+C     WRITE(6,6302) ELEMNT(NELEMI),NELEMI,CCLOG(NELEMI),FP(NELEMI),
+C    1FPLOG,PLOG,PDFPL
+      IF(MOD(I,5)) 1303,1304,1303
+ 1304 CONTINUE
+C1304    PRINT 6305
+ 1303 CONTINUE
+C        PRINT 6307
+C     PRINT 6031, (DD(K),K=1,20)
+ 1231 CONTINUE
+C1231 WRITE(6,6091) PGLOG,PELOG,PE,THETA,TEM, TO(ITO)
+C     PUNCH 710,NH,THETA,PE
+C 710 FORMAT(2X,E11.5,2X,F6.4,2X,E11.5,46X)
+C        PRINT 6992
+      IRL = 120
+      DO 1184 I=1,dissoc_NMETAL
+      NELEMI=dissoc_NELEMX(I)
+      YA(I)  =  ELEMNT(NELEMI)
+      PLOG=ALOG10(P(NELEMI)+1.0E-30)
+      KPLOG=ALOG10(KP(NELEMI)+1.0E-30)
+      YD(I)  =  KPLOG
+      PIONL = PLOG + KPLOG - PELOG
+      YB(I) = PIONL
+      XLOG = PIONL - PGLOG
+      YC(I)  =  XLOG
+C
+      IF (  I.NE.dissoc_NMETAL )  GO TO 1450
+       IQ = I / 120
+      IR  =  dissoc_NMETAL  -  IQ * 120
+      IRL  =  IR / 3
+      GO TO 1460
+ 1450 IF ( MOD(I,120) )  1184,1460,1184
+C
+ 1460 NBL = 0
+      DO 1470  K1=1,120,3
+      NBL = NBL + 1
+      K2 = K1 + 1
+      K3 = K1 + 2
+      IF ( NBL.EQ.IRL + 1)  GO TO 1480
+ 1475 CONTINUE
+C1475 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
+C    2              YA(K2), YB(K2), YC(K2), YD(K2),
+C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
+      IF ( MOD(NBL,5) ) 1470,1500,1470
+ 1500 CONTINUE
+C1500    PRINT 6089
+ 1470 CONTINUE
+      GO TO 1184
+ 1480 IRR  =  IR  -  IRL * 3
+      IF ( IRR.EQ.0 )  GO TO 1184
+      GO TO (1482,1484), IRR
+ 1482 CONTINUE
+C1482 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1) )
+      GO TO 1184
+ 1484 CONTINUE
+C1484 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
+C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
+ 1184 CONTINUE
+C
+      IRL = 120
+      KD =-119
+      DO 1084 J=1,dissoc_NMOL
+         YA(J)  =  dissoc_MOL(J)
+      JCOUNT = JCOUNT + 1
+      PMOLL=ALOG10(PPMOL(J)+1.0E-30)
+         YB(J) = PMOLL
+      XLOG = PMOLL - PGLOG
+         YC(J)  =  XLOG
+      PPG(J,ITO)  =  XLOG
+          YD(J)  =  APMLOG(J)
+C
+      IF ( J.NE.dissoc_NMOL ) GO TO 2450
+       IQ = J / 120
+      IR  =  dissoc_NMOL    -  IQ * 120
+      IRL  =  IR / 3
+      GO TO 2460
+ 2450 IF ( MOD(J,120) )  2184,2460,2184
+ 2460 NBL = 0
+C        PRINT 6092
+      KD = KD + 120
+      KF = KD + 119
+      DO 2470  K1=KD,KF,3
+      NBL = NBL + 1
+      K2 = K1 + 1
+      K3 = K1 + 2
+      IF ( NBL.EQ.IRL + 1)  GO TO 2480
+ 2475 CONTINUE
+C2475 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
+C    2              YA(K2), YB(K2), YC(K2), YD(K2),
+C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
+      IF ( MOD(NBL,5) ) 2470,2500,2470
+ 2500 CONTINUE
+C2500  PRINT 6089
+ 2470 CONTINUE
+      GO TO 2184
+ 2480 IRR  =  IR  -  IRL * 3
+      IF ( IRR.EQ.0 )  GO TO 2184
+      GO TO (2482,2484), IRR
+ 2482 CONTINUE
+C2482 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1) )
+      GO TO 2184
+ 2484 CONTINUE
+C2484 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
+C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
+ 2184 CONTINUE
+ 1084 CONTINUE
+C     PRINT 6600
+C
+ 1020  CONTINUE
+cpc      WRITE(6,100) (TO(ITO),ITO=1,IT)
+  100 FORMAT(' TO=',5E15.5)
+C
+C1111  PUNCH 700,   atomgrade_ELEM(I),( XP(ITX,I),ITX=1,IT )
+      DO 1111 I=1,4
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
+ 1111 PRINT 50, (XP(ITX,I),ITX=1,IT)
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
+   50 FORMAT(7E11.4)
+cpc      write(40,*) IT
+      DO 51 ITX=1,IT
+      PPH(ITX)=XP(ITX,1)
+       PPC2(ITX)=XP(ITX,3)
+cpc        write(40,300) PPC2(ITX)
+       PN(ITX)=XP(ITX,4)
+       PO(ITX)=XP(ITX,5)
+       PC13(ITX)=XP(ITX,6)
+          PTI(ITX)=XP(ITX,15)
+C        write(90,300) PTI(ITX)
+        PMG(ITX)=XP(ITX,8)
+        PNG(ITX)=XP(ITX,9)
+        PIG(ITX)=XP(ITX,10)
+        pfe(ITX)=XP(ITX,16)
+   51  CONTINUE
+ 1100  CONTINUE
+  300  Format('  PPC2 SAT4 ', E11.3)
+C   FORMATS
+C
+  700  FORMAT ( A3,7E11.4,/(7E11.4) )
+  701 FORMAT(1X,A3,7E11.4,/(7E11.4))
+ 500  FORMAT (20I5)
+  501  FORMAT (I4)
+
+ 5011 FORMAT(A3,5X,E11.5,4E12.5,1X,I1,4(I2,I1) )
+ 5021 FORMAT (F10.3,E12.5,E12.6)
+ 5030 FORMAT(20A4)
+C
+ 6031 FORMAT(1H1,20A4/)
+c 6091 FORMAT (/,10X,'LOG PG =',F8.4,20X,'LOG PE =',F8.4,20X,'PE =',E13.
+c     2     6/,10X,'TETA=',F8.4,20X,'TEMP=',F8.0,20X,'T0=',E14.6/)
+ 6102 FORMAT(1H0, 61H ELEMENT    ATOMIC NUMBER     I.P.        G(0)   G(
+     11)   LOG N/)
+
+ 6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
+     1///)
+c 6301 FORMAT(1H0,'ELEMENT',3X,'LOG N(E)/N(H)',4X,'P(E)',6X,'LOG P(E)',2
+c     1     X,'LOG P(A)',2X,'LOG P(A)/P(E)'/)
+ 6302 FORMAT(1H ,1X,A4,1X,I2,4X,F10.3,1X,E11.4,2F10.3,4X,F10.3)
+ 6305 FORMAT(1H )
+ 6307 FORMAT('   P(E) 8888 FICTITIUS PRESSURE OF THE
+     1      NUCLEUS OF THE ELEMENT',/'P(A) **** PARTIAL PRESSURE OF THE
+     2      MONOATOMIC GAS OF THE ELEMENT')
+ 6089 FORMAT (1H )
+ 6092 FORMAT (1H1,3(5X,'MOLECULE  LOG P   LOG P/PG  LOG KP  ')//)
+ 6495 FORMAT ( 3(8X,A4,'+',3F9.3) )
+ 6496 FORMAT ( 3(9X,A4,3F9.3) )
+ 6600 FORMAT (1H1)
+ 6992 FORMAT (///,3(9X,'ION   LOG P   LOG P/PG  LOG KP ')//)
+      RETURN
+      END
+
+
+C*****DIE9
+
+C-------------------------------------------------------------------------------
+      SUBROUTINE DIE(TEM,PG)
+      REAL  IP,KP,KPLOG,IPI,NH,NNH
+      REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
+      REAL  dissoc_EPS,dissoc_SWITER, dissoc_C
+      INTEGER dissoc_NIMAX, dissoc_NMETAL, dissoc_NMOL, dissoc_NATOM, dissoc_NELEM,dissoc_MMAX
+
+      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
+      COMMON /COMFH1/ dissoc_C(600,5), dissoc_NELEM(5,600), dissoc_NATOM(5,600), dissoc_MMAX(600),
+                      PPMOL(600), APMLOG(600), dissoc_MOL(600), IP(100),
+                      CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
+                      dissoc_NELEMX(50), dissoc_NIMAX, dissoc_EPS, dissoc_SWITER, dissoc_NMETAL, dissoc_NMOL
+
+      CHARACTER*3 dissoc_MOL
+      DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
+      ECONST = 4.342945E-1
+      EPSDIE=5.0E-3
+      T=5040.0/TEM
+      PGLOG=ALOG10(PG)
+C
+C     HEH=HELIUM TO HYDROGEN RATIO BY NUMBER
+      HEH=CCOMP(2)/CCOMP(1)
+C
+C     EVALUATION OF LOG KP(MOL)
+      DO 1025 J =1, dissoc_NMOL
+      APLOGJ = dissoc_C(J,5)
+      DO 1026 K=1,4
+      KM5=5-K
+      APLOGJ = APLOGJ*T     + dissoc_C(J,KM5)
+ 1026 CONTINUE
+      APMLOG(J) = APLOGJ
+ 1025 CONTINUE
+      DHH = (((0.1196952E-02*T-0.2125713E-01)*T+0.1545253E+00)*
+     1  (-0.5161452E+01))*T+0.1277356E+02
+      DHH=EXP(DHH/ECONST)
+C
+C     EVALUATION OF THE IONIZATION CONSTANTS
+      TEM25 = TEM**2*SQRT(TEM)
+      DO 1060 I = 1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
+ 1060 CONTINUE
+      HKP=KP(1)
+      IF(T-0.6) 1084,1072,1072
+C
+C     PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
+ 1084 PPH=SQRT(HKP *(PG/(1.0+HEH)+HKP ))-HKP
+      PH=PPH**2/HKP
+      GO TO 1102
+C
+C     PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
+ 1072 IF(PG/DHH-  0.1 ) 1073,1073,1074
+ 1073 PH=PG/(1.0+HEH)
+      GO TO 1102
+ 1074 PH=0.5*(SQRT(DHH*(DHH+4.0*PG/(1.0+HEH)))-DHH)
+C
+C     EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
+C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
+ 1102 U=(1.0+2.0*HEH)/DHH
+      Q=1.0+HEH
+      R=(2.0+HEH)*SQRT(HKP )
+      S=-1.0*PG
+      X=SQRT(PH)
+      ITERAT=0
+ 1103 F=((U*X**2+Q)*X+R)*X+S
+      DF=2.0*(2.0*U*X**2+Q)*X+R
+      XR=X-F/DF
+      IF(ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
+ 1106 ITERAT=ITERAT+1
+      IF(ITERAT-50) 1104,1104,1107
+ 1107   PRINT 6108, TEM,PG,X,XR,PH
+ 6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
+     1'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
+      GO TO 1105
+ 1104 X=XR
+      GO TO 1103
+ 1105 PH=XR**2
+      PHH=PH**2/DHH
+      PPH=SQRT(HKP *PH)
+      FPH  =PH+2.0*PHH+PPH
+C      PRINT 6109,  TEM,T,PG,FPH,PH
+c 6109      FORMAT(1X,'TEM=',F10.2,10X,'THETA=',F8.4
+c     1     ,10X,'PG=',E13.5,10X,'FPH',E12.3,10X,'PH=',E12.3)
+C     P(100)=PH+
+      P(100)=PPH
+C
+C     EVALUATION OF THE FICTITIOUSPRESSURE OF EACH ELEMENT
+      DO 1070 I=1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      FP(NELEMI) = CCOMP(NELEMI)*FPH
+ 1070 CONTINUE
+C
+C     CHECK OF INITIALIZATION
+      PE=P(99)
+      IF(PH-P(1)) 1402,1402,1401
+ 1401 DO 1403 I=1,dissoc_NMETAL
+      NELEMI=dissoc_NELEMX(I)
+      P(NELEMI)=FP(NELEMI)*EXP(-5.0*T/ECONST)
+ 1403 CONTINUE
+      P(1)=PH
+C
+C     RUSSELL EQUATIONS
+ 1402 CONTINUE
+ 6003 FORMAT(1H0)
+      NITER = 0
+ 1040 DO 1030 I =1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE)
+      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
+ 1030 CONTINUE
+      SPNION=0.0
+      DO 1041 J=1,dissoc_NMOL
+      MMAXJ = dissoc_MMAX(J)
+      PMOLJL=-APMLOG(J)
+      DO 1042 M =1,MMAXJ
+      NELEMJ = dissoc_NELEM(M,J)
+      NATOMJ = dissoc_NATOM(M,J)
+      PMOLJL = PMOLJL + FLOAT(NATOMJ)*ALOG10(P(NELEMJ))
+ 1042 CONTINUE
+      IF(PMOLJL - (PGLOG+1.0) ) 1046,1046,1047
+ 1047 DO 1048 M =1,MMAXJ
+      NELEMJ = dissoc_NELEM(M,J)
+      NATOMJ = dissoc_NATOM(M,J)
+      P(NELEMJ)=1.0E-2*P(NELEMJ)
+      PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
+ 1048 CONTINUE
+ 1046 PMOLJ = EXP(PMOLJL/ECONST)
+      DO 1044 M =1,MMAXJ
+      NELEMJ = dissoc_NELEM(M,J)
+      NATOMJ = dissoc_NATOM(M,J)
+      ATOMJ = FLOAT(NATOMJ)
+      IF(NELEMJ.EQ.99) SPNION=SPNION + PMOLJ
+      DO 1043 I=1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      IF(NELEMJ.EQ.NELEMI) GO TO 1045
+      GO TO 1043
+ 1045 FX(NELEMI) = FX(NELEMI) + ATOMJ*PMOLJ
+      DFX(NELEMI) = DFX(NELEMI) + ATOMJ**2*PMOLJ/P(NELEMI)
+ 1043 CONTINUE
+ 1044 CONTINUE
+      PPMOL(J)= PMOLJ
+ 1041 CONTINUE
+C
+C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
+      DO 2001 I=1,dissoc_NMETAL
+      NELEMI=dissoc_NELEMX(I)
+      WA(I)=ALOG10(P(NELEMI)+1.0E-30)
+ 2001 CONTINUE
+      IMAXP1=dissoc_NMETAL+1
+      WA(IMAXP1)=ALOG10(PE+1.0E-30)
+      DELTA = 0.0
+      DO 1050 I=1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      PREV(NELEMI) = P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
+      PREV(NELEMI) = ABS(PREV(NELEMI))
+      IF(PREV(NELEMI).LT.1.0E-30)PREV(NELEMI)=1.0E-30
+      Z(NELEMI) = PREV(NELEMI)/P(NELEMI)
+      DELTA = DELTA + ABS(Z(NELEMI) - 1.0)
+      IF(dissoc_SWITER) 2500,2500,2501
+ 2501 P(NELEMI) = (PREV(NELEMI) + P(NELEMI) )*0.5
+      GO TO 1050
+ 2500 P(NELEMI)=PREV(NELEMI)
+ 1050 CONTINUE
+C     IONIZATION EQUILIBRIUM
+      PEREV = 0.0
+      DO 1061 I=1,dissoc_NMETAL
+      NELEMI = dissoc_NELEMX(I)
+      PEREV = PEREV + KP(NELEMI)*P(NELEMI)
+ 1061 CONTINUE
+      PEREV=SQRT( PEREV/(1.0+SPNION/PE) )
+      DELTA = DELTA + ABS((PE-PEREV)/PE)
+      PE =(PEREV + PE )*0.5
+      P(99)=PE
+      IF(DELTA - dissoc_EPS) 1051,1051,1052
+ 1052 NITER = NITER + 1
+      IF(NITER-dissoc_NIMAX)1040,1040,1054
+ 1054    PRINT 6055,  dissoc_NIMAX
+ 6055 FORMAT(1H0,39H *DOES NOT CONVERGE AFTER ITERATIONS OF,I4/////)
+C     ATOMIC NUMBER 99 = ELECTRON
+ 1051 RETURN
+      END
+
+C-------------------------------------------------------------------------------
+      FUNCTION MINI(IFA,NTOT,IA,IZ)
+      DIMENSION IFA(NTOT)
+      MINI=IFA(IA)
+      IA2=IA+1
+      DO I=IA2,IZ
+        IF(IFA(I).LT.MINI) THEN
+          MINI=IFA(I)
+        END IF
+      END DO
+      RETURN
+      END
+
+
+      END MODULE SAT4_DIE
