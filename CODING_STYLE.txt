@@ -1,0 +1,19 @@
+Sketch of a coding style manual
+
+Format
+======
+
+  Indents
+  -------
+  - Beginning of line: use 6 spaces (not tabs) at the beginning of a line, since most editors seem not to understand the old tabbed format.
+  - IF, DO etc indents: let us use only 2 spaces because we are restricted to 72 columns
+  
+  Number of columns
+  -----------------
+  - Restrict code to 72 columns (comments may surpass this)
+
+Common blocks
+=============
+Do NOT use common blocks! Use Fortran MODULE to declare globals!
+
+
