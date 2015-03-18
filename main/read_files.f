@@ -118,12 +118,41 @@ C ISSUE: nobody cares about ABONDR
      8          atomgrade__ZINF(MAX_atomgrade__NBLEND),
      9          atomgrade__ABONDR(MAX_atomgrade__NBLEND)
 
+
+
+C Variables filled by READ_PARTIT() (file partit.dat)
+C ---------------------------------------------------
+      ! Limit number of "items" in partit.dat:
+      ! - Maximum value for partit_NPAR
+      ! - Second dimension of partit_TABU
+      PARAMETER(MAX_partit_NPAR=85)
+      ! Third dimension of partit_TABU
+      PARAMETER(MAX_partit_KMAX=63)
+
+      CHARACTER*2  partit_EL
+      INTEGER partit_NPAR, partit_JKMAX
+
+      DIMENSION partit_EL(MAX_partit_NPAR),
+     1           partit_TINI(MAX_partit_NPAR),
+     2           partit_PA(MAX_partit_NPAR),
+     3           partit_JKMAX(MAX_partit_NPAR),
+     4           partit_TABU(MAX_partit_NPAR, 3, MAX_partit_KMAX),
+     5           partit_M(MAX_partit_NPAR),
+     6           partit_KI1(MAX_partit_NPAR),
+     7           partit_KI2(MAX_partit_NPAR)
+
+
       SAVE
 
 C     ========
       CONTAINS
 C     ========
 
+
+
+
+
+C================================================================================================================================
 C-----------------------------------------------------------------------
 C READ_MAIN(): reads file main.dat to fill variables main_*
 C
@@ -242,6 +271,7 @@ C          thalpha
 
 
 
+C================================================================================================================================
 C-----------------------------------------------------------------------
 C READ_ABONDS(): reads file abonds.dat to fill variables abonds_*
 C
@@ -253,6 +283,9 @@ C
 C The end of the file is signalled by two rows containing only "1" each at
 C column 1 and nothing else at the others
 C-----------------------------------------------------------------------
+
+
+C TODO Test one row!!!
 
 C PROPOSE: use READ()'s "END=" option
 
@@ -282,12 +315,18 @@ C PROPOSE: use READ()'s "END=" option
 
 
 
+C================================================================================================================================
 C-----------------------------------------------------------------------
 C READ_DISSOC(): reads file dissoc.dat to fill variables dissoc_*
 C
 C This file must end with a blank row so that the routine can detect
 C the end of the file
 C-----------------------------------------------------------------------
+
+
+C TODO Various tests:
+C TODO - mismatched NMETAL and metal rows
+C TODO - check if NMETAL and NMOL match what they are supposed to (assertions in test)
 
 C PROPOSE: use READ()'s "END=" option
 
@@ -338,7 +377,7 @@ C   col  7     -- MMAX(J) (number of subsequent columns)/2
 C   cols 8-... -- Maximum of 8 columns here.
 C                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J)
       J = 0
- 1010 J = J + 1
+ 1010 J = J+1
 C ISSUE: This 1X does not appear in my sample dissoc.dat file
 C ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
 C ISSUE: THere is no 1X
@@ -390,8 +429,9 @@ C ISSUE: THere is no 1X
 
 
 
-C-------------------------------------------------------------------------
-C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade_*
+C================================================================================================================================
+C--------------------------------------------------------------------------
+C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade__* (double underscore)
 C
 C This file has 2 types of alternating rows:
 C   odd row
@@ -413,7 +453,11 @@ C-------------------------------------------------------------------------
 C TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
 C TODO: including other reading routines!!!!!!!!!!!!!!
 
-C ISSUE: Cannot cope with empty file (tested).
+C ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
+
+C TODO Assertions in test to see if numbers match what they are supposed to
+
+
 
 C PROPOSE: use READ()'s "END=" option
 
@@ -526,6 +570,85 @@ C-------------------------------------------------------------------------
 
       atomgrade_NBLEND = K
 
+      END
+
+
+
+
+
+
+
+
+
+C================================================================================================================================
+C-------------------------------------------------------------------------
+C READ_PARTIT(): reads file partit.dat to fill variables partit_*
+C
+C Rows in this file alternate between:
+C 1) 8-column row
+C    col 8 -- signals end-of-file. If 1, it ignores the row and
+C             stops reading
+C
+C 2) Series of rows to fill in partit_TABU(J, :, :)
+C
+C How is end-of-file signalled??
+C-------------------------------------------------------------------------
+
+C ISSUE: How is end-of-file signalled???
+
+      SUBROUTINE READ_PARTIT(fileName)
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 fileName
+
+      INTEGER FINPAR, J
+
+      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+
+      ! orig "LECTURE DES FCTS DE PARTITION"
+
+      J = 1
+      FINPAR = 0
+      DO WHILE (FINPAR .LT. 1)
+        READ (UNIT_, '(A2, 2F5.2, I3, 3F10.2, 34X, I1)')
+     1         partit_EL(J),
+     2         partit_TINI(J),
+     3         partit_PA(J),
+     4         partit_JKMAX(J),
+     5         partit_M(J),
+     6         partit_KI1(J),
+     7         partit_KI2(J), FINPAR
+
+        IF (FINPAR .NE. 1) THEN
+
+          ! Checks if exceeds maximum number of elements allowed
+          IF (J .GT. MAX_partit_NPAR) THEN
+            WRITE(*,*) 'READ_PARTIT(): PAR exceeded maximum of ',
+     1                  MAX_partit_NPAR
+            STOP ERROR_EXCEEDED
+          END IF
+
+
+          KMAX = partit_JKMAX(J)
+
+          ! Checks if exceeds maximum number of elements allowed
+          IF (KMAX .GT. MAX_partit_KMAX) THEN
+            WRITE(*,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
+     1       ' exceeded maximum of', MAX_partit_KMAX
+            STOP ERROR_EXCEEDED
+          END IF
+
+
+          READ(UNIT_, '(13F6.4)')
+     1         ((partit_TABU(J, L, K), L=1, 3), K=1, KMAX)
+
+          J = J+1
+        END IF
+      END DO
+
+      partit_NPAR = J-1
+
+      RETURN
       END
 
 

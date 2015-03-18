@@ -92,7 +92,7 @@ cp Nov03    INTEGER DHM,DHP
       character FILEFLUX2*72,FILEFLUX3*72
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
-      REAL NH,M,KI1,KI2,atomgrade_KIEX,KB,KC,main_MU,LAMBD,
+      REAL NH,partit_M,partit_KI1,partit_KI2,atomgrade_KIEX,KB,KC,main_MU,LAMBD,
      1   NHE,KC1,KC2,KCD,MM, ABOND, ABO
       LOGICAL CONVOL,GAUSS,IDENTH
       REAL*8 LZERO,LFIN,atomgrade_LAMBDA,LMBDAM, LLHY(10)
@@ -106,12 +106,13 @@ cp Nov03    INTEGER DHM,DHP
      6 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_ABONDR(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
      8 ECARTM(PARAMETER_NMOL)
-      CHARACTER*2 dissoc_ELEMS, atomgrade_ELEM, EL
+      CHARACTER*2 dissoc_ELEMS, atomgrade_ELEM, partit_EL
         DIMENSION dissoc_ELEMS(18),DM(8)
       DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
-      DIMENSION EL(85),TINI(85),PA(85),JKMAX(85),TABU(85,3,63),
-     1 M(85),KI1(85),KI2(85),P(3,85,50)
+
+C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these variables, what they sync with!
+      DIMENSION P(3,MAX_partit_NPAR, 50)
       DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
       DIMENSION FL(NP), TTD(NP), FCONT(NP), FN(NP)
@@ -180,11 +181,11 @@ C  ****************************************************************
 C ------------1) LECTURE DES FCTS DE PARTITION
       J=1
       DO WHILE (FINPAR.LT.1)
-      READ(25,108)EL(J),TINI(J),PA(J),JKMAX(J),M(J),
-     1           KI1(J),KI2(J),FINPAR
+      READ(25,108)partit_EL(J),partit_TINI(J),partit_PA(J),partit_JKMAX(J),partit_M(J),
+     1           partit_KI1(J),partit_KI2(J),FINPAR
             IF(FINPAR.NE.1) THEN
-            KMAX=JKMAX(J)
-            READ(25,111) ((TABU(J,L,K),L=1,3),K=1,KMAX)
+            KMAX=partit_JKMAX(J)
+            READ(25,111) ((partit_TABU(J,L,K),L=1,3),K=1,KMAX)
             J=J+1
             END IF
       END DO
@@ -222,7 +223,7 @@ C                       III
 C     CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
 C           POPULATION DU NIV FOND DES IONS
 C  *****************************************************************
-      CALL POPUL(TETA,PE,NTOT,TINI,PA,JKMAX,KI1,KI2,NPAR,TABU,P)
+      CALL POPUL(TETA,PE,NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
 C
 C  *****************************************************************
 C                       IV
@@ -406,7 +407,7 @@ C
       read(tti,1510)dm(8)
 
 
-      CALL POPADELH (NPAR,EL,KI1,KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+      CALL POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,partit_M,atomgrade_NBLEND,atomgrade_ELEM,
      1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,NTOT,TETA,PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
 C
@@ -524,9 +525,7 @@ C  *******************************************************************
 105   FORMAT(I1,A2,F6.3)
 106   FORMAT(' Pas du calcul=',F6.3)
 107   FORMAT(' Decalage mesure a l''ecran =',f6.2,' A')
-108   FORMAT(A2,2F5.2,I3,3F10.2,34X,I1)
 110   FORMAT(1H1)
-111   FORMAT(13F6.4)
 160   FORMAT(4(4X,F8.2,E14.7))
 114   FORMAT(4 (4X,F8.2,F8.3))
 155   FORMAT(12F6.3)
@@ -2089,7 +2088,7 @@ C105  FORMAT(7F10.3)
       END
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE POPADELH (NPAR,EL,KI1,KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+      SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
      1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,NTOT,TETA,PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
 C     ***calcule la population au niveau inferieur de la transition
@@ -2097,11 +2096,11 @@ C     ***la largeur doppler DELTA et le coefficient d'elargissement
 C     ***le "A" utilise dans le calcul de H(A,V)
       PARAMETER(MAX_atomgrade_NBLEND=8000)
       CHARACTER*1 ISI(1), ISS(1)
-      CHARACTER*2 atomgrade_ELEM, EL
+      CHARACTER*2 atomgrade_ELEM, partit_EL
       INTEGER atomgrade_NBLEND, NPAR, J, K
-        real KI1,KI2,atomgrade_KIEX,M,KB,KIES,KII,NUL
+        real partit_KI1,partit_KI2,atomgrade_KIEX,partit_M,KB,KIES,KII,NUL
       DIMENSION PE(50),TETA(50),VT(50),ALPH(50),PHN(50),PH2(50),
-     1 EL(85),M(85),KI1(85),KI2(85),P(3,85,50),ALPHL(50),
+     1 partit_EL(85),partit_M(85),partit_KI1(85),partit_KI2(85),P(3,85,50),ALPHL(50),
      2 atomgrade_ELEM(MAX_atomgrade_NBLEND),atomgrade_IONI(MAX_atomgrade_NBLEND),atomgrade_KIEX(MAX_atomgrade_NBLEND),
      3 atomgrade_CH(MAX_atomgrade_NBLEND),CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_GR(MAX_atomgrade_NBLEND),
      4 atomgrade_GE(MAX_atomgrade_NBLEND),POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
@@ -2123,7 +2122,7 @@ c
             corch(k)=0.
             CVdW(K)=0
                 DO  J=1,NPAR
-                IF(EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
+                IF(partit_EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
                 END DO
         WRITE(6,104) atomgrade_ELEM(K)
         STOP
@@ -2132,8 +2131,8 @@ C
             write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
                 IF(atomgrade_CH(K).LT.1.E-37)  THEN
                 KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
-                IF(IOO.EQ.1)   KII=KI1(J)
-                IF(IOO.EQ.2)   KII=KI2(J)
+                IF(IOO.EQ.1)   KII=partit_KI1(J)
+                IF(IOO.EQ.2)   KII=partit_KI2(J)
                         IF(CORCH(K).LT.1.E-37)   THEN
                         CORCH(K)=0.67 * atomgrade_KIEX(K) +1
                         END IF   ! FIN DE IF CORCH(K)=0
@@ -2186,8 +2185,8 @@ c        POP(K,N)=TOP*TAP*P(IOO,J,N)*PTI(N)/PPH(N)
 c       write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(1),ioo,pop(k,n)
 c        end if
 
-        DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/M(J))
-        VREL    = SQRT(C4*T*(1.+1./M(J)))
+        DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
+        VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
             IF (IOPI.EQ.1)  then
             GH   =C5*atomgrade_CH(K)**0.4*VREL   **0.6
 C                 if (N.EQ.10)  write (6,100) GH
@@ -2200,13 +2199,13 @@ C                 if (N.EQ.10) write(6, 101) GH
 c     if((k.le.3).and.(n.eq.1)) then
 c     write(6,*) atomgrade_LAMBDA(k),atomgrade_GR(k),atomgrade_GE(k),gh,gamma
 c     write(6,*) alphl(n),p(ioo,j,n),top,tap
-c     write(6,*) vrel,m(j),atomgrade_CH(k),corch(k)
+c     write(6,*) vrel,partit_M(j),atomgrade_CH(k),corch(k)
 c     write(6,*) n,pe(n),phn(n),ph2(n),t
 c     end if
 c     if((k.le.3).and.(n.eq.ntot)) then
 c     write(6,*) atomgrade_LAMBDA(k),atomgrade_GR(k),atomgrade_GE(k),gh,gamma
 c     write(6,*) alphl(n),p(ioo,j,n),top,tap
-c     write(6,*) vrel,m(j),atomgrade_CH(k),corch(k)
+c     write(6,*) vrel,partit_M(j),atomgrade_CH(k),corch(k)
 c     write(6,*) n,pe(n),phn(n),ph2(n),t
 c     end if
         END DO    !FIN BCLE SUR N
@@ -2790,16 +2789,16 @@ c     Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE POPUL(TETA,PE,NTOT,TINI,PA,JKMAX,KI1,KI2,NPAR,TABU,P)
+      SUBROUTINE POPUL(TETA,PE,NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
 C     ***calcule la pop du niv fond de l'ion pour tous les NPAR atomes de
 C     ***la table des fonctions de partition ,a tous les niv du modele
 C     ***
-      DIMENSION TINI(85),PA(85),JKMAX(85),TABU(85,3,63),
-     1 KI1(85),KI2(85),U(3),ALISTU(63),P(3,85,50),TETA(50),
+      DIMENSION partit_TINI(85),partit_PA(85),partit_JKMAX(85),partit_TABU(85,3,63),
+     1 partit_KI1(85),partit_KI2(85),U(3),ALISTU(63),P(3,85,50),TETA(50),
      2 PE(50),UE(50),TT(51)
 c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
 c           partit donnee pour 33 temperatures au plus ds la table.
-      REAL KB,KI1,KI2
+      REAL KB,partit_KI1,partit_KI2
       KB=1.38046E-16
       C1=4.8298E+15   ! =2 * (2*Pi*KB*ME)**1.5 / H**3
 C
@@ -2807,19 +2806,19 @@ C
       T=5040./TETA(N)
       UE(N)=C1*KB*T /PE(N)*T**1.5
             DO  J=1,NPAR
-            KMAX=JKMAX(J)
-            TT(1) = TINI(J)
+            KMAX=partit_JKMAX(J)
+            TT(1) = partit_TINI(J)
                   DO  L=1,3
                         DO  K=1,KMAX
-                        TT(K+1) = TT(K) + PA(J)
-                        ALISTU(K) = TABU(J,L,K)
+                        TT(K+1) = TT(K) + partit_PA(J)
+                        ALISTU(K) = partit_TABU(J,L,K)
                         END DO
 c
                         if (teta(N).LT.TT(KMAX-1) ) then ! (inter parabolique)
                         UUU=FT(TETA(N),KMAX,TT,ALISTU)
                         else
 c                  interpolation lineaire entre 2 derniers pts
-                        AA=(ALISTU(KMAX)-ALISTU(KMAX-1)) / PA(J)
+                        AA=(ALISTU(KMAX)-ALISTU(KMAX-1)) / partit_PA(J)
                         BB=ALISTU(KMAX-1) - AA * TT(KMAX-1)
                         UUU= AA*Teta(N) + BB
                         end if
@@ -2827,13 +2826,13 @@ c
                         U(L) = EXP(2.302585*UUU )
                   END DO   ! FIN BCLE SUR L
 C
-            X=U(1) / (U(2)*UE(N)) * 10.**(KI1(J)*TETA(N))
-            TKI2= KI2(J) * TETA(N)
+            X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*TETA(N))
+            TKI2= partit_KI2(J) * TETA(N)
             IF(TKI2.GE.77.)   THEN
             Y=0.
             P(3,J,N)=0.
                           ELSE
-            Y=U(3)*UE(N)/U(2)  *  10.**(-KI2(J)*TETA(N))
+            Y=U(3)*UE(N)/U(2)  *  10.**(-partit_KI2(J)*TETA(N))
             P(3,J,N) =(1./U(3))*(Y/(1.+X+Y))
             END IF
 

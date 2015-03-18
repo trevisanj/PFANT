@@ -17,3 +17,6 @@ Common blocks
 Do NOT use common blocks! Use Fortran MODULE to declare globals!
 
 
+Data types
+==========
+"If you must use floating point, use double precision unless you have reason to be concerned about memory use (your program uses large arrays) and you do not need much precision. Modern computers do not take significantly longer to process double precision values than they do to process reals." [1]
