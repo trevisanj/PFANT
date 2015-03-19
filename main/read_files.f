@@ -142,12 +142,40 @@ C ---------------------------------------------------
      7           partit_KI2(MAX_partit_NPAR)
 
 
+
+
+
+
+C Variables filled by READ_ABSORU2() (file absoru2.dat)
+C ---------------------------------------------------
+      ! Maximum value for absoru_NM
+      PARAMETER(MAX_absoru2_NM=30)
+      ! Maximum value for absoru2_NR(J)
+      PARAMETER(MAX_absoru2_NRR=9)
+      ! Maximum value for each element of absoru2_NUMSET
+      PARAMETER(MAX_absoru2_NUMSET_I=41)
+
+      INTEGER absoru2_NM, absoru2_NMETA, absoru2_NUMSET, absoru2_NR
+      REAL*8 absoru2_ABMET, absoru2_ABHEL
+      CHARACTER*4 absoru2_TITRE, absoru2_IUNITE  ! ISSUE: I am not sure about this, made this from the FORMAT below
+
+      DIMENSION  absoru2_IUNITE(2), absoru2_TITRE(17),
+     1           absoru2_NR(MAX_absoru2_NM),
+     2           absoru2_ZP(MAX_absoru2_NM),
+     3           absoru2_ZM(MAX_absoru2_NM),
+     4           absoru2_XI(MAX_absoru2_NM, MAX_absoru2_NRR),
+     5           absoru2_PF(MAX_absoru2_NM, MAX_absoru2_NRR),
+     6           absoru2_NOMET(MAX_absoru2_NM)
+
+      DIMENSION absoru2_WI(MAX_absoru2_NUMSET_I, 2), absoru2_NUMSET(2)
+
+
+
       SAVE
 
 C     ========
       CONTAINS
 C     ========
-
 
 
 
@@ -495,7 +523,7 @@ C orig *******************************************************************
       IF (FINRAI .EQ. 1) GO TO 10
       K = K+1
 
-          ! Checks if exceeds maximum number of elements allowed
+          ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (K .GT. MAX_atomgrade__NBLEND) THEN
             WRITE(*,*) 'READ_ATOMGRADE(): exceeded maximum of',
      1                 MAX_atomgrade__NBLEND, ' spectral lines'
@@ -547,7 +575,7 @@ C-------------------------------------------------------------------------
           K = K+1
 
 
-          ! Checks if exceeds maximum number of elements allowed
+          ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (K .GT. MAX_atomgrade_NBLEND) THEN
             WRITE(*,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
      1                 MAX_atomgrade_NBLEND, ' spectral lines'
@@ -591,10 +619,7 @@ C             stops reading
 C
 C 2) Series of rows to fill in partit_TABU(J, :, :)
 C
-C How is end-of-file signalled??
 C-------------------------------------------------------------------------
-
-C ISSUE: How is end-of-file signalled???
 
       SUBROUTINE READ_PARTIT(fileName)
       INTEGER UNIT_
@@ -621,7 +646,7 @@ C ISSUE: How is end-of-file signalled???
 
         IF (FINPAR .NE. 1) THEN
 
-          ! Checks if exceeds maximum number of elements allowed
+          ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (J .GT. MAX_partit_NPAR) THEN
             WRITE(*,*) 'READ_PARTIT(): PAR exceeded maximum of ',
      1                  MAX_partit_NPAR
@@ -631,7 +656,7 @@ C ISSUE: How is end-of-file signalled???
 
           KMAX = partit_JKMAX(J)
 
-          ! Checks if exceeds maximum number of elements allowed
+          ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (KMAX .GT. MAX_partit_KMAX) THEN
             WRITE(*,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
      1       ' exceeded maximum of', MAX_partit_KMAX
@@ -647,6 +672,155 @@ C ISSUE: How is end-of-file signalled???
       END DO
 
       partit_NPAR = J-1
+
+      RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C================================================================================================================================
+C-------------------------------------------------------------------------
+C READ_ABSORU2(): reads file absoru2.dat to fill variables absoru2_*
+C
+C
+C Attention: variables absoru2_ZP, absoru2_XI, and absoru2_PF
+C            undergo transformation!
+C
+C Obs: this routine is in essence the old routine called "LECTUR"
+C
+C I think SSP means "SubProgram" but it is a typo with an additional "S"
+C
+C orig CE SSP PERMET DE LIRE LES ABONDANCES ET LA TABLE D'IONISATION CHOI
+C orig PUIS LES DONNEES CORRESPONDANTS AUX ABSORBANTS METALLIQUES SI NECE
+C orig CALMET=1 SI ON NE TIENT PAS COMPTE DES METAUX
+C orig CALMET=2 SI ON    TIENT     COMPTE DES METAUX
+C
+C ISSUE: see observation below
+C Obs: as opposed to original description, CALMET was being ignored in
+C      original routine LECTUR()
+C-------------------------------------------------------------------------
+
+      SUBROUTINE READ_ABSORU2(fileName)
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 fileName
+
+      CHARACTER*3 NEANT
+      INTEGER NION
+
+
+      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+
+      ! orig ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
+      ! orig ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
+      READ (UNIT_,'(2E15.7)') absoru2_ABMET, absoru2_ABHEL
+
+
+      ! orig NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISA
+      ! orig NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
+      ! orig IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
+      ! orig IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
+      READ (UNIT_,'(2I2, 19A4)') absoru2_NM, absoru2_NMETA,
+     1      (absoru2_IUNITE(I),I=1,2), (absoru2_TITRE(I),I=1,17)
+
+
+      ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
+      IF (absoru2_NM .GT. MAX_absoru2_NM) THEN
+        WRITE(*,*) 'READ_ABSORU2(): NM=', absoru2_NM,
+     1        ' exceeded maximum of', MAX_absoru2_NM
+        STOP ERROR_EXCEEDED
+      END IF
+
+
+      ! orig LECTURE DE LA TABLE D'IONISATION CHOISIE
+      ! orig ----------------------------------------
+      DO J = 1, absoru2_NM
+        READ (UNIT_, '(3X,I3,2E16.5)') absoru2_NR(J), absoru2_ZP(J),
+     1                                 absoru2_ZM(J)
+        absoru2_ZP(J) = 10**absoru2_ZP(J)
+
+        ! orig    NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
+        ! orig    ZP=NBR. D'ABONDANCE DE L'ELEMENT
+        ! orig    ZM=POIDS MOLECULAIRE DE L'ELEMENT
+        NRR = absoru2_NR(J)
+
+        ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
+        IF (NRR .GT. MAX_absoru2_NRR) THEN
+          WRITE(*,*) 'READ_ABSORU2(): J = ', J, 'NR=', NRR,
+     1       ' exceeded maximum of', MAX_absoru2_NRR
+          STOP ERROR_EXCEEDED
+        END IF
+
+
+        DO I = 1, NRR
+          ! neant="nothing"
+          ! NION is also not used
+          ! ISSUE: NOMET is not used in the program
+          READ (UNIT_, '(A3,A2,I1,2E16.5)') NEANT, absoru2_NOMET(J),
+     1           NION, absoru2_XI(J,I), absoru2_PF(J,I)
+
+          ! orig ON LIT NR CARTES CONTENANT CHACUNE LE POTENTIEL D'IONISATION ET LA
+          ! orig FONCTION DE PARTITION(LOG10(2UI+1)/UI)DE CHAQUE DEGRE D'IONISATION
+          ! orig CES VALEURS SONT LUES DANS L'ORDRE CROISSANT DU DEGRE D'IONISATION
+          ! orig NOMET  =NOM DE L'ELEMENT
+          ! orig NION   =SON ETAT D'IONISATION
+          ! orig XI(J,I)=POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATIO
+          ! orig PF(J,I)=FONCTION DE PARTITION         ''   ''     ''      ''   ''
+
+          absoru2_XI(J, I) = absoru2_XI(J, I)*2.302585
+          absoru2_PF(J, I) = absoru2_PF(J, I)*2.302585
+        END DO
+      END DO
+
+
+      READ (UNIT_, '(2I2)') (absoru2_NUMSET(ITH), ITH=1,2)
+
+C ISSUE: I am not sure if this last part is being read correcly.
+C ISSUE: Perhaps I didn't de-spag right
+
+
+      ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
+      IF (absoru2_NUMSET(1) .GT. MAX_absoru2_NUMSET_I) THEN
+        WRITE(*,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1),
+     1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
+        STOP ERROR_EXCEEDED
+      END IF
+      ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
+      IF (absoru2_NUMSET(2) .GT. MAX_absoru2_NUMSET_I) THEN
+        WRITE(*,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2),
+     1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
+        STOP ERROR_EXCEEDED
+      END IF
+
+
+      ! orig NUMSET=NBR.DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
+      ! orig POUR H,HE ET HE+
+      ! orig PREMIERE LISTE POUR TH.LE.0.8  ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
+      DO ITH = 1,2
+        NSET = absoru2_NUMSET(ITH)
+        READ (UNIT_,'(8F10.1)') (absoru2_WI(I,ITH),I=1,NSET)
+      END DO
 
       RETURN
       END
