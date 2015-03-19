@@ -1,9 +1,13 @@
       MODULE READ_FILES
 
-      ! Error code if any array index blow maximum number of elements
-      ! allowed while reading from file
-      INTEGER ERROR_EXCEEDED
-      PARAMETER(ERROR_EXCEEDED=111)
+      ! ERROR_EXCEEDED: Error code if any array index blow maximum number of elements
+      !                 allowed while reading from file.
+      ! ERROR_NOT_FOUND: When value from somewhere selects something that does not exist
+      !                  (example in READ_MODELES()).
+      ! ERROR_BAD_VALUE: generic error for bad value found inside file
+      INTEGER ERROR_EXCEEDED, ERROR_NOT_FOUND, ERROR_BAD_VALUE
+      PARAMETER(ERROR_EXCEEDED=111, ERROR_NOT_FOUND=112,
+     +           ERROR_BAD_VALUE=113)
 
 
 C Variables filled by READ_DISSOC() (file dissoc.dat)
@@ -49,11 +53,12 @@ C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
 
 C Variables filled by READ_MAIN() (file main.dat)
       CHARACTER main_TITRAV*10, main_FILEFLUX*64
-      LOGICAL   main_PTDISK
+      LOGICAL   main_ECRIT, main_PTDISK
       REAL*8    main_PAS, main_ECHX, main_ECHY, main_FWHM, main_VVT,
-     1          main_TEFF, main_MU, main_AFSTAR, main_LLZERO,
-     2          main_LLFIN, main_AINT
-      INTEGER   main_IVTOT
+     1          main_MU, main_AFSTAR, main_LLZERO,
+     2          main_LLFIN, main_AINT,
+     3          main_TEFF, main_GLOG, main_ASALOG, main_NHE
+      INTEGER   main_IVTOT, main_INUM
       CHARACTER main_FILETOHY*64
 
       DIMENSION main_FILETOHY(10)
@@ -171,7 +176,36 @@ C ---------------------------------------------------
 
 
 
+
+
+
+C Variables filled by READ_MODELE() (file modeles.mod)
+C ----------------------------------------------------
+      ! Maximum possible value of modeles_NTOT
+      PARAMETER(MAX_modeles_NTOT=50)
+
+      ! Attention: one has to specify sizes of all the variables here, because
+      ! this may change with compiler
+      INTEGER*4 modeles_NTOT
+      CHARACTER*4 modeles_TIT
+      CHARACTER*20 modeles_TIABS ! I just want to see this string at testing
+      REAL*4 modeles_DETEF, modeles_DGLOG, modeles_DSALOG,
+     +       modeles_ASALALF, modeles_NHE,
+     +       modeles_NH, modeles_TETA, modeles_PE, modeles_PG,
+     +       modeles_T5L
+
+      DIMENSION modeles_NH(MAX_modeles_NTOT),
+     +           modeles_TETA(MAX_modeles_NTOT),
+     +           modeles_PE(MAX_modeles_NTOT),
+     +           modeles_PG(MAX_modeles_NTOT),
+     +           modeles_T5L(MAX_modeles_NTOT),
+     +           BID(16),   ! ISSUE: I counted 12... let's see, I have to see INEWMARCS... actually, it seems that it should be 12!!
+     +           modeles_TIT(5)
+
+
+
       SAVE
+
 
 C     ========
       CONTAINS
@@ -179,26 +213,26 @@ C     ========
 
 
 
-
 C================================================================================================================================
 C-----------------------------------------------------------------------
 C READ_MAIN(): reads file main.dat to fill variables main_*
 C
+C Original UNIT: 4
+C
 C IMPORTANT: Depends on variable dissoc_NMETAL (this variable is filled
 C            by READ_DISSOC())
 C-----------------------------------------------------------------------
-      SUBROUTINE READ_MAIN(fileName)
+      SUBROUTINE READ_MAIN(filename)
       INTEGER UNIT_
       PARAMETER(UNIT_=4)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
 C row 01: object name, e.g. "sun"
 C =======
 *      PRINT *,' ENTRER UN TITRE'
       READ(UNIT_, '(20A)') main_TITRAV
-*      WRITE(6,'(1H1, 20X, 20A4)') TITRAV
 
 C row 02: ???
 C =======
@@ -211,7 +245,7 @@ C =======
 C Example: 0.9
 
       READ(UNIT_, *) main_VVT(1)
-      main_IVTOT=1
+      main_IVTOT = 1
 C ISSUE: it seems that here there are three conditional rows;
 C ISSUE: these are present/read only if the value in the third line
 C ISSUE: is greater than 900
@@ -265,6 +299,8 @@ C   spec.<FILEFLUX>
 
 C line 09 --
 C =======
+C     AINT =intervalle de calcul
+
 C Example:      4800    4820   50
       READ(UNIT_, *) main_LLZERO, main_LLFIN, main_AINT
 *711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
@@ -303,6 +339,8 @@ C===============================================================================
 C-----------------------------------------------------------------------
 C READ_ABONDS(): reads file abonds.dat to fill variables abonds_*
 C
+C Original UNIT: 30
+C
 C The input file has 3 columns:
 C   1) Empty space or "1"
 C   2) 2-character atomic element symbol (?)
@@ -317,13 +355,13 @@ C TODO Test one row!!!
 
 C PROPOSE: use READ()'s "END=" option
 
-      SUBROUTINE READ_ABONDS(fileName)
+      SUBROUTINE READ_ABONDS(filename)
       INTEGER UNIT_
       INTEGER FINAB
       PARAMETER(UNIT_=199)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
       J = 1
       FINAB = 0
@@ -347,6 +385,8 @@ C===============================================================================
 C-----------------------------------------------------------------------
 C READ_DISSOC(): reads file dissoc.dat to fill variables dissoc_*
 C
+C Original UNIT: 23
+C
 C This file must end with a blank row so that the routine can detect
 C the end of the file
 C-----------------------------------------------------------------------
@@ -358,17 +398,17 @@ C TODO - check if NMETAL and NMOL match what they are supposed to (assertions in
 
 C PROPOSE: use READ()'s "END=" option
 
-      SUBROUTINE READ_DISSOC(fileName)
+      SUBROUTINE READ_DISSOC(filename)
       INTEGER UNIT_
       INTEGER I
       PARAMETER(UNIT_=199)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
       ! Auxiliary temp variables for reading file
       INTEGER*4 NATOMM, NELEMM
       DIMENSION NATOMM(5), NELEMM(5)
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
 C row 01
 C =======
@@ -461,6 +501,8 @@ C===============================================================================
 C--------------------------------------------------------------------------
 C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade__* (double underscore)
 C
+C Original UNIT: 14
+C
 C This file has 2 types of alternating rows:
 C   odd row
 C     col 1 -- 2-letter atomgrade_ELEM(K) FILLDOC
@@ -489,14 +531,14 @@ C TODO Assertions in test to see if numbers match what they are supposed to
 
 C PROPOSE: use READ()'s "END=" option
 
-      SUBROUTINE READ_ATOMGRADE(fileName)
+      SUBROUTINE READ_ATOMGRADE(filename)
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
       INTEGER FINRAI, K
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
 C orig ******************************************************************
 C orig                      V
@@ -612,6 +654,8 @@ C===============================================================================
 C-------------------------------------------------------------------------
 C READ_PARTIT(): reads file partit.dat to fill variables partit_*
 C
+C orig "LECTURE DES FCTS DE PARTITION"
+C
 C Rows in this file alternate between:
 C 1) 8-column row
 C    col 8 -- signals end-of-file. If 1, it ignores the row and
@@ -621,16 +665,15 @@ C 2) Series of rows to fill in partit_TABU(J, :, :)
 C
 C-------------------------------------------------------------------------
 
-      SUBROUTINE READ_PARTIT(fileName)
+      SUBROUTINE READ_PARTIT(filename)
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
       INTEGER FINPAR, J
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
-      ! orig "LECTURE DES FCTS DE PARTITION"
 
       J = 1
       FINPAR = 0
@@ -703,6 +746,7 @@ C===============================================================================
 C-------------------------------------------------------------------------
 C READ_ABSORU2(): reads file absoru2.dat to fill variables absoru2_*
 C
+C Original UNIT: 15
 C
 C Attention: variables absoru2_ZP, absoru2_XI, and absoru2_PF
 C            undergo transformation!
@@ -721,16 +765,16 @@ C Obs: as opposed to original description, CALMET was being ignored in
 C      original routine LECTUR()
 C-------------------------------------------------------------------------
 
-      SUBROUTINE READ_ABSORU2(fileName)
+      SUBROUTINE READ_ABSORU2(filename)
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 fileName
+      CHARACTER*256 filename
 
       CHARACTER*3 NEANT
       INTEGER NION
 
 
-      OPEN(UNIT=UNIT_,FILE=fileName, STATUS='OLD')
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
       ! orig ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
       ! orig ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
@@ -796,8 +840,7 @@ C-------------------------------------------------------------------------
 
       READ (UNIT_, '(2I2)') (absoru2_NUMSET(ITH), ITH=1,2)
 
-C ISSUE: I am not sure if this last part is being read correcly.
-C ISSUE: Perhaps I didn't de-spag right
+C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
 
 
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
@@ -823,6 +866,111 @@ C ISSUE: Perhaps I didn't de-spag right
       END DO
 
       RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C================================================================================================================================
+C-------------------------------------------------------------------------
+C READ_MODELE(): reads single record from file modeles.mod into
+C                 variables modeles_*
+C
+C Original UNIT: 18
+C
+C orig SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
+C orig SUR LE FICHIER ACCES DIRECT
+C
+C-------------------------------------------------------------------------
+
+C Depends on main_INUM
+C ISSUE: depends on other main_* but I think not for long
+
+      SUBROUTINE READ_MODELE(filename)
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 filename
+
+
+      OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD',
+     1     FILE=filename, RECL=1200)
+
+      ID_ = 1
+
+      IF (main_INUM .GT. 0) ID_ = main_INUM  ! Selects record number
+
+C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
+
+
+9     READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG,
+     +      modeles_DSALOG, modeles_ASALALF, modeles_NHE, modeles_TIT,
+     +      modeles_TIABS
+      IF (modeles_NTOT .EQ. 9999) THEN
+        ! ISSUE perhaps I should check the condition that leads to this error
+        ! TODO STOP with error level
+        WRITE(6, *) 'LE MODELE DESIRE NE EST PAS SUR LE FICHIER'
+        STOP ERROR_NOT_FOUND
+      END IF
+
+
+      ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
+      IF (modeles_NTOT .GT. MAX_modeles_NTOT) THEN
+        WRITE(*,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
+     1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
+        STOP ERROR_EXCEEDED
+      END IF
+
+
+
+      WRITE(6, *) 'modeles_DETEF', modeles_DETEF
+      WRITE(*, *) 'modeles_DGLOG', modeles_DGLOG
+      WRITE(*, *) 'modeles_DSALOG', modeles_DSALOG
+
+
+      DDT  = ABS(main_TEFF-modeles_DETEF)
+      DDG = ABS(main_GLOG-modeles_DGLOG)
+      DDAB = ABS(main_ASALOG-modeles_DSALOG)
+
+      ! ISSUE: Variable DNHE does not exist!!! Anyway, it is not used
+      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
+      DDHE= ABS(modeles_NHE-DNHE)
+
+      ! ISSUE: I don't get this; it will keep looping forever???
+      IF(DDT .GT. 1.0) THEN
+        WRITE(*,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
+        STOP ERROR_BAD_VALUE
+      END IF
+      IF(DDG .GT. 0.01) THEN
+        WRITE(*,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
+        STOP ERROR_BAD_VALUE
+      END IF
+      IF(DDAB .GT. 0.01) THEN
+        WRITE(*,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
+        STOP ERROR_BAD_VALUE
+      END IF
+
+
+
+      READ(UNIT_, REC=ID_) BID,
+     +     (modeles_NH(I),
+     +      modeles_TETA(I),
+     +      modeles_PE(I),
+     +      modeles_PG(I),
+     +      modeles_T5L(I), I=1,modeles_NTOT)
+
+
+      CLOSE(UNIT_)
       END
 
 
