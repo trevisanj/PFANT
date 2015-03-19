@@ -1,36 +1,38 @@
 C     TEST THE READ_MAIN ROUTINE
       PROGRAM TEST_READ_MAIN
-      USE COMMONS
+      USE READ_FILES
 
       NMETAL = 18  ! This must be set in order to read line 07
 
       CALL READ_MAIN('test_read_main.dat')
 
       WRITE(*, *)
-      WRITE(*, *) 'TITRAV = ', TITRAV
-      WRITE(*, *) 'ECRIT = ', ECRIT
-      WRITE(*, *) 'PAS = ', PAS
-      WRITE(*, *) 'ECHX = ', ECHX
-      WRITE(*, *) 'ECHY = ', ECHY
-      WRITE(*, *) 'FWHM = ', FWHM
-      WRITE(*, *) 'VVT = ', VVT
-      WRITE(*, *) 'IVTOT = ', IVTOT
-      WRITE(*, *) 'TEFF = ', TEFF
-      WRITE(*, *) 'GLOG = ', GLOG
-      WRITE(*, *) 'ASALOG = ', ASALOG
-      WRITE(*, *) 'PTDISK = ', PTDISK
-      WRITE(*, *) 'MU = ', MU
-      WRITE(*, *) 'AFSTAR = ', AFSTAR
-      WRITE(*, *) 'XXCOR = ', XXCOR
-      WRITE(*, *) 'FILEFLUX = ', FILEFLUX
-      WRITE(*, *) 'LLZERO = ', LLZERO
-      WRITE(*, *) 'LLFIN = ', LLFIN
-      WRITE(*, *) 'AINT = ', AINT
+      WRITE(*, *) 'TITRAV = ', main_TITRAV
+      WRITE(*, *) 'ECRIT = ', main_ECRIT
+      WRITE(*, *) 'PAS = ', main_PAS
+      WRITE(*, *) 'ECHX = ', main_ECHX
+      WRITE(*, *) 'ECHY = ', main_ECHY
+      WRITE(*, *) 'FWHM = ', main_FWHM
+      WRITE(*, *) 'VVT = ', main_VVT
+      WRITE(*, *) 'IVTOT = ', main_IVTOT
+      WRITE(*, *) 'TEFF = ', main_TEFF
+      WRITE(*, *) 'GLOG = ', main_GLOG
+      WRITE(*, *) 'ASALOG = ', main_ASALOG
+      WRITE(*, *) 'PTDISK = ', main_PTDISK
+      WRITE(*, *) 'MU = ', main_MU
+      WRITE(*, *) 'AFSTAR = ', main_AFSTAR
+      WRITE(*, *) 'XXCOR = ', main_XXCOR
+      WRITE(*, *) 'FILEFLUX = ', main_FILEFLUX
+      WRITE(*, *) 'LLZERO = ', main_LLZERO
+      WRITE(*, *) 'LLFIN = ', main_LLFIN
+      WRITE(*, *) 'AINT = ', main_AINT
+      WRITE(*, *) 'INUM = ', main_INUM
 
 
       DO IH = 1, 10
-        WRITE(*, *) 'FILETOHY(', IH, ') = ', FILETOHY(IH)
+        WRITE(*, *) 'FILETOHY(', IH, ') = ', main_FILETOHY(IH)
       END DO
 
 
       END
+
