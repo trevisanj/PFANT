@@ -58,7 +58,8 @@ C     TEST THE READ_PARTIT ROUTINE
       ! STOP 111
       ! "
       !-----------------------------------------------------------------------
-      CALL TEST_FILE(partit_KMAX_too_big)
+* Gave error as expected
+*      CALL TEST_FILE(partit_KMAX_too_big)
 
       END
 
