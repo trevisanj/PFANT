@@ -1,3 +1,4 @@
+
 c ======================================================================
 c
 c     >> pfantgrade.f << NOV 2003
@@ -39,10 +40,10 @@ c
 c     a. linhas de codigo foram comentadas (identificadas com 'cp Nov03':
 c     (comentario da Paula em Nov03).
 c
-c     b. dimensao e data de LLHY e dimensao de FILETOHY foram
+c     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
 c     atualizadas
 c
-c     c. incluidos TAUHI(NP,50),TAUHY(10,NP,50) e excluido IHH(500)
+c     c. incluidos c_filetoh_TAUHI(NP,50),TAUHY(10,NP,50) e excluido IHH(500)
 c
 c     d. todo o codigo que se referia ao calculo das linha de H foram
 c     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -85,8 +86,24 @@ C       Flux sortant est en nu: Fnu x lambda
 C       Flux absolu sortant a ete multiplie par 10**5
 
       PARAMETER(PARAMETER_NMOL=50000,NP=7000,NT=10000)
+      
+      
+      
+      ! TODO organize this once I have a module
+      LOGICAL config_VERBOSE
+      config_VERBOSE = .FALSE.
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       INTEGER FINPAR,FINRAI,FINAB,D,DTOT
-      INTEGER DHM,DHP,DHMY,DHPY,DHMI,DHPI, modeles_NTOT
+      INTEGER DHM,DHP,DHMY,DHPY,c_filetoh_DHMI,c_filetoh_DHPI
       CHARACTER FILETOH*20
       character FILEFLUX2*72,FILEFLUX3*72
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
@@ -95,8 +112,8 @@ C       Flux absolu sortant a ete multiplie par 10**5
      1   modeles_NHE,KC1,KC2,KCD,MM, ABOND, ABO
       LOGICAL GAUSS,IDENTH
       REAL*8 LZERO,LFIN,LMBDAM, LLHY(10)
-      REAL*8 LLAMBDH,ECART,ECARTM,L0,LF,lllhy
-      DIMENSION modeles_NH(50),PE(50),TETA(50),PG(50),T5L(50),
+      REAL*8 ECART,ECARTM,L0,LF,lllhy
+      DIMENSION 
      1 KC(50),ALPH(50),PHN(50),PH2(50),
      2 KC1(50),KC2(50),KCD(NP,50),
      3 DELTA(MAX_atomgrade_NBLEND,50),ABOND(MAX_atomgrade_NBLEND),
@@ -104,7 +121,6 @@ C       Flux absolu sortant a ete multiplie par 10**5
      6 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
      8 ECARTM(PARAMETER_NMOL)
-      DIMENSION DM(8)
       DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
 
@@ -113,8 +129,7 @@ C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these vari
       DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
       DIMENSION FL(NP), TTD(NP), FCONT(NP), FN(NP)
-      DIMENSION LLAMBDH(100),TAUH(NP,50),TTH(100,50),
-     1          FILETOHY(10),TAUHI(NP,50),TAUHY(10,NP,50)
+      DIMENSION TAUH(NP,50),TAUHY(10,NP,50)
       DIMENSION DHMY(10),DHPY(10)
       DIMENSION PPH(50),PPC2(50),PN(50),PC13(50),PMG(50),
      1          PO(50),PTI(50),PNG(50),PIG(50),pfe(50)
@@ -125,11 +140,11 @@ C
 
       ! ISSUE: KIK never used!!!
       KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
+      
+      
 C  *****************************************************************
-      DATA tti/'ti'/,mgg/'mg'/,cc1/' c'/,cc2/'c '/,
-     1 oo1/' o'/,oo2/'o '/,nn1/'n '/,nn2/' n'/
-      DATA LLHY /3750.150,3770.630,3797.900,3835.390,3889.050,3970.076,
-     1           4101.748,4340.468,4861.332,6562.817/
+      DATA LLHY /3750.150, 3770.630, 3797.900, 3835.390, 3889.050, 
+     +           3970.076, 4101.748, 4340.468, 4861.332, 6562.817/
       DATA C/2.997929E+10/, H/6.6252E-27/,KB/1.38046E-16/,R/8.3170E+7/,
      1     PI/3.141593/,C1/4.8298E+15/,C2/8.8525E-13/,C4/2.1179E+8/,
      2     C6/3.76727E+11/,DEUXR/1.6634E+8/,C7/1.772453/
@@ -140,6 +155,9 @@ C  *****************************************************************
       OPEN(UNIT=30,FILE='abonds.dat',STATUS='OLD')
       OPEN(UNIT=14,FILE='atomgrade.dat',STATUS='OLD')
 
+
+
+      ! ISSUE what is this?
       RPI = 1.77245385
 
 
@@ -148,12 +166,24 @@ C  *****************************************************************
 
       ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
       CALL READ_DISSOC(filename_DISSOC)
+
+
+
       CALL READ_MAIN(filename_MAIN)
 
+      !---
+      ! Variable values derived directly from information in main.dat
+      !---
 
       ! ISSUE: Is this right, I think it has something to do with the sun, no??
       ASASOL = 10.**main_ASALOG  ! This was in READER06, but depends directly from something read from main.dat
       TETAEF = 5040/main_TEFF    ! This was in READER06, but depends directly from something read from main.dat
+      FSTAR  = 10**main_AFSTAR   ! ISSUE This was further below
+
+      ! ISSUE: breaking rule!!! this cannot happen: change value of this global here, check what is supposed to happen instead.
+      main_FILEFLUX = 'spec.'//main_FILEFLUX
+      FILEFLUX2 = 'cont.'//main_FILEFLUX
+      FILEFLUX3 = 'norm.'//main_FILEFLUX
 
 
 
@@ -189,10 +219,15 @@ C  ****************************************************************
       AMET=A0*ASASOL
 
 
+      ! Reads abonds.dat
+      CALL READ_ABONDS(config_fn_ABONDS)
+
+
+
       ! ISSUE: this is used, shouldn't it be some command-line option???
       INTERP = 1  ! interp. lineaire de vt (si parabolique 2)
 
-      CALL TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,T5L,VT)
+      CALL TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,modeles_T5L,VT)
       IF(IVTOT .EQ. 1) THEN
         WRITE(6,131) main_VVT(1)
       ELSE
@@ -204,52 +239,38 @@ C                       III
 C     CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
 C           POPULATION DU NIV FOND DES IONS
 C  *****************************************************************
-      CALL POPUL(TETA,PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,P)
+      CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,P)
 C
 C  *****************************************************************
 C                       IV
 C           CALCUL DES QUANTITES NE DEPENDANT QUE DU
 C           MODELE ET DE LAMBDA : B(N)   KC(N)   FC
 C  *****************************************************************
-      READ(4,*) main_PTDISK ,main_MU
-      READ(4,*) main_AFSTAR  ! metallicity of the star (in log scale)
-      fstar=10**main_AFSTAR
 
       CALL SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,PIG,PFE,modeles_NTOT)
 
-      J=1
-      DO WHILE (FINAB .LT. 1)
-        READ(30,105) FINAB,abonds_ELE(J),abonds_ABOL(J)
-        J=J+1
-      END DO
-      abonds_NABOND=J-2
-C
       DO K = 1, dissoc_NMETAL
         DO J=1,abonds_NABOND
-C ISSUE: This is the thing that Beatriz mentioned that is not used anymore
-        IF(abonds_ELE(J).EQ.dissoc_ELEMS(K)) abonds_ABOL(J)=abonds_ABOL(J)+main_XXCOR(K)
+          ! ISSUE: This is the thing that Beatriz mentioned that is not used anymore
+          IF(abonds_ELE(J).EQ.dissoc_ELEMS(K)) THEN
+            ! ISSUE: breaking rule: changing variable filled in READ_*() not allowed!!!
+            abonds_ABOL(J) = abonds_ABOL(J)+main_XXCOR(K)
+          END IF
         END DO
-      end do
-c
-
-      DO J=1,abonds_NABOND
-        ABO(J)=10.**(abonds_ABOL(J)-12.)
-        ABO(J)=ABO(J)*fstar
       END DO
 
+      DO J=1,abonds_NABOND
+        ABO(J) = 10.**(abonds_ABOL(J)-12.)
+        ABO(J) = ABO(J)*FSTAR
+      END DO
 
-
-      READ(4,1500) main_FILEFLUX
-      FILEFLUX2 = 'cont.'//main_FILEFLUX
-      FILEFLUX3 = 'norm.'//main_FILEFLUX
-
-C ISSUE: this cannot happen: change value of this global here, check what is supposed to happen instead.
-      main_FILEFLUX = 'spec.'//main_FILEFLUX
 
 
       OPEN(UNIT=17,FILE=main_FILEFLUX,STATUS='unknown')
       OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
       OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
+
+
       IK=1
       IK2=1
       IK3=1
@@ -259,18 +280,15 @@ C     HINT =demi-intervalle de calcul des raies d'hydrogene
       HINT=35.
       CINT=20.
       IDENTH=.FALSE.
-      READ(4,*) main_LLZERO,main_LLFIN,main_AINT
-      WRITE(6,711) main_LLZERO,main_LLFIN,main_AINT
-      DO IH=1,8
-        READ(4,1560) FILETOHY(IH)
-        print *,IH,filetohy(IH)
-      END DO
 
+
+      ! ISSUE Explain what it does
       XLZERO = main_LLZERO-20.
       XLFIN = XLZERO+main_AINT+20.
       IF(XLFIN .GE. (main_LLFIN+20.)) THEN
         IKEYTOT = 1
       ELSE
+        ! ISSUE it seems that I could write this using a modulus operator
         DO I = 2,250
           XLFIN = XLFIN+main_AINT
           IF(XLFIN .GE. (main_LLFIN+20.)) EXIT
@@ -299,19 +317,17 @@ C
         END IF
 
         LAMBD = (LZERO+LFIN)/2
-        ILZERO = LZERO/100.
-        ILZERO = 1E2* ILZERO
+        ILZERO = (LZERO/100.)*1E2
         ALZERO = LZERO -ILZERO
-        ZLZERO = LFIN - ILZERO
 C
         DO D = 1,DTOT
           TTD(D) = ALZERO+main_PAS*(D-1)
         END DO
 
-        CALL BK(modeles_NH,TETA,PE,PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
+        CALL BK(modeles_NH,modeles_TETA,modeles_PE,modeles_PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
      1        FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
 
-        WRITE(6,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
+        IF config_VERBOSE WRITE(6,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
 
         ! ******************************************************************
         ! LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH
@@ -327,15 +343,21 @@ C
             IM = IM+1
             IRH = 1
             IHT = IH
-            FILETOH = FILETOHY(IHT)
-            WRITE(6,712) IM, LLHY(IH), FILETOH, IHT
-            CALL LECTAUH(modeles_NH,modeles_NTOT,main_PAS,JJMAX,LLAMBDH,TTH,
-     1                   DTOT,TTD,LZERO,LFIN,TAUHI,DHMI,DHPI,FILETOH)
-            DHMY(IM) = DHMI
-            DHPY(IM) = DHPI
+            FILETOH = main_FILETOHY(IHT)
+            
+            !--verbose--!
+            IF config_VERBOSE WRITE(6,712) IM, LLHY(IH), FILETOH, IHT
+            !-----------!
+            
+            ! ISSUE Extract this from main loop. Not too hard: c_filetoh_* just need one extra dimension
+            CALL READ_FILETOH(FILETOH)
+            CALL FILETOH_AUH(DTOT,TTD, ILZERO)
+            
+            DHMY(IM) = c_filetoh_DHMI
+            DHPY(IM) = c_filetoh_DHPI
             DO N = 1,modeles_NTOT
                DO D = 1,DTOT
-               TAUHY(IM, D, N) = TAUHI(D,N)
+               TAUHY(IM, D, N) = c_filetoh_TAUHI(D,N)
                END DO
             END DO
           END IF
@@ -343,8 +365,11 @@ C
 
         IMY = IM
         IF(IMY .NE. 0) THEN
-          WRITE(6,*) (DHMY(IM), IM=1,IMY)
-          WRITE(6,*) (DHPY(IM), IM=1,IMY)
+          IF config_VERBOSE THEN
+            WRITE(6,*) (DHMY(IM), IM=1,IMY)
+            WRITE(6,*) (DHPY(IM), IM=1,IMY)
+          END IF
+          
           DHP = MAXI(DHPY, IMY, 1, IMY)
           DHM = MINI(DHMY, IMY, 1, IMY)
           DO N = 1,modeles_NTOT
@@ -374,19 +399,9 @@ C
         ! ******************************************************************
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
-
         IF(atomgrade_NBLEND .GT. 0) THEN
-          READ(CC1, 1510) DM(1)
-          READ(CC2, 1510) DM(2)
-          READ(NN1, 1510) DM(3)
-          READ(NN2, 1510) DM(4)
-          READ(OO1, 1510) DM(5)
-          READ(OO2, 1510) DM(6)
-          READ(MGG, 1510) DM(7)
-          READ(TTI, 1510) DM(8)
-
           CALL POPADELH (partit_NPAR,partit_EL,partit_KI1,partit_KI2,partit_M,atomgrade_NBLEND,atomgrade_ELEM,
-     1     atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,TETA,PE,ALPH,
+     1     atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
      2     PHN,PH2,VT,P,POP,A,DELTA)
 
           CALL ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
@@ -396,22 +411,22 @@ C
           !     CALCUL DU COEFFICIENT D ABSORPTION SELECTIF
           !     ET CALCUL DU SPECTRE
           !  ***************************************************************
-
           DO K = 1,atomgrade_NBLEND
-            GFAL(K) = atomgrade_GF(K) * C2 * (atomgrade_LAMBDA(K)*1.E-8)**2
+            GFAL(K) = atomgrade_GF(K)*C2*(atomgrade_LAMBDA(K)*1.E-8)**2
             ECART(K)= atomgrade_LAMBDA(K)-LZERO+main_PAS
-          END DO ! fin bcle sur K
+          END DO
         END IF
 
-        CALL KAPMOL(modeles_NH, TETA, modeles_NTOT)
+        CALL KAPMOL(modeles_NH, modeles_TETA, modeles_NTOT)
 
-        WRITE (6,704) MBLEND
+        IF config_VERBOSE WRITE (6,704) MBLEND
+
         DO L = 1, MBLEND
           ECARTM(L)=LMBDAM(L)-LZERO + main_PAS
         END DO
 
         CALL SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,GFAL,atomgrade_ZINF,
-     1   ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,modeles_NTOT,modeles_NH,TETA,B,
+     1   ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,modeles_NTOT,modeles_NH,modeles_TETA,B,
      2   B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
 
 
@@ -450,14 +465,13 @@ C
         WRITE(20,1132) (FN(D),D=I1,I2)
 
 C
-        WRITE(6,707) IKEY, LZERO, LFIN, I1, I2
+        IF config_VERBOSE WRITE(6,707) IKEY, LZERO, LFIN, I1, I2
 
         IKEY = IKEY+1
         IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door!
 
         WRITE(6, 708) IKEY, IRH
         IDENTH = .FALSE.
-        REWIND 14
 
         LZERO = LZERO+main_AINT
         LFIN = LFIN+main_AINT
@@ -468,8 +482,11 @@ C
 669   CONTINUE
       CLOSE(17)
 
-      WRITE(6,800)
-      WRITE(6,801)
+      ! ISSUE Do I need to print this?
+      IF config_VERBOSE THEN
+        WRITE(6,*) '   Flux sortant est en nu: Fnu x lambda'
+        WRITE(6,*) '   Flux absolu sortant a ete multiplie par 10**5'
+      END IF
 
 
 
@@ -535,15 +552,12 @@ C  *******************************************************************
 710   FORMAT(1X,A,2X,'IH=',I5)
 711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
 712   FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
-800     format('   Flux sortant est en nu: Fnu x lambda')
-801     format('   Flux absolu sortant a ete multiplie par 10**5')
 1500  FORMAT(A20)
 1501  FORMAT(2X,'LAMBD milieu intevalle=',F8.2,2X,'FC=',E15.7)
 1502  FORMAT(2X,'LDNOR =',F8.2,2X,'FMOYEN=',E15.7)
 1503  FORMAT(2X,'RLAMBD=',F8.2,2x,'RLAMBF=',F8.2,2x,'FLNOR=',E15.7)
 1560    FORMAT(A)
 1570    FORMAT(1X,A)
-1510  format(a2)
 1511  format(8(1x,a2))
 
 C3333   FORMAT(F15.8)
@@ -594,7 +608,7 @@ C-------------------------------------------------------------------------------
       COMMON /ZION/   AC, AC1(3), AC2(30,9)
       COMMON /ABME/   STIMU
       COMMON /SAPE/   AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-      COMMON /SAPDIV/ ZMU, PG
+      COMMON /SAPDIV/ ZMU, PG_SAPDIV
       COMMON /SAPU/   PE_SAPU, RHO, TOC, ZNH(12)
       COMMON /SOMAB/  SUM1
 
@@ -725,13 +739,13 @@ C
       COMMON /ZION/ AC, AC1(3), AC2(30,9)
       COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
       COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
-      COMMON /SAPDIV/ ZMU, PG
+      COMMON /SAPDIV/ ZMU, PG_SAPDIV
       COMMON /ABSO1/ absoru2_NM
       COMMON /ABSO2/ absoru2_NMETA
 C
 C     SSP CALCULANT LES QUANTITES SUIVANTES
 C     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
-C     PG    =PRESSION TOTALE EN DYNES/CM2
+C     PG_SAPDIV    =PRESSION TOTALE EN DYNES/CM2
 C     ZMU   =POIDS MOLECULAIRE MOYEN
 C     RHO   =DENSITE (G-CM-3)
 C     TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
@@ -790,7 +804,7 @@ C     6.956948E-13=1.38024E-16*5040.39
       TOC=2*TP2+TP1
       PARTH=TOC/ZNU1
       PPAR=(TP1+TP2+PARTH*(ZNU2+ZNU3))*KTH
-      PG=PPAR+PE_SAPU
+      PG_SAPDIV=PPAR+PE_SAPU
       AC=PE_SAPU/PPAR
       W5=ZK(absoru2_NMETA+6)/PE_SAPU
       W6=ZK(absoru2_NMETA+5)*W5/PE_SAPU
@@ -802,7 +816,7 @@ C     6.956948E-13=1.38024E-16*5040.39
       ZNH(absoru2_NMETA+5)=ZNH(absoru2_NMETA+6)*W5
       RHO=1.6602E-24*PARTH*ZMUZE
 C     1.6602E-24=MASSE DE L'UNITE DE POIDS
-      ZMU=RHO*41904.28E+7/(TH*PG)
+      ZMU=RHO*41904.28E+7/(TH*PG_SAPDIV)
 C     41904.275E+7=8.313697E+7*5040.39,OU 8.313697E+7=CONSTANTE DES GAZ
 11    RETURN
       END
@@ -879,7 +893,7 @@ C
       DO 1 N=2,3
 1     ZK(absoru2_NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))
 C
-C     LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
+C     LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
 C     LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
 C     CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
 C     31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
@@ -1437,7 +1451,7 @@ C
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE BK(modeles_NH,TETA,PE,PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
+      SUBROUTINE BK(modeles_NH,modeles_TETA,modeles_PE,modeles_PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
      1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
       PARAMETER(NP=7000)
       INTEGER D,DTOT,CAVA
@@ -1446,7 +1460,7 @@ C-------------------------------------------------------------------------------
      1 LAMBDC,KCJ,KCN
       REAL*8 LZERO,LFIN
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
-      DIMENSION modeles_NH(50),TETA(50),PE(50),PG(50),KC(50),TOTKAP(2),
+      DIMENSION modeles_NH(50),modeles_TETA(50),modeles_PE(50),modeles_PG(50),KC(50),TOTKAP(2),
      1 ALPH(50),PHN(50),PH2(50),KC1(50),KC2(50)
 
 c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
@@ -1455,16 +1469,13 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
       DIMENSION FC(NP)
 
       COMMON /LECT1/ AMET, BHE  ! ISSUE Another name here!!!
-      COMMON /LECT2/ absoru2_ZP(30), absoru2_ZM(30), absoru2_WI(41,2), absoru2_NUMSET(2), CAL
-      COMMON /ABSO2/ absoru2_NMETA
+      COMMON /LECT2/ CAL
       COMMON /SAPE/  AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-      COMMON /SAPU/  PE, RHO, TOC, ZNH(12)
-      COMMON /ABSO1/ absoru2_NM
+      COMMON /SAPU/  PE_SAPU, RHO, TOC, ZNH(12)
 
 C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
-      COMMON /PRT/   main_ECRIT
       LLZERO=LZERO
       LLFIN=LFIN
       C=2.997929E+10
@@ -1474,30 +1485,30 @@ C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
       AHNU1= H*NU1
       C31=(2*AHNU1) * (NU1/C)**2
             DO   N=1,modeles_NTOT
-            T=5040./TETA(N)
+            T=5040./modeles_TETA(N)
             ALPH(N)=EXP(-AHNU1/(KB*T))
             B1(N)= C31 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LLZERO,TETA(N),ALOG10(PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+      CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
             KC1(N)=TOTKAP(1)
             END DO
       NU2= C* 1.E+8 /LFIN
       AHNU2= H*NU2
       C32=(2*AHNU2) * (NU2/C)**2
             DO   N=1,modeles_NTOT
-            T=5040./TETA(N)
+            T=5040./modeles_TETA(N)
             ALPH(N)=EXP(-AHNU2/(KB*T))
             B2(N)= C32 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LLFIN,TETA(N),ALOG10(PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+      CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
             KC2(N)=TOTKAP(1)
             END DO
       NU= C* 1.E+8 /LAMBD
       AHNU= H*NU
       C3=(2*AHNU) * (NU/C)**2
             DO   N=1,modeles_NTOT
-            T=5040./TETA(N)
+            T=5040./modeles_TETA(N)
             ALPH(N)=EXP(-AHNU/(KB*T))
             B(N)= C3 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LAMBD,TETA(N),ALOG10(PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+      CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
             PHN(N)=  ZNH (absoru2_NMETA+4) *KB * T
             PH2(N) =ZNH (absoru2_NMETA+2) *KB * T
 c     if(n.eq.1) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
@@ -1506,7 +1517,7 @@ c     if(n.eq.modeles_NTOT) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4
 c     1 znh(absoru2_NMETA+2),t
             KC(N)=TOTKAP(1)
             END DO
-      TET0=FTETA0(PG,TETA)     !on extrapole TETA pour modeles_NH=0
+      TET0=FTETA0(modeles_PG,modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
       T=5040./TET0
       ALPH01=EXP(-AHNU1/(KB*T))
       B1(0)=C31 * (ALPH01/(1.-ALPH01))
@@ -1573,109 +1584,16 @@ C     IF(.NOT.main_ECRIT) GO TO 10
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE LECTAUH(modeles_NH,modeles_NTOT,main_PAS,JJMAX,LLAMBDH,TTH,
-     1 DTOT,TTD,LZERO,LFIN,TAUH,DHM,DHP,FILETOH)
-      PARAMETER(NP=7000)
-      INTEGER D,DTOT,DHM,DHP
-      REAL modeles_NH
-      REAL*8 LAMBDH,LLAMBDH,LZERO,LFIN
-      CHARACTER*20 FILETOH,TITRE*80,TTT*11
-      DIMENSION modeles_NH(50),TTH(100,50),TH(50,50)
-      DIMENSION LAMBDH(50),LLAMBDH(100),ALLH(100)
-c p 20/11/04 M-N  DIMENSION TTD(DTOT),FTTH(NP),TAUHN(100),TAUH(DTOT,50)
-      DIMENSION TTD(NP),FTTH(NP),TAUHN(100),TAUH(NP,50)
-
-C
-C     LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
-      OPEN(UNIT=16,FILE=FILETOH,STATUS='OLD')
-      READ(16,1500) TITRE
-      READ(16,1501) TTT
-      READ(16,1551)JMAX
-      READ(16,1550)(LAMBDH(J),J=1,JMAX)
-      READ(16,1555) ((TH(J,N),J=1,JMAX),N=1,modeles_NTOT)
-C     DO N=1,modeles_NTOT,5
-C     WRITE(6,1555) (TH(J,N),J=1,JMAX)
-C     END DO
-C     WRITE(6,1555) ((TH(J,N),J=1,JMAX),N=1,modeles_NTOT)
-C
-      JJMAX=2*JMAX-1
-      JMA1=JMAX-1
-      DO JJ=1,JMAX
-      DEL=LAMBDH(JMAX+1-JJ)-LAMBDH(1)
-      LLAMBDH(JJ)=LAMBDH(JMAX+1-JJ)-2*DEL
-      END DO
-      DO JJ=JMAX+1,JJMAX
-      LLAMBDH(JJ)=LAMBDH(JJ-JMA1)
-      END DO
-      DO N=1,modeles_NTOT
-            DO JJ=1,JMAX
-            TTH(JJ,N)=TH(JMAX+1-JJ,N)
-            END DO
-            DO JJ=JMAX+1,JJMAX
-            TTH(JJ,N)=TH(JJ-JMA1,N)
-            END DO
-      END DO
-      WRITE(6,1500) TITRE
-      WRITE(6,1501) TTT
-      WRITE(6,1552)JMAX
-      WRITE(6,1553)(LLAMBDH(JJ),JJ=1,JJMAX)
-      IF(.NOT.main_ECRIT) GO TO 15
-      WRITE(6,1553)(LLAMBDH(JJ),JJ=1,JJMAX)
-      DO N=1,modeles_NTOT,5
-      WRITE(6,1556)N
-      WRITE(6,1554)(TTH(JJ,N),JJ=1,JJMAX)
-      END DO
-15    CONTINUE
-      ILZERO=LZERO/100.
-      ILZERO=1E2*ILZERO
-      ALZERO=LZERO-ILZERO
-      ZLZERO=LFIN-ILZERO
-      DO J=1,JJMAX
-      ALLH(J)=LLAMBDH(J)-ILZERO
-      END DO
-      WRITE(6,155) ALLH(1),ALLH(JJMAX),ALZERO,ZLZERO
-      WRITE(6,156) JJMAX,modeles_NTOT,DTOT
-      DO N=1,modeles_NTOT
-            DO J=1,JJMAX
-            TAUHN(J)=TTH(J,N)
-            END DO
-      CALL FTLIN3H(JJMAX,ALLH,TAUHN,DTOT,TTD,FTTH,DHM,DHP)
-            DO D=1,DTOT
-            TAUH(D,N)=FTTH(D)
-            END DO
-      END DO
-      REWIND 16
-      WRITE(6,150)TAUH(1,1),TAUH(1,modeles_NTOT)
-      WRITE(6,160)TAUH(dtot,1),TAUH(DTOT,modeles_NTOT)
-150   FORMAT(' TAUH(1,1)=',E14.7,2X,'TAUH(1,NTOT)=',E14.7)
-160   FORMAT(' TAUH(dtot,1)=',E14.7,2X,'TAUH(DTOT,NTOT)=',E14.7)
-155   FORMAT(' ALLH(1)=',F8.3,2X,'ALLH(JJMAX)=',F8.3,2X,
-     1 'ALZERO=',F7.3,2X,'ZLZERO=',F7.3)
-156   FORMAT(' JJMAX=',I3,2X,'NTOT=',I3,2X,'DTOT=',I5)
-1500  FORMAT(A80)
-1501  FORMAT(A11)
-1550  FORMAT(5F14.3)
-1551  FORMAT(I4)
-1555  FORMAT(5E12.4)
-1552  FORMAT(' JMAX=',I3)
-1556  FORMAT(' N=',I3)
-1553  FORMAT(2X,5F14.3)
-1554  FORMAT(2X,5E12.4)
-1560  FORMAT(A40)
-      RETURN
-      END
-
-C-------------------------------------------------------------------------------
       SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,
      1 GFAL,atomgrade_ZINF,ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,
-     2 modeles_NTOT,modeles_NH,TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
+     2 modeles_NTOT,modeles_NH,modeles_TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
       PARAMETER(MAX_atomgrade_NBLEND=8000,PARAMETER_NMOL=50000,NP=7000)
       LOGICAL main_PTDISK,main_ECRIT
       INTEGER D, DTOT, CAVA,DHM,DHP
       REAL lambi
       REAL main_MU,KAPPA,KA,KAP,modeles_NH,KCD,KCI,KAM,KAPPAM,KAPPT,MM
       REAL*8 atomgrade_LAMBDA,main_PAS,ECART,ECAR,ECARTM,ECARM,LMBDAM
-      DIMENSION modeles_NH(50),TETA(50),VT(50)
+      DIMENSION modeles_NH(50),modeles_TETA(50),VT(50)
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50),BI(0:50)
       DIMENSION ECART(MAX_atomgrade_NBLEND),ECAR(MAX_atomgrade_NBLEND), atomgrade_ZINF(MAX_atomgrade_NBLEND),ECARTL(MAX_atomgrade_NBLEND),
      1 GFAL(MAX_atomgrade_NBLEND),ABOND(MAX_atomgrade_NBLEND),KA(MAX_atomgrade_NBLEND),KAP(50),atomgrade_ELEM(MAX_atomgrade_NBLEND),
@@ -1687,14 +1605,13 @@ cp 20/11/04 M-N   DIMENSION TTD(DTOT),FL(DTOT),TAUHD(50),TAUH(DTOT,50)
       DIMENSION DELTAM(PARAMETER_NMOL,50),ECARTM(PARAMETER_NMOL),ECARM(PARAMETER_NMOL),
      1 ECARTLM(PARAMETER_NMOL),KAM(PARAMETER_NMOL),KAPPAM(50),KAPPT(50)
       DIMENSION LMBDAM(PARAMETER_NMOL),GFM(PARAMETER_NMOL),PNVJ(PARAMETER_NMOL,50),
-     1 ALARGM(PARAMETER_NMOL),dm(8)
+     1 ALARGM(PARAMETER_NMOL)
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
       COMMON /KAPM1/ MM,MBLEND
       COMMON /KAPM2/ LMBDAM,GFM,PNVJ,ALARGM
       COMMON /KAPM4/ ECARTM
       COMMON /PRT/   main_ECRIT
-      COMMON /CNO/   DM
 
       DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
 C
@@ -1726,7 +1643,7 @@ C
             DO N=1,modeles_NTOT
             KAPPA(N) =0.
             KAPPAM(N) =0.
-            T=5040./TETA(N)
+            T=5040./modeles_TETA(N)
 c     atomes
       if(atomgrade_NBLEND.eq.0) go to 260
 
@@ -1829,72 +1746,13 @@ c
 106   FORMAT('     MANQUE L ABONDANCE DU  ',A2                  )
       END
 
-C-------------------------------------------------------------------------------
-      SUBROUTINE FTLIN3H(N,X,Y,ITOT,TT,FTT,K1,K2)
-      DIMENSION X(N),Y(N),TT(ITOT),FTT(ITOT)
-C     WRITE(6,*) N
-C     WRITE (6,105) (X(J),J=1,N)
-C     WRITE (6,105) (Y(J),J=1,N)
-C
-      J=2
-      KK=1
-24    DO  4 K=KK,ITOT
-      KQ=K
-      T=TT(K)
-C     WRITE(6,103)T
-      JJ=J-1
-            DO 1  J=JJ,N
-            IF(T-X(J) ) 3,2,1
-1           CONTINUE
-            GO TO 10
-2     FT=Y(J)
-      IF(J.EQ.1) J=J+1
-      GO TO 4
-C 3   WRITE(6,*) '   J=',J
-3     IF(J.EQ.1)   GO TO 10
-      U0= Y(J)-Y(J-1)
-      T0= X(J)-X(J-1)
-      T1=   T -X(J-1)
-C     WRITE(6,104) J, X(J-1), Y(J-1), X(J),Y(J), U0,T0,T1
-      T2= T1/T0
-      DY= U0*T2
-      FT= Y(J-1) + DY
-4     FTT(K)=FT
-14    continue
-      DO K=1,ITOT
-      IF(FTT(K).NE.0.0) GO TO 20
-      END DO
-20    K1=K
-        if(k1.eq.itot) k1=1
-      KK1=K1+1
-      DO K=KK1,ITOT
-      IF(FTT(K).EQ.0.0) GO TO 30
-      END DO
-30    K2=K
-c p 21/11/04 instrucao da Marie Noel
-      if (FTT(ITOT).NE.0.0) K2=ITOT
-C
-      RETURN
-10    FTT(K)=0.
-      J=J+1
-C     WRITE(6,*)K,FTT(K)
-      KK=KQ
-      KK=KK+1
-      IF(KQ.GT.ITOT) GO TO 14
-      GO TO 24
-C     WRITE(6,101)
-C     WRITE(6,102) (X(I),I=1,N)
-100   FORMAT(' ON SORT DE LA TABLE D INTERPOLATION    T=',E15.7)
-101   FORMAT(/'   LISTE DES X')
-102   FORMAT(8E15.7)
-103   FORMAT(5X,F10.3)
-104   FORMAT(I5,7F9.3)
-C105  FORMAT(7F10.3)
-      END
+
+
+
 
 C-------------------------------------------------------------------------------
       SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
-     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,TETA,PE,ALPH,
+     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
 C     ***calcule la population au niveau inferieur de la transition
 C     ***la largeur doppler DELTA et le coefficient d'elargissement
@@ -1904,16 +1762,15 @@ C     ***le "A" utilise dans le calcul de H(A,V)
       CHARACTER*2 atomgrade_ELEM, partit_EL
       INTEGER atomgrade_NBLEND, NPAR, J, K
         real partit_KI1,partit_KI2,atomgrade_KIEX,partit_M,KB,KIES,KII,NUL
-      DIMENSION PE(50),TETA(50),VT(50),ALPH(50),PHN(50),PH2(50),
+      DIMENSION modeles_PE(50),modeles_TETA(50),VT(50),ALPH(50),PHN(50),PH2(50),
      1 partit_EL(85),partit_M(85),partit_KI1(85),partit_KI2(85),P(3,85,50),ALPHL(50),
      2 atomgrade_ELEM(MAX_atomgrade_NBLEND),atomgrade_IONI(MAX_atomgrade_NBLEND),atomgrade_KIEX(MAX_atomgrade_NBLEND),
      3 atomgrade_CH(MAX_atomgrade_NBLEND),CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_GR(MAX_atomgrade_NBLEND),
      4 atomgrade_GE(MAX_atomgrade_NBLEND),POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
       DIMENSION PPH(50),PPC2(50),PN(50),PC13(50),PMG(50),
-     1 PO(50),PTI(50),PNG(50),PIG(50),pfe(50),dm(8)
+     1 PO(50),PTI(50),PNG(50),PIG(50),pfe(50)
       CHARACTER*2 TTI, CC, OO, NN, MGG
       COMMON /KAPM3/ PPH, PPC2, PN, PC13, PMG, PO, PTI, PNG, PIG, pfe
-      COMMON /CNO/ DM
 
         data KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
      1  C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
@@ -1953,46 +1810,19 @@ C
             IOPI=2
             end IF
         DO  N=1,modeles_NTOT
-        T=5040./TETA(N)
+        T=5040./modeles_TETA(N)
 
       NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
       AHNUL= H*NUL
       ALPHL(N)=EXP(-AHNUL/(KB*T))
 
         TAP = 1.-ALPHL(N)
-        TOP = 10.**(-atomgrade_KIEX(K)*TETA(N))
+        TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
         POP(K,N) = P(IOO,J,N)*TOP*TAP
 C NOXIG:
 
         IF(K .EQ. 1) POP(K,N) = TOP*TAP*P(IOO,J,N)*PO(N)/PPH(N)
 
-
-! ISSUE Can I get rid of this???
-c     C
-c       if((atomgrade_ELEM(k).eq.dm(1)).or.(atomgrade_ELEM(k).eq.dm(2))) then
-c       POP(K,N)=TOP*TAP*P(IOO,J,N)*PPC2(N)/PPH(N)
-c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(3),ioo,pop(k,n)
-c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(4),ioo,pop(k,n)
-c        end if
-c     N
-c       if((atomgrade_ELEM(k).eq.dm(3)).or.(atomgrade_ELEM(k).eq.dm(4))) then
-c     POP(K,N)=TOP*TAP*P(IOO,J,N)*PN(N)/PPH(N)
-c     end if
-c     O
-c       if((atomgrade_ELEM(k).eq.dm(5)).or.(atomgrade_ELEM(k).eq.dm(6))) then
-c        POP(K,N)=TOP*TAP*P(IOO,J,N)*PO(N)/PPH(N)
-c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(5),ioo,pop(k,n)
-c        write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(6),ioo,pop(k,n)
-c        end if
-c     Mg
-c       if(atomgrade_ELEM(k).eq.dm(7)) then
-c     POP(K,N)=TOP*TAP*P(IOO,J,N)*PMG(N)/PPH(N)
-c     end if
-c     Ti
-c       if(atomgrade_ELEM(k).eq.dm(8)) then
-c        POP(K,N)=TOP*TAP*P(IOO,J,N)*PTI(N)/PPH(N)
-c       write(48,488)atomgrade_LAMBDA(k),atomgrade_ELEM(k),dm(1),ioo,pop(k,n)
-c        end if
 
         DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
         VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
@@ -2003,7 +1833,7 @@ C                 if (N.EQ.10)  write (6,100) GH
             GH = atomgrade_CH(K) + Corch(K)*T
 C                 if (N.EQ.10) write(6, 101) GH
             END IF
-        GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*PE (N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
+        GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*modeles_PE(N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
         A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
 
 
@@ -2161,7 +1991,7 @@ C          mention is a reserved word
       REAL   modeles_NH,KAP,main_MU
       INTEGER CAVA
       DIMENSION B(0:50),  TO_TOTO(0:50)
-      DIMENSION modeles_NH(50),KAP(50),T5L(50),BBB(26),TD2(26),
+      DIMENSION modeles_NH(50),KAP(50),modeles_T5L(50),BBB(26),TD2(26),
      1  TD(6),TP(7),CD(6),CP(7),C1(13),C2(12),C3(12),
      1  TT2(6000),BB2(6000),FP2(6000),CC2(6000)
 
@@ -2588,13 +2418,13 @@ c     Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE POPUL(TETA,PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
+      SUBROUTINE POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
 C     ***calcule la pop du niv fond de l'ion pour tous les NPAR atomes de
 C     ***la table des fonctions de partition ,a tous les niv du modele
 C     ***
       DIMENSION partit_TINI(85),partit_PA(85),partit_JKMAX(85),partit_TABU(85,3,63),
-     1 partit_KI1(85),partit_KI2(85),U(3),ALISTU(63),P(3,85,50),TETA(50),
-     2 PE(50),UE(50),TT(51)
+     1 partit_KI1(85),partit_KI2(85),U(3),ALISTU(63),P(3,85,50),modeles_TETA(50),
+     2 modeles_PE(50),UE(50),TT(51)
 c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
 c           partit donnee pour 33 temperatures au plus ds la table.
       REAL KB,partit_KI1,partit_KI2
@@ -2602,8 +2432,8 @@ c           partit donnee pour 33 temperatures au plus ds la table.
       C1=4.8298E+15   ! =2 * (2*Pi*KB*ME)**1.5 / H**3
 C
       DO  N=1,modeles_NTOT
-      T=5040./TETA(N)
-      UE(N)=C1*KB*T /PE(N)*T**1.5
+      T=5040./modeles_TETA(N)
+      UE(N)=C1*KB*T /modeles_PE(N)*T**1.5
             DO  J=1,NPAR
             KMAX=partit_JKMAX(J)
             TT(1) = partit_TINI(J)
@@ -2613,25 +2443,25 @@ C
                         ALISTU(K) = partit_TABU(J,L,K)
                         END DO
 c
-                        if (teta(N).LT.TT(KMAX-1) ) then ! (inter parabolique)
-                        UUU=FT(TETA(N),KMAX,TT,ALISTU)
+                        if (modeles_TETA(N).LT.TT(KMAX-1) ) then ! (inter parabolique)
+                        UUU=FT(modeles_TETA(N),KMAX,TT,ALISTU)
                         else
 c                  interpolation lineaire entre 2 derniers pts
                         AA=(ALISTU(KMAX)-ALISTU(KMAX-1)) / partit_PA(J)
                         BB=ALISTU(KMAX-1) - AA * TT(KMAX-1)
-                        UUU= AA*Teta(N) + BB
+                        UUU= AA*modeles_TETA(N) + BB
                         end if
 c
                         U(L) = EXP(2.302585*UUU )
                   END DO   ! FIN BCLE SUR L
 C
-            X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*TETA(N))
-            TKI2= partit_KI2(J) * TETA(N)
+            X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*modeles_TETA(N))
+            TKI2= partit_KI2(J) * modeles_TETA(N)
             IF(TKI2.GE.77.)   THEN
             Y=0.
             P(3,J,N)=0.
                           ELSE
-            Y=U(3)*UE(N)/U(2)  *  10.**(-partit_KI2(J)*TETA(N))
+            Y=U(3)*UE(N)/U(2)  *  10.**(-partit_KI2(J)*modeles_TETA(N))
             P(3,J,N) =(1./U(3))*(Y/(1.+X+Y))
             END IF
 
@@ -2736,27 +2566,28 @@ c
       END
 
 
-      FUNCTION FTETA0(PG,TETA)
-C     EXTRAPOLE TETA(PG) POUR PG=0
+      FUNCTION FTETA0(modeles_PG,modeles_TETA)
+C     EXTRAPOLE modeles_TETA(modeles_PG) POUR modeles_PG=0
 c     ***TETA1 extrapolation parabolique sur les 3 derniers pts
 c     ***TETA2      "             "      sur les pts 2 3 et 4
 c     ***TETA3      "        lineaire    sur les 2 derniers pts
 c     (ici seul TETA3 est utilise)
-      REAL*4 PG(50), TETA(50), PP1(5),TT1(5),PP2(5),TT2(5)
+      REAL*4 modeles_PG(50), modeles_TETA(50), PP1(5),TT1(5),PP2(5),TT2(5)
 
 C ISSUE: it this ECRIT a flag to turn verbose on/off? If so, it is not being respected throughout!!!
 
+      ! TODO Implement this FLAG_VERBOSE, that's cool 
       LOGICAL ECRIT
       ECRIT=.FALSE.
-      PP1(1)=PG(1)
-      TT1(1)=TETA(1)
-      IF(ECRIT) write(6,*) PG(1), TETA(1)
+      PP1(1)=modeles_PG(1)
+      TT1(1)=modeles_TETA(1)
+      IF(ECRIT) write(6,*) modeles_PG(1), modeles_TETA(1)
       DO I=2,5
-      PP1(I)=PG(I)
-      PP2(I-1)=PG(I)
-      TT1(I)=TETA(I)
-      TT2(I-1)=TETA(I)
-      IF(ECRIT) write(6,*) PG(I), TETA(I)
+        PP1(I)=modeles_PG(I)
+        PP2(I-1)=modeles_PG(I)
+        TT1(I)=modeles_TETA(I)
+        TT2(I-1)=modeles_TETA(I)
+      IF(ECRIT) write(6,*) modeles_PG(I), modeles_TETA(I)
       END DO
 c     TETA1=FT(0.,5,PP1,TT1)
 c     TETA2=FT(0.,4,PP2,TT2)
@@ -2846,7 +2677,7 @@ C-------------------------------------------------------------------------------
 C Contents of pkapgeralgrade.f
 
 
-      SUBROUTINE KAPMOL(modeles_NH,TETA,modeles_NTOT)
+      SUBROUTINE KAPMOL()
 C     KAPMOL GERAL, COM MOLECULAS NA SEGUINTE ORDEM:
 C
 C     MgH,C2,CN blue,red,nir,CH AX,BX,CX,13,CO nir,modeles_NH blue,OH blue,nir,FeH,Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
@@ -2858,7 +2689,7 @@ C      CALCUL DE PNVJ ET GFM -
       PARAMETER(NM=50000,NTR=200)
       REAL*8 LMBDAM,LZERO,LFIN,LZERO1,LFIN1
       REAL modeles_NH,KB,JJ,MM,MMC
-      DIMENSION modeles_NH(50),TETA(50),PE(50),PG(50),T5L(50),PPA(50),
+      DIMENSION modeles_NH(50),modeles_TETA(50),modeles_PE(50),modeles_PG(50),modeles_T5L(50),PPA(50),
      -PPH(50),PB(50),SJ(NM),PPC2(50),PMG(50),JJ(NM),TITM(20),
      -CSC(NM),GGV(NTR),BBV(NTR),DDV(NTR),PC13(50),PO(50),PTI(50),
      6 QQV(NTR),M(NTR),TITULO(20),FACT(NTR),LN(NTR),ITRANS(NM),
@@ -2874,7 +2705,9 @@ C      CALCUL DE PNVJ ET GFM -
 
       DATA H/6.6252E-27/,C/2.997929E+10/,KB/1.38046E-16/,
      -CK/2.85474E-04/,C2/8.8525E-13/
+     
        OPEN(UNIT=12,FILE='moleculagrade.dat',STATUS='OLD')
+       
       NMOL_KAPMOL=1
       K=1
       I=1
@@ -3071,7 +2904,7 @@ C    EX.: GGV(I),I=1,2,3,4...   ITRANS=0,1,2,3....
 cpc   WRITE(6,1021) MBLEND
       RM=AM*BM/MM
       DO 4 N=1,modeles_NTOT
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UA*UB)-13.670
       PSI=10.**PSI
       DO 4 I=1,NNV
@@ -3084,18 +2917,18 @@ cpc   WRITE(6,1021) MBLEND
       BV=BBV(I)
       DV=DDV(I)
       DO 4 L=N1,MXX
-      CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+      CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      1 CRO)*(2.*JJ(L)+1.)*
-     2 EXP(H*C/KB*TETA(N)/5040.*(DV*(JJ(L)*(JJ(L)+1))**2+2.*BV))
+     2 EXP(H*C/KB*modeles_TETA(N)/5040.*(DV*(JJ(L)*(JJ(L)+1))**2+2.*BV))
     4 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
       GO TO 20
     3 DO 5 N=1,modeles_NTOT
       DO 5 L=1,MBLEND
-      CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+      CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      1      CRO)
-      UUA=UA+EXP(A0+A1*ALOG(TETA(N))+A2*(ALOG(TETA(N)))**2+A3*
-     1      (ALOG(TETA(N)))**3+A4*(ALOG(TETA(N)))**4)
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+      UUA=UA+EXP(A0+A1*ALOG(modeles_TETA(N))+A2*(ALOG(modeles_TETA(N)))**2+A3*
+     1      (ALOG(modeles_TETA(N)))**3+A4*(ALOG(modeles_TETA(N)))**4)
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UUA*UB)-13.670
       PSI=10.**PSI
     5 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
@@ -3103,25 +2936,25 @@ cpc   WRITE(6,1021) MBLEND
     6 IF(ISE.NE.0) GO TO 7
       DO 8 N=1,modeles_NTOT
       DO 8 L=1,MBLEND
-   35 CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+   35 CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      X      CRO)*
-     1    (2.*S+1)*EXP(-ALS *CK*TETA(N))/(1.+2.*COSH(ALS *CK*TETA(N)))*
+     1    (2.*S+1)*EXP(-ALS *CK*modeles_TETA(N))/(1.+2.*COSH(ALS *CK*modeles_TETA(N)))*
      2(2.*JJ(L)+1.)*
-     3       EXP(-H*C/KB*TETA(N)/5040.*(-DV*(JJ(L)*(JJ(L)+1.))**2))
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+     3       EXP(-H*C/KB*modeles_TETA(N)/5040.*(-DV*(JJ(L)*(JJ(L)+1.))**2))
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UA*UB)-13.670
       PSI=10.**PSI
     8 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
       GO TO 20
     7 DO 9 N=1,modeles_NTOT
       DO 9 L=1,MBLEND
-      CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+      CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      X      CRO)
-     1   *(2.*S+1)*EXP(-ALS *CK*TETA(N))/(1.+2.*COSH(ALS *CK*TETA(N)))
-      UUA=UA+EXP(A0+A1*ALOG(TETA(N))+A2*(ALOG(TETA(N)))**2+
-     X      A3*(ALOG(TETA
-     1(N)))**3+A4*(ALOG(TETA(N)))**4)
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+     1   *(2.*S+1)*EXP(-ALS *CK*modeles_TETA(N))/(1.+2.*COSH(ALS *CK*modeles_TETA(N)))
+      UUA=UA+EXP(A0+A1*ALOG(modeles_TETA(N))+A2*(ALOG(modeles_TETA(N)))**2+
+     X      A3*(ALOG(modeles_TETA
+     1(N)))**3+A4*(ALOG(modeles_TETA(N)))**4)
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UUA*UB)-13.670
       PSI=10.**PSI
     9 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
@@ -3129,23 +2962,23 @@ cpc   WRITE(6,1021) MBLEND
     2 IF(ISE.NE.0) GO TO 10
       DO 11 N=1,modeles_NTOT
       DO 11 L=1,MBLEND
-      CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+      CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      X      CRO)
-     1      *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+     1      *(2.*S+1)*EXP(-2*ALS*CK*modeles_TETA(N))/(1.+2.*COSH(2*ALS*CK*modeles_TETA(N)))
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UA*UB)-13.670
       PSI=10.**PSI
    11 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
       GO TO 20
    10 DO 12 N=1,modeles_NTOT
       DO 12 L=1,MBLEND
-      CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
+      CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
      X      CRO)
-     1      *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
-      UUA=UA+EXP(A0+A1*ALOG(TETA(N))+A2*(ALOG(TETA(N)))**2+
-     X      A3*(ALOG(TETA
-     1(N)))**3+A4*(ALOG(TETA(N)))**4)
-      PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
+     1      *(2.*S+1)*EXP(-2*ALS*CK*modeles_TETA(N))/(1.+2.*COSH(2*ALS*CK*modeles_TETA(N)))
+      UUA=UA+EXP(A0+A1*ALOG(modeles_TETA(N))+A2*(ALOG(modeles_TETA(N)))**2+
+     X      A3*(ALOG(modeles_TETA
+     1(N)))**3+A4*(ALOG(modeles_TETA(N)))**4)
+      PSI=D0*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UUA*UB)-13.670
       PSI=10.**PSI
    12 PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/PPH(N)
@@ -3309,7 +3142,7 @@ C-------------------------------------------------------------------------------
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       SUBROUTINE SAT4(PPH,PPC2,PN,PC13,PMG,PO,PTI,PNG,pig,pfe,IT)
 C
-      REAL  IP,KP,KPLOG,IPI,NH,NNH
+      REAL  IP,KP,KPLOG,IPI,NH
       REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
       REAL  dissoc_EPS,dissoc_SWITER, dissoc_C
       INTEGER dissoc_NIMAX, dissoc_NMETAL, dissoc_NMOL, dissoc_NATOM, dissoc_NELEM,dissoc_MMAX
@@ -3317,7 +3150,6 @@ C
      1      PO(50),PTI(50),PMG(50),PC13(50),PN(50),
      2      PNG(50),pig(50),pfe(50)
         dimension dissoc_ELEMS(18)
-      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
       COMMON /COMFH1/ dissoc_C(600,5), dissoc_NELEM(5,600), dissoc_NATOM(5,600), dissoc_MMAX(600),
      1                PPMOL(600), APMLOG(600),dissoc_MOL(600), IP(100),
      2                CCOMP(100), UIIDUI(100), COMFH1_P(100), FP(100),
@@ -3398,41 +3230,30 @@ C     STARTING VALUE OF THE SOLUTION
 C
 C*****IMPUT E
       DO 1020  ITO=1,IT
- 1023 THETA=TETA(ITO)
+ 1023 THETA=modeles_TETA(ITO)
       TEM=5040.0/THETA
- 1024 PG=PGG(ITO)
-      PGLOG=ALOG10(PG)
-      NH=NNH(ITO)
-      TO(ITO)=10.**T5L(ITO)
+ 1024 PG_LOCAL_SAT4=modeles_PG(ITO)
+      PGLOG=ALOG10(PG_LOCAL_SAT4)
+      NH = modeles_NH(ITO)
+      TO(ITO)=10.**modeles_T5L(ITO)
 C
 
-      CALL DIE(TEM,PG)
-      PE=P(99)
-      PELOG=ALOG10(PE)
-C
-C     PRINT OUT OF THE RESULTS
-C        PRINT 6300
-C     PRINT 6091,   PGLOG, PELOG,PE, THETA, TEM, TO(ITO)
-C     PRINT 6301
+      CALL DIE(TEM,PG_LOCAL_SAT4)
+      PE_LOCAL_SAT4=P(99)
+      PELOG=ALOG10(PE_LOCAL_SAT4)
+
+
       DO 1303 I=1,dissoc_NMETAL
       NELEMI=dissoc_NELEMX(I)
       FPLOG=ALOG10(FP(NELEMI))
       XP(ITO,I) = P(NELEMI)+1.0E-30
       PLOG = ALOG10( XP(ITO,I) )
       PDFPL = PLOG - FPLOG
-C     WRITE(6,6302) ELEMNT(NELEMI),NELEMI,CCLOG(NELEMI),FP(NELEMI),
-C    1FPLOG,PLOG,PDFPL
       IF(MOD(I,5)) 1303,1304,1303
  1304 CONTINUE
-C1304    PRINT 6305
  1303 CONTINUE
-C        PRINT 6307
-C     PRINT 6031, (DD(K),K=1,20)
  1231 CONTINUE
-C1231 WRITE(6,6091) PGLOG,PELOG,PE,THETA,TEM, TO(ITO)
-C     PUNCH 710,NH,THETA,PE
-C 710 FORMAT(2X,E11.5,2X,F6.4,2X,E11.5,46X)
-C        PRINT 6992
+
       IRL = 120
       DO 1184 I=1,dissoc_NMETAL
       NELEMI=dissoc_NELEMX(I)
@@ -3564,17 +3385,12 @@ C
  5011 FORMAT(A3,5X,E11.5,4E12.5,1X,I1,4(I2,I1) )
  5021 FORMAT (F10.3,E12.5,E12.6)
  5030 FORMAT(20A4)
-C
  6031 FORMAT(1H1,20A4/)
-c 6091 FORMAT (/,10X,'LOG PG =',F8.4,20X,'LOG PE =',F8.4,20X,'PE =',E13.
-c     2     6/,10X,'TETA=',F8.4,20X,'TEMP=',F8.0,20X,'T0=',E14.6/)
  6102 FORMAT(1H0, 61H ELEMENT    ATOMIC NUMBER     I.P.        G(0)   G(
      11)   LOG N/)
 
  6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
      1///)
-c 6301 FORMAT(1H0,'ELEMENT',3X,'LOG N(E)/N(H)',4X,'P(E)',6X,'LOG P(E)',2
-c     1     X,'LOG P(A)',2X,'LOG P(A)/P(E)'/)
  6302 FORMAT(1H ,1X,A4,1X,I2,4X,F10.3,1X,E11.4,2F10.3,4X,F10.3)
  6305 FORMAT(1H )
  6307 FORMAT('   P(E) 8888 FICTITIUS PRESSURE OF THE
@@ -3593,24 +3409,18 @@ c     1     X,'LOG P(A)',2X,'LOG P(A)/P(E)'/)
 C*****DIE9
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE DIE(TEM,PG)
-      REAL  IP,KP,KPLOG,IPI,NH,NNH
+      SUBROUTINE DIE(TEM,PG_LOCAL_SAT4)
+      REAL  IP,KP,KPLOG,IPI,modeles_NH
       REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
-      REAL  dissoc_EPS,dissoc_SWITER, dissoc_C
-      INTEGER dissoc_NIMAX, dissoc_NMETAL, dissoc_NMOL, dissoc_NATOM, dissoc_NELEM,dissoc_MMAX
 
-      COMMON /COM8/   NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
-      COMMON /COMFH1/ dissoc_C(600,5), dissoc_NELEM(5,600), dissoc_NATOM(5,600), dissoc_MMAX(600),
-                      PPMOL(600), APMLOG(600), dissoc_MOL(600), IP(100),
+      COMMON /COMFH1/ PPMOL(MAX_dissoc_NMOL), APMLOG(MAX_dissoc_NMOL), IP(100),
                       CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-                      dissoc_NELEMX(50), dissoc_NIMAX, dissoc_EPS, dissoc_SWITER, dissoc_NMETAL, dissoc_NMOL
 
-      CHARACTER*3 dissoc_MOL
       DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
       ECONST = 4.342945E-1
       EPSDIE=5.0E-3
       T=5040.0/TEM
-      PGLOG=ALOG10(PG)
+      PGLOG=ALOG10(PG_LOCAL_SAT4)
 C
 C     HEH=HELIUM TO HYDROGEN RATIO BY NUMBER
       HEH=CCOMP(2)/CCOMP(1)
@@ -3638,22 +3448,22 @@ C     EVALUATION OF THE IONIZATION CONSTANTS
       IF(T-0.6) 1084,1072,1072
 C
 C     PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
- 1084 PPH=SQRT(HKP *(PG/(1.0+HEH)+HKP ))-HKP
+ 1084 PPH=SQRT(HKP *(PG_LOCAL_SAT4/(1.0+HEH)+HKP ))-HKP
       PH=PPH**2/HKP
       GO TO 1102
 C
 C     PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
- 1072 IF(PG/DHH-  0.1 ) 1073,1073,1074
- 1073 PH=PG/(1.0+HEH)
+ 1072 IF(PG_LOCAL_SAT4/DHH-  0.1 ) 1073,1073,1074
+ 1073 PH=PG_LOCAL_SAT4/(1.0+HEH)
       GO TO 1102
- 1074 PH=0.5*(SQRT(DHH*(DHH+4.0*PG/(1.0+HEH)))-DHH)
+ 1074 PH=0.5*(SQRT(DHH*(DHH+4.0*PG_LOCAL_SAT4/(1.0+HEH)))-DHH)
 C
 C     EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
+C     PG_LOCAL_SAT4=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
  1102 U=(1.0+2.0*HEH)/DHH
       Q=1.0+HEH
       R=(2.0+HEH)*SQRT(HKP )
-      S=-1.0*PG
+      S=-1.0*PG_LOCAL_SAT4
       X=SQRT(PH)
       ITERAT=0
  1103 F=((U*X**2+Q)*X+R)*X+S
@@ -3662,7 +3472,7 @@ C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
       IF(ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
  1106 ITERAT=ITERAT+1
       IF(ITERAT-50) 1104,1104,1107
- 1107   PRINT 6108, TEM,PG,X,XR,PH
+ 1107   PRINT 6108, TEM,PG_LOCAL_SAT4,X,XR,PH
  6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
      1'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
       GO TO 1105
@@ -3685,7 +3495,7 @@ C     EVALUATION OF THE FICTITIOUSPRESSURE OF EACH ELEMENT
  1070 CONTINUE
 C
 C     CHECK OF INITIALIZATION
-      PE=P(99)
+      PE_LOCAL_DIE=P(99)
       IF(PH-P(1)) 1402,1402,1401
  1401 DO 1403 I=1,dissoc_NMETAL
       NELEMI=dissoc_NELEMX(I)
@@ -3699,8 +3509,8 @@ C     RUSSELL EQUATIONS
       NITER = 0
  1040 DO 1030 I =1,dissoc_NMETAL
       NELEMI = dissoc_NELEMX(I)
-      FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE)
-      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
+      FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE_LOCAL_DIE)
+      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE_LOCAL_DIE
  1030 CONTINUE
       SPNION=0.0
       DO 1041 J=1,dissoc_NMOL
@@ -3741,7 +3551,7 @@ C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
       WA(I)=ALOG10(P(NELEMI)+1.0E-30)
  2001 CONTINUE
       IMAXP1=dissoc_NMETAL+1
-      WA(IMAXP1)=ALOG10(PE+1.0E-30)
+      WA(IMAXP1)=ALOG10(PE_LOCAL_DIE+1.0E-30)
       DELTA = 0.0
       DO 1050 I=1,dissoc_NMETAL
       NELEMI = dissoc_NELEMX(I)
@@ -3761,10 +3571,10 @@ C     IONIZATION EQUILIBRIUM
       NELEMI = dissoc_NELEMX(I)
       PEREV = PEREV + KP(NELEMI)*P(NELEMI)
  1061 CONTINUE
-      PEREV=SQRT( PEREV/(1.0+SPNION/PE) )
-      DELTA = DELTA + ABS((PE-PEREV)/PE)
-      PE =(PEREV + PE )*0.5
-      P(99)=PE
+      PEREV=SQRT( PEREV/(1.0+SPNION/PE_LOCAL_DIE) )
+      DELTA = DELTA + ABS((PE_LOCAL_DIE-PEREV)/PE_LOCAL_DIE)
+      PE_LOCAL_DIE =(PEREV + PE_LOCAL_DIE )*0.5
+      P(99)=PE_LOCAL_DIE
       IF(DELTA - dissoc_EPS) 1051,1051,1052
  1052 NITER = NITER + 1
       IF(NITER-dissoc_NIMAX)1040,1040,1054

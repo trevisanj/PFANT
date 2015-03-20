@@ -26,10 +26,10 @@ C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
       ! dissoc.dat, metals part
       PARAMETER(MAX_dissoc_NMETAL=50)  ! Limit number of metal rows in dissoc.dat
 
-      INTEGER*4 dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
+      INTEGER dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
       CHARACTER*2 dissoc_ELEMS
       INTEGER dissoc__IG0, dissoc__IG1
-      REAL*8 dissoc__IP, dissoc__CCLOG
+      REAL dissoc__IP, dissoc__CCLOG
       DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
      1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
       ! JT2015 I introduced these variables, double underscore to emphasize that they
@@ -42,7 +42,7 @@ C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
       ! dissoc.dat, molecules part
       PARAMETER(MAX_dissoc_NMOL=600)  ! Limit number of molecule rows
       CHARACTER dissoc_MOL*3
-      INTEGER*4 dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
+      INTEGER dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
       DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
      1          dissoc_C(MAX_dissoc_NMOL, 5),
      2          dissoc_MMAX(MAX_dissoc_NMOL),
@@ -214,14 +214,14 @@ C     ========
 
 
 C================================================================================================================================
-C-----------------------------------------------------------------------
 C READ_MAIN(): reads file main.dat to fill variables main_*
 C
 C Original UNIT: 4
 C
 C IMPORTANT: Depends on variable dissoc_NMETAL (this variable is filled
 C            by READ_DISSOC())
-C-----------------------------------------------------------------------
+C
+
       SUBROUTINE READ_MAIN(filename)
       INTEGER UNIT_
       PARAMETER(UNIT_=4)
@@ -323,7 +323,7 @@ C          thalpha
       DO IH = 1, 10
           READ(UNIT_, '(A)') main_FILETOHY(IH)
       END DO
-*1560  FORMAT(A20)
+
 
 
       CLOSE(UNIT=UNIT_)
@@ -336,7 +336,6 @@ C          thalpha
 
 
 C================================================================================================================================
-C-----------------------------------------------------------------------
 C READ_ABONDS(): reads file abonds.dat to fill variables abonds_*
 C
 C Original UNIT: 30
@@ -348,11 +347,8 @@ C   3) absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
 C
 C The end of the file is signalled by two rows containing only "1" each at
 C column 1 and nothing else at the others
-C-----------------------------------------------------------------------
-
-
+C
 C TODO Test one row!!!
-
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ABONDS(filename)
@@ -498,7 +494,6 @@ C ISSUE: THere is no 1X
 
 
 C================================================================================================================================
-C--------------------------------------------------------------------------
 C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade__* (double underscore)
 C
 C Original UNIT: 14
@@ -517,18 +512,11 @@ C     col 5 --
 C     col 6 --
 C     col 7 --
 C     col 8 -- signals end-of-file. If "1", reading stops
-C-------------------------------------------------------------------------
-
-
+C
 C TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
 C TODO: including other reading routines!!!!!!!!!!!!!!
-
 C ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
-
 C TODO Assertions in test to see if numbers match what they are supposed to
-
-
-
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ATOMGRADE(filename)
@@ -651,7 +639,6 @@ C-------------------------------------------------------------------------
 
 
 C================================================================================================================================
-C-------------------------------------------------------------------------
 C READ_PARTIT(): reads file partit.dat to fill variables partit_*
 C
 C orig "LECTURE DES FCTS DE PARTITION"
@@ -663,7 +650,6 @@ C             stops reading
 C
 C 2) Series of rows to fill in partit_TABU(J, :, :)
 C
-C-------------------------------------------------------------------------
 
       SUBROUTINE READ_PARTIT(filename)
       INTEGER UNIT_
@@ -743,7 +729,6 @@ C-------------------------------------------------------------------------
 
 
 C================================================================================================================================
-C-------------------------------------------------------------------------
 C READ_ABSORU2(): reads file absoru2.dat to fill variables absoru2_*
 C
 C Original UNIT: 15
@@ -763,7 +748,7 @@ C
 C ISSUE: see observation below
 C Obs: as opposed to original description, CALMET was being ignored in
 C      original routine LECTUR()
-C-------------------------------------------------------------------------
+C
 
       SUBROUTINE READ_ABSORU2(filename)
       INTEGER UNIT_
@@ -883,7 +868,6 @@ C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn'
 
 
 C================================================================================================================================
-C-------------------------------------------------------------------------
 C READ_MODELE(): reads single record from file modeles.mod into
 C                 variables modeles_*
 C
@@ -892,8 +876,6 @@ C
 C orig SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
 C orig SUR LE FICHIER ACCES DIRECT
 C
-C-------------------------------------------------------------------------
-
 C Depends on main_INUM
 C ISSUE: depends on other main_* but I think not for long
 
@@ -974,4 +956,177 @@ C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt
       END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C================================================================================================================================
+C READ_FILETOH()
+C
+C orig LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
+C
+C Original UNIT: 16
+
+      SUBROUTINE READ_FILETOH(filename, LLAMBDH, TTH,
+     1                        DTOT, TTD, TAUH, DHM, DHP)
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 filename
+
+      PARAMETER(NP=7000, MAX_filetoh_JJMAX=100, MAX_filetoh_JMAX=50)
+      INTEGER D, DTOT, DHM, DHP, JJMAX
+
+
+      REAL*8 LAMBDH, LLAMBDH
+
+
+      CHARACTER TITRE*80, TTT*11
+
+
+      DIMENSION      TH(MAX_filetoh_JMAX,  MAX_modeles_NTOT)
+     +           LAMBDH(MAX_filetoh_JMAX),
+     +              TTH(MAX_filetoh_JJMAX, MAX_modeles_NTOT),
+     +          LLAMBDH(MAX_filetoh_JJMAX),
+     +             ALLH(MAX_filetoh_JJMAX),
+     +            TAUHN(MAX_filetoh_JJMAX)
+
+
+
+      DIMENSION TTD(NP), FTTH(NP), TAUH(NP, MAX_modeles_NTOT)
+
+
+      OPEN(UNIT=UNIT_,FILE=filename,STATUS='OLD')
+      READ(UNIT_,'(A80)') TITRE
+      READ(UNIT_,'(I4)') TTT
+      READ(UNIT_,'(I4)') JMAX
+      READ(UNIT_,'(5F14.3)') (LAMBDH(J),J=1,JMAX)
+      READ(UNIT_,'(5E12.4)') ((TH(J,N),J=1,JMAX),N=1,modeles_NTOT)
+
+      JJMAX = 2*JMAX-1
+      JMA1 = JMAX-1
+      DO JJ=1,JMAX
+        DEL = LAMBDH(JMAX+1-JJ)-LAMBDH(1)
+        LLAMBDH(JJ) = LAMBDH(JMAX+1-JJ)-2*DEL
+      END DO
+      DO JJ = JMAX+1,JJMAX
+        LLAMBDH(JJ) = LAMBDH(JJ-JMA1)
+      END DO
+      DO N=1,modeles_NTOT
+            DO JJ=1,JMAX
+            TTH(JJ,N)=TH(JMAX+1-JJ,N)
+            END DO
+            DO JJ=JMAX+1,JJMAX
+            TTH(JJ,N)=TH(JJ-JMA1,N)
+            END DO
+      END DO
+
+      IF config_VERBOSE THEN
+        WRITE(6,'(A80)') TITRE
+        WRITE(6,'(A11)') TTT
+        WRITE(6,'('' JMAX='',I3)') JMAX
+        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
+
+        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
+
+        DO N = 1,modeles_NTOT,5
+          WRITE(6,'('' N='',I3)') N
+          WRITE(6,'(2X,5E12.4)') (TTH(JJ,N),JJ=1,JJMAX)
+        END DO
+      END
+
+
+      DO J = 1,JJMAX
+        ALLH(J) = LLAMBDH(J)-ILZERO
+      END DO
+
+      IF config_VERBOSE THEN
+        WRITE(6, '('' ALLH(1)='',F8.3,2X,''ALLH(JJMAX)='',F8.3,2X)')
+     +        ALLH(1),ALLH(JJMAX)
+        WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
+              JJMAX, modeles_NTOT, DTOT
+      END IF
+
+      DO N = 1,modeles_NTOT
+            DO J = 1,JJMAX
+              TAUHN(J) = TTH(J,N)
+            END DO
+
+            CALL FTLIN3H(JJMAX,ALLH,TAUHN,DTOT,TTD,FTTH,DHM,DHP)
+
+            DO D = 1,DTOT
+              TAUH(D,N) = FTTH(D)
+            END DO
+      END DO
+
+      IF config_VERBOSE THEN
+        WRITE(6,'('' TAUH(1,1)='',E14.7,2X,''TAUH(1,NTOT)='',E14.7)')
+     +        TAUH(1,1), TAUH(1,modeles_NTOT)
+        WRITE(6,'('' TAUH(dtot,1)='',E14.7,2X,'
+     +        //'''TAUH(DTOT,NTOT)='',E14.7)')
+     +        TAUH(dtot,1), TAUH(DTOT,modeles_NTOT)
+      END IF
+
+      RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       END MODULE READ_FILES
+
+
+
+
+
+
+
+
