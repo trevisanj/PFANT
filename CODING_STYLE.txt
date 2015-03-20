@@ -20,3 +20,17 @@ Do NOT use common blocks! Use Fortran MODULE to declare globals!
 Data types
 ==========
 "If you must use floating point, use double precision unless you have reason to be concerned about memory use (your program uses large arrays) and you do not need much precision. Modern computers do not take significantly longer to process double precision values than they do to process reals." [1]
+
+
+Programming
+===========
+
+  Verbose
+  -------
+  Verbose is controlled by config_ALLOW_VERBOSE AND local VERBOSE (logical) variables. To switch on/off verbosing of a particular routine, do as follows:
+  
+  VERBOSE = .TRUE.  .AND. config_ALLOW_VERBOSE ! Turns local verbose on
+  VERBOSE = .FALSE. .AND. config_ALLOW_VERBOSE ! Turns local verbose off
+  
+  
+  Having these bits of verbosing code intercalated with "real" code does hinder the code reading/interpretation, so it is better to use as little verbosing code as possible.

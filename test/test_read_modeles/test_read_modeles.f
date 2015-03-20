@@ -9,6 +9,7 @@
 * modeles_DSALOG   0.00000000
 * ABS(main_TEFF-modeles_DETEF) =    2289.00000      > 1.0
 *STOP 113
+* ISSUE: Here what happened is that 5777-3488 = 2289 > 1
 * Just reminding that there was a "GO TO 9" instead of a STOP 113
 
       PROGRAM TEST_READ_PARTIT
@@ -56,7 +57,6 @@
      +      modeles_INUM
 
 
-
       WRITE(6, '(4F10.2,E15.4,5A4)') modeles_DETEF, modeles_DGLOG,
      +      modeles_DSALOG, modeles_ASALALF, modeles_NHE, modeles_TIT
       WRITE(6, '(''MODELE CALCULE AVEC LA TABLE'',A20)') modeles_TIABS
@@ -71,3 +71,4 @@
       WRITE(*, *) 'etc.....'
 
       END
+
