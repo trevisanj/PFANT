@@ -138,6 +138,9 @@ C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these vari
 C
 
 
+
+
+
       ! ISSUE: KIK never used!!!
       KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
 
@@ -3253,7 +3256,8 @@ C-------------------------------------------------------------------------------
 
 
 
-
+      
+      
 
 C-------------------------------------------------------------------------------
 C Contents of pkapgeralgrade.f
@@ -3272,7 +3276,7 @@ C      CALCUL DE PNVJ ET GFM -
       REAL*8 km_LMBDAM, LZERO, LFIN, LZERO1, LFIN1
       REAL KB,
      +     km_JJ,
-     +     MM,
+     +     km_MM,
      +     MMC
       DIMENSION PPA(50),
      +          PPH(50),
@@ -3310,7 +3314,7 @@ C      CALCUL DE PNVJ ET GFM -
 
       REAL*8 T5040
 
-      COMMON /KAPM1/ MM,MBLEND
+      COMMON /KAPM1/ km_MM,MBLEND
       COMMON /TOTAL/ MMC,MBLENQ
       COMMON /OPTIM/ LZERO,LFIN
       COMMON /KAPM2/ km_LMBDAM,GFM,PNVJ,ALARGM
@@ -3702,3 +3706,21 @@ c     1     'B(VSEC)=',E12.5)
  1020 FORMAT('  M(I)=',9(2X,I3))
  1021 FORMAT('   MBLEND=',I4)
       END
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
