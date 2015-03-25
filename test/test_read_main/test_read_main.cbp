@@ -31,11 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../../main/commons.f">
+		<Unit filename="../../main/read_files.f">
 			<Option weight="0" />
-		</Unit>
-		<Unit filename="../../main/read_main.f">
-			<Option weight="1" />
 		</Unit>
 		<Unit filename="test_read_main.f">
 			<Option weight="1" />
