@@ -4,7 +4,7 @@
 
       INTEGER, PARAMETER :: MAX_km__NUMBER=21
       
-      ! Old "MAX_LINES_PER_MOL"; ISSUE: what does "MAX_LINES_PER_MOL" stand for?
+      ! Old "NM"; ISSUE: what does "MAX_LINES_PER_MOL" stand for?
       INTEGER, PARAMETER :: MAX_LINES_PER_MOL=50000
       ! Old "NTR"; Maximum number of transitions for each molecule
       INTEGER, PARAMETER :: MAX_TRANSITIONS_PER_MOL=200
