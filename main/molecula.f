@@ -279,23 +279,6 @@ C
       IMPLICIT NONE
       
       REAL*8 LZERO,LFIN
-          
-      REAL, DIMENSION(MAX_modeles_NTOT) :: PPA, PB
-               
-      DIMENSION km_LMBDAM(MAX_LINES_PER_MOL),
-
-      REAL*8 T5040
-      
-      REAL CSC, H, C, KB, CK, C2
-
-      REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO 
-      
-
-      DATA H  /6.6252E-27/,
-     +     C  /2.997929E+10/,
-     +     KB /1.38046E-16/,
-     +     CK /2.85474E-04/,
-     +     C2 /8.8525E-13/
 
 
       ! Initializes the zero elements of the augmented matrices
@@ -308,66 +291,6 @@ C
       DO I_MOL = 1, km__NUMBER
         IF (VERBOSE) WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
      +                           km__TITULO(I_MOL)
-        
-        
-        ! TODO must be prepared to switch molecules on/off!!!
-        ! TODO use pointers instead of copying elements!!!
-        SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
-          CASE (1)  ! MgH
-            DO N = 1,modeles_NTOT
-              PPA(N)=sat4_PMG(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (2)  ! C2
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PPC2(N)
-              PB(N)=sat4_PPC2(N)
-            END DO  
-          CASE (3, 4, 5)  ! CN blue,red, nir
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PPC2(N)
-              PB(N)=sat4_PN(N)
-            END DO
-          CASE (6, 7, 8)  ! CH AX, BX, CX
-            DO  N=1,modeles_NTOT
-              PPA(N)=sat4_PPC2(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (9)  ! 13
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PC13(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (10)  ! CO nir
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PPC2(N)
-              PB(N)=sat4_PO(N)
-            END DO
-          CASE (11)  ! NH blue
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PN(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (12, 13)  ! OH blue,nir
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PO(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (14)  ! FeH
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PFE(N)
-              PB(N)=sat4_PPH(N)
-            END DO
-          CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-            DO N=1,modeles_NTOT
-              PPA(N)=sat4_PTI(N)
-              PB(N)=sat4_PO(N)
-            END DO
-        END SELECT
-        
-        
-        NNV = km__NV(I_MOL)
-        
         
         
         ! Counters starting with "J _" restart at each molecule
@@ -415,72 +338,10 @@ C
         
         km_MBLENQ(I_MOL+1) = I_LINE
         
-        ! Note: (J_SET .EQ. NNV) holds, this has been checked when the file was read already
-        
-        
-        FE  = km__FE(I_MOL)
-        DO_ = km__DO(I_MOL)
-        MM  = km__MM(I_MOL)
-        AM  = km__AM(I_MOL)
-        BM  = km__BM(I_MOL)  ! ISSUE Not used!!
-        UA  = km__UA(I_MOL)
-        UB  = km__UB(I_MOL)
-        TE  = km__TE(I_MOL)
-        CRO = km___CRO(I_MOL)
-        
-        
-        
-        !======
-        ! This part of the code calculates km_PNVL(
-        RM = AM*BM/MM
-        DO N = 1,modeles_NTOT
-          T5040 = modeles_TETA(N)/5040
-          PSI = DO_*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-
-     +          1.5*ALOG10(RM)-ALOG10(UA*UB)-13.670
-          PSI = 10.**PSI
-          DO J_SET = 1,NNV
-            ! TODO check if it is possible to have a pointer to km_LN(*, I_MOL), which may well be called "LN"
-        
-            QV = km__QQV(J_SET, I_MOL)
-            GV = km__GGV(J_SET, I_MOL)
-            BV = km__BBV(J_SET, I_MOL)
-            DV = km__DDV(J_SET, I_MOL)
-           
-            L_INI = km_LN(J_SET, I_MOL)+1
-            L_FIN = km_LN(J_SET+1, I_MOL)
-            
-            ! L is index within km_LMBDAM, km_SJ and km_JJ
-            DO L= L_INI, L_FIN
-              ! PC: default value for CSC does not exist physically
-              CSC = EXP(-H*C/KB*modeles_TETA(N)/5040.*
-     @                  (TE+GV+BV*(km_JJ(L)+1)*km_JJ(L))
-     @                 )*
-     @              (2.-CRO)*(2.*km_JJ(L)+1.)*
-     @              EXP(H*C/KB*modeles_TETA(N)/5040.*
-     @                  (DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV)
-     @                 )
-        
-              km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-            END DO
-            
-            
-            ! Takes advantage of current J_SET loop so it is not necessary to create 
-            ! another double loop as in the original KAPMOL to calculate km_GFM
-            IF (N .EQ. 1) THEN
-              ! Because GFM does not depend on N, runs this part just once, when N is 1.
-              FACTO = km__FACT(J_SET, I_MOL)
-              km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*km_FE*QV*
-     @                    km_SJ(L)*FACTO
-            END IF
-          END DO
-        END DO
+        ! Note: (J_SET .EQ. km__NV(I_MOL)) should hold: this has been checked when the file was read already
       END DO !--end of I_MOL loop--!     
 
       km_MBLEND = I_LINE
-      
-      DO L = 1,km_MBLEND
-        km_ALARGM(L) = 0.1
-      END DO
       
       RETURN
       
@@ -494,22 +355,15 @@ C===============================================================================
 C USE_MOLECULAGRADE(): uses km_* filled by FILTER_MOLECULAGRADE() to perform its calculations
 C
 
-      SUBROUTINE FILTER_MOLECULAGRADE()
+      SUBROUTINE USE_MOLECULAGRADE()
       IMPLICIT NONE
-      
-      
-      REAL*8 km_LMBDAM, 
-     
+
+      ! TODO see if I can use pointers
       REAL, DIMENSION(MAX_modeles_NTOT) :: PPA, PB
                
-      DIMENSION km_LMBDAM(MAX_LINES_PER_MOL),
-
       REAL*8 T5040
-      
       REAL CSC, H, C, KB, CK, C2
-
       REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO 
-      
 
       DATA H  /6.6252E-27/,
      +     C  /2.997929E+10/,
@@ -518,13 +372,6 @@ C
      +     C2 /8.8525E-13/
 
 
-      ! Initializes the zero elements of the augmented matrices
-      km_MBLENQ(1) = 0
-      DO I = 1, MAX_km__NUMBER
-        km_LN(1, I) = 0
-      END DO
-
-      I_LINE = 0  ! Current spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
       DO I_MOL = 1, km__NUMBER
         IF (VERBOSE) WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
      +                           km__TITULO(I_MOL)
@@ -588,56 +435,6 @@ C
         
         NNV = km__NV(I_MOL)
         
-        
-        
-        ! Counters starting with "J _" restart at each molecule
-        J_SET = 0   ! Current "transition"/"set of spectral lines" ISSUE: is the concept correct?
-        FLAG_IN = .FALSE.  ! Whether has filtered in at least one line 
-        DO J_LAMBDA = 1, km__N_LAMBDA(I_MOL)  ! Points to first dimension within km__LMBDAM, km__SJ, km__JJ
-          !~READ(12,*) km_LMBDAM(L),SJ(L),JJ(L), km_IZ, km_NUMLIN
-          LAMBDA = km__LMBDAM(J_LAMBDA, I_MOL)
-          NUMLIN = km__NUMLIN(J_LAMBDA, I_MOL)
-          
-          IF ((LAMBDA .GE. LZERO) .AND. (LAMBDA .LE. LFIN)) THEN
-            ! Filters in a new spectral line!
-            I_LINE = I_LINE+1
-            
-            km_LMBDAM(I_LINE) = LAMBDA
-            km_SJ(I_LINE) = km__SJ(J_LAMBDA, I_MOL)
-            km_JJ(I_LINE) = km__JJ(J_LAMBDA, I_MOL)
-            
-            FLAG_IN = .TRUE.
-          END IF
-            
-          IF (NUMLIN .NE. 0) THEN
-            ! Reached last line of current set of lines
-        
-            ! ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
-            IF (.NOT. FLAG_IN) THEN
-              ! TODO, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
-        
-        
-              !--error checking--!
-              ! TODO test this error
-              WRITE (*, *) 'USE_MOLECULAGRADE(): Molecule ', I_MOL, 
-     +            ' titled  "', km__TITULO(I_MOL), '"'
-              WRITE (*, *) 'Set of lines ', (J_SET+1), 'has no lambda '
-     +            //'within ', LZERO, ' <= lambda <= ', LFIN
-              WRITE (*, *) 'The algorithm is not prepared for this, '
-                  //'sorry!'
-              STOP ERROR_BAD_VALUE
-            END IF
-              
-            J_SET = J_SET+1           
-            km_LN(J_SET+1, I_MOL) = I_LINE
-          END IF
-        END DO
-        
-        km_MBLENQ(I_MOL+1) = I_LINE
-        
-        ! Note: (J_SET .EQ. NNV) holds, this has been checked when the file was read already
-        
-        
         FE  = km__FE(I_MOL)
         DO_ = km__DO(I_MOL)
         MM  = km__MM(I_MOL)
@@ -649,14 +446,13 @@ C
         CRO = km___CRO(I_MOL)
         
         
-        
         !======
         ! This part of the code calculates km_PNVL(
         RM = AM*BM/MM
         DO N = 1,modeles_NTOT
           T5040 = modeles_TETA(N)/5040
           PSI = DO_*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-
-     +          1.5*ALOG10(RM)-ALOG10(UA*UB)-13.670
+     @          1.5*ALOG10(RM)-ALOG10(UA*UB)-13.670
           PSI = 10.**PSI
           DO J_SET = 1,NNV
             ! TODO check if it is possible to have a pointer to km_LN(*, I_MOL), which may well be called "LN"
@@ -696,8 +492,6 @@ C
         END DO
       END DO !--end of I_MOL loop--!     
 
-      km_MBLEND = I_LINE
-      
       DO L = 1,km_MBLEND
         km_ALARGM(L) = 0.1
       END DO
