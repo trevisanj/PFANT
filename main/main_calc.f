@@ -1594,7 +1594,9 @@ C     IF(.NOT.main_ECRIT) GO TO 10
 
 
 
+
 C-------------------------------------------------------------------------------
+! ISSUE with variable MM
       SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,
      1 GFAL,atomgrade_ZINF,ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,
      2 modeles_NTOT,modeles_NH,modeles_TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
@@ -1680,6 +1682,7 @@ C     molecule
             else
             
          ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+         ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
          DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
          VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
          PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
@@ -1793,65 +1796,61 @@ C     ***le "A" utilise dans le calcul de H(A,V)
       C5= 2.*PI* (3.*PI**2/2.44)**0.4
 C     C6=4 * Pi * C
 c
-        DO  K=1,atomgrade_NBLEND
-            corch(k)=0.
-            CVdW(K)=0
-                DO  J=1,NPAR
-                IF(partit_EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
-                END DO
+      DO  K=1,atomgrade_NBLEND
+        corch(k)=0.
+        CVdW(K)=0
+        DO  J=1,NPAR
+          IF(partit_EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
+        END DO
         WRITE(6,104) atomgrade_ELEM(K)
         STOP
+        
 15      IOO=atomgrade_IONI(K)
 C
-            write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
-                IF(atomgrade_CH(K).LT.1.E-37)  THEN
-                KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
-                IF(IOO.EQ.1)   KII=partit_KI1(J)
-                IF(IOO.EQ.2)   KII=partit_KI2(J)
-                        IF(CORCH(K).LT.1.E-37)   THEN
-                        CORCH(K)=0.67 * atomgrade_KIEX(K) +1
-                        END IF   ! FIN DE IF CORCH(K)=0
+        write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
+        IF(atomgrade_CH(K).LT.1.E-37)  THEN
+          KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
+          IF(IOO.EQ.1)   KII=partit_KI1(J)
+          IF(IOO.EQ.2)   KII=partit_KI2(J)
+          IF(CORCH(K).LT.1.E-37)   THEN
+            CORCH(K)=0.67 * atomgrade_KIEX(K) +1
+          END IF   ! FIN DE IF CORCH(K)=0
 C               WRITE(6,125)  atomgrade_LAMBDA(K), CORCH(K)
-                CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
-            atomgrade_CH(K)= CVdW(K) * CORCH(K)
-                END IF  ! FIN DE IF atomgrade_CH=0.
+          CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
+          atomgrade_CH(K)= CVdW(K) * CORCH(K)
+        END IF  ! FIN DE IF atomgrade_CH=0.
 
 C
-            IF(atomgrade_CH(K) .LT. 1.E-20) then
-            IOPI=1
-            else
-            IOPI=2
-            end IF
+        IF(atomgrade_CH(K) .LT. 1.E-20) THEN 
+          IOPI=1
+        ELSE
+          IOPI=2
+        END IF
+        
         DO  N=1,modeles_NTOT
-        T=5040./modeles_TETA(N)
+          T=5040./modeles_TETA(N)
+          NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
+          AHNUL= H*NUL
+          ALPHL(N)=EXP(-AHNUL/(KB*T))
 
-      NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
-      AHNUL= H*NUL
-      ALPHL(N)=EXP(-AHNUL/(KB*T))
-
-        TAP = 1.-ALPHL(N)
-        TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
-        POP(K,N) = P(IOO,J,N)*TOP*TAP
-C NOXIG:
-
-        IF(K .EQ. 1) POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
-
-
-        DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
-        VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
-            IF (IOPI.EQ.1)  then
-            GH   =C5*atomgrade_CH(K)**0.4*VREL   **0.6
+          TAP = 1.-ALPHL(N)
+          TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
+          POP(K,N) = P(IOO,J,N)*TOP*TAP
+C NOXIG: ISSUE what does it mean?
+          IF(K .EQ. 1) POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
+          DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
+          VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
+          IF (IOPI.EQ.1) THEN
+            GH = C5*atomgrade_CH(K)**0.4*VREL**0.6
 C                 if (N.EQ.10)  write (6,100) GH
-            else
+          ELSE
             GH = atomgrade_CH(K) + Corch(K)*T
 C                 if (N.EQ.10) write(6, 101) GH
-            END IF
-        GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*modeles_PE(N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
-        A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
-
-
+          END IF
+          GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*modeles_PE(N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
+          A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
         END DO    !FIN BCLE SUR N
-        END DO    !FIN BCLE SUR K
+      END DO    !FIN BCLE SUR K
 C
  100  FORMAT(' GamH AU 1Oeme Niv du modele:', E15.3)
  101  FORMAT(' GamH au 10eme Niv du modele:', E15.3,'  Spielfieldel')
@@ -3246,489 +3245,6 @@ C-------------------------------------------------------------------------------
 
    
       
-C================================================================================================================================
-C USE_MOLECULAGRADE(): sweeps km__* to perform various calculations
-C                      depending on the interval LZERO-LFIN
-C
-
-      SUBROUTINE USE_MOLECULAGRADE(LZERO, LFIN)
-      IMPLICIT NONE
-C     KAPMOL GERAL, COM MOLECULAS NA SEGUINTE ORDEM:
-C
-C     MgH,C2,CN blue,red,nir,CH AX,BX,CX,13,CO nir,modeles_NH blue,OH blue,nir,FeH,Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-C     Todos os formatos foram transferidos para o final do arquivo.
-C     Os labels das moleculas foram modificados para contarem sequencialmente a partir de 100.
-c
-c
-      
-      REAL*8 LZERO,LFIN, LZERO1, LFIN1
-      
-      REAL*8 km_LMBDAM, 
-      REAL KB,
-     +     SJ, JJ
-     +     km_MM
-     
-      DIMENSION PPA(MAX_modeles_NTOT),
-     +          PB(MAX_modeles_NTOT),
-     +          SJ(MAX_LINES_PER_MOL),
-     +          JJ(MAX_LINES_PER_MOL),
-     +          CSC(MAX_LINES_PER_MOL),
-     +          km_GGV(MAX_TRANSITIONS_PER_MOL),
-     +          km_BBV(MAX_TRANSITIONS_PER_MOL),
-     +          km_DDV(MAX_TRANSITIONS_PER_MOL),
-     +          km_QQV(MAX_TRANSITIONS_PER_MOL),
-     +          km_FACT(MAX_TRANSITIONS_PER_MOL),
-     +          LN(MAX_TRANSITIONS_PER_MOL),
-     +          ITRANS(MAX_LINES_PER_MOL),
-     
-     
-      !------
-      ! These two arrays contain indexes pointing at km_LMBDAM, SJ, and JJ
-      !------
-      ! This one points to the last index of the lines of each molecule within 
-      ! km_LMBDAM, SJ and JJ (after the filtering)
-      DIMENSION MBLENQ(MAX_km__NUMBER) 
-      ! This is similar but is a "local" one, it contains index of the last 
-      ! line of each set of lines within km_LMBDAM, SJ and JJ
-      ! **for the current molecule** I_MOL
-      DIMENSION LN(MAX_TRANSITIONS_PER_MOL) 
-           
-      
-      INTEGER, DIMENSION(MAX_TRANSITIONS_PER_MOL) :: km_NV
-
-      DIMENSION km_LMBDAM(MAX_LINES_PER_MOL),
-     +          km_GFM(MAX_LINES_PER_MOL),
-     +          km_PNVJ(MAX_LINES_PER_MOL,50),
-     +          km_ALARGM(MAX_LINES_PER_MOL)
-
-
-      REAL*8 T5040
-
-      COMMON /KAPM1/ km_MM,km_MBLEND
-      COMMON /KAPM2/ km_LMBDAM,km_GFM,km_PNVJ,km_ALARGM
-
-
-      DATA H  /6.6252E-27/,
-     +     C  /2.997929E+10/,
-     +     KB /1.38046E-16/,
-     +     CK /2.85474E-04/,
-     +     C2 /8.8525E-13/
-
-      OPEN(UNIT=12,FILE='moleculagrade.dat',STATUS='OLD')
-
-
-      ! Counters starting with "I_" keep increasing
-      I_MOL = 1
-      I = 1
-
-
-      I_LINE = 0  ! Current spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
-
-      L = 1
-
-996   CONTINUE  !--start of main loop--!
-
-      IF (VERBOSE) WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
-     +                         km__TITULO(I_MOL)
-
-      SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
-        CASE (1)  ! MgH
-          DO N = 1,modeles_NTOT
-            PPA(N)=sat4_PMG(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (2)  ! C2
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PPC2(N)
-            PB(N)=sat4_PPC2(N)
-          END DO  
-        CASE (3, 4, 5)  ! CN blue,red, nir
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PPC2(N)
-            PB(N)=sat4_PN(N)
-          END DO
-        CASE (6, 7, 8)  ! CH AX, BX, CX
-          DO  N=1,modeles_NTOT
-            PPA(N)=sat4_PPC2(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (9)  ! 13
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PC13(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (10)  ! CO nir
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PPC2(N)
-            PB(N)=sat4_PO(N)
-          END DO
-        CASE (11)  ! NH blue
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PN(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (12, 13)  ! OH blue,nir
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PO(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (14)  ! FeH
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PFE(N)
-            PB(N)=sat4_PPH(N)
-          END DO
-        CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-          DO N=1,modeles_NTOT
-            PPA(N)=sat4_PTI(N)
-            PB(N)=sat4_PO(N)
-          END DO
-        CASE DEFAULT
-          GO TO 23  !subroutine exit!
-      END SELECT
-
-
-!~  999 READ(12,*) km_FE,km_DO,km_MM,km_AM,km_BM,km_UA,km_UB,km_TE,km_CRO
-!~cpc      WRITE(6,63) km_FE,km_TE,km_CRO,km_DO
-!~      READ(12,52) km_ISE,km_A0,km_A1,km_A2,km_A3,km_A4,km_ALS
-!~      NNV=km_NV(J)
-!~      READ(12,*) km_S
-!~      READ(12,*) (km_QQV(I),I=1,NNV)
-!~cpc   WRITE(6,*) (km_QQV(I),I=1,NNV)
-!~      READ(12,*) (km_GGV(I),I=1,NNV)
-!~cpc   WRITE(6,*) (km_GGV(I),I=1,NNV)
-!~      READ(12,*) (km_BBV(I),I=1,NNV)
-!~cpc   WRITE(6,*) (km_BBV(I),I=1,NNV)
-!~      READ(12,*) (km_DDV(I),I=1,NNV)
-!~      DO I = 1,NNV
-!~        km_DDV(I)=1.E-6*km_DDV(I)
-!~      END DO
-!~cpc   WRITE(6,*) (km_DDV(I),I=1,NNV)
-!~      READ(12,*) (km_FACT(I),I=1,NNV)
-
-
-      NNV = km__NV(I_MOL)
-
-
-      !~IF(I_MOL .EQ. 1) THEN
-      !~  L = 1
-      !~ELSE
-      !~  L = MBLENQ(I_MOL-1)+1
-      !~END IF
-
-
-      ! Counters starting with "J _" restart at each molecule
-      J_SET = 0   ! Current "transition"/"set of spectral lines" ISSUE: is the concept correct?
-      FLAG_IN = .FALSE.  ! Whether has filtered in at least one line 
-      DO J_LAMBDA = 1, km__N_LAMBDA(I_MOL)  ! Points to first dimension within km__LMBDAM, km__SJ, km__JJ
-        !~READ(12,*) km_LMBDAM(L),SJ(L),JJ(L), km_IZ, km_NUMLIN
-        LAMBDA = km__LMBDAM(J_LAMBDA, I_MOL)
-        NUMLIN = km__NUMLIN(J_LAMBDA, I_MOL)
-        
-        IF ((LAMBDA .GE. LZERO) .AND. (LAMBDA .LE. LFIN)) THEN
-          ! Filters in a new spectral line!
-          I_LINE = I_LINE+1
-          
-          km_LMBDAM(I_LINE) = LAMBDA
-          SJ(I_LINE) = km__SJ(J_LAMBDA, I_MOL)
-          JJ(I_LINE) = km__JJ(J_LAMBDA, I_MOL)
-          
-          FLAG_IN = .TRUE.
-        END IF
-          
-        IF (km_NUMLIN .NE. 0) THEN
-            ! ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
-            IF (.NOT. FLAG_IN) THEN
-              !--error checking--!
-              ! TODO test this error
-              WRITE (*, *) 'USE_MOLECULAGRADE(): Molecule ', I_MOL, 
-     +          ' titled  "', km__TITULO(I_MOL), '"'
-              WRITE (*, *) 'Set of lines ', (J_SET+1), 'has no lambda '
-     +          //'within ', LZERO, ' <= lambda <= ', LFIN
-              WRITE (*, *) 'The algorithm is not prepared for this, '
-                //'sorry!'
-              STOP ERROR_BAD_VALUE
-            END IF
-            
-            ! Reached last line of current set of lines
-            J_SET = J_SET+1           
-            LN(J_SET) = I_LINE
-!~            GO TO 14
-!~          ELSE
-!~            I_LINE=I_LINE+1
-!~            CYCLE
-!~          END IF
-!~        ELSE
-!~          IF(km_NUMLIN .EQ. 9) THEN
-!~            GO TO 16
-!~          ELSEIF IF(km_NUMLIN .NE. 0) THEN
-!~            GO TO 14
-!~          ELSE
-!~            CYCLE
-!~          END IF
-!~        END IF
-!~   
-!~      
-!~14      IF(km_NUMLIN .EQ. 9) THEN
-!~          GO TO 16
-!~        ELSE  
-!~          LN(I) = I_LINE
-!~          I = I+1
-!~          I_LINE = I_LINE+1
-!~          CYCLE
-        END IF
-      
-16      km_MBLEND = I_LINE
-        MBLENQ(I_MOL) = I_LINE
-        LN(I)     = I_LINE
-        I         = I+1
-        I_LINE         = I_LINE+1
-        EXIT
-      END DO
-      
-      ! Note: (J_SET .EQ. NNV) holds, this has been checked when the file was read already
-      
-      
-      
-      
-      
-
-cpc   WRITE(6,1021) km_MBLEND
-
-
-    ! ISSUE It seems that labels 3, 6, 7, 10 are never accessed
-
-      RM = km_AM*km_BM/km_MM
-      DO 4 N=1,modeles_NTOT
-        T5040 = modeles_TETA(N)/5040
-        PSI = km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-
-     +        1.5*ALOG10(RM)-ALOG10(km_UA*km_UB)-13.670
-        PSI = 10.**PSI
-        DO 4 J_SET = 1,NNV
-          MXX = LN(J_SET)  ! Final index for "L"
-          
-          ! Determines initial index for "L"
-          IF ((J_SET .EQ. 1)) THEN
-            IF (I_MOL .EQ. 1)) THEN
-              N1 = 1
-            ELSE 
-              N1 = MBLENQ(I_MOL-1)+1
-            END IF
-          ELSE
-            N1 = LN(J_SET-1)+1
-          ELSE
-
-          QV = km_QQV(I)
-          GV = km_GGV(I)
-          BV = km_BBV(I)
-          DV = km_DDV(I)
-          DO 4 L= N1,MXX
-            CSC(L)=
-     @ EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*
-     @ (2.-km_CRO)*(2.*JJ(L)+1.)*
-     @ EXP(H*C/KB*modeles_TETA(N)/5040.*(DV*(JJ(L)*(JJ(L)+1))**2+2.*BV))
-4           km_PNVJ(L,N) = CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-
-
-
-
-    !~3 DO 5 N=1,modeles_NTOT
-    !~    T5040 = modeles_TETA(N)/5040
-    !~    DO 5 L=1,km_MBLEND
-    !~      CSC(L) = EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-    !~ @      km_CRO)
-    !~      UUA = km_UA+EXP(km_A0+km_A1*ALOG(modeles_TETA(N))+km_A2*(ALOG(modeles_TETA(N)))**2+km_A3*
-    !~ @      (ALOG(modeles_TETA(N)))**3+km_A4*(ALOG(modeles_TETA(N)))**4)
-    !~      PSI = km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
-    !~ @ (UUA*km_UB)-13.670
-    !~      PSI=10.**PSI
-    !~5     km_PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-    !~  GO TO 20
-
-
-!~    6 IF(km_ISE .NE. 0) GO TO 7
-!~      DO 8 N=1,modeles_NTOT
-!~        T5040 = modeles_TETA(N)/5040
-!~        DO 8 L=1,km_MBLEND
-!~   35     CSC(L) = EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-!~     @ km_CRO)*
-!~     @    (2.*km_S+1)*EXP(-km_ALS *CK*modeles_TETA(N))/(1.+2.*COSH(km_ALS *CK*modeles_TETA(N)))*
-!~     @ (2.*JJ(L)+1.)*
-!~     @       EXP(-H*C/KB*modeles_TETA(N)/5040.*(-DV*(JJ(L)*(JJ(L)+1.))**2))
-!~
-!~          PSI = km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
-!~     @(km_UA*km_UB)-13.670
-!~          PSI = 10.**PSI
-!~    8 km_PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-!~      GO TO 20
-
-
-!~    7 DO 9 N=1,modeles_NTOT
-!~        DO 9 L=1,km_MBLEND
-!~          CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-!~     @ km_CRO)
-!~     @ *(2.*km_S+1)*EXP(-km_ALS *CK*modeles_TETA(N))/(1.+2.*COSH(km_ALS *CK*modeles_TETA(N)))
-!~          UUA = km_UA+EXP(km_A0+km_A1*ALOG(modeles_TETA(N))+km_A2*(ALOG(modeles_TETA(N)))**2+
-!~     @      km_A3*(ALOG(modeles_TETA
-!~     @ (N)))**3+km_A4*(ALOG(modeles_TETA(N)))**4)
-!~
-!~          PSI = km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
-!~     @ (UUA*km_UB)-13.670
-!~          PSI = 10.**PSI
-!~    9     km_PNVJ(L,N) = CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-!~      GO TO 20
-
-
-!~    2 IF (km_ISE .NE. 0) GO TO 10
-!~      DO 11 N=1,modeles_NTOT
-!~        DO 11 L=1,km_MBLEND
-!~          CSC(L) = EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-!~     @      km_CRO)
-!~     @      *(2.*km_S+1)*EXP(-2*km_ALS*CK*modeles_TETA(N))/(1.+2.*COSH(2*km_ALS*CK*modeles_TETA(N)))
-!~
-!~          PSI=km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
-!~     @(km_UA*km_UB)-13.670
-!~          PSI=10.**PSI
-!~   11     km_PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-!~      GO TO 20
-
-
-   !~10 DO 12 N=1,modeles_NTOT
-   !~     DO 12 L=1,km_MBLEND
-   !~       CSC(L)=EXP(-H*C/KB*modeles_TETA(N)/5040.*(km_TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-   !~  @ km_CRO)
-   !~  @ *(2.*km_S+1)*EXP(-2*km_ALS*CK*modeles_TETA(N))/(1.+2.*COSH(2*km_ALS*CK*modeles_TETA(N)))
-   !~       UUA = km_UA+EXP(km_A0+km_A1*ALOG(modeles_TETA(N))+km_A2*(ALOG(modeles_TETA(N)))**2+
-   !~  @ km_A3*(ALOG(modeles_TETA
-   !~  @ (N)))**3+km_A4*(ALOG(modeles_TETA(N)))**4)
-   !~       PSI = km_DO*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-ALOG10
-   !~  @ (UUA*km_UB)-13.670
-   !~       PSI=10.**PSI
-   !~12     km_PNVJ(L,N)=CSC(L)*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-
-
-
-
-
-      IF(I_MOL .GT. 1) THEN
-        L = MBLENQ(I_MOL-1)+1
-      ELSE
-        L = 1
-      END IF
-
-      I = 1
-   40 CONTINUE  ! LL = ITRANS(L) ! ISSUE Not used (and absent from file)!!
-      QV = km_QQV(I)
-      FACTO = km_FACT(I)
-   21 km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*km_FE*QV*SJ(L)*FACTO
-      IF(L .EQ. km_MBLEND) GO TO 24
-      IF(L .EQ. LN(I)) GO TO 29
-      L = L+1
-      GO TO 21
-
-   29 I = I+1
-      L = L+1
-      GO TO 40
-      
-   24 L = L+1
-      IF (I_MOL .LT. km_NUMBER) GO TO 994
-      GO TO 23  !subroutine exit!
-      
-  994 I_MOL = I_MOL+1
-      
-      GO TO 996 !--end of main loop--!
-
-
-
-23    CONTINUE
-      DO L = 1,km_MBLEND
-        km_ALARGM(L)=0.1
-      REWIND 12
-      RETURN
-
-
-
-   50 FORMAT(7E11.4)
-   51 FORMAT(F9.3,F7.3,F5.1,F5.2,I2,10X,I2,5X,I1)
-   52 FORMAT(2X,I3,5F10.6,10X,F6.3)
-   57 FORMAT(3X,'L',8X,'LAMBDA',10X,'SJ',10X,'GFM')
-   58 FORMAT(I4,2X,2F12.3,2X,E12.3)
-   59 FORMAT(10E12.3)
-   60 FORMAT(3F10.3,3E10.3)
-   61 FORMAT(20A4)
-   62 FORMAT(E12.3,4F5.2,12X,2E10.3,E12.5,F3.0)
-   63 FORMAT(20X,'FEL=',E10.3,2X,'TE=',E12.5,2X,'CRO=',F3.0,4X,'D0=',
-     1F8.3)
-c   64 FORMAT(20X,'FRANCK-CONDON=',F7.4,2X,'G(VSEC)=',E12.5,2X,
-c     1     'B(VSEC)=',E12.5)
-  300 FORMAT(7E11.4)
-  500 FORMAT('   BIZARRE, BIZARRE')
-  590 FORMAT(I3,2E10.3,2F6.3,F10.3)
-  777 FORMAT(20A4)
-  800 FORMAT('    NUMBER=',I3)
- 1001 FORMAT('     NV=',10I5)
- 1021 FORMAT('   MBLEND=',I4)
-      END
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-      END MODULE MOLECULA
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,14 +1,5 @@
       MODULE READ_FILES
 
-      ! ERROR_EXCEEDED: Error code if any array index blow maximum number of elements
-      !                 allowed while reading from file.
-      ! ERROR_NOT_FOUND: When value from somewhere selects something that does not exist
-      !                  (example in READ_MODELES()).
-      ! ERROR_BAD_VALUE: generic error for bad value found inside file
-      INTEGER ERROR_EXCEEDED, ERROR_NOT_FOUND, ERROR_BAD_VALUE
-      PARAMETER(ERROR_EXCEEDED=111, ERROR_NOT_FOUND=112,
-     +           ERROR_BAD_VALUE=113)
-
 
 C Variables filled by READ_DISSOC() (file dissoc.dat)
 C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
@@ -223,9 +214,11 @@ C            by READ_DISSOC())
 C
 
       SUBROUTINE READ_MAIN(filename)
+      IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=4)
       CHARACTER*256 filename
+      INTEGER IH, I
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -352,10 +345,12 @@ C TODO Test one row!!!
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ABONDS(filename)
+      IMPLICIT NONE
       INTEGER UNIT_
       INTEGER FINAB
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
+      INTEGER J
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -520,6 +515,8 @@ C TODO Assertions in test to see if numbers match what they are supposed to
 C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ATOMGRADE(filename)
+      USE ERRORS
+      IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
@@ -596,6 +593,7 @@ C
 C Populates variables atomgrade_* (single underscore)
 C-------------------------------------------------------------------------
       SUBROUTINE FILTER_ATOMGRADE(LZERO, LFIN)
+      USE ERRORS
       REAL*8 LZERO, LFIN
 
       K = 0
@@ -652,11 +650,13 @@ C 2) Series of rows to fill in partit_TABU(J, :, :)
 C
 
       SUBROUTINE READ_PARTIT(filename)
+      USE ERRORS
+      IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
 
-      INTEGER FINPAR, J
+      INTEGER FINPAR, J, KMAX, L, K
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -751,12 +751,14 @@ C      original routine LECTUR()
 C
 
       SUBROUTINE READ_ABSORU2(filename)
+      USE ERRORS
+      IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
 
       CHARACTER*3 NEANT
-      INTEGER NION
+      INTEGER NION, I, ITH, J, NRR, NSET
 
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
@@ -842,7 +844,7 @@ C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn'
       END IF
 
 
-      ! orig NUMSET=NBR.DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
+      ! orig NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
       ! orig POUR H,HE ET HE+
       ! orig PREMIERE LISTE POUR TH.LE.0.8  ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
       DO ITH = 1,2
@@ -880,9 +882,14 @@ C Depends on main_INUM
 C ISSUE: depends on other main_* but I think not for long
 
       SUBROUTINE READ_MODELE(filename)
+      USE ERRORS
+      IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
+      REAL*8 DDT, DDG, DDAB
+      INTEGER I,
+     +         ID_   ! TODO This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
 
 
       OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD',
@@ -890,12 +897,16 @@ C ISSUE: depends on other main_* but I think not for long
 
       ID_ = 1
 
+
+      ! TODO better to give error if main_INUM is not set
+      ! TODO Check if FORTRAN initializes variables to zero automatically: can I rely on this??
+      ! TODO Maybe implement variable main_FLAG to FLAG that main.dat has been read already
       IF (main_INUM .GT. 0) ID_ = main_INUM  ! Selects record number
 
 C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
 
 
-9     READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG,
+      READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG,
      +      modeles_DSALOG, modeles_ASALALF, modeles_NHE, modeles_TIT,
      +      modeles_TIABS
       IF (modeles_NTOT .EQ. 9999) THEN
@@ -924,9 +935,9 @@ C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt
       DDG = ABS(main_GLOG-modeles_DGLOG)
       DDAB = ABS(main_ASALOG-modeles_DSALOG)
 
-      ! ISSUE: Variable DNHE does not exist!!! Anyway, it is not used
-      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
-      DDHE= ABS(modeles_NHE-DNHE)
+*      ! ISSUE: Variable DNHE does not exist!!! Anyway, it is not used
+*      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
+*      DDHE= ABS(modeles_NHE-DNHE)
 
       ! ISSUE: I don't get this; it will keep looping forever???
       IF(DDT .GT. 1.0) THEN
@@ -989,122 +1000,126 @@ C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt
 
 
 
-
-
-C================================================================================================================================
-C READ_FILETOH()
-C
-C orig LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
-C
-C Original UNIT: 16
-
-      SUBROUTINE READ_FILETOH(filename, LLAMBDH, TTH,
-     1                        DTOT, TTD, TAUH, DHM, DHP)
-      INTEGER UNIT_
-      PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
-
-      PARAMETER(NP=7000, MAX_filetoh_JJMAX=100, MAX_filetoh_JMAX=50)
-      INTEGER D, DTOT, DHM, DHP, JJMAX
-
-
-      REAL*8 LAMBDH, LLAMBDH
-
-
-      CHARACTER TITRE*80, TTT*11
-
-
-      DIMENSION      TH(MAX_filetoh_JMAX,  MAX_modeles_NTOT)
-     +           LAMBDH(MAX_filetoh_JMAX),
-     +              TTH(MAX_filetoh_JJMAX, MAX_modeles_NTOT),
-     +          LLAMBDH(MAX_filetoh_JJMAX),
-     +             ALLH(MAX_filetoh_JJMAX),
-     +            TAUHN(MAX_filetoh_JJMAX)
-
-
-
-      DIMENSION TTD(NP), FTTH(NP), TAUH(NP, MAX_modeles_NTOT)
-
-
-      OPEN(UNIT=UNIT_,FILE=filename,STATUS='OLD')
-      READ(UNIT_,'(A80)') TITRE
-      READ(UNIT_,'(I4)') TTT
-      READ(UNIT_,'(I4)') JMAX
-      READ(UNIT_,'(5F14.3)') (LAMBDH(J),J=1,JMAX)
-      READ(UNIT_,'(5E12.4)') ((TH(J,N),J=1,JMAX),N=1,modeles_NTOT)
-
-      JJMAX = 2*JMAX-1
-      JMA1 = JMAX-1
-      DO JJ=1,JMAX
-        DEL = LAMBDH(JMAX+1-JJ)-LAMBDH(1)
-        LLAMBDH(JJ) = LAMBDH(JMAX+1-JJ)-2*DEL
-      END DO
-      DO JJ = JMAX+1,JJMAX
-        LLAMBDH(JJ) = LAMBDH(JJ-JMA1)
-      END DO
-      DO N=1,modeles_NTOT
-            DO JJ=1,JMAX
-            TTH(JJ,N)=TH(JMAX+1-JJ,N)
-            END DO
-            DO JJ=JMAX+1,JJMAX
-            TTH(JJ,N)=TH(JJ-JMA1,N)
-            END DO
-      END DO
-
-      IF config_VERBOSE THEN
-        WRITE(6,'(A80)') TITRE
-        WRITE(6,'(A11)') TTT
-        WRITE(6,'('' JMAX='',I3)') JMAX
-        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
-
-        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
-
-        DO N = 1,modeles_NTOT,5
-          WRITE(6,'('' N='',I3)') N
-          WRITE(6,'(2X,5E12.4)') (TTH(JJ,N),JJ=1,JJMAX)
-        END DO
-      END
-
-
-      DO J = 1,JJMAX
-        ALLH(J) = LLAMBDH(J)-ILZERO
-      END DO
-
-      IF config_VERBOSE THEN
-        WRITE(6, '('' ALLH(1)='',F8.3,2X,''ALLH(JJMAX)='',F8.3,2X)')
-     +        ALLH(1),ALLH(JJMAX)
-        WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
-              JJMAX, modeles_NTOT, DTOT
-      END IF
-
-      DO N = 1,modeles_NTOT
-            DO J = 1,JJMAX
-              TAUHN(J) = TTH(J,N)
-            END DO
-
-            CALL FTLIN3H(JJMAX,ALLH,TAUHN,DTOT,TTD,FTTH,DHM,DHP)
-
-            DO D = 1,DTOT
-              TAUH(D,N) = FTTH(D)
-            END DO
-      END DO
-
-      IF config_VERBOSE THEN
-        WRITE(6,'('' TAUH(1,1)='',E14.7,2X,''TAUH(1,NTOT)='',E14.7)')
-     +        TAUH(1,1), TAUH(1,modeles_NTOT)
-        WRITE(6,'('' TAUH(dtot,1)='',E14.7,2X,'
-     +        //'''TAUH(DTOT,NTOT)='',E14.7)')
-     +        TAUH(dtot,1), TAUH(DTOT,modeles_NTOT)
-      END IF
-
-      RETURN
-      END
-
-
-
-
-
-
+* NOW in module "FILETOH"
+*
+*C================================================================================================================================
+*C READ_FILETOH()
+*C
+*C orig LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
+*C
+*C Original UNIT: 16
+*
+*
+*C TODO Not tested!!!
+*
+*      SUBROUTINE READ_FILETOH(filename, LLAMBDH, TTH,
+*     1                        DTOT, TTD, TAUH, DHM, DHP)
+*      IMPLICIT NONE
+*      INTEGER UNIT_, np
+*      PARAMETER(UNIT_=199)
+*      CHARACTER*256 filename
+*
+*      PARAMETER(NP=7000, MAX_filetoh_JJMAX=100, MAX_filetoh_JMAX=50)
+*      INTEGER D, DTOT, DHM, DHP, JJMAX
+*
+*
+*      REAL*8 LAMBDH, LLAMBDH
+*
+*
+*      CHARACTER TITRE*80, TTT*11
+*
+*
+*      DIMENSION      TH(MAX_filetoh_JMAX, MAX_modeles_NTOT),
+*     +           LAMBDH(MAX_filetoh_JMAX),
+*     +              TTH(MAX_filetoh_JJMAX, MAX_modeles_NTOT),
+*     +          LLAMBDH(MAX_filetoh_JJMAX),
+*     +             ALLH(MAX_filetoh_JJMAX),
+*     +            TAUHN(MAX_filetoh_JJMAX)
+*
+*
+*
+*      DIMENSION TTD(NP), FTTH(NP), TAUH(NP, MAX_modeles_NTOT)
+*
+*
+*      OPEN(UNIT=UNIT_,FILE=filename,STATUS='OLD')
+*      READ(UNIT_,'(A80)') TITRE
+*      READ(UNIT_,'(I4)') TTT
+*      READ(UNIT_,'(I4)') JMAX
+*      READ(UNIT_,'(5F14.3)') (LAMBDH(J),J=1,JMAX)
+*      READ(UNIT_,'(5E12.4)') ((TH(J,N),J=1,JMAX),N=1,modeles_NTOT)
+*
+*      JJMAX = 2*JMAX-1
+*      JMA1 = JMAX-1
+*      DO JJ=1,JMAX
+*        DEL = LAMBDH(JMAX+1-JJ)-LAMBDH(1)
+*        LLAMBDH(JJ) = LAMBDH(JMAX+1-JJ)-2*DEL
+*      END DO
+*      DO JJ = JMAX+1,JJMAX
+*        LLAMBDH(JJ) = LAMBDH(JJ-JMA1)
+*      END DO
+*      DO N=1,modeles_NTOT
+*            DO JJ=1,JMAX
+*            TTH(JJ,N)=TH(JMAX+1-JJ,N)
+*            END DO
+*            DO JJ=JMAX+1,JJMAX
+*            TTH(JJ,N)=TH(JJ-JMA1,N)
+*            END DO
+*      END DO
+*
+*      IF config_VERBOSE THEN
+*        WRITE(6,'(A80)') TITRE
+*        WRITE(6,'(A11)') TTT
+*        WRITE(6,'('' JMAX='',I3)') JMAX
+*        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
+*
+*        WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ),JJ=1,JJMAX)
+*
+*        DO N = 1,modeles_NTOT,5
+*          WRITE(6,'('' N='',I3)') N
+*          WRITE(6,'(2X,5E12.4)') (TTH(JJ,N),JJ=1,JJMAX)
+*        END DO
+*      END
+*
+*
+*      DO J = 1,JJMAX
+*        ALLH(J) = LLAMBDH(J)-ILZERO
+*      END DO
+*
+*      IF config_VERBOSE THEN
+*        WRITE(6, '('' ALLH(1)='',F8.3,2X,''ALLH(JJMAX)='',F8.3,2X)')
+*     +        ALLH(1),ALLH(JJMAX)
+*        WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
+*              JJMAX, modeles_NTOT, DTOT
+*      END IF
+*
+*      DO N = 1,modeles_NTOT
+*            DO J = 1,JJMAX
+*              TAUHN(J) = TTH(J,N)
+*            END DO
+*
+*            CALL FTLIN3H(JJMAX,ALLH,TAUHN,DTOT,TTD,FTTH,DHM,DHP)
+*
+*            DO D = 1,DTOT
+*              TAUH(D,N) = FTTH(D)
+*            END DO
+*      END DO
+*
+*      IF config_VERBOSE THEN
+*        WRITE(6,'('' TAUH(1,1)='',E14.7,2X,''TAUH(1,NTOT)='',E14.7)')
+*     +        TAUH(1,1), TAUH(1,modeles_NTOT)
+*        WRITE(6,'('' TAUH(dtot,1)='',E14.7,2X,'
+*     +        //'''TAUH(DTOT,NTOT)='',E14.7)')
+*     +        TAUH(dtot,1), TAUH(DTOT,modeles_NTOT)
+*      END IF
+*
+*      RETURN
+*      END
+*
+*
+*
+*
+*
+*
 
 
 

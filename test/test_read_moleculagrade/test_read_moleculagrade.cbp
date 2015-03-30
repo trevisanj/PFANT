@@ -31,7 +31,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.f95" />
+		<Unit filename="../../main/config.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="../../main/errors.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="../../main/molecula.f">
+			<Option weight="3" />
+		</Unit>
+		<Unit filename="../../main/read_files.f">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="../../main/sat4_die.f">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="test_read_moleculagrade.f">
+			<Option weight="4" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

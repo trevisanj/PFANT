@@ -32,6 +32,12 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="commons.f">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="config.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="errors.f">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="main_calc.f">
@@ -40,17 +46,20 @@
 		<Unit filename="main_io.f">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="molecula.f">
+			<Option weight="2" />
+		</Unit>
 		<Unit filename="original_merged_reference.f">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="read_files.f">
-			<Option weight="0" />
+			<Option weight="1" />
 		</Unit>
 		<Unit filename="sat4_die.f">
-			<Option weight="0" />
+			<Option weight="2" />
 		</Unit>
 		<Unit filename="write_files.f">
-			<Option weight="1" />
+			<Option weight="2" />
 		</Unit>
 		<Extensions>
 			<code_completion />

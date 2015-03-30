@@ -1,20 +1,10 @@
       MODULE MOLECULA
-
-      ! TODO Write a common module to put all this ERROR_stuff
-
-      ! ERROR_EXCEEDED: Error code if any array index blow maximum number of elements
-      !                 allowed while reading from file.
-      ! ERROR_NOT_FOUND: When value from somewhere selects something that does not exist
-      !                  (example in READ_MODELES()).
-      ! ERROR_BAD_VALUE: generic error for bad value found inside file
-      INTEGER ERROR_EXCEEDED, ERROR_NOT_FOUND, ERROR_BAD_VALUE
-      PARAMETER(ERROR_EXCEEDED=111, ERROR_NOT_FOUND=112,
-     +           ERROR_BAD_VALUE=113)
+      USE READ_FILES
 
       INTEGER, PARAMETER :: MAX_km__NUMBER=21
 
       ! Old "NM"; ISSUE: what does "NM" stand for?
-      INTEGER, PARAMETER :: MAX_LINES_PER_MOL=50000
+      INTEGER, PARAMETER :: MAX_LINES_PER_MOL=300000
       ! Old "NTR"; Maximum number of transitions for each molecule
       INTEGER, PARAMETER :: MAX_TRANSITIONS_PER_MOL=200
 
@@ -34,16 +24,18 @@
      +  km__MM, km__AM, km__BM, km__UA, km__UB, km__TE, km__CRO,
      +  km__A0, km__A1, km__A2, km__A3, km__A4, km__ALS, km__S
 
-      INTEGER, DIMENSION(MAX_km__NUMBER)  :: km__ISE, km__NV, 
+      INTEGER, DIMENSION(MAX_km__NUMBER)  :: km__ISE, km__NV,
      +  km__N_LAMBDA  ! This stores the number of spectral lines for each molecule
 
       REAL, DIMENSION(MAX_TRANSITIONS_PER_MOL, MAX_km__NUMBER) ::
      +  km__QQV, km__GGV, km__BBV, km__DDV, km__FACT
 
-      REAL*8,  DIMENSION(MAX_LINES_PER_MOL, MAX_km__NUMBER) :: km__LMBDAM
+      REAL*8,  DIMENSION(MAX_LINES_PER_MOL, MAX_km__NUMBER) ::
+     +  km__LMBDAM
       REAL,    DIMENSION(MAX_LINES_PER_MOL, MAX_km__NUMBER) ::
      +  km__SJ, km__JJ
-      INTEGER, DIMENSION(MAX_LINES_PER_MOL, MAX_km__NUMBER) :: km__NUMLIN
+      INTEGER, DIMENSION(MAX_LINES_PER_MOL, MAX_km__NUMBER) ::
+     +  km__NUMLIN
 
 
 
@@ -53,34 +45,33 @@
 
       !=====
       ! Variables filled by FILTER_MOLECULAGRADE()
-     
+
       INTEGER km_MBLEND  ! Total number of spectral lines *filtered in*
 
       ! Valid elements of these are from 1 to km_MBLEND
       REAL*8, DIMENSION(MAX_LINES_TOTAL) :: km_LMBDAM
-      REAL, DIMENSION(MAX_LINES_TOTAL) :: km_SJ, km_JJ, km_GFM, km_ALARGM
-     
+      REAL, DIMENSION(MAX_LINES_TOTAL) :: km_SJ, km_JJ, km_GFM,
+     +  km_ALARGM
+
 
 
 
       !------
       ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
       !------
-      ! This one points to the last index of the lines of each molecule within 
+      ! This one points to the last index of the lines of each molecule within
       ! km_LMBDAM, km_SJ and km_JJ (after the filtering)
       ! Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
-      DIMENSION km_MBLENQ(MAX_km__NUMBER+1) 
-      ! This is similar but is a "local" one, it contains index of the last 
+      DIMENSION km_MBLENQ(MAX_km__NUMBER+1)
+      ! This is similar but is a "local" one, it contains index of the last
       ! line of each set of lines within km_LMBDAM, km_SJ and km_JJ
       ! **for the current molecule** I_MOL
-      ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm     
+      ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
       ! TODO Explain better
-      DIMENSION km_LN(MAX_TRANSITIONS_PER_MOL+1, MAX_km__NUMBER) 
+      DIMENSION km_LN(MAX_TRANSITIONS_PER_MOL+1, MAX_km__NUMBER)
 
 
-      REAL, DIMENSION(MAX_LINES_TOTAL, MAX_modeles_NTOT) :: km_GFM
-
-
+      REAL, DIMENSION(MAX_LINES_TOTAL, MAX_modeles_NTOT) :: km_PNVJ
 
 
       SAVE
@@ -97,14 +88,20 @@ C
 C Obs: this is part of original subroutine KAPMOL()
 
       SUBROUTINE READ_MOLECULAGRADE(filename)
+      USE ERRORS
+      USE CONFIG
       IMPLICIT NONE
+      CHARACTER*256 filename
       INTEGER UNIT_, I,
      +  I_MOL,   ! Old "NMOL", number of current molecule
-     +  I_LAMBDA,  ! Counts lines within each molecule (reset at each new molecule)
+     +  J_LAMBDA,  ! Counts lines within each molecule (reset at each new molecule)
      +  NNV, IZ, J,
-     +  NUMLIN   ! Temporary variable
+     +  NUMLIN ,  ! Temporary variable
+     +  J_SET
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      LOGICAL VERBOSE
+
+      VERBOSE = config_VERBOSE .AND. .FALSE. !--verbose--!
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -112,14 +109,18 @@ C Obs: this is part of original subroutine KAPMOL()
 
 
 
+
+
       ! BLB: NUMBER -- number of molecules do be considered
+
+      ! ISSUE, TODO -- ignore this and implement a way to switch this on/off
       READ(UNIT_,*) km__NUMBER
 
-      write (*,*) 'NUMBER--------------', km__NUMBER
+      IF (VERBOSE) write (*,*) 'NUMBER--------------', km__NUMBER
 
       READ(UNIT_,'(A)') km__TITM
       !~READ(UNIT_,'(20A4)') km__TITM
-      write (*,*) 'TITM--------------', km__TITM
+      IF (VERBOSE)  write (*,*) 'TITM--------------', km__TITM
 
       ! BLB:
       ! BLB: km__NV -- number of transitions (v', v'') for each molecule
@@ -139,7 +140,7 @@ C Obs: this is part of original subroutine KAPMOL()
         READ(UNIT_,'(A)') km__TITULO(I_MOL)
 
 
-      WRITE(*,*) 'TITULO NOW ', km__TITULO(I_MOL)
+        IF (VERBOSE) WRITE(*,*) 'TITULO NOW ', km__TITULO(I_MOL)
 
         ! BLB: FE, DO, MM, AM, BM, UA, UB, Te, CRO
         ! BLB: Format: free
@@ -174,7 +175,7 @@ C Obs: this is part of original subroutine KAPMOL()
 
         NNV = km__NV(I_MOL)
 
-        WRITE(*,*) 'NV NOW=', NNV
+        IF (VERBOSE)  WRITE(*,*) 'NV NOW=', NNV
 
         ! TODO type in documentation
         READ(UNIT_,*) (km__QQV(I, I_MOL), I=1,NNV)
@@ -190,14 +191,17 @@ C Obs: this is part of original subroutine KAPMOL()
 
         !~L = (I_MOL-1)*MAX_LINES_PER_MOL+1  ! Initial index for all vectors inside this loop
         !~WRITE(*,*) 'LLLLLLLLLLLLL', L
-        I_LAMBDA = 1  ! Counts spectral lines for current molecule
-        I_SET_COUNT = 0  ! File consistency check: has to match NNV when the following loop ends
+        J_LAMBDA = 0  ! Counts spectral lines for current molecule
+        J_SET = 0  ! File consistency check: has to match NNV when the following loop ends
         DO WHILE (.TRUE.)
+          J_LAMBDA = J_LAMBDA+1
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
-          IF (I_LAMBDA .GT. MAX_LINES_PER_MOL) THEN
+          ! ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
+          IF (J_LAMBDA .GT. MAX_LINES_PER_MOL) THEN
             WRITE(*,*) 'READ_MOLECULAGRADE(): molecule number ', I_MOL,
-     +          ': number of lines exceeded ', MAX_LINES_PER_MOL
+     +       ': number of lines exceeded MAX_LINES_PER_MOL=',
+     +       MAX_LINES_PER_MOL
             STOP ERROR_EXCEEDED
           END IF
 
@@ -230,33 +234,33 @@ C Obs: this is part of original subroutine KAPMOL()
           ! BLB:           .
           ! BLB:
           ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a certain molecula
-          READ(UNIT_,*) km__LMBDAM(I_LAMBDA, I_MOL), 
-     +         km__SJ(I_LAMBDA, I_MOL),
-     +         km__JJ(I_LAMBDA, I_MOL), IZ, NUMLIN
-     
-          km__NUMLIN(I_LAMBDA, I_MOL) = NUMLIN
+          READ(UNIT_,*) km__LMBDAM(J_LAMBDA, I_MOL),
+     +         km__SJ(J_LAMBDA, I_MOL),
+     +         km__JJ(J_LAMBDA, I_MOL), IZ, NUMLIN
 
-          IF (NUMLIN .NE. 0) I_SET_COUNT = I_SET_COUNT+1
+          km__NUMLIN(J_LAMBDA, I_MOL) = NUMLIN
+
+          IF (NUMLIN .NE. 0) J_SET = J_SET+1
           IF (NUMLIN .EQ. 9) EXIT
 
-          !~L = L+1
-          I_LAMBDA = I_LAMBDA+1
         END DO
-        
-        ! ISSUE: I don't get this; it will keep looping forever???
-        IF(I_SET_COUNT .NE. NNV) THEN
-          WRITE(*,*) 'Incorrect number of spectral line sets ', 
-     +          I_SET_COUNT, '(should be ', NNV, ')'
+
+        ! TODO actually I think it is OK
+        IF(J_SET .NE. NNV) THEN
+          WRITE(*,*) 'Incorrect number of spectral line sets ',
+     +          J_SET, '(should be ', NNV, ')'
           STOP ERROR_BAD_VALUE
         END IF
 
-        
-        WRITE (*,*) 'IIIIIIIIIIIIIIIIIIIIIIIIIIII', I
+        km__N_LAMBDA(I_MOL) = J_LAMBDA
+
+
+        IF (VERBOSE) WRITE (*,*) 'IIIIIIIIIIIIIIIIIIIIIIIIIIII', I
       END DO
 
       CLOSE(UNIT_)
 
-      WRITE (*,*) 'NUMBER (again) --------------', km__NUMBER
+      IF (VERBOSE) WRITE (*,*) 'NUMBER (again) -----------', km__NUMBER
 
       END
 
@@ -274,11 +278,22 @@ C===============================================================================
 C FILTER_MOLECULAGRADE(): sweeps km__* to populate a few km_*
 C                         depending on the interval LZERO-LFIN
 C
+C N
 
       SUBROUTINE FILTER_MOLECULAGRADE(LZERO, LFIN)
+      USE CONFIG
+      USE ERRORS
       IMPLICIT NONE
-      
-      REAL*8 LZERO,LFIN
+
+      REAL*8 LZERO, LFIN, LAMBDA
+      INTEGER I, I_LINE, I_MOL, J_LAMBDA, NUMLIN, J_SET
+      LOGICAL VERBOSE, FLAG_IN
+
+      VERBOSE = config_VERBOSE .AND. .TRUE. !--verbose--!
+
+
+      IF (VERBOSE) WRITE(*, *) 'km__NUMBER = ', km__NUMBER
+
 
 
       ! Initializes the zero elements of the augmented matrices
@@ -289,62 +304,71 @@ C
 
       I_LINE = 0  ! Current spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
       DO I_MOL = 1, km__NUMBER
-        IF (VERBOSE) WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
-     +                           km__TITULO(I_MOL)
-        
-        
+        IF (VERBOSE) then
+          WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
+     +     km__TITULO(I_MOL)
+
+          WRITE(*, *) 'Number of prospective Lambdas ------>',
+     +     km__N_LAMBDA(I_MOL)
+        END IF
+
+
+
         ! Counters starting with "J _" restart at each molecule
         J_SET = 0   ! Current "transition"/"set of spectral lines" ISSUE: is the concept correct?
-        FLAG_IN = .FALSE.  ! Whether has filtered in at least one line 
+        FLAG_IN = .FALSE.  ! Whether has filtered in at least one line
         DO J_LAMBDA = 1, km__N_LAMBDA(I_MOL)  ! Points to first dimension within km__LMBDAM, km__SJ, km__JJ
           !~READ(12,*) km_LMBDAM(L),SJ(L),JJ(L), km_IZ, km_NUMLIN
           LAMBDA = km__LMBDAM(J_LAMBDA, I_MOL)
           NUMLIN = km__NUMLIN(J_LAMBDA, I_MOL)
-          
+
           IF ((LAMBDA .GE. LZERO) .AND. (LAMBDA .LE. LFIN)) THEN
             ! Filters in a new spectral line!
             I_LINE = I_LINE+1
-            
+
             km_LMBDAM(I_LINE) = LAMBDA
             km_SJ(I_LINE) = km__SJ(J_LAMBDA, I_MOL)
             km_JJ(I_LINE) = km__JJ(J_LAMBDA, I_MOL)
-            
+
             FLAG_IN = .TRUE.
+
+*            IF (VERBOSE) WRITE(*, *) 'In!!!!', LAMBDA
           END IF
-            
+
           IF (NUMLIN .NE. 0) THEN
             ! Reached last line of current set of lines
-        
+
             ! ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
             IF (.NOT. FLAG_IN) THEN
               ! TODO, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
-        
-        
+
+
               !--error checking--!
               ! TODO test this error
-              WRITE (*, *) 'USE_MOLECULAGRADE(): Molecule ', I_MOL, 
+              WRITE (*, *) 'USE_MOLECULAGRADE(): Molecule ', I_MOL,
      +            ' titled  "', km__TITULO(I_MOL), '"'
               WRITE (*, *) 'Set of lines ', (J_SET+1), 'has no lambda '
      +            //'within ', LZERO, ' <= lambda <= ', LFIN
               WRITE (*, *) 'The algorithm is not prepared for this, '
-                  //'sorry!'
+     +            //'sorry!'
               STOP ERROR_BAD_VALUE
             END IF
-              
-            J_SET = J_SET+1           
+
+            J_SET = J_SET+1
             km_LN(J_SET+1, I_MOL) = I_LINE
           END IF
         END DO
-        
+
         km_MBLENQ(I_MOL+1) = I_LINE
-        
+
         ! Note: (J_SET .EQ. km__NV(I_MOL)) should hold: this has been checked when the file was read already
-      END DO !--end of I_MOL loop--!     
+      END DO !--end of I_MOL loop--!
 
       km_MBLEND = I_LINE
-      
+
       RETURN
-      
+
+      END
 
 
 
@@ -354,16 +378,23 @@ C
 C================================================================================================================================
 C USE_MOLECULAGRADE(): uses km_* filled by FILTER_MOLECULAGRADE() to perform its calculations
 C
+C Note: depends on a few sat4_* variables
 
       SUBROUTINE USE_MOLECULAGRADE()
+      USE CONFIG
+      USE SAT4_DIE
       IMPLICIT NONE
 
       ! TODO see if I can use pointers
       REAL, DIMENSION(MAX_modeles_NTOT) :: PPA, PB
-               
-      REAL*8 T5040
+
+      REAL*8 T5040, PSI
       REAL CSC, H, C, KB, CK, C2
-      REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO 
+      REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO, RM
+      REAL QV, GV, BV, DV, FACTO
+      INTEGER I_MOL, J_SET, L, L_INI, L_FIN, N, NNV
+
+      LOGICAL VERBOSE
 
       DATA H  /6.6252E-27/,
      +     C  /2.997929E+10/,
@@ -371,12 +402,13 @@ C
      +     CK /2.85474E-04/,
      +     C2 /8.8525E-13/
 
+      VERBOSE = config_VERBOSE .AND. .FALSE. !--verbose--!
 
       DO I_MOL = 1, km__NUMBER
         IF (VERBOSE) WRITE(*, *) 'MOLECULE NUMBER', I_MOL, ': ',  !--verbose--!
      +                           km__TITULO(I_MOL)
-        
-        
+
+
         ! TODO must be prepared to switch molecules on/off!!!
         ! TODO use pointers instead of copying elements!!!
         SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
@@ -389,7 +421,7 @@ C
             DO N=1,modeles_NTOT
               PPA(N)=sat4_PPC2(N)
               PB(N)=sat4_PPC2(N)
-            END DO  
+            END DO
           CASE (3, 4, 5)  ! CN blue,red, nir
             DO N=1,modeles_NTOT
               PPA(N)=sat4_PPC2(N)
@@ -431,10 +463,10 @@ C
               PB(N)=sat4_PO(N)
             END DO
         END SELECT
-        
-        
+
+
         NNV = km__NV(I_MOL)
-        
+
         FE  = km__FE(I_MOL)
         DO_ = km__DO(I_MOL)
         MM  = km__MM(I_MOL)
@@ -443,9 +475,9 @@ C
         UA  = km__UA(I_MOL)
         UB  = km__UB(I_MOL)
         TE  = km__TE(I_MOL)
-        CRO = km___CRO(I_MOL)
-        
-        
+        CRO = km__CRO(I_MOL)
+
+
         !======
         ! This part of the code calculates km_PNVL(
         RM = AM*BM/MM
@@ -456,15 +488,15 @@ C
           PSI = 10.**PSI
           DO J_SET = 1,NNV
             ! TODO check if it is possible to have a pointer to km_LN(*, I_MOL), which may well be called "LN"
-        
+
             QV = km__QQV(J_SET, I_MOL)
             GV = km__GGV(J_SET, I_MOL)
             BV = km__BBV(J_SET, I_MOL)
             DV = km__DDV(J_SET, I_MOL)
-           
+
             L_INI = km_LN(J_SET, I_MOL)+1
             L_FIN = km_LN(J_SET+1, I_MOL)
-            
+
             ! L is index within km_LMBDAM, km_SJ and km_JJ
             DO L= L_INI, L_FIN
               ! PC: default value for CSC does not exist physically
@@ -475,30 +507,32 @@ C
      @              EXP(H*C/KB*modeles_TETA(N)/5040.*
      @                  (DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV)
      @                 )
-        
+
+              ! ISSUE What to do with this REAL*4 vs. REAL*8 thing?
               km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
             END DO
-            
-            
-            ! Takes advantage of current J_SET loop so it is not necessary to create 
+
+
+            ! Takes advantage of current J_SET loop so it is not necessary to create
             ! another double loop as in the original KAPMOL to calculate km_GFM
             IF (N .EQ. 1) THEN
               ! Because GFM does not depend on N, runs this part just once, when N is 1.
               FACTO = km__FACT(J_SET, I_MOL)
-              km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*km_FE*QV*
+              km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*FE*QV*
      @                    km_SJ(L)*FACTO
             END IF
           END DO
         END DO
-      END DO !--end of I_MOL loop--!     
+      END DO !--end of I_MOL loop--!
 
       DO L = 1,km_MBLEND
         km_ALARGM(L) = 0.1
       END DO
-      
+
       RETURN
-      
+
+      END
 
 
 
-
+      END MODULE MOLECULA

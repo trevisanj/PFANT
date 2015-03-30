@@ -1,5 +1,13 @@
 # depslib dependency file v1.0
-1427239414 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\molecula.f
+1427476875 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\molecula.f
 
-1427236263 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\test\test_read_moleculagrade\test_read_moleculagrade.f
+1427476753 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\test\test_read_moleculagrade\test_read_moleculagrade.f
+
+1427476123 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\config.f
+
+1427469814 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\errors.f
+
+1427469964 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\read_files.f
+
+1427474538 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\sat4_die.f
 

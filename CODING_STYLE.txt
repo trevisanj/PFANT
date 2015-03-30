@@ -1,16 +1,32 @@
 Sketch of a coding style manual
 
+This file:
+- Restrict to 80 columns.
+
 Format
 ======
 
   Indents
   -------
-  - Beginning of line: use 6 spaces (not tabs) at the beginning of a line, since most editors seem not to understand the old tabbed format.
-  - IF, DO etc indents: let us use only 2 spaces because we are restricted to 72 columns
+  - Beginning of line: use 6 spaces (not tabs) at the beginning of a line,
+    since most editors seem not to understand the old tabbed format.
+  - IF, DO etc indents: let us use only 2 spaces because we are restricted
+    to 72 columns.
+  - Indents at continuation lines: no fixed rule; as a suggestion, put at
+    least one space between the continuation character and the continuation
+    line.
   
   Number of columns
   -----------------
   - Restrict code to 72 columns (comments may surpass this)
+
+  Continuation
+  ------------
+  No fixed rule; as a suggestion, use "@" when the line contains a formula to
+  avoid the risk of messing with the formula because "@" cannot be part of a
+  formula, whereas the usual continuation characters ([+_0-9]) can be part of
+  a formula.
+  
 
 Common blocks
 =============
@@ -19,7 +35,12 @@ Do NOT use common blocks! Use Fortran MODULE to declare globals!
 
 Data types
 ==========
-"If you must use floating point, use double precision unless you have reason to be concerned about memory use (your program uses large arrays) and you do not need much precision. Modern computers do not take significantly longer to process double precision values than they do to process reals." [1]
+REAL*4 vs. REAL*8
+As a thought (not put in practice yet):
+"If you must use floating point, use double precision unless you have reason
+to be concerned about memory use (your program uses large arrays) and you do
+not need much precision. Modern computers do not take significantly longer to
+process double precision values than they do to process reals." [1]
 
 
 Programming
@@ -29,6 +50,9 @@ Programming
   -------
   Verbose is controlled by config_ALLOW_VERBOSE AND local VERBOSE (logical) variables. To switch on/off verbosing of a particular routine, do as follows:
   
+  SUBROUTINE BID()
+  USE CONFIG
+  LOGICAL VERBOSE
   VERBOSE = .TRUE.  .AND. config_ALLOW_VERBOSE ! Turns local verbose on
   VERBOSE = .FALSE. .AND. config_ALLOW_VERBOSE ! Turns local verbose off
   
