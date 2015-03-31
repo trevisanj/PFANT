@@ -32,7 +32,7 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="../../main/config.f">
-			<Option weight="0" />
+			<Option weight="1" />
 		</Unit>
 		<Unit filename="../../main/errors.f">
 			<Option weight="0" />

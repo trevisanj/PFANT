@@ -1,14 +1,22 @@
 C     TEST THE READ_MOLECULAGRADE ROUTINE
       PROGRAM TEST_READ_MOLECULAGRADE
       USE MOLECULA
+      USE CONFIG
       IMPLICIT NONE
+      REAL T0, T1
 
       CHARACTER*256 fn
       REAL*8 LZERO, LFIN
 
       fn = 'moleculagrade.dat'
 
+      CALL CONFIG_SETUP()
+
+
+      CALL CPU_TIME(T0)
       CALL READ_MOLECULAGRADE(fn)
+      CALL CPU_TIME(T1)
+      WRITE(*,*) 'Time to READ_MOLECULAGRADE(): ', (T1-T0)
 
       WRITE(*,*) '*****************************************************'
       WRITE(*, *) 'NUMBER = ', km__NUMBER
