@@ -13,6 +13,7 @@
       INTEGER, PARAMETER :: MAX_km__LINES_TOTAL=1400000
 
       ! Specifies how many molecules to read
+      ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
       INTEGER km__NUMBER
 
       INTEGER km__LINES_TOTAL  ! Total number of spectral line, counting all molecules
@@ -47,9 +48,6 @@
       !~+  km__NUMLIN
 
 
-
-
-
       !=====
       ! Variables filled by FILTER_MOLECULAGRADE()
 
@@ -59,8 +57,6 @@
       REAL*8, DIMENSION(MAX_km__LINES_TOTAL) :: km_LMBDAM
       REAL, DIMENSION(MAX_km__LINES_TOTAL) :: km_SJ, km_JJ, km_GFM,
      +  km_ALARGM
-
-
 
 
       !------

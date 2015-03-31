@@ -94,27 +94,15 @@ C       Flux absolu sortant a ete multiplie par 10**5
       config_VERBOSE = .FALSE.
 
 
-
-
-C     COMMON'S AVEC LE SP KAPMOL
-C main, SELEKFH, KAPMOL
-      COMMON /KAPM1/ km_MM, km_MBLEND
-C main, SELEKFH, KAPMOL
-      COMMON /KAPM2/ LMBDAM, km_GFM, km_PNVJ, km_ALARGM
-
 C main, KAPMOL
       COMMON /OPTIM/ LZERO,LFIN
 
-C     COMMON'S AVEC LE SP KAPMOL ET POPADELH
-c main, KAPMOL, POPADELH
-      COMMON /KAPM3/ sat4_PPH, sat4_PPC2, sat4_PN, sat4_PC13, sat4_PMG, sat4_PO, sat4_PTI, sat4_PIG, sat4_PFE
-c main, BK, LECTAUH, SELEKFH
 
 
 
 
       INTEGER FINPAR,FINRAI,FINAB,D,DTOT
-      INTEGER DHM,DHP,DHMY,DHPY,c_filetoh_DHMI,c_filetoh_DHPI
+      INTEGER DHM,DHP,DHMY,DHPY
       CHARACTER FILETOH*20
       character FILEFLUX2*72,FILEFLUX3*72
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
@@ -122,7 +110,7 @@ c main, BK, LECTAUH, SELEKFH
       REAL KB,KC,LAMBD,
      1   KC1,KC2,KCD,km_MM, ABOND, ABO
       LOGICAL GAUSS,IDENTH
-      REAL*8 LZERO,LFIN,km_LMBDAM, LLHY(10)
+      REAL*8 LZERO,LFIN,LLHY(10)
       REAL*8 ECART,ECARTM,L0,LF,lllhy
       DIMENSION
      1 KC(50),ALPH(50),PHN(50),PH2(50),
@@ -142,10 +130,6 @@ C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these vari
       DIMENSION FL(NP), TTD(NP), FCONT(NP), FN(NP)
       DIMENSION TAUH(NP,50),TAUHY(10,NP,50)
       DIMENSION DHMY(10),DHPY(10)
-      DIMENSION sat4_PPH(50),sat4_PPC2(50),sat4_PN(50),sat4_PC13(50),sat4_PMG(50),
-     1          sat4_PO(50),sat4_PTI(50),sat4_PFE(50)
-      DIMENSION km_LMBDAM(PARAMETER_NMOL),km_GFM(PARAMETER_NMOL),km_PNVJ(PARAMETER_NMOL,50),
-     1          km_ALARGM(PARAMETER_NMOL)
 C
 
 
@@ -1991,6 +1975,7 @@ c     STOP
 1504  FORMAT(18H MODELE TROP COURT)
       END
 
+
 C-------------------------------------------------------------------------------
       SUBROUTINE FLIN1 (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,F,IOP,CAVA)
 c     calcul du flux ou de l'intensite par la methode d'integration
@@ -2161,6 +2146,8 @@ C
 1504  FORMAT(18H MODELE TROP COURT)
       END
 
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE FT2(N,X,Y,ITOT,TT,FTT)
 C     INTERPOLATION PARABOLIQUE
@@ -2204,6 +2191,10 @@ C     AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
       STOP
 100   FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION       T=',E15.7)
       END
+
+
+
+
 
 C-------------------------------------------------------------------------------
       SUBROUTINE FTLIN3(N,X,Y,ITOT,TT,FTT)
@@ -3172,6 +3163,8 @@ C     IONIZATION EQUILIBRIUM
 C     ATOMIC NUMBER 99 = ELECTRON
  1051 RETURN
       END
+
+
 
 C-------------------------------------------------------------------------------
       FUNCTION MINI(IFA,modeles_NTOT,IA,IZ)
