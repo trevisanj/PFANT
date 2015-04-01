@@ -95,8 +95,14 @@ C       Flux absolu sortant a ete multiplie par 10**5
 
 
 C main, KAPMOL
-      COMMON /OPTIM/ LZERO,LFIN
 
+
+
+      !====
+      ! Making a new declaration section
+      !====
+      REAL*8 LZERO, LFIN
+      CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
 
 
 
@@ -104,7 +110,8 @@ C main, KAPMOL
       INTEGER FINPAR,FINRAI,FINAB,D,DTOT
       INTEGER DHM,DHP,DHMY,DHPY
       CHARACTER FILETOH*20
-      character FILEFLUX2*72,FILEFLUX3*72
+      
+      
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
       REAL KB,KC,LAMBD,
@@ -144,11 +151,13 @@ C  *****************************************************************
      1     PI/3.141593/,C1/4.8298E+15/,C2/8.8525E-13/,C4/2.1179E+8/,
      2     C6/3.76727E+11/,DEUXR/1.6634E+8/,C7/1.772453/
         C5= 2.*PI* (3.*PI**2/2.44)**0.4
-      OPEN(UNIT=4,FILE='main.dat',STATUS='OLD')
-      OPEN(UNIT=25,FILE='partit.dat',STATUS='OLD')
-      OPEN(UNIT=23,FILE='dissoc.dat',STATUS='OLD')
-      OPEN(UNIT=30,FILE='abonds.dat',STATUS='OLD')
-      OPEN(UNIT=14,FILE='atomgrade.dat',STATUS='OLD')
+
+
+      !~!~!~!~!~OPEN(UNIT=4,FILE='main.dat',STATUS='OLD')
+      !~!~!~!~!~OPEN(UNIT=25,FILE='partit.dat',STATUS='OLD')
+      !~!~!~!~!~OPEN(UNIT=23,FILE='dissoc.dat',STATUS='OLD')
+      !~!~!~!~!~OPEN(UNIT=30,FILE='abonds.dat',STATUS='OLD')
+      !~!~!~!~!~OPEN(UNIT=14,FILE='atomgrade.dat',STATUS='OLD')
 
 
 
@@ -157,11 +166,8 @@ C  *****************************************************************
 
 
 
-
-
       ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
       CALL READ_DISSOC(filename_DISSOC)
-
 
 
       CALL READ_MAIN(filename_MAIN)
@@ -176,7 +182,7 @@ C  *****************************************************************
       FSTAR  = 10**main_AFSTAR   ! ISSUE This was further below
 
       ! ISSUE: breaking rule!!! this cannot happen: change value of this global here, check what is supposed to happen instead.
-      main_FILEFLUX = 'spec.'//main_FILEFLUX
+      FILEFLUX1 = 'spec.'//main_FILEFLUX
       FILEFLUX2 = 'cont.'//main_FILEFLUX
       FILEFLUX3 = 'norm.'//main_FILEFLUX
 
@@ -242,7 +248,7 @@ C           CALCUL DES QUANTITES NE DEPENDANT QUE DU
 C           MODELE ET DE LAMBDA : B(N)   KC(N)   FC
 C  *****************************************************************
 
-      CALL SAT4(modeles_NTOT)
+      CALL SAT4()
 
       DO K = 1, dissoc_NMETAL
         DO J=1,abonds_NABOND
@@ -261,7 +267,7 @@ C  *****************************************************************
 
 
 
-      OPEN(UNIT=17,FILE=main_FILEFLUX,STATUS='unknown')
+      OPEN(UNIT=17,FILE=FILEFLUX1,STATUS='unknown')
       OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
       OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
 
@@ -530,8 +536,6 @@ C  *******************************************************************
 136   FORMAT(5X,A2,I1,F10.3,F10.2)
 142   FORMAT(5X,A2,F8.2)
 300   format(1x,'NPAR=', I4)
-455   FORMAT(' NBLEND=',I6)
-456   FORMAT('     MANQUE L ABONDANCE DU  ',A2                  )
 700   FORMAT(1X,'Lambda H -LZERO',F10.4)
 701   FORMAT(1X,'IHH(IKEY)=',I5)
 702   FORMAT(1X,'IRH=',I5)
@@ -722,6 +726,18 @@ C     LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
 C
@@ -816,6 +832,21 @@ C     41904.275E+7=8.313697E+7*5040.39,OU 8.313697E+7=CONSTANTE DES GAZ
 11    RETURN
       END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE  TEMPA(WL,TH,CALTH,CALLAM)
 C
@@ -867,6 +898,23 @@ C
 5010  RETURN
       END
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE SAHATH(TH)
 C
@@ -874,7 +922,6 @@ C     A.M COLLE   13/5/69
 C
       DIMENSION POTION(6),C1(3),C2(3),C3(3),C4(3)
 
-      COMMON /ABSO2/ absoru2_NMETA
       COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
       COMMON /SAHTP/ absoru2_XI(30,9), absoru2_PF(30,9)
       COMMON /ABSO1/ absoru2_NM
@@ -1022,6 +1069,20 @@ C     AA=NBR. DE CHRISTOFFEL CORRESPONDANT
 C     DONNEES POUR QUASI MOLECULE H+H (DOYLE,APJ,153,187.1968)
 C
       END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 C-------------------------------------------------------------------------------
       SUBROUTINE ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
@@ -1345,6 +1406,19 @@ C
       END
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE GAUNTH (WL)
 C
@@ -1443,6 +1517,17 @@ C
 1410  CONTINUE
 1420  RETURN
       END
+
+
+
+
+
+
+
+
+
+
+
 
 
 C-------------------------------------------------------------------------------
@@ -1574,6 +1659,13 @@ C     IF(.NOT.main_ECRIT) GO TO 10
 153   FORMAT(' KCD(1,1)=',E14.7,2X,'KCD(1,NTOT)=',E14.7)
 154   FORMAT(' KCD(DTOT,1)=',E14.7,2X,'KCD(DTOT,NTOT)=',E14.7)
       END
+
+
+
+
+
+
+
 
 
 
@@ -1750,13 +1842,19 @@ c
 
 
 
+
+
+
+
 C-------------------------------------------------------------------------------
-      SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
-     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
-     2 PHN,PH2,VT,P,POP,A,DELTA)
 C     ***calcule la population au niveau inferieur de la transition
 C     ***la largeur doppler DELTA et le coefficient d'elargissement
 C     ***le "A" utilise dans le calcul de H(A,V)
+C
+      SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
+     2 PHN,PH2,VT,P,POP,A,DELTA)
+
       PARAMETER(MAX_atomgrade_NBLEND=8000)
       CHARACTER*1 ISI(1), ISS(1)
       CHARACTER*2 atomgrade_ELEM, partit_EL
@@ -1845,12 +1943,16 @@ C
       return
       end
 
+
+
+
+
 C-------------------------------------------------------------------------------
-      SUBROUTINE FLINH (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,F,IOP,CAVA)
-c     calcul du flux ou de l'intensite par la methode d'integration
+c FLINH():  Calcul du flux ou de l'intensite par la methode d'integration
 c     a 6 pts (ou 13pts) de R.Cayrel (these).
 c     nouvelle methode de calcul de to . TO(1)est calcule et
 c     est different de 0 (On pose TO(0)=0)   -Avril 1988-
+      SUBROUTINE FLINH (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,F,IOP,CAVA)
       LOGICAL main_PTDISK
       REAL   modeles_NH,KAP,main_MU
       INTEGER CAVA
@@ -1974,6 +2076,18 @@ c     STOP
 1503  FORMAT(I10,5X,3HTO=,F10.4)
 1504  FORMAT(18H MODELE TROP COURT)
       END
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 C-------------------------------------------------------------------------------
@@ -2196,6 +2310,13 @@ C     AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
 
 
 
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE FTLIN3(N,X,Y,ITOT,TT,FTT)
       DIMENSION X(N),Y(N),TT(ITOT),FTT(ITOT)
@@ -2237,6 +2358,15 @@ C     WRITE(6,104) J, X(J-1), Y(J-1), X(J),Y(J), U0,T0,T1
 104   FORMAT(I5,7F9.3)
 C105  FORMAT(7F10.3)
       END
+
+
+
+
+
+
+
+
+
 
 C-------------------------------------------------------------------------------
       SUBROUTINE HJENOR(Y,X,DEL,PHI)
@@ -2340,6 +2470,12 @@ C     write(6,*)phi
       END
 
 
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
 C X -- TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS
 C      CROISSANTES
@@ -2383,6 +2519,13 @@ C     ***********************************
 
 
 
+
+
+
+
+
+
+
 C-------------------------------------------------------------------------------
       SUBROUTINE NAITK3(XdI,XdIp1,XdIp2,XdIp3,
      1                  YdI,YdIp1,YdIp2,YdIp3,XX,FX)
@@ -2417,6 +2560,16 @@ c     Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
       FX=F0123
       RETURN
       END
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2711,59 +2864,120 @@ C     EST MAXIMUM.
 C Subroutines SAT4 and DIE
 
 
-      MODULE SAT4_DIE
+      MODULE DISSOC
+      IMPLICIT NONE
+
+
+
+
+
+C Variables filled by READ_DISSOC() (file dissoc.dat)
+C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
+
+C ISSUE: I created new variables to decouple from logic while reading this file.
+C        The original mixes reading and logic, and I don't want to track down the
+C        variables that are read right now. It seems, BTW, that many of them aren't used.
+C ISSUE: this may be temporary, or to test not using COMMON, or remain just like this
+
+
+C RESULT: common blocks are really not needed!!!
+
+C Variables filled by READ_DISSOC() (file dissoc.dat)
+C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
+      ! dissoc.dat, metals part
+      ÌNTEGER, PARAMETER :: MAX_dissoc_NMETAL=50,  ! Limit number of metal rows in dissoc.dat
+     +                      MAX_dissoc_NELEMXI=98  ! Maximum value allowed for each element of dissoc_NELEMX ! TODO CHeck also when reading atomic number of metals
+      INTEGER, PARAMETER :: 
+      ! ISSUE Number above is tied to SAT4() DATA ELEMNT(99)...
+     
+
+      INTEGER dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
+      CHARACTER*2 dissoc_ELEMS
+      INTEGER dissoc__IG0, dissoc__IG1
+      REAL dissoc__IP, dissoc__CCLOG
+      DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
+     1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
+      ! JT2015 I introduced these variables, double underscore to emphasize that they
+      !        are not just old variables that had a prefix added.
+     2          dissoc__IP(MAX_dissoc_NMETAL),      ! These other 4 variables are used
+     3          dissoc__IG0(MAX_dissoc_NMETAL),     ! for filling local variables
+     4          dissoc__IG1(MAX_dissoc_NMETAL),     ! within SAT4()
+     5          dissoc__CCLOG(MAX_dissoc_NMETAL)    !
+
+      ! dissoc.dat, molecules part
+      PARAMETER(MAX_dissoc_NMOL=600)  ! Limit number of molecule rows ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
+      CHARACTER dissoc_MOL*3
+      INTEGER dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
+      DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
+     1          dissoc_C(MAX_dissoc_NMOL, 5),
+     2          dissoc_MMAX(MAX_dissoc_NMOL),
+     3          dissoc_NELEM(5, MAX_dissoc_NMOL),
+     4          dissoc_NATOM(5, MAX_dissoc_NMOL)
+
+
+
+
+
+
+      INTEGER, PRIVATE, PARAMETER :: 
+     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
+     + Z_ELECTRON = 99,   ! Fictitious atomic number of electron
+     + Z_H_STAR   = 100   ! Fictitious atomic number of "H*"
+
+
+
+
+      ! Prefix "sat4_" denotes variables filled by SAT4() (or indirectly, DIE())
+
+      
+      ! They will be pointer targets at molecula.f:POINT_PPA_PB()
+      REAL, TARGET, DIMENSION(MAX_modeles_NTOT) :: sat4_PPH, sat4_PPC2,
+     + sat4_PN,
+     + sat4_PC13, sat4_PMG, sat4_PO, sat4_PTI, sat4_PFE
+    
+    
+      ! ISSUE These variables are assigned but never used!!!
+      REAL, DIMENSION(MAX_modeles_NTOT) :: sat4_PNG, sat4_PIG 
+
+      REAL, PRIVATE, DIMENSION(MAX_Z) :: 
+     + IP, CCOMP, UIIDUI, P, FP, KP
+
+      REAL, PRIVATE, DIMENSION(MAX_dissoc_NMOL) :: 
+     + PPMOL, APMLOG
+
+
+
+
+
+      REAL PE ! Fictitious pressure of electron?? ISSUE: is it?
+     
+      ! ISSUE I won't do it this way until I sort the conflicts in DIE
+      !~REAL PE ! Fictitious pressure of the electron?? is it? ISSUE
+      !~EQUIVALENCE (P(Z_ELECTRON), P_ELECTRON)
+    
 
 C     ========
       CONTAINS
 C     ========
 
-C-------------------------------------------------------------------------------
+
+C================================================================================================================================
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
-      SUBROUTINE SAT4(IT)
-C
-      REAL  IP,KP,KPLOG,IPI,NH
-      REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
-      REAL  dissoc_EPS,dissoc_SWITER, dissoc_C
-      INTEGER dissoc_NIMAX, dissoc_NMETAL, dissoc_NMOL, dissoc_NATOM, dissoc_NELEM,dissoc_MMAX
-      
-      ! TODO Clean declaration of variables starting with sat4_ (and module)
-      DIMENSION sat4_PPH(MAX_modeles_NTOT),sat4_PPC2(MAX_modeles_NTOT),
-     1      sat4_PO(MAX_modeles_NTOT),sat4_PTI(MAX_modeles_NTOT),sat4_PMG(MAX_modeles_NTOT),sat4_PC13(MAX_modeles_NTOT),sat4_PN(MAX_modeles_NTOT),
-     2      sat4_PFE(MAX_modeles_NTOT)
-     
-      DIMENSION sat4_PNG(MAX_modeles_NTOT),sat4_PIG(MAX_modeles_NTOT)  ! ISSUE These variables are assigned but never used!!!
-        
-      COMMON /COMFH1/ PPMOL(600), APMLOG(600),IP(100),
-     2                CCOMP(100), UIIDUI(100), COMFH1_P(100), FP(100),
-     3                KP(100)
-
-      COMMON /VAL/    PPG(600,50)
-
+      SUBROUTINE SAT4()
+      IMPLICIT NONE
+      REAL  KPLOG, IPI
+       
 C ISSUE Careful with all this ELE<something> variables, this is messy
-      CHARACTER*2 ELEMNT, ELEMXI, YA
-      CHARACTER*3 dissoc_MOL
-      DIMENSION   TO(50)
-      DIMENSION YA(525), YB(525), YC(525), YD(525),ELEMNT(100),
-     2      CCLOG(100),G0(100),G1(100),NATOMM(5),NELEMM(5),
-     3      XP(50,20)
-      DATA ELEMNT(99),ELEMNT(100)/'E-','H*'/
+      REAL, DIMENSION(MAX_modeles_NTOT, MAX_dissoc_NMETAL) :: XP
+
 
 C
 C*****IMPUT A
 
-      AVO = 0.602217E 24
-      SPA = 0.196E-01
-      GRA = 0.275423E 05
-      AHE = 0.100E 00
-      IND = 1
       ECONST = 4.342945E-1
 
-C (JT2015) This fragment is already adapted
-      CALL READ_DISSOC('dissoc.dat')
-C (JT2015) This fragment is already adapted
-      ! Infers other variables from the metal rows of dissoc.dat
+      ! Infers other variables from variables dissoc__* (notice the double underscore)
       DO I = 1, dissoc_NMETAL
-
           CCLOGI = dissoc__CCLOG(I)+main_AFSTAR
 C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
           CCLOGI = CCLOGI+main_XXCOR(I)
@@ -2774,193 +2988,175 @@ C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I 
           IG0I = dissoc__IG0(I)
           IG1I = dissoc__IG1(I)
 
-          ELEMNT(NELEMXI) = dissoc_ELEMS(I)
-          IP(NELEMI) = dissoc__IP(I)
+          IP(NELEMXI) = dissoc__IP(I)
           UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
-          G0(NELEMXI) = IG0I
-          G1(NELEMXI) = IG1I
-          CCLOG(NELEMXI) = CCLOGI
           CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
-          WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
+          
+          IF (VERBOSE) THEN !--verbose--!
+            WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
      1          dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
                 IG0I, IG1I, CCLOGI-main_AFSTAR
+          END IF
       END DO
+      
 C
-C*****IMPUT D
-      J = 0
- 1010 J = J + 1
-      READ(23,5011)dissoc_MOL(J),(dissoc_C(J,K),K=1,5)
-     1   ,dissoc_MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
-      print 5011, dissoc_MOL(J),(dissoc_C(J,K),K=1,5)
-     1   ,dissoc_MMAX(J),(NELEMM(M),NATOMM(M),M=1,4)
-      MMAXJ = dissoc_MMAX(J)
-      IF(MMAXJ.EQ.0) GO TO 1014
-      DO 1012 M=1,MMAXJ
-      dissoc_NELEM(M,J) = NELEMM(M)
-      dissoc_NATOM(M,J) = NATOMM(M)
- 1012 CONTINUE
- 1110 GO TO 1010
-C     STARTING VALUE OF THE SOLUTION
- 1014 dissoc_NMOL = J - 1
-      DO 1400 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      P(NELEMI)=1.0E-20
+C orig *****INPUT D
+
+C orig STARTING VALUE OF THE SOLUTION
+
+      DO 1400 I = 1,dissoc_NMETAL
+        NELEMI = dissoc_NELEMX(I)
+        sat4_P(NELEMI) = 1.0E-20 
  1400 CONTINUE
-      P(99)=1.0E-10
-C
-C*****IMPUT E
-      DO 1020  ITO=1,IT
- 1023 THETA=modeles_TETA(ITO)
-      TEM=5040.0/THETA
- 1024 PG_LOCAL_SAT4=modeles_PG(ITO)
-      PGLOG=ALOG10(PG_LOCAL_SAT4)
-      NH = modeles_NH(ITO)
-      TO(ITO)=10.**modeles_T5L(ITO)
-C
+ 
+      ! ISSUE What if atomic number 99 was already in dissoc.dat?
+      sat4_P(Z_ELECTRON) = 1.0E-10
+      ! ISSUE: what about 100?
+     
 
-      CALL DIE(TEM,PG_LOCAL_SAT4)
-      PE_LOCAL_SAT4=P(99)
-      PELOG=ALOG10(PE_LOCAL_SAT4)
+C orig *****INPUT E
+      DO 1020 ITO = 1,modeles_NTOT
+ 1023   THETA = modeles_TETA(ITO)
+        TEM = 5040.0/THETA
+ 1024   PG_LOCAL_SAT4 = modeles_PG(ITO)
+        PGLOG = ALOG10(PG_LOCAL_SAT4)
+        
+        CALL DIE(TEM,PG_LOCAL_SAT4)
 
+        PE = sat4_P(Z_ELECTRON)
+        PELOG = ALOG10(PE)
+        
+        DO 1303 I=1,dissoc_NMETAL
+          NELEMI = dissoc_NELEMX(I)
+          
+          FPLOG  = ALOG10(FP(NELEMI))
+          XP(ITO,I) = sat4_P(NELEMI)+1.0E-30
+          PLOG   = ALOG10( XP(ITO,I) )
+          PDFPL  = PLOG - FPLOG
+          IF (MOD(I,5)) 1303,1304,1303
+ 1304   CONTINUE
+ 1303   CONTINUE
+        
+        IRL = 120
+        DO 1184 I=1,dissoc_NMETAL
+          NELEMI = dissoc_NELEMX(I)
+          
+          PLOG   = ALOG10(sat4_P(NELEMI)+1.0E-30)
+          KPLOG  = ALOG10(KP(NELEMI)+1.0E-30)
+          PIONL  = PLOG + KPLOG - PELOG
+          XLOG   = PIONL - PGLOG
 
-      DO 1303 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      FPLOG=ALOG10(FP(NELEMI))
-      XP(ITO,I) = P(NELEMI)+1.0E-30
-      PLOG = ALOG10( XP(ITO,I) )
-      PDFPL = PLOG - FPLOG
-      IF(MOD(I,5)) 1303,1304,1303
- 1304 CONTINUE
- 1303 CONTINUE
- 1231 CONTINUE
+          IF (I .NE. dissoc_NMETAL ) GO TO 1450
+          IQ  = I / 120
+          IR  = dissoc_NMETAL - IQ * 120
+          IRL = IR / 3
+          GO TO 1460
+ 1450     IF (MOD(I,120))  1184,1460,1184
+         
+ 1460     NBL = 0
+          DO 1470  K1=1,120,3
+            NBL = NBL + 1
+            K2 = K1 + 1
+            K3 = K1 + 2
+            IF ( NBL.EQ.IRL + 1)  GO TO 1480
+ 1475       CONTINUE
+ 
+            IF (MOD(NBL,5)) 1470,1500,1470
+ 1500       CONTINUE
+ 1470     CONTINUE
+          GO TO 1184
 
-      IRL = 120
-      DO 1184 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      YA(I)  =  ELEMNT(NELEMI)
-      PLOG=ALOG10(P(NELEMI)+1.0E-30)
-      KPLOG=ALOG10(KP(NELEMI)+1.0E-30)
-      YD(I)  =  KPLOG
-      PIONL = PLOG + KPLOG - PELOG
-      YB(I) = PIONL
-      XLOG = PIONL - PGLOG
-      YC(I)  =  XLOG
-C
-      IF (  I.NE.dissoc_NMETAL )  GO TO 1450
-       IQ = I / 120
-      IR  =  dissoc_NMETAL  -  IQ * 120
-      IRL  =  IR / 3
-      GO TO 1460
- 1450 IF ( MOD(I,120) )  1184,1460,1184
-C
- 1460 NBL = 0
-      DO 1470  K1=1,120,3
-      NBL = NBL + 1
-      K2 = K1 + 1
-      K3 = K1 + 2
-      IF ( NBL.EQ.IRL + 1)  GO TO 1480
- 1475 CONTINUE
-C1475 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2),
-C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
-      IF ( MOD(NBL,5) ) 1470,1500,1470
- 1500 CONTINUE
-C1500    PRINT 6089
- 1470 CONTINUE
-      GO TO 1184
- 1480 IRR  =  IR  -  IRL * 3
-      IF ( IRR.EQ.0 )  GO TO 1184
-      GO TO (1482,1484), IRR
- 1482 CONTINUE
-C1482 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1) )
-      GO TO 1184
- 1484 CONTINUE
-C1484 PRINT 6495, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
- 1184 CONTINUE
-C
-      IRL = 120
-      KD =-119
-      DO 1084 J=1,dissoc_NMOL
-         YA(J)  =  dissoc_MOL(J)
-      JCOUNT = JCOUNT + 1
-      PMOLL=ALOG10(PPMOL(J)+1.0E-30)
-         YB(J) = PMOLL
-      XLOG = PMOLL - PGLOG
-         YC(J)  =  XLOG
-      PPG(J,ITO)  =  XLOG
-          YD(J)  =  APMLOG(J)
-C
-      IF ( J.NE.dissoc_NMOL ) GO TO 2450
-       IQ = J / 120
-      IR  =  dissoc_NMOL    -  IQ * 120
-      IRL  =  IR / 3
-      GO TO 2460
- 2450 IF ( MOD(J,120) )  2184,2460,2184
- 2460 NBL = 0
-C        PRINT 6092
-      KD = KD + 120
-      KF = KD + 119
-      DO 2470  K1=KD,KF,3
-      NBL = NBL + 1
-      K2 = K1 + 1
-      K3 = K1 + 2
-      IF ( NBL.EQ.IRL + 1)  GO TO 2480
- 2475 CONTINUE
-C2475 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2),
-C    3              YA(K3), YB(K3), YC(K3), YD(K3) )
-      IF ( MOD(NBL,5) ) 2470,2500,2470
- 2500 CONTINUE
-C2500  PRINT 6089
- 2470 CONTINUE
-      GO TO 2184
- 2480 IRR  =  IR  -  IRL * 3
-      IF ( IRR.EQ.0 )  GO TO 2184
-      GO TO (2482,2484), IRR
- 2482 CONTINUE
-C2482 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1) )
-      GO TO 2184
- 2484 CONTINUE
-C2484 PRINT 6496, ( YA(K1), YB(K1), YC(K1), YD(K1),
-C    2              YA(K2), YB(K2), YC(K2), YD(K2) )
- 2184 CONTINUE
- 1084 CONTINUE
-C     PRINT 6600
-C
- 1020  CONTINUE
-cpc      WRITE(6,100) (TO(ITO),ITO=1,IT)
+          
+ 1480     IRR = IR - IRL*3
+          IF (IRR .EQ. 0)  GO TO 1184
+          GO TO (1482,1484), IRR
+ 1482     CONTINUE
+          GO TO 1184
+          
+ 1484     CONTINUE
+ 1184   CONTINUE
+
+        IRL = 120
+        KD =-119
+        DO 1084 J=1,dissoc_NMOL
+          JCOUNT = JCOUNT + 1
+          PMOLL  = ALOG10(PPMOL(J)+1.0E-30)
+          XLOG   = PMOLL - PGLOG
+
+          IF (J .NE. dissoc_NMOL) GO TO 2450
+          IQ = J/120
+          IR =  dissoc_NMOL - IQ*120
+          IRL = IR/3
+          GO TO 2460
+          
+ 2450     IF (MOD(J,120)) 2184,2460,2184
+ 2460     NBL = 0
+ 
+          !--verbose--!
+          IF (VERBOSE) PRINT 6092
+          
+          KD = KD + 120
+          KF = KD + 119
+          DO 2470  K1=KD,KF,3
+            NBL = NBL + 1
+            K2 = K1 + 1
+            K3 = K1 + 2
+            IF ( NBL.EQ.IRL + 1)  GO TO 2480
+ 2475       CONTINUE
+     
+            IF (MOD(NBL,5)) 2470,2500,2470
+            
+ 2500       CONTINUE
+
+            !--verbose--!
+            IF (VERBOSE) PRINT 6089
+            
+ 2470     CONTINUE
+          GO TO 2184
+            
+ 2480     IRR = IR - IRL*3
+          IF (IRR .EQ. 0)  GO TO 2184
+          GO TO (2482,2484), IRR
+ 2482     CONTINUE
+ 
+          GO TO 2184
+ 2484     CONTINUE
+ 2184     CONTINUE
+ 1084   CONTINUE
+ 1020 CONTINUE
+
   100 FORMAT(' TO=',5E15.5)
-C
-C1111  PUNCH 700,   atomgrade_ELEM(I),( XP(ITX,I),ITX=1,IT )
+
       DO 1111 I=1,4
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
- 1111 PRINT 50, (XP(ITX,I),ITX=1,IT)
+ 1111 PRINT 50, (XP(ITX,I),ITX=1,modeles_NTOT)
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
    50 FORMAT(7E11.4)
-cpc      write(40,*) IT
-      DO 51 ITX=1,IT
+   
+      DO 51 ITX=1,modeles_NTOT
         sat4_PPH(ITX)=XP(ITX,1)
         sat4_PPC2(ITX)=XP(ITX,3)
-cpc        write(40,300) sat4_PPC2(ITX)
         sat4_PN(ITX)=XP(ITX,4)
         sat4_PO(ITX)=XP(ITX,5)
         sat4_PC13(ITX)=XP(ITX,6)
         sat4_PTI(ITX)=XP(ITX,15)
-C        write(90,300) sat4_PTI(ITX)
         sat4_PMG(ITX)=XP(ITX,8)
-        sat4_PNG(ITX)=XP(ITX,9)
+        sat4_PNG(ITX)=XP(ITX,9)   ! ISSUE Not used
         sat4_PIG(ITX)=XP(ITX,10)  ! ISSUE Not used
         sat4_PFE(ITX)=XP(ITX,16)
    51  CONTINUE
  1100  CONTINUE
-  300  Format('  PPC2 SAT4 ', E11.3)
-C   FORMATS
-C
-  700  FORMAT ( A3,7E11.4,/(7E11.4) )
+ 
+  300  FORMAT('  PPC2 SAT4 ', E11.3)
+  
+      !=====
+      ! Formats 
+      !=====
+
+  700 FORMAT (A3,7E11.4,/(7E11.4))
   701 FORMAT(1X,A3,7E11.4,/(7E11.4))
- 500  FORMAT (20I5)
-  501  FORMAT (I4)
+  500 FORMAT (20I5)
+  501 FORMAT (I4)
 
  5011 FORMAT(A3,5X,E11.5,4E12.5,1X,I1,4(I2,I1) )
  5021 FORMAT (F10.3,E12.5,E12.6)
@@ -2972,197 +3168,236 @@ C
  6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
      1///)
  6302 FORMAT(1H ,1X,A4,1X,I2,4X,F10.3,1X,E11.4,2F10.3,4X,F10.3)
- 6305 FORMAT(1H )
- 6307 FORMAT('   P(E) 8888 FICTITIUS PRESSURE OF THE
-     1      NUCLEUS OF THE ELEMENT',/'P(A) **** PARTIAL PRESSURE OF THE
-     2      MONOATOMIC GAS OF THE ELEMENT')
- 6089 FORMAT (1H )
  6092 FORMAT (1H1,3(5X,'MOLECULE  LOG P   LOG P/PG  LOG KP  ')//)
  6495 FORMAT ( 3(8X,A4,'+',3F9.3) )
- 6496 FORMAT ( 3(9X,A4,3F9.3) )
- 6600 FORMAT (1H1)
- 6992 FORMAT (///,3(9X,'ION   LOG P   LOG P/PG  LOG KP ')//)
       RETURN
       END
 
 
-C*****DIE9
 
-C-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+C*****DIE9
+C================================================================================================================================
       SUBROUTINE DIE(TEM,PG_LOCAL_SAT4)
       REAL  IP,KP,KPLOG,IPI,modeles_NH
-      REAL  CCOMP, UIIDUI, P, FP,dissoc_NELEMX
+      REAL  CCOMP, UIIDUI, sat4_P, FP,dissoc_NELEMX
 
       COMMON /COMFH1/ PPMOL(MAX_dissoc_NMOL), APMLOG(MAX_dissoc_NMOL), IP(100),
-                      CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
+                      CCOMP(100), UIIDUI(100), sat4_P(100), FP(100), KP(100),
 
       DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
+      
       ECONST = 4.342945E-1
-      EPSDIE=5.0E-3
-      T=5040.0/TEM
-      PGLOG=ALOG10(PG_LOCAL_SAT4)
-C
-C     HEH=HELIUM TO HYDROGEN RATIO BY NUMBER
-      HEH=CCOMP(2)/CCOMP(1)
-C
+      EPSDIE = 5.0E-3
+      T      = 5040.0/TEM
+      PGLOG  = ALOG10(PG_LOCAL_SAT4)
+      HEH    = CCOMP(2)/CCOMP(1) ! orig HEH=HELIUM-TO-HYDROGEN RATIO BY NUMBER ! ISSUE This assumes H and He are in the right places. If so, one gotta impose restrictions on the file reading 
+
 C     EVALUATION OF LOG KP(MOL)
       DO 1025 J =1, dissoc_NMOL
-      APLOGJ = dissoc_C(J,5)
-      DO 1026 K=1,4
-      KM5=5-K
-      APLOGJ = APLOGJ*T     + dissoc_C(J,KM5)
- 1026 CONTINUE
-      APMLOG(J) = APLOGJ
+        APLOGJ = dissoc_C(J,5)
+        DO 1026 K=1,4
+          KM5 = 5-K
+          APLOGJ = APLOGJ*T + dissoc_C(J,KM5)
+ 1026   CONTINUE
+        APMLOG(J) = APLOGJ
  1025 CONTINUE
+ 
       DHH = (((0.1196952E-02*T-0.2125713E-01)*T+0.1545253E+00)*
      1  (-0.5161452E+01))*T+0.1277356E+02
-      DHH=EXP(DHH/ECONST)
-C
+      DHH = EXP(DHH/ECONST)
+
 C     EVALUATION OF THE IONIZATION CONSTANTS
       TEM25 = TEM**2*SQRT(TEM)
       DO 1060 I = 1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
+        NELEMI = dissoc_NELEMX(I)
+        KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
  1060 CONTINUE
-      HKP=KP(1)
-      IF(T-0.6) 1084,1072,1072
-C
+ 
+      HKP = KP(1)  ! ISSUE another access by number, better to define a Z_H (for readability/meaning a 1 is just a 1, but Z_H is the atomig number of Hydrogen) and impose restrictions upon reading dissoc.dat
+      IF (T-0.6) 1084,1072,1072
+      
 C     PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
- 1084 PPH=SQRT(HKP *(PG_LOCAL_SAT4/(1.0+HEH)+HKP ))-HKP
-      PH=PPH**2/HKP
+ 1084 PPH = SQRT(HKP *(PG_LOCAL_SAT4/(1.0+HEH)+HKP ))-HKP
+      PH  = PPH**2/HKP
       GO TO 1102
-C
+
 C     PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
- 1072 IF(PG_LOCAL_SAT4/DHH-  0.1 ) 1073,1073,1074
- 1073 PH=PG_LOCAL_SAT4/(1.0+HEH)
+ 1072 IF (PG_LOCAL_SAT4/DHH - 0.1) 1073,1073,1074
+ 1073 PH = PG_LOCAL_SAT4/(1.0+HEH)
       GO TO 1102
- 1074 PH=0.5*(SQRT(DHH*(DHH+4.0*PG_LOCAL_SAT4/(1.0+HEH)))-DHH)
+      
+      
+ 1074 PH = 0.5*(SQRT(DHH*(DHH+4.0*PG_LOCAL_SAT4/(1.0+HEH)))-DHH)
+
 C
 C     EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
 C     PG_LOCAL_SAT4=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
- 1102 U=(1.0+2.0*HEH)/DHH
-      Q=1.0+HEH
-      R=(2.0+HEH)*SQRT(HKP )
-      S=-1.0*PG_LOCAL_SAT4
-      X=SQRT(PH)
-      ITERAT=0
- 1103 F=((U*X**2+Q)*X+R)*X+S
-      DF=2.0*(2.0*U*X**2+Q)*X+R
-      XR=X-F/DF
-      IF(ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
+ 1102 U = (1.0+2.0*HEH)/DHH
+      Q = 1.0+HEH
+      R = (2.0+HEH)*SQRT(HKP )
+      S = -1.0*PG_LOCAL_SAT4
+      X = SQRT(PH)
+      ITERAT = 0
+ 1103 F  = ((U*X**2+Q)*X+R)*X+S
+      DF = 2.0*(2.0*U*X**2+Q)*X+R
+      XR = X-F/DF
+      IF (ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
  1106 ITERAT=ITERAT+1
-      IF(ITERAT-50) 1104,1104,1107
- 1107   PRINT 6108, TEM,PG_LOCAL_SAT4,X,XR,PH
+      IF (ITERAT-50) 1104,1104,1107
+ 1107 IF (VERBOSE) PRINT 6108, TEM,PG_LOCAL_SAT4,X,XR,PH !--verbose--!
+ 
  6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
-     1'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
+     1 'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
       GO TO 1105
- 1104 X=XR
+      
+ 1104 X = XR
       GO TO 1103
- 1105 PH=XR**2
-      PHH=PH**2/DHH
-      PPH=SQRT(HKP *PH)
-      FPH  =PH+2.0*PHH+PPH
-C      PRINT 6109,  TEM,T,PG,FPH,PH
-c 6109      FORMAT(1X,'TEM=',F10.2,10X,'THETA=',F8.4
-c     1     ,10X,'PG=',E13.5,10X,'FPH',E12.3,10X,'PH=',E12.3)
-C     P(100)=PH+
-      P(100)=PPH
+      
+ 1105 PH  = XR**2
+      PHH = PH**2/DHH
+      PPH = SQRT(HKP *PH)
+      FPH = PH+2.0*PHH+PPH
+
+
+      ! ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
+      ! THe current dissoc.dat has no Z=100 (neither 99).
+      ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
+      sat4_P(Z_H_STAR) = PPH
+
 C
-C     EVALUATION OF THE FICTITIOUSPRESSURE OF EACH ELEMENT
+C     EVALUATION OF THE FICTITIOUS PRESSURE OF EACH ELEMENT
       DO 1070 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      FP(NELEMI) = CCOMP(NELEMI)*FPH
+        NELEMI = dissoc_NELEMX(I)
+        FP(NELEMI) = CCOMP(NELEMI)*FPH
  1070 CONTINUE
+ 
 C
 C     CHECK OF INITIALIZATION
-      PE_LOCAL_DIE=P(99)
-      IF(PH-P(1)) 1402,1402,1401
+      PE = sat4_P(Z_ELECTRON)
+
+      
+      IF(PH-sat4_P(1)) 1402,1402,1401  ! ISSUE: Accessing index 1 of variable P, is this too much of an assumption (e.g. that the element is H)?
  1401 DO 1403 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      P(NELEMI)=FP(NELEMI)*EXP(-5.0*T/ECONST)
+        ! ISSUE: what if some NELEMI=Z_ELECTRON=99? THen sat4_P(99) will no longer be equal to PE
+        NELEMI=dissoc_NELEMX(I)
+        sat4_P(NELEMI) = FP(NELEMI)*EXP(-5.0*T/ECONST)
  1403 CONTINUE
-      P(1)=PH
+      sat4_P(1) = PH   ! ISSUE: overwriting P(1)
 C
 C     RUSSELL EQUATIONS
  1402 CONTINUE
  6003 FORMAT(1H0)
       NITER = 0
  1040 DO 1030 I =1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      FX(NELEMI) = -FP(NELEMI) + P(NELEMI)*(1.0 + KP(NELEMI)/PE_LOCAL_DIE)
-      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE_LOCAL_DIE
+        NELEMI = dissoc_NELEMX(I)
+        FX(NELEMI) = -FP(NELEMI) + 
+     @               sat4_P(NELEMI)*(1.0 + KP(NELEMI)/PE)  ! ISSUE if NELEMI=99, sat4_P(99) and PE are potentially not the same thing! Is this alright?
+        DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
  1030 CONTINUE
-      SPNION=0.0
+ 
+      SPNION = 0.0
       DO 1041 J=1,dissoc_NMOL
-      MMAXJ = dissoc_MMAX(J)
-      PMOLJL=-APMLOG(J)
-      DO 1042 M =1,MMAXJ
-      NELEMJ = dissoc_NELEM(M,J)
-      NATOMJ = dissoc_NATOM(M,J)
-      PMOLJL = PMOLJL + FLOAT(NATOMJ)*ALOG10(P(NELEMJ))
- 1042 CONTINUE
-      IF(PMOLJL - (PGLOG+1.0) ) 1046,1046,1047
- 1047 DO 1048 M =1,MMAXJ
-      NELEMJ = dissoc_NELEM(M,J)
-      NATOMJ = dissoc_NATOM(M,J)
-      P(NELEMJ)=1.0E-2*P(NELEMJ)
-      PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
- 1048 CONTINUE
- 1046 PMOLJ = EXP(PMOLJL/ECONST)
-      DO 1044 M =1,MMAXJ
-      NELEMJ = dissoc_NELEM(M,J)
-      NATOMJ = dissoc_NATOM(M,J)
-      ATOMJ = FLOAT(NATOMJ)
-      IF(NELEMJ.EQ.99) SPNION=SPNION + PMOLJ
-      DO 1043 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      IF(NELEMJ.EQ.NELEMI) GO TO 1045
-      GO TO 1043
- 1045 FX(NELEMI) = FX(NELEMI) + ATOMJ*PMOLJ
-      DFX(NELEMI) = DFX(NELEMI) + ATOMJ**2*PMOLJ/P(NELEMI)
- 1043 CONTINUE
- 1044 CONTINUE
-      PPMOL(J)= PMOLJ
+        MMAXJ  = dissoc_MMAX(J)
+        PMOLJL = -APMLOG(J)
+        DO 1042 M =1,MMAXJ
+          NELEMJ = dissoc_NELEM(M,J)
+          NATOMJ = dissoc_NATOM(M,J)
+          PMOLJL = PMOLJL + FLOAT(NATOMJ)*ALOG10(sat4_P(NELEMJ))
+ 1042   CONTINUE
+        IF(PMOLJL - (PGLOG+1.0) ) 1046,1046,1047
+ 1047   DO 1048 M =1,MMAXJ
+          NELEMJ = dissoc_NELEM(M,J)
+          NATOMJ = dissoc_NATOM(M,J)
+          
+          ! ISSUE at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
+          sat4_P(NELEMJ)=1.0E-2*sat4_P(NELEMJ)
+          PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
+ 1048   CONTINUE
+ 
+ 1046   PMOLJ = EXP(PMOLJL/ECONST)
+        DO 1044 M =1,MMAXJ
+          NELEMJ = dissoc_NELEM(M,J)
+          NATOMJ = dissoc_NATOM(M,J)
+          ATOMJ = FLOAT(NATOMJ)
+          
+          IF (NELEMJ .EQ. Z_ELECTRON) THEN  ! ISSUE This bit suggests that Z=99 is allowed in the molecules part
+            SPNION = SPNION + PMOLJ
+          END IF
+        
+          DO 1043 I=1,dissoc_NMETAL
+            NELEMI = dissoc_NELEMX(I)
+            IF(NELEMJ .EQ. NELEMI) GO TO 1045
+            GO TO 1043
+ 1045       FX(NELEMI) = FX(NELEMI) + ATOMJ*PMOLJ
+            DFX(NELEMI) = DFX(NELEMI) + ATOMJ**2*PMOLJ/sat4_P(NELEMI)
+ 1043     CONTINUE
+ 1044   CONTINUE
+        PPMOL(J) = PMOLJ
  1041 CONTINUE
+ 
 C
 C     SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
       DO 2001 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      WA(I)=ALOG10(P(NELEMI)+1.0E-30)
+        NELEMI=dissoc_NELEMX(I)
+        WA(I)=ALOG10(sat4_P(NELEMI)+1.0E-30)
  2001 CONTINUE
-      IMAXP1=dissoc_NMETAL+1
-      WA(IMAXP1)=ALOG10(PE_LOCAL_DIE+1.0E-30)
+ 
+      IMAXP1 = dissoc_NMETAL+1
+      WA(IMAXP1) = ALOG10(PE+1.0E-30)
       DELTA = 0.0
       DO 1050 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      PREV(NELEMI) = P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
-      PREV(NELEMI) = ABS(PREV(NELEMI))
-      IF(PREV(NELEMI).LT.1.0E-30)PREV(NELEMI)=1.0E-30
-      Z(NELEMI) = PREV(NELEMI)/P(NELEMI)
-      DELTA = DELTA + ABS(Z(NELEMI) - 1.0)
-      IF(dissoc_SWITER) 2500,2500,2501
- 2501 P(NELEMI) = (PREV(NELEMI) + P(NELEMI) )*0.5
-      GO TO 1050
- 2500 P(NELEMI)=PREV(NELEMI)
+        NELEMI = dissoc_NELEMX(I)
+        PREV(NELEMI) = sat4_P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
+        PREV(NELEMI) = ABS(PREV(NELEMI))
+        
+        IF (PREV(NELEMI) .LT. 1.0E-30) PREV(NELEMI)=1.0E-30
+        
+        Z(NELEMI) = PREV(NELEMI)/sat4_P(NELEMI)
+        DELTA = DELTA + ABS(Z(NELEMI) - 1.0)
+        
+        IF (dissoc_SWITER) 2500,2500,2501
+        
+ 2501   sat4_P(NELEMI) = (PREV(NELEMI) + sat4_P(NELEMI) )*0.5
+        GO TO 1050
+        
+ 2500   sat4_P(NELEMI) = PREV(NELEMI)
  1050 CONTINUE
+ 
+C 
 C     IONIZATION EQUILIBRIUM
       PEREV = 0.0
       DO 1061 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      PEREV = PEREV + KP(NELEMI)*P(NELEMI)
+        NELEMI = dissoc_NELEMX(I)
+        PEREV = PEREV + KP(NELEMI)*sat4_P(NELEMI)
  1061 CONTINUE
-      PEREV=SQRT( PEREV/(1.0+SPNION/PE_LOCAL_DIE) )
-      DELTA = DELTA + ABS((PE_LOCAL_DIE-PEREV)/PE_LOCAL_DIE)
-      PE_LOCAL_DIE =(PEREV + PE_LOCAL_DIE )*0.5
-      P(99)=PE_LOCAL_DIE
-      IF(DELTA - dissoc_EPS) 1051,1051,1052
+ 
+      PEREV = SQRT(PEREV/(1.0+SPNION/PE))
+      DELTA = DELTA + ABS((PE-PEREV)/PE)
+      PE = (PEREV + PE)*0.5  ! Note that it has an equivalence with the last element of sat4_P
+      sat4_P(Z_ELECTRON)=PE
+
+      IF (DELTA - dissoc_EPS) 1051,1051,1052
+      
  1052 NITER = NITER + 1
-      IF(NITER-dissoc_NIMAX)1040,1040,1054
- 1054    PRINT 6055,  dissoc_NIMAX
+      IF (NITER-dissoc_NIMAX) 1040,1040,1054
+      
+ 1054 IF (VERBOSE) PRINT 6055, dissoc_NIMAX
+ 
  6055 FORMAT(1H0,39H *DOES NOT CONVERGE AFTER ITERATIONS OF,I4/////)
-C     ATOMIC NUMBER 99 = ELECTRON
+
+
+
  1051 RETURN
       END
+
+
 
 
 
@@ -3176,6 +3411,177 @@ C-------------------------------------------------------------------------------
           MINI=IFA(I)
         END IF
       END DO
+      RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C================================================================================================================================
+C READ_DISSOC(): reads file dissoc.dat to fill variables dissoc_*
+C
+C Original UNIT: 23
+C
+C This file must end with a blank row so that the routine can detect
+C the end of the file
+
+
+C TODO Various tests:
+C TODO - mismatched NMETAL and metal rows
+C TODO - check if NMETAL and NMOL match what they are supposed to (assertions in test)
+
+C PROPOSE: use READ()'s "END=" option
+
+      SUBROUTINE READ_DISSOC(filename)
+      INTEGER UNIT_
+      INTEGER I
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 filename
+      CHARACTER*128 S
+
+      ! Auxiliary temp variables for reading file
+      INTEGER*4 NATOMM, NELEMM
+      DIMENSION NATOMM(5), NELEMM(5)
+
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
+
+C row 01
+C =======
+C NMETAL - NUMBER OF ELEMENTS CONSIDERED IN CHEMICAL EQUILIBRIUM
+C NIMAX  - MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
+C EPS    - IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
+C SWITER - IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
+C          IF SWITER .LE. 0;   X(I+1)=X(I+1)
+C
+C Example:    18  100    0.005   -1.0
+      READ(UNIT_,'(2I5, 2F10.5, I10)')
+     1     dissoc_NMETAL, dissoc_NIMAX, dissoc_EPS, dissoc_SWITER
+
+C rows 2 to NMETAL+1
+C ==================
+C 6 columns:
+C   col 1 -- symbol of chemical element
+C   col 2 -- atomic number "N"
+C   col 3 -- (?)
+C   col 4 -- (?)
+C   col 5 -- (?)
+C   col 6 -- (?)
+      DO I = 1, dissoc_NMETAL
+        READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
+     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc__IP(I),
+     2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
+     
+        !--spill check--!
+        IF (dissoc_NELEMX(I) .GT. MAX_dissoc_NELEMXI) THEN
+          WRITE(*,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ', 
+     +     dissoc_NELEMX(I), ' over maximum allowed (', 
+     +     MAX_dissoc_NELEMXI, ')'
+          STOP ERROR_EXCEEDED
+        END IF
+          
+      END DO
+
+C rows NMETAL+2 till end-of-file
+C ==============================
+C   col  1     -- "name" of molecule
+C   cols 2-6   -- C(J, 1-5)
+C   col  7     -- MMAX(J) (number of subsequent columns)/2
+C   cols 8-... -- Maximum of 8 columns here.
+C                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J) ISSUE NELEM(M) is atomic number, what about NATOM(M)???
+      J = 0
+ 1010 J = J+1
+C ISSUE: This 1X does not appear in my sample dissoc.dat file
+C ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
+C ISSUE: THere is no 1X
+*      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, I1, 4(I2,I1))')
+     1             dissoc_MOL(J),
+     2             (dissoc_C(J, K), K=1,5),
+     3             dissoc_MMAX(J),
+     4             (NELEMM(M), NATOMM(M), M=1,4)
+
+
+      ! Check, TODO dissoc_MMAX(J) cannot be > 4
+
+      ! TODO not tested, this
+      FLAG_FOUND = .FALSE.
+      DO M = 1, 4
+        DO I = 1, dissoc_NMETAL
+          IF (NELEMM(M) .EQ. dissoc_NELEMX(I)) THEN
+            FLAG_FOUND = .TRUE.
+            EXIT
+          END IF
+        END DO
+        
+        IF (.NOT. FLAG_FOUND) THEN
+          WRITE('READ_DISSOC() molecule "', dissoc_MOL(J), 
+     +     '" atomic number ', NELEMM(M), 'not in atoms list above'
+          STOP ERROR_INVALID
+        END IF
+      END DO
+            
+
+*
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (NELEMM(M), NATOMM(M), M=1,4)
+
+
+
+      MMAXJ = dissoc_MMAX(J)
+      IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
+      DO M = 1, MMAXJ
+          dissoc_NELEM(M,J) = NELEMM(M)
+          dissoc_NATOM(M,J) = NATOMM(M)
+      END DO
+
+
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (dissoc_NELEM(M, J), dissoc_NATOM(M, J), M=1,4)
+
+
+
+      GO TO 1010
+
+ 1014 dissoc_NMOL = J-1
+
+      CLOSE(UNIT=UNIT_)
+
       RETURN
       END
 

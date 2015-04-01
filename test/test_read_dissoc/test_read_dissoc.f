@@ -1,9 +1,12 @@
 
 C     TEST THE READ_MAIN ROUTINE
       PROGRAM TEST_READ_DISSOC
-      USE COMMONS
+      USE READ_FILES
+      CHARACTER*256, PARAMETER :: fn='dissoc.dat'
 
-      CALL READ_DISSOC('dissoc.dat')
+
+
+      CALL READ_DISSOC(fn)
 
       WRITE(*, *)
       WRITE(*, *) 'NMETAL = ', dissoc_NMETAL
@@ -15,8 +18,8 @@ C     TEST THE READ_MAIN ROUTINE
       WRITE (*, *) '======================================'
       DO I = 1, dissoc_NMETAL
         WRITE(*, '(1X, A2, I6, F10.3, 2I5, F10.5)')
-     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc_IP(I),
-     2        dissoc_IG0(I), dissoc_IG1(I), dissoc_CCLOG(I)
+     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc__IP(I),
+     2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
       END DO
 
 
