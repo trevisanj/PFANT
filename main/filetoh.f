@@ -5,7 +5,7 @@ C
 C Variables
 C   f_filetoh_* -- read directly from file
 C   c_filetoh_* -- calculated
-C ISSUE: The distinction above may be temporary, it is easier to merge prefixes than to split them
+C TODO: The distinction above may be temporary, it is easier to merge prefixes than to split them
 C
 
       MODULE FILETOH
@@ -85,7 +85,7 @@ C
 C Arguments:
 C   DTOT -- Number of calculation steps, I think. ISSUE: better explanation
 C           Calculated as: DTOT = (LFIN-LZERO)/main_PAS + 1.0005
-C   TTD -- ISSUE: get explanation
+C   TTD -- ISSUE: get explanation ! TODO get from MT
 C          Calculated as: TTD(D) = ALZERO+main_PAS*(D-1)
 C   ILZERO -- integer version of variable LZERO in main module
 

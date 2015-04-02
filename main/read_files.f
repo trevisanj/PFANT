@@ -1,4 +1,5 @@
       MODULE READ_FILES
+      
 
 
 
@@ -46,6 +47,7 @@ C Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
 
 
 C ISSUE: Can I just declare everything as DOUBLE PRECISION (by default!!)??
+C (MT) Yes and modeles.mod could become an ASCII file!!!
       REAL atomgrade_KIEX, atomgrade__KIEX
       REAL*8 atomgrade_GR, atomgrade_LAMBDA, atomgrade__LAMBDA
 
@@ -207,6 +209,8 @@ C ISSUE: is greater than 900
 C ISSUE: UPDATE: I checked pfantgrade.f and only VVT(1) is used
 C ISSUE:         throughout the program, so I think I can safely
 C ISSUE;         exclude these
+C (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
+C TODO I gotta put this back, but also check again whether the program is prepared to use this
 C      IF(VVT(1) .GT. 900)  THEN   ! VT VARIABLE AVEC LA PROFONDEUR
 C            READ(4,*) IVTOT
 C            READ(4,*) (TOLV(I), I=1, IVTOT)
@@ -237,6 +241,7 @@ C Example: 0
 C line 07 -- XXCOR(I)
 C =======
 C ISSUE: Should be a column in dissoc.dat !!!!!
+C (MT) I agree
 C ISSUE: Is this actually used?
       READ(UNIT_, *)(main_XXCOR(I), I=1, dissoc_NMETAL)
 
@@ -359,6 +364,7 @@ C
 C TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
 C TODO: including other reading routines!!!!!!!!!!!!!!
 C ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
+C (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!
 C TODO Assertions in test to see if numbers match what they are supposed to
 C PROPOSE: use READ()'s "END=" option
 
@@ -407,31 +413,31 @@ C orig *******************************************************************
 
       GO TO 9
 
-10    atomgrade__NBLEND = K  ! ISSUE: check this K, K-1, if ignoring last row was on purpose (no longer ignoring)
+10    atomgrade__NBLEND = K
+
+! MENTION: last atomic line wasn't being used and has been fixed. Original code:
+!~	K=1
+!~9	READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
+!~	READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
+!~	1 ABONDR(K),FINRAI
+!~	write(34,103)ELEM(K),IONI(K),LAMBDA(K)
+!~	GF(K)=10.**ALGF(K)
+!~C        IF(K.EQ.1) GF(K)=10**AGGF
+!~	IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / LAMBDA(K)**2
+!~	IF(FINRAI.EQ.1) GO TO 10
+!~	IF(((LAMBDA(K).GT.LFIN).OR.(LAMBDA(K).LT.LZERO))) GO TO 205
+!~	K=K+1
+!~205	CONTINUE
+!~	GO TO 9
+!~10	NBLEND=K-1
+
+
 
       CLOSE(UNIT=UNIT_)
 
       RETURN
 
       END
-
-C ISSUE: I gotta check with BLB, it seems that the last 2 rows were being ignored, look:
-
-*      K=1
-*9     READ(14,103)atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K)
-*      READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
-*     1 ABONDR(K),FINRAI
-*      write(34,103)atomgrade_ELEM(K),atomgrade_IONI(K),atomgrade_LAMBDA(K)
-*      GF(K)=10.**ALGF(K)
-*C        IF(K.EQ.1) GF(K)=10**AGGF
-*      IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / atomgrade_LAMBDA(K)**2
-*      IF(FINRAI.EQ.1) GO TO 10
-*      IF(((atomgrade_LAMBDA(K).GT.LFIN).OR.(atomgrade_LAMBDA(K).LT.LZERO))) GO TO 205
-*      K=K+1
-*205   CONTINUE
-*      GO TO 9
-*10    NBLEND=K-1
-
 
 
 
@@ -593,9 +599,9 @@ C orig PUIS LES DONNEES CORRESPONDANTS AUX ABSORBANTS METALLIQUES SI NECE
 C orig CALMET=1 SI ON NE TIENT PAS COMPTE DES METAUX
 C orig CALMET=2 SI ON    TIENT     COMPTE DES METAUX
 C
-C ISSUE: see observation below
-C Obs: as opposed to original description, CALMET was being ignored in
-C      original routine LECTUR()
+C ISSUE: as opposed to original description, CALMET was being ignored in original routine LECTUR()
+C (MT) ???
+C (JT) I guess it is a remain of sth and nowadays the metals are always taken into account
 C
 
       SUBROUTINE READ_ABSORU2(filename)
@@ -752,6 +758,7 @@ C ISSUE: depends on other main_* but I think not for long
       IF (main_INUM .GT. 0) ID_ = main_INUM  ! Selects record number
 
 C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
+C (MT) ASSERT main_NHE == modeles_NHE
 
 
       READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG,
@@ -787,7 +794,27 @@ C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt
 *      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
 *      DDHE= ABS(modeles_NHE-DNHE)
 
-      ! ISSUE: I don't get this; it will keep looping forever???
+      ! ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks
+      ! (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
+      
+      
+!~9	READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
+!~	WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
+!~        write(6,108) TIABS
+!~	IF(NTOT.EQ.9999)   GO TO 6
+!~	DDT  = ABS(TEFF-DETEF)
+!~C	DDTA  = ABS(TETAEF-DETAEF)
+!~	DDG = ABS(GLOG-DGLOG)
+!~	DDAB = ABS(ASALOG-DSALOG)
+!~	DDHE= ABS(NHE-DNHE)
+!~C	DDIF = DDTA+DDG+DDAB+DDHE
+!~5	IF(DDT.GT.1.0)   GO TO 9
+!~	IF(DDG.GT.0.01)   GO TO 9
+!~	IF(DDAB.GT.0.01)   GO TO 9
+     
+      
+      ! TODO ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
+      ! TODO Get the epsilon from MT
       IF(DDT .GT. 1.0) THEN
         WRITE(*,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
         STOP ERROR_BAD_VALUE

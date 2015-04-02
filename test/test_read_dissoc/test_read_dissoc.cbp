@@ -31,14 +31,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../../main/commons.f">
+		<Unit filename="../../main/errors.f">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="../../main/read_dissoc.f">
+		<Unit filename="../../main/read_files.f">
 			<Option weight="1" />
 		</Unit>
 		<Unit filename="test_read_dissoc.f">
-			<Option weight="1" />
+			<Option weight="2" />
 		</Unit>
 		<Extensions>
 			<code_completion />

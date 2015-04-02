@@ -2,7 +2,6 @@
       USE READ_FILES
       USE CONFIG
 
-      !~! Old "NM"; ISSUE: what does "NM" stand for?
       !~INTEGER, PARAMETER :: MAX_LINES_PER_MOL=300000
       ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
 
@@ -14,6 +13,7 @@
 
       ! Specifies how many molecules to read
       ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
+      ! (MT) Gonna ask BLB this
       INTEGER km__NUMBER
 
       INTEGER km__LINES_TOTAL  ! Total number of spectral line, counting all molecules

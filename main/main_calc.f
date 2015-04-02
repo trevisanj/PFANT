@@ -141,6 +141,8 @@ C
 
 
       ! ISSUE: KIK never used!!!
+      ! TODO Careful, actually YES!!!! 
+      ! TODO command-line option to select this integration; config
       KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
 
 
@@ -314,6 +316,7 @@ C
         WRITE(6, 117) LZERO, LFIN, DTOT
         IF(DTOT .GT. 40000) THEN
           ! ISSUE: replace with EXIT statement
+          ! TODO Make a more elegant exit
           STOP  !Main loop exit door!
         END IF
 
@@ -1752,7 +1755,7 @@ c     atomes
 260   continue
 C     molecule
       IF(km_MBLEND.EQ.0) GO TO 250
-       DO  L=1,km_MBLEND
+       DO L=1,km_MBLEND
             IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
             KAM(L)=0.
             else
@@ -2221,37 +2224,6 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
 
       END IF  !(fin du IF IOP)
 
-      IF(IOP.EQ.2) THEN
-            IPOINT=600
-            TOLIM=6.00
-
-c     on verifie que le modele n'est pas trop court
-      IF (TO(modeles_NTOT).LT.TOLIM  )    THEN
-      WRITE(6,1504)
-      WRITE(6,1503) modeles_NTOT,TO(modeles_NTOT)
-      WRITE(6,1501)
-      CAVA=2
-      RETURN
-      END IF
-
-      DO  L=1,IPOINT
-            TT2(L) = 0.01 + (L-1) * 0.01
-            CC2(L) = EXP(-1*(TT2(L))) * 0.01
-c     print *, TT(L), CC(L)
-      END DO
-c      STOP
-c
-      F=0.
-            DO  L=1,IPOINT
-            BB2(L)=FAITK30(TT2(L),TO,B,modeles_NTOT)
-            FP2(L)=CC2(L)*BB2(L)
-            F=F+FP2(L)
-            END DO
-
-      RETURN
-      END IF  !(fin du IF IOP)
-
-C
 1500  FORMAT('   LE SP FLIN1 NE PEUT CALCULER L INTENSITE EN 1 PT ',
      1 'DU DISQUE AVEC LA FORMULE A 26PTS (UTILISER 7PTS IOP=0)' )
 1501  FORMAT(1H //)
