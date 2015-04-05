@@ -3288,7 +3288,7 @@ C     RUSSELL EQUATIONS
           NELEMJ = dissoc_NELEM(M,J)
           NATOMJ = dissoc_NATOM(M,J)
           
-          ! ISSUE at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
+          ! ISSUE BIG! at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
           sat4_P(NELEMJ)=1.0E-2*sat4_P(NELEMJ)
           PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
  1048   CONTINUE
