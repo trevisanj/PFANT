@@ -2854,11 +2854,24 @@ C ISSUE: this may be temporary, or to test not using COMMON, or remain just like
 
 C RESULT: common blocks are really not needed!!!
 
-C Variables filled by READ_DISSOC() (file dissoc.dat)
+
+
+
+      ! TODO if MAX_Z ceases to be private, then it must become MAX_dissoc_Z or sth
+      INTEGER, PRIVATE, PARAMETER :: 
+     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
+     + Z_ELECTRON = 99,   ! Fictitious atomic number of electron
+     + Z_H_STAR   = 100,  ! Fictitious atomic number of "H*"
+     + Z_H        = 1,    ! Atomic number of Hydrogen
+     + Z-HE       = 2     ! Atomic number of Helium
+
+
+
+C Variables filled by READ_DISSOC()
 C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
       ! dissoc.dat, metals part
       ÌNTEGER, PARAMETER :: MAX_dissoc_NMETAL=50,  ! Limit number of metal rows in dissoc.dat
-     +                      MAX_dissoc_NELEMXI=98  ! Maximum value allowed for each element of dissoc_NELEMX ! TODO CHeck also when reading atomic number of metals
+     +                      MAX_Z=98  ! Maximum value allowed for each element of dissoc_NELEMX ! TODO CHeck also when reading atomic number of metals
       INTEGER, PARAMETER :: 
       ! ISSUE Number above is tied to SAT4() DATA ELEMNT(99)...
      
@@ -2889,12 +2902,6 @@ C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
 
 
 
-
-
-      INTEGER, PRIVATE, PARAMETER :: 
-     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
-     + Z_ELECTRON = 99,   ! Fictitious atomic number of electron
-     + Z_H_STAR   = 100   ! Fictitious atomic number of "H*"
 
 
 
@@ -2936,12 +2943,12 @@ C     ========
 C================================================================================================================================
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       SUBROUTINE SAT4()
+      USE READ_FILEs
       IMPLICIT NONE
-      REAL  KPLOG, IPI
+      REAL  KPLOG, IPI, ECONST
        
 C ISSUE Careful with all this ELE<something> variables, this is messy
       REAL, DIMENSION(MAX_modeles_NTOT, MAX_dissoc_NMETAL) :: XP
-
 
 C
 C*****IMPUT A
@@ -2990,10 +2997,10 @@ C orig *****INPUT E
       DO 1020 ITO = 1,modeles_NTOT
  1023   THETA = modeles_TETA(ITO)
         TEM = 5040.0/THETA
- 1024   PG_LOCAL_SAT4 = modeles_PG(ITO)
-        PGLOG = ALOG10(PG_LOCAL_SAT4)
+ 1024   PG = modeles_PG(ITO)
+        PGLOG = ALOG10(PG)
         
-        CALL DIE(TEM,PG_LOCAL_SAT4)
+        CALL DIE(TEM,PG)
 
         PE = sat4_P(Z_ELECTRON)
         PELOG = ALOG10(PE)
@@ -3062,11 +3069,9 @@ C orig *****INPUT E
           GO TO 2460
           
  2450     IF (MOD(J,120)) 2184,2460,2184
+ 
  2460     NBL = 0
  
-          !--verbose--!
-          IF (VERBOSE) PRINT 6092
-          
           KD = KD + 120
           KF = KD + 119
           DO 2470  K1=KD,KF,3
@@ -3079,10 +3084,6 @@ C orig *****INPUT E
             IF (MOD(NBL,5)) 2470,2500,2470
             
  2500       CONTINUE
-
-            !--verbose--!
-            IF (VERBOSE) PRINT 6089
-            
  2470     CONTINUE
           GO TO 2184
             
@@ -3099,11 +3100,12 @@ C orig *****INPUT E
 
   100 FORMAT(' TO=',5E15.5)
 
-      DO 1111 I=1,4
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
- 1111 PRINT 50, (XP(ITX,I),ITX=1,modeles_NTOT)
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
-   50 FORMAT(7E11.4)
+      IF (VERBOSE) THEN !--verbose--!
+        DO 1111 I=1,4
+          WRITE(*,'(7E11.4)') (XP(ITX,I),ITX=1,modeles_NTOT)
+        END DO
+      END IF
+ 
    
       DO 51 ITX=1,modeles_NTOT
         sat4_PPH(ITX)=XP(ITX,1)
@@ -3117,31 +3119,12 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
         sat4_PIG(ITX)=XP(ITX,10)  ! ISSUE Not used
         sat4_PFE(ITX)=XP(ITX,16)
    51  CONTINUE
- 1100  CONTINUE
  
-  300  FORMAT('  PPC2 SAT4 ', E11.3)
   
       !=====
       ! Formats 
       !=====
 
-  700 FORMAT (A3,7E11.4,/(7E11.4))
-  701 FORMAT(1X,A3,7E11.4,/(7E11.4))
-  500 FORMAT (20I5)
-  501 FORMAT (I4)
-
- 5011 FORMAT(A3,5X,E11.5,4E12.5,1X,I1,4(I2,I1) )
- 5021 FORMAT (F10.3,E12.5,E12.6)
- 5030 FORMAT(20A4)
- 6031 FORMAT(1H1,20A4/)
- 6102 FORMAT(1H0, 61H ELEMENT    ATOMIC NUMBER     I.P.        G(0)   G(
-     11)   LOG N/)
-
- 6300 FORMAT(1H0, 51H EQUILIBRIUM PARTIAL PRESSURES OF THE GASEOUS ATOM
-     1///)
- 6302 FORMAT(1H ,1X,A4,1X,I2,4X,F10.3,1X,E11.4,2F10.3,4X,F10.3)
- 6092 FORMAT (1H1,3(5X,'MOLECULE  LOG P   LOG P/PG  LOG KP  ')//)
- 6495 FORMAT ( 3(8X,A4,'+',3F9.3) )
       RETURN
       END
 
@@ -3154,22 +3137,26 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc
 
 
 
+
+
 C*****DIE9
 C================================================================================================================================
-      SUBROUTINE DIE(TEM,PG_LOCAL_SAT4)
-      REAL  IP,KP,KPLOG,IPI,modeles_NH
-      REAL  CCOMP, UIIDUI, sat4_P, FP,dissoc_NELEMX
+      SUBROUTINE DIE(TEM,PG)
+      REAL  IP,KP,KPLOG,IPI
 
-      COMMON /COMFH1/ PPMOL(MAX_dissoc_NMOL), APMLOG(MAX_dissoc_NMOL), IP(100),
-                      CCOMP(100), UIIDUI(100), sat4_P(100), FP(100), KP(100),
-
-      DIMENSION FX(100),DFX(100),Z(100),PREV(100),WA(50)
+      REAL, DIMENSION(Z_MAX) ::  FX, DFX, Z, PREV
+      REAL, DIMENSION(MAX_dissoc_NMETAL) :: WA
+      
+      LOGICAL VERBOSE
+      
+      VERBOSE = config_DEBUG .AND. .FALSE.
       
       ECONST = 4.342945E-1
       EPSDIE = 5.0E-3
       T      = 5040.0/TEM
-      PGLOG  = ALOG10(PG_LOCAL_SAT4)
-      HEH    = CCOMP(2)/CCOMP(1) ! orig HEH=HELIUM-TO-HYDROGEN RATIO BY NUMBER ! ISSUE This assumes H and He are in the right places. If so, one gotta impose restrictions on the file reading 
+      PGLOG  = ALOG10(PG)
+      ! orig HEH=HELIUM-TO-HYDROGEN RATIO BY NUMBER 
+      HEH    = CCOMP(Z_HE)/CCOMP(Z_H) 
 
 C     EVALUATION OF LOG KP(MOL)
       DO 1025 J =1, dissoc_NMOL
@@ -3192,29 +3179,29 @@ C     EVALUATION OF THE IONIZATION CONSTANTS
         KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
  1060 CONTINUE
  
-      HKP = KP(1)  ! ISSUE another access by number, better to define a Z_H (for readability/meaning a 1 is just a 1, but Z_H is the atomig number of Hydrogen) and impose restrictions upon reading dissoc.dat
+      HKP = KP(Z_H)
       IF (T-0.6) 1084,1072,1072
       
 C     PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
- 1084 PPH = SQRT(HKP *(PG_LOCAL_SAT4/(1.0+HEH)+HKP ))-HKP
+ 1084 PPH = SQRT(HKP *(PG/(1.0+HEH)+HKP ))-HKP
       PH  = PPH**2/HKP
       GO TO 1102
 
 C     PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
- 1072 IF (PG_LOCAL_SAT4/DHH - 0.1) 1073,1073,1074
- 1073 PH = PG_LOCAL_SAT4/(1.0+HEH)
+ 1072 IF (PG/DHH - 0.1) 1073,1073,1074
+ 1073 PH = PG/(1.0+HEH)
       GO TO 1102
       
       
- 1074 PH = 0.5*(SQRT(DHH*(DHH+4.0*PG_LOCAL_SAT4/(1.0+HEH)))-DHH)
+ 1074 PH = 0.5*(SQRT(DHH*(DHH+4.0*PG/(1.0+HEH)))-DHH)
 
 C
 C     EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-C     PG_LOCAL_SAT4=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
+C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
  1102 U = (1.0+2.0*HEH)/DHH
       Q = 1.0+HEH
       R = (2.0+HEH)*SQRT(HKP )
-      S = -1.0*PG_LOCAL_SAT4
+      S = -1.0*PG
       X = SQRT(PH)
       ITERAT = 0
  1103 F  = ((U*X**2+Q)*X+R)*X+S
@@ -3223,8 +3210,8 @@ C     PG_LOCAL_SAT4=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
       IF (ABS((X-XR)/XR)-EPSDIE) 1105,1105,1106
  1106 ITERAT=ITERAT+1
       IF (ITERAT-50) 1104,1104,1107
- 1107 IF (VERBOSE) PRINT 6108, TEM,PG_LOCAL_SAT4,X,XR,PH !--verbose--!
- 
+      
+ 1107 IF (VERBOSE) PRINT 6108, TEM,PG,X,XR,PH !--verbose--!
  6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
      1 'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
       GO TO 1105
@@ -3255,17 +3242,18 @@ C     CHECK OF INITIALIZATION
       PE = sat4_P(Z_ELECTRON)
 
       
-      IF(PH-sat4_P(1)) 1402,1402,1401  ! ISSUE: Accessing index 1 of variable P, is this too much of an assumption (e.g. that the element is H)?
+      IF(PH-sat4_P(Z_H)) 1402,1402,1401
  1401 DO 1403 I=1,dissoc_NMETAL
         ! ISSUE: what if some NELEMI=Z_ELECTRON=99? THen sat4_P(99) will no longer be equal to PE
         NELEMI=dissoc_NELEMX(I)
         sat4_P(NELEMI) = FP(NELEMI)*EXP(-5.0*T/ECONST)
  1403 CONTINUE
-      sat4_P(1) = PH   ! ISSUE: overwriting P(1)
+      sat4_P(Z_H) = PH   ! ISSUE: overwriting P(1)
+
 C
 C     RUSSELL EQUATIONS
  1402 CONTINUE
- 6003 FORMAT(1H0)
+
       NITER = 0
  1040 DO 1030 I =1,dissoc_NMETAL
         NELEMI = dissoc_NELEMX(I)
@@ -3440,6 +3428,7 @@ C PROPOSE: use READ()'s "END=" option
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
       CHARACTER*128 S
+      CHARACTER*2 SYMBOl
 
       ! Auxiliary temp variables for reading file
       INTEGER*4 NATOMM, NELEMM
@@ -3470,14 +3459,31 @@ C   col 5 -- (?)
 C   col 6 -- (?)
       DO I = 1, dissoc_NMETAL
         READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
-     1        dissoc_ELEMS(I), dissoc_NELEMX(I), dissoc__IP(I),
+     1        SYMBOL, dissoc_NELEMX(I), dissoc__IP(I),
      2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
      
+     
+
+        ! Makes sure that elements first and second are H and HE, respectively,
+        ! because SAT4() and DIE() count on this
+        SELECT CASE (I)
+          CASE (1) 
+            IF (SYMBOL .NE. 'H ')
+     +       STOP 'First element must be hydrogen ("H ")!'
+          CASE (2) 
+            IF (SYMBOL .NE. 'HE' .AND. SYMBOL .NE. 'He') 
+     +       STOP 'Second element must be helium ("He")!'
+        END SELECT
+
+
+     
+        dissoc_ELEMS(I) = SYMBOL
+     
         !--spill check--!
-        IF (dissoc_NELEMX(I) .GT. MAX_dissoc_NELEMXI) THEN
+        IF (dissoc_NELEMX(I) .GT. MAX_Z) THEN
           WRITE(*,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ', 
      +     dissoc_NELEMX(I), ' over maximum allowed (', 
-     +     MAX_dissoc_NELEMXI, ')'
+     +     MAX_Z, ')'
           STOP ERROR_EXCEEDED
         END IF
           

@@ -9,6 +9,7 @@ C - All globals have prefix "config_"
                                         ! Conceptually, this should be defined in molecula.f, but there would be cyclic USEs
 
       LOGICAL config_VERBOSE
+      LOGICAL config_DEBUG    ! Allows for debugging messages
 
 
 
@@ -32,9 +33,10 @@ C - All globals have prefix "config_"
       LOGICAL, PRIVATE :: FLAG_SETUP
 
 
-      DATA config_VERBOSE     /.TRUE./
-     +     config_NUM_MOL_OFF /0/
-     +     FLAG_SETUP         /.FALSE./
+      DATA config_VERBOSE       /.TRUE./
+     +     config_NUM_MOL_OFF   /0/
+     +     FLAG_SETUP           /.FALSE./
+     +     config_DEBUG /.FALSE./
 
 
 
