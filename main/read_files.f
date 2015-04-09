@@ -1,29 +1,5 @@
       MODULE READ_FILES
-
-
-C Variables filled by READ_MAIN() (file main.dat)
-      CHARACTER main_TITRAV*10, main_FILEFLUX*64
-      LOGICAL   main_ECRIT, main_PTDISK
-      REAL*8    main_PAS, main_ECHX, main_ECHY, main_FWHM, main_VVT,
-     1          main_MU, main_AFSTAR, main_LLZERO,
-     2          main_LLFIN, main_AINT,
-     3          main_TEFF, main_GLOG, main_ASALOG, main_NHE
-      INTEGER   main_IVTOT, main_INUM
-      CHARACTER main_FILETOHY*64
-
-      DIMENSION main_FILETOHY(10)
-      DIMENSION main_TITRAV(20)
-      DIMENSION main_VVT(20)
-      DIMENSION main_XXCOR(MAX_dissoc_NMETAL)
-
-
-C Variables filled by READ_ABONDS() (file abonds.dat)
-      PARAMETER(MAX_abonds_NABOND=100)  ! Limit number of abundances in abonds.dat
-      INTEGER abonds_NABOND
-      CHARACTER*2 abonds_ELE
-      DIMENSION abonds_ELE(MAX_abonds_NABOND),
-     1          abonds_ABOL(MAX_abonds_NABOND)
-
+      IMPLICIT NONE
 
 
 
@@ -36,7 +12,7 @@ C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX
 
 
       INTEGER, PARAMETER ::
-     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
+     + MAX_Z      = 100  ! Maximum atomic number that can be found in dissoc.dat
 
 
       ! dissoc.dat, metals part
@@ -57,7 +33,7 @@ C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX
       INTEGER, PARAMETER:: MAX_dissoc_NMOL=600  ! Limit number of molecule rows ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
       CHARACTER dissoc_MOL*3
       INTEGER dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
-      REAL dissoc_C
+      REAL dissoc_C, dissoc_EPS, dissoc_SWITER
       DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
      1          dissoc_C(MAX_dissoc_NMOL, 5),
      2          dissoc_MMAX(MAX_dissoc_NMOL),
@@ -70,14 +46,41 @@ C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX
 
 
 
+C Variables filled by READ_MAIN() (file main.dat)
+      CHARACTER main_TITRAV*10, main_FILEFLUX*64
+      LOGICAL   main_ECRIT, main_PTDISK
+      REAL*8    main_PAS, main_ECHX, main_ECHY, main_FWHM, main_VVT,
+     1          main_MU, main_AFSTAR, main_LLZERO,
+     2          main_LLFIN, main_AINT,
+     3          main_TEFF, main_GLOG, main_ASALOG, main_NHE
+      INTEGER   main_IVTOT, main_INUM
+      CHARACTER main_FILETOHY*64
+
+      DIMENSION main_FILETOHY(10)
+      DIMENSION main_TITRAV(20)
+      DIMENSION main_VVT(20)
+      REAL, DIMENSION(MAX_dissoc_NMETAL) :: main_XXCOR
+
+
+C Variables filled by READ_ABONDS() (file abonds.dat)
+      INTEGER, PARAMETER :: MAX_abonds_NABOND=100  ! Limit number of abundances in abonds.dat
+      INTEGER abonds_NABOND
+      CHARACTER*2 abonds_ELE
+      REAL abonds_ABOL
+      DIMENSION abonds_ELE(MAX_abonds_NABOND),
+     1          abonds_ABOL(MAX_abonds_NABOND)
+
+
+
+
+
 
 C Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
 
-      ! Half of the maximum the number of rows in atomgrade.dat
-      PARAMETER(MAX_atomgrade__NBLEND=13000)
 
-      ! Maximum number of spectral lines possible within the interval LZERO, LFIN
-      PARAMETER(MAX_atomgrade_NBLEND=8000)
+      INTEGER, PARAMETER ::
+     + MAX_atomgrade__NBLEND=13000, ! Half of the maximum the number of rows in atomgrade.dat
+     + MAX_atomgrade_NBLEND=8000    ! Maximum number of spectral lines possible within the interval LZERO, LFIN
 
       INTEGER*4 atomgrade_NBLEND, atomgrade__NBLEND
       CHARACTER*2 atomgrade_ELEM, atomgrade__ELEM
@@ -94,29 +97,24 @@ C (MT) Yes and modeles.mod could become an ASCII file!!!
 
       ! Filtered variables
 C ISSUE: nobody cares about ABONDR
+      REAL, DIMENSION(MAX_atomgrade__NBLEND) ::
+     + atomgrade_GE, atomgrade_ZINF, atomgrade_ABONDR, atomgrade_ALGF,
+     + atomgrade_GF, atomgrade_CH
       DIMENSION atomgrade_ELEM(MAX_atomgrade_NBLEND),
      1          atomgrade_IONI(MAX_atomgrade_NBLEND),
      2          atomgrade_LAMBDA(MAX_atomgrade_NBLEND),
      3          atomgrade_KIEX(MAX_atomgrade_NBLEND),
-     4          atomgrade_ALGF(MAX_atomgrade_NBLEND),
-     5          atomgrade_GF(MAX_atomgrade_NBLEND),
-     6          atomgrade_CH(MAX_atomgrade_NBLEND),
-     7          atomgrade_GR(MAX_atomgrade_NBLEND),
-     8          atomgrade_GE(MAX_atomgrade_NBLEND),
-     9          atomgrade_ZINF(MAX_atomgrade_NBLEND),
-     +          atomgrade_ABONDR(MAX_atomgrade_NBLEND)
+     7          atomgrade_GR(MAX_atomgrade_NBLEND)
+
 
       ! File originals
+      REAL, DIMENSION(MAX_atomgrade__NBLEND) :: atomgrade__ABONDR,
+     + atomgrade__ALGF, atomgrade__CH, atomgrade__GE, atomgrade__ZINF,
+     + atomgrade__GR
       DIMENSION atomgrade__ELEM(MAX_atomgrade__NBLEND),
      1          atomgrade__IONI(MAX_atomgrade__NBLEND),
      2          atomgrade__LAMBDA(MAX_atomgrade__NBLEND),
-     3          atomgrade__KIEX(MAX_atomgrade__NBLEND),
-     4          atomgrade__ALGF(MAX_atomgrade__NBLEND),
-     5          atomgrade__CH(MAX_atomgrade__NBLEND),
-     6          atomgrade__GR(MAX_atomgrade__NBLEND),
-     7          atomgrade__GE(MAX_atomgrade__NBLEND),
-     8          atomgrade__ZINF(MAX_atomgrade__NBLEND),
-     9          atomgrade__ABONDR(MAX_atomgrade__NBLEND)
+     3          atomgrade__KIEX(MAX_atomgrade__NBLEND)
 
 
 
@@ -125,21 +123,20 @@ C ---------------------------------------------------
       ! Limit number of "items" in partit.dat:
       ! - Maximum value for partit_NPAR
       ! - Second dimension of partit_TABU
-      PARAMETER(MAX_partit_NPAR=85)
+      INTEGER, PARAMETER :: MAX_partit_NPAR=85
       ! Third dimension of partit_TABU
-      PARAMETER(MAX_partit_KMAX=63)
+      INTEGER, PARAMETER :: MAX_partit_KMAX=63
 
       CHARACTER*2  partit_EL
-      INTEGER partit_NPAR, partit_JKMAX
+      INTEGER partit_NPAR
 
+      REAL, DIMENSION (MAX_partit_NPAR) :: partit_KI1, partit_PA,
+     + partit_M, partit_TINI, partit_KI2
+      INTEGER, DIMENSION (MAX_partit_NPAR) :: partit_JKMAX
+      REAL partit_TABU
       DIMENSION partit_EL(MAX_partit_NPAR),
-     1           partit_TINI(MAX_partit_NPAR),
-     2           partit_PA(MAX_partit_NPAR),
-     3           partit_JKMAX(MAX_partit_NPAR),
-     4           partit_TABU(MAX_partit_NPAR, 3, MAX_partit_KMAX),
-     5           partit_M(MAX_partit_NPAR),
-     6           partit_KI1(MAX_partit_NPAR),
-     7           partit_KI2(MAX_partit_NPAR)
+     4           partit_TABU(MAX_partit_NPAR, 3, MAX_partit_KMAX)
+
 
 
 
@@ -149,14 +146,16 @@ C ---------------------------------------------------
 C Variables filled by READ_ABSORU2() (file absoru2.dat)
 C ---------------------------------------------------
       ! Maximum value for absoru_NM
-      PARAMETER(MAX_absoru2_NM=30)
+      INTEGER, PARAMETER :: MAX_absoru2_NM=30
       ! Maximum value for absoru2_NR(J)
-      PARAMETER(MAX_absoru2_NRR=9)
+      INTEGER, PARAMETER :: MAX_absoru2_NRR=9
       ! Maximum value for each element of absoru2_NUMSET
-      PARAMETER(MAX_absoru2_NUMSET_I=41)
+      INTEGER, PARAMETER :: MAX_absoru2_NUMSET_I=41
 
-      INTEGER absoru2_NM, absoru2_NMETA, absoru2_NUMSET, absoru2_NR
+      INTEGER absoru2_NM, absoru2_NMETA, absoru2_NUMSET, absoru2_NR,
+     + absoru2_NOMET
       REAL*8 absoru2_ABMET, absoru2_ABHEL
+      REAL absoru2_PF, absoru2_WI, absoru2_XI, absoru2_ZM, absoru2_ZP
       CHARACTER*4 absoru2_TITRE, absoru2_IUNITE  ! ISSUE: I am not sure about this, made this from the FORMAT below
 
       DIMENSION  absoru2_IUNITE(2), absoru2_TITRE(17),
@@ -176,7 +175,7 @@ C ---------------------------------------------------
 C Variables filled by READ_MODELE() (file modeles.mod)
 C ----------------------------------------------------
       ! Maximum possible value of modeles_NTOT
-      PARAMETER(MAX_modeles_NTOT=50)
+      INTEGER, PARAMETER :: MAX_modeles_NTOT=50
 
       ! Attention: one has to specify sizes of all the variables here, because
       ! this may change with compiler
@@ -186,7 +185,7 @@ C ----------------------------------------------------
       REAL*4 modeles_DETEF, modeles_DGLOG, modeles_DSALOG,
      +       modeles_ASALALF, modeles_NHE,
      +       modeles_NH, modeles_TETA, modeles_PE, modeles_PG,
-     +       modeles_T5L
+     +       modeles_T5L, BID
 
       DIMENSION modeles_NH(MAX_modeles_NTOT),
      +           modeles_TETA(MAX_modeles_NTOT),
@@ -358,11 +357,12 @@ C PROPOSE: use READ()'s "END=" option
       SUBROUTINE READ_DISSOC(filename)
       USE ERRORS
       INTEGER UNIT_
-      INTEGER I
+      INTEGER I, J, K, M, MMAXJ
       PARAMETER(UNIT_=199)
       CHARACTER*256 filename
-      CHARACTER*128 S
+*      CHARACTER*128 S
       CHARACTER*2 SYMBOl
+      LOGICAL FLAG_FOUND
 
       ! Auxiliary temp variables for reading file
       INTEGER*4 NATOMM, NELEMM
@@ -443,7 +443,15 @@ C ISSUE: THere is no 1X
      4             (NELEMM(M), NATOMM(M), M=1,4)
 
 
-      ! Check, TODO dissoc_MMAX(J) cannot be > 4
+      MMAXJ = dissoc_MMAX(J)
+      IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
+
+      IF (MMAXJ .GT. 4) THEN
+        WRITE(*,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
+     +     '", MMAXJ = ', MMAXJ, ' cannot be greater than 4!'
+        STOP ERROR_BAD_VALUE
+      END IF
+
 
       ! TODO not tested, this
       FLAG_FOUND = .FALSE.
@@ -471,9 +479,6 @@ C ISSUE: THere is no 1X
 *     4             (NELEMM(M), NATOMM(M), M=1,4)
 
 
-
-      MMAXJ = dissoc_MMAX(J)
-      IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
       DO M = 1, MMAXJ
           dissoc_NELEM(M,J) = NELEMM(M)
           dissoc_NATOM(M,J) = NATOMM(M)
@@ -654,6 +659,7 @@ C-------------------------------------------------------------------------
       SUBROUTINE FILTER_ATOMGRADE(LZERO, LFIN)
       USE ERRORS
       REAL*8 LZERO, LFIN
+      INTEGER J, K
 
       K = 0
       DO J = 1, atomgrade__NBLEND

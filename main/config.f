@@ -36,7 +36,7 @@ C - All globals have prefix "config_"
       DATA config_VERBOSE       /.TRUE./
      +     config_NUM_MOL_OFF   /0/
      +     FLAG_SETUP           /.FALSE./
-     +     config_DEBUG /.FALSE./
+     +     config_DEBUG         /.FALSE./
 
 
 

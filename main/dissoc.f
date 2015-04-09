@@ -54,17 +54,24 @@ C     ========
 C     ========
 
 
-     
-      
+
+
 
 C================================================================================================================================
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       SUBROUTINE SAT4()
+      USE CONFIG
       IMPLICIT NONE
-      REAL  KPLOG, IPI, ECONST
-
-C ISSUE Careful with all this ELE<something> variables, this is messy
       REAL, DIMENSION(MAX_modeles_NTOT, MAX_dissoc_NMETAL) :: XP
+      REAL  KPLOG, ECONST, FPLOG,
+     + PDFPL, PELOG, PGLOG, PIONL, PLOG, PMOLL, TEM, PG, THETA, XLOG
+      REAL*8 CCLOGI
+      INTEGER I, IG0I, IG1I, IQ, IR, IRL, IRR, ITO, ITX, J, JCOUNT, NBL,
+     + NELEMI, NELEMXI, K1, K2, K3, KD, KF
+      LOGICAL VERBOSE
+
+      VERBOSE = config_DEBUG .AND. .FALSE.
+
 
 C
 C*****IMPUT A
@@ -111,9 +118,9 @@ C orig STARTING VALUE OF THE SOLUTION
 
 C orig *****INPUT E
       DO 1020 ITO = 1,modeles_NTOT
- 1023   THETA = modeles_TETA(ITO)
+        THETA = modeles_TETA(ITO)
         TEM = 5040.0/THETA
- 1024   PG = modeles_PG(ITO)
+        PG = modeles_PG(ITO)
         PGLOG = ALOG10(PG)
 
         CALL DIE(TEM,PG)
@@ -154,7 +161,7 @@ C orig *****INPUT E
             K2 = K1 + 1
             K3 = K1 + 2
             IF ( NBL.EQ.IRL + 1)  GO TO 1480
- 1475       CONTINUE
+            CONTINUE
 
             IF (MOD(NBL,5)) 1470,1500,1470
  1500       CONTINUE
@@ -195,7 +202,7 @@ C orig *****INPUT E
             K2 = K1 + 1
             K3 = K1 + 2
             IF ( NBL.EQ.IRL + 1)  GO TO 2480
- 2475       CONTINUE
+            CONTINUE
 
             IF (MOD(NBL,5)) 2470,2500,2470
 
@@ -214,7 +221,6 @@ C orig *****INPUT E
  1084   CONTINUE
  1020 CONTINUE
 
-  100 FORMAT(' TO=',5E15.5)
 
       IF (VERBOSE) THEN !--verbose--!
         DO I=1,4
@@ -258,11 +264,16 @@ C orig *****INPUT E
 C*****DIE9
 C================================================================================================================================
       SUBROUTINE DIE(TEM,PG)
+      USE CONFIG
+      USE READ_FILES
       REAL TEM, PG
-      REAL PLOG, IPI
-
-      REAL, DIMENSION(Z_MAX) :: FX, DFX, Z, PREV
+      REAL, DIMENSION(MAX_Z) :: FX, DFX, Z, PREV
       REAL, DIMENSION(MAX_dissoc_NMETAL) :: WA
+      REAL APLOGJ, ATOMJ, DELTA, DF, DHH, ECONST, EPSDIE,
+     + F, FPH, HEH, HKP, PEREV, PGLOG, PH, PMOLJ, PMOLJL, Q, R, S,
+     + SPNION, T, TEM25, U, X, XR, PPH, PHH
+      INTEGER I, IMAXP1, ITERAT, J, K, KM5, M, MMAXJ, NELEMI, NELEMJ,
+     + NATOMJ, NITER
 
       LOGICAL VERBOSE
 
