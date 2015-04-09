@@ -1,6 +1,4 @@
       MODULE READ_FILES
-      USE DISSOC
-
 
 
 C Variables filled by READ_MAIN() (file main.dat)
@@ -25,6 +23,50 @@ C Variables filled by READ_ABONDS() (file abonds.dat)
       CHARACTER*2 abonds_ELE
       DIMENSION abonds_ELE(MAX_abonds_NABOND),
      1          abonds_ABOL(MAX_abonds_NABOND)
+
+
+
+
+
+C Variables filled by READ_DISSOC() (file dissoc.dat)
+C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
+
+C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
+      INTEGER, PARAMETER :: MAX_dissoc_NMETAL=50  ! Limit number of metal rows in dissoc.dat
+
+
+      INTEGER, PARAMETER ::
+     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
+
+
+      ! dissoc.dat, metals part
+      INTEGER dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
+      CHARACTER*2 dissoc_ELEMS
+      INTEGER dissoc__IG0, dissoc__IG1
+      REAL dissoc__IP, dissoc__CCLOG
+      DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
+     1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
+      ! JT2015 I introduced these variables, double underscore to emphasize that they
+      !        are not just old variables that had a prefix added.
+     2          dissoc__IP(MAX_dissoc_NMETAL),      ! These other 4 variables are used
+     3          dissoc__IG0(MAX_dissoc_NMETAL),     ! for filling local variables
+     4          dissoc__IG1(MAX_dissoc_NMETAL),     ! within SAT4()
+     5          dissoc__CCLOG(MAX_dissoc_NMETAL)    !
+
+      ! dissoc.dat, molecules part
+      INTEGER, PARAMETER:: MAX_dissoc_NMOL=600  ! Limit number of molecule rows ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
+      CHARACTER dissoc_MOL*3
+      INTEGER dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
+      REAL dissoc_C
+      DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
+     1          dissoc_C(MAX_dissoc_NMOL, 5),
+     2          dissoc_MMAX(MAX_dissoc_NMOL),
+     3          dissoc_NELEM(5, MAX_dissoc_NMOL),
+     4          dissoc_NATOM(5, MAX_dissoc_NMOL)
+
+
+
+
 
 
 
@@ -127,6 +169,32 @@ C ---------------------------------------------------
 
       DIMENSION absoru2_WI(MAX_absoru2_NUMSET_I, 2), absoru2_NUMSET(2)
 
+
+
+
+
+C Variables filled by READ_MODELE() (file modeles.mod)
+C ----------------------------------------------------
+      ! Maximum possible value of modeles_NTOT
+      PARAMETER(MAX_modeles_NTOT=50)
+
+      ! Attention: one has to specify sizes of all the variables here, because
+      ! this may change with compiler
+      INTEGER*4 modeles_NTOT
+      CHARACTER*4 modeles_TIT
+      CHARACTER*20 modeles_TIABS ! I just want to see this string at testing
+      REAL*4 modeles_DETEF, modeles_DGLOG, modeles_DSALOG,
+     +       modeles_ASALALF, modeles_NHE,
+     +       modeles_NH, modeles_TETA, modeles_PE, modeles_PG,
+     +       modeles_T5L
+
+      DIMENSION modeles_NH(MAX_modeles_NTOT),
+     +           modeles_TETA(MAX_modeles_NTOT),
+     +           modeles_PE(MAX_modeles_NTOT),
+     +           modeles_PG(MAX_modeles_NTOT),
+     +           modeles_T5L(MAX_modeles_NTOT),
+     +           BID(16),   ! ISSUE: I counted 12... let's see, I have to see INEWMARCS... actually, it seems that it should be 12!!
+     +           modeles_TIT(5)
 
 
 
@@ -266,6 +334,168 @@ C          thalpha
       RETURN
       END
 
+
+
+
+
+
+
+C================================================================================================================================
+C READ_DISSOC(): reads file dissoc.dat to fill variables dissoc_*
+C
+C Original UNIT: 23
+C
+C This file must end with a blank row so that the routine can detect
+C the end of the file
+
+
+C TODO Various tests:
+C TODO - mismatched NMETAL and metal rows
+C TODO - check if NMETAL and NMOL match what they are supposed to (assertions in test)
+
+C PROPOSE: use READ()'s "END=" option
+
+      SUBROUTINE READ_DISSOC(filename)
+      USE ERRORS
+      INTEGER UNIT_
+      INTEGER I
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 filename
+      CHARACTER*128 S
+      CHARACTER*2 SYMBOl
+
+      ! Auxiliary temp variables for reading file
+      INTEGER*4 NATOMM, NELEMM
+      DIMENSION NATOMM(5), NELEMM(5)
+
+      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
+
+C row 01
+C =======
+C NMETAL - NUMBER OF ELEMENTS CONSIDERED IN CHEMICAL EQUILIBRIUM
+C NIMAX  - MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
+C EPS    - IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
+C SWITER - IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
+C          IF SWITER .LE. 0;   X(I+1)=X(I+1)
+C
+C Example:    18  100    0.005   -1.0
+      READ(UNIT_,'(2I5, 2F10.5, I10)')
+     1     dissoc_NMETAL, dissoc_NIMAX, dissoc_EPS, dissoc_SWITER
+
+C rows 2 to NMETAL+1
+C ==================
+C 6 columns:
+C   col 1 -- symbol of chemical element
+C   col 2 -- atomic number "N"
+C   col 3 -- (?)
+C   col 4 -- (?)
+C   col 5 -- (?)
+C   col 6 -- (?)
+      DO I = 1, dissoc_NMETAL
+        READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
+     1        SYMBOL, dissoc_NELEMX(I), dissoc__IP(I),
+     2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
+
+
+
+        ! Makes sure that elements first and second are H and HE, respectively,
+        ! because SAT4() and DIE() count on this
+        SELECT CASE (I)
+          CASE (1)
+            IF (SYMBOL .NE. 'H ')
+     +       STOP 'First element must be hydrogen ("H ")!'
+          CASE (2)
+            IF (SYMBOL .NE. 'HE' .AND. SYMBOL .NE. 'He')
+     +       STOP 'Second element must be helium ("He")!'
+        END SELECT
+
+
+
+        dissoc_ELEMS(I) = SYMBOL
+
+        !--spill check--!
+        IF (dissoc_NELEMX(I) .GT. MAX_Z) THEN
+          WRITE(*,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ',
+     +     dissoc_NELEMX(I), ' over maximum allowed (',
+     +     MAX_Z, ')'
+          STOP ERROR_EXCEEDED
+        END IF
+
+      END DO
+
+C rows NMETAL+2 till end-of-file
+C ==============================
+C   col  1     -- "name" of molecule
+C   cols 2-6   -- C(J, 1-5)
+C   col  7     -- MMAX(J) (number of subsequent columns)/2
+C   cols 8-... -- Maximum of 8 columns here.
+C                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J) ISSUE NELEM(M) is atomic number, what about NATOM(M)???
+      J = 0
+ 1010 J = J+1
+C ISSUE: This 1X does not appear in my sample dissoc.dat file
+C ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
+C ISSUE: THere is no 1X
+*      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, I1, 4(I2,I1))')
+     1             dissoc_MOL(J),
+     2             (dissoc_C(J, K), K=1,5),
+     3             dissoc_MMAX(J),
+     4             (NELEMM(M), NATOMM(M), M=1,4)
+
+
+      ! Check, TODO dissoc_MMAX(J) cannot be > 4
+
+      ! TODO not tested, this
+      FLAG_FOUND = .FALSE.
+      DO M = 1, 4
+        DO I = 1, dissoc_NMETAL
+          IF (NELEMM(M) .EQ. dissoc_NELEMX(I)) THEN
+            FLAG_FOUND = .TRUE.
+            EXIT
+          END IF
+        END DO
+
+        IF (.NOT. FLAG_FOUND) THEN
+          WRITE(*,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
+     +     '" atomic number ', NELEMM(M), 'not in atoms list above'
+          STOP ERROR_BAD_VALUE
+        END IF
+      END DO
+
+
+*
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (NELEMM(M), NATOMM(M), M=1,4)
+
+
+
+      MMAXJ = dissoc_MMAX(J)
+      IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
+      DO M = 1, MMAXJ
+          dissoc_NELEM(M,J) = NELEMM(M)
+          dissoc_NATOM(M,J) = NATOMM(M)
+      END DO
+
+
+*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+*     1             dissoc_MOL(J),
+*     2             (dissoc_C(J, K), K=1,5),
+*     3             dissoc_MMAX(J),
+*     4             (dissoc_NELEM(M, J), dissoc_NATOM(M, J), M=1,4)
+
+
+
+      GO TO 1010
+
+ 1014 dissoc_NMOL = J-1
+
+      CLOSE(UNIT=UNIT_)
+
+      RETURN
+      END
 
 
 
@@ -707,30 +937,123 @@ C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn'
 
 
 
+C================================================================================================================================
+C READ_MODELE(): reads single record from file modeles.mod into
+C                 variables modeles_*
+C
+C Original UNIT: 18
+C
+C orig SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
+C orig SUR LE FICHIER ACCES DIRECT
+C
+C Depends on main_INUM
+C ISSUE: depends on other main_* but I think not for long
+
+      SUBROUTINE READ_MODELE(filename)
+      USE ERRORS
+      IMPLICIT NONE
+      INTEGER UNIT_
+      PARAMETER(UNIT_=199)
+      CHARACTER*256 filename
+      REAL*8 DDT, DDG, DDAB
+      INTEGER I,
+     +        ID_   ! TODO This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
+
+
+      OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD',
+     1     FILE=filename, RECL=1200)
+
+      ID_ = 1
+
+
+      ! TODO better to give error if main_INUM is not set
+      ! TODO Check if FORTRAN initializes variables to zero automatically: can I rely on this??
+      ! TODO Maybe implement variable main_FLAG to FLAG that main.dat has been read already
+      IF (main_INUM .GT. 0) ID_ = main_INUM  ! Selects record number
+
+C ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
+C (MT) ASSERT main_NHE == modeles_NHE
+
+
+      READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG,
+     +      modeles_DSALOG, modeles_ASALALF, modeles_NHE, modeles_TIT,
+     +      modeles_TIABS
+      IF (modeles_NTOT .EQ. 9999) THEN
+        ! ISSUE perhaps I should check the condition that leads to this error
+        ! TODO STOP with error level
+        WRITE(6, *) 'LE MODELE DESIRE NE EST PAS SUR LE FICHIER'
+        STOP ERROR_NOT_FOUND
+      END IF
+
+
+      ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
+      IF (modeles_NTOT .GT. MAX_modeles_NTOT) THEN
+        WRITE(*,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
+     1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
+        STOP ERROR_EXCEEDED
+      END IF
 
 
 
+      WRITE(6, *) 'modeles_DETEF', modeles_DETEF
+      WRITE(*, *) 'modeles_DGLOG', modeles_DGLOG
+      WRITE(*, *) 'modeles_DSALOG', modeles_DSALOG
+
+
+      DDT  = ABS(main_TEFF-modeles_DETEF)
+      DDG = ABS(main_GLOG-modeles_DGLOG)
+      DDAB = ABS(main_ASALOG-modeles_DSALOG)
+
+*      ! ISSUE: Variable DNHE does not exist!!! Anyway, it is not used
+*      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
+*      DDHE= ABS(modeles_NHE-DNHE)
+
+      ! ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks
+      ! (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
+
+
+!~9	READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
+!~	WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
+!~        write(6,108) TIABS
+!~	IF(NTOT.EQ.9999)   GO TO 6
+!~	DDT  = ABS(TEFF-DETEF)
+!~C	DDTA  = ABS(TETAEF-DETAEF)
+!~	DDG = ABS(GLOG-DGLOG)
+!~	DDAB = ABS(ASALOG-DSALOG)
+!~	DDHE= ABS(NHE-DNHE)
+!~C	DDIF = DDTA+DDG+DDAB+DDHE
+!~5	IF(DDT.GT.1.0)   GO TO 9
+!~	IF(DDG.GT.0.01)   GO TO 9
+!~	IF(DDAB.GT.0.01)   GO TO 9
+
+
+      ! TODO ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
+      ! TODO Get the epsilon from MT
+      IF(DDT .GT. 1.0) THEN
+        WRITE(*,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
+        STOP ERROR_BAD_VALUE
+      END IF
+      IF(DDG .GT. 0.01) THEN
+        WRITE(*,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
+        STOP ERROR_BAD_VALUE
+      END IF
+      IF(DDAB .GT. 0.01) THEN
+        WRITE(*,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
+        STOP ERROR_BAD_VALUE
+      END IF
 
 
 
+      READ(UNIT_, REC=ID_) BID,
+     +     (modeles_NH(I),
+     +      modeles_TETA(I),
+     +      modeles_PE(I),
+     +      modeles_PG(I),
+     +      modeles_T5L(I), I=1,modeles_NTOT)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      CLOSE(UNIT_)
+      END
 
 
 

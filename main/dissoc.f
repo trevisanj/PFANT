@@ -1,75 +1,17 @@
-
-C Subroutines SAT4 and DIE
+C - Subroutines SAT4 and DIE
 
 
       MODULE DISSOC
+      USE READ_FILES
       IMPLICIT NONE
 
 
 
-
-
-C Variables filled by READ_DISSOC() (file dissoc.dat)
-C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
-
-C ISSUE: I created new variables to decouple from logic while reading this file.
-C        The original mixes reading and logic, and I don't want to track down the
-C        variables that are read right now. It seems, BTW, that many of them aren't used.
-C ISSUE: this may be temporary, or to test not using COMMON, or remain just like this
-
-
-C RESULT: common blocks are really not needed!!!
-
-
-
-
-      ! TODO if MAX_Z ceases to be private, then it must become MAX_dissoc_Z or sth
       INTEGER, PRIVATE, PARAMETER ::
-     + MAX_Z      = 100,  ! Maximum atomic number that can be found in dissoc.dat
      + Z_ELECTRON = 99,   ! Fictitious atomic number of electron
      + Z_H_STAR   = 100,  ! Fictitious atomic number of "H*"
      + Z_H        = 1,    ! Atomic number of Hydrogen
      + Z_HE       = 2     ! Atomic number of Helium
-
-
-
-C Variables filled by READ_DISSOC()
-C ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
-
-      ! dissoc.dat, metals part
-
-      INTEGER, PARAMETER :: MAX_dissoc_NMETAL=50  ! Limit number of metal rows in dissoc.dat
-
-
-
-      INTEGER dissoc_NMETAL, dissoc_NIMAX, dissoc_NELEMX
-      CHARACTER*2 dissoc_ELEMS
-      INTEGER dissoc__IG0, dissoc__IG1
-      REAL dissoc__IP, dissoc__CCLOG
-      DIMENSION dissoc_ELEMS(MAX_dissoc_NMETAL),   ! Only this ...
-     1          dissoc_NELEMX(MAX_dissoc_NMETAL),  ! ... and this are used directly.
-      ! JT2015 I introduced these variables, double underscore to emphasize that they
-      !        are not just old variables that had a prefix added.
-     2          dissoc__IP(MAX_dissoc_NMETAL),      ! These other 4 variables are used
-     3          dissoc__IG0(MAX_dissoc_NMETAL),     ! for filling local variables
-     4          dissoc__IG1(MAX_dissoc_NMETAL),     ! within SAT4()
-     5          dissoc__CCLOG(MAX_dissoc_NMETAL)    !
-
-      ! dissoc.dat, molecules part
-      INTEGER, PARAMETER:: MAX_dissoc_NMOL=600  ! Limit number of molecule rows ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
-      CHARACTER dissoc_MOL*3
-      INTEGER dissoc_NMOL, dissoc_MMAX, dissoc_NELEM, dissoc_NATOM
-      REAL dissoc_C
-      DIMENSION dissoc_MOL(MAX_dissoc_NMOL),
-     1          dissoc_C(MAX_dissoc_NMOL, 5),
-     2          dissoc_MMAX(MAX_dissoc_NMOL),
-     3          dissoc_NELEM(5, MAX_dissoc_NMOL),
-     4          dissoc_NATOM(5, MAX_dissoc_NMOL)
-
-
-
-
-
 
 
 
@@ -112,10 +54,12 @@ C     ========
 C     ========
 
 
+     
+      
+
 C================================================================================================================================
 C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       SUBROUTINE SAT4()
-      ! USE READ_FILES
       IMPLICIT NONE
       REAL  KPLOG, IPI, ECONST
 
@@ -533,168 +477,4 @@ C     IONIZATION EQUILIBRIUM
 
 
 
-
-
-
-C================================================================================================================================
-C READ_DISSOC(): reads file dissoc.dat to fill variables dissoc_*
-C
-C Original UNIT: 23
-C
-C This file must end with a blank row so that the routine can detect
-C the end of the file
-
-
-C TODO Various tests:
-C TODO - mismatched NMETAL and metal rows
-C TODO - check if NMETAL and NMOL match what they are supposed to (assertions in test)
-
-C PROPOSE: use READ()'s "END=" option
-
-      SUBROUTINE READ_DISSOC(filename)
-      USE ERRORS
-      INTEGER UNIT_
-      INTEGER I
-      PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
-      CHARACTER*128 S
-      CHARACTER*2 SYMBOl
-
-      ! Auxiliary temp variables for reading file
-      INTEGER*4 NATOMM, NELEMM
-      DIMENSION NATOMM(5), NELEMM(5)
-
-      OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
-
-C row 01
-C =======
-C NMETAL - NUMBER OF ELEMENTS CONSIDERED IN CHEMICAL EQUILIBRIUM
-C NIMAX  - MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
-C EPS    - IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
-C SWITER - IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
-C          IF SWITER .LE. 0;   X(I+1)=X(I+1)
-C
-C Example:    18  100    0.005   -1.0
-      READ(UNIT_,'(2I5, 2F10.5, I10)')
-     1     dissoc_NMETAL, dissoc_NIMAX, dissoc_EPS, dissoc_SWITER
-
-C rows 2 to NMETAL+1
-C ==================
-C 6 columns:
-C   col 1 -- symbol of chemical element
-C   col 2 -- atomic number "N"
-C   col 3 -- (?)
-C   col 4 -- (?)
-C   col 5 -- (?)
-C   col 6 -- (?)
-      DO I = 1, dissoc_NMETAL
-        READ (UNIT_, '(A2, 2X, I6, F10.3, 2I5, F10.5)')
-     1        SYMBOL, dissoc_NELEMX(I), dissoc__IP(I),
-     2        dissoc__IG0(I), dissoc__IG1(I), dissoc__CCLOG(I)
-
-
-
-        ! Makes sure that elements first and second are H and HE, respectively,
-        ! because SAT4() and DIE() count on this
-        SELECT CASE (I)
-          CASE (1)
-            IF (SYMBOL .NE. 'H ')
-     +       STOP 'First element must be hydrogen ("H ")!'
-          CASE (2)
-            IF (SYMBOL .NE. 'HE' .AND. SYMBOL .NE. 'He')
-     +       STOP 'Second element must be helium ("He")!'
-        END SELECT
-
-
-
-        dissoc_ELEMS(I) = SYMBOL
-
-        !--spill check--!
-        IF (dissoc_NELEMX(I) .GT. MAX_Z) THEN
-          WRITE(*,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ',
-     +     dissoc_NELEMX(I), ' over maximum allowed (',
-     +     MAX_Z, ')'
-          STOP ERROR_EXCEEDED
-        END IF
-
-      END DO
-
-C rows NMETAL+2 till end-of-file
-C ==============================
-C   col  1     -- "name" of molecule
-C   cols 2-6   -- C(J, 1-5)
-C   col  7     -- MMAX(J) (number of subsequent columns)/2
-C   cols 8-... -- Maximum of 8 columns here.
-C                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J) ISSUE NELEM(M) is atomic number, what about NATOM(M)???
-      J = 0
- 1010 J = J+1
-C ISSUE: This 1X does not appear in my sample dissoc.dat file
-C ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
-C ISSUE: THere is no 1X
-*      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
-      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, I1, 4(I2,I1))')
-     1             dissoc_MOL(J),
-     2             (dissoc_C(J, K), K=1,5),
-     3             dissoc_MMAX(J),
-     4             (NELEMM(M), NATOMM(M), M=1,4)
-
-
-      ! Check, TODO dissoc_MMAX(J) cannot be > 4
-
-      ! TODO not tested, this
-      FLAG_FOUND = .FALSE.
-      DO M = 1, 4
-        DO I = 1, dissoc_NMETAL
-          IF (NELEMM(M) .EQ. dissoc_NELEMX(I)) THEN
-            FLAG_FOUND = .TRUE.
-            EXIT
-          END IF
-        END DO
-
-        IF (.NOT. FLAG_FOUND) THEN
-          WRITE(*,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
-     +     '" atomic number ', NELEMM(M), 'not in atoms list above'
-          STOP ERROR_BAD_VALUE
-        END IF
-      END DO
-
-
-*
-*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
-*     1             dissoc_MOL(J),
-*     2             (dissoc_C(J, K), K=1,5),
-*     3             dissoc_MMAX(J),
-*     4             (NELEMM(M), NATOMM(M), M=1,4)
-
-
-
-      MMAXJ = dissoc_MMAX(J)
-      IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
-      DO M = 1, MMAXJ
-          dissoc_NELEM(M,J) = NELEMM(M)
-          dissoc_NATOM(M,J) = NATOMM(M)
-      END DO
-
-
-*        WRITE(*, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
-*     1             dissoc_MOL(J),
-*     2             (dissoc_C(J, K), K=1,5),
-*     3             dissoc_MMAX(J),
-*     4             (dissoc_NELEM(M, J), dissoc_NATOM(M, J), M=1,4)
-
-
-
-      GO TO 1010
-
- 1014 dissoc_NMOL = J-1
-
-      CLOSE(UNIT=UNIT_)
-
-      RETURN
-      END
-
-
       END MODULE DISSOC
-
-
-
