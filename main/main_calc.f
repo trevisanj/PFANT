@@ -589,13 +589,20 @@ C--- END MAIN ------------------------------------------------------------------
 
 
 C-------------------------------------------------------------------------------
+C Calculates the "continuum absorption"
+C
+C Note1: 1/3 things that need to be changed to include scattering (other software
+C       e.g. Upsalla already have this)
+C
+C Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
+C        So, one idea is to include opacity model tables (Upsalla; MARCS model).
+C
       SUBROUTINE ABSORU (WL,TH,ZLPE,CALLAM,CALTH,CALPE,CALMET,CALU,CALSO
      1R,KKK,TOTKAP)
       INTEGER*4 CAL,CALU,CALMET,CALLAM,CALTH,CALPE,PMAX,CALSOR
       DIMENSION ZZKK(11,2),TOTKAP(2),DIF(2,3),SCATH(2),ZZK(11,2),SCAT(2)
 
-      COMMON /LECT1/  absoru2_ABMET, absoru2_ABHEL
-      COMMON /LECT2/  absoru2_ZP(30), absoru2_ZM(30), absoru2_WI(41,2),absoru2_NUMSET(2), CAL
+      COMMON /LECT2/  CAL
       COMMON /GBF/    ZLH(19)
       COMMON /GBFH/   G2D(2,19), JSHYD(2), JH
       COMMON /TETA/   AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
@@ -615,63 +622,74 @@ C-------------------------------------------------------------------------------
       COMMON /SOMAB/  SUM1
 
       DATA DIF/5.799E-13,8.14E-13,1.422E-6,1.28E-6,2.784,1.61/
-      ILT=CALLAM
-      IF (CALPE.EQ.2) GO TO 9003
-      SUM1=0.0
-      SUM2=0.0
-      DO 4100 I=1,absoru2_NM
-      SUM1=SUM1+absoru2_ZP(I)
-4100  SUM2=SUM2+absoru2_ZP(I)*absoru2_ZM(I)
-      AVM=SUM2/SUM1
+      
+      ILT = CALLAM
+      IF (CALPE .EQ. 2) GO TO 9003
 
 C
 C     AVM=MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
 C     SUM1=SOMME DES ABONDANCES DES METAUX
-      DO 4110 I=1,absoru2_NM
-4110  ZNU(I)=absoru2_ZP(I)/SUM1
+C
+      SUM1 = 0.0
+      SUM2 = 0.0
+      DO 4100 I=1,absoru2_NM
+        SUM1 = SUM1+absoru2_ZP(I)
+4100    SUM2 = SUM2+absoru2_ZP(I)*absoru2_ZM(I)
+      AVM = SUM2/SUM1
+
 C
 C     ZNU1,ZNU2,ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
 C
-      ZNU1=1.0/(1.0+absoru2_ABMET+absoru2_ABHEL)
-      ZNU2=ZNU1*absoru2_ABHEL
-      ZNU3=ZNU1*absoru2_ABMET
-      ZMUZE=1.008*ZNU1+4.003*ZNU2+AVM*ZNU3
+      DO 4110 I = 1,absoru2_NM
+4110    ZNU(I) = absoru2_ZP(I)/SUM1
+
+      ZNU1 = 1.0/(1.0+absoru2_ABMET+absoru2_ABHEL)
+      ZNU2 = ZNU1*absoru2_ABHEL
+      ZNU3 = ZNU1*absoru2_ABMET
+      ZMUZE = 1.008*ZNU1+4.003*ZNU2+AVM*ZNU3
+      
 9005  IF ((CALTH.EQ.2).AND.(CALLAM.EQ.2)) GO TO 5016
       IF (CALTH.EQ.2) GO TO 9001
       IF (TH.LE.0.8) ITH=1
       IF (TH.GT.0.8) ITH=2
-      NSET=absoru2_NUMSET(ITH)-1
+      NSET = absoru2_NUMSET(ITH)-1
+      
 9001  DO 6500 I=1,NSET
-      IF (ABS(WL-absoru2_WI(I+1,ITH)).LE.0.50) GO TO 8000
-      IF (WL.LT.absoru2_WI(I+1,ITH)) GO TO 7000
+        IF (ABS(WL-absoru2_WI(I+1,ITH)).LE.0.50) GO TO 8000
+        IF (WL.LT.absoru2_WI(I+1,ITH)) GO TO 7000
 6500  CONTINUE
+
 7000  JFZ=1
       GO TO 9002
 8000  JFZ=2
+
 C
 C     DIFFUSION DE RAYLEIGH PAR H ET H2 (DALGARNO) HARVARD JUIN 1964
 C     SCATH(1)=DIFFUSION DE H
 C     SCATH(2)=DIFFUSION DE H2
 C
 9002  DO 9023 I=1,2
-      IF (I.EQ.2) GO TO 9020
-      IF (WL.GT.1026.0) GO TO 9021
-      SCATH(1)=4.0E-24
-      GO TO 9023
-9020  IF (WL.GT.1200.0) GO TO 9021
-      WLH=1200.0
-      GO TO 9022
-9021  WLH=WL
-9022  WL4=WLH**4
-      SCATH(I)=(DIF(I,1)+DIF(I,2)/SQRT(WL4)+DIF(I,3)/WL4)/WL4
+        IF (I.EQ.2) GO TO 9020
+        IF (WL.GT.1026.0) GO TO 9021
+        SCATH(1)=4.0E-24
+        GO TO 9023
+        
+9020    IF (WL.GT.1200.0) GO TO 9021
+        WLH=1200.0
+        GO TO 9022
+9021    WLH=WL
+9022    WL4=WLH**4
+        SCATH(I)=(DIF(I,1)+DIF(I,2)/SQRT(WL4)+DIF(I,3)/WL4)/WL4
 9023  CONTINUE
+
       GO TO 5018
+      
 5016  IF ((JFZ.NE.2).OR.(ILT.EQ.1)) GO TO 5017
       ILT=CALLAM-1
 5018  CALL GAUNTH (WL)
-5017  CALL  TEMPA(WL,TH,CALTH,CALLAM)
+5017  CALL TEMPA(WL,TH,CALTH,CALLAM)
       IF (CALTH.EQ.2) GO TO 9007
-      CALL SAHATH (TH)
+      CALL SAHATH(TH)
 9007  IF ((CALTH.EQ.2).AND.(CALLAM.EQ.2)) GO TO 9006
       CALL ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
 9006  IF (CALMET.EQ.1) GO TO 9003
@@ -679,49 +697,57 @@ C
       MM=absoru2_NMETA+1
       MMM=absoru2_NMETA+6
       SCATEL=9.559063E-13*PE_SAPU*TH
+      
 C
 C     9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
 C     =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 C
-      GO TO (9008,9009),CALSOR
+      GO TO (9008,9009), CALSOR
 9009  WRITE (6,86) (absoru2_IUNITE(I),I=1,2)
 86    FORMAT ('0LAMBDA KKK   C1'7X'MG'7X'SI1'7X'AL1'8X'H-'7X'H2-'7X'H2+'
      19X'H'7X'HE+'8X'HE'5X'K TOTAL/',2A4)
 9008  KKK=JFZ
       MIN=MM
+      
       DO 9015 I=1,JFZ
-      DO 9015 M=1,absoru2_NMETA
-9015  ZZKK(M,I)=0.0
+        DO 9015 M=1,absoru2_NMETA
+9015      ZZKK(M,I)=0.0
+
 1750  TOTKAP(2)=0.
       IF (CALU.EQ.1) UNIT=RHO
       IF (CALU.EQ.2) UNIT=TOC
+
 C     RAPPEL  TOC=NBRE DE NOYAUX DE H PAR CM3
+
       SCATEL=SCATEL/UNIT
       DO 4220 I=1,KKK
-      TOTKAP(I)=0.0
-      SCAT(1)=SCATH(1)*ZNH(absoru2_NMETA+4)/UNIT
-      SCAT(2)=SCATH(2)*ZNH(absoru2_NMETA+2)/UNIT
-      DO 4221 M=MIN,MMM
-C     LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
-      IF ((M.NE.(absoru2_NMETA+1)).AND.(M.NE.(absoru2_NMETA+3))) GO TO 4222
-      IF (M.EQ.(absoru2_NMETA+1)) ZZKK(M,I)=ZZK(M,I)*(ZNH(absoru2_NMETA+4)*PE_SAPU*1.E-26)/UNIT
-      IF (M.EQ.(absoru2_NMETA+3)) ZZKK(M,I)=ZZK(M,I)*((ZNH(absoru2_NMETA+4)*1.E-19)*(ZNH(M
-     1MAX+7)*1.0E-20))/UNIT
-      GO TO 4221
-4222  ZZKK(M,I)=ZZK(M,I)*ZNH(M)/UNIT
-      IF (M.EQ.(absoru2_NMETA+2)) ZZKK(M,I)=ZZKK(M,I)*PE_SAPU
-4221  TOTKAP(I)=TOTKAP(I)+ZZKK(M,I)
-      TOTKAP(I)=(TOTKAP(I)+SCATEL+SCAT(1)+SCAT(2))
-      GO TO (4220,9010),CALSOR
-9010  WRITE (6,87) WL,KKK,(ZZKK(M,I),M=1,MMM),TOTKAP(I)
-87    FORMAT (F9.1,I2,1P12E10.2)
+        TOTKAP(I)=0.0
+        SCAT(1)=SCATH(1)*ZNH(absoru2_NMETA+4)/UNIT
+        SCAT(2)=SCATH(2)*ZNH(absoru2_NMETA+2)/UNIT
+        DO 4221 M=MIN,MMM
+C         LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
+          IF ((M.NE.(absoru2_NMETA+1)).AND.(M.NE.(absoru2_NMETA+3)))
+     +     GO TO 4222
+          IF (M.EQ.(absoru2_NMETA+1))
+     +     ZZKK(M,I)=ZZK(M,I)*(ZNH(absoru2_NMETA+4)*PE_SAPU*1.E-26)/UNIT
+          IF (M.EQ.(absoru2_NMETA+3))
+     +     ZZKK(M,I)=ZZK(M,I)*((ZNH(absoru2_NMETA+4)*1.E-19)*(ZNH(MMAX+7)*1.0E-20))/UNIT
+          GO TO 4221
+4222      ZZKK(M,I)=ZZK(M,I)*ZNH(M)/UNIT
+          IF (M.EQ.(absoru2_NMETA+2)) ZZKK(M,I)=ZZKK(M,I)*PE_SAPU
+4221      TOTKAP(I)=TOTKAP(I)+ZZKK(M,I)
+        TOTKAP(I)=(TOTKAP(I)+SCATEL+SCAT(1)+SCAT(2))
+        GO TO (4220,9010),CALSOR
+9010    WRITE (6,87) WL,KKK,(ZZKK(M,I),M=1,MMM),TOTKAP(I)
+87      FORMAT (F9.1,I2,1P12E10.2)
 4220  CONTINUE
+
       GO TO (9011,9012),CALSOR
 9012  WRITE (6,89) SCATEL,SCAT(1),SCAT(2),RHO,TOC,ZLPE,TH
 89    FORMAT ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSI
      1TE='E11.4,' NBR.NOYAU D H/CM3='E11.4,' LOG10PE='0PF5.2,' TETA='F5.
      22)
-9011  CAL=2
+9011  CAL = 2
       RETURN
       END
 
@@ -742,20 +768,7 @@ C     LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
-C
-C     A.M COLLE  18/01/1971
-C
-      INTEGER*4 CALTH,CALMET
-      REAL KTH
-      DIMENSION PHI(30),PA(10)
-      COMMON /SAPE/ AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-      COMMON /ZION/ AC, AC1(3), AC2(30,9)
-      COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
-      COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
-      COMMON /SAPDIV/ ZMU, PG_SAPDIV
-      COMMON /ABSO1/ absoru2_NM
-      COMMON /ABSO2/ absoru2_NMETA
+C Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
 C
 C     SSP CALCULANT LES QUANTITES SUIVANTES
 C     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
@@ -772,6 +785,19 @@ C     PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
 C     ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
 C     VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 C
+C A.M COLLE  18/01/1971
+C
+      SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
+      INTEGER*4 CALTH,CALMET
+      REAL KTH
+      DIMENSION PHI(30),PA(10)
+      COMMON /SAPE/ AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
+      COMMON /ZION/ AC, AC1(3), AC2(30,9)
+      COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
+      COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
+      COMMON /SAPDIV/ ZMU, PG_SAPDIV
+      COMMON /ABSO1/ absoru2_NM
+      COMMON /ABSO2/ absoru2_NMETA
       KTH=6.956948E-13/TH
 C     6.956948E-13=1.38024E-16*5040.39
       PE_SAPU=EXP(ZLPE*2.302585)
@@ -851,15 +877,8 @@ C     41904.275E+7=8.313697E+7*5040.39,OU 8.313697E+7=CONSTANTE DES GAZ
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE  TEMPA(WL,TH,CALTH,CALLAM)
 C
 C     A.M COLLE   8/5/69
-C
-      INTEGER*4 CALLAM,CALTH
-      COMMON /TETA/ AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
-      COMMON /TEHE/ ZLHEM(5), ZLHE(10)
-      COMMON /TEMPE/ STWTM(5)
-      COMMON /THE/ ZEUH(20), ZEUHEP(20), ZEXPM(5), ZEXP(10), UL
 C
 C     HCBKTM=(H*C/K*T)*1.0E8
 C     0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
@@ -870,6 +889,13 @@ C     AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
 C     C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
 C     ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
 C
+      SUBROUTINE  TEMPA(WL,TH,CALTH,CALLAM)
+      INTEGER*4 CALLAM,CALTH
+      COMMON /TETA/ AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
+      COMMON /TEHE/ ZLHEM(5), ZLHE(10)
+      COMMON /TEMPE/ STWTM(5)
+      COMMON /THE/ ZEUH(20), ZEUHEP(20), ZEXPM(5), ZEXP(10), UL
+
       IF (CALTH.EQ.2) GO TO 1001
       HCBKTM=0.2854306E-3*TH*1.0E8
       AHE=0.9717088E-12*TH**3
@@ -919,15 +945,22 @@ C
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE SAHATH(TH)
+C
+C SAHA's equation: ionization equilibrium: relative number of atoms in each
+C ionization state
+C
+C LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
+C LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
+C CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
+C 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
+C POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
 C
 C     A.M COLLE   13/5/69
 C
+      SUBROUTINE SAHATH(TH)
       DIMENSION POTION(6),C1(3),C2(3),C3(3),C4(3)
 
-      COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
-      COMMON /SAHTP/ absoru2_XI(30,9), absoru2_PF(30,9)
-      COMMON /ABSO1/ absoru2_NM
+      COMMON /SAHT/ ZK(11), ZKM(30,9)
 
       DATA C1 /0.0,-7.526612E-3,5.708280E-2/,
      1     C2 /0.0,1.293852E-1,-1.823574E-1/,
@@ -937,13 +970,7 @@ C
 
       DO 1 N=2,3
 1     ZK(absoru2_NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))
-C
-C     LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
-C     LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
-C     CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
-C     31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
-C     POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
-C
+
       TEMPOR=2.5*ALOG(5040.39/TH)
       TEMPO=TEMPOR-1.098794
       DO 2 N=4,5
@@ -1088,16 +1115,20 @@ C
 
 
 C-------------------------------------------------------------------------------
+C ATHYHE():
+C CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
+C L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
+C DISCONTINUITE DE L'UN DE CES ABSORBANTS
+C
+C A.M COLLE  07/12/1970
+C
       SUBROUTINE ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
-C
-C     A.M COLLE  07/12/1970
-C
+
       INTEGER*4 CALLAM,CALTH
       DIMENSION TGAUNT(5),TRHOG(5),OPNU(46),ZZK(11,2),COTE(2),SNIV(2),EX
      1PO(2),CUK(2),CONS(2),AN(2),C1(3),C2(3),C3(3),C4(3),C5(3),C6(3),EXP
      2ON(2)
 
-      COMMON /ABSO2/ absoru2_NMETA
       COMMON /ABSO3/ JFZ
       COMMON /HYHE/  GRDM(46), U1(46), U2(46), WINV(46), YY(4),
      1               ZLETAG(18), G3D(12,18), AA(4), ZEFF4(10),
@@ -1115,69 +1146,85 @@ C
      30816,0.1809394,-0.1959804/,C3/2.549101,-1.828635,4.233733/,C4/-14.
      497997,8.900841,-20.84862/,C5/0.0,-17.78231,0.0/,C6/0.0,-7.89472E-2
      5,0.0/
-C
-C     CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
-C     L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
-C     DISCONTINUITE DE L'UN DE CES ABSORBANTS
-C
-      JHE=0
-      JHEP=0
-      JHEM=0
-      IF (CALLAM.EQ.1) INDTH=0
-      JHYT=1
-      GCONST=31.3213*TH
+      JHE  = 0
+      JHEP = 0
+      JHEM = 0
+      IF (CALLAM.EQ.1) INDTH = 0
+      JHYT = 1
+      GCONST = 31.3213*TH     
 C     31.3213= 157871.62/5040.39 , 157871.62=M*Z**2*E**4/(2*K*(H/2*PI)**
 C     M ET E SONT LA MASSE ET LA CHARGE DE L'ELECTRON,H ET K LES CONSTAN
 C     DE PLANCK ET DE BOLTZMANN
 C
-      IF (UL.LT.100.0) GO TO 1333
+
+      IF (UL .LT. 100.0) GO TO 1333
+      
 C     UL=H*NU/(K*T)
       STIMU=1.0
       GO TO 1334
+      
 1333  STIMU=1.0-EXP(-UL)
 1334  STIMU3=STIMU/UL**3
+
       IF (CALLAM.EQ.2) GO TO 1335
-      ZNL=ALOG(WL)
-      ZLAMIN=1.0E8/WL
-      DO 3 N=1,2
-3     EXPON(N)=EXP(EXPO(N)+CONS(N)*ZNL)
+      
+      ZNL = ALOG(WL)
+      ZLAMIN = 1.0E8/WL
+      DO 3 N = 1,2
+3       EXPON(N)=EXP(EXPO(N)+CONS(N)*ZNL)
 C
 C     I   H-
 C     H- GINGERICH= HARVARD JUIN 1964 (RESULTATS*1.0E-26)
-1335  IF (TH.GE.0.3) GO TO 6060
+
+1335  IF (TH .GE. 0.3) GO TO 6060
+
       ZZK(absoru2_NMETA+1,1)=0.0
       GO TO 6210
+      
 6060  IF ((CALLAM.EQ.2).AND.(INDTH.EQ.1)) GO TO 6100
+
       INDTH=1
       IF (WL.LE.16419.0) GO TO 6070
-      ALTHMB=0.0
+      
+      ALTHMB = 0.0
       GO TO 6190
-6070  WLM=WL/1.0E3
+      
+6070  WLM = WL/1.0E3
       IF (WL.GT.14200.0) GO TO 6090
-      ZKAS=(((5.95244E-4*WLM-0.0204842)*WLM+0.164790)*WLM+0.178708)*WLM+
+      
+      ZKAS =(((5.95244E-4*WLM-0.0204842)*WLM+0.164790)*WLM+0.178708)*WLM+
      10.680133E-2
       GO TO 6100
+      
 6090  WLM=16.149-WLM
-      ZKAS=((0.273236E-2*WLM-0.411288E-1)*WLM+0.220190)*WLM**2+0.269818
-6100  FACT=1.0-EXP((-TH)*28.54310E+3/WL)
+      ZKAS = ((0.273236E-2*WLM-0.411288E-1)*WLM+0.220190)*WLM**2+0.269818
+      
+6100  FACT = 1.0-EXP((-TH)*28.54310E+3/WL)
 C
 C     TRANSITION BOUND-FREE= GELTMAN APJ. VOL. 136 P. 935 1962
 C
-      ALTHMB=ZKAS*4.158E-1*TH**2.5*EXP(1.726*TH)*FACT
+
+      ALTHMB = ZKAS*4.158E-1*TH**2.5*EXP(1.726*TH)*FACT
 C
 C     TRANSITION FREE-FREE=T L JOHN (OCT.1963)
 C
+
 6190  ALTHML=(WL/1.0E6)*(((-5.939*TH+11.934)*TH-3.2062)+(WL/1.0E3)*((-0.
      134592*TH+7.0355)*TH-0.40192))+((0.027039*TH-0.011493)*TH+0.0053666
      2)
-      ZZK(absoru2_NMETA+1,1)=ALTHMB+ALTHML
+
+! ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1     
+      ZZK(absoru2_NMETA+1,1) = ALTHMB+ALTHML
 C
 C     II   H2-
 C     H2- SOMMERVILLE= APJ. VOL. 139 P. 195 1963
+
 6210  IF (TH.LT.0.5) GO TO 2050
       IF (WL.GE.3040.0) GO TO 2070
+      
 2050  ZZK(absoru2_NMETA+2,1)=0.0
       GO TO 2080
+      
 2070  DKSQ=911.27/WL
       ZZK(absoru2_NMETA+2,1)=(((0.09319*TH+2.857-0.9316/TH)/DKSQ-(2.6*TH+6.831-4.
      1993/TH))/DKSQ+(35.29*TH-9.804-10.62/TH)-(74.52*TH-62.48+0.4679/TH)
@@ -1185,11 +1232,14 @@ C     H2- SOMMERVILLE= APJ. VOL. 139 P. 195 1963
 C
 C     III   H2+
 C     H2+ BATES=HARVARD JUIN 1964  (RESULTATS *1.0E+39)
+
 2080  IF ((TH.LT.0.25).OR.((ZLAMIN.LT.WINV(1)).OR.(ZLAMIN.GT.WINV(46))))
      1 GO TO 1012
+     
       BKT=3.19286E-2/TH
 C     BKT=K*T EN RYDBERGS POUR H2+
 C
+
       DO 1006 J=1,46
 1006  OPNU(J)=2.51E-3*GRDM(J)*(EXP(U1(J)/BKT)-(EXP(-U2(J)/BKT)))
       DO 1013 J=1,46
@@ -1423,100 +1473,133 @@ C
 
 
 C-------------------------------------------------------------------------------
+C
+C Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
+C (i.e., a statistical weight)
+C
+C Reference: J.A.Gaunth 1930.
+C
+C A.M COLLE   19/8/69
+C
       SUBROUTINE GAUNTH (WL)
-C
-C     A.M COLLE   19/8/69
-C
+
       COMMON /GBF/   ZLH(19)
       COMMON /GBFH/  G2D(2,19), JSHYD(2), JH
       COMMON /ABSO3/ JFZ
 C
 C     DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE
 C
-      JH=0
+      JH = 0
       DO 1410 I=1,JFZ
-      DO 1332 J=1,19
-      JJ=J
-      IF (ABS(WL-ZLH(J)).LE.0.5) GO TO 1335
-      IF (WL.LT.ZLH(J)) GO TO 1333
-1332  CONTINUE
-1333  IF (I.NE.2) GO TO 1334
-C
+      
+        DO 1332 J=1,19
+          JJ=J
+          IF (ABS(WL-ZLH(J)).LE.0.5) GO TO 1335
+          IF (WL.LT.ZLH(J)) GO TO 1333
+1332    CONTINUE
 
+1333    IF (I .NE. 2) GO TO 1334
+C       
+C       CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
+C       
 
-C     CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
-C
-      DO 1336 J=1,19
-1336  G2D(2,J)=G2D(1,J)
-      GO TO 1420
-1334  JS=JJ
-      GO TO 1340
-1335  JH=1
-C
-C     C'EST UNE DISCONTINUITE DE L'HYDROGENE
-C
-      IF (I.EQ.1) GO TO 1334
-      JS=JJ+1
-1340  JSHYD(I)=JS
-      DO 1410 J=JS,19
-      ZJ=J
-      IF (J.GT.7) GO TO 1400
-      COND=ZLH(J)-WL
-      IF (ABS(COND).LE.0.50) GO TO 1122
-      IF (COND.LT.0.0) GO TO 1410
-      ZQ=WL*J**2/COND
-      RK=SQRT(ZQ)
-      GO TO (1111,1113,1115,1117,1119,2000,2010),J
-C
-C     MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
-C
-1111  DELTA=8.*RK/SQRT(ZQ+1.0)
-      GO TO 1120
-1113  DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
-      GO TO 1120
-1115  DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.
-     1)**4.5
-      GO TO 1120
-1117  DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+68
-     100.)*ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
-      GO TO 1120
-1119  DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171
-     1875.)*((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(
-     29.*(ZQ+25.)**8.5)
-      GO TO 1120
-C
-C     HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
-C
-2000  ZP=(ZQ+36.)**5.25
-      DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+2262816.E
-     12)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+1
-     2290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
-      GO TO 1120
+        DO 1336 J=1,19
+1336      G2D(2,J)=G2D(1,J)
 
-2010  ZP=(ZQ+49.)**6.25
-      DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060
-     1.E3)*ZQ+2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((22974
-     22.5*ZQ+1968907.E1)*ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ
-     3+1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
-1120  G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/(SQRT(ZQ+ZJ**
-     12)*(1.-EXP(-6.283185*RK)))
-      GO TO 1410
-1122  GO TO (1123,1125,1127,1129,1131,2020,2030),J
-1123  G2D(I,J)=0.7973
-      GO TO 1410
-1125  G2D(I,J)=0.8762
-      GO TO 1410
-1127  G2D(I,J)=0.9075
-      GO TO 1410
-1129  G2D(I,J)=0.9247
-      GO TO 1410
-1131  G2D(I,J)=0.9358
-      GO TO 1410
-2020  G2D(I,J)=0.9436
-      GO TO 1410
-2030  G2D(I,J)=0.9494
-      GO TO 1410
-1400  G2D(I,J)=1.0
+        GO TO 1420
+        
+1334    JS=JJ
+        GO TO 1340
+        
+1335    JH=1
+C       
+C       C'EST UNE DISCONTINUITE DE L'HYDROGENE
+C       
+        IF (I .EQ. 1) GO TO 1334
+        
+        JS = JJ+1
+        
+1340    JSHYD(I) = JS
+
+        DO 1410 J=JS,19
+          ZJ=J
+          IF (J.GT.7) GO TO 1400
+          COND=ZLH(J)-WL
+          IF (ABS(COND).LE.0.50) GO TO 1122
+          IF (COND.LT.0.0) GO TO 1410
+          
+          
+          !=====
+          ! Assignment of G2D(I,J), alternative 1
+          !=====
+          
+          ZQ=WL*J**2/COND
+          RK=SQRT(ZQ)
+          GO TO (1111,1113,1115,1117,1119,2000,2010), J
+          
+C         
+C         MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
+C         
+1111      DELTA=8.*RK/SQRT(ZQ+1.0)
+          GO TO 1120
+          
+1113      DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
+          GO TO 1120
+          
+1115      DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.
+     1    )**4.5
+          GO TO 1120
+          
+1117      DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+68
+     1    00.)*ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
+          GO TO 1120
+          
+1119      DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171
+     1    875.)*((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(
+     2    9.*(ZQ+25.)**8.5)
+          GO TO 1120
+          
+C         
+C         HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
+C         
+2000      ZP=(ZQ+36.)**5.25
+          DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+2262816.E
+     1    2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+1
+     2    290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
+          GO TO 1120
+          
+2010      ZP=(ZQ+49.)**6.25
+          DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060
+     1    .E3)*ZQ+2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((22974
+     2    2.5*ZQ+1968907.E1)*ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ
+     3    +1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
+     
+1120      G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/(SQRT(ZQ+ZJ**
+     1    2)*(1.-EXP(-6.283185*RK)))
+          GO TO 1410
+          
+          
+          !=====
+          ! Assignment of G2D(I,J), alternative 2
+          !=====
+          
+1122      GO TO (1123,1125,1127,1129,1131,2020,2030), J
+1123      G2D(I,J)=0.7973
+          GO TO 1410
+1125      G2D(I,J)=0.8762
+          GO TO 1410
+1127      G2D(I,J)=0.9075
+          GO TO 1410
+1129      G2D(I,J)=0.9247
+          GO TO 1410
+1131      G2D(I,J)=0.9358
+          GO TO 1410
+2020      G2D(I,J)=0.9436
+          GO TO 1410
+2030      G2D(I,J)=0.9494
+          GO TO 1410
+1400      G2D(I,J)=1.0
+
 1410  CONTINUE
 1420  RETURN
       END
@@ -1534,6 +1617,8 @@ C
 
 
 C-------------------------------------------------------------------------------
+C Calculates the flux in the continuum.
+C
       SUBROUTINE BK(modeles_NH,modeles_TETA,modeles_PE,modeles_PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
      1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
       PARAMETER(NP=7000)
@@ -1559,96 +1644,125 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
 C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
+      
+      ! ISSUE I don't like this name LLZERO, it is the same name as the variable read from main.dat
       LLZERO=LZERO
       LLFIN=LFIN
-      C=2.997929E+10
-      H=6.6252E-27
-      KB=1.38046E-16
-      NU1= C* 1.E+8 /LZERO
-      AHNU1= H*NU1
-      C31=(2*AHNU1) * (NU1/C)**2
-            DO   N=1,modeles_NTOT
-            T=5040./modeles_TETA(N)
-            ALPH(N)=EXP(-AHNU1/(KB*T))
-            B1(N)= C31 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-            KC1(N)=TOTKAP(1)
-            END DO
+      C  = 2.997929E+10
+      H  = 6.6252E-27
+      KB = 1.38046E-16
+      NU1 = C* 1.E+8 /LZERO
+      AHNU1 = H*NU1
+      C31 = (2*AHNU1) * (NU1/C)**2
+      
+      DO N = 1,modeles_NTOT
+        T = 5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU1/(KB*T))
+        B1(N) = C31 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        KC1(N) = TOTKAP(1)
+      END DO
+      
       NU2= C* 1.E+8 /LFIN
       AHNU2= H*NU2
       C32=(2*AHNU2) * (NU2/C)**2
-            DO   N=1,modeles_NTOT
-            T=5040./modeles_TETA(N)
-            ALPH(N)=EXP(-AHNU2/(KB*T))
-            B2(N)= C32 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-            KC2(N)=TOTKAP(1)
-            END DO
+      DO N = 1,modeles_NTOT
+        ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
+        T = 5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU2/(KB*T))
+        B2(N) = C32 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        KC2(N)=TOTKAP(1)
+      END DO
+      
       NU= C* 1.E+8 /LAMBD
       AHNU= H*NU
       C3=(2*AHNU) * (NU/C)**2
-            DO   N=1,modeles_NTOT
-            T=5040./modeles_TETA(N)
-            ALPH(N)=EXP(-AHNU/(KB*T))
-            B(N)= C3 * (ALPH(N)/(1.-ALPH(N)))
-      CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-            PHN(N)=  ZNH (absoru2_NMETA+4) *KB * T
-            PH2(N) =ZNH (absoru2_NMETA+2) *KB * T
+      DO N=1,modeles_NTOT
+        T=5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU/(KB*T))
+        B(N) = C3 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        PHN(N) = ZNH(absoru2_NMETA+4) *KB * T
+        PH2(N) = ZNH(absoru2_NMETA+2) *KB * T
+
+!ISSUE Can I delete this?        
 c     if(n.eq.1) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
 c     1 znh(absoru2_NMETA+2),t
 c     if(n.eq.modeles_NTOT) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
 c     1 znh(absoru2_NMETA+2),t
-            KC(N)=TOTKAP(1)
-            END DO
-      TET0=FTETA0(modeles_PG,modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
-      T=5040./TET0
-      ALPH01=EXP(-AHNU1/(KB*T))
-      B1(0)=C31 * (ALPH01/(1.-ALPH01))
+
+        KC(N) = TOTKAP(1)
+      END DO
+      
+      TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
+      T = 5040./TET0
+      
+      
+      ALPH01 = EXP(-AHNU1/(KB*T))
+      B1(0) = C31 * (ALPH01/(1.-ALPH01))
       CALL FLIN1(KC1,B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC1,KIK,CAVA)
-      IF(CAVA. GT.0) THEN
-      WRITE(6,132) CAVA
-      WRITE(6,135) (I, TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
-      IF(CAVA.GT.1) STOP
+      IF(CAVA. GT. 0) THEN
+        !--verbose--!
+        IF (VERBOSE) THEN
+          WRITE(6,132) CAVA
+          WRITE(6,135) (I, TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        
+        IF(CAVA.GT.1) STOP
       END IF
-      ALPH02=EXP(-AHNU2/(KB*T))
-      B2(0)=C32 * (ALPH02/(1.-ALPH02))
+      
+      ALPH02 = EXP(-AHNU2/(KB*T))
+      B2(0) = C32 * (ALPH02/(1.-ALPH02))
       CALL FLIN1(KC2,B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC2,KIK,CAVA)
-      IF(CAVA. GT.0) THEN
-      WRITE(6,132) CAVA
-      WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
-      IF(CAVA.GT.1) STOP
+      IF (CAVA .GT. 0) THEN
+        !--verbose--!
+        IF (VERBOSE) THEN
+          WRITE(6,132) CAVA
+          WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        
+        IF(CAVA .GT. 1) STOP
       END IF
-      ALPH0=EXP(-AHNU/(KB*T))
-      B(0)=C3 * (ALPH0/(1.-ALPH0))
+      
+      ALPH0 = EXP(-AHNU/(KB*T))
+      B(0) = C3 * (ALPH0/(1.-ALPH0))
       CALL FLIN1(KC,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC,KIK,CAVA)
       IF(CAVA. GT.0) THEN
-      WRITE(6,132) CAVA
-      WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
-      IF(CAVA.GT.1) STOP
+        !--verbose--!
+        IF (VERBOSE) THEN
+          WRITE(6,132) CAVA
+          WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        IF(CAVA.GT.1) STOP
       END IF
+      
 cpc   WRITE(6,151) KC1(1),KC1(modeles_NTOT),B1(0),B1(1),B1(modeles_NTOT),FC1
 cpc   WRITE(6,152) KC2(1),KC2(modeles_NTOT),B2(0),B2(1),B2(modeles_NTOT),FC2
 cpc   WRITE(6,150) KC(1),KC(modeles_NTOT),B(0),B(1),B(modeles_NTOT),FC
-      ILZERO=LZERO/100.
-      ILZERO=1E2*ILZERO
-      LAMBDC(1)=LZERO-ILZERO
-      LAMBDC(2)=LFIN-ILZERO
+
+      ILZERO = LZERO/100.
+      ILZERO = 1E2*ILZERO
+      LAMBDC(1) = LZERO-ILZERO
+      LAMBDC(2) = LFIN-ILZERO
       DO N=1,modeles_NTOT
         KCJ(1,N)=KC1(N)
         KCJ(2,N)=KC2(N)
-        END DO
-      DO N=1,modeles_NTOT
-            DO J=1,2
-            KCN(J)=KCJ(J,N)
-            END DO
-      CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
-            DO D=1,DTOT
-            KCD(D,N)=FTTC(D)
-            END DO
       END DO
-C     IF(.NOT.main_ECRIT) GO TO 10
-      WRITE(6,153) KCD(1,1),KCD(1,modeles_NTOT)
-      WRITE(6,154) KCD(DTOT,1),KCD(DTOT,modeles_NTOT)
+      DO N=1,modeles_NTOT
+        DO J=1,2
+          KCN(J)=KCJ(J,N)
+        END DO
+        CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
+        DO D=1,DTOT
+          KCD(D,N)=FTTC(D)
+        END DO
+      END DO
+      
+      IF (VERBOSE) THEN
+        WRITE(6,153) KCD(1,1),KCD(1,modeles_NTOT)
+        WRITE(6,154) KCD(DTOT,1),KCD(DTOT,modeles_NTOT)
+      END IF
 10    CONTINUE
       RETURN
 132   FORMAT(' ENNUI AU CALCUL DU FLUX CONTINU     CAVA='I3)
@@ -1675,140 +1789,154 @@ C     IF(.NOT.main_ECRIT) GO TO 10
 
 
 C-------------------------------------------------------------------------------
+C Sets the Voigt profile using Hjertings' constants.
+C
+C Note: convolution for molecules uses Gaussian profile.
+C
+
 ! ISSUE with variable MM
-      SUBROUTINE SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,
-     1 GFAL,atomgrade_ZINF,ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,
-     2 modeles_NTOT,modeles_NH,modeles_TETA,B,B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
-      PARAMETER(MAX_atomgrade_NBLEND=8000,PARAMETER_NMOL=50000,NP=7000)
+      SUBROUTINE SELEKFH(KIK, DTOT, GFAL, ABOND, ECART, TAUH,DHM,DHP,VT,
+     2 B, B1, B2, KCD, POP, DELTA, A, TTD, FL, FCONT)
+      PARAMETER(PARAMETER_NMOL=50000,NP=7000)
       LOGICAL main_PTDISK,main_ECRIT
       INTEGER D, DTOT, CAVA,DHM,DHP
       REAL lambi
-      REAL main_MU,KAPPA,KA,KAP,modeles_NH,KCD,KCI,KAM,KAPPAM,KAPPT,km_MM
-      REAL*8 atomgrade_LAMBDA,main_PAS,ECART,ECAR,ECARTM,ECARM,km_LMBDAM
-      DIMENSION modeles_NH(50),modeles_TETA(50),VT(50)
+      REAL KAPPA,KA,KAP,KCD,KCI,KAM,KAPPAM,KAPPT
+      REAL*8 ECART,ECAR,ECARTM,ECARM
+      DIMENSION VT(50)
       DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50),BI(0:50)
-      DIMENSION ECART(MAX_atomgrade_NBLEND),ECAR(MAX_atomgrade_NBLEND), atomgrade_ZINF(MAX_atomgrade_NBLEND),ECARTL(MAX_atomgrade_NBLEND),
-     1 GFAL(MAX_atomgrade_NBLEND),ABOND(MAX_atomgrade_NBLEND),KA(MAX_atomgrade_NBLEND),KAP(50),atomgrade_ELEM(MAX_atomgrade_NBLEND),
+      DIMENSION ECART(MAX_atomgrade_NBLEND),ECAR(MAX_atomgrade_NBLEND), ECARTL(MAX_atomgrade_NBLEND),
+     1 GFAL(MAX_atomgrade_NBLEND),ABOND(MAX_atomgrade_NBLEND),KA(MAX_atomgrade_NBLEND),KAP(50),
      2 KAPPA(50),atomgrade_LAMBDA(MAX_atomgrade_NBLEND),KCD(NP,50),KCI(50),
      3 POP(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50)
-cp 20/11/04 M-N   DIMENSION TTD(DTOT),FL(DTOT),TAUHD(50),TAUH(DTOT,50)
+
       DIMENSION TTD(NP),FL(NP),TAUHD(50),TAUH(NP,50)
       DIMENSION FCONT(NP)
       DIMENSION DELTAM(PARAMETER_NMOL,50),ECARTM(PARAMETER_NMOL),ECARM(PARAMETER_NMOL),
      1 ECARTLM(PARAMETER_NMOL),KAM(PARAMETER_NMOL),KAPPAM(50),KAPPT(50)
-      DIMENSION km_LMBDAM(PARAMETER_NMOL),km_GFM(PARAMETER_NMOL),km_PNVJ(PARAMETER_NMOL,50),
-     1 km_ALARGM(PARAMETER_NMOL)
+
       COMMON /TOTO/  TO_TOTO
       COMMON /FAIL/  ERR(50)
-      COMMON /KAPM1/ km_MM,km_MBLEND
-      COMMON /KAPM2/ km_LMBDAM,km_GFM,km_PNVJ,km_ALARGM
       COMMON /KAPM4/ ECARTM
-      COMMON /PRT/   main_ECRIT
 
       DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
 C
 
-      if(atomgrade_NBLEND.ne.0) then
-            DO K=1,atomgrade_NBLEND
-            ECAR(K)=ECART(K)
-            END DO
+      IF (atomgrade_NBLEND .NE. 0) then
+      ! TODO Pointer job
+        DO K = 1,atomgrade_NBLEND
+          ECAR(K) = ECART(K)
+        END DO
+      END IF
+      
+      IF (km_MBLEND .ne. 0) then
+        DO K=1,km_MBLEND
+          ECARM(K)=ECARTM(K)
+        END DO
       end if
-      if(km_MBLEND.ne.0) then
-            DO K=1,km_MBLEND
-            ECARM(K)=ECARTM(K)
-            END DO
-      end if
+      
       DO D=1,DTOT
-      lambi = (6270+(D-1)*0.02)
-      if(atomgrade_NBLEND.ne.0) then
-            DO K=1,atomgrade_NBLEND
+        lambi = (6270+(D-1)*0.02)
+        if (atomgrade_NBLEND .ne. 0) then
+          DO K=1,atomgrade_NBLEND
             ECAR(K)=ECAR(K)-main_PAS
             ECARTL(K)=ECAR(K)
-            END DO
-      end if
-      if(km_MBLEND.ne.0) then
-            DO K=1,km_MBLEND
-            ECARM(K)=ECARM(K)-main_PAS
-            ECARTLM(K)=ECARM(K)
-            END DO
-      end if
-            DO N=1,modeles_NTOT
-            KAPPA(N) =0.
-            KAPPAM(N) =0.
-            T=5040./modeles_TETA(N)
-c     atomes
-      if(atomgrade_NBLEND.eq.0) go to 260
+          END DO
+        end if
+        
+        if(km_MBLEND.ne.0) then
+          DO K=1,km_MBLEND
+            ECARM(K) = ECARM(K)-main_PAS
+            ECARTLM(K) = ECARM(K)
+          END DO
+        end if
+      
+        DO N = 1,modeles_NTOT
+          KAPPA(N) =0.
+          KAPPAM(N) =0.
+          T = 5040./modeles_TETA(N)
+          
+          ! atomes
+          if(atomgrade_NBLEND.eq.0) go to 260
 
-       DO  K=1,atomgrade_NBLEND
-         IF( ABS(ECARTL(K)) .GT. atomgrade_ZINF(K) )  THEN
-           KA(K)=0.
-           ELSE
-             V=ABS(ECAR(K)*1.E-8/DELTA(K,N))
-           CALL HJENOR(A(K,N),V,DELTA(K,N),PHI)
-           KA(K) = PHI * POP(K,N) * GFAL(K) * ABOND(K)
-             IF(K.eq.1)KA(K) = PHI * POP(K,N) * GFAL(K)
+          DO  K=1,atomgrade_NBLEND
+            IF( ABS(ECARTL(K)) .GT. atomgrade_ZINF(K) )  THEN
+              KA(K)=0.
+            ELSE
+              V=ABS(ECAR(K)*1.E-8/DELTA(K,N))
+              CALL HJENOR(A(K,N),V,DELTA(K,N),PHI)
+              KA(K) = PHI * POP(K,N) * GFAL(K) * ABOND(K)
+              IF(K.eq.1)KA(K) = PHI * POP(K,N) * GFAL(K)
 
-         END IF
-         KAPPA(N) = KAPPA(N) + KA(K)
-         END DO   !  fin bcle sur K
+            END IF
+            KAPPA(N) = KAPPA(N) + KA(K)
+          END DO   !  fin bcle sur K
 
-260   continue
-C     molecule
-      IF(km_MBLEND.EQ.0) GO TO 250
-       DO L=1,km_MBLEND
+260       CONTINUE
+
+          ! molecule
+          IF(km_MBLEND.EQ.0) GO TO 250
+          DO L=1,km_MBLEND
             IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
-            KAM(L)=0.
+              KAM(L)=0.
             else
-            
-         ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
-         ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-         DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
-         VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
-         PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
-         KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
+          
+              ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
+              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
+              VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
+              PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
+              KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
             end if
-         KAPPAM(N)=KAPPAM(N)+KAM(L)
-       END DO   !  fin bcle sur L
-
-250   KAPPT(N)=KAPPA(N)+KAPPAM(N)
-      KCI(N)=KCD(D,N)
-      KAP(N)=KAPPT(N)+KCI(N)
-      BI(N)=((B2(N)-B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(N)
-              END DO    ! fin bcle sur N
-      BI(0)=((B2(0)-B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(0)
-
-      IF(D.EQ.1) WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-      IF(D.EQ.1) WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-      IF(D.EQ.1) WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
-
-c     WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-c     WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-c     WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
-
-      IF(D.EQ.DTOT) WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-      IF(D.EQ.DTOT)WRITE(6,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-      IF(D.EQ.DTOT)WRITE(6,152)KAPPAM(1),KAPPAM(modeles_NTOT)
-
-      IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
-      CALL FLIN1 (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FL(D),KIK,CAVA)
-                  IF(CAVA.GT.1)   THEN
-                  WRITE(6,131) TTD(D),CAVA
-                  STOP
-                  END IF
-c     FN(D) = FL(D) / FCONT(D)
-      ELSE
-            DO N=1,modeles_NTOT
-            TAUHD(N)=TAUH(D,N)
-            END DO
-      CALL FLINH (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,FL(D),KIK,CAVA)
-                  IF(CAVA.GT.1)   THEN
-                  WRITE(6,131) TTD(D),CAVA
-                  STOP
-                  END IF
-      END IF
-c Dez 03-P. Coelho - calculate the continuum and normalized spectra
-      CALL FLIN1 (KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FCONT(D),KIK,CAVA)
+            KAPPAM(N)=KAPPAM(N)+KAM(L)
+          END DO   !  fin bcle sur L
+        
+250       KAPPT(N)=KAPPA(N)+KAPPAM(N)
+          KCI(N)=KCD(D,N)
+          KAP(N)=KAPPT(N)+KCI(N)
+          BI(N)=((B2(N)-B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(N)
+        END DO    ! fin bcle sur N
+        
+        BI(0)=((B2(0)-B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(0)
+        
+        IF(D.EQ.1) WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+        IF(D.EQ.1) WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+        IF(D.EQ.1) WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
+        
+c       WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+c       WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+c       WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
+        
+        !--verbose--!
+        IF (VERBOSE .AND. D .EQ. DTOT) THEN 
+          WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+          WRITE(6,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+          WRITE(6,152)KAPPAM(1),KAPPAM(modeles_NTOT)
+        END IF
+        
+        IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
+          CALL FLIN1 (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FL(D),KIK,CAVA)
+          IF (CAVA.GT.1) THEN
+            WRITE(6,131) TTD(D),CAVA
+            STOP
+          END IF
+          
+c         FN(D) = FL(D) / FCONT(D)
+        ELSE
+          DO N = 1,modeles_NTOT
+              TAUHD(N) = TAUH(D,N)
+          END DO
+          CALL FLINH (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,FL(D),KIK,CAVA)
+          IF(CAVA .GT. 1) THEN
+            WRITE(6,131) TTD(D),CAVA
+            STOP
+          END IF
+        END IF
+            
+        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
+        CALL FLIN1 (KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FCONT(D),KIK,CAVA)
       END DO  ! fin bcle sur D
+      
 131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
      1   ' A LAMBD=',F10.3,'     CAVA=',I3)
 150   FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,
@@ -1819,26 +1947,27 @@ c Dez 03-P. Coelho - calculate the continuum and normalized spectra
       RETURN
       END
 
+
 C-------------------------------------------------------------------------------
+C ISSUE: This seems to be some kind of search, gotta check if better to do it upon reading the file!!
       SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
-      CHARACTER*2 abonds_ELE, atomgrade_ELEM
       REAL ABO, ABOND
-      INTEGER abonds_NABOND, atomgrade_NBLEND, MAX_atomgrade_NBLEND
-      PARAMETER(MAX_atomgrade_NBLEND=8000)
-      DIMENSION abonds_ELE(100),ABO(100),atomgrade_ELEM(8000),ABOND(8000)
+      DIMENSION ABO(100),ABOND(8000)
 
       DO  K=1,atomgrade_NBLEND
-            DO  J=1,abonds_NABOND
+        DO  J=1,abonds_NABOND
 C           print 1035, abonds_ELE(J), atomgrade_ELEM(k), ALOG10(abo(j))-0.37+12
-            IF(abonds_ELE(J).EQ.atomgrade_ELEM(K))  GO TO 14
-            END DO   !FIN BCLE SUR J
-      WRITE(6,106)     atomgrade_ELEM(K)
-      STOP
-14    ABOND(K)=ABO(J)
+          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
+        END DO   !FIN BCLE SUR J
+            
+        ! TODO check this while reading file, not here!!!!
+        WRITE(6,106) atomgrade_ELEM(K)
+        STOP
+14      ABOND(K) = ABO(J)
       END DO   !FIN BCLE SUR K
       RETURN
 c
-106   FORMAT('     MANQUE L ABONDANCE DU  ',A2                  )
+106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
       END
 
 
@@ -2094,13 +2223,18 @@ c     STOP
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE FLIN1 (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,F,IOP,CAVA)
+C 
 c     calcul du flux ou de l'intensite par la methode d'integration
 c     a 6 pts (ou 13pts) de R.Cayrel (these).
 c     nouvelle methode de calcul de to . TO_TOTO(1) est calcule et
 c     est different de 0 (On pose TO_TOTO(0)=0)   -Avril 1988-
+C
+C Originally by Roger Cayrel
+C
 C (JT2015) dubbed TO_TOTO because the 2-letter variable that I won't
 C          mention is a reserved word
+      SUBROUTINE FLIN1 (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,F,IOP,CAVA)
+
       LOGICAL main_PTDISK
       REAL   modeles_NH,KAP,main_MU
       INTEGER CAVA
@@ -2234,52 +2368,6 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
 
 
 
-C-------------------------------------------------------------------------------
-      SUBROUTINE FT2(N,X,Y,ITOT,TT,FTT)
-C     INTERPOLATION PARABOLIQUE
-C     DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
-C     AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
-      DIMENSION  X(N),Y(N),TT(ITOT),FTT(ITOT)
-      INV = -1
-      IF(X(N).LT.X(1) ) INV=1
-      DO 4 K=1,ITOT
-      T=TT(K)
-      IF (INV)5,6,6
-5     DO 1 J=1,N
-      I=J
-      IF(T-X(J))3,2,1
-1     CONTINUE
-      GO TO 10
-6     DO 7 J=1,N
-      I=J
-      IF(T-X(J) )7,2,3
-7     CONTINUE
-      GO TO 10
-2     FT=Y(J)
-      GO TO 4
-3     IF(I .EQ. 1) I=2
-      IF( I .GE. N)  I=N-1
-      T0=T-X(I-1)
-      T1=T-X(I)
-      T2=T-X(I+1)
-      U0=X(I+1)-X(I-1)
-      U1=X(I+1)-X(I)
-      U2=X(I)-X(I-1)
-      A=T0/U0
-      B=T1/U1
-      C=T2/U2
-      D=T0/U1
-      E=T1/U0
-      FT=Y(I+1)*A*B - Y(I)*D*C + Y(I-1)*E*C
-4     FTT(K) =FT
-      RETURN
-10    WRITE(6,100) T
-      STOP
-100   FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION       T=',E15.7)
-      END
-
-
-
 
 
 
@@ -2290,62 +2378,12 @@ C     AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE FTLIN3(N,X,Y,ITOT,TT,FTT)
-      DIMENSION X(N),Y(N),TT(ITOT),FTT(ITOT)
-C     WRITE(6,*) N
-C     WRITE (6,105) (X(J),J=1,N)
-C     WRITE (6,105) (Y(J),J=1,N)
-C
-      J=2
-      DO  4 K=1,ITOT
-      T=TT(K)
-C     WRITE(6,103)T
-      JJ=J-1
-            DO 1  J=JJ,N
-            IF(T-X(J) ) 3,2,1
-1           CONTINUE
-            GO TO 10
-2     FT=Y(J)
-      IF(J.EQ.1) J=J+1
-      GO TO 4
-C 3   WRITE(6,*) '   J=',J
-3     IF(J.EQ.1)   GO TO 10
-      U0= Y(J)-Y(J-1)
-      T0= X(J)-X(J-1)
-      T1=   T -X(J-1)
-C     WRITE(6,104) J, X(J-1), Y(J-1), X(J),Y(J), U0,T0,T1
-      T2= T1/T0
-      DY= U0*T2
-      FT= Y(J-1) + DY
-4     FTT(K)=FT
-      RETURN
-10    WRITE(6,100) T
-      WRITE(6,101)
-      WRITE(6,102) (X(I),I=1,N)
-      STOP
-100   FORMAT(' ON SORT DE LA TABLE D INTERPOLATION    T=',E15.7)
-101   FORMAT(/'   LISTE DES X')
-102   FORMAT(8E15.7)
-103   FORMAT(5X,F10.3)
-104   FORMAT(I5,7F9.3)
-C105  FORMAT(7F10.3)
-      END
-
-
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-      SUBROUTINE HJENOR(Y,X,DEL,PHI)
 C     ***      REFERENCE   Q.S.R.T.   VOL16,611 (1976)
 C     ***ROUTINE COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
 C     ***- TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
 C     *** LA FONCTION EST ENSUITE NORMALISEE
+      SUBROUTINE HJENOR(Y,X,DEL,PHI)
+
       REAL X,Y
       real VOIGT
       real    VV,UU,CO
@@ -2448,114 +2486,18 @@ C     write(6,*)phi
 
 
 
-C-------------------------------------------------------------------------------
-C X -- TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS
-C      CROISSANTES
-C Y -- TABLEAU DES VALEURS ASSOCIEES DE LA FONCTION A INTEGRER
-C P -- TABLEAU DES VALEURS DE LA PRIMITIVE AUX POINTS X(I)
-C N --
-C PDEB -- VALEUR DE LA PRIMITIVE POUR X(1),PREMIERE VALEUR
-C         DU TABLEAU
-C
-C METHODE: LA VALEUR DE L'INTEGRALE SUR L'INTERVALLE X(I), X(I+1)
-C   EST CALCULEE PAR LA FORMULE DE SIMPSON, LA VALEUR DE Y AU POINT
-C   MILIEU ETANT CALCULEE PAR INTERPOLATION CUBIQUE, PAR LA ROUTINE
-C   AITK3
-      SUBROUTINE INTEGRA(X,Y,P,N,PDEB)
-      DIMENSION X(N),Y(N),P(0:N)
-      P(1)=PDEB
-C     CAS SPECIAL DU PREMIER INTERVALLE
-      XMILIEU=(X(1)+X(2))/2.
-      CALL NAITK3(X(1),X(2),X(3),X(4),
-     1           Y(1),Y(2),Y(3),Y(4),XMILIEU,FX)
-      P(2)=P(1)+((X(2)-X(1))/6.)*(Y(1)+Y(2)+4.*FX)
-C     ********************************
-C     CAS GENERAL
-            DO I=2,N-2
-            XMILIEU=(X(I)+X(I+1))/2.
-            J=I-1
-            call NAITK3(X(J),X(J+1),X(J+2),X(J+3),
-     1                   Y(J),Y(J+1),Y(J+2),Y(J+3),XMILIEU,FX)
-            P(I+1)=P(I)+((Y(I)+Y(I+1)+4.*FX)/6.)*(X(I+1)-X(I))
-            END DO
-C     *********************************
-C     CAS SPECIAL DERNIER INTERVALLE
-      XMILIEU=(X(N-1)+X(N))/2.
-      J=N-3
-      call NAITK3(X(J),X(J+1),X(J+2),X(J+3),
-     1           Y(J),Y(J+1),Y(J+2),Y(J+3),XMILIEU,FX)
-      P(N)=P(N-1)+((X(N)-X(N-1))/6.)*(Y(N-1)+Y(N)+4.*FX)
-C     ***********************************
-      RETURN
-      END
-
-
-
-
-
-
-
 
 
 
 C-------------------------------------------------------------------------------
-      SUBROUTINE NAITK3(XdI,XdIp1,XdIp2,XdIp3,
-     1                  YdI,YdIp1,YdIp2,YdIp3,XX,FX)
-c
-c     Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
-      U=XdI
-      V=XdIp1
-      FU=YdI
-      FV=YdIp1
-            F01=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      U=XdIp2
-      FU=YdIp2
-            F12=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      U=XdIp3
-      FU=YdIp3
-            F13=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      U=XdI
-      FU=F01
-      V=XdIp2
-      FV=F12
-            F012=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      U=XdIp2
-      FU=F12
-      V=XdIp3
-      FV=F13
-            F123=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      U=XdI
-      V=XdIp3
-      FU=F012
-      FV=F123
-            F0123=(FU*(V-XX)-FV*(U-XX))/(V-U)
-      FX=F0123
-      RETURN
-      END
-
-
-
-
-
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-      SUBROUTINE POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
 C     ***calcule la pop du niv fond de l'ion pour tous les NPAR atomes de
 C     ***la table des fonctions de partition ,a tous les niv du modele
 C     ***
-      DIMENSION partit_TINI(85),partit_PA(85),partit_JKMAX(85),partit_TABU(85,3,63),
-     1 partit_KI1(85),partit_KI2(85),U(3),ALISTU(63),P(3,85,50),modeles_TETA(50),
-     2 modeles_PE(50),UE(50),TT(51)
+      SUBROUTINE POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
+      DIMENSION U(3),ALISTU(63),P(3,85,50), UE(50),TT(51)
 c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
 c           partit donnee pour 33 temperatures au plus ds la table.
-      REAL KB,partit_KI1,partit_KI2
+      REAL KB
       KB=1.38046E-16
       C1=4.8298E+15   ! =2 * (2*Pi*KB*ME)**1.5 / H**3
 C
@@ -2604,7 +2546,7 @@ C
 
 C-------------------------------------------------------------------------------
       SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-      DIMENSION main_VVT(20),TOLV(20),VT(50),TOL(50)
+      DIMENSION TOLV(20),VT(50),TOL(50)
       PRINT *,'   ENTREE DS TURBUL'
       IF(IVTOT.EQ.1)   THEN
         WRITE(6,*) ' VT CONSTANT'
@@ -2618,6 +2560,9 @@ C-------------------------------------------------------------------------------
         WRITE(6,*) '     VT'
         WRITE(6,101) (main_VVT(I),I=1,IVTOT)
         IF(INTERP .EQ. 1) CALL FTLIN3(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
+        
+        ! ISSUE: is this still useful?? (SWITCHED OFF IN CODE)
+
         IF(INTERP .GT. 1) CALL FT2(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
         NT2=modeles_NTOT-2
         DO N=1,NT2,3
@@ -2636,202 +2581,6 @@ C-------------------------------------------------------------------------------
 102   FORMAT(3(I5,2F8.3,5X))
       END
 C
-
-      FUNCTION CALCH(KII,IZ,KIEX1,IS1,KIEX2,IS2)
-C     CALCUL DE CH VAN DER WAALS  APPROXIMATIONS D UNSOLD (1955)
-C     SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54  SINON 82-55
-      REAL KII,KIEX1,KIEX2,NET1C,NET2C
-      DIMENSION IS(4),IL(4)
-      CHARACTER*1 IS, IBL
-      CHARACTER*1 IS1, IS2
-      DATA IBL/' '/
-      DATA IS/'S','P','D','F'/
-      DATA IL/1,-5,-17,-35/
-      IF(IS1.NE.IBL)   GO TO 1
-      C61=1.61E-33*(13.5*IZ / (KII-KIEX1)  )**2
-      C62=1.61E-33*(13.5*IZ / (KII-KIEX2)  )**2
-      GO TO 10
-1     DO 2 I=1,4
-      IF(IS1.EQ.IS(I))   GO TO 3
-2     CONTINUE
-3     IL1=IL(I)
-      DO 4 I=1,4
-      IF(IS2.EQ.IS(I))   GO TO 5
-4     CONTINUE
-5     IL2=IL(I)
-      IZC=IZ**2
-      NET1C=13.5 * IZC / (KII-KIEX1)
-      NET2C=13.5 * IZC / (KII-KIEX2)
-      C61=3.22E-34 * NET1C *(5*NET1C+IL1)/ IZC
-      C62=3.22E-34 * NET2C *(5*NET2C+IL2)/ IZC
-10    CALCH=C62-C61
-      RETURN
-100   FORMAT('  NET1C=',F5.2,'  NET2C=',F5.2,5X,2E14.4)
-      END
-
-
-      FUNCTION FAITK30(XX,X,Y,N)
-C       interpolation
-      DIMENSION X(0:N),Y(0:N)
-      IF(XX.LT.X(2))THEN
-      I=0
-      GOTO 200
-      ELSE IF(XX.GT.X(N-2))THEN
-      I=N-3
-      GOTO 200
-      ELSE
-            DO J=2,N-2
-                  IF(XX.LE.X(J)) GO TO 100
-            END DO
-      ENDIF
-100   CONTINUE
-      I=J-2
-c
-200   CALL NAITK3(X(I),X(I+1),X(I+2),X(I+3),
-     1           Y(I),Y(I+1),Y(I+2),Y(I+3),XX,RESULTA)
-      FAITK30=RESULTA
-      RETURN
-      END
-
-
-      FUNCTION FTETA0(modeles_PG,modeles_TETA)
-C     EXTRAPOLE modeles_TETA(modeles_PG) POUR modeles_PG=0
-c     ***TETA1 extrapolation parabolique sur les 3 derniers pts
-c     ***TETA2      "             "      sur les pts 2 3 et 4
-c     ***TETA3      "        lineaire    sur les 2 derniers pts
-c     (ici seul TETA3 est utilise)
-      REAL*4 modeles_PG(50), modeles_TETA(50), PP1(5),TT1(5),PP2(5),TT2(5)
-
-C ISSUE: it this ECRIT a flag to turn verbose on/off? If so, it is not being respected throughout!!!
-
-      ! TODO Implement this FLAG_VERBOSE, that's cool
-      LOGICAL ECRIT
-      ECRIT=.FALSE.
-      PP1(1)=modeles_PG(1)
-      TT1(1)=modeles_TETA(1)
-      IF(ECRIT) write(6,*) modeles_PG(1), modeles_TETA(1)
-      DO I=2,5
-        PP1(I)=modeles_PG(I)
-        PP2(I-1)=modeles_PG(I)
-        TT1(I)=modeles_TETA(I)
-        TT2(I-1)=modeles_TETA(I)
-      IF(ECRIT) write(6,*) modeles_PG(I), modeles_TETA(I)
-      END DO
-c     TETA1=FT(0.,5,PP1,TT1)
-c     TETA2=FT(0.,4,PP2,TT2)
-      TETA3=TT1(1) - PP1(1) * (TT1(1)-TT1(2)) / (PP1(1)-PP1(2))
-      IF(ECRIT) WRITE(6,*)TETA3
-      FTETA0= TETA3
-      RETURN
-      END
-
-
-      FUNCTION FT(T,N,X,F)
-C     INTERPOLATION D UNE LISTE A PAS NON CONSTANT
-      DIMENSION X(N),F(N)
-      DO 1 J=1,N
-      I=J
-      IF(T-X(J))3,2,1
-2     FT=F(J)
-      RETURN
-1     CONTINUE
-3     IF(I.EQ.1)   I=2
-      IF(I.GE.N)   I=N-1
-      T0=T-X(I-1)
-      T1=T-X(I)
-      T2=T-X(I+1)
-      U0=X(I+1)-X(I-1)
-      U1=X(I+1)-X(I)
-      U2=X(I)-X(I-1)
-      A=T0/U0
-      B=T1/U1
-      C=T2/U2
-      D=T0/U1
-      E=T1/U0
-      FT=F(I+1)*A*B - F(I)*D*C + F(I-1)*E*C
-      RETURN
-      END
-
-
-      FUNCTION IINF(FR,ITOT,IA,IZ)
-      DIMENSION FR(ITOT)
-      IA2=IA+1
-      IINF=IA
-      FMIN=FR(IA)
-      DO 1 I=IA2,IZ
-      IF(FR(I).GT.FMIN)   GO TO 1
-      FMIN=FR(I)
-      IINF=I
-1     CONTINUE
-      RETURN
-      END
-
-
-      FUNCTION ISUP(FR,ITOT,IA,IZ)
-C     UNE FONCTION FR EST CONNUE EN ITOT POINTS. ON CHERCHE ENTRE
-C     LES POINTS IA ET IZ QUEL EST L INDICE I OU CETTE FONCTION
-C     EST MAXIMUM.
-      DIMENSION FR(ITOT)
-      IA2=IA+1
-      ISUP=IA
-      FMAX=FR(IA)
-      DO 1 I=IA2,IZ
-      IF(FR(I).LT.FMAX)   GO TO 1
-      FMAX=FR(I)
-      ISUP=I
-1     CONTINUE
-      RETURN
-      END
-
-
-      FUNCTION MAXI(IFA,modeles_NTOT,IA,IZ)
-      DIMENSION IFA(modeles_NTOT)
-      MAXI=IFA(IA)
-      IA2=IA+1
-      DO I=IA2,IZ
-      IF(IFA(I).GT.MAXI) THEN
-      MAXI=IFA(I)
-      END IF
-      END DO
-      RETURN
-      END
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-      FUNCTION MINI(IFA, NTOT, IA, IZ)
-      INTEGER NTOT, IA, IZ
-      INTEGER, DIMENSION(NTOT) :: IFA
-      MINI=IFA(IA)
-      IA2=IA+1
-      DO I=IA2,IZ
-        IF(IFA(I) .LT. MINI) THEN
-          MINI=IFA(I)
-        END IF
-      END DO
-      RETURN
-      END
-
-
-
-
-C-------------------------------------------------------------------------------
-      FUNCTION MAXI(IFA, NTOT, IA, IZ)
-      INTEGER NTOT, IA, IZ
-      INTEGER, DIMENSION(NTOT) :: IFA
-      MAXI=IFA(IA)
-      IA2=IA+1
-      DO I=IA2,IZ
-        IF(IFA(I).GT.MAXI) THEN
-          MAXI=IFA(I)
-        END IF
-      END DO
-      RETURN
-      END
 
 
 

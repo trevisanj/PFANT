@@ -199,6 +199,8 @@ C
 C================================================================================================================================
 C READ_MOLECULAGRADE(): reads file moleculagrade.dat to fill variables km_*
 C
+C Reads molecular lines
+C
 C Original UNIT: 12
 C
 C Obs: this is part of original subroutine KAPMOL()
@@ -285,8 +287,8 @@ C
         ! BLB:  |
         ! BLB:  +---> where (12)C = 12, H = 1.008
         ! BLB:
-        ! BLB: UA -- molar(?) value of partition function for element A     ISSUE
-        ! BLB: UB -- molar(?) value of partition function for element B     ISSUE
+        ! BLB: UA -- value of partition function for element A
+        ! BLB: UB -- value of partition function for element B
         ! BLB: TE -- eletronic term.
         ! BLB: CRO - delta Kronecker (2-delta_{Sigma, 0})
         ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
@@ -532,6 +534,8 @@ C===============================================================================
 C USE_MOLECULAGRADE(): uses km_* filled by FILTER_MOLECULAGRADE() to perform its calculations
 C
 C Note: depends on a few sat4_* variables
+C
+C Calculates the molecular absorption coefficient
 
       SUBROUTINE USE_MOLECULAGRADE()
       USE CONFIG
