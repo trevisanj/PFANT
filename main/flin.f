@@ -21,7 +21,6 @@ C NO LONGER modifying arguments F and CAVA (they are no longer arguments)
       REAL*8 flin_F
       INTEGER flin_CAVA  ! Error code. TODO get rid of this and just STOP here
       
-      
 
       
       PRIVATE, REAL*8 :: TD2, TD,TP, CD, CP, C1, C2, C3
@@ -47,15 +46,18 @@ C NO LONGER modifying arguments F and CAVA (they are no longer arguments)
       LOGICAL, PRIVATE, PARAMETER :: MODE_FLINH = .TRUE.,
      +                               MODE_FLIN1 = .FALSE.
       
+      ! This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
       REAL*8, PRIVATE, DIMENSION(MAX_modeles_NTOT) :: DUMMY_TAUHD
-    
+
+C     ========
       CONTAINS
+C     ========
       
 
-C
+C---------------------------------------------------------------------------------------------------
       SUBROUTINE FLIN1(KAP, B, NH, NTOT, PTDISK, MU, KIK)
       INTEGER KIK
-      LOGICAL PTDISK, MODE_
+      LOGICAL PTDISK
       REAL NH, KAP, MU
       REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: B
       REAL*8, DIMENSION(MAX_modeles_NTOT) :: NH, KAP
@@ -64,6 +66,7 @@ C
       END
       
 
+C---------------------------------------------------------------------------------------------------
 C
 C Two differences from FLIN1()
 C 1) adds TAUHD vector to flin_TO
@@ -71,7 +74,7 @@ C 2) ignores PTDISK ISSUE!!!
 C
       SUBROUTINE FLINH(KAP, B, NH, NTOT, PTDISK, MU, KIK, TAUHD)
       INTEGER KIK
-      LOGICAL PTDISK, MODE_
+      LOGICAL PTDISK
       REAL NH, KAP, MU
       REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: B
       REAL*8, DIMENSION(MAX_modeles_NTOT) :: NH, KAP, TAUHD
@@ -128,9 +131,9 @@ C               FORMULE A 6 OU 7 PTS
           TOLIM=4.0
         ELSE
           IF (MODE_ .EQ. MODE_FLIN1) THEN
-            IPOINT = 6
-          ELSE
             IPOINT = 7  ! ISSUE BIG !!!!! I kept this behaviour until I get feedback from BLB
+          ELSE
+            IPOINT = 6
           END IF
           TOLIM=3.89
         END IF

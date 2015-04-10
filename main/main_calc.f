@@ -133,7 +133,7 @@ C     fonctions de partition
 C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these variables, what they sync with!
       DIMENSION P(3,MAX_partit_NPAR, 50)
       DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
-      DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
+      DIMENSION B(0:50),flin_TO(0:50),B1(0:50),B2(0:50)
       DIMENSION FL(NP), TTD(NP), FCONT(NP), FN(NP)
       DIMENSION TAUH(NP,50),TAUHY(10,NP,50)
       DIMENSION DHMY(10),DHPY(10)
@@ -429,7 +429,7 @@ C
 
         CALL SELEKFH(main_PTDISK,main_MU,KIK,DTOT,main_PAS,atomgrade_NBLEND,GFAL,atomgrade_ZINF,
      1   ABOND,ECART,atomgrade_ELEM,atomgrade_LAMBDA,TAUH,DHM,DHP,VT,modeles_NTOT,modeles_NH,modeles_TETA,B,
-     2   B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT)
+     2   B1,B2,KCD,POP,DELTA,A,TTD,FL,FCONT, ECARTM, atomgrade_NBLEND)
 
 
         CALL WRITE_LINES_PFANT(filename_LINES_PFANT)
@@ -1696,7 +1696,7 @@ C
       REAL LAMBD,modeles_NH,main_MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
      1 LAMBDC,KCJ,KCN
       REAL*8 LZERO,LFIN
-      DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50)
+      DIMENSION B(0:50),flin_TO(0:50),B1(0:50),B2(0:50)
       DIMENSION modeles_NH(50),modeles_TETA(50),modeles_PE(50),modeles_PG(50),KC(50),TOTKAP(2),
      1 ALPH(50),PHN(50),PH2(50),KC1(50),KC2(50)
 
@@ -1709,7 +1709,7 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
       COMMON /SAPU/  PE_SAPU, RHO, TOC, ZNH(12)
 
 C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
-      COMMON /TOTO/  TO_TOTO
+      COMMON /TOTO/  flin_TO
       
       ! ISSUE I don't like this name LLZERO, it is the same name as the variable read from main.dat
       LLZERO=LZERO
@@ -1775,7 +1775,7 @@ c     1 znh(absoru2_NMETA+2),t
 
           WRITE(6,132) CAVA
           ! ISSUE ERR was in a common, but not being assigned. I have to see what it was about
-          WRITE(6,135) (I, TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+          WRITE(6,135) (I, flin_TO(I),ERR(I),I=1,modeles_NTOT)
         END IF
         
         IF(CAVA.GT.1) STOP
@@ -1789,7 +1789,7 @@ c     1 znh(absoru2_NMETA+2),t
         !--verbose--!
         IF (VERBOSE) THEN
           WRITE(6,132) CAVA
-          WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
         END IF
         
         IF(CAVA .GT. 1) STOP
@@ -1803,7 +1803,7 @@ c     1 znh(absoru2_NMETA+2),t
         !--verbose--!
         IF (VERBOSE) THEN
           WRITE(6,132) CAVA
-          WRITE(6,135) (I,TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
+          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
         END IF
         IF(CAVA.GT.1) STOP
       END IF
@@ -1851,175 +1851,6 @@ cpc   WRITE(6,150) KC(1),KC(modeles_NTOT),B(0),B(1),B(modeles_NTOT),FC
 
 
 
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C Sets the Voigt profile using Hjertings' constants.
-C
-C Note: convolution for molecules uses Gaussian profile.
-C
-
-! ISSUE with variable MM
-      SUBROUTINE SELEKFH(KIK, DTOT, GFAL, ABOND, ECART, TAUH,DHM,DHP,VT,
-     2 B, B1, B2, KCD, POP, DELTA, A, TTD, FL, FCONT)
-      PARAMETER(PARAMETER_NMOL=50000,NP=7000)
-      LOGICAL main_PTDISK,main_ECRIT
-      INTEGER D, DTOT, CAVA,DHM,DHP
-      REAL lambi
-      REAL KAPPA,KA,KAP,KCD,KCI,KAM,KAPPAM,KAPPT
-      REAL*8 ECART,ECAR,ECARTM,ECARM
-      DIMENSION VT(50)
-      DIMENSION B(0:50),TO_TOTO(0:50),B1(0:50),B2(0:50),BI(0:50)
-      DIMENSION ECART(MAX_atomgrade_NBLEND),ECAR(MAX_atomgrade_NBLEND), ECARTL(MAX_atomgrade_NBLEND),
-     1 GFAL(MAX_atomgrade_NBLEND),ABOND(MAX_atomgrade_NBLEND),KA(MAX_atomgrade_NBLEND),KAP(50),
-     2 KAPPA(50),atomgrade_LAMBDA(MAX_atomgrade_NBLEND),KCD(NP,50),KCI(50),
-     3 POP(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50)
-
-      DIMENSION TTD(NP),FL(NP),TAUHD(50),TAUH(NP,50)
-      DIMENSION FCONT(NP)
-      DIMENSION DELTAM(PARAMETER_NMOL,50),ECARTM(PARAMETER_NMOL),ECARM(PARAMETER_NMOL),
-     1 ECARTLM(PARAMETER_NMOL),KAM(PARAMETER_NMOL),KAPPAM(50),KAPPT(50)
-
-      COMMON /TOTO/  TO_TOTO
-      COMMON /KAPM4/ ECARTM
-
-      DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
-C
-
-      IF (atomgrade_NBLEND .NE. 0) then
-      ! TODO Pointer job
-        DO K = 1,atomgrade_NBLEND
-          ECAR(K) = ECART(K)
-        END DO
-      END IF
-      
-      IF (km_MBLEND .ne. 0) then
-        DO K=1,km_MBLEND
-          ECARM(K)=ECARTM(K)
-        END DO
-      end if
-      
-      DO D=1,DTOT
-        lambi = (6270+(D-1)*0.02)
-        if (atomgrade_NBLEND .ne. 0) then
-          DO K=1,atomgrade_NBLEND
-            ECAR(K)=ECAR(K)-main_PAS
-            ECARTL(K)=ECAR(K)
-          END DO
-        end if
-        
-        if(km_MBLEND.ne.0) then
-          DO K=1,km_MBLEND
-            ECARM(K) = ECARM(K)-main_PAS
-            ECARTLM(K) = ECARM(K)
-          END DO
-        end if
-      
-        DO N = 1,modeles_NTOT
-          KAPPA(N) =0.
-          KAPPAM(N) =0.
-          T = 5040./modeles_TETA(N)
-          
-          ! atomes
-          if(atomgrade_NBLEND.eq.0) go to 260
-
-          DO  K=1,atomgrade_NBLEND
-            IF( ABS(ECARTL(K)) .GT. atomgrade_ZINF(K) )  THEN
-              KA(K)=0.
-            ELSE
-              V=ABS(ECAR(K)*1.E-8/DELTA(K,N))
-              CALL HJENOR(A(K,N),V,DELTA(K,N),PHI)
-              KA(K) = PHI * POP(K,N) * GFAL(K) * ABOND(K)
-              IF(K.eq.1)KA(K) = PHI * POP(K,N) * GFAL(K)
-
-            END IF
-            KAPPA(N) = KAPPA(N) + KA(K)
-          END DO   !  fin bcle sur K
-
-260       CONTINUE
-
-          ! molecule
-          IF(km_MBLEND.EQ.0) GO TO 250
-          DO L=1,km_MBLEND
-            IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
-              KAM(L)=0.
-            else
-          
-              ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
-              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
-              VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
-              PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
-              KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
-            end if
-            KAPPAM(N)=KAPPAM(N)+KAM(L)
-          END DO   !  fin bcle sur L
-        
-250       KAPPT(N)=KAPPA(N)+KAPPAM(N)
-          KCI(N)=KCD(D,N)
-          KAP(N)=KAPPT(N)+KCI(N)
-          BI(N)=((B2(N)-B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(N)
-        END DO    ! fin bcle sur N
-        
-        BI(0)=((B2(0)-B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(0)
-        
-        IF(D.EQ.1) WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-        IF(D.EQ.1) WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-        IF(D.EQ.1) WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
-        
-c       WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-c       WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-c       WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
-        
-        !--verbose--!
-        IF (VERBOSE .AND. D .EQ. DTOT) THEN 
-          WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-          WRITE(6,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-          WRITE(6,152)KAPPAM(1),KAPPAM(modeles_NTOT)
-        END IF
-        
-        IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
-          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
-          FL(D) = flin_F
-          IF (flin_CAVA.GT.1) THEN
-            WRITE(6,131) TTD(D),CAVA
-            STOP
-          END IF
-          
-c         FN(D) = FL(D) / FCONT(D)
-        ELSE
-          DO N = 1,modeles_NTOT
-              TAUHD(N) = TAUH(D,N)
-          END DO
-          CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,KIK)
-          FL(D) = flin_F
-          IF(CAVA .GT. 1) THEN
-            WRITE(6,131) TTD(D),CAVA
-            STOP
-          END IF
-        END IF
-            
-        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
-        FCONT(D) = flin_F
-        ! TODO Not checking CAVA, really gotta make it STOP from within FLIN_
-      END DO  ! fin bcle sur D
-      
-131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
-     1   ' A LAMBD=',F10.3,'     CAVA=',I3)
-150   FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,
-     1 /,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
-152   FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
-151   FORMAT(' D=',I5,2X,'BI(0)=',E14.7,2X,'BI(1)=',E14.7,2X,
-     1 'BI(NTOT)=',E14.7)
-      RETURN
-      END
 
 
 
