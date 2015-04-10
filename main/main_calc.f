@@ -56,7 +56,7 @@ c     'if (ftt(itot).ne.0.0) k2=itot'
 c     - DTOT foi substituido por NP nas dimensoes das matrizes
 c           BK : TTD(NP), KCD(NP,5)
 c        LECTAUH : TTD(NP)
-c        SELEKFH : TTD(NP), KCD(NP, 50), FL(NP), TAUH(NP,50)
+c        SELEKFH : TTD(NP), KCD(NP, 50), FL(NP), TAUH(NP,50)`
 c
 c
 c     Tambem reduzi o numero de comentario que vao para a tela
@@ -599,10 +599,9 @@ C        So, one idea is to include opacity model tables (Upsalla; MARCS model).
 C
       SUBROUTINE ABSORU (WL,TH,ZLPE,CALLAM,CALTH,CALPE,CALMET,CALU,CALSO
      1R,KKK,TOTKAP)
-      INTEGER*4 CAL,CALU,CALMET,CALLAM,CALTH,CALPE,PMAX,CALSOR
+      INTEGER*4 CALU,CALMET,CALLAM,CALTH,CALPE,PMAX,CALSOR
       DIMENSION ZZKK(11,2),TOTKAP(2),DIF(2,3),SCATH(2),ZZK(11,2),SCAT(2)
 
-      COMMON /LECT2/  CAL
       COMMON /GBF/    ZLH(19)
       COMMON /GBFH/   G2D(2,19), JSHYD(2), JH
       COMMON /TETA/   AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
@@ -619,7 +618,6 @@ C
       COMMON /SAPE/   AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
       COMMON /SAPDIV/ ZMU, PG_SAPDIV
       COMMON /SAPU/   PE_SAPU, RHO, TOC, ZNH(12)
-      COMMON /SOMAB/  SUM1
 
       DATA DIF/5.799E-13,8.14E-13,1.422E-6,1.28E-6,2.784,1.61/
       
@@ -747,7 +745,7 @@ C         LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
 89    FORMAT ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSI
      1TE='E11.4,' NBR.NOYAU D H/CM3='E11.4,' LOG10PE='0PF5.2,' TETA='F5.
      22)
-9011  CAL = 2
+9011  CONTINUE
       RETURN
       END
 
@@ -796,8 +794,6 @@ C
       COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
       COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
       COMMON /SAPDIV/ ZMU, PG_SAPDIV
-      COMMON /ABSO1/ absoru2_NM
-      COMMON /ABSO2/ absoru2_NMETA
       KTH=6.956948E-13/TH
 C     6.956948E-13=1.38024E-16*5040.39
       PE_SAPU=EXP(ZLPE*2.302585)
@@ -1163,8 +1159,9 @@ C     UL=H*NU/(K*T)
       STIMU=1.0
       GO TO 1334
       
-1333  STIMU=1.0-EXP(-UL)
-1334  STIMU3=STIMU/UL**3
+1333  STIMU = 1.0-EXP(-UL)
+
+1334  STIMU3 = STIMU/UL**3
 
       IF (CALLAM.EQ.2) GO TO 1335
       
@@ -1636,8 +1633,6 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
       DIMENSION FTTC(NP)
       DIMENSION FC(NP)
 
-      COMMON /LECT1/ AMET, BHE  ! ISSUE Another name here!!!
-      COMMON /LECT2/ CAL
       COMMON /SAPE/  AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
       COMMON /SAPU/  PE_SAPU, RHO, TOC, ZNH(12)
 
@@ -1948,6 +1943,8 @@ c         FN(D) = FL(D) / FCONT(D)
       END
 
 
+
+
 C-------------------------------------------------------------------------------
 C ISSUE: This seems to be some kind of search, gotta check if better to do it upon reading the file!!
       SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
@@ -1975,14 +1972,12 @@ c
 
 
 
-
-
-
 C-------------------------------------------------------------------------------
 C     ***calcule la population au niveau inferieur de la transition
 C     ***la largeur doppler DELTA et le coefficient d'elargissement
 C     ***le "A" utilise dans le calcul de H(A,V)
 C
+C Note: (JT) seems to use variables atomgrade_* and modeles_*
       SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
      1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
      2 PHN,PH2,VT,P,POP,A,DELTA)
@@ -1991,24 +1986,19 @@ C
       CHARACTER*1 ISI(1), ISS(1)
       CHARACTER*2 atomgrade_ELEM, partit_EL
       INTEGER atomgrade_NBLEND, NPAR, J, K
-        real partit_KI1,partit_KI2,atomgrade_KIEX,partit_M,KB,KIES,KII,NUL
-      DIMENSION modeles_PE(50),modeles_TETA(50),VT(50),ALPH(50),PHN(50),PH2(50),
-     1 partit_EL(85),partit_M(85),partit_KI1(85),partit_KI2(85),P(3,85,50),ALPHL(50),
-     2 atomgrade_ELEM(MAX_atomgrade_NBLEND),atomgrade_IONI(MAX_atomgrade_NBLEND),atomgrade_KIEX(MAX_atomgrade_NBLEND),
-     3 atomgrade_CH(MAX_atomgrade_NBLEND),CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),atomgrade_GR(MAX_atomgrade_NBLEND),
-     4 atomgrade_GE(MAX_atomgrade_NBLEND),POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
-      DIMENSION sat4_PPH(50),sat4_PPC2(50),sat4_PN(50),sat4_PC13(50),sat4_PMG(50),
-     1 sat4_PO(50),sat4_PTI(50),sat4_PFE(50)
+      real KB,KIES,KII,NUL
+      DIMENSION VT(50),ALPH(50),PHN(50),PH2(50),
+     1 P(3,85,50),ALPHL(50),
+     3 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),
+     4 POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
       CHARACTER*2 TTI, CC, OO, NN, MGG
-      COMMON /KAPM3/ sat4_PPH, sat4_PPC2, sat4_PN, sat4_PC13, sat4_PMG, sat4_PO, sat4_PTI, sat4_PFE
 
-        data KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
-     1  C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
+      DATA KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
+     1 C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
       DATA ISI/' '/, ISS/' '/
-        DATA TTI/'TI'/,CC/' C'/,OO/' O'/,NN/' N'/,MGG/'MG'/
-      H=6.6252E-27
-      C5= 2.*PI* (3.*PI**2/2.44)**0.4
-C     C6=4 * Pi * C
+      DATA TTI/'TI'/,CC/' C'/,OO/' O'/,NN/' N'/,MGG/'MG'/
+      H  = 6.6252E-27
+      C5 = 2.*PI* (3.*PI**2/2.44)**0.4
 c
       DO  K=1,atomgrade_NBLEND
         corch(k)=0.
@@ -2084,6 +2074,7 @@ c FLINH():  Calcul du flux ou de l'intensite par la methode d'integration
 c     a 6 pts (ou 13pts) de R.Cayrel (these).
 c     nouvelle methode de calcul de to . TO(1)est calcule et
 c     est different de 0 (On pose TO(0)=0)   -Avril 1988-
+C
       SUBROUTINE FLINH (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,F,IOP,CAVA)
       LOGICAL main_PTDISK
       REAL   modeles_NH,KAP,main_MU
@@ -2373,111 +2364,6 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
 
 
 
-
-
-
-
-C-------------------------------------------------------------------------------
-C     ***      REFERENCE   Q.S.R.T.   VOL16,611 (1976)
-C     ***ROUTINE COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
-C     ***- TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
-C     *** LA FONCTION EST ENSUITE NORMALISEE
-      SUBROUTINE HJENOR(Y,X,DEL,PHI)
-
-      REAL X,Y
-      real VOIGT
-      real    VV,UU,CO
-      REAL    B(22),RI(15),XN(15)/10.,9.,2*8.,7.,6.,5.,4.,7*3./,
-     &  YN(15)/3*.6,.5,2*.4,4*.3,1.,.9,.8,2*.7/,D0(35),D1(35),D2(35)
-     &  ,D3(35),D4(35),HN(35),H/.201/,XX(3)/.5246476,1.65068,.7071068/
-     &  ,HH(3)/.2562121,.2588268E-1,.2820948/,NBY2(19)/9.5,9.,8.5,8.,
-     &  7.5,7.,6.5,6.,5.5,5.,4.5,4.,3.5,3.,2.5,2.,1.5,1.,.5/,C(21)/
-     &  .7093602E-7,-.2518434E-6,.8566874E-6,-.2787638E-5,.866074E-5,
-     &  -.2565551E-4,.7228775E-4,-.1933631E-3,.4899520E-3,-.1173267E-2,
-     &  .2648762E-2,-.5623190E-2, .1119601E-1,-.2084976E-1,.3621573E-1,
-     &  -.5851412E-1,.8770816E-1, -.121664,.15584,-.184,.2/
-      LOGICAL TRU/.FALSE./
-      TRU=.FALSE.
-      B(1)=0.
-      B(2)=0.7093602E-7
-      IF (TRU) GO TO 104
-C  REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
-      TRU=.TRUE.
-      DO 101 I=1,15
-101   RI(I)=-I/2.
-      DO 103 I=1,25
-      HN(I)=H*(I-.5)
-      C0=4.*HN(I)*HN(I)/25.-2.
-      DO 102 J=2,21
-102   B(J+1)=C0*B(J)-B(J-1)+C(J)
-      D0(I)=HN(I)*(B(22)-B(21))/5.
-      D1(I)=1.-2.*HN(I)*D0(I)
-      D2(I)=(HN(I)*D1(I)+D0(I))/RI(2)
-      D3(I)=(HN(I)*D2(I)+D1(I))/RI(3)
-      D4(I)=(HN(I)*D3(I)+D2(I))/RI(4)
-C     write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
-103   CONTINUE
-104   IF (X-5.) 105,112,112
-105   IF (Y-1.) 110,110,106
-106   IF (X.GT.1.85*(3.6-Y)) GO TO 112
-C   REGION II CONTINUED FRACTION .COMPUTE NUMBER OF TERMS NEEDED
-C     write(6,*)'region II'
-      IF (Y.LT.1.45) GO TO 107
-      I=Y+Y
-      GO TO 108
-107   I=11.*Y
-108   J=X+X+1.85
-      MAX=XN(J)*YN(I)+.46
-      MIN=MIN0(16,21-2*MAX)
-C  EVALUATED CONTINUED FRACTION
-      UU=Y
-      VV=X
-      DO 109 J=MIN,19
-      U=NBY2(J)/(UU*UU+VV*VV)
-      UU=Y+U*UU
-109   VV=X-U*VV
-      VOIGT=UU/(UU*UU+VV*VV)/1.772454
-      GO TO 10
-110   Y2=Y*Y
-      IF (X+Y.GE.5.) GO TO 113
-C REGION I. COMMPUTE DAWSON'S FUNCTION AT X FROM TAYLOR SERIES
-      N=INT(X/H)
-      DX=X-HN(N+1)
-      U=(((D4(N+1)*DX+D3(N+1))*DX+D2(N+1))*DX+D1(N+1))*DX+D0(N+1)
-      V=1.-2.*X*U
-C  TAYLOR SERIES EXPANSION ABOUT Y=0.0
-      VV=EXP(Y2-X*X)*COS(2.*X*Y)/1.128379-Y*V
-C     write(6,*) n,u,dx,d0(n+1),d1(n+1),d2(n+1),d3(n+1),d4(n+1)
-      UU=-Y
-      MAX=5.+(12.5-X)*.8*Y
-      DO 111 I=2,MAX,2
-      U=(X*V+U)/RI(I)
-      V=(X*U+V)/RI(I+1)
-      UU=-UU*Y2
-111   VV=VV+V*UU
-      VOIGT=1.128379*VV
-C     write(6,*)'region I ',voigt,vv,x,y,del
-      GO TO 10
-112   Y2=Y*Y
-      IF (Y.LT.11.-.6875*X) GO TO 113
-C  REGION IIIB  2 POINT GAUSS-HERMITE QUADRATURE
-      U=X-XX(3)
-      V=X+XX(3)
-      VOIGT=Y*(HH(3)/(Y2+U*U)+HH(3)/(Y2+V*V))
-C     write(6,*)'region IIIb ', voigt
-      GO TO 10
-C  REGION IIIA 4-POINT GAUSS-HERMITE QUADRATURE.
-113   U=X-XX(1)
-      V=X+XX(1)
-      UU=X-XX(2)
-      VV=X+XX(2)
-      VOIGT=Y*(HH(1)/(Y2+U*U)+HH(1)/(Y2+V*V)+HH(2)/(Y2+UU*UU)+HH(2)/
-     1(Y2+VV*VV))
-C     write(6,*)'region IIIa',voigt
-10    PHI = VOIGT /  (1.772454 * DEL)
-C     write(6,*)phi
-      RETURN
-      END
 
 
 

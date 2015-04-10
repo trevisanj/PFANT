@@ -19,34 +19,6 @@ C       3) Keep clean! Only one block definition per statement!
 
 
 
-C     COMMON AVEC LE SP READER ET LE SP DE TRACE
-C (main), READER06
-      COMMON /COM6/ TETAEF, GLOG, ASASOL, NHE, TIT(5)
-      REAL*8 NHE
-
-C main, READER06
-      COMMON /ALOG/ASALOG
-
-
-C     COMMON AVEC LE SP D ABSORPTION CONTINUE
-C main, ABSORU, BK, LECTUR
-      COMMON /LECT1/ AMET, BHE
-C main, ABSORU, BK, LECTUR
-      COMMON /LECT2/ ZP(30), ZM(30), WI(41,2), NUMSET(2), CAL
-C     History
-C     =========
-C     I found occurrences of the LECT2 block being defined as
-C     The variable "BIDA"is never used, so I guess it just reserves
-C     the allocation space for WI+NUMSET+C whose space indeed sum up
-C     to 85
-C     COMMON /LECT2/ZP(30),ZM(30),BIDA(85)
-
-
-
-C main, LECTUR, ABSORU, IONIPE, SAHATH, BK
-      COMMON /ABSO1/ NM
-c main, LECTUR, ABSORU, IONIPE, SAHATH, ATHYHE, BK
-      COMMON /ABSO2/ NMETA
 
 C main, ABSORU, IONIPE, BK
       COMMON /SAPE/   AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
@@ -66,27 +38,8 @@ C main, BK, SELEKFH, FLINH, FLIN1
       DIMENSION TO_TOTO(0:50)
 
 
-C     COMMON AVEC LA SUBROUTINE D EQUILIBRE DISSOCIATIF SAT4
-C main, SAT4, DIE
-      COMMON /COM8/  NNH(50), TETA(50), PPE(50), PGG(50), T5L(50)
-C     Variant: COMMON /COM8/   NH, TETA, PE, PG, T5L
-C main, SAT4
-      COMMON /COR/ XXCOR
-      DIMENSION XXCOR(MAX_dissoc_NMETAL)
-C main, SAT4
-      COMMON /FANSAT/ FSTAR
-
-C     COMMON'S AVEC LE SP KAPMOL
-C main, SELEKFH, KAPMOL
-      COMMON /KAPM1/ MM, MBLEND
-C main, SELEKFH, KAPMOL
-      COMMON /KAPM2/ LMBDAM, GFM, PNVJ, ALARGM
 C main, SELEKFH
       COMMON /KAPM4/ ECARTM
-C main, KAPMOL
-      COMMON /OPTIM/ LZERO,LFIN
-C main, KAPMOL
-      COMMON /TOTAL/ MMC,MBLENQ
 
 C     COMMON'S AVEC LE SP KAPMOL ET POPADELH
 c main, KAPMOL, POPADELH
