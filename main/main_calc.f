@@ -670,6 +670,651 @@ C
 
 
 
+
+C-------------------------------------------------------------------------------
+C ISSUE: This seems to be some kind of search, gotta check if better to do it upon reading the file!!
+      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
+      REAL ABO, ABOND
+      DIMENSION ABO(100),ABOND(8000)
+
+      DO  K=1,atomgrade_NBLEND
+        DO  J=1,abonds_NABOND
+C           print 1035, abonds_ELE(J), atomgrade_ELEM(k), ALOG10(abo(j))-0.37+12
+          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
+        END DO   !FIN BCLE SUR J
+            
+        ! TODO check this while reading file, not here!!!!
+        WRITE(6,106) atomgrade_ELEM(K)
+        STOP
+14      ABOND(K) = ABO(J)
+      END DO   !FIN BCLE SUR K
+      RETURN
+c
+106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
+      END
+
+
+
+
+
+
+C-------------------------------------------------------------------------------
+C     ***calcule la population au niveau inferieur de la transition
+C     ***la largeur doppler DELTA et le coefficient d'elargissement
+C     ***le "A" utilise dans le calcul de H(A,V)
+C
+C Note: (JT) seems to use variables atomgrade_* and modeles_*
+      SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
+     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
+     2 PHN,PH2,VT,P,POP,A,DELTA)
+
+      PARAMETER(MAX_atomgrade_NBLEND=8000)
+      CHARACTER*1 ISI(1), ISS(1)
+      CHARACTER*2 atomgrade_ELEM, partit_EL
+      INTEGER atomgrade_NBLEND, NPAR, J, K
+      real KB,KIES,KII,NUL
+      DIMENSION VT(50),ALPH(50),PHN(50),PH2(50),
+     1 P(3,85,50),ALPHL(50),
+     3 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),
+     4 POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
+      CHARACTER*2 TTI, CC, OO, NN, MGG
+
+      DATA KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
+     1 C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
+      DATA ISI/' '/, ISS/' '/
+      DATA TTI/'TI'/,CC/' C'/,OO/' O'/,NN/' N'/,MGG/'MG'/
+      H  = 6.6252E-27
+      C5 = 2.*PI* (3.*PI**2/2.44)**0.4
+c
+      DO  K=1,atomgrade_NBLEND
+        corch(k)=0.
+        CVdW(K)=0
+        DO  J=1,NPAR
+          IF(partit_EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
+        END DO
+        WRITE(6,104) atomgrade_ELEM(K)
+        STOP
+        
+15      IOO=atomgrade_IONI(K)
+C
+        write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
+        IF(atomgrade_CH(K).LT.1.E-37)  THEN
+          KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
+          IF(IOO.EQ.1)   KII=partit_KI1(J)
+          IF(IOO.EQ.2)   KII=partit_KI2(J)
+          IF(CORCH(K).LT.1.E-37)   THEN
+            CORCH(K)=0.67 * atomgrade_KIEX(K) +1
+          END IF   ! FIN DE IF CORCH(K)=0
+C               WRITE(6,125)  atomgrade_LAMBDA(K), CORCH(K)
+          CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
+          atomgrade_CH(K)= CVdW(K) * CORCH(K)
+        END IF  ! FIN DE IF atomgrade_CH=0.
+
+C
+        IF(atomgrade_CH(K) .LT. 1.E-20) THEN 
+          IOPI=1
+        ELSE
+          IOPI=2
+        END IF
+        
+        DO  N=1,modeles_NTOT
+          T=5040./modeles_TETA(N)
+          NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
+          AHNUL= H*NUL
+          ALPHL(N)=EXP(-AHNUL/(KB*T))
+
+          TAP = 1.-ALPHL(N)
+          TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
+          POP(K,N) = P(IOO,J,N)*TOP*TAP
+C NOXIG: ISSUE what does it mean?
+          IF(K .EQ. 1) POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
+          DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
+          VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
+          IF (IOPI.EQ.1) THEN
+            GH = C5*atomgrade_CH(K)**0.4*VREL**0.6
+C                 if (N.EQ.10)  write (6,100) GH
+          ELSE
+            GH = atomgrade_CH(K) + Corch(K)*T
+C                 if (N.EQ.10) write(6, 101) GH
+          END IF
+          GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*modeles_PE(N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
+          A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
+        END DO    !FIN BCLE SUR N
+      END DO    !FIN BCLE SUR K
+C
+ 100  FORMAT(' GamH AU 1Oeme Niv du modele:', E15.3)
+ 101  FORMAT(' GamH au 10eme Niv du modele:', E15.3,'  Spielfieldel')
+ 104  FORMAT('     MANQUE LES FCTS DE PARTITION DU ',A2)
+ 125  FORMAT(3X ,' POUR',F9.3,'   ON CALCULE CH ',
+     1 'VAN DER WAALS ET ON MULTIPLIE PAR ',F7.1)
+ 488    format(2x,f10.3,2x,a2,2x,a2,2x,i3,1x,e13.3)
+      return
+      end
+
+
+
+
+
+
+
+
+
+
+C-------------------------------------------------------------------------------
+C     ***calcule la pop du niv fond de l'ion pour tous les NPAR atomes de
+C     ***la table des fonctions de partition ,a tous les niv du modele
+C     ***
+      SUBROUTINE POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
+      DIMENSION U(3),ALISTU(63),P(3,85,50), UE(50),TT(51)
+c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
+c           partit donnee pour 33 temperatures au plus ds la table.
+      REAL KB
+      KB=1.38046E-16
+      C1=4.8298E+15   ! =2 * (2*Pi*KB*ME)**1.5 / H**3
+C
+      DO  N=1,modeles_NTOT
+      T=5040./modeles_TETA(N)
+      UE(N)=C1*KB*T /modeles_PE(N)*T**1.5
+            DO  J=1,NPAR
+            KMAX=partit_JKMAX(J)
+            TT(1) = partit_TINI(J)
+                  DO  L=1,3
+                        DO  K=1,KMAX
+                        TT(K+1) = TT(K) + partit_PA(J)
+                        ALISTU(K) = partit_TABU(J,L,K)
+                        END DO
+c
+                        if (modeles_TETA(N).LT.TT(KMAX-1) ) then ! (inter parabolique)
+                        UUU=FT(modeles_TETA(N),KMAX,TT,ALISTU)
+                        else
+c                  interpolation lineaire entre 2 derniers pts
+                        AA=(ALISTU(KMAX)-ALISTU(KMAX-1)) / partit_PA(J)
+                        BB=ALISTU(KMAX-1) - AA * TT(KMAX-1)
+                        UUU= AA*modeles_TETA(N) + BB
+                        end if
+c
+                        U(L) = EXP(2.302585*UUU )
+                  END DO   ! FIN BCLE SUR L
+C
+            X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*modeles_TETA(N))
+            TKI2= partit_KI2(J) * modeles_TETA(N)
+            IF(TKI2.GE.77.)   THEN
+            Y=0.
+            P(3,J,N)=0.
+                          ELSE
+            Y=U(3)*UE(N)/U(2)  *  10.**(-partit_KI2(J)*modeles_TETA(N))
+            P(3,J,N) =(1./U(3))*(Y/(1.+X+Y))
+            END IF
+
+C
+            P(2,J,N) = (1./U(2))*(1./(1.+X+Y))
+            P(1,J,N) =  (1./U(1))*(X/(1.+X+Y))
+            END DO   ! fin bcle sur J
+      END DO   ! fin bcle sur N
+      RETURN
+      END
+
+
+
+
+
+
+
+
+! TODO Fix Initializations
+! TOdO explain parameters
+! TODO verbose
+! TODO discover what is input and what is output
+
+C-------------------------------------------------------------------------------
+C Sets the Voigt profile using Hjertings' constants.
+C
+C Note: convolution for molecules uses Gaussian profile.
+C
+
+! ISSUE with variable MM
+      SUBROUTINE SELEKFH(KIK,    ! 0/1, passed to FLINH
+     +                   DTOT,   ! ?
+     +                   GFAL, 
+     +                   ABOND, 
+     +                   ECART, 
+     +                   TAUH,
+     +                   DHM,
+     +                   DHP,
+     +                   VT,
+     +                   B, 
+     +                   B1,
+     +                   B2,
+     +                   KCD,
+     +                   POP,
+     +                   DELTA,
+     +                   A,
+     +                   TTD,
+     +                   FL,
+     +                   FCONT,
+     +                   ECARTM
+     +                  )
+      USE READ_FILES
+      IMPLICIT NONE
+      PARAMETER(PARAMETER_NMOL=50000,NP=7000)
+      INTEGER D, DTOT, DHM,DHP
+      REAL lambi
+      REAL KAPPA,KA,KAP,KCD,KCI,KAM,KAPPAM,KAPPT
+      REAL*8 ECART,ECAR,ECARTM,ECARM
+      DIMENSION VT(50)
+      DIMENSION B(0:50),B1(0:50),B2(0:50),BI(0:50)
+      DIMENSION ECART(MAX_atomgrade_NBLEND),
+     +          ECAR(MAX_atomgrade_NBLEND),
+     +          ECARTL(MAX_atomgrade_NBLEND),
+     +          GFAL(MAX_atomgrade_NBLEND),
+     +          ABOND(MAX_atomgrade_NBLEND),
+     +          KA(MAX_atomgrade_NBLEND),
+     +          KAP(50),
+     +          KAPPA(50),
+     +          KCD(NP,50),
+     +          KCI(50),
+     +          POP(MAX_atomgrade_NBLEND,50),
+     +          DELTA(MAX_atomgrade_NBLEND,50),
+     +          A(MAX_atomgrade_NBLEND,50)
+
+      DIMENSION TTD(NP),FL(NP),TAUHD(50),TAUH(NP,50)
+      DIMENSION FCONT(NP)
+      DIMENSION DELTAM(PARAMETER_NMOL,50),
+     +          ECARTM(PARAMETER_NMOL),
+     +          ECARM(PARAMETER_NMOL),
+     +          ECARTLM(PARAMETER_NMOL),
+     +          KAM(PARAMETER_NMOL),
+     +          KAPPAM(50),
+     +          KAPPT(50)
+
+      DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
+C
+
+      IF (atomgrade_NBLEND .NE. 0) then
+        DO K = 1,atomgrade_NBLEND
+          ECAR(K) = ECART(K)
+        END DO
+      END IF
+      
+      IF (km_MBLEND .ne. 0) then
+        DO K=1,km_MBLEND
+          ECARM(K)=ECARTM(K)
+        END DO
+      end if
+      
+      DO D=1,DTOT
+        lambi = (6270+(D-1)*0.02)
+        if (atomgrade_NBLEND .ne. 0) then
+          DO K=1,atomgrade_NBLEND
+            ECAR(K)=ECAR(K)-main_PAS
+            ECARTL(K)=ECAR(K)
+          END DO
+        end if
+        
+        if(km_MBLEND.ne.0) then
+          DO K=1,km_MBLEND
+            ECARM(K) = ECARM(K)-main_PAS
+            ECARTLM(K) = ECARM(K)
+          END DO
+        end if
+      
+        DO N = 1,modeles_NTOT
+          KAPPA(N) =0.
+          KAPPAM(N) =0.
+          T = 5040./modeles_TETA(N)
+          
+          ! atomes
+          if(atomgrade_NBLEND.eq.0) go to 260
+
+          DO  K=1,atomgrade_NBLEND
+            IF( ABS(ECARTL(K)) .GT. atomgrade_ZINF(K) )  THEN
+              KA(K)=0.
+            ELSE
+              V=ABS(ECAR(K)*1.E-8/DELTA(K,N))
+              CALL HJENOR(A(K,N),V,DELTA(K,N),PHI)
+              KA(K) = PHI * POP(K,N) * GFAL(K) * ABOND(K)
+              IF(K.eq.1)KA(K) = PHI * POP(K,N) * GFAL(K)
+
+            END IF
+            KAPPA(N) = KAPPA(N) + KA(K)
+          END DO   !  fin bcle sur K
+
+260       CONTINUE
+
+          ! molecule
+          IF(km_MBLEND.EQ.0) GO TO 250
+          DO L=1,km_MBLEND
+            IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
+              KAM(L)=0.
+            else
+          
+              ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
+              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
+              VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
+              PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
+              KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
+            end if
+            KAPPAM(N)=KAPPAM(N)+KAM(L)
+          END DO   !  fin bcle sur L
+        
+250       KAPPT(N)=KAPPA(N)+KAPPAM(N)
+          KCI(N)=KCD(D,N)
+          KAP(N)=KAPPT(N)+KCI(N)
+          BI(N)=((B2(N)-B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(N)
+        END DO    ! fin bcle sur N
+        
+        BI(0)=((B2(0)-B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + B1(0)
+        
+        IF(D.EQ.1) WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+        IF(D.EQ.1) WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+        IF(D.EQ.1) WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
+        
+c       WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+c       WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+c       WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
+        
+        !--verbose--!
+        IF (VERBOSE .AND. D .EQ. DTOT) THEN 
+          WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
+          WRITE(6,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+          WRITE(6,152)KAPPAM(1),KAPPAM(modeles_NTOT)
+        END IF
+        
+        IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
+          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+          FL(D) = flin_F
+          IF (flin_CAVA.GT.1) THEN
+            WRITE(6,131) TTD(D),CAVA
+            STOP
+          END IF
+          
+c         FN(D) = FL(D) / FCONT(D)
+        ELSE
+          DO N = 1,modeles_NTOT
+              TAUHD(N) = TAUH(D,N)
+          END DO
+          CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,
+     +     KIK,TAUHD)
+          FL(D) = flin_F
+          IF(CAVA .GT. 1) THEN
+            WRITE(6,131) TTD(D),CAVA
+            STOP
+          END IF
+        END IF
+            
+        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
+        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+        FCONT(D) = flin_F
+        ! TODO Not checking CAVA, really gotta make it STOP from within FLIN_
+      END DO  ! fin bcle sur D
+      
+131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
+     1   ' A LAMBD=',F10.3,'     CAVA=',I3)
+150   FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,
+     1 /,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
+152   FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
+151   FORMAT(' D=',I5,2X,'BI(0)=',E14.7,2X,'BI(1)=',E14.7,2X,
+     1 'BI(NTOT)=',E14.7)
+      RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      MODULE BK
+      
+      CONTAINS
+      
+      
+      
+      
+      
+
+
+C-------------------------------------------------------------------------------
+C Calculates the flux in the continuum.
+C
+      SUBROUTINE BK(modeles_NH,modeles_TETA,modeles_PE,modeles_PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
+     1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
+      PARAMETER(NP=7000)
+      INTEGER D,DTOT,CAVA
+      LOGICAL main_PTDISK,main_ECRIT
+      REAL LAMBD,modeles_NH,main_MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
+     1 LAMBDC,KCJ,KCN
+      REAL*8 LZERO,LFIN
+      DIMENSION B(0:50),flin_TO(0:50),B1(0:50),B2(0:50)
+      DIMENSION modeles_NH(50),modeles_TETA(50),modeles_PE(50),modeles_PG(50),KC(50),TOTKAP(2),
+     1 ALPH(50),PHN(50),PH2(50),KC1(50),KC2(50)
+
+c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
+      DIMENSION TTD(NP),KCD(NP,50),KCJ(2,50),KCN(2),LAMBDC(2)
+      DIMENSION FTTC(NP)
+      DIMENSION FC(NP)
+
+      COMMON /SAPE/  AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
+      COMMON /SAPU/  PE_SAPU, RHO, TOC, ZNH(12)
+
+C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
+      COMMON /TOTO/  flin_TO
+      
+      ! ISSUE I don't like this name LLZERO, it is the same name as the variable read from main.dat
+      LLZERO=LZERO
+      LLFIN=LFIN
+      C  = 2.997929E+10
+      H  = 6.6252E-27
+      KB = 1.38046E-16
+      NU1 = C* 1.E+8 /LZERO
+      AHNU1 = H*NU1
+      C31 = (2*AHNU1) * (NU1/C)**2
+      
+      DO N = 1,modeles_NTOT
+        T = 5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU1/(KB*T))
+        B1(N) = C31 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        KC1(N) = TOTKAP(1)
+      END DO
+      
+      NU2= C* 1.E+8 /LFIN
+      AHNU2= H*NU2
+      C32=(2*AHNU2) * (NU2/C)**2
+      DO N = 1,modeles_NTOT
+        ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
+        T = 5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU2/(KB*T))
+        B2(N) = C32 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        KC2(N)=TOTKAP(1)
+      END DO
+      
+      NU= C* 1.E+8 /LAMBD
+      AHNU= H*NU
+      C3=(2*AHNU) * (NU/C)**2
+      DO N=1,modeles_NTOT
+        T=5040./modeles_TETA(N)
+        ALPH(N) = EXP(-AHNU/(KB*T))
+        B(N) = C3 * (ALPH(N)/(1.-ALPH(N)))
+        CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        PHN(N) = ZNH(absoru2_NMETA+4) *KB * T
+        PH2(N) = ZNH(absoru2_NMETA+2) *KB * T
+
+!ISSUE Can I delete this?        
+c     if(n.eq.1) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
+c     1 znh(absoru2_NMETA+2),t
+c     if(n.eq.modeles_NTOT) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
+c     1 znh(absoru2_NMETA+2),t
+
+        KC(N) = TOTKAP(1)
+      END DO
+      
+      TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
+      T = 5040./TET0
+      
+      
+      ALPH01 = EXP(-AHNU1/(KB*T))
+      B1(0) = C31 * (ALPH01/(1.-ALPH01))
+      CALL FLIN1(KC1,B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC1 = flin_F
+      IF(flin_CAVA. GT. 0) THEN
+        !--verbose--!
+        IF (VERBOSE) THEN
+
+          WRITE(6,132) CAVA
+          ! ISSUE ERR was in a common, but not being assigned. I have to see what it was about
+          WRITE(6,135) (I, flin_TO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        
+        IF(CAVA.GT.1) STOP
+      END IF
+      
+      ALPH02 = EXP(-AHNU2/(KB*T))
+      B2(0) = C32 * (ALPH02/(1.-ALPH02))
+      CALL FLIN1(KC2,B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC2 = flin_F
+      IF (flin_CAVA .GT. 0) THEN
+        !--verbose--!
+        IF (VERBOSE) THEN
+          WRITE(6,132) CAVA
+          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        
+        IF(CAVA .GT. 1) STOP
+      END IF
+      
+      ALPH0 = EXP(-AHNU/(KB*T))
+      B(0) = C3 * (ALPH0/(1.-ALPH0))
+      CALL FLIN1(KC,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC = flin_F
+      IF(flin_CAVA. GT.0) THEN
+        !--verbose--!
+        IF (VERBOSE) THEN
+          WRITE(6,132) CAVA
+          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
+        END IF
+        IF(CAVA.GT.1) STOP
+      END IF
+      
+cpc   WRITE(6,151) KC1(1),KC1(modeles_NTOT),B1(0),B1(1),B1(modeles_NTOT),FC1
+cpc   WRITE(6,152) KC2(1),KC2(modeles_NTOT),B2(0),B2(1),B2(modeles_NTOT),FC2
+cpc   WRITE(6,150) KC(1),KC(modeles_NTOT),B(0),B(1),B(modeles_NTOT),FC
+
+      ILZERO = LZERO/100.
+      ILZERO = 1E2*ILZERO
+      LAMBDC(1) = LZERO-ILZERO
+      LAMBDC(2) = LFIN-ILZERO
+      DO N=1,modeles_NTOT
+        KCJ(1,N)=KC1(N)
+        KCJ(2,N)=KC2(N)
+      END DO
+      DO N=1,modeles_NTOT
+        DO J=1,2
+          KCN(J)=KCJ(J,N)
+        END DO
+        CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
+        DO D=1,DTOT
+          KCD(D,N)=FTTC(D)
+        END DO
+      END DO
+      
+      IF (VERBOSE) THEN
+        WRITE(6,153) KCD(1,1),KCD(1,modeles_NTOT)
+        WRITE(6,154) KCD(DTOT,1),KCD(DTOT,modeles_NTOT)
+      END IF
+10    CONTINUE
+      RETURN
+132   FORMAT(' ENNUI AU CALCUL DU FLUX CONTINU     CAVA='I3)
+135   FORMAT(5(I4,F7.3,F5.2))
+151   FORMAT(' KC1(1)=',E14.7,2X,'KC1(NTOT)=',E14.7,/' B1(0)=',E14.7,
+     1 2X,'B1(1)=',E14.7,2X,'B1(NTOT)=',E14.7,/' FC1=',E14.7)
+152   FORMAT(' KC2(1)=',E14.7,2X,'KC2(NTOT)=',E14.7,/' B2(0)=',E14.7,
+     1 2X,'B2(1)=',E14.7,2X,'B2(NTOT)=',E14.7,/' FC2=',E14.7)
+150   FORMAT(' KC(1)=',E14.7,2X,'KC(NTOT)=',E14.7,/' B(0)=',E14.7,
+     1 2X,'B(1)=',E14.7,2X,'B(NTOT)=',E14.7,/' FC=',E14.7)
+153   FORMAT(' KCD(1,1)=',E14.7,2X,'KCD(1,NTOT)=',E14.7)
+154   FORMAT(' KCD(DTOT,1)=',E14.7,2X,'KCD(DTOT,NTOT)=',E14.7)
+      END
+
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
 C-------------------------------------------------------------------------------
 C Calculates the "continuum absorption"
 C
@@ -841,115 +1486,144 @@ C         LES ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
 
 
 
-
-
-
-
-
-
 C-------------------------------------------------------------------------------
-C Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
 C
-C     SSP CALCULANT LES QUANTITES SUIVANTES
-C     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
-C     PG_SAPDIV    =PRESSION TOTALE EN DYNES/CM2
-C     ZMU   =POIDS MOLECULAIRE MOYEN
-C     RHO   =DENSITE (G-CM-3)
-C     TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
-C     AC    =DEGRE D'IONISATION MOYEN
-C     AC1(1)=  ''        ''     DE H
-C     AC1(2)=  ''        ''     DE HE+
-C     AC1(3)=  ''        ''     DE HE
-C     AC2   =  ''        ''     DES METAUX
-C     PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
-C     ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
-C     VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
+C Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
+C (i.e., a statistical weight)
 C
-C A.M COLLE  18/01/1971
+C Reference: J.A.Gaunth 1930.
 C
-      SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
-      INTEGER*4 CALTH,CALMET
-      REAL KTH
-      DIMENSION PHI(30),PA(10)
-      COMMON /SAPE/ AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-      COMMON /ZION/ AC, AC1(3), AC2(30,9)
-      COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
-      COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
-      COMMON /SAPDIV/ ZMU, PG_SAPDIV
-      KTH=6.956948E-13/TH
-C     6.956948E-13=1.38024E-16*5040.39
-      PE_SAPU=EXP(ZLPE*2.302585)
-      SIGM3=0.0
-      DO 2380 J=1,absoru2_NM
-      NRR=absoru2_NR(J)
-      SIGM1=0.0
-      SIGM2=0.0
-      PA(1)=1.0
-      DO 2370 I=1,NRR
-      IF ((PA(I).LE.0.0).OR.(ZKM(J,I).LE.0.0)) GO TO 2375
-      PA(I+1)=PA(I)*(ZKM(J,I)/PE_SAPU)
-      SIGM1=I*PA(I+1)+SIGM1
-2370  SIGM2=SIGM2+PA(I+1)
-2375  DEN=1.0+SIGM2
-      PHI(J)=SIGM1/DEN
-      DO 1 I=1,NRR
-1     AC2(J,I)=PA(I)/DEN
-2380  SIGM3=SIGM3+ZNU(J)*PHI(J)
-      IF (CALTH.EQ.2) GO TO 2390
-      IF (TH.GE.0.25) GO TO 2382
-      TEMPOR=0.0
-      ANY=0.0
-      COND=0.0
-      GO TO 2390
-2382  ANY=1.0/ZK(absoru2_NMETA+3)
-      TEMPOR=1.0/ZK(absoru2_NMETA+2)
-      COND=1.0/ZK(absoru2_NMETA+1)
-2390  W2=ZK(absoru2_NMETA+4)/PE_SAPU
-      W1=W2*ANY
-      W3=PE_SAPU*COND
-      W4=ZNU2*ZK(absoru2_NMETA+6)*(PE_SAPU+2*ZK(absoru2_NMETA+5))/((PE_SAPU+ZK(absoru2_NMETA+6))*PE_SAPU+ZK(absoru2_NMETA+6
-     1)*ZK(absoru2_NMETA+5))+(ZNU3*SIGM3)
-      FUN1=ZNU1*W1+2*(TEMPOR+W1)*W4
-      FUN2=ZNU1*(W2-W3)+(1.0+W2+W3)*W4
-      PH=2*ZNU1*PE_SAPU/(FUN2+SQRT(FUN2**2+4*FUN1*ZNU1*PE_SAPU))
-      ZNH(absoru2_NMETA+4)=PH/KTH
-      ZNH(absoru2_NMETA+2)=PH*TEMPOR*ZNH(absoru2_NMETA+4)
-      ZNH(absoru2_NMETA+1)=ZNH(absoru2_NMETA+4)*W3
-      ZNH(absoru2_NMETA+7)=ZNH(absoru2_NMETA+4)*W2
-      ZNH(absoru2_NMETA+3)=ZNH(absoru2_NMETA+7)*PH*ANY
-      TP1=ZNH(absoru2_NMETA+1)+ZNH(absoru2_NMETA+4)+ZNH(absoru2_NMETA+7)
-      TP2=ZNH(absoru2_NMETA+2)+ZNH(absoru2_NMETA+3)
-      TOC=2*TP2+TP1
-      PARTH=TOC/ZNU1
-      PPAR=(TP1+TP2+PARTH*(ZNU2+ZNU3))*KTH
-      PG_SAPDIV=PPAR+PE_SAPU
-      AC=PE_SAPU/PPAR
-      W5=ZK(absoru2_NMETA+6)/PE_SAPU
-      W6=ZK(absoru2_NMETA+5)*W5/PE_SAPU
-      S=1.0+W5+W6
-      AC1(1)=W2/(1.0+W2)
-      AC1(2)=W6/S
-      AC1(3)=W5/S
-      ZNH(absoru2_NMETA+6)=ZNU2*PARTH/(1.0+W5+W6)
-      ZNH(absoru2_NMETA+5)=ZNH(absoru2_NMETA+6)*W5
-      RHO=1.6602E-24*PARTH*ZMUZE
-C     1.6602E-24=MASSE DE L'UNITE DE POIDS
-      ZMU=RHO*41904.28E+7/(TH*PG_SAPDIV)
-C     41904.275E+7=8.313697E+7*5040.39,OU 8.313697E+7=CONSTANTE DES GAZ
-11    RETURN
+C A.M COLLE   19/8/69
+C
+      SUBROUTINE GAUNTH (WL)
+
+      COMMON /GBF/   ZLH(19)
+      COMMON /GBFH/  G2D(2,19), JSHYD(2), JH
+      COMMON /ABSO3/ JFZ
+C
+C     DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE
+C
+      JH = 0
+      DO 1410 I=1,JFZ
+      
+        DO 1332 J=1,19
+          JJ=J
+          IF (ABS(WL-ZLH(J)).LE.0.5) GO TO 1335
+          IF (WL.LT.ZLH(J)) GO TO 1333
+1332    CONTINUE
+
+1333    IF (I .NE. 2) GO TO 1334
+C       
+C       CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
+C       
+
+        DO 1336 J=1,19
+1336      G2D(2,J)=G2D(1,J)
+
+        GO TO 1420
+        
+1334    JS=JJ
+        GO TO 1340
+        
+1335    JH=1
+C       
+C       C'EST UNE DISCONTINUITE DE L'HYDROGENE
+C       
+        IF (I .EQ. 1) GO TO 1334
+        
+        JS = JJ+1
+        
+1340    JSHYD(I) = JS
+
+        DO 1410 J=JS,19
+          ZJ=J
+          IF (J.GT.7) GO TO 1400
+          COND=ZLH(J)-WL
+          IF (ABS(COND).LE.0.50) GO TO 1122
+          IF (COND.LT.0.0) GO TO 1410
+          
+          
+          !=====
+          ! Assignment of G2D(I,J), alternative 1
+          !=====
+          
+          ZQ=WL*J**2/COND
+          RK=SQRT(ZQ)
+          GO TO (1111,1113,1115,1117,1119,2000,2010), J
+          
+C         
+C         MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
+C         
+1111      DELTA=8.*RK/SQRT(ZQ+1.0)
+          GO TO 1120
+          
+1113      DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
+          GO TO 1120
+          
+1115      DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.
+     1    )**4.5
+          GO TO 1120
+          
+1117      DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+68
+     1    00.)*ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
+          GO TO 1120
+          
+1119      DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171
+     1    875.)*((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(
+     2    9.*(ZQ+25.)**8.5)
+          GO TO 1120
+          
+C         
+C         HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
+C         
+2000      ZP=(ZQ+36.)**5.25
+          DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+2262816.E
+     1    2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+1
+     2    290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
+          GO TO 1120
+          
+2010      ZP=(ZQ+49.)**6.25
+          DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060
+     1    .E3)*ZQ+2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((22974
+     2    2.5*ZQ+1968907.E1)*ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ
+     3    +1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
+     
+1120      G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/(SQRT(ZQ+ZJ**
+     1    2)*(1.-EXP(-6.283185*RK)))
+          GO TO 1410
+          
+          
+          !=====
+          ! Assignment of G2D(I,J), alternative 2
+          !=====
+          
+1122      GO TO (1123,1125,1127,1129,1131,2020,2030), J
+1123      G2D(I,J)=0.7973
+          GO TO 1410
+1125      G2D(I,J)=0.8762
+          GO TO 1410
+1127      G2D(I,J)=0.9075
+          GO TO 1410
+1129      G2D(I,J)=0.9247
+          GO TO 1410
+1131      G2D(I,J)=0.9358
+          GO TO 1410
+2020      G2D(I,J)=0.9436
+          GO TO 1410
+2030      G2D(I,J)=0.9494
+          GO TO 1410
+1400      G2D(I,J)=1.0
+
+1410  CONTINUE
+1420  RETURN
       END
 
 
-
-
-
-
-
-
-
-
-
-
+      
+      
+      
+      
+      
 
 
 
@@ -967,7 +1641,7 @@ C     AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
 C     C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
 C     ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
 C
-      SUBROUTINE  TEMPA(WL,TH,CALTH,CALLAM)
+      SUBROUTINE TEMPA(WL,TH,CALTH,CALLAM)
       INTEGER*4 CALLAM,CALTH
       COMMON /TETA/ AHE, AH, AHEP, UH1, ZEMH, UHEP1, UHE1, ZEUHE1
       COMMON /TEHE/ ZLHEM(5), ZLHE(10)
@@ -1005,19 +1679,12 @@ C
 5010  RETURN
       END
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+      
+      
+      
+      
+      
+      
 
 
 
@@ -1532,145 +2199,96 @@ C
 
 
 
-
-
-
-
-
-
-
-
-
 C-------------------------------------------------------------------------------
+C Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
 C
-C Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
-C (i.e., a statistical weight)
+C     SSP CALCULANT LES QUANTITES SUIVANTES
+C     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
+C     PG_SAPDIV    =PRESSION TOTALE EN DYNES/CM2
+C     ZMU   =POIDS MOLECULAIRE MOYEN
+C     RHO   =DENSITE (G-CM-3)
+C     TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
+C     AC    =DEGRE D'IONISATION MOYEN
+C     AC1(1)=  ''        ''     DE H
+C     AC1(2)=  ''        ''     DE HE+
+C     AC1(3)=  ''        ''     DE HE
+C     AC2   =  ''        ''     DES METAUX
+C     PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
+C     ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+C     VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 C
-C Reference: J.A.Gaunth 1930.
+C A.M COLLE  18/01/1971
 C
-C A.M COLLE   19/8/69
-C
-      SUBROUTINE GAUNTH (WL)
-
-      COMMON /GBF/   ZLH(19)
-      COMMON /GBFH/  G2D(2,19), JSHYD(2), JH
-      COMMON /ABSO3/ JFZ
-C
-C     DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE
-C
-      JH = 0
-      DO 1410 I=1,JFZ
-      
-        DO 1332 J=1,19
-          JJ=J
-          IF (ABS(WL-ZLH(J)).LE.0.5) GO TO 1335
-          IF (WL.LT.ZLH(J)) GO TO 1333
-1332    CONTINUE
-
-1333    IF (I .NE. 2) GO TO 1334
-C       
-C       CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
-C       
-
-        DO 1336 J=1,19
-1336      G2D(2,J)=G2D(1,J)
-
-        GO TO 1420
-        
-1334    JS=JJ
-        GO TO 1340
-        
-1335    JH=1
-C       
-C       C'EST UNE DISCONTINUITE DE L'HYDROGENE
-C       
-        IF (I .EQ. 1) GO TO 1334
-        
-        JS = JJ+1
-        
-1340    JSHYD(I) = JS
-
-        DO 1410 J=JS,19
-          ZJ=J
-          IF (J.GT.7) GO TO 1400
-          COND=ZLH(J)-WL
-          IF (ABS(COND).LE.0.50) GO TO 1122
-          IF (COND.LT.0.0) GO TO 1410
-          
-          
-          !=====
-          ! Assignment of G2D(I,J), alternative 1
-          !=====
-          
-          ZQ=WL*J**2/COND
-          RK=SQRT(ZQ)
-          GO TO (1111,1113,1115,1117,1119,2000,2010), J
-          
-C         
-C         MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
-C         
-1111      DELTA=8.*RK/SQRT(ZQ+1.0)
-          GO TO 1120
-          
-1113      DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
-          GO TO 1120
-          
-1115      DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.
-     1    )**4.5
-          GO TO 1120
-          
-1117      DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+68
-     1    00.)*ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
-          GO TO 1120
-          
-1119      DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171
-     1    875.)*((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(
-     2    9.*(ZQ+25.)**8.5)
-          GO TO 1120
-          
-C         
-C         HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
-C         
-2000      ZP=(ZQ+36.)**5.25
-          DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+2262816.E
-     1    2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+1
-     2    290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
-          GO TO 1120
-          
-2010      ZP=(ZQ+49.)**6.25
-          DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060
-     1    .E3)*ZQ+2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((22974
-     2    2.5*ZQ+1968907.E1)*ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ
-     3    +1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
-     
-1120      G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/(SQRT(ZQ+ZJ**
-     1    2)*(1.-EXP(-6.283185*RK)))
-          GO TO 1410
-          
-          
-          !=====
-          ! Assignment of G2D(I,J), alternative 2
-          !=====
-          
-1122      GO TO (1123,1125,1127,1129,1131,2020,2030), J
-1123      G2D(I,J)=0.7973
-          GO TO 1410
-1125      G2D(I,J)=0.8762
-          GO TO 1410
-1127      G2D(I,J)=0.9075
-          GO TO 1410
-1129      G2D(I,J)=0.9247
-          GO TO 1410
-1131      G2D(I,J)=0.9358
-          GO TO 1410
-2020      G2D(I,J)=0.9436
-          GO TO 1410
-2030      G2D(I,J)=0.9494
-          GO TO 1410
-1400      G2D(I,J)=1.0
-
-1410  CONTINUE
-1420  RETURN
+      SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
+      INTEGER*4 CALTH,CALMET
+      REAL KTH
+      DIMENSION PHI(30),PA(10)
+      COMMON /SAPE/ AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
+      COMMON /ZION/ AC, AC1(3), AC2(30,9)
+      COMMON /SAHT/ ZK(11), ZKM(30,9), absoru2_NR(30)
+      COMMON /SAPU/ PE_SAPU, RHO, TOC, ZNH(12)
+      COMMON /SAPDIV/ ZMU, PG_SAPDIV
+      KTH=6.956948E-13/TH
+C     6.956948E-13=1.38024E-16*5040.39
+      PE_SAPU=EXP(ZLPE*2.302585)
+      SIGM3=0.0
+      DO 2380 J=1,absoru2_NM
+      NRR=absoru2_NR(J)
+      SIGM1=0.0
+      SIGM2=0.0
+      PA(1)=1.0
+      DO 2370 I=1,NRR
+      IF ((PA(I).LE.0.0).OR.(ZKM(J,I).LE.0.0)) GO TO 2375
+      PA(I+1)=PA(I)*(ZKM(J,I)/PE_SAPU)
+      SIGM1=I*PA(I+1)+SIGM1
+2370  SIGM2=SIGM2+PA(I+1)
+2375  DEN=1.0+SIGM2
+      PHI(J)=SIGM1/DEN
+      DO 1 I=1,NRR
+1     AC2(J,I)=PA(I)/DEN
+2380  SIGM3=SIGM3+ZNU(J)*PHI(J)
+      IF (CALTH.EQ.2) GO TO 2390
+      IF (TH.GE.0.25) GO TO 2382
+      TEMPOR=0.0
+      ANY=0.0
+      COND=0.0
+      GO TO 2390
+2382  ANY=1.0/ZK(absoru2_NMETA+3)
+      TEMPOR=1.0/ZK(absoru2_NMETA+2)
+      COND=1.0/ZK(absoru2_NMETA+1)
+2390  W2=ZK(absoru2_NMETA+4)/PE_SAPU
+      W1=W2*ANY
+      W3=PE_SAPU*COND
+      W4=ZNU2*ZK(absoru2_NMETA+6)*(PE_SAPU+2*ZK(absoru2_NMETA+5))/((PE_SAPU+ZK(absoru2_NMETA+6))*PE_SAPU+ZK(absoru2_NMETA+6
+     1)*ZK(absoru2_NMETA+5))+(ZNU3*SIGM3)
+      FUN1=ZNU1*W1+2*(TEMPOR+W1)*W4
+      FUN2=ZNU1*(W2-W3)+(1.0+W2+W3)*W4
+      PH=2*ZNU1*PE_SAPU/(FUN2+SQRT(FUN2**2+4*FUN1*ZNU1*PE_SAPU))
+      ZNH(absoru2_NMETA+4)=PH/KTH
+      ZNH(absoru2_NMETA+2)=PH*TEMPOR*ZNH(absoru2_NMETA+4)
+      ZNH(absoru2_NMETA+1)=ZNH(absoru2_NMETA+4)*W3
+      ZNH(absoru2_NMETA+7)=ZNH(absoru2_NMETA+4)*W2
+      ZNH(absoru2_NMETA+3)=ZNH(absoru2_NMETA+7)*PH*ANY
+      TP1=ZNH(absoru2_NMETA+1)+ZNH(absoru2_NMETA+4)+ZNH(absoru2_NMETA+7)
+      TP2=ZNH(absoru2_NMETA+2)+ZNH(absoru2_NMETA+3)
+      TOC=2*TP2+TP1
+      PARTH=TOC/ZNU1
+      PPAR=(TP1+TP2+PARTH*(ZNU2+ZNU3))*KTH
+      PG_SAPDIV=PPAR+PE_SAPU
+      AC=PE_SAPU/PPAR
+      W5=ZK(absoru2_NMETA+6)/PE_SAPU
+      W6=ZK(absoru2_NMETA+5)*W5/PE_SAPU
+      S=1.0+W5+W6
+      AC1(1)=W2/(1.0+W2)
+      AC1(2)=W6/S
+      AC1(3)=W5/S
+      ZNH(absoru2_NMETA+6)=ZNU2*PARTH/(1.0+W5+W6)
+      ZNH(absoru2_NMETA+5)=ZNH(absoru2_NMETA+6)*W5
+      RHO=1.6602E-24*PARTH*ZMUZE
+C     1.6602E-24=MASSE DE L'UNITE DE POIDS
+      ZMU=RHO*41904.28E+7/(TH*PG_SAPDIV)
+C     41904.275E+7=8.313697E+7*5040.39,OU 8.313697E+7=CONSTANTE DES GAZ
+11    RETURN
       END
 
 
@@ -1682,367 +2300,6 @@ C
 
 
 
-
-
-
-C-------------------------------------------------------------------------------
-C Calculates the flux in the continuum.
-C
-      SUBROUTINE BK(modeles_NH,modeles_TETA,modeles_PE,modeles_PG,modeles_NTOT,LAMBD,B,B1,B2,ALPH,PHN,PH2,
-     1              FC,KC,KC1,KC2,KCD,TTD,DTOT,main_PTDISK,main_MU,KIK,LZERO,LFIN)
-      PARAMETER(NP=7000)
-      INTEGER D,DTOT,CAVA
-      LOGICAL main_PTDISK,main_ECRIT
-      REAL LAMBD,modeles_NH,main_MU,NU,KB,KC,KC1,KC2,LLZERO,LLFIN,NU1,NU2,KCD,
-     1 LAMBDC,KCJ,KCN
-      REAL*8 LZERO,LFIN
-      DIMENSION B(0:50),flin_TO(0:50),B1(0:50),B2(0:50)
-      DIMENSION modeles_NH(50),modeles_TETA(50),modeles_PE(50),modeles_PG(50),KC(50),TOTKAP(2),
-     1 ALPH(50),PHN(50),PH2(50),KC1(50),KC2(50)
-
-c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
-      DIMENSION TTD(NP),KCD(NP,50),KCJ(2,50),KCN(2),LAMBDC(2)
-      DIMENSION FTTC(NP)
-      DIMENSION FC(NP)
-
-      COMMON /SAPE/  AVM, ZNU1, ZNU2, ZNU3, ZMUZE, ZNU(30)
-      COMMON /SAPU/  PE_SAPU, RHO, TOC, ZNH(12)
-
-C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
-      COMMON /TOTO/  flin_TO
-      
-      ! ISSUE I don't like this name LLZERO, it is the same name as the variable read from main.dat
-      LLZERO=LZERO
-      LLFIN=LFIN
-      C  = 2.997929E+10
-      H  = 6.6252E-27
-      KB = 1.38046E-16
-      NU1 = C* 1.E+8 /LZERO
-      AHNU1 = H*NU1
-      C31 = (2*AHNU1) * (NU1/C)**2
-      
-      DO N = 1,modeles_NTOT
-        T = 5040./modeles_TETA(N)
-        ALPH(N) = EXP(-AHNU1/(KB*T))
-        B1(N) = C31 * (ALPH(N)/(1.-ALPH(N)))
-        CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-        KC1(N) = TOTKAP(1)
-      END DO
-      
-      NU2= C* 1.E+8 /LFIN
-      AHNU2= H*NU2
-      C32=(2*AHNU2) * (NU2/C)**2
-      DO N = 1,modeles_NTOT
-        ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
-        T = 5040./modeles_TETA(N)
-        ALPH(N) = EXP(-AHNU2/(KB*T))
-        B2(N) = C32 * (ALPH(N)/(1.-ALPH(N)))
-        CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-        KC2(N)=TOTKAP(1)
-      END DO
-      
-      NU= C* 1.E+8 /LAMBD
-      AHNU= H*NU
-      C3=(2*AHNU) * (NU/C)**2
-      DO N=1,modeles_NTOT
-        T=5040./modeles_TETA(N)
-        ALPH(N) = EXP(-AHNU/(KB*T))
-        B(N) = C3 * (ALPH(N)/(1.-ALPH(N)))
-        CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-        PHN(N) = ZNH(absoru2_NMETA+4) *KB * T
-        PH2(N) = ZNH(absoru2_NMETA+2) *KB * T
-
-!ISSUE Can I delete this?        
-c     if(n.eq.1) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
-c     1 znh(absoru2_NMETA+2),t
-c     if(n.eq.modeles_NTOT) write(6,*) alph(n),phn(n),ph2(n),znh(absoru2_NMETA+4),
-c     1 znh(absoru2_NMETA+2),t
-
-        KC(N) = TOTKAP(1)
-      END DO
-      
-      TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
-      T = 5040./TET0
       
       
-      ALPH01 = EXP(-AHNU1/(KB*T))
-      B1(0) = C31 * (ALPH01/(1.-ALPH01))
-      CALL FLIN1(KC1,B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
-      FC1 = flin_F
-      IF(flin_CAVA. GT. 0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-
-          WRITE(6,132) CAVA
-          ! ISSUE ERR was in a common, but not being assigned. I have to see what it was about
-          WRITE(6,135) (I, flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        
-        IF(CAVA.GT.1) STOP
-      END IF
-      
-      ALPH02 = EXP(-AHNU2/(KB*T))
-      B2(0) = C32 * (ALPH02/(1.-ALPH02))
-      CALL FLIN1(KC2,B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
-      FC2 = flin_F
-      IF (flin_CAVA .GT. 0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-          WRITE(6,132) CAVA
-          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        
-        IF(CAVA .GT. 1) STOP
-      END IF
-      
-      ALPH0 = EXP(-AHNU/(KB*T))
-      B(0) = C3 * (ALPH0/(1.-ALPH0))
-      CALL FLIN1(KC,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
-      FC = flin_F
-      IF(flin_CAVA. GT.0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-          WRITE(6,132) CAVA
-          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        IF(CAVA.GT.1) STOP
-      END IF
-      
-cpc   WRITE(6,151) KC1(1),KC1(modeles_NTOT),B1(0),B1(1),B1(modeles_NTOT),FC1
-cpc   WRITE(6,152) KC2(1),KC2(modeles_NTOT),B2(0),B2(1),B2(modeles_NTOT),FC2
-cpc   WRITE(6,150) KC(1),KC(modeles_NTOT),B(0),B(1),B(modeles_NTOT),FC
-
-      ILZERO = LZERO/100.
-      ILZERO = 1E2*ILZERO
-      LAMBDC(1) = LZERO-ILZERO
-      LAMBDC(2) = LFIN-ILZERO
-      DO N=1,modeles_NTOT
-        KCJ(1,N)=KC1(N)
-        KCJ(2,N)=KC2(N)
-      END DO
-      DO N=1,modeles_NTOT
-        DO J=1,2
-          KCN(J)=KCJ(J,N)
-        END DO
-        CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
-        DO D=1,DTOT
-          KCD(D,N)=FTTC(D)
-        END DO
-      END DO
-      
-      IF (VERBOSE) THEN
-        WRITE(6,153) KCD(1,1),KCD(1,modeles_NTOT)
-        WRITE(6,154) KCD(DTOT,1),KCD(DTOT,modeles_NTOT)
-      END IF
-10    CONTINUE
-      RETURN
-132   FORMAT(' ENNUI AU CALCUL DU FLUX CONTINU     CAVA='I3)
-135   FORMAT(5(I4,F7.3,F5.2))
-151   FORMAT(' KC1(1)=',E14.7,2X,'KC1(NTOT)=',E14.7,/' B1(0)=',E14.7,
-     1 2X,'B1(1)=',E14.7,2X,'B1(NTOT)=',E14.7,/' FC1=',E14.7)
-152   FORMAT(' KC2(1)=',E14.7,2X,'KC2(NTOT)=',E14.7,/' B2(0)=',E14.7,
-     1 2X,'B2(1)=',E14.7,2X,'B2(NTOT)=',E14.7,/' FC2=',E14.7)
-150   FORMAT(' KC(1)=',E14.7,2X,'KC(NTOT)=',E14.7,/' B(0)=',E14.7,
-     1 2X,'B(1)=',E14.7,2X,'B(NTOT)=',E14.7,/' FC=',E14.7)
-153   FORMAT(' KCD(1,1)=',E14.7,2X,'KCD(1,NTOT)=',E14.7)
-154   FORMAT(' KCD(DTOT,1)=',E14.7,2X,'KCD(DTOT,NTOT)=',E14.7)
-      END
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C ISSUE: This seems to be some kind of search, gotta check if better to do it upon reading the file!!
-      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
-      REAL ABO, ABOND
-      DIMENSION ABO(100),ABOND(8000)
-
-      DO  K=1,atomgrade_NBLEND
-        DO  J=1,abonds_NABOND
-C           print 1035, abonds_ELE(J), atomgrade_ELEM(k), ALOG10(abo(j))-0.37+12
-          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
-        END DO   !FIN BCLE SUR J
-            
-        ! TODO check this while reading file, not here!!!!
-        WRITE(6,106) atomgrade_ELEM(K)
-        STOP
-14      ABOND(K) = ABO(J)
-      END DO   !FIN BCLE SUR K
-      RETURN
-c
-106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
-      END
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C     ***calcule la population au niveau inferieur de la transition
-C     ***la largeur doppler DELTA et le coefficient d'elargissement
-C     ***le "A" utilise dans le calcul de H(A,V)
-C
-C Note: (JT) seems to use variables atomgrade_* and modeles_*
-      SUBROUTINE POPADELH (NPAR,partit_EL,partit_KI1,partit_KI2,M,atomgrade_NBLEND,atomgrade_ELEM,
-     1 atomgrade_LAMBDA,atomgrade_KIEX,atomgrade_CH,CORCH,CVdW,atomgrade_GR,atomgrade_GE,atomgrade_IONI,modeles_NTOT,modeles_TETA,modeles_PE,ALPH,
-     2 PHN,PH2,VT,P,POP,A,DELTA)
-
-      PARAMETER(MAX_atomgrade_NBLEND=8000)
-      CHARACTER*1 ISI(1), ISS(1)
-      CHARACTER*2 atomgrade_ELEM, partit_EL
-      INTEGER atomgrade_NBLEND, NPAR, J, K
-      real KB,KIES,KII,NUL
-      DIMENSION VT(50),ALPH(50),PHN(50),PH2(50),
-     1 P(3,85,50),ALPHL(50),
-     3 CORCH(MAX_atomgrade_NBLEND),CVdW(MAX_atomgrade_NBLEND),
-     4 POP(MAX_atomgrade_NBLEND,50),A(MAX_atomgrade_NBLEND,50),DELTA(MAX_atomgrade_NBLEND,50)
-      CHARACTER*2 TTI, CC, OO, NN, MGG
-
-      DATA KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
-     1 C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
-      DATA ISI/' '/, ISS/' '/
-      DATA TTI/'TI'/,CC/' C'/,OO/' O'/,NN/' N'/,MGG/'MG'/
-      H  = 6.6252E-27
-      C5 = 2.*PI* (3.*PI**2/2.44)**0.4
-c
-      DO  K=1,atomgrade_NBLEND
-        corch(k)=0.
-        CVdW(K)=0
-        DO  J=1,NPAR
-          IF(partit_EL(J).EQ.atomgrade_ELEM(K)) GO TO 15
-        END DO
-        WRITE(6,104) atomgrade_ELEM(K)
-        STOP
-        
-15      IOO=atomgrade_IONI(K)
-C
-        write(77,*)atomgrade_ELEM(k),atomgrade_LAMBDA(k)
-        IF(atomgrade_CH(K).LT.1.E-37)  THEN
-          KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
-          IF(IOO.EQ.1)   KII=partit_KI1(J)
-          IF(IOO.EQ.2)   KII=partit_KI2(J)
-          IF(CORCH(K).LT.1.E-37)   THEN
-            CORCH(K)=0.67 * atomgrade_KIEX(K) +1
-          END IF   ! FIN DE IF CORCH(K)=0
-C               WRITE(6,125)  atomgrade_LAMBDA(K), CORCH(K)
-          CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
-          atomgrade_CH(K)= CVdW(K) * CORCH(K)
-        END IF  ! FIN DE IF atomgrade_CH=0.
-
-C
-        IF(atomgrade_CH(K) .LT. 1.E-20) THEN 
-          IOPI=1
-        ELSE
-          IOPI=2
-        END IF
-        
-        DO  N=1,modeles_NTOT
-          T=5040./modeles_TETA(N)
-          NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
-          AHNUL= H*NUL
-          ALPHL(N)=EXP(-AHNUL/(KB*T))
-
-          TAP = 1.-ALPHL(N)
-          TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
-          POP(K,N) = P(IOO,J,N)*TOP*TAP
-C NOXIG: ISSUE what does it mean?
-          IF(K .EQ. 1) POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
-          DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
-          VREL    = SQRT(C4*T*(1.+1./partit_M(J)))
-          IF (IOPI.EQ.1) THEN
-            GH = C5*atomgrade_CH(K)**0.4*VREL**0.6
-C                 if (N.EQ.10)  write (6,100) GH
-          ELSE
-            GH = atomgrade_CH(K) + Corch(K)*T
-C                 if (N.EQ.10) write(6, 101) GH
-          END IF
-          GAMMA = atomgrade_GR(K)+(atomgrade_GE(K)*modeles_PE(N)+GH*(PHN(N)+1.0146*PH2(N)))/(KB*T)
-          A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*DELTA(K,N))
-        END DO    !FIN BCLE SUR N
-      END DO    !FIN BCLE SUR K
-C
- 100  FORMAT(' GamH AU 1Oeme Niv du modele:', E15.3)
- 101  FORMAT(' GamH au 10eme Niv du modele:', E15.3,'  Spielfieldel')
- 104  FORMAT('     MANQUE LES FCTS DE PARTITION DU ',A2)
- 125  FORMAT(3X ,' POUR',F9.3,'   ON CALCULE CH ',
-     1 'VAN DER WAALS ET ON MULTIPLIE PAR ',F7.1)
- 488    format(2x,f10.3,2x,a2,2x,a2,2x,i3,1x,e13.3)
-      return
-      end
-
-
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C     ***calcule la pop du niv fond de l'ion pour tous les NPAR atomes de
-C     ***la table des fonctions de partition ,a tous les niv du modele
-C     ***
-      SUBROUTINE POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,NPAR,partit_TABU,P)
-      DIMENSION U(3),ALISTU(63),P(3,85,50), UE(50),TT(51)
-c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
-c           partit donnee pour 33 temperatures au plus ds la table.
-      REAL KB
-      KB=1.38046E-16
-      C1=4.8298E+15   ! =2 * (2*Pi*KB*ME)**1.5 / H**3
-C
-      DO  N=1,modeles_NTOT
-      T=5040./modeles_TETA(N)
-      UE(N)=C1*KB*T /modeles_PE(N)*T**1.5
-            DO  J=1,NPAR
-            KMAX=partit_JKMAX(J)
-            TT(1) = partit_TINI(J)
-                  DO  L=1,3
-                        DO  K=1,KMAX
-                        TT(K+1) = TT(K) + partit_PA(J)
-                        ALISTU(K) = partit_TABU(J,L,K)
-                        END DO
-c
-                        if (modeles_TETA(N).LT.TT(KMAX-1) ) then ! (inter parabolique)
-                        UUU=FT(modeles_TETA(N),KMAX,TT,ALISTU)
-                        else
-c                  interpolation lineaire entre 2 derniers pts
-                        AA=(ALISTU(KMAX)-ALISTU(KMAX-1)) / partit_PA(J)
-                        BB=ALISTU(KMAX-1) - AA * TT(KMAX-1)
-                        UUU= AA*modeles_TETA(N) + BB
-                        end if
-c
-                        U(L) = EXP(2.302585*UUU )
-                  END DO   ! FIN BCLE SUR L
-C
-            X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*modeles_TETA(N))
-            TKI2= partit_KI2(J) * modeles_TETA(N)
-            IF(TKI2.GE.77.)   THEN
-            Y=0.
-            P(3,J,N)=0.
-                          ELSE
-            Y=U(3)*UE(N)/U(2)  *  10.**(-partit_KI2(J)*modeles_TETA(N))
-            P(3,J,N) =(1./U(3))*(Y/(1.+X+Y))
-            END IF
-
-C
-            P(2,J,N) = (1./U(2))*(1./(1.+X+Y))
-            P(1,J,N) =  (1./U(1))*(X/(1.+X+Y))
-            END DO   ! fin bcle sur J
-      END DO   ! fin bcle sur N
-      RETURN
-      END
-
-
-
-
-
-
-
-
-
+      END MODULE BK
