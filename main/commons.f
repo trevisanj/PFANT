@@ -41,34 +41,10 @@ C main, BK, SELEKFH, FLINH, FLIN1
 C main, SELEKFH
       COMMON /KAPM4/ ECARTM
 
-C     COMMON'S AVEC LE SP KAPMOL ET POPADELH
-c main, KAPMOL, POPADELH
-      COMMON /KAPM3/ PPH, PPC2, PN, PC13, PMG, PO, PTI, PNG, PIG, PFE
-c main, BK, LECTAUH, SELEKFH
-      COMMON /PRT/   ECRIT
-      LOGICAL ECRIT
-
-
-
-C     COMMON AVEC SELEKFH ET POPADELH
-c main, POPADELH, SELEKFH
-      COMMON /CNO/ DM
-
-
 
 C     First appeared in subroutine LECTUR
 c LECTUR, ABSORU, IONIPE, SAHATH
       COMMON /SAHT/  ZK(11), ZKM(30,9), NR_SAHT(30)
-c LECTUR, ABSORU, SAHATH
-      COMMON /SAHTP/ XI(30,9), PF(30,9)
-c LECTUR, ABSORU
-      COMMON /UNI/   IUNITE(2)
-c LECTUR, ABSORU
-      COMMON /NOM/   NOMET(30)
-c LECTUR, ABSORU
-      COMMON /TIT/   TITRE(17)
-
-
 
 C First appeared in subroutine ABSORU
 C ABSORU, GAUNTH, block data
@@ -96,27 +72,8 @@ C ABSORU, ATHYHE
 C ABSORU
       COMMON /SOMAB/  SUM1
 
-C Not used!!!!, appears only in ABSORU's block data
-C I think I can get rid of all these variables
-      COMMON /D1/ TET(7), ALP(9), TAB(9,7), MMAX_D1, NMAX
 
 
-C     First appeared in subroutine FLINH
-C FLINH, FLIN1
-      COMMON /FCO/  FP_FCO(13),CC(13),TT(13),BB(13)
-C FLINH, FLIN1
-      COMMON /CCC/  AMF(50), AMF2(50), FX1(50), FX2(50)
-
-
-
-C     First appeared in subroutine SAT4
-C SAT4, DIE
-      COMMON /COMFH1/ C(MAX_dissoc_NMOL,5), NELEM(5,MAX_dissoc_NMOL), NATOM(5,MAX_dissoc_NMOL), MMAX(MAX_dissoc_NMOL),
-     1                PPMOL(MAX_dissoc_NMOL), APMLOG(MAX_dissoc_NMOL),MOL(MAX_dissoc_NMOL), IP(100),
-     2                CCOMP(100), UIIDUI(100), P(100), FP(100), KP(100),
-     3                NELEMX(50), NIMAX, EPS, SWITER
-C SAT4 only
-      COMMON /VAL/    PPG(MAX_dissoc_NMOL,50)
 
 
       SAVE

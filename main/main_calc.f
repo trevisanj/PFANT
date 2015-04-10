@@ -140,8 +140,6 @@ C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these vari
 C
 
 
-      ! ISSUE: KIK never used!!!
-      ! TODO Careful, actually YES!!!! 
       ! TODO command-line option to select this integration; config
       KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
 
@@ -581,6 +579,90 @@ C--- END MAIN ------------------------------------------------------------------
 
 
 
+C-------------------------------------------------------------------------------
+C ISSUE WHAT
+
+      SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
+      DIMENSION TOLV(20),VT(50),TOL(50)
+      PRINT *,'   ENTREE DS TURBUL'
+      IF(IVTOT.EQ.1)   THEN
+        WRITE(6,*) ' VT CONSTANT'
+        DO N = 1, modeles_NTOT
+          VT(N) = main_VVT(1)*1E5
+        END DO
+      ELSE
+        WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
+        WRITE(6,*) '     LOG TO'
+        WRITE(6,101) (TOLV(I),I=1,IVTOT)
+        WRITE(6,*) '     VT'
+        WRITE(6,101) (main_VVT(I),I=1,IVTOT)
+        IF(INTERP .EQ. 1) CALL FTLIN3(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
+        
+        ! ISSUE: is this still useful?? (SWITCHED OFF IN CODE)
+
+        IF(INTERP .GT. 1) CALL FT2(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
+        NT2=modeles_NTOT-2
+        DO N=1,NT2,3
+          WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
+     1                 (N+2),TOL(N+2),VT(N+2)
+        END DO
+
+        DO N = 1, modeles_NTOT
+          VT(N) = VT(N)*1E5
+        END DO
+      END IF
+
+      RETURN
+100   FORMAT(I5)
+101   FORMAT(10F8.3)
+102   FORMAT(3(I5,2F8.3,5X))
+      END
+C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -993,13 +1075,11 @@ C
       END
 
       BLOCK DATA
-C     BLOCK DATA POUR LE SOUS PROGRAMME  ABSORU POUR LES RAIES D'HYDROGE
 C
+C     BLOCK DATA POUR LE SOUS PROGRAMME  ABSORU POUR LES RAIES D'HYDROGE
 C     A.M COLLE  12/08/70
       DIMENSION G3D1(12,9),G3D2(12,9)
 
-C ISSUE: Block /D1/ is never used!!!!!
-      COMMON /D1/ TET(7), ALP(9), TAB(9,7), MMAX_D1, NMAX
       COMMON /GBF/ ZLH(19)
       COMMON /HYHE/ GRDM(46), U1(46), U2(46), WINV(46), YY(4),
      1              ZLETAG(18), G3D(12,18), AA(4), ZEFF4(10),
@@ -1009,14 +1089,6 @@ C ISSUE: Block /D1/ is never used!!!!!
 
       EQUIVALENCE (G3D(1,1),G3D1(1,1)),(G3D(1,10),G3D2(1,1))
 
-      DATA ALP/5.,4.,3.,2.,1.,0.,-1.,-2.,-3./,MMAX_D1,NMAX/9,7/,TET/0.1,0.2
-     1,0.3,0.4,0.5,0.6,0.7/
-      DATA TAB/1.43,1.83,2.28,2.77,3.27,3.77,4.27,4.77,5.27,
-     1         0.47,0.62,0.91,1.31,1.78,2.26,2.75,3.25,3.76,
-     2         0.31,0.32,0.35,0.42,0.61,0.93,1.35,1.82,2.32,
-     3         0.30,0.30,0.30,0.31,0.32,0.35,0.44,0.65,0.99,
-     4         0.30,0.30,0.30,0.30,0.30,0.30,0.31,0.32,0.36,
-     5         18*0.30/
       DATA WINV/361.9,429.9,514.4,615.3,733.7,869.7,1028.7,1226.2,1460.9
      1,1737.3,2044.4,2407.4,2851.6,3378.1,3986.8,4677.7,5477.3,6442.5,75
      274.3,8872.9,10338.2,12064.6,14049.7,16352.9,18996.2,22056.2,25576.
@@ -1638,7 +1710,6 @@ c p 21/11/04 M-N  DIMENSION TTD(DTOT),KCD(DTOT,50),KCJ(2,50),KCN(2),LAMBDC(2)
 
 C     COMMON ENTRE LE PROGRAMME PRINCIPAL ET LE SP FLIN1
       COMMON /TOTO/  TO_TOTO
-      COMMON /FAIL/  ERR(50)
       
       ! ISSUE I don't like this name LLZERO, it is the same name as the variable read from main.dat
       LLZERO=LZERO
@@ -1696,11 +1767,14 @@ c     1 znh(absoru2_NMETA+2),t
       
       ALPH01 = EXP(-AHNU1/(KB*T))
       B1(0) = C31 * (ALPH01/(1.-ALPH01))
-      CALL FLIN1(KC1,B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC1,KIK,CAVA)
-      IF(CAVA. GT. 0) THEN
+      CALL FLIN1(KC1,B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC1 = flin_F
+      IF(flin_CAVA. GT. 0) THEN
         !--verbose--!
         IF (VERBOSE) THEN
+
           WRITE(6,132) CAVA
+          ! ISSUE ERR was in a common, but not being assigned. I have to see what it was about
           WRITE(6,135) (I, TO_TOTO(I),ERR(I),I=1,modeles_NTOT)
         END IF
         
@@ -1709,8 +1783,9 @@ c     1 znh(absoru2_NMETA+2),t
       
       ALPH02 = EXP(-AHNU2/(KB*T))
       B2(0) = C32 * (ALPH02/(1.-ALPH02))
-      CALL FLIN1(KC2,B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC2,KIK,CAVA)
-      IF (CAVA .GT. 0) THEN
+      CALL FLIN1(KC2,B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC2 = flin_F
+      IF (flin_CAVA .GT. 0) THEN
         !--verbose--!
         IF (VERBOSE) THEN
           WRITE(6,132) CAVA
@@ -1722,8 +1797,9 @@ c     1 znh(absoru2_NMETA+2),t
       
       ALPH0 = EXP(-AHNU/(KB*T))
       B(0) = C3 * (ALPH0/(1.-ALPH0))
-      CALL FLIN1(KC,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FC,KIK,CAVA)
-      IF(CAVA. GT.0) THEN
+      CALL FLIN1(KC,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      FC = flin_F
+      IF(flin_CAVA. GT.0) THEN
         !--verbose--!
         IF (VERBOSE) THEN
           WRITE(6,132) CAVA
@@ -1811,7 +1887,6 @@ C
      1 ECARTLM(PARAMETER_NMOL),KAM(PARAMETER_NMOL),KAPPAM(50),KAPPT(50)
 
       COMMON /TOTO/  TO_TOTO
-      COMMON /FAIL/  ERR(50)
       COMMON /KAPM4/ ECARTM
 
       DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
@@ -1910,8 +1985,9 @@ c       WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
         END IF
         
         IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
-          CALL FLIN1 (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FL(D),KIK,CAVA)
-          IF (CAVA.GT.1) THEN
+          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+          FL(D) = flin_F
+          IF (flin_CAVA.GT.1) THEN
             WRITE(6,131) TTD(D),CAVA
             STOP
           END IF
@@ -1921,7 +1997,8 @@ c         FN(D) = FL(D) / FCONT(D)
           DO N = 1,modeles_NTOT
               TAUHD(N) = TAUH(D,N)
           END DO
-          CALL FLINH (KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,FL(D),KIK,CAVA)
+          CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,KIK)
+          FL(D) = flin_F
           IF(CAVA .GT. 1) THEN
             WRITE(6,131) TTD(D),CAVA
             STOP
@@ -1929,7 +2006,9 @@ c         FN(D) = FL(D) / FCONT(D)
         END IF
             
         ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        CALL FLIN1 (KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,FCONT(D),KIK,CAVA)
+        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+        FCONT(D) = flin_F
+        ! TODO Not checking CAVA, really gotta make it STOP from within FLIN_
       END DO  ! fin bcle sur D
       
 131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
@@ -2069,307 +2148,6 @@ C
 
 
 
-C-------------------------------------------------------------------------------
-c FLINH():  Calcul du flux ou de l'intensite par la methode d'integration
-c     a 6 pts (ou 13pts) de R.Cayrel (these).
-c     nouvelle methode de calcul de to . TO(1)est calcule et
-c     est different de 0 (On pose TO(0)=0)   -Avril 1988-
-C
-      SUBROUTINE FLINH (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,TAUHD,F,IOP,CAVA)
-      LOGICAL main_PTDISK
-      REAL   modeles_NH,KAP,main_MU
-      INTEGER CAVA
-      DIMENSION B(0:50),  TO_TOTO(0:50)
-      DIMENSION modeles_NH(50),KAP(50),BBB(26),TD2(26),
-     1  TD(6),TP(7),CD(6),CP(7),C1(13),C2(12),C3(12)
-      DIMENSION TAUHD(50)
-
-      COMMON /TOTO/ TO_TOTO
-      COMMON /FCO/  FP_FCO(13),CC(13),TT(13),BB(13)
-      COMMON /CCC/  AMF(50), AMF2(50), FX1(50), FX2(50)
-      COMMON /FAIL/ ERR(50)
-
-      DATA TD /0.038,0.154,0.335,0.793,1.467,3.890 /
-      DATA CD/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
-      DATA TP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
-      DATA CP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848,
-     10.049787/
-      DATA TD2/0.,.05,.1,.15,.3,.45,.60,.80,1.,1.2,1.4,1.6,1.8,2.,
-     1 2.2,2.4,2.6,2.8,3.,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
-      DATA C1/.032517,.047456,.046138,.036113,.019493,.011037,.006425,
-     1 .003820,.002303,.001404,.000864,.001045,.002769/
-      DATA C2/.111077,.154237,.143783,.108330,.059794,.034293,
-     1 .020169,.012060,.007308,.004473,.002761,.002757/
-      DATA C3/.023823,.030806,.027061,.019274,.010946,.006390,
-     1 .003796,.002292,.001398,.000860,.000533,.000396/
-C
-C           CALCUL DE TO
-C           (now dubbed "TO_TOTO")
-C
-      CAVA=0
-      EPSI=0.05
-      TO_TOTO(0)=0.
-        TO_TOTO(1)=modeles_NH(1)*(KAP(1)-(KAP(2)-KAP(1))/(modeles_NH(2)-modeles_NH(1))*modeles_NH(1)/2.)
-        CALL INTEGRA(modeles_NH,KAP,TO_TOTO,modeles_NTOT,TO_TOTO(1))
-            DO N=1,modeles_NTOT
-            TO_TOTO(N)=TO_TOTO(N)+TAUHD(N)
-            END DO
-C
-C           CALCUL DU FLUX
-      IF(IOP.EQ.0)   THEN
-C               FORMULE A 6 OU 7 PTS
-            IF(main_PTDISK) THEN
-            IPOINT=7
-            TOLIM=4.0
-                     ELSE
-            IPOINT=6
-            TOLIM=3.89
-            END IF
-c     on verifie que le modele n'est pas trop court
-      IF (TO_TOTO(modeles_NTOT) .LT. TOLIM)    THEN
-      WRITE(6,1504)
-      WRITE(6,1503) modeles_NTOT, TO_TOTO(modeles_NTOT)
-      WRITE(6,1501)
-      CAVA=2
-      RETURN
-      END IF
-c
-2     DO  L=1,IPOINT
-            IF(main_PTDISK) THEN
-            TT(L) = TP(L)*main_MU
-            CC(L)=CP(L)
-                     ELSE
-            TT(L) = TD(L)
-            CC(L) = CD(L)
-            END IF
-      END DO
-c
-      F=0.
-            DO  L=1,IPOINT
-            BB(L)=FAITK30(TT(L), TO_TOTO, B, modeles_NTOT)
-            FP_FCO(L)=CC(L)*BB(L)
-            F=F+FP_FCO(L)
-            END DO
-      RETURN
-C
-                        ELSE
-C     FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
-C           (13PTS +PTS MILIEU)
-            IF(main_PTDISK)   then
-            WRITE(6,1500)
-            STOP
-            END IF
-      TOLIM=5.487  ! Le modele doit aller au moins a une prof TOLIM
-            IF(TO_TOTO(modeles_NTOT).LT. TOLIM) THEN
-              WRITE(6,1504)
-              WRITE(6,1503) modeles_NTOT,TO_TOTO(modeles_NTOT)
-              WRITE(6,1501)
-              CAVA=2
-              RETURN
-              END IF
-c
-      DO L=1,26
-      T=TD2(L)
-      BBB(L) = FAITK30(TD2(L),TO_TOTO,B,modeles_NTOT)
-      END DO
-C
-      DO M=1,12
-      L=2*M - 1
-      BB(M)=BBB(L+1)
-      FP_FCO(M)=C1(M)*BBB(L) + C2(M)*BBB(L+1) + C3(M)*BBB(L+2)
-      CC(M)=C2(M)
-      END DO
-      FP_FCO(13)=C1(13)*BBB(26)
-      BB(13)=BBB(26)
-      CC(13)=C1(13)
-C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
-      F=0.
-      DO L=1,13
-      F=F+FP_FCO(L)
-      END DO
-      RETURN
-      END IF  !(fin du IF IOP)
-C
-c8    WRITE(6,1500)
-c     STOP
-1500  FORMAT('   LE SP FLIN1 NE PEUT CALCULER L INTENSITE EN 1 PT ',
-     1 'DU DISQUE AVEC LA FORMULE A 26PTS (UTILISER 7PTS IOP=0)' )
-1501  FORMAT(1H //)
-1502  FORMAT(5(F7.3,F5.2,2X))
-1503  FORMAT(I10,5X,3HTO=,F10.4)
-1504  FORMAT(18H MODELE TROP COURT)
-      END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C 
-c     calcul du flux ou de l'intensite par la methode d'integration
-c     a 6 pts (ou 13pts) de R.Cayrel (these).
-c     nouvelle methode de calcul de to . TO_TOTO(1) est calcule et
-c     est different de 0 (On pose TO_TOTO(0)=0)   -Avril 1988-
-C
-C Originally by Roger Cayrel
-C
-C (JT2015) dubbed TO_TOTO because the 2-letter variable that I won't
-C          mention is a reserved word
-      SUBROUTINE FLIN1 (KAP,B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,F,IOP,CAVA)
-
-      LOGICAL main_PTDISK
-      REAL   modeles_NH,KAP,main_MU
-      INTEGER CAVA
-      DIMENSION B(0:50),  TO_TOTO(0:50)
-      DIMENSION modeles_NH(50),KAP(50),modeles_T5L(50),BBB(26),TD2(26),
-     1  TD(6),TP(7),CD(6),CP(7),C1(13),C2(12),C3(12),
-     1  TT2(6000),BB2(6000),FP2(6000),CC2(6000)
-
-      COMMON /TOTO/ TO_TOTO
-      COMMON /FCO/  FP_FCO(13), CC(13), TT(13), BB(13)
-      COMMON /CCC/  AMF(50), AMF2(50), FX1(50), FX2(50)
-      COMMON /FAIL/ ERR(50)
-
-      DATA TD /0.038,0.154,0.335,0.793,1.467,3.890 /
-      DATA CD/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
-      DATA TP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
-
-      DATACP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848,
-     10.049787/
-      DATA TD2/0.,.05,.1,.15,.3,.45,.60,.80,1.,1.2,1.4,1.6,1.8,2.,
-     1 2.2,2.4,2.6,2.8,3.,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
-      DATA C1/.032517,.047456,.046138,.036113,.019493,.011037,.006425,
-     1 .003820,.002303,.001404,.000864,.001045,.002769/
-      DATA C2/.111077,.154237,.143783,.108330,.059794,.034293,
-     1 .020169,.012060,.007308,.004473,.002761,.002757/
-      DATA C3/.023823,.030806,.027061,.019274,.010946,.006390,
-     1 .003796,.002292,.001398,.000860,.000533,.000396/
-C
-C           CALCUL DE TO_TOTO
-C
-      CAVA=0
-      EPSI=0.05
-      TO_TOTO(0)=0.
-        TO_TOTO(1)=modeles_NH(1)*(KAP(1)-(KAP(2)-KAP(1))/(modeles_NH(2)-modeles_NH(1))*modeles_NH(1)/2.)
-c     write(6,*)modeles_NH(1),modeles_NH(2),Kap(1),KAP(2),modeles_NTOT
-c     read(5,*)
-
-        CALL INTEGRA(modeles_NH,KAP,TO_TOTO,modeles_NTOT,TO_TOTO(1))
-c     do i = 1,50
-c     print *, TO_TOTO(i), B(I)
-c     end do
-c     STOP
-C
-C           CALCUL DU FLUX
-      IF(IOP.EQ.0)   THEN
-C               FORMULE A 6 OU 7 PTS
-            IF(main_PTDISK) THEN
-            IPOINT=7
-            TOLIM=4.0
-                     ELSE
-            IPOINT=7
-            TOLIM=3.89
-            END IF
-
-c     on verifie que le modele n'est pas trop court
-      IF (TO_TOTO(modeles_NTOT) .LT. TOLIM) THEN
-      WRITE(6,1504)
-      WRITE(6,1503) modeles_NTOT,TO(modeles_NTOT)
-      WRITE(6,1501)
-      CAVA=2
-      RETURN
-      END IF
-
-2     DO  L=1,IPOINT
-            IF(main_PTDISK) THEN
-            TT(L) = TP(L)*main_MU
-            CC(L)=CP(L)
-                     ELSE
-            TT(L) = TD(L)
-            CC(L) = CD(L)
-            END IF
-      END DO
-c
-      F=0.
-            DO  L=1,IPOINT
-            BB(L)=FAITK30(TT(L), TO_TOTO, B, modeles_NTOT)
-            FP_FCO(L)=CC(L)*BB(L)
-            F=F+FP_FCO(L)
-            END DO
-      RETURN
-
-      END IF
-
-C
-      IF(IOP.EQ.1) THEN
-C     FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
-C           (13PTS +PTS MILIEU)
-            IF(main_PTDISK)   then
-            WRITE(6,1500)
-            STOP
-            END IF
-      TOLIM=5.487  ! Le modele doit aller au moins a une prof TOLIM
-            IF(TO_TOTO(modeles_NTOT) .LT. TOLIM) THEN
-              WRITE(6,1504)
-              WRITE(6,1503) modeles_NTOT,TO_TOTO(modeles_NTOT)
-              WRITE(6,1501)
-              CAVA=2
-              RETURN
-              END IF
-c
-      DO L=1,26
-      T=TD2(L)
-      BBB(L)=FAITK30(TD2(L),TO,B,modeles_NTOT)
-      END DO
-C
-      DO M=1,12
-      L=2*M - 1
-      BB(M)=BBB(L+1)
-      FP_FCO(M)=C1(M)*BBB(L) + C2(M)*BBB(L+1) + C3(M)*BBB(L+2)
-      CC(M)=C2(M)
-      END DO
-      FP_FCO(13)=C1(13)*BBB(26)
-      BB(13)=BBB(26)
-      CC(13)=C1(13)
-C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
-      F=0.
-      DO L=1,13
-      F=F+FP_FCO(L)
-      END DO
-      RETURN
-
-      END IF  !(fin du IF IOP)
-
-1500  FORMAT('   LE SP FLIN1 NE PEUT CALCULER L INTENSITE EN 1 PT ',
-     1 'DU DISQUE AVEC LA FORMULE A 26PTS (UTILISER 7PTS IOP=0)' )
-1501  FORMAT(1H //)
-1502  FORMAT(5(F7.3,F5.2,2X))
-1503  FORMAT(I10,5X,3HTO=,F10.4)
-1504  FORMAT(18H MODELE TROP COURT)
-      END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2430,43 +2208,6 @@ C
       END
 
 
-C-------------------------------------------------------------------------------
-      SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-      DIMENSION TOLV(20),VT(50),TOL(50)
-      PRINT *,'   ENTREE DS TURBUL'
-      IF(IVTOT.EQ.1)   THEN
-        WRITE(6,*) ' VT CONSTANT'
-        DO N = 1, modeles_NTOT
-          VT(N) = main_VVT(1)*1E5
-        END DO
-      ELSE
-        WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
-        WRITE(6,*) '     LOG TO'
-        WRITE(6,101) (TOLV(I),I=1,IVTOT)
-        WRITE(6,*) '     VT'
-        WRITE(6,101) (main_VVT(I),I=1,IVTOT)
-        IF(INTERP .EQ. 1) CALL FTLIN3(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-        
-        ! ISSUE: is this still useful?? (SWITCHED OFF IN CODE)
-
-        IF(INTERP .GT. 1) CALL FT2(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-        NT2=modeles_NTOT-2
-        DO N=1,NT2,3
-          WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
-     1                 (N+2),TOL(N+2),VT(N+2)
-        END DO
-
-        DO N = 1, modeles_NTOT
-          VT(N) = VT(N)*1E5
-        END DO
-      END IF
-
-      RETURN
-100   FORMAT(I5)
-101   FORMAT(10F8.3)
-102   FORMAT(3(I5,2F8.3,5X))
-      END
-C
 
 
 
