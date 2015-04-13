@@ -8,6 +8,12 @@ C     ***      REFERENCE   Q.S.R.T.   VOL16,611 (1976)
 C     ***ROUTINE COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
 C     ***- TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
 C     *** LA FONCTION EST ENSUITE NORMALISEE
+C
+C Arguments:
+C   X --
+C   Y --
+C   DEL --
+C   PHI -- output
       SUBROUTINE HJENOR(Y,X,DEL,PHI)
 
       REAL X,Y
