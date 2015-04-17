@@ -99,7 +99,7 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
         END DO
         RETURN
       ELSE
-        STOP 'Bad KIK (must be 0 or 1)'
+        CALL PFANT_HALT('Bad KIK (must be 0 or 1)')
       END IF  !(fin du IF KIK)
 
 1500  FORMAT('   LE SP FLIN1 NE PEUT CALCULER L INTENSITE EN 1 PT ',

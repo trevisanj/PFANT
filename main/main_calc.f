@@ -1,6 +1,3 @@
-
-
-
 C TODO Explain that each [subroutine] module declared the variables that it calculates
 C TODO module dependence map
 
@@ -94,14 +91,6 @@ C       Flux absolu sortant a ete multiplie par 10**5
 
 
 
-      ! TODO organize this once I have a module
-      LOGICAL config_VERBOSE
-      config_VERBOSE = .FALSE.
-
-
-C main, KAPMOL
-
-
 
       !====
       ! Making a new declaration section
@@ -109,6 +98,9 @@ C main, KAPMOL
       REAL*8 LZERO, LFIN
       CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
 
+
+      ! Calculated by search after reading atomgrade.dat and abonds.dat
+      REAL*8,  DIMENSION(MAX_atomgrade_NBLEND) :: ABOND
 
 
 
@@ -120,19 +112,18 @@ C main, KAPMOL
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
       REAL KB,bk_KC,LAMBD,
-     1   bk_KC1,bk_KC2,bk_KCD,km_MM, ABOND, ABO
+     1   bk_KC1,bk_KC2,bk_KCD,km_MM, ABO
       LOGICAL GAUSS,IDENTH
       REAL*8 LZERO,LFIN,LLHY(10)
       REAL*8 ECART,ECARTM,L0,LF,lllhy
       DIMENSION
-     1 bk_KC(50),bk_ALPH(50),bk_PHN(50),bk_PH2(50),
+     1 bk_KC(50),bk_PHN(50),bk_PH2(50),
      2 bk_KC1(50),bk_KC2(50),bk_KCD(par_NP,50),
      3 popadelh_DELTA(MAX_atomgrade_NBLEND,50),ABOND(MAX_atomgrade_NBLEND),
      5 popadelh_POP(MAX_atomgrade_NBLEND,50),popadelh_A(MAX_atomgrade_NBLEND,50),GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),
      6 popadelh_CORCH(MAX_atomgrade_NBLEND),popadelh_CVdW(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
      8 ECARTM(PARAMETER_NMOL)
-      DIMENSION VT(50),TOLV(20)
 C     fonctions de partition
 
 C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these variables, what they sync with!
@@ -226,19 +217,51 @@ C  ****************************************************************
 
 
       ! Reads abonds.dat
-      CALL READ_ABONDS(config_fn_ABONDS)
+      CALL READ_ABONDS(config_FN_ABONDS)
+
+
+      CALL READ_ATOMGRADE(config_FN_ATOMGRADE)
 
 
 
-      ! ISSUE: this is used, shouldn't it be some command-line option???
-      INTERP = 1  ! interp. lineaire de vt (si parabolique 2)
 
-      CALL TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,modeles_T5L,VT)
-      IF(IVTOT .EQ. 1) THEN
-        WRITE(6,131) main_VVT(1)
-      ELSE
-        WRITE(6,132)
-      END IF
+      ! Old routine "ABONDRAIH"
+      DO  K = 1,atomgrade_NBLEND
+        DO  J = 1,abonds_NABOND
+          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
+        END DO   !FIN BCLE SUR J
+            
+        ! TODO check this while reading file, not here!!!!
+        WRITE(6,106) atomgrade_ELEM(K)
+        STOP
+14      ABOND(K) = ABO(J)
+      END DO   !FIN BCLE SUR K
+      RETURN
+c
+106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
+      END
+
+
+
+
+      END MODULE ABONDRAIH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      CALL TURBUL()
+      
 
 C  *****************************************************************
 C                       III
@@ -282,8 +305,7 @@ C  *****************************************************************
       IK3=1
 C     AINT =intervalle de calcul
 C     CAINT=intervalle de recouvremment des intervalles
-C     HINT =demi-intervalle de calcul des raies d'hydrogene
-      HINT=35.
+      HINT=35.  ! demi-intervalle de calcul des raies d'hydrogene
       CINT=20.
       IDENTH=.FALSE.
 
@@ -318,9 +340,8 @@ C
         DTOT = (LFIN-LZERO)/main_PAS + 1.0005
         WRITE(6, 117) LZERO, LFIN, DTOT
         IF(DTOT .GT. 40000) THEN
-          ! ISSUE: replace with EXIT statement
-          ! TODO Make a more elegant exit
-          STOP  !Main loop exit door!
+          ! ISSUE: DOCUMENT THIS
+          CALL PFANT_HALT('DTOT > 40000!')
         END IF
 
         LAMBD = (LZERO+LFIN)/2
@@ -331,10 +352,10 @@ C
           TTD(D) = ALZERO+main_PAS*(D-1)
         END DO
 
-        CALL BK(LAMBD,bk_PHN,bk_PH2,
-     1        bk_FC,bk_KC,bk_KC1,bk_KC2,bk_KCD,TTD,DTOT,KIK,LZERO,LFIN)
+        CALL BK(LAMBD,TTD,DTOT,KIK,LZERO,LFIN)
 
-        IF config_VERBOSE WRITE(6,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
+        WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
+        CALL LOG_DEBUG(LLL)
 
         ! ******************************************************************
         ! LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH
@@ -352,9 +373,9 @@ C
             IHT = IH
             FILETOH = main_FILETOHY(IHT)
 
-            !--verbose--!
-            IF config_VERBOSE WRITE(6,712) IM, LLHY(IH), FILETOH, IHT
-            !-----------!
+
+            WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
+            CALL LOG_DEBUG(LLL)
 
             ! ISSUE Extract this from main loop. Not too hard: c_filetoh_* just need one extra dimension
             CALL READ_FILETOH(FILETOH)
@@ -372,10 +393,10 @@ C
 
         IMY = IM
         IF(IMY .NE. 0) THEN
-          IF config_VERBOSE THEN
-            WRITE(6,*) (DHMY(IM), IM=1,IMY)
-            WRITE(6,*) (DHPY(IM), IM=1,IMY)
-          END IF
+          WRITE(LLL,*) (DHMY(IM), IM=1,IMY)
+          CALL LOG_DEBUG(LLL)
+          WRITE(LLL,*) (DHPY(IM), IM=1,IMY)
+          CALL LOG_DEBUG(LLL)
 
           DHP = MAXI(DHPY, IMY, 1, IMY)
           DHM = MINI(DHMY, IMY, 1, IMY)
@@ -407,9 +428,9 @@ C
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
         IF(atomgrade_NBLEND .GT. 0) THEN
-          CALL POPADELH (popadelh_CORCH,popadelh_CVdW,VT,P,popadelh_POP,popadelh_A,popadelh_DELTA)
+          CALL POPADELH (popadelh_CORCH,popadelh_CVdW,turbul_VT,P,popadelh_POP,popadelh_A,popadelh_DELTA)
 
-          CALL ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
+
 
           ! *************************************************************
           !                       VI
@@ -422,16 +443,17 @@ C
           END DO
         END IF
 
-        CALL KAPMOL(modeles_NTOT)
+        CALL KAPMOL()
 
-        IF config_VERBOSE WRITE (6,704) km_MBLEND
+        WRITE(LLL, 704) km_MBLEND
+        CALL LOG_DEBUG(LLL)
 
         DO L = 1, km_MBLEND
           ECARTM(L) = km_LMBDAM(L)-LZERO + main_PAS
         END DO
 
-        CALL SELEKFH(KIK, DTOT, GFAL, ABOND, ECART, TAUH, DHM,DHP, VT,
-     +   bk_B, bk_B1,bk_B2,bk_KCD,popadelh_POP,popadelh_DELTA,popadelh_A,TTD,selekfh_FL,selekfh_FCONT, ECARTM)
+        CALL SELEKFH(KIK, DTOT, GFAL, ABOND, ECART, TAUH, DHM,DHP,
+     +   TTD, ECARTM)
 
 
         CALL WRITE_LINES_PFANT(filename_LINES_PFANT)
@@ -468,11 +490,12 @@ C
      1   L0,LF,LZERO,LFIN,ITOT,main_PAS,main_ECHX,main_ECHY,main_FWHM
         WRITE(20,1132) (FN(D),D=I1,I2)
 
-C
-        IF config_VERBOSE WRITE(6,707) IKEY, LZERO, LFIN, I1, I2
+
+        WRITE(LLL,707) IKEY, LZERO, LFIN, I1, I2
+        CALL CONFIG_DEBUG(LLL)
 
         IKEY = IKEY+1
-        IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door!
+        IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
         WRITE(6, 708) IKEY, IRH
         IDENTH = .FALSE.
@@ -503,16 +526,12 @@ C  *******************************************************************
 
 1130  FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
 1132  FORMAT(40000F15.5)
-
-
-
 100   FORMAT (3F10.3)
 101   FORMAT(2X,'FLUX CONTINU A ',F10.3,' ANGSTROM',E20.7/)
 501   FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,/
      1 2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
 102   FORMAT(2X,'INTENSITE CONTINUE A ',F10.3,' ANGSTROM  ET MU=',
      1  F4.1,3X,E20.7/)
-
 104   FORMAT('    INITIALE =',F6.3,' Angstrom')
 105   FORMAT(I1,A2,F6.3)
 106   FORMAT(' Pas du calcul=',F6.3)
@@ -532,8 +551,6 @@ C  *******************************************************************
 128   FORMAT(1H1,20X,20A4)
 130   FORMAT('     PAS=',F8.3,5X,'NBRE TOT DE PTS A CALCULER=',I10,
      1 /'   ON N A PAS LE DROIT DE CALCULER PLUS DE  PTS')
-131   FORMAT(/' V MICRO CONSTANTE  =',F6.1,'KM/S'/)
-132   FORMAT(/'V MICRO VARIABLE AVEC PROFONDEUR')
 133   FORMAT('   TO=',F7.3,10X,'V=',F7.3,'Km/s')
 135   FORMAT(5(I4,F7.3,F5.2))
 136   FORMAT(5X,A2,I1,F10.3,F10.2)
@@ -543,7 +560,6 @@ C  *******************************************************************
 701   FORMAT(1X,'IHH(IKEY)=',I5)
 702   FORMAT(1X,'IRH=',I5)
 703   FORMAT(1X,'DHM=',I5,2X,'DHP=',I5)
-
 704   FORMAT(1X,'MBLEND=',I10)
 705   FORMAT(1X,'I1=',I10,2X,'I2=',I10,2X,'IKEY=',I5)
 706   FORMAT(1X,'ILZERO=',I8,2X,'TTD(I1)=',F10.5,2X,'TTD(I2)=',F10.5)
@@ -561,12 +577,9 @@ C  *******************************************************************
 1560    FORMAT(A)
 1570    FORMAT(1X,A)
 1511  format(8(1x,a2))
-
-C3333   FORMAT(F15.8)
 5550  FORMAT(2F10.3,I5,F8.3,E20.7)
 5551  FORMAT(1X,5A4,F8.3,4X,F7.2,4X,F7.2,4X,F5.2)
 5555  FORMAT(2F10.3,2I5,F8.3,E20.7)
-      STOP
       END
 C--- END MAIN ------------------------------------------------------------------
 C--- END MAIN ------------------------------------------------------------------
@@ -577,6 +590,17 @@ C--- END MAIN ------------------------------------------------------------------
 
 
 
+
+
+
+
+
+      MODULE TURBUL
+      
+      !=====
+      ! Outputs
+      !=====
+      REAL*8, DIMENSION(MAX_modeles_NTOT) :: turbul_VT
 
 
 
@@ -584,40 +608,65 @@ C--- END MAIN ------------------------------------------------------------------
 C-------------------------------------------------------------------------------
 C ISSUE WHAT
 
-      SUBROUTINE TURBUL(INTERP,IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-      DIMENSION TOLV(20),VT(50),TOL(50)
+      SUBROUTINE TURBUL()
+      USE CONFIG
+      
+      
+      
       PRINT *,'   ENTREE DS TURBUL'
-      IF(IVTOT.EQ.1)   THEN
-        WRITE(6,*) ' VT CONSTANT'
+      IF(main_IVTOT .EQ. 1)   THEN
+        CALL LOG_DEBUG('VT CONSTANT')
         DO N = 1, modeles_NTOT
-          VT(N) = main_VVT(1)*1E5
+          turbul_VT(N) = main_VVT(1)*1E5
         END DO
       ELSE
-        WRITE(6,*) ' VT VARIABLE AVEC LA PROFONDEUR'
-        WRITE(6,*) '     LOG TO'
-        WRITE(6,101) (TOLV(I),I=1,IVTOT)
-        WRITE(6,*) '     VT'
-        WRITE(6,101) (main_VVT(I),I=1,IVTOT)
-        IF(INTERP .EQ. 1) CALL FTLIN3(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
+        CALL LOG_DEBUG('VT VARIABLE AVEC LA PROFONDEUR')
+        CALL LOG_DEBUG('    LOG TO')
+        WRITE(LLL,101) (main_TOLV(I),I=1,IVTOT)
+        CALL LOG_DEBUG(LLL)
+        CALL LOG_DEBUG('    VT')
+        WRITE(LLL,101) (main_VVT(I),I=1,IVTOT)
+        CALL LOG_DEBUG(LLL)
         
-        ! ISSUE: is this still useful?? (SWITCHED OFF IN CODE)
-
-        IF(INTERP .GT. 1) CALL FT2(IVTOT,TOLV,main_VVT,modeles_NTOT,TOL,VT)
-        NT2=modeles_NTOT-2
-        DO N=1,NT2,3
-          WRITE(6,102) N,TOL(N),VT(N),(N+1),TOL(N+1),VT(N+1),
-     1                 (N+2),TOL(N+2),VT(N+2)
+        IF(config_INTERP .EQ. 1) THEN
+          CALL FTLIN3(min_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
+     +     modeles_T5L, turbul_VT)
+        ELSEIF (config_INTERP .EQ. 2) THEN
+          ! ISSUE ask if still useful mbecause it was switched off.
+          ! TODO Test this interpolation
+          CALL FT2(main_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
+     +     modeles_T5L,turbul_VT)
+        END IF
+          
+        
+        NT2 = modeles_NTOT-2
+        DO N = 1, NT2, 3
+          WRITE(LLL,102) N,modeles_T5L(N),turbul_VT(N),(N+1),
+     +     modeles_T5L(N+1),turbul_VT(N+1),
+     +     (N+2),modeles_T5L(N+2),turbul_VT(N+2)
+          CALL LOG_DEBUG(LLL)
         END DO
 
         DO N = 1, modeles_NTOT
-          VT(N) = VT(N)*1E5
+          turbul_VT(N) = turbul_VT(N)*1E5
         END DO
+      END IF
+
+
+      IF(main_IVTOT .EQ. 1) THEN
+        WRITE(LLL,131) main_VVT(1)
+        CALL LOG_DEBUG(LLL)
+      ELSE
+        WRITE(LLL,132)
+        CALL LOG_DEBUG(LLL)
       END IF
 
       RETURN
 100   FORMAT(I5)
 101   FORMAT(10F8.3)
 102   FORMAT(3(I5,2F8.3,5X))
+131   FORMAT(/' V MICRO CONSTANTE  =',F6.1,'KM/S'/)
+132   FORMAT(/'V MICRO VARIABLE AVEC PROFONDEUR')
       END
 
 
@@ -653,44 +702,6 @@ C ISSUE WHAT
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-C-------------------------------------------------------------------------------
-C ISSUE: This seems to be some kind of search, gotta check if better to do it upon reading the file!!
-      SUBROUTINE ABONDRAIH(abonds_ELE,ABO,abonds_NABOND,atomgrade_ELEM,ABOND,atomgrade_NBLEND)
-      REAL ABO, ABOND
-      DIMENSION ABO(100),ABOND(8000)
-
-      DO  K=1,atomgrade_NBLEND
-        DO  J=1,abonds_NABOND
-C           print 1035, abonds_ELE(J), atomgrade_ELEM(k), ALOG10(abo(j))-0.37+12
-          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
-        END DO   !FIN BCLE SUR J
-            
-        ! TODO check this while reading file, not here!!!!
-        WRITE(6,106) atomgrade_ELEM(K)
-        STOP
-14      ABOND(K) = ABO(J)
-      END DO   !FIN BCLE SUR K
-      RETURN
-c
-106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
-      END
 
 
 
@@ -741,14 +752,14 @@ C     ***la largeur doppler popadelh_DELTA et le coefficient d'elargissement
 C     ***le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
 C
 C Note: (JT) seems to use variables atomgrade_* and modeles_*
-    SUBROUTINE POPADELH (VT, P)
+      SUBROUTINE POPADELH (turbul_VT, P)
       USE BK
       IMPLICIT NONE
 
       CHARACTER*1 ISI(1), ISS(1)
       INTEGER partit_NPAR, J, K
       real KB,KIES,KII,NUL
-      DIMENSION VT(50),bk_PHN(50),bk_PH2(50),
+      DIMENSION turbul_VT(50),bk_PHN(50),bk_PH2(50),
      1 P(3,85,50),ALPHL(50),
       CHARACTER*2 TTI, CC, OO, NN, MGG
 
@@ -803,7 +814,7 @@ C
           popadelh_POP(K,N) = P(IOO,J,N)*TOP*TAP
 C NOXIG: ISSUE what does it mean?
           IF(K .EQ. 1) popadelh_POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
-          popadelh_DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(VT(N)**2+DEUXR*T/partit_M(J))
+          popadelh_DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(turbul_VT(N)**2+DEUXR*T/partit_M(J))
           VREL = SQRT(C4*T*(1.+1./partit_M(J)))
           IF (IOPI .EQ. 1) THEN
             GH = C5*atomgrade_CH(K)**0.4*VREL**0.6
@@ -847,7 +858,6 @@ C
 
 
 
-C
 
       MODULE SELEKFH
       USE PARAMETERS
@@ -880,7 +890,7 @@ C
      +                   TAUH,
      +                   DHM,
      +                   DHP,
-     +                   VT,
+     +                   turbul_VT,
      +                   TTD,
      +                   ECARTM
      +                  )
@@ -894,7 +904,7 @@ C
       REAL lambi
       REAL KAPPA,KA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
       REAL*8 ECART,ECAR,ECARTM,ECARM
-      DIMENSION VT(50)
+      DIMENSION turbul_VT(50)
       DIMENSION BI(0:50)
       REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECART, ECAR, ECARTL, GFAL, ABOND, KA
 
@@ -978,7 +988,7 @@ C
           
               ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
               ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(VT(N)**2+DEUXR*T/km_MM)
+              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(turbul_VT(N)**2+DEUXR*T/km_MM)
               VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
               PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
               KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
@@ -998,47 +1008,33 @@ C
         IF(D.EQ.1) WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
         IF(D.EQ.1) WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
         
-c       WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-c       WRITE(6,150) D, KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-c       WRITE(6,152) KAPPAM(1),KAPPAM(modeles_NTOT)
         
-        !--verbose--!
-        IF (VERBOSE .AND. D .EQ. DTOT) THEN 
-          WRITE(6,151) D,BI(0),BI(1),BI(modeles_NTOT)
-          WRITE(6,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-          WRITE(6,152)KAPPAM(1),KAPPAM(modeles_NTOT)
-        END IF
+        WRITE(LLL,151) D,BI(0),BI(1),BI(modeles_NTOT)
+        CALL LOG_DEBUG(LLL)
+        WRITE(LLL,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+        CALL LOG_DEBUG(LLL)
+        WRITE(LLL,152)KAPPAM(1),KAPPAM(modeles_NTOT)
+        CALL LOG_DEBUG(LLL)
         
         IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
-          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,
+     +     KIK, TTD(D))
           selekfh_FL(D) = flin_F
-          IF (flin_CAVA.GT.1) THEN
-            WRITE(6,131) TTD(D),CAVA
-            STOP
-          END IF
-          
-c         FN(D) = selekfh_FL(D) / selekfh_FCONT(D)
         ELSE
           DO N = 1,modeles_NTOT
               TAUHD(N) = TAUH(D,N)
           END DO
           CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,
-     +     KIK,TAUHD)
+     +     KIK,TAUHD, TTD(D))
           selekfh_FL(D) = flin_F
-          IF(CAVA .GT. 1) THEN
-            WRITE(6,131) TTD(D),CAVA
-            STOP
-          END IF
         END IF
             
         ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, 
+     +   KIK, TTD(D))
         selekfh_FCONT(D) = flin_F
-        ! TODO Not checking CAVA, really gotta make it STOP from within FLIN_
       END DO  ! fin bcle sur D
       
-131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
-     1   ' A LAMBD=',F10.3,'     CAVA=',I3)
 150   FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,
      1 /,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
 152   FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
@@ -1146,7 +1142,7 @@ c         FN(D) = selekfh_FL(D) / selekfh_FCONT(D)
 
       REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: bk_B, bk_B1, bk_B2
       REAL*8, DIMENSION(MAX_modeles_NTOT) :: bk_KC, bk_KC1, bk_KC2
-     + bk_ALPH,bk_PHN, bk_PH2 
+     + bk_PHN, bk_PH2 
       REAL*8, DIMENSION(par_NP, MAX_modeles_NTOT) :: bk_KCD
       REAL*8, DIMENSION(par_NP) :: bk_FC
 
@@ -1167,10 +1163,12 @@ C
       USE PARAMETERS
       IMPLICIT NONE
       INTEGER D, DTOT
-      REAL LAMBD, NU, KB, LLZERO, LLFIN, NU1, NU2, LAMBDC,KCJ,KCN
+      REAL*8 LAMBD, NU, KB, LLZERO, LLFIN, NU1, NU2, LAMBDC, KCJ, KCN,
+     + ALPH_N, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
+     + LOG_PE  ! Created to avoid calculating ALOG10(PE) 3x
       REAL*8 LZERO, LFIN
-      REAL, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
-      REAL, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
+      REAL*8, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
+      REAL*8, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
       DIMENSION TTD(par_NP)
       DIMENSION FTTC(par_NP)
 
@@ -1186,8 +1184,8 @@ C
       
       DO N = 1,modeles_NTOT
         T = 5040./modeles_TETA(N)
-        bk_ALPH(N) = EXP(-AHNU1/(KB*T))
-        bk_B1(N) = C31 * (bk_ALPH(N)/(1.-bk_ALPH(N)))
+        ALPH_N = EXP(-AHNU1/(KB*T))
+        bk_B1(N) = C31 * (ALPH_N/(1.-ALPH_N))
         CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
         bk_KC1(N) = TOTKAP(1)
       END DO
@@ -1198,8 +1196,8 @@ C
       DO N = 1,modeles_NTOT
         ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
         T = 5040./modeles_TETA(N)
-        bk_ALPH(N) = EXP(-AHNU2/(KB*T))
-        bk_B2(N) = C32 * (bk_ALPH(N)/(1.-bk_ALPH(N)))
+        ALPH_N = EXP(-AHNU2/(KB*T))
+        bk_B2(N) = C32 * (ALPH_N/(1.-ALPH_N))
         CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
         bk_KC2(N) = TOTKAP(1)
       END DO
@@ -1209,8 +1207,8 @@ C
       C3 =(2*AHNU) * (NU/C)**2
       DO N=1,modeles_NTOT
         T=5040./modeles_TETA(N)
-        bk_ALPH(N) = EXP(-AHNU/(KB*T))
-        bk_B(N) = C3 * (bk_ALPH(N)/(1.-bk_ALPH(N)))
+        ALPH_N = EXP(-AHNU/(KB*T))
+        bk_B(N) = C3 * (ALPH_N/(1.-ALPH_N))
         CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
         bk_PHN(N) = absoru_ZNH(absoru2_NMETA+4) *KB * T
         bk_PH2(N) = absoru_ZNH(absoru2_NMETA+2) *KB * T
@@ -1225,44 +1223,16 @@ C
       bk_B1(0) = C31 * (ALPH01/(1.-ALPH01))
       CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
       FC1 = flin_F
-      IF(flin_CAVA. GT. 0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-
-          WRITE(6,132) CAVA
-          ! ISSUE ERR was in a common, but not being assigned. I have to see what it was about
-          WRITE(6,135) (I, flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        
-        IF(CAVA.GT.1) STOP
-      END IF
       
       ALPH02 = EXP(-AHNU2/(KB*T))
       bk_B2(0) = C32 * (ALPH02/(1.-ALPH02))
       CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
       FC2 = flin_F
-      IF (flin_CAVA .GT. 0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-          WRITE(6,132) CAVA
-          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        
-        IF(CAVA .GT. 1) STOP
-      END IF
       
       ALPH0 = EXP(-AHNU/(KB*T))
       bk_B(0) = C3 * (ALPH0/(1.-ALPH0))
       CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
       bk_FC = flin_F
-      IF(flin_CAVA. GT.0) THEN
-        !--verbose--!
-        IF (VERBOSE) THEN
-          WRITE(6,132) CAVA
-          WRITE(6,135) (I,flin_TO(I),ERR(I),I=1,modeles_NTOT)
-        END IF
-        IF(CAVA.GT.1) STOP
-      END IF
 
       ILZERO = LZERO/100.
       ILZERO = 1E2*ILZERO
@@ -1288,7 +1258,7 @@ C
       END IF
 10    CONTINUE
       RETURN
-132   FORMAT(' ENNUI AU CALCUL DU FLUX CONTINU     CAVA='I3)
+
 135   FORMAT(5(I4,F7.3,F5.2))
 151   FORMAT(' bk_KC1(1)=',E14.7,2X,'bk_KC1(NTOT)=',E14.7,/' bk_B1(0)=',E14.7,
      1 2X,'bk_B1(1)=',E14.7,2X,'bk_B1(NTOT)=',E14.7,/' FC1=',E14.7)

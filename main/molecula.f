@@ -96,12 +96,15 @@ C
       USE CONFIG
       USE ERRORS
       USE SAT4_DIE
+      USE LOGGING
       IMPLICIT NONE
       INTEGER MOLID
+      CHARACTER*192 S
+      
       IF (MOLID .GT. NUM_MOL) THEN
-        WRITE (*, *) 'FILL_PPA_PB(): Invalid molecule ID (',
+        WRITE (S, *) 'FILL_PPA_PB(): Invalid molecule ID (',
      +   MOLID, ') must be maximum ', NUM_MOL
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
 
       SELECT CASE (MOLID)  ! ISSUE Check molecule names and cases
@@ -215,7 +218,8 @@ C
       USE ERRORS
       USE CONFIG
       IMPLICIT NONE
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
+      
       INTEGER UNIT_, I,
      +  MOLID,   ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
      +  I_LINE,  ! Counts lines within each molecule (reset at each new molecule)

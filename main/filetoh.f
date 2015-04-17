@@ -97,11 +97,6 @@ C   ILZERO -- integer version of variable LZERO in main module
       
       INTEGER D
 
-      !--verbose--!
-      LOGICAL VERBOSE
-      VERBOSE = .TRUE. .AND. config_ALLOW_VERBOSE
-      !-----------!
-
       JJMAX = 2*f_filetoh_JMAX-1
       JMA1 = f_filetoh_JMAX-1
       DO JJ = 1, f_filetoh_JMAX
@@ -120,34 +115,28 @@ C   ILZERO -- integer version of variable LZERO in main module
         END DO
       END DO
       
-      !--verbose--!
-      IF (VERBOSE) THEN
-        WRITE(6,'(A80)') f_filetoh_TITRE
-        WRITE(6,'(A11)') f_filetoh_TTT
-        WRITE(6,'('' f_filetoh_JMAX='',I3)') f_filetoh_JMAX
-        WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
+      !~WRITE(6,'(A80)') f_filetoh_TITRE
+      !~WRITE(6,'(A11)') f_filetoh_TTT
+      !~WRITE(6,'('' f_filetoh_JMAX='',I3)') f_filetoh_JMAX
+      !~WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
+      !~WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
+      !~
+      !~DO N = 1,modeles_NTOT,5
+      !~  WRITE(6,'('' N='',I3)') N
+      !~  WRITE(6,'(2X,5E12.4)') (mi_TTH(JJ,N), JJ=1,JJMAX)
+      !~END DO
 
-        WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
-        
-        DO N = 1,modeles_NTOT,5
-          WRITE(6,'('' N='',I3)') N
-          WRITE(6,'(2X,5E12.4)') (mi_TTH(JJ,N), JJ=1,JJMAX)
-        END DO
-      END
-      !-----------!      
 
       DO J = 1,JJMAX
         mi_ALLH(J) = mi_LLAMBDH(J)-ILZERO
       END DO
-      
-      !--verbose--!
-      IF (VERBOSE) THEN
-        WRITE(6, '('' mi_ALLH(1)='',F8.3,2X,''mi_ALLH(JJMAX)='',F8.3,2X)')
-     +        mi_ALLH(1),mi_ALLH(JJMAX)
-        WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
-              JJMAX, modeles_NTOT, DTOT
-      END IF
-      !-----------!
+
+        
+     !~ WRITE(6, '('' mi_ALLH(1)='',F8.3,2X,''mi_ALLH(JJMAX)='',F8.3,2X)')
+     !~+      mi_ALLH(1),mi_ALLH(JJMAX)
+     !~ WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
+     !~       JJMAX, modeles_NTOT, DTOT
+
       
       DO N = 1,modeles_NTOT
             DO J = 1,JJMAX
@@ -160,16 +149,14 @@ C   ILZERO -- integer version of variable LZERO in main module
               c_filetoh_TAUHI(D, N) = mi_FTTH(D)
             END DO
       END DO
-      
-      !--verbose--!
-      IF (VERBOSE) THEN
-        WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)') 
-     +        c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
-        WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
-     +        //'''TAUHI(DTOT,NTOT)='',E14.7)')
-     +        c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
-      END IF
-      !-----------!
+
+
+     !~ !--debugging--!
+     !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)') 
+     !~+ c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
+     !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
+     !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
+     !~+ c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
       
       RETURN
       END

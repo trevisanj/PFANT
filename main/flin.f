@@ -8,8 +8,8 @@ c     est different de 0 (On pose flin_TO(0)=0)   -Avril 1988-
 C
 C Originally by Roger Cayrel
 C
-C Outputs ONLY in module variables: flin_TO, flin_F, flin_CAVA
-C NO LONGER modifying arguments F and CAVA (they are no longer arguments)
+C Outputs ONLY in module variables: flin_TO, flin_F
+C NO LONGER modifying arguments F and CAVA (they are no longer arguments; CAVA (error code) extint)
       MODULE FLIN
       IMPLICIT NONE
       
@@ -19,8 +19,7 @@ C NO LONGER modifying arguments F and CAVA (they are no longer arguments)
       !=====
       REAL*8, DIMENSION(0:50) flin_TO
       REAL*8 flin_F
-      INTEGER flin_CAVA  ! Error code. TODO get rid of this and just STOP here
-      
+     
 
       
       PRIVATE, REAL*8 :: TD2, TD,TP, CD, CP, C1, C2, C3
@@ -95,6 +94,7 @@ C MU -- probably main_MU
 C KIK -- (old "IOP") (integer), accepts 0 or 1
 C        if 0, uses the 6/7 point formula
 C TAUHD -- used only in FLINH mode
+C TTD_D -- just for logging purpose, it will be shown if the system halts
 C MODE_ -- (logical; internal) .TRUE. : behaves as FLINH
 C                              .FALSE.: behaves as FLIN1
       SUBROUTINE FLIN_(KAP, B, NH, NTOT, PTDISK, MU, KIK, TAUHD, MODE_)
@@ -112,7 +112,6 @@ C                              .FALSE.: behaves as FLIN1
 C
 C           CALCUL DE flin_TO
 C
-      flin_CAVA=0
       EPSI=0.05
       flin_TO(0)=0.
         flin_TO(1)=NH(1)*(KAP(1)-(KAP(2)-KAP(1))/(NH(2)-NH(1))*NH(1)/2.)
@@ -140,11 +139,16 @@ C               FORMULE A 6 OU 7 PTS
 
 c     on verifie que le modele n'est pas trop court
         IF (flin_TO(NTOT) .LT. TOLIM) THEN
-          WRITE(6,1504)
-          WRITE(6,1503) NTOT, flin_TO(NTOT)
-          WRITE(6,1501)
-          flin_CAVA=2
-          RETURN
+          ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+
+          WRITE(LLL,1504)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,1503) NTOT, flin_TO(NTOT)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,1501)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,131) TTD_D
+          CALL PFANT_HALT(LLL)
         END IF
 
 2       DO  L=1,IPOINT
@@ -173,12 +177,18 @@ C           (13PTS +PTS MILIEU)
           STOP
         END IF
         TOLIM=5.487  ! Le modele doit aller au moins a une prof TOLIM
-        IF(flin_TO(NTOT).LT. TOLIM) THEN
-          WRITE(6,1504)
-          WRITE(6,1503) NTOT,flin_TO(NTOT)
-          WRITE(6,1501)
-          flin_CAVA=2
-          RETURN
+
+        IF(flin_TO(NTOT) .LT. TOLIM) THEN
+          ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+
+          WRITE(LLL,1504)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,1503) NTOT, flin_TO(NTOT)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,1501)
+          CALL LOG_HALT(LLL)
+          WRITE(LLL,131) TTD_D
+          CALL PFANT_HALT(LLL)
         END IF
 
         DO L=1,26
@@ -202,7 +212,7 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
         END DO
         RETURN
       ELSE
-        STOP 'Bad KIK (must be 0 or 1)'
+        CALL PFANT_HALT('Bad KIK (must be 0 or 1)')
       END IF  !(fin du IF KIK)
 
 1500  FORMAT('   LE SP FLIN1 NE PEUT CALCULER L INTENSITE EN 1 PT ',
@@ -211,6 +221,9 @@ C     CES BB ET CC NE SERVENT QUE POUR LES SORTIES (PAS AU CALCUL)
 1502  FORMAT(5(F7.3,F5.2,2X))
 1503  FORMAT(I10,5X,3HTO=,F10.4)
 1504  FORMAT(18H MODELE TROP COURT)
+131   FORMAT(' ENNUI AU CALCUL DU FLUX (CF LIGNE PRECEDENTE)',
+     1   ' A LAMBD=',F10.3)
+
       END
 
 

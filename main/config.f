@@ -4,12 +4,13 @@ C - Routines to parse command-line arguments
 C - All globals have prefix "config_"
 
       MODULE CONFIG
+      USE LOGGING
 
       INTEGER, PARAMETER :: NUM_MOL=21  ! Number of molecules configured in the program.
                                         ! Conceptually, this should be defined in molecula.f, but there would be cyclic USEs
 
-      LOGICAL config_VERBOSE
-      LOGICAL config_DEBUG    ! Allows for debugging messages
+      INTEGER config_logging_LEVEL /logging_INFO/
+      LOGICAL config_DEBUG /.FALSE./    ! Allows for debugging messages
 
 
 
@@ -18,7 +19,7 @@ C - All globals have prefix "config_"
       !=====
 
       ! These are configurable
-      INTEGER config_NUM_MOL_OFF  ! Number of molecules switched off (excluded from calculations)
+      INTEGER config_NUM_MOL_OFF /0/ ! Number of molecules switched off (excluded from calculations)
       INTEGER, DIMENSION(NUM_MOL) :: config_MOLIDS_OFF  ! IDs=indexes of the molecules to be switched off
 
       ! These are filled by MAKE_MOLIDS()
@@ -26,19 +27,24 @@ C - All globals have prefix "config_"
       INTEGER config_NUM_MOL_ON  ! This is actually = NUM_MOL-config_NUM_MOL_OFF
 
 
+      !=====
+      ! Misc
+      !=====
+      
+      
+      ! Interpolation type of turbul_VT
+      ! 1 -- linear
+      ! 2 -- parabolic
+      INTEGER config_INTERP = 1  ! TODO not sure if I can initialize thus
+      
+
+
+
 
       !=====
       ! Private variables
       !=====
-      LOGICAL, PRIVATE :: FLAG_SETUP
-
-
-      DATA config_VERBOSE       /.TRUE./
-     +     config_NUM_MOL_OFF   /0/
-     +     FLAG_SETUP           /.FALSE./
-     +     config_DEBUG         /.FALSE./
-
-
+      LOGICAL, PRIVATE :: FLAG_SETUP /.FALSE./
 
       CONTAINS
 
@@ -52,9 +58,22 @@ C
 C Must be called at system startup
 C
       SUBROUTINE CONFIG_SETUP()
+      USE LOGGING
       IMPLICIT NONE
 
       ! TODO parse command-line here
+
+
+      ! Validation of config_INTERP
+      SELECT CASE (config_INTERP)
+        CASE (1, 2)
+        CASE DEFAULT
+          WRITE (*,*) 'Invalid INTERP: ', INTERP, ' (valid: 1/2)',
+     +     config_INTERP
+      END SELECT
+      
+      logging_LEVEL = config_logging_LEVEL  ! sets logging level at LOGGING module based on config variable
+          
 
       CALL MAKE_MOLIDS()
       FLAG_SETUP = .TRUE.
@@ -72,16 +91,17 @@ C
       USE ERRORS
       IMPLICIT NONE
       INTEGER I_MOL, GET_MOLID
+      CHARACTER*128 S  !--logging--!
 
       !--assertion--!
       IF (.NOT. FLAG_SETUP)
-     + STOP 'GET_MOLID(): forgot to call CONFIG_SETUP()'
+     + CALL PFANT_HALT('GET_MOLID(): forgot to call CONFIG_SETUP()')
 
       !--spill check--!
       IF (I_MOL .GT. config_NUM_MOL_ON) THEN
-        WRITE (*, *) 'GET_MOLID(): Invalid molecule index I_MOL (',
+        WRITE (S, *) 'GET_MOLID(): Invalid molecule index I_MOL (',
      +   I_MOL, ') must be maximum ', config_NUM_MOL_ON
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
 
       GET_MOLID = config_MOLIDS_ON(I_MOL)
@@ -99,7 +119,8 @@ C MOLECULE_IS_ON(): returns .TRUE. or .FALSE. whether molecule represented by MO
 
       !--assertion--!
       IF (.NOT. FLAG_SETUP)
-     + STOP 'MOLECULE_IS_ON(): forgot to call CONFIG_SETUP()'
+     + CALL PFANT_HALT('MOLECULE_IS_ON(): '
+     + //'forgot to call CONFIG_SETUP()')
 
       MOlECULE_IS_ON = .TRUE.
       DO J = 1, config_NUM_MOL_OFF

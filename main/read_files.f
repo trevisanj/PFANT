@@ -44,8 +44,6 @@ C Number of elements actually used is specified by variable dissoc_NMETAL <= MAX
 
 
 
-
-
 C Variables filled by READ_MAIN() (file main.dat)
       CHARACTER main_TITRAV*10, main_FILEFLUX*64
       LOGICAL   main_ECRIT, main_PTDISK
@@ -53,12 +51,15 @@ C Variables filled by READ_MAIN() (file main.dat)
      1          main_MU, main_AFSTAR, main_LLZERO,
      2          main_LLFIN, main_AINT,
      3          main_TEFF, main_GLOG, main_ASALOG, main_NHE
-      INTEGER   main_IVTOT, main_INUM
+      INTEGER   main_IVTOT,  ! affects TURBUL() ISSUE what
+                             ! = 1 -- "VT" constant
+                             ! > 1 -- "VT" variable
+     + main_INUM
       CHARACTER main_FILETOHY*64
 
       DIMENSION main_FILETOHY(10)
       DIMENSION main_TITRAV(20)
-      DIMENSION main_VVT(20)
+      REAL, DIMENSION(MAX_modeles_NTOT) :: main_VVT, main_TOLV
       REAL, DIMENSION(MAX_dissoc_NMETAL) :: main_XXCOR
 
 
@@ -96,7 +97,7 @@ C (MT) Yes and modeles.mod could become an ASCII file!!!
 
 
       ! Filtered variables
-C ISSUE: nobody cares about ABONDR
+C ISSUE: nobody cares about ABONDR. Why?
       REAL, DIMENSION(MAX_atomgrade__NBLEND) ::
      + atomgrade_GE, atomgrade_ZINF, atomgrade_ABONDR, atomgrade_ALGF,
      + atomgrade_GF, atomgrade_CH
@@ -182,6 +183,8 @@ C ----------------------------------------------------
       INTEGER*4 modeles_NTOT
       CHARACTER*4 modeles_TIT
       CHARACTER*20 modeles_TIABS ! I just want to see this string at testing
+      
+      ! TODO create REAL*4 temp locals, then transfer to REAL*8 ones
       REAL*4 modeles_DETEF, modeles_DGLOG, modeles_DSALOG,
      +       modeles_ASALALF, modeles_NHE,
      +       modeles_NH, modeles_TETA, modeles_PE, modeles_PG,
@@ -223,7 +226,7 @@ C
       IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=4)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
       INTEGER IH, I
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
@@ -239,25 +242,30 @@ C Example:  T      0.02 5.0   1.    .12
       READ(UNIT_, *) main_ECRIT, main_PAS, main_ECHX, main_ECHY,
      1               main_FWHM
 
-C row 03:
+C row 03
 C =======
 C Example: 0.9
-
       READ(UNIT_, *) main_VVT(1)
       main_IVTOT = 1
-C ISSUE: it seems that here there are three conditional rows;
-C ISSUE: these are present/read only if the value in the third line
-C ISSUE: is greater than 900
-C ISSUE: UPDATE: I checked pfantgrade.f and only VVT(1) is used
-C ISSUE:         throughout the program, so I think I can safely
-C ISSUE;         exclude these
+
+
+
+C rows 03.(0-2) (three conditional rows that MUST exist if and only if main_VVT(1) > 900)
+C =============
+C ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
+C ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
+C ISSUE Documentation
 C (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
-C TODO I gotta put this back, but also check again whether the program is prepared to use this
-C      IF(VVT(1) .GT. 900)  THEN   ! VT VARIABLE AVEC LA PROFONDEUR
-C            READ(4,*) IVTOT
-C            READ(4,*) (TOLV(I), I=1, IVTOT)
-C            READ(4,*) (VVT(I) ,I=1, IVTOT)
-C      END IF
+      IF(main_VVT(1) .GT. 900)  THEN   ! VT VARIABLE AVEC LA PROFONDEUR
+        READ(UNIT_, *) main_IVTOT
+        ! IVTOT, affects subroutine TURBUL() ISSUE what
+        IF (main_IVTOT .GT. MAX_modeles_NTOT) THEN
+          WRITE (*, *) 'main_IVTOT .GT. MAX_modeles_NTOT (',
+     +     main_IVTOT, ' .GT. ', MAX_modeles_NTOT, ')'
+          
+        READ(UNIT_,*) (main_TOLV(I), I=1, main_IVTOT)
+        READ(UNIT_,*) (main_VVT(I) ,I=1, main_IVTOT)
+      END IF
 
 
 C line 04
@@ -359,8 +367,8 @@ C PROPOSE: use READ()'s "END=" option
       INTEGER UNIT_
       INTEGER I, J, K, M, MMAXJ
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
-*      CHARACTER*128 S
+      CHARACTER(LEN=*) :: filename
+      CHARACTER*192 S
       CHARACTER*2 SYMBOl
       LOGICAL FLAG_FOUND
 
@@ -403,10 +411,10 @@ C   col 6 -- (?)
         SELECT CASE (I)
           CASE (1)
             IF (SYMBOL .NE. 'H ')
-     +       STOP 'First element must be hydrogen ("H ")!'
+     +       CALL PFANT_HALT('First element must be hydrogen ("H ")!')
           CASE (2)
             IF (SYMBOL .NE. 'HE' .AND. SYMBOL .NE. 'He')
-     +       STOP 'Second element must be helium ("He")!'
+     +       CALL PFANT_HALT('Second element must be helium ("He")!')
         END SELECT
 
 
@@ -415,10 +423,10 @@ C   col 6 -- (?)
 
         !--spill check--!
         IF (dissoc_NELEMX(I) .GT. MAX_Z) THEN
-          WRITE(*,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ',
+          WRITE(S,*) 'READ_DISSOC(): metal # ', I, ': NELEMXI = ',
      +     dissoc_NELEMX(I), ' over maximum allowed (',
      +     MAX_Z, ')'
-          STOP ERROR_EXCEEDED
+          CALL PFANT_HALT(S)
         END IF
 
       END DO
@@ -447,9 +455,9 @@ C ISSUE: THere is no 1X
       IF(MMAXJ .EQ. 0) GO TO 1014  ! means end-of-file
 
       IF (MMAXJ .GT. 4) THEN
-        WRITE(*,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
+        WRITE(S,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
      +     '", MMAXJ = ', MMAXJ, ' cannot be greater than 4!'
-        STOP ERROR_BAD_VALUE
+        CALL PFANT_HALT(S)
       END IF
 
 
@@ -464,9 +472,9 @@ C ISSUE: THere is no 1X
         END DO
 
         IF (.NOT. FLAG_FOUND) THEN
-          WRITE(*,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
+          WRITE(S,*) 'READ_DISSOC() molecule "', dissoc_MOL(J),
      +     '" atomic number ', NELEMM(M), 'not in atoms list above'
-          STOP ERROR_BAD_VALUE
+          CALL PFANT_HALT(S)
         END IF
       END DO
 
@@ -526,7 +534,7 @@ C PROPOSE: use READ()'s "END=" option
       INTEGER UNIT_
       INTEGER FINAB
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
       INTEGER J
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
@@ -556,6 +564,8 @@ C READ_ATOMGRADE(): reads file atomgrade.dat to fill variables atomgrade__* (dou
 C
 C Original UNIT: 14
 C
+C Depends on abonds_*, so must be called after READ_ABONDS()
+C
 C This file has 2 types of alternating rows:
 C   odd row
 C     col 1 -- 2-letter atomgrade_ELEM(K) FILLDOC
@@ -583,7 +593,8 @@ C PROPOSE: use READ()'s "END=" option
       IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
+      CHARACTER*192 S
 
       INTEGER FINRAI, K
 
@@ -616,9 +627,9 @@ C orig *******************************************************************
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (K .GT. MAX_atomgrade__NBLEND) THEN
-            WRITE(*,*) 'READ_ATOMGRADE(): exceeded maximum of',
+            WRITE(S,*) 'READ_ATOMGRADE(): exceeded maximum of',
      1                 MAX_atomgrade__NBLEND, ' spectral lines'
-            STOP ERROR_EXCEEDED
+            CALL PFANT_HALT(S)
           END IF
 
       GO TO 9
@@ -655,11 +666,14 @@ C-------------------------------------------------------------------------
 C FILTER_ATOMGRADE(): selects only spectral lines within range LZERO, LFIN
 C
 C Populates variables atomgrade_* (single underscore)
+C
+C Also looks into abonds_ELE(:) to fill atomgrade_ABOND_ABONDS
 C-------------------------------------------------------------------------
       SUBROUTINE FILTER_ATOMGRADE(LZERO, LFIN)
       USE ERRORS
       REAL*8 LZERO, LFIN
       INTEGER J, K
+      CHARACTER*192 S
 
       K = 0
       DO J = 1, atomgrade__NBLEND
@@ -670,9 +684,9 @@ C-------------------------------------------------------------------------
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (K .GT. MAX_atomgrade_NBLEND) THEN
-            WRITE(*,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
+            WRITE(S,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
      1                 MAX_atomgrade_NBLEND, ' spectral lines'
-            STOP ERROR_EXCEEDED
+            CALL PFANT_HALT(S)
           END IF
           !Filters in!
           atomgrade_ELEM(K)   = atomgrade__ELEM(J)
@@ -686,6 +700,8 @@ C-------------------------------------------------------------------------
           atomgrade_GE(K)     = atomgrade__GE(J)
           atomgrade_ZINF(K)   = atomgrade__ZINF(J)
           atomgrade_ABONDR(K) = atomgrade__ABONDR(J)
+          
+          
         END IF
       END DO
 
@@ -719,7 +735,8 @@ C
       IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
+      CHARACTER*192 S
 
       INTEGER FINPAR, J, KMAX, L, K
 
@@ -742,9 +759,9 @@ C
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (J .GT. MAX_partit_NPAR) THEN
-            WRITE(*,*) 'READ_PARTIT(): PAR exceeded maximum of ',
+            WRITE(S,*) 'READ_PARTIT(): PAR exceeded maximum of ',
      1                  MAX_partit_NPAR
-            STOP ERROR_EXCEEDED
+            CALL PFANT_HALT(S)
           END IF
 
 
@@ -752,9 +769,9 @@ C
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (KMAX .GT. MAX_partit_KMAX) THEN
-            WRITE(*,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
+            WRITE(S,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
      1       ' exceeded maximum of', MAX_partit_KMAX
-            STOP ERROR_EXCEEDED
+            CALL PFANT_HALT(S)
           END IF
 
 
@@ -820,7 +837,7 @@ C
       IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
 
       CHARACTER*3 NEANT
       INTEGER NION, I, ITH, J, NRR, NSET
@@ -843,9 +860,9 @@ C
 
       ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
       IF (absoru2_NM .GT. MAX_absoru2_NM) THEN
-        WRITE(*,*) 'READ_ABSORU2(): NM=', absoru2_NM,
+        WRITE(S,*) 'READ_ABSORU2(): NM=', absoru2_NM,
      1        ' exceeded maximum of', MAX_absoru2_NM
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
 
 
@@ -863,9 +880,9 @@ C
 
         ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
         IF (NRR .GT. MAX_absoru2_NRR) THEN
-          WRITE(*,*) 'READ_ABSORU2(): J = ', J, 'NR=', NRR,
+          WRITE(S,*) 'READ_ABSORU2(): J = ', J, 'NR=', NRR,
      1       ' exceeded maximum of', MAX_absoru2_NRR
-          STOP ERROR_EXCEEDED
+          CALL PFANT_HALT(S)
         END IF
 
 
@@ -897,15 +914,15 @@ C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn'
 
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (absoru2_NUMSET(1) .GT. MAX_absoru2_NUMSET_I) THEN
-        WRITE(*,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1),
+        WRITE(S,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (absoru2_NUMSET(2) .GT. MAX_absoru2_NUMSET_I) THEN
-        WRITE(*,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2),
+        WRITE(S,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
 
 
@@ -960,10 +977,11 @@ C ISSUE: depends on other main_* but I think not for long
       IMPLICIT NONE
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
-      CHARACTER*256 filename
+      CHARACTER(LEN=*) :: filename
       REAL*8 DDT, DDG, DDAB
       INTEGER I,
      +        ID_   ! TODO This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
+      CHARACTER*192 S
 
 
       OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD',
@@ -987,16 +1005,15 @@ C (MT) ASSERT main_NHE == modeles_NHE
       IF (modeles_NTOT .EQ. 9999) THEN
         ! ISSUE perhaps I should check the condition that leads to this error
         ! TODO STOP with error level
-        WRITE(6, *) 'LE MODELE DESIRE NE EST PAS SUR LE FICHIER'
-        STOP ERROR_NOT_FOUND
+        CALL PFANT_HALT('LE MODELE DESIRE NE EST PAS SUR LE FICHIER')
       END IF
 
 
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (modeles_NTOT .GT. MAX_modeles_NTOT) THEN
-        WRITE(*,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
+        WRITE(S,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        STOP ERROR_EXCEEDED
+        CALL PFANT_HALT(S)
       END IF
 
 
@@ -1036,16 +1053,16 @@ C (MT) ASSERT main_NHE == modeles_NHE
       ! TODO ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
       ! TODO Get the epsilon from MT
       IF(DDT .GT. 1.0) THEN
-        WRITE(*,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
-        STOP ERROR_BAD_VALUE
+        WRITE(S,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
+        CALL PFANT_HALT(S)
       END IF
       IF(DDG .GT. 0.01) THEN
-        WRITE(*,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
-        STOP ERROR_BAD_VALUE
+        WRITE(S,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
+        CALL PFANT_HALT(S)
       END IF
       IF(DDAB .GT. 0.01) THEN
-        WRITE(*,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
-        STOP ERROR_BAD_VALUE
+        WRITE(S,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
+        CALL PFANT_HALT(S)
       END IF
 
 

@@ -68,9 +68,7 @@ C "SUBROUTINE D'EQUILIBRE DISSOCIATIF"
       REAL*8 CCLOGI
       INTEGER I, IG0I, IG1I, IQ, IR, IRL, IRR, ITO, ITX, J, JCOUNT, NBL,
      + NELEMI, NELEMXI, K1, K2, K3, KD, KF
-      LOGICAL VERBOSE
-
-      VERBOSE = config_DEBUG .AND. .FALSE.
+      CHARACTER*128 LLL
 
 
 C
@@ -94,11 +92,11 @@ C ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I 
           UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
           CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
 
-          IF (VERBOSE) THEN !--verbose--!
-            WRITE(*, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
-     +          dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
-     +          IG0I, IG1I, CCLOGI-main_AFSTAR
-          END IF
+     !~     !--debugging--!
+     !~     WRITE(LLL, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
+     !~+     dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
+     !~+     IG0I, IG1I, CCLOGI-main_AFSTAR
+     !~     CALL LOG_DEBUG(LLL)
       END DO
 
 C
@@ -222,11 +220,11 @@ C orig *****INPUT E
  1020 CONTINUE
 
 
-      IF (VERBOSE) THEN !--verbose--!
-        DO I=1,4
-          WRITE(*,'(7E11.4)') (XP(ITX,I),ITX=1,modeles_NTOT)
-        END DO
-      END IF
+      !--debugging--!
+      DO I=1,4
+        WRITE(LLL,'(7E11.4)') (XP(ITX,I),ITX=1,modeles_NTOT)
+        CALL LOG_DEBUG(LLL)
+      END DO
 
 
       DO 51 ITX=1,modeles_NTOT
@@ -274,10 +272,7 @@ C===============================================================================
      + SPNION, T, TEM25, U, X, XR, PPH, PHH
       INTEGER I, IMAXP1, ITERAT, J, K, KM5, M, MMAXJ, NELEMI, NELEMJ,
      + NATOMJ, NITER
-
-      LOGICAL VERBOSE
-
-      VERBOSE = config_DEBUG .AND. .FALSE.
+      CHARACTER*128 LLL
 
       ECONST = 4.342945E-1
       EPSDIE = 5.0E-3
@@ -339,7 +334,10 @@ C     PG=PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)
  1106 ITERAT=ITERAT+1
       IF (ITERAT-50) 1104,1104,1107
 
- 1107 IF (VERBOSE) PRINT 6108, TEM,PG,X,XR,PH !--verbose--!
+ 1107 CONTINUE
+      
+      WRITE(LLL, 6108) TEM,PG,X,XR,PH
+      CALL LOG_WARNING(LLL)
  6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X
      1 'X1=', E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
       GO TO 1105
@@ -476,7 +474,9 @@ C     IONIZATION EQUILIBRIUM
  1052 NITER = NITER + 1
       IF (NITER-dissoc_NIMAX) 1040,1040,1054
 
- 1054 IF (VERBOSE) PRINT 6055, dissoc_NIMAX
+ 1054 CONTINUE
+      WRITE(LLL,6055) dissoc_NIMAX
+      CALL LOG_WARNING(LLL)
 
  6055 FORMAT(1H0,39H *DOES NOT CONVERGE AFTER ITERATIONS OF,I4/////)
 
