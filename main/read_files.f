@@ -96,26 +96,30 @@ C (MT) Yes and modeles.mod could become an ASCII file!!!
       REAL*8 atomgrade_GR, atomgrade_LAMBDA, atomgrade__LAMBDA
 
 
+C ISSUE: nobody cares about ABONDR_DUMMY. Why? I might have the answer, this is taken from elsewere, file abonds.dat, maybe
+
+
       ! Filtered variables
-C ISSUE: nobody cares about ABONDR. Why?
       REAL, DIMENSION(MAX_atomgrade__NBLEND) ::
-     + atomgrade_GE, atomgrade_ZINF, atomgrade_ABONDR, atomgrade_ALGF,
+     + atomgrade_GE, atomgrade_ZINF, atomgrade_ABONDR_DUMMY, atomgrade_ALGF,
      + atomgrade_GF, atomgrade_CH
       DIMENSION atomgrade_ELEM(MAX_atomgrade_NBLEND),
-     1          atomgrade_IONI(MAX_atomgrade_NBLEND),
-     2          atomgrade_LAMBDA(MAX_atomgrade_NBLEND),
-     3          atomgrade_KIEX(MAX_atomgrade_NBLEND),
-     7          atomgrade_GR(MAX_atomgrade_NBLEND)
+     +          atomgrade_IONI(MAX_atomgrade_NBLEND),
+     +          atomgrade_LAMBDA(MAX_atomgrade_NBLEND),
+     +          atomgrade_KIEX(MAX_atomgrade_NBLEND),
+     +          atomgrade_GR(MAX_atomgrade_NBLEND),
+     +          atomgrade_ABONDS_ABO(MAX_atomgrade_NBLEND)
 
 
       ! File originals
-      REAL, DIMENSION(MAX_atomgrade__NBLEND) :: atomgrade__ABONDR,
+      REAL, DIMENSION(MAX_atomgrade__NBLEND) :: atomgrade__ABONDR_DUMMY,
      + atomgrade__ALGF, atomgrade__CH, atomgrade__GE, atomgrade__ZINF,
      + atomgrade__GR
       DIMENSION atomgrade__ELEM(MAX_atomgrade__NBLEND),
      1          atomgrade__IONI(MAX_atomgrade__NBLEND),
      2          atomgrade__LAMBDA(MAX_atomgrade__NBLEND),
      3          atomgrade__KIEX(MAX_atomgrade__NBLEND)
+     +          atomgrade__ABONDS_ABO(MAX_atomgrade__NBLEND)  ! will be filled by searching atomgrade__ELEM within abonds_ELE
 
 
 
@@ -201,6 +205,8 @@ C ----------------------------------------------------
 
 
 
+
+      LOGICAL, PRIVATE :: FLAG_READ_ABONDS /.FALSE./  ! Set to .TRUE. at the end of READ_ABONDS()
 
 
 
@@ -368,7 +374,7 @@ C PROPOSE: use READ()'s "END=" option
       INTEGER I, J, K, M, MMAXJ
       PARAMETER(UNIT_=199)
       CHARACTER(LEN=*) :: filename
-      CHARACTER*192 S
+      CHARACTER*192 LLL
       CHARACTER*2 SYMBOl
       LOGICAL FLAG_FOUND
 
@@ -549,6 +555,8 @@ C PROPOSE: use READ()'s "END=" option
 
       CLOSE(UNIT=UNIT_)
 
+      FLAG_READ_ABONDS = .TRUE.
+
       RETURN
       END
 
@@ -582,7 +590,6 @@ C     col 7 --
 C     col 8 -- signals end-of-file. If "1", reading stops
 C
 C TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
-C TODO: including other reading routines!!!!!!!!!!!!!!
 C ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
 C (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!
 C TODO Assertions in test to see if numbers match what they are supposed to
@@ -594,9 +601,14 @@ C PROPOSE: use READ()'s "END=" option
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER(LEN=*) :: filename
-      CHARACTER*192 S
-
+      CHARACTER*192 LLL
       INTEGER FINRAI, K
+      LOGICAL FLAG_FOUND
+      
+      IF (.NOT. FLAG_READ_ABONDS)
+        CALL PFANT_HALT('READ_ABONDS() must be called '
+     +   //'before READ_ATOMGRADE()')
+      END IF
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -617,20 +629,43 @@ C orig *******************************************************************
      3               atomgrade__GR(K),
      4               atomgrade__GE(K),
      5               atomgrade__ZINF(K),
-     6               atomgrade__ABONDR(K), FINRAI
+     6               atomgrade__ABONDR_DUMMY(K), FINRAI
 
+
+      ! ISSUE Why this? Document!!!
       IF (atomgrade_GR(K) .LT. 1E-37)
      1    atomgrade_GR(K) = 2.21E15 / atomgrade_LAMBDA(K)**2
 
       IF (FINRAI .EQ. 1) GO TO 10
       K = K+1
 
-          ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
-          IF (K .GT. MAX_atomgrade__NBLEND) THEN
-            WRITE(S,*) 'READ_ATOMGRADE(): exceeded maximum of',
-     1                 MAX_atomgrade__NBLEND, ' spectral lines'
-            CALL PFANT_HALT(S)
-          END IF
+      ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
+      IF (K .GT. MAX_atomgrade__NBLEND) THEN
+        WRITE(LLL,*) 'READ_ATOMGRADE(): exceeded maximum of',
+     1   MAX_atomgrade__NBLEND, ' spectral lines'
+        CALL PFANT_HALT(LLL)
+      END IF
+
+    
+      ! Searches atomgrade's element within abonds' elements and copies corresponding
+      ! abonds_ABO value into atomgrade_ABONDS_ABOND. Halts program if element not found.
+      ! This is a "inner join" (SQL terminology)!
+      ! Historical note: this corresponds to old routine "ABONDRAIH". The search was being carried out
+      !   every time (LZERO, LFIN) changed and only for the filtered atomgrade rows. I decided to 
+      !   perform this search for all atomgrade rows and then filter atomgrade_ABONDS_ABOND together 
+      !   with other variables in FILTER_ATOMGRADE(), which is probably cheaper.
+      FLAG_FOUND = .FALSE.
+      DO  J = 1, abonds_NABOND
+        IF (abonds_ELE(J) .EQ. atomgrade__ELEM(K)) THEN
+          FLAG_FOUND = .TRUE.
+          EXIT
+        END IF
+      END DO
+      IF (.NOT. FLAG_FOUND) THEN
+        WRITE(LLL,*)  'MANQUE L ABONDANCE DU ', atomgrade__ELEM(K)
+        CALL PFANT_HALT(LLL)
+      END
+      atomgrade__ABONDS_ABOND(K) = abonds_ABO(J)
 
       GO TO 9
 
@@ -673,7 +708,7 @@ C-------------------------------------------------------------------------
       USE ERRORS
       REAL*8 LZERO, LFIN
       INTEGER J, K
-      CHARACTER*192 S
+      CHARACTER*192 LLL
 
       K = 0
       DO J = 1, atomgrade__NBLEND
@@ -684,9 +719,9 @@ C-------------------------------------------------------------------------
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (K .GT. MAX_atomgrade_NBLEND) THEN
-            WRITE(S,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
+            WRITE(LLL,*) 'FILTER_ATOMGRADE(): exceeded maximum of',
      1                 MAX_atomgrade_NBLEND, ' spectral lines'
-            CALL PFANT_HALT(S)
+            CALL PFANT_HALT(LLL)
           END IF
           !Filters in!
           atomgrade_ELEM(K)   = atomgrade__ELEM(J)
@@ -699,7 +734,10 @@ C-------------------------------------------------------------------------
           atomgrade_GR(K)     = atomgrade__GR(J)
           atomgrade_GE(K)     = atomgrade__GE(J)
           atomgrade_ZINF(K)   = atomgrade__ZINF(J)
-          atomgrade_ABONDR(K) = atomgrade__ABONDR(J)
+          
+          atomgrade_ABONDS_ABO(K) = atomgrade__ABONDS_ABO(J)
+          
+          atomgrade_ABONDR_DUMMY(K) = atomgrade__ABONDR_DUMMY(J)
           
           
         END IF
@@ -736,7 +774,7 @@ C
       INTEGER UNIT_
       PARAMETER(UNIT_=199)
       CHARACTER(LEN=*) :: filename
-      CHARACTER*192 S
+      CHARACTER*192 LLL
 
       INTEGER FINPAR, J, KMAX, L, K
 
@@ -759,9 +797,9 @@ C
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (J .GT. MAX_partit_NPAR) THEN
-            WRITE(S,*) 'READ_PARTIT(): PAR exceeded maximum of ',
+            WRITE(LLL,*) 'READ_PARTIT(): PAR exceeded maximum of ',
      1                  MAX_partit_NPAR
-            CALL PFANT_HALT(S)
+            CALL PFANT_HALT(LLL)
           END IF
 
 
@@ -769,9 +807,9 @@ C
 
           ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
           IF (KMAX .GT. MAX_partit_KMAX) THEN
-            WRITE(S,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
+            WRITE(LLL,*) 'READ_PARTIT(): PAR number', J, 'KMAX=', KMAX,
      1       ' exceeded maximum of', MAX_partit_KMAX
-            CALL PFANT_HALT(S)
+            CALL PFANT_HALT(LLL)
           END IF
 
 
@@ -860,9 +898,9 @@ C
 
       ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
       IF (absoru2_NM .GT. MAX_absoru2_NM) THEN
-        WRITE(S,*) 'READ_ABSORU2(): NM=', absoru2_NM,
+        WRITE(LLL,*) 'READ_ABSORU2(): NM=', absoru2_NM,
      1        ' exceeded maximum of', MAX_absoru2_NM
-        CALL PFANT_HALT(S)
+        CALL PFANT_HALT(LLL)
       END IF
 
 
@@ -880,9 +918,9 @@ C
 
         ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
         IF (NRR .GT. MAX_absoru2_NRR) THEN
-          WRITE(S,*) 'READ_ABSORU2(): J = ', J, 'NR=', NRR,
+          WRITE(LLL,*) 'READ_ABSORU2(): J = ', J, 'NR=', NRR,
      1       ' exceeded maximum of', MAX_absoru2_NRR
-          CALL PFANT_HALT(S)
+          CALL PFANT_HALT(LLL)
         END IF
 
 
@@ -914,15 +952,15 @@ C ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn'
 
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (absoru2_NUMSET(1) .GT. MAX_absoru2_NUMSET_I) THEN
-        WRITE(S,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1),
+        WRITE(LLL,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        CALL PFANT_HALT(S)
+        CALL PFANT_HALT(LLL)
       END IF
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (absoru2_NUMSET(2) .GT. MAX_absoru2_NUMSET_I) THEN
-        WRITE(S,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2),
+        WRITE(LLL,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        CALL PFANT_HALT(S)
+        CALL PFANT_HALT(LLL)
       END IF
 
 
@@ -981,7 +1019,7 @@ C ISSUE: depends on other main_* but I think not for long
       REAL*8 DDT, DDG, DDAB
       INTEGER I,
      +        ID_   ! TODO This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
-      CHARACTER*192 S
+      CHARACTER*192 LLL
 
 
       OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD',
@@ -1011,9 +1049,9 @@ C (MT) ASSERT main_NHE == modeles_NHE
 
       ! *BOUNDARY CHECK*: Checks if exceeds maximum number of elements allowed
       IF (modeles_NTOT .GT. MAX_modeles_NTOT) THEN
-        WRITE(S,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
+        WRITE(LLL,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1),
      1         ' exceeded maximum of', MAX_absoru2_NUMSET_I
-        CALL PFANT_HALT(S)
+        CALL PFANT_HALT(LLL)
       END IF
 
 
@@ -1053,16 +1091,16 @@ C (MT) ASSERT main_NHE == modeles_NHE
       ! TODO ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
       ! TODO Get the epsilon from MT
       IF(DDT .GT. 1.0) THEN
-        WRITE(S,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
-        CALL PFANT_HALT(S)
+        WRITE(LLL,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
+        CALL PFANT_HALT(LLL)
       END IF
       IF(DDG .GT. 0.01) THEN
-        WRITE(S,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
-        CALL PFANT_HALT(S)
+        WRITE(LLL,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
+        CALL PFANT_HALT(LLL)
       END IF
       IF(DDAB .GT. 0.01) THEN
-        WRITE(S,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
-        CALL PFANT_HALT(S)
+        WRITE(LLL,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
+        CALL PFANT_HALT(LLL)
       END IF
 
 

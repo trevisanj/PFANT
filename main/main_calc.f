@@ -99,10 +99,6 @@ C       Flux absolu sortant a ete multiplie par 10**5
       CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
 
 
-      ! Calculated by search after reading atomgrade.dat and abonds.dat
-      REAL*8,  DIMENSION(MAX_atomgrade_NBLEND) :: ABOND
-
-
 
       INTEGER FINPAR,FINRAI,FINAB,D,DTOT
       INTEGER DHM,DHP,DHMY,DHPY
@@ -117,20 +113,15 @@ C       Flux absolu sortant a ete multiplie par 10**5
       REAL*8 LZERO,LFIN,LLHY(10)
       REAL*8 ECART,ECARTM,L0,LF,lllhy
       DIMENSION
-     1 bk_KC(50),bk_PHN(50),bk_PH2(50),
-     2 bk_KC1(50),bk_KC2(50),bk_KCD(par_NP,50),
-     3 popadelh_DELTA(MAX_atomgrade_NBLEND,50),ABOND(MAX_atomgrade_NBLEND),
-     5 popadelh_POP(MAX_atomgrade_NBLEND,50),popadelh_A(MAX_atomgrade_NBLEND,50),GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),
-     6 popadelh_CORCH(MAX_atomgrade_NBLEND),popadelh_CVdW(MAX_atomgrade_NBLEND),
+     5 GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
      8 ECARTM(PARAMETER_NMOL)
 C     fonctions de partition
 
 C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these variables, what they sync with!
-      DIMENSION P(3,MAX_partit_NPAR, 50)
+      DIMENSION popul_P(3,MAX_partit_NPAR, 50)
       DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
-      DIMENSION bk_B(0:50),bk_B1(0:50),bk_B2(0:50)
-      DIMENSION selekfh_FL(par_NP), TTD(par_NP), selekfh_FCONT(par_NP), FN(par_NP)
+      DIMENSION TTD(par_NP), FN(par_NP)
       DIMENSION TAUH(par_NP,50),TAUHY(10,par_NP,50)
       DIMENSION DHMY(10),DHPY(10)
 C
@@ -147,14 +138,6 @@ C  *****************************************************************
      1     PI/3.141593/,C1/4.8298E+15/,C2/8.8525E-13/,C4/2.1179E+8/,
      2     C6/3.76727E+11/,DEUXR/1.6634E+8/,C7/1.772453/
         C5= 2.*PI* (3.*PI**2/2.44)**0.4
-
-
-      !~!~!~!~!~OPEN(UNIT=4,FILE='main.dat',STATUS='OLD')
-      !~!~!~!~!~OPEN(UNIT=25,FILE='partit.dat',STATUS='OLD')
-      !~!~!~!~!~OPEN(UNIT=23,FILE='dissoc.dat',STATUS='OLD')
-      !~!~!~!~!~OPEN(UNIT=30,FILE='abonds.dat',STATUS='OLD')
-      !~!~!~!~!~OPEN(UNIT=14,FILE='atomgrade.dat',STATUS='OLD')
-
 
 
       ! ISSUE what is this?
@@ -216,45 +199,10 @@ C  ****************************************************************
       AMET=A0*ASASOL
 
 
-      ! Reads abonds.dat
       CALL READ_ABONDS(config_FN_ABONDS)
 
 
       CALL READ_ATOMGRADE(config_FN_ATOMGRADE)
-
-
-
-
-      ! Old routine "ABONDRAIH"
-      DO  K = 1,atomgrade_NBLEND
-        DO  J = 1,abonds_NABOND
-          IF(abonds_ELE(J) .EQ. atomgrade_ELEM(K))  GO TO 14
-        END DO   !FIN BCLE SUR J
-            
-        ! TODO check this while reading file, not here!!!!
-        WRITE(6,106) atomgrade_ELEM(K)
-        STOP
-14      ABOND(K) = ABO(J)
-      END DO   !FIN BCLE SUR K
-      RETURN
-c
-106   FORMAT('     MANQUE L ABONDANCE DU  ', A2)
-      END
-
-
-
-
-      END MODULE ABONDRAIH
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -268,7 +216,7 @@ C                       III
 C     CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
 C           POPULATION DU NIV FOND DES IONS
 C  *****************************************************************
-      CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,P)
+      CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,popul_P)
 C
 C  *****************************************************************
 C                       IV
@@ -428,7 +376,7 @@ C
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
         IF(atomgrade_NBLEND .GT. 0) THEN
-          CALL POPADELH (popadelh_CORCH,popadelh_CVdW,turbul_VT,P,popadelh_POP,popadelh_A,popadelh_DELTA)
+          CALL POPADELH (popadelh_CORCH,popadelh_CVdW,turbul_VT,popul_P,popadelh_POP,popadelh_A,popadelh_DELTA)
 
 
 
@@ -452,7 +400,7 @@ C
           ECARTM(L) = km_LMBDAM(L)-LZERO + main_PAS
         END DO
 
-        CALL SELEKFH(KIK, DTOT, GFAL, ABOND, ECART, TAUH, DHM,DHP,
+        CALL SELEKFH(KIK, DTOT, GFAL, atomgrade_ABONDS_ABO, ECART, TAUH, DHM,DHP,
      +   TTD, ECARTM)
 
 
@@ -670,9 +618,89 @@ C ISSUE WHAT
       END
 
 
+      END MODULE TURBUL
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      MODULE POPUL
+      USE READ_FILES
+      
+      !=====
+      ! Outputs
+      !=====
+
+      REAL*8, DIMENSION(3,MAX_partit_NPAR, MAX_modeles_NTOT) :: popul_P
+
+
+C-------------------------------------------------------------------------------
+C     ***calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
+C     ***la table des fonctions de partition ,a tous les niv du modele
+C     ***
+C
+      SUBROUTINE POPUL()
+      DIMENSION U(3), ALISTU(63), UE(50), TT(51)
+c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
+c           partit donnee pour 33 temperatures au plus ds la table.
+      REAL KB /1.38046E-16/, C1 = /4.8298E+15/
+      
+      DO N = 1, modeles_NTOT
+        T = 5040./modeles_TETA(N)  ! TODO I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
+        UE(N) = C1*KB*T/modeles_PE(N)*T**1.5
+        DO J = 1, partit_NPAR
+          KMAX = partit_JKMAX(J)
+          TT(1) = partit_TINI(J)
+          DO  L=1,3
+            DO  K=1,KMAX
+              TT(K+1) = TT(K) + partit_PA(J)
+              ALISTU(K) = partit_TABU(J,L,K)
+            END DO
+
+            IF (modeles_TETA(N) .LT. TT(KMAX-1) ) THEN
+              ! interpolation parabolique
+              UUU = FT(modeles_TETA(N),KMAX,TT,ALISTU)
+            ELSE
+              ! interpolation lineaire entre 2 derniers pts
+              AA = (ALISTU(KMAX)-ALISTU(KMAX-1)) / partit_PA(J)
+              BB = ALISTU(KMAX-1) - AA * TT(KMAX-1)
+              UUU = AA*modeles_TETA(N) + BB
+            END IF
+
+            U(L) = EXP(2.302585*UUU)
+          END DO
+
+          X=U(1) / (U(2)*UE(N)) * 10.**(partit_KI1(J)*modeles_TETA(N))
+          TKI2= partit_KI2(J) * modeles_TETA(N)
+          IF (TKI2 .GE. 77.) THEN
+            Y = 0.
+            popul_P(3,J,N) = 0.
+          ELSE
+            Y = U(3)*UE(N)/U(2) * 10.**(-partit_KI2(J)*modeles_TETA(N))
+            popul_P(3,J,N) = (1./U(3))*(Y/(1.+X+Y))
+          END IF
+          popul_P(2,J,N) = (1./U(2))*(1./(1.+X+Y))
+          popul_P(1,J,N) =  (1./U(1))*(X/(1.+X+Y))
+          END DO
+        END DO
+      RETURN
+      END
+
+      END MODULE POPUL
 
 
 
@@ -752,15 +780,14 @@ C     ***la largeur doppler popadelh_DELTA et le coefficient d'elargissement
 C     ***le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
 C
 C Note: (JT) seems to use variables atomgrade_* and modeles_*
-      SUBROUTINE POPADELH (turbul_VT, P)
+      SUBROUTINE POPADELH ()
       USE BK
       IMPLICIT NONE
 
       CHARACTER*1 ISI(1), ISS(1)
-      INTEGER partit_NPAR, J, K
+      INTEGER J, K
       real KB,KIES,KII,NUL
-      DIMENSION turbul_VT(50),bk_PHN(50),bk_PH2(50),
-     1 P(3,85,50),ALPHL(50),
+      DIMENSION ALPHL(50)  ! TODO 50??
       CHARACTER*2 TTI, CC, OO, NN, MGG
 
       DATA KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
@@ -811,9 +838,9 @@ C
 
           TAP = 1.-ALPHL(N)
           TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
-          popadelh_POP(K,N) = P(IOO,J,N)*TOP*TAP
+          popadelh_POP(K,N) = popul_P(IOO,J,N)*TOP*TAP
 C NOXIG: ISSUE what does it mean?
-          IF(K .EQ. 1) popadelh_POP(K,N) = TOP*TAP*P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
+          IF(K .EQ. 1) popadelh_POP(K,N) = TOP*TAP*popul_P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
           popadelh_DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(turbul_VT(N)**2+DEUXR*T/partit_M(J))
           VREL = SQRT(C4*T*(1.+1./partit_M(J)))
           IF (IOPI .EQ. 1) THEN
@@ -885,12 +912,10 @@ C
       SUBROUTINE SELEKFH(KIK,    ! 0/1, passed to FLINH
      +                   DTOT,   ! ?
      +                   GFAL, 
-     +                   ABOND, 
      +                   ECART, 
      +                   TAUH,
      +                   DHM,
      +                   DHP,
-     +                   turbul_VT,
      +                   TTD,
      +                   ECARTM
      +                  )
@@ -906,7 +931,7 @@ C
       REAL*8 ECART,ECAR,ECARTM,ECARM
       DIMENSION turbul_VT(50)
       DIMENSION BI(0:50)
-      REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECART, ECAR, ECARTL, GFAL, ABOND, KA
+      REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECART, ECAR, ECARTL, GFAL, KA
 
 
 
@@ -970,7 +995,7 @@ C
             ELSE
               V = ABS(ECAR(K)*1.E-8/popadelh_DELTA(K,N))
               CALL HJENOR(popadelh_A(K,N), V, popadelh_DELTA(K,N), PHI)
-              KA(K) = PHI * popadelh_POP(K,N) * GFAL(K) * ABOND(K)
+              KA(K) = PHI * popadelh_POP(K,N) * GFAL(K) * atomgrade_ABONDS_ABO(K)
               IF(K .EQ. 1) KA(K) = PHI * popadelh_POP(K,N) * GFAL(K)
 
             END IF

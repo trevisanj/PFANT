@@ -1,5 +1,8 @@
-      MODULE ABSORU
+C Module ABSORU
+C
+C Public: only subroutine ABSORU() and variable absoru_ZNH
 
+      MODULE ABSORU
 
 
       !=====
@@ -7,6 +10,15 @@
       !=====
       REAL, DIMENSION(12) :: absoru_ZNH  ! [SAPU]
 
+
+
+      ! Down here all private
+      ! vvvvvvvvvvvvvvvvvvvvv
+
+      ! Subroutines
+      PRIVATE GAUNTH, TEMPA, SAHATH, ATHYHE, IONIPE
+
+      PRIVATE
 
       ! TODO Identify outputs and inputs
       ! TODO CHECK ALL TYPES
@@ -50,6 +62,9 @@
       REAL, DIMENSION(126) :: au_RHOG
       REAL, DIMENSION(3) :: au_AC1
       REAL, DIMENSION(30) :: au_ZNU  ! [SAPE]
+
+
+
 
 
       CONTAINS
