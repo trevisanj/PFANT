@@ -100,16 +100,15 @@ C       Flux absolu sortant a ete multiplie par 10**5
 
 
 
-      INTEGER FINPAR,FINRAI,FINAB,D,DTOT
+      INTEGER D,DTOT
       INTEGER DHM,DHP,DHMY,DHPY
-      CHARACTER FILETOH*20
+      
+      CHARACTER FILETOH*260
       
       
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
-      REAL KB,bk_KC,LAMBD,
-     1   bk_KC1,bk_KC2,bk_KCD,km_MM, ABO
-      LOGICAL GAUSS,IDENTH
+      REAL KB,LAMBD
       REAL*8 LZERO,LFIN,LLHY(10)
       REAL*8 ECART,ECARTM,L0,LF,lllhy
       DIMENSION
@@ -118,9 +117,7 @@ C       Flux absolu sortant a ete multiplie par 10**5
      8 ECARTM(PARAMETER_NMOL)
 C     fonctions de partition
 
-C ISSUE: I think this 50 should be MAX_partit_KMAX... GOtta check all these variables, what they sync with!
-      DIMENSION popul_P(3,MAX_partit_NPAR, 50)
-      DIMENSION ABO(100)  ! ISSUE: Must match dimension of abonds_ELE. Change to maxNABOND later
+
       DIMENSION TTD(par_NP), FN(par_NP)
       DIMENSION TAUH(par_NP,50),TAUHY(10,par_NP,50)
       DIMENSION DHMY(10),DHPY(10)
@@ -151,14 +148,6 @@ C  *****************************************************************
 
       CALL READ_MAIN(filename_MAIN)
 
-      !---
-      ! Variable values derived directly from information in main.dat
-      !---
-
-      ! ISSUE: Is this right, I think it has something to do with the sun, no??
-      ASASOL = 10.**main_ASALOG  ! This was in READER06, but depends directly from something read from main.dat
-      TETAEF = 5040/main_TEFF    ! This was in READER06, but depends directly from something read from main.dat
-      FSTAR  = 10**main_AFSTAR   ! ISSUE This was further below
 
       ! ISSUE: breaking rule!!! this cannot happen: change value of this global here, check what is supposed to happen instead.
       FILEFLUX1 = 'spec.'//main_FILEFLUX
@@ -166,45 +155,18 @@ C  *****************************************************************
       FILEFLUX3 = 'norm.'//main_FILEFLUX
 
 
-
-
-C                       I
-C                 INITIALISATIONS DIVERSES
-C         LECTURE ET CALCUL  DE LA FONCTION DE CONVOLUTION
-C  *****************************************************************
-
-
-
-C  ****************************************************************
-C                       II
-C           1-   LECTURE DES FCTS DE PARTITION
-C           2-   LECTURE DES DONNEES ABSORPTION CONTINUE
-C           3-   LECTURE DU MODELE
-C  ****************************************************************
-
-      ! 1) LECTURE DES FCTS DE PARTITION
-      CALL READ_PARTIT(filename_PARTIT)
-
-      ! 2) LECTURE DES DONNEES ABSORPTION CONTINUE
-      CALL READ_ABSORU2(filename_ABSORU2)
-
-
-      ! ISSUE What is this doing here?
-      A0=AMET
-
-      ! 3) LECTURE DU MODELE
-      CALL READ_MODELE(filename_MODELES)
-
-      BHE = modeles_NHE
-      AMET=A0*ASASOL
-
-
+      CALL READ_PARTIT(filename_PARTIT)  ! LECTURE DES FCTS DE PARTITION
+      CALL READ_ABSORU2(filename_ABSORU2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+      CALL READ_MODELE(filename_MODELES)  ! LECTURE DU MODELE
       CALL READ_ABONDS(config_FN_ABONDS)
-
-
       CALL READ_ATOMGRADE(config_FN_ATOMGRADE)
 
 
+
+      !---
+      ! Other stuff
+      !---
+      TETAEF = 5040/main_TEFF
 
 
 
@@ -226,23 +188,6 @@ C  *****************************************************************
 
       CALL SAT4()
 
-      DO K = 1, dissoc_NMETAL
-        DO J=1,abonds_NABOND
-          ! ISSUE: This is the thing that Beatriz mentioned that is not used anymore
-          IF(abonds_ELE(J).EQ.dissoc_ELEMS(K)) THEN
-            ! ISSUE: breaking rule: changing variable filled in READ_*() not allowed!!!
-            abonds_ABOL(J) = abonds_ABOL(J)+main_XXCOR(K)
-          END IF
-        END DO
-      END DO
-
-      DO J=1,abonds_NABOND
-        ABO(J) = 10.**(abonds_ABOL(J)-12.)
-        ABO(J) = ABO(J)*FSTAR
-      END DO
-
-
-
       OPEN(UNIT=17,FILE=FILEFLUX1,STATUS='unknown')
       OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
       OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
@@ -255,8 +200,6 @@ C     AINT =intervalle de calcul
 C     CAINT=intervalle de recouvremment des intervalles
       HINT=35.  ! demi-intervalle de calcul des raies d'hydrogene
       CINT=20.
-      IDENTH=.FALSE.
-
 
       ! ISSUE Explain what it does
       XLZERO = main_LLZERO-20.
@@ -285,10 +228,16 @@ C     CAINT=intervalle de recouvremment des intervalles
       ! =========
       DO WHILE .T. !Main loop!
 C
+
+        ! ISSUE Explain DTOT
         DTOT = (LFIN-LZERO)/main_PAS + 1.0005
-        WRITE(6, 117) LZERO, LFIN, DTOT
+        
+        !--logging--!
+        WRITE(LLL, 117) LZERO, LFIN, DTOT
+        CALL LOG_INFO(LLL)
+        
         IF(DTOT .GT. 40000) THEN
-          ! ISSUE: DOCUMENT THIS
+          ! ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
           CALL PFANT_HALT('DTOT > 40000!')
         END IF
 
@@ -302,14 +251,15 @@ C
 
         CALL BK(LAMBD,TTD,DTOT,KIK,LZERO,LFIN)
 
+        !--logging--!
         WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
-        CALL LOG_DEBUG(LLL)
+        CALL LOG_INFO(LLL)
+
 
         ! ******************************************************************
         ! LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH
         !
         ! Type *,' nom des fichiers TAU raies Hydrogene'
-
         IM = 0
         DO IH = 1,10
           ALLHY = LLHY(IH)-LZERO
@@ -321,9 +271,9 @@ C
             IHT = IH
             FILETOH = main_FILETOHY(IHT)
 
-
+            !--logging--!
             WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
-            CALL LOG_DEBUG(LLL)
+            CALL LOG_INFO(LLL)
 
             ! ISSUE Extract this from main loop. Not too hard: c_filetoh_* just need one extra dimension
             CALL READ_FILETOH(FILETOH)
@@ -333,7 +283,7 @@ C
             DHPY(IM) = c_filetoh_DHPI
             DO N = 1,modeles_NTOT
                DO D = 1,DTOT
-               TAUHY(IM, D, N) = c_filetoh_TAUHI(D,N)
+                 TAUHY(IM, D, N) = c_filetoh_TAUHI(D,N)
                END DO
             END DO
           END IF
@@ -341,6 +291,7 @@ C
 
         IMY = IM
         IF(IMY .NE. 0) THEN
+          !--logging--!
           WRITE(LLL,*) (DHMY(IM), IM=1,IMY)
           CALL LOG_DEBUG(LLL)
           WRITE(LLL,*) (DHPY(IM), IM=1,IMY)
@@ -376,9 +327,7 @@ C
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
         IF(atomgrade_NBLEND .GT. 0) THEN
-          CALL POPADELH (popadelh_CORCH,popadelh_CVdW,turbul_VT,popul_P,popadelh_POP,popadelh_A,popadelh_DELTA)
-
-
+          CALL POPADELH ()
 
           ! *************************************************************
           !                       VI
@@ -386,13 +335,19 @@ C
           !     ET CALCUL DU SPECTRE
           !  ***************************************************************
           DO K = 1,atomgrade_NBLEND
+          
+            ! IssuE check these variables, they may be misnamed
             GFAL(K) = atomgrade_GF(K)*C2*(atomgrade_LAMBDA(K)*1.E-8)**2
-            ECART(K)= atomgrade_LAMBDA(K)-LZERO+main_PAS
+            
+            ! issuE What is ECART?
+            ECART(K) = atomgrade_LAMBDA(K)-LZERO+main_PAS
           END DO
         END IF
 
-        CALL KAPMOL()
+        CALL FILTER_MOLECULAGRADE()
+        CALL USE_MOLECULAGRADE()
 
+        !--debugging--!
         WRITE(LLL, 704) km_MBLEND
         CALL LOG_DEBUG(LLL)
 
@@ -400,14 +355,12 @@ C
           ECARTM(L) = km_LMBDAM(L)-LZERO + main_PAS
         END DO
 
-        CALL SELEKFH(KIK, DTOT, GFAL, atomgrade_ABONDS_ABO, ECART, TAUH, DHM,DHP,
-     +   TTD, ECARTM)
-
+        CALL SELEKFH(KIK, DTOT, GFAL, ECART, TAUH, DHM,DHP, TTD, ECARTM)
 
         CALL WRITE_LINES_PFANT(filename_LINES_PFANT)
 
 
-        AMG = main_XXCOR(8) ! ISSUE Ithink this is just for debugging purposes
+        AMG = main_XXCOR(8)
         LI = 10./main_PAS
         I1 = LI+1
         I2 = DTOT - LI
@@ -439,15 +392,17 @@ C
         WRITE(20,1132) (FN(D),D=I1,I2)
 
 
+        !--logging--!
         WRITE(LLL,707) IKEY, LZERO, LFIN, I1, I2
-        CALL CONFIG_DEBUG(LLL)
+        CALL LOG_INFO(LLL)
 
         IKEY = IKEY+1
         IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
-        WRITE(6, 708) IKEY, IRH
-        IDENTH = .FALSE.
 
+        WRITE(LLL, 708) IKEY, IRH
+        CALL LOG_INFO(LLL)
+        
         LZERO = LZERO+main_AINT
         LFIN = LFIN+main_AINT
         IF(LFIN .GT. (main_LLFIN+20.)) LFIN = main_LLFIN+20.
@@ -457,77 +412,25 @@ C
 669   CONTINUE
       CLOSE(17)
 
-      ! ISSUE Do I need to print this?
-      IF config_VERBOSE THEN
-        WRITE(6,*) '   Flux sortant est en nu: Fnu x lambda'
-        WRITE(6,*) '   Flux absolu sortant a ete multiplie par 10**5'
-      END IF
+      !--logging--!
+      CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
+      CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
 
 
 
-C  ****************************************************************
-C                       XI
+
+C  *******************************************************************
 C           ZONE DE DEFINITION DES FORMATS
 C  *******************************************************************
-
-
-
 1130  FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
 1132  FORMAT(40000F15.5)
-100   FORMAT (3F10.3)
-101   FORMAT(2X,'FLUX CONTINU A ',F10.3,' ANGSTROM',E20.7/)
 501   FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,/
      1 2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
-102   FORMAT(2X,'INTENSITE CONTINUE A ',F10.3,' ANGSTROM  ET MU=',
-     1  F4.1,3X,E20.7/)
-104   FORMAT('    INITIALE =',F6.3,' Angstrom')
-105   FORMAT(I1,A2,F6.3)
-106   FORMAT(' Pas du calcul=',F6.3)
-107   FORMAT(' Decalage mesure a l''ecran =',f6.2,' A')
-110   FORMAT(1H1)
-160   FORMAT(4(4X,F8.2,E14.7))
-114   FORMAT(4 (4X,F8.2,F8.3))
-155   FORMAT(12F6.3)
-115   FORMAT(1H )
-116   FORMAT(10X,'CONVOLUTION PAR UN PROFIL INSTRUMENTAL')
 117   FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
-121   FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,
-     1 F7.1)
-123   FORMAT(10X,'    FLUX EN CHAQUE POINT' )
-124   FORMAT(10X,'  PROFIL APRES CONVOLUTION')
-127   FORMAT(20A4)
-128   FORMAT(1H1,20X,20A4)
-130   FORMAT('     PAS=',F8.3,5X,'NBRE TOT DE PTS A CALCULER=',I10,
-     1 /'   ON N A PAS LE DROIT DE CALCULER PLUS DE  PTS')
-133   FORMAT('   TO=',F7.3,10X,'V=',F7.3,'Km/s')
-135   FORMAT(5(I4,F7.3,F5.2))
-136   FORMAT(5X,A2,I1,F10.3,F10.2)
-142   FORMAT(5X,A2,F8.2)
-300   format(1x,'NPAR=', I4)
-700   FORMAT(1X,'Lambda H -LZERO',F10.4)
-701   FORMAT(1X,'IHH(IKEY)=',I5)
-702   FORMAT(1X,'IRH=',I5)
-703   FORMAT(1X,'DHM=',I5,2X,'DHP=',I5)
 704   FORMAT(1X,'MBLEND=',I10)
-705   FORMAT(1X,'I1=',I10,2X,'I2=',I10,2X,'IKEY=',I5)
-706   FORMAT(1X,'ILZERO=',I8,2X,'TTD(I1)=',F10.5,2X,'TTD(I2)=',F10.5)
 707   FORMAT(1X,'IKEY=',I10,2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,
      1 2X,'I1=',I7,2X,'I2=',I7)
-708   FORMAT(1X,'IKEY=',I10,2X,'IRH=',I6)
-709   FORMAT(1x,'IMY=',I3)
-710   FORMAT(1X,A,2X,'IH=',I5)
-711   FORMAT(/,2X,'LLZERO=',F10.5,2X,'LLFIN=',F10.5,2X,'AINT=',F8.3,/)
 712   FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
-1500  FORMAT(A20)
-1501  FORMAT(2X,'LAMBD milieu intevalle=',F8.2,2X,'FC=',E15.7)
-1502  FORMAT(2X,'LDNOR =',F8.2,2X,'FMOYEN=',E15.7)
-1503  FORMAT(2X,'RLAMBD=',F8.2,2x,'RLAMBF=',F8.2,2x,'FLNOR=',E15.7)
-1560    FORMAT(A)
-1570    FORMAT(1X,A)
-1511  format(8(1x,a2))
-5550  FORMAT(2F10.3,I5,F8.3,E20.7)
-5551  FORMAT(1X,5A4,F8.3,4X,F7.2,4X,F7.2,4X,F5.2)
-5555  FORMAT(2F10.3,2I5,F8.3,E20.7)
       END
 C--- END MAIN ------------------------------------------------------------------
 C--- END MAIN ------------------------------------------------------------------
@@ -610,7 +513,7 @@ C ISSUE WHAT
       END IF
 
       RETURN
-100   FORMAT(I5)
+
 101   FORMAT(10F8.3)
 102   FORMAT(3(I5,2F8.3,5X))
 131   FORMAT(/' V MICRO CONSTANTE  =',F6.1,'KM/S'/)
@@ -853,7 +756,6 @@ C NOXIG: ISSUE what does it mean?
         END DO
       END DO
 C
- 100  FORMAT(' GamH AU 1Oeme Niv du modele:', E15.3)
  101  FORMAT(' GamH au 10eme Niv du modele:', E15.3,'  Spielfieldel')
  104  FORMAT('     MANQUE LES FCTS DE PARTITION DU ',A2)
  125  FORMAT(3X ,' POUR',F9.3,'   ON CALCULE CH ',
@@ -1284,7 +1186,6 @@ C
 10    CONTINUE
       RETURN
 
-135   FORMAT(5(I4,F7.3,F5.2))
 151   FORMAT(' bk_KC1(1)=',E14.7,2X,'bk_KC1(NTOT)=',E14.7,/' bk_B1(0)=',E14.7,
      1 2X,'bk_B1(1)=',E14.7,2X,'bk_B1(NTOT)=',E14.7,/' FC1=',E14.7)
 152   FORMAT(' bk_KC2(1)=',E14.7,2X,'bk_KC2(NTOT)=',E14.7,/' bk_B2(0)=',E14.7,

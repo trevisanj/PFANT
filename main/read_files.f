@@ -1,4 +1,4 @@
-      MODULE READ_FILES
+f      MODULE READ_FILES
       IMPLICIT NONE
 
 
@@ -60,7 +60,7 @@ C Variables filled by READ_MAIN() (file main.dat)
       DIMENSION main_FILETOHY(10)
       DIMENSION main_TITRAV(20)
       REAL, DIMENSION(MAX_modeles_NTOT) :: main_VVT, main_TOLV
-      REAL, DIMENSION(MAX_dissoc_NMETAL) :: main_XXCOR
+      REAL, DIMENSION(MAX_dissoc_NMETAL) :: main_XXCOR   ! This vector goes along with dissoc_ELEMS and dissoc_NELEMX
 
 
 C Variables filled by READ_ABONDS() (file abonds.dat)
@@ -69,8 +69,8 @@ C Variables filled by READ_ABONDS() (file abonds.dat)
       CHARACTER*2 abonds_ELE
       REAL abonds_ABOL
       DIMENSION abonds_ELE(MAX_abonds_NABOND),
-     1          abonds_ABOL(MAX_abonds_NABOND)
-
+     +          abonds_ABOL(MAX_abonds_NABOND),
+     +          abonds_ABO(MAX_abonds_NABOND)   ! This is calculated
 
 
 
@@ -206,7 +206,13 @@ C ----------------------------------------------------
 
 
 
-      LOGICAL, PRIVATE :: FLAG_READ_ABONDS /.FALSE./  ! Set to .TRUE. at the end of READ_ABONDS()
+      ! Flags indicating whether corresponding routine has already been called.
+      ! There is a strict order in which files must be read, because there are
+      ! consistency checks and inner joins being percormed while reading files.
+      ! At the moment, this order is reinforces: DISSOC -> MAIN -> ABONDS -> ATOMGRADE
+      LOGICAL, PRIVATE :: FLAG_READ_ABONDS /.FALSE./,
+                          FLAG_READ_MAIN   /.FALSE./,
+                          FLAG_READ_DISSOC /.FALSE./
 
 
 
@@ -234,6 +240,12 @@ C
       PARAMETER(UNIT_=4)
       CHARACTER(LEN=*) :: filename
       INTEGER IH, I
+
+      IF (.NOT. FLAG_READ_DISSOC)
+        CALL PFANT_HALT('READ_DISSOC() must be called '
+     +   //'before READ_MAIN()')
+      END IF
+
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -298,7 +310,9 @@ C line 07 -- XXCOR(I)
 C =======
 C ISSUE: Should be a column in dissoc.dat !!!!!
 C (MT) I agree
-C ISSUE: Is this actually used?
+
+
+      ! Feature "XXCOR" -- 
       READ(UNIT_, *)(main_XXCOR(I), I=1, dissoc_NMETAL)
 
 
@@ -343,9 +357,9 @@ C          thalpha
 
 
       CLOSE(UNIT=UNIT_)
-
-      RETURN
+      FLAG_READ_MAIN = .TRUE.
       END
+
 
 
 
@@ -467,9 +481,8 @@ C ISSUE: THere is no 1X
       END IF
 
 
-      ! TODO not tested, this
-      FLAG_FOUND = .FALSE.
       DO M = 1, 4
+        FLAG_FOUND = .FALSE.
         DO I = 1, dissoc_NMETAL
           IF (NELEMM(M) .EQ. dissoc_NELEMX(I)) THEN
             FLAG_FOUND = .TRUE.
@@ -512,17 +525,16 @@ C ISSUE: THere is no 1X
  1014 dissoc_NMOL = J-1
 
       CLOSE(UNIT=UNIT_)
-
-      RETURN
+      FLAG_READ_DISSOC = .TRUE.
       END
 
-
+ 
 
 
 C================================================================================================================================
 C READ_ABONDS(): reads file abonds.dat to fill variables abonds_*
 C
-C Original UNIT: 30
+C In addition, searches elements in dissoc atoms table to take XXCOR values.
 C
 C The input file has 3 columns:
 C   1) Empty space or "1"
@@ -537,11 +549,12 @@ C PROPOSE: use READ()'s "END=" option
 
       SUBROUTINE READ_ABONDS(filename)
       IMPLICIT NONE
-      INTEGER UNIT_
-      INTEGER FINAB
+      INTEGER UNIT_, FINAB, K, J
       PARAMETER(UNIT_=199)
       CHARACTER(LEN=*) :: filename
-      INTEGER J
+      LOGICAL FLAG_FOUND
+
+    assert red_dissoc
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
@@ -549,15 +562,44 @@ C PROPOSE: use READ()'s "END=" option
       FINAB = 0
       DO WHILE (FINAB .LT. 1)
         READ(UNIT_, '(I1,A2,F6.3)') FINAB, abonds_ELE(J), abonds_ABOL(J)
+        
+        IF (FINAB .LT. 1) THEN
+          ! Extra tasks (i.e., apart from reading file) [1], [2]:
+          !
+          ! [1] Searches dissoc.dat' metals table by atomic symbol to get value of XXCOR variable
+          ! ISSUE: lot of effort to keep dubious feature
+          ! ISSUE: This is the thing that Beatriz mentioned that is not used anymore
+          
+          FLAG_FOUND = .FALSE.
+          DO K = 1, dissoc_NMETAL
+            IF(abonds_ELE(J) .EQ. dissoc_ELEMS(K)) THEN
+              FLAG_FOUND = .TRUE.
+              EXIT
+            END IF
+          END DO
+          
+          IF (.NOT. FLAG_FOUND) THEN
+            WRITE(S,*) 'READ_ABONDS() element "', abonds_ELE(J),
+     +       '" is not in dissoc atoms list!'
+            CALL PFANT_HALT(S)
+          END IF
+          
+          abonds_ABOL(J) = abonds_ABOL(J)+main_XXCOR(K)
+
+          
+          ! [2] Calculates abonds_ABO based on abonds_ABOL
+          
+          ! ISSUE Why "-12" ??
+          abonds_ABO(J) = 10.**(abonds_ABOL(J)-12.)
+          abonds_ABO(J) = ABO(J)*fstar
+        END IF
+        
         J = J+1
       END DO
       abonds_NABOND = J-2
 
       CLOSE(UNIT=UNIT_)
-
       FLAG_READ_ABONDS = .TRUE.
-
-      RETURN
       END
 
 
@@ -648,12 +690,16 @@ C orig *******************************************************************
 
     
       ! Searches atomgrade's element within abonds' elements and copies corresponding
-      ! abonds_ABO value into atomgrade_ABONDS_ABOND. Halts program if element not found.
+      ! abonds_ABO value into atomgrade_ABONDS_ABO. Halts program if element not found.
       ! This is a "inner join" (SQL terminology)!
       ! Historical note: this corresponds to old routine "ABONDRAIH". The search was being carried out
       !   every time (LZERO, LFIN) changed and only for the filtered atomgrade rows. I decided to 
-      !   perform this search for all atomgrade rows and then filter atomgrade_ABONDS_ABOND together 
+      !   perform this search for all atomgrade rows and then filter atomgrade_ABONDS_ABO together 
       !   with other variables in FILTER_ATOMGRADE(), which is probably cheaper.
+      
+      
+      ! ISSUE Why name was "ABONDRAIH"?? Did it mean "abundances of hydrogen lines"? I ask this because if it has really a physical meaning, I shouldn't bury this inside read_files.f
+      
       FLAG_FOUND = .FALSE.
       DO  J = 1, abonds_NABOND
         IF (abonds_ELE(J) .EQ. atomgrade__ELEM(K)) THEN
@@ -665,13 +711,13 @@ C orig *******************************************************************
         WRITE(LLL,*)  'MANQUE L ABONDANCE DU ', atomgrade__ELEM(K)
         CALL PFANT_HALT(LLL)
       END
-      atomgrade__ABONDS_ABOND(K) = abonds_ABO(J)
+      atomgrade__ABONDS_ABO(K) = abonds_ABO(J)
 
       GO TO 9
 
 10    atomgrade__NBLEND = K
 
-! MENTION: last atomic line wasn't being used and has been fixed. Original code:
+! MENTION: last atomic line wasn't being used!! (this has been fixed/changed). Original code:
 !~	K=1
 !~9	READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
 !~	READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),

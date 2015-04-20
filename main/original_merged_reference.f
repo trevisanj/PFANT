@@ -2713,7 +2713,7 @@ C	***
 	DIMENSION TINI(85),PA(85),JKMAX(85),TABU(85,3,63),
 	1 KI1(85),KI2(85),U(3),ALISTU(63),P(3,85,50),TETA(50),
 	2 PE(50),UE(50),TT(51)
-c		40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
+c		40 elements, 50 niv`eaux de modele, 3 niv d'ionisation par elem.
 c		partit donnee pour 33 temperatures au plus ds la table.
 	REAL KB,KI1,KI2
 	KB=1.38046E-16
