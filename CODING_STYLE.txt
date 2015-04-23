@@ -14,7 +14,15 @@ Format
     to 72 columns.
   - Indents at continuation lines: no fixed rule; as a suggestion, put at
     least one space between the continuation character and the continuation
-    line.
+    line. 
+    Suggestion: continue with a 1-space indentation from the beginning line, 
+                i.e.:
+    
+            WRITE (*,*) 'A equals ', A, '; B equals ', B, '; C equals ',
+     +       C, 'D equals ', D            
+             ^1-space indentation after beginning line
+     ^6th column
+     
   
   Number of columns
   -----------------
@@ -46,15 +54,14 @@ process double precision values than they do to process reals." [1]
 Programming
 ===========
 
-  Verbose
+  Logging (i.e., printing things on the screen)
   -------
-  Verbose is controlled by config_ALLOW_VERBOSE AND local VERBOSE (logical) variables. To switch on/off verbosing of a particular routine, do as follows:
-  
-  SUBROUTINE BID()
-  USE CONFIG
-  LOGICAL VERBOSE
-  VERBOSE = .TRUE.  .AND. config_ALLOW_VERBOSE ! Turns local verbose on
-  VERBOSE = .FALSE. .AND. config_ALLOW_VERBOSE ! Turns local verbose off
-  
-  
-  Having these bits of verbosing code intercalated with "real" code does hinder the code reading/interpretation, so it is better to use as little verbosing code as possible.
+  For outputting messages on the screen, use the routines in the LOGGING
+  module (not just WRITE or PRINT). This may give a bit more work
+  (may require one extra line of code if the string is formatted), but
+  there are good reasons. for that.
+  There are different routines to be used, such as
+  LOG_CRITICAL(), LOG_ERROR(), LOG_WARNING(), LOG_INFO(), LOG_DEBUG(), and
+  logging can be silenced and/or sent to specific logging file using
+  command-line config options.
+

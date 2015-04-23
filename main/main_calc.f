@@ -1,4 +1,4 @@
-C TODO Explain that each [subroutine] module declared the variables that it calculates
+C TODO Explain that each [subroutine] module declares the variables that it calculates
 C TODO module dependence map
 
 c ======================================================================
@@ -1198,3 +1198,4 @@ C
 
 
       END MODULE BK
+      
