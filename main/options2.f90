@@ -1,5 +1,9 @@
-! @author
-! probably Mark Gates
+!> Command-line parser.
+!>
+!> I took the original from the Fortran wiki:
+!> http://fortranwiki.org/fortran/show/Command-line+arguments
+!>
+!> T
 
 module options
   implicit none
