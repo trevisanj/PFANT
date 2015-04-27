@@ -5,16 +5,16 @@
 !>
 !> T
 
-module options
+module options2
   implicit none
 
   type option
     !> Long name.
     character(len=100) :: name
-    !> Does the option require an argument?
-    logical :: has_arg
     !> Corresponding short name.
     character :: chr
+    !> Does the option require an argument?
+    logical :: has_arg
     !> Description.
     character(len=500) :: descr
     !> Argument name, if required.
@@ -45,7 +45,7 @@ contains
   !>   ! things changed
   !> end do
   !> \endcode
-  subroutine getopt (options, chr, name, arg, arglen, stat, &
+  subroutine getopt (options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
 
@@ -55,12 +55,8 @@ contains
     !> checked.
     type(option), intent(in) :: options(:)
 
-    !> Contains the short name of the option that was parsed.
-    character, intent(out) :: chr
-
-    !> If stat is not 1, chr contains the option character that was parsed.
-    !> Otherwise its value is undefined.
-    character(len=*), intent(out) :: name
+    !> If stat is 0, contains the id (index) of the option that was parsed.
+    integer, intent(out) :: optindex
 
     !> If the parsed option requires an argument, arg contains
     !> the first len(arg) (but at most 500) characters of that argument.
@@ -99,7 +95,7 @@ contains
     integer, intent(out), optional :: remain
 
     integer, save :: pos = 1, cnt = 0
-    character(len=64), save :: arg0  ! used for option name
+    character(len=100), save :: arg0  ! used for option name
     character(len=512), save :: arg1  ! used for option argument
 
     integer :: length, st, id
@@ -190,11 +186,10 @@ contains
     10 continue
 
     offset = pos
+    stat   = st
     if (stat == 0) then
-      chr    = options(id)%chr
-      name   = options(id)%name
-      stat   = st
-      remain = cnt-pos
+      optindex = id
+      remain   = cnt-pos
       if (options(id)%has_arg) then
         arg = arg1
         arglen = length
@@ -211,10 +206,16 @@ contains
       character(len=*), intent(in) :: name
       integer :: i
 
+      write(*,*) '>>>>> looking up @', name, '@'
+
       do i = 1, size(options)
+        write(*,*) '>>>>> checking if @', options(i)%name, '@'
         if (name == options(i)%name) then
+          write (*,*) '>>>>> IT IS'
           lookup_long = i
           return
+        else
+          write (*,*) '>>>>> IT IS NOT'
         end if
       end do
       ! if we get to this point, the option was not found
@@ -295,6 +296,57 @@ contains
     write(error_unit, *) lll
     stop
   end subroutine
+
+
+  !================================================================================================================================
+
+  !> Converts string to integer with error logging
+  !
+  integer function parseint(opt, s)
+    !> Option, will be used only in case of error
+    type(option), intent(in) :: opt
+
+    !> If the parsed option requires an argument, arg contains
+    !> the first len(arg) (but at most 500) characters of that argument.
+    !> Otherwise its value is undefined. If the arguments length exceeds 500
+    !> characters and err is .true., a warning is issued.
+    character(len=*), intent(in) :: s
+
+
+    character*128 lll
+
+    read(s, *, err=20) parseint
+    go to 30
+
+    20 write(lll, *) 'Error parsing option ', get_option_name(opt), &
+     ': invalid integer argument: ''', trim(s), ''''
+    call give_error(lll)
+
+    30 continue
+  end
+
+
+  !> Returns option name with single quotes.
+  !>
+  function get_option_name(opt) result(res)
+    character(len=:), allocatable :: res
+    !> Option, will be used only in case of error
+    type(option), intent(in) :: opt
+
+    if (len(opt%chr) > 0) then
+      if (len(opt%name) > 0) then
+        res = '''-' // opt%chr // '''/''--' // trim(opt%name) // ''''
+        write(*,*) '11111111111111111111' // '''-' // opt%chr // '''/''--' // trim(opt%name) // ''''
+      else
+        res = '''-' // opt%chr // ''''
+      end if
+    else
+      res = '''-' // trim(opt%name) // ''''
+    end if
+
+    write (*,*) 'G#E#T#O#P#T#I#O#N#N#A#M#E #', res, '#'
+  end
+
 
 end module
 
