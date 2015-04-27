@@ -30,13 +30,13 @@ C - All globals have prefix "config_"
       !=====
       ! Misc
       !=====
-      
-      
+
+
       ! Interpolation type of turbul_VT
       ! 1 -- linear
       ! 2 -- parabolic
-      INTEGER config_INTERP = 1  ! TODO not sure if I can initialize thus
-      
+      INTEGER config_INTERP /1/
+
 
 
 
@@ -44,7 +44,9 @@ C - All globals have prefix "config_"
       !=====
       ! Private variables
       !=====
-      LOGICAL, PRIVATE :: FLAG_SETUP /.FALSE./
+      LOGICAL, PRIVATE :: FLAG_SETUP = .FALSE.
+
+      PRIVATE STR2INT
 
       CONTAINS
 
@@ -59,21 +61,24 @@ C Must be called at system startup
 C
       SUBROUTINE CONFIG_SETUP()
       USE LOGGING
+      USE argparser
       IMPLICIT NONE
 
       ! TODO parse command-line here
 
+      CALL parseargs()
 
-      ! Validation of config_INTERP
-      SELECT CASE (config_INTERP)
-        CASE (1, 2)
-        CASE DEFAULT
-          WRITE (*,*) 'Invalid INTERP: ', INTERP, ' (valid: 1/2)',
-     +     config_INTERP
-      END SELECT
-      
+
+* not needed, validated upon parsing      ! Validation of config_INTERP
+*      SELECT CASE (config_INTERP)
+*        CASE (1, 2)
+*        CASE DEFAULT
+*          WRITE (*,*) 'Invalid INTERP: ', INTERP, ' (valid: 1/2)',
+*     +     config_INTERP
+*      END SELECT
+
       logging_LEVEL = config_logging_LEVEL  ! sets logging level at LOGGING module based on config variable
-          
+
 
       CALL MAKE_MOLIDS()
       FLAG_SETUP = .TRUE.
@@ -88,7 +93,7 @@ C
 C Molecule ID is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within PFANT.
 C
       FUNCTION GET_MOLID(I_MOL)
-      USE ERRORS
+!      USE ERRORS
       IMPLICIT NONE
       INTEGER I_MOL, GET_MOLID
       CHARACTER*128 S  !--logging--!
@@ -112,7 +117,7 @@ C===============================================================================
 C MOLECULE_IS_ON(): returns .TRUE. or .FALSE. whether molecule represented by MOLID is "on" or "off"
 
       FUNCTION MOLECULE_IS_ON(MOLID)
-      USE ERRORS
+!      USE ERRORS
       IMPLICIT NONE
       INTEGER MOLID, J
       LOGICAL MOLECULE_IS_ON
@@ -158,7 +163,12 @@ C
       END
 
 
+
+
+
       END MODULE CONFIG
+
+
 
 
 
