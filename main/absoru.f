@@ -1,9 +1,7 @@
-C Module ABSORU
-C
-C Public: only subroutine ABSORU() and variable absoru_ZNH
-
+C> Module ABSORU
+C>
+C> Public: only subroutine ABSORU() and variable absoru_ZNH
       MODULE ABSORU
-
 
       !=====
       ! Outputs
@@ -69,15 +67,15 @@ C Public: only subroutine ABSORU() and variable absoru_ZNH
 
       CONTAINS
 
-C-------------------------------------------------------------------------------
-C Calculates the "continuum absorption"
-C
-C Note1: 1/3 things that need to be changed to include scattering (other software
-C       e.g. Upsalla already have this)
-C
-C Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
-C        So, one idea is to include opacity model tables (Upsalla; MARCS model).
-C
+C>-------------------------------------------------------------------------------
+C> Calculates the "continuum absorption"
+C>
+C> Note1: 1/3 things that need to be changed to include scattering (other software
+C>       e.g. Upsalla already have this)
+C>
+C> Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
+C>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
+C>
       SUBROUTINE ABSORU(WL,TH,ZLPE,CALLAM,CALTH,CALPE,CALMET,CALU,CALSO
      1                  R,KKK,TOTKAP)
       INTEGER*4 CALU,CALMET,CALLAM,CALTH,CALPE,PMAX,CALSOR
@@ -89,10 +87,10 @@ C
       ILT = CALLAM
       IF (CALPE .EQ. 2) GO TO 9003
 
-C
-C     au_AVM=MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
-C     SUM1=SOMME DES ABONDANCES DES METAUX
-C
+C>
+C>     au_AVM=MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
+C>     SUM1=SOMME DES ABONDANCES DES METAUX
+C>
       SUM1 = 0.0
       SUM2 = 0.0
       DO 4100 I=1,absoru2_NM
@@ -100,9 +98,9 @@ C
 4100    SUM2 = SUM2+absoru2_ZP(I)*absoru2_ZM(I)
       au_AVM = SUM2/SUM1
 
-C
-C     au_ZNU1,au_ZNU2,au_ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
-C
+C>
+C>     au_ZNU1,au_ZNU2,au_ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
+C>
       DO 4110 I = 1,absoru2_NM
 4110    au_ZNU(I) = absoru2_ZP(I)/SUM1
 
@@ -224,15 +222,15 @@ C         LES absoru_ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
 
 
 
-C-------------------------------------------------------------------------------
-C
-C Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
-C (i.e., a statistical weight)
-C
-C Reference: J.A.Gaunth 1930.
-C
-C A.M COLLE   19/8/69
-C
+C>-------------------------------------------------------------------------------
+C>
+C> Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
+C> (i.e., a statistical weight)
+C>
+C> Reference: J.A.Gaunth 1930.
+C>
+C> A.M COLLE   19/8/69
+C>
       SUBROUTINE GAUNTH (WL)
 
 C
@@ -364,18 +362,18 @@ C
 
 
 C-------------------------------------------------------------------------------
-C
-C     A.M COLLE   8/5/69
-C
-C     HCBKTM=(H*C/K*T)*1.0E8
-C     0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
-C     0.0043890867=CONSTANTE DE RYDBERG POUR HE+*1.0E-8  MOORE 1950 (HE4
-C     au_AHE =POUR HE 4*C/T**3
-C     au_AH  =POUR H   C*Z**4/T**3  AVEC Z=1
-C     au_AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
-C     C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
-C     ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
-C
+C>
+C>     A.M COLLE   8/5/69
+C>
+C>     HCBKTM=(H*C/K*T)*1.0E8
+C>     0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
+C>     0.0043890867=CONSTANTE DE RYDBERG POUR HE+*1.0E-8  MOORE 1950 (HE4
+C>     au_AHE =POUR HE 4*C/T**3
+C>     au_AH  =POUR H   C*Z**4/T**3  AVEC Z=1
+C>     au_AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
+C>     C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
+C>     ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
+C>
       SUBROUTINE TEMPA(WL,TH,CALTH,CALLAM)
       INTEGER*4 CALLAM,CALTH
 
@@ -433,17 +431,17 @@ C
 
 C-------------------------------------------------------------------------------
 C
-C SAHA's equation: ionization equilibrium: relative number of atoms in each
-C ionization state
-C
-C LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
-C LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
-C CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
-C 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
-C POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
-C
-C     A.M COLLE   13/5/69
-C
+C> SAHA's equation: ionization equilibrium: relative number of atoms in each
+C> ionization state
+C>
+C> LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
+C> LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
+C> CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
+C> 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
+C> POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
+C>
+C>     A.M COLLE   13/5/69
+C>
       SUBROUTINE SAHATH(TH)
       DIMENSION POTION(6),C1(3),C2(3),C3(3),C4(3)
 
@@ -600,14 +598,14 @@ C
 
 
 
-C-------------------------------------------------------------------------------
-C ATHYHE():
-C CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
-C L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
-C DISCONTINUITE DE L'UN DE CES ABSORBANTS
-C
-C A.M COLLE  07/12/1970
-C
+C>-------------------------------------------------------------------------------
+C> ATHYHE():
+C> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
+C> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
+C> DISCONTINUITE DE L'UN DE CES ABSORBANTS
+C>
+C> A.M COLLE  07/12/1970
+C>
       SUBROUTINE ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
 
       INTEGER*4 CALLAM,CALTH
@@ -951,25 +949,25 @@ C
 
 
 C-------------------------------------------------------------------------------
-C Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
-C
-C     SSP CALCULANT LES QUANTITES SUIVANTES
-C     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
-C     au_PG    =PRESSION TOTALE EN DYNES/CM2
-C     au_ZMU   =POIDS MOLECULAIRE MOYEN
-C     au_RHO   =DENSITE (G-CM-3)
-C     au_TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
-C     au_AC    =DEGRE D'IONISATION MOYEN
-C     au_AC1(1)=  ''        ''     DE H
-C     au_AC1(2)=  ''        ''     DE HE+
-C     au_AC1(3)=  ''        ''     DE HE
-C     au_AC2   =  ''        ''     DES METAUX
-C     PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
-C     absoru_ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
-C     VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
-C
-C A.M COLLE  18/01/1971
-C
+C> Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
+C>
+C>     SSP CALCULANT LES QUANTITES SUIVANTES
+C>     PARTH =NBRE TOTAL DE NOYAUX PAR CM3
+C>     au_PG    =PRESSION TOTALE EN DYNES/CM2
+C>     au_ZMU   =POIDS MOLECULAIRE MOYEN
+C>     au_RHO   =DENSITE (G-CM-3)
+C>     au_TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
+C>     au_AC    =DEGRE D'IONISATION MOYEN
+C>     au_AC1(1)=  ''        ''     DE H
+C>     au_AC1(2)=  ''        ''     DE HE+
+C>     au_AC1(3)=  ''        ''     DE HE
+C>     au_AC2   =  ''        ''     DES METAUX
+C>     PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
+C>     absoru_ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+C>     VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
+C>
+C> A.M COLLE  18/01/1971
+C>
       SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
       INTEGER*4 CALTH,CALMET
       REAL KTH

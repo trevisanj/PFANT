@@ -1,104 +1,173 @@
-C TODO Explain that each [subroutine] module declares the variables that it calculates
-C TODO module dependence map
+! TODO Explain that each [subroutine] module declares the variables that it calculates
+! TODO module dependence map
+!
+! ======================================================================
+!
+!     >> pfantgrade.f << NOV 2003
+!
+!     este codigo eh uma uniao do codigo pfant03.f e do
+!     pfant01h.f feita pela Paula Coelho e Jorge Melendez. O
+!     codigo pfant03.f calculava apenas 4 linhas de hidrogenio enquanto
+!     que pfant01.h (MNoel) calculava 10 linhas.
+!     Esta relatado a seguir as modificacoes feitas ao pfant03.f
+!     para chegar ao presente codigo.
+!
+!     Passos realizados (nov/2003):
+!     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
+!
+!     2) troquei nome do arquivo de atomos para 'atomgrade.dat' e o de
+!     moleculas para 'moleculagrade.dat'
+!
+!     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e
+!     psatox95t.f e retirei as rotinas que eram obsoletas e nao eram
+!     mais utilizadas (rotinas RETIRADAS => pcalr98bht.f: cafconvh,
+!     voluteh / pncalr98.f: bkf, ediga, equiv, flin2, flin2b, inait,
+!     inaitb, largq, popul2, quid, selekf, trangx, step, stepb,
+!     volute, naitk3, gam, xxsol.
+!
+!     4) juntei os arquivos limpos conforme item anterior pabsor.f,
+!     pcalr98bht.f, pfant03.f, pncalr98.f psatox95t.f em um
+!     UNICO FONTE PFANTGRADE.F. Dessa forma, apenas o pkapgeralgrade.f
+!     continua sendo um arquivo externo, devido a sua atualizacao ser
+!     SEMPRE paralela com alteracoes no arquivo de moleculas.
+!
+!     Portanto, a nova forma de compilar o programa eh
+!     f90 -o pfantgrade pfantgrade.f pkapgeralgrade.f
+!
+!     5) Aumentei o tamanho maximo do espectro total possivel de
+!     ser calculado de 10000A para 20000A.
+!
+!     6) AQUI COMECAM AS ALTERACOES DEVIDO AO CALCULO DAS LINHAS DE H
+!
+!     a. linhas de codigo foram comentadas (identificadas com 'cp Nov03':
+!     (comentario da Paula em Nov03).
+!
+!     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
+!     atualizadas
+!
+!     c. incluidos c_filetoh_TAUHI(par_NP,50),TAUHY(10,par_NP,50) e excluido IHH(500)
+!
+!     d. todo o codigo que se referia ao calculo das linha de H foram
+!     ocultados, e o codigo a isto referente que estava em pfant01.h
+!     foi acrescentado (correspondo ao codigo na secao
+!     LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH ).
+!
+!     e. segundo as instrucoes enviadas pela Marie Noel em 2001:
+!     - na rotina FTLIN3H foi incluida a linha
+!     'if (ftt(itot).ne.0.0) k2=itot'
+!     - DTOT foi substituido por par_NP nas dimensoes das matrizes
+!           BK : TTD(par_NP), bk_KCD(par_NP,5)
+!        LECTAUH : TTD(par_NP)
+!        SELEKFH : TTD(par_NP), bk_KCD(par_NP, 50), selekfh_FL(par_NP), TAUH(par_NP,50)`
+!
+!
+!     Tambem reduzi o numero de comentario que vao para a tela
+!     'write(6...)' := cpc
+!
+! ========================================================================
+!
+!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(par_NP) e o
+!     espectro normalizado FN(par_NP) {Paula, dez 2003}
+!
+!     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
+!     - abro mais dois arquivos binarios unit=19 (continuo) e 20 (normalizado)
+!     - rotina SELEKFH:
+!           - recebe tbem selekfh_FCONT e FN
+!           - selekfh_FCONT eh calculado passando p/ a rotina FLIN1 apenas o
+!           coeficiente de absorcao do continuo
+!     - FN = selekfh_FL / selekfh_FCONT
+!     - escrevo nos devidos arquivos
+!
+!     Portanto, para diferenciar os arquivos binarios criados,
+!     alem do arquivo normal criado como 'spe.' + nome no main.dat
+!     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
 
-c ======================================================================
-c
-c     >> pfantgrade.f << NOV 2003
-c
-c     este codigo eh uma uniao do codigo pfant03.f e do
-c     pfant01h.f feita pela Paula Coelho e Jorge Melendez. O
-c     codigo pfant03.f calculava apenas 4 linhas de hidrogenio enquanto
-c     que pfant01.h (MNoel) calculava 10 linhas.
-c     Esta relatado a seguir as modificacoes feitas ao pfant03.f
-c     para chegar ao presente codigo.
-c
-c     Passos realizados (nov/2003):
-c     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
-c
-c     2) troquei nome do arquivo de atomos para 'atomgrade.dat' e o de
-c     moleculas para 'moleculagrade.dat'
-c
-c     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e
-c     psatox95t.f e retirei as rotinas que eram obsoletas e nao eram
-c     mais utilizadas (rotinas RETIRADAS => pcalr98bht.f: cafconvh,
-c     voluteh / pncalr98.f: bkf, ediga, equiv, flin2, flin2b, inait,
-c     inaitb, largq, popul2, quid, selekf, trangx, step, stepb,
-c     volute, naitk3, gam, xxsol.
-c
-c     4) juntei os arquivos limpos conforme item anterior pabsor.f,
-c     pcalr98bht.f, pfant03.f, pncalr98.f psatox95t.f em um
-c     UNICO FONTE PFANTGRADE.F. Dessa forma, apenas o pkapgeralgrade.f
-c     continua sendo um arquivo externo, devido a sua atualizacao ser
-c     SEMPRE paralela com alteracoes no arquivo de moleculas.
-c
-c     Portanto, a nova forma de compilar o programa eh
-c     f90 -o pfantgrade pfantgrade.f pkapgeralgrade.f
-c
-c     5) Aumentei o tamanho maximo do espectro total possivel de
-c     ser calculado de 10000A para 20000A.
-c
-c     6) AQUI COMECAM AS ALTERACOES DEVIDO AO CALCULO DAS LINHAS DE H
-c
-c     a. linhas de codigo foram comentadas (identificadas com 'cp Nov03':
-c     (comentario da Paula em Nov03).
-c
-c     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
-c     atualizadas
-c
-c     c. incluidos c_filetoh_TAUHI(par_NP,50),TAUHY(10,par_NP,50) e excluido IHH(500)
-c
-c     d. todo o codigo que se referia ao calculo das linha de H foram
-c     ocultados, e o codigo a isto referente que estava em pfant01.h
-c     foi acrescentado (correspondo ao codigo na secao
-c     LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH ).
-c
-c     e. segundo as instrucoes enviadas pela Marie Noel em 2001:
-c     - na rotina FTLIN3H foi incluida a linha
-c     'if (ftt(itot).ne.0.0) k2=itot'
-c     - DTOT foi substituido por par_NP nas dimensoes das matrizes
-c           BK : TTD(par_NP), bk_KCD(par_NP,5)
-c        LECTAUH : TTD(par_NP)
-c        SELEKFH : TTD(par_NP), bk_KCD(par_NP, 50), selekfh_FL(par_NP), TAUH(par_NP,50)`
-c
-c
-c     Tambem reduzi o numero de comentario que vao para a tela
-c     'write(6...)' := cpc
-c
-c ========================================================================
-c
-c     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(par_NP) e o
-c     espectro normalizado FN(par_NP) {Paula, dez 2003}
-c
-c     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
-c     - abro mais dois arquivos binarios unit=19 (continuo) e 20 (normalizado)
-c     - rotina SELEKFH:
-c           - recebe tbem selekfh_FCONT e FN
-c           - selekfh_FCONT eh calculado passando p/ a rotina FLIN1 apenas o
-c           coeficiente de absorcao do continuo
-c     - FN = selekfh_FL / selekfh_FCONT
-c     - escrevo nos devidos arquivos
-c
-c     Portanto, para diferenciar os arquivos binarios criados,
-c     alem do arquivo normal criado como 'spe.' + nome no main.dat
-c     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
 
-C       Fantomol avec sous-programmes (MNP) -
-C       calcul possible de 100 angstrom en 100 angstrom
-C       Flux sortant est en nu: Fnu x lambda
-C       Flux absolu sortant a ete multiplie par 10**5
+
+!> Fantomol avec sous-programmes (MNP) -
+!> Calcul possible de 100 angstrom en 100 angstrom.
+!> Flux sortant est en nu: Fnu x lambda
+!> Flux absolu sortant a ete multiplie par 10**5
+      MODULE SYNTHESIS
+      USE READ_FILES
 
       PARAMETER(PARAMETER_NMOL=50000,NT=10000)
 
 
 
+      !=====
+      ! Subroutine outputs
+      !=====
+      ! The following variables have the prefix of the subroutine that is responsible for them.
+
+      !> Calculated by subroutine POPUL
+      REAL*8, DIMENSION(3,MAX_partit_NPAR, MAX_modeles_NTOT) :: popul_P
+
+
+      !> Calculated by subroutine TURBUL
+      REAL*8, DIMENSION(MAX_modeles_NTOT) :: turbul_VT
+
+
+      !> Calculated by subroutine POPADELH
+      REAL*8, DIMENSION(MAX_atomgrade_NBLEND) :: popadelh_CORCH,
+     + popadelh_CVdW     
+      !> Calculated by subroutine POPADELH
+      REAL*8, DIMENSION(MAX_atomgrade_NBLEND,MAX_modeles_NTOT) ::
+     + popadelh_POP, popadelh_A, popadelh_DELTA
+
+
+      !> Calculated by subroutine SELEKFH
+      REAL*8, DIMENSION(par_NP) :: selekfh_FL, selekfh_FCONT
+
+
+
+      !> Calculated by subroutine BK
+      REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: bk_B, bk_B1, bk_B2
+      !> Calculated by subroutine BK
+      REAL*8, DIMENSION(MAX_modeles_NTOT) :: bk_KC, bk_KC1, bk_KC2
+     + bk_PHN, bk_PH2 
+      !> Calculated by subroutine BK
+      REAL*8, DIMENSION(par_NP, MAX_modeles_NTOT) :: bk_KCD
+      !> Calculated by subroutine BK
+      REAL*8, DIMENSION(par_NP) :: bk_FC
+
+
+
+
+      !=====
+      ! Constants available to all subroutines in this file
+      !=====
+
+      REAL*8, PARAMETER, DIMENSION(10) ::
+     + LLHY = (/3750.150, 3770.630, 3797.900, 3835.390, 3889.050, 
+     + 3970.076, 4101.748, 4340.468, 4861.332, 6562.817/)
+      REAL*8, PARAMETER ::
+     +  C = 2.997929E+10,
+     +  H = 6.6252E-27,
+     + KB = 1.38046E-16,
+     + PI = 3.141593,
+     + C1 = 4.8298E+15,
+     + C2 = 8.8525E-13,
+     + C4 = 2.1179E+8,
+     + C6 = 3.76727E+11,
+     + DEUXR = 1.6634E+8,
+     + RPI = 1.77245385
+
+      REAL*8, PARAMETER :: C5 = 2.*PI* (3.*PI**2/2.44)**0.4
+
+
+      CONTAINS
+
+
+
+!======================================================================================================================      
+      SUBROUTINE PFANT_CALCULATE()  ! ISSUE Find a nicer name for this routine. It is what PFANT DOES
 
       !====
       ! Making a new declaration section
       !====
       REAL*8 LZERO, LFIN
       CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
-
-
 
       INTEGER D,DTOT
       INTEGER DHM,DHP,DHMY,DHPY
@@ -108,98 +177,66 @@ C       Flux absolu sortant a ete multiplie par 10**5
       
       CHARACTER tti*2,mgg*2,oo1*2,cc1*2,nn1*2
       character oo2*2,cc2*2,nn2*2
-      REAL KB,LAMBD
-      REAL*8 LZERO,LFIN,LLHY(10)
+      REAL LAMBD
+      REAL*8 LZERO,LFIN
       REAL*8 ECART,ECARTM,L0,LF,lllhy
+      
       DIMENSION
      5 GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
      8 ECARTM(PARAMETER_NMOL)
-C     fonctions de partition
+!     fonctions de partition TODO figure out what this comment refers to
 
 
       DIMENSION TTD(par_NP), FN(par_NP)
       DIMENSION TAUH(par_NP,50),TAUHY(10,par_NP,50)
       DIMENSION DHMY(10),DHPY(10)
-C
 
 
-      ! TODO command-line option to select this integration; config
-      KIK=0 ! FORMULE A 6 OU 7 PTS POUR CALCUL FLUX OU INT
+!  *****************************************************************
 
 
-C  *****************************************************************
-      DATA LLHY /3750.150, 3770.630, 3797.900, 3835.390, 3889.050,
-     +           3970.076, 4101.748, 4340.468, 4861.332, 6562.817/
-      DATA C/2.997929E+10/, H/6.6252E-27/,KB/1.38046E-16/,R/8.3170E+7/,
-     1     PI/3.141593/,C1/4.8298E+15/,C2/8.8525E-13/,C4/2.1179E+8/,
-     2     C6/3.76727E+11/,DEUXR/1.6634E+8/,C7/1.772453/
-        C5= 2.*PI* (3.*PI**2/2.44)**0.4
 
-
-      ! ISSUE what is this?
-      RPI = 1.77245385
-
+      !=====
+      ! Read/setup
+      !=====
 
 
       ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
-      CALL READ_DISSOC(filename_DISSOC)
-
-
-      CALL READ_MAIN(filename_MAIN)
-
-
-      ! ISSUE: breaking rule!!! this cannot happen: change value of this global here, check what is supposed to happen instead.
-      FILEFLUX1 = 'spec.'//main_FILEFLUX
-      FILEFLUX2 = 'cont.'//main_FILEFLUX
-      FILEFLUX3 = 'norm.'//main_FILEFLUX
-
-
-      CALL READ_PARTIT(filename_PARTIT)  ! LECTURE DES FCTS DE PARTITION
-      CALL READ_ABSORU2(filename_ABSORU2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-      CALL READ_MODELE(filename_MODELES)  ! LECTURE DU MODELE
+      CALL READ_DISSOC(config_FN_DISSOC)
+      CALL READ_MAIN(config_FN_MAIN)
+      CALL READ_PARTIT(config_FN_PARTIT)  ! LECTURE DES FCTS DE PARTITION
+      CALL READ_ABSORU2(config_FN_ABSORU2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+      CALL READ_MODELE(config_FN_MODELES)  ! LECTURE DU MODELE
       CALL READ_ABONDS(config_FN_ABONDS)
       CALL READ_ATOMGRADE(config_FN_ATOMGRADE)
 
-
-
-      !---
-      ! Other stuff
-      !---
       TETAEF = 5040/main_TEFF
 
-
-
-      CALL TURBUL()
-      
-
-C  *****************************************************************
-C                       III
-C     CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
-C           POPULATION DU NIV FOND DES IONS
-C  *****************************************************************
-      CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,popul_P)
-C
-C  *****************************************************************
-C                       IV
-C           CALCUL DES QUANTITES NE DEPENDANT QUE DU
-C           MODELE ET DE LAMBDA : bk_B(N)   bk_KC(N)   bk_FC
-C  *****************************************************************
-
-      CALL SAT4()
-
+      FILEFLUX1 = TRIM(main_FILEFLUX) // '.spec'
+      FILEFLUX2 = TRIM(main_FILEFLUX) // '.cont'
+      FILEFLUX3 = TRIM(main_FILEFLUX) // '.norm'
       OPEN(UNIT=17,FILE=FILEFLUX1,STATUS='unknown')
       OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
       OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
 
 
-      IK=1
-      IK2=1
-      IK3=1
-C     AINT =intervalle de calcul
-C     CAINT=intervalle de recouvremment des intervalles
-      HINT=35.  ! demi-intervalle de calcul des raies d'hydrogene
-      CINT=20.
+      !=====
+      ! Calculation begins!
+      !=====
+
+      CALL TURBUL()     
+
+      ! -- III --
+      ! CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
+      ! POPULATION DU NIV FOND DES IONS
+      CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,popul_P)
+
+      ! -- IV --
+      ! CALCUL DES QUANTITES NE DEPENDANT QUE DU
+      ! MODELE ET DE LAMBDA : bk_B(N)   bk_KC(N)   bk_FC
+      CALL SAT4()
+
 
       ! ISSUE Explain what it does
       XLZERO = main_LLZERO-20.
@@ -223,11 +260,11 @@ C     CAINT=intervalle de recouvremment des intervalles
 
 
 
-      ! =========
+      !=====
       ! Main loop
-      ! =========
+      !=====
       DO WHILE .T. !Main loop!
-C
+!
 
         ! ISSUE Explain DTOT
         DTOT = (LFIN-LZERO)/main_PAS + 1.0005
@@ -244,12 +281,12 @@ C
         LAMBD = (LZERO+LFIN)/2
         ILZERO = (LZERO/100.)*1E2
         ALZERO = LZERO -ILZERO
-C
+!
         DO D = 1,DTOT
           TTD(D) = ALZERO+main_PAS*(D-1)
         END DO
 
-        CALL BK(LAMBD,TTD,DTOT,KIK,LZERO,LFIN)
+        CALL BK(LAMBD,TTD,DTOT,config_KIK,LZERO,LFIN)
 
         !--logging--!
         WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
@@ -319,11 +356,8 @@ C
         END IF
 
 
-
-        ! ******************************************************************
         ! -- V --
         ! QUANTITES DEPENDANT DE LA RAIE ET DU MODELE
-        ! ******************************************************************
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
         IF(atomgrade_NBLEND .GT. 0) THEN
@@ -334,7 +368,7 @@ C
           !     CALCUL DU COEFFICIENT D ABSORPTION SELECTIF
           !     ET CALCUL DU SPECTRE
           !  ***************************************************************
-          DO K = 1,atomgrade_NBLEND
+          DO K = 1, atomgrade_NBLEND
           
             ! IssuE check these variables, they may be misnamed
             GFAL(K) = atomgrade_GF(K)*C2*(atomgrade_LAMBDA(K)*1.E-8)**2
@@ -355,12 +389,10 @@ C
           ECARTM(L) = km_LMBDAM(L)-LZERO + main_PAS
         END DO
 
-        CALL SELEKFH(KIK, DTOT, GFAL, ECART, TAUH, DHM,DHP, TTD, ECARTM)
+        CALL SELEKFH(DTOT, GFAL, ECART, TAUH, DHM,DHP, TTD, ECARTM)
 
         CALL WRITE_LINES_PFANT(filename_LINES_PFANT)
 
-
-        AMG = main_XXCOR(8)
         LI = 10./main_PAS
         I1 = LI+1
         I2 = DTOT - LI
@@ -379,6 +411,7 @@ C
 
         CALL WRITE_LOG_LOG(filename_LOG_LOG)
 
+        AMG = main_XXCOR(8)
         WRITE(17,1130)IKEYtot,(modeles_TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,modeles_NHE,AMG,
      1   L0,LF,LZERO,LFIN,ITOT,main_PAS,main_ECHX,main_ECHY,main_FWHM
         WRITE(17,1132) (selekfh_FL(D),D=I1,I2)
@@ -399,7 +432,7 @@ C
         IKEY = IKEY+1
         IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
-
+        !--logging--!
         WRITE(LLL, 708) IKEY, IRH
         CALL LOG_INFO(LLL)
         
@@ -407,7 +440,7 @@ C
         LFIN = LFIN+main_AINT
         IF(LFIN .GT. (main_LLFIN+20.)) LFIN = main_LLFIN+20.
 
-      END DO  !Main loop!
+      END DO  !--Main loop--!
 
 669   CONTINUE
       CLOSE(17)
@@ -419,9 +452,9 @@ C
 
 
 
-C  *******************************************************************
-C           ZONE DE DEFINITION DES FORMATS
-C  *******************************************************************
+!  *******************************************************************
+!           ZONE DE DEFINITION DES FORMATS
+!  *******************************************************************
 1130  FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
 1132  FORMAT(40000F15.5)
 501   FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,/
@@ -432,39 +465,18 @@ C  *******************************************************************
      1 2X,'I1=',I7,2X,'I2=',I7)
 712   FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
       END
-C--- END MAIN ------------------------------------------------------------------
-C--- END MAIN ------------------------------------------------------------------
-C--- END MAIN ------------------------------------------------------------------
-C--- END MAIN ------------------------------------------------------------------
-C--- END MAIN ------------------------------------------------------------------
 
 
 
 
 
-
-
-
-
-      MODULE TURBUL
-      
-      !=====
-      ! Outputs
-      !=====
-      REAL*8, DIMENSION(MAX_modeles_NTOT) :: turbul_VT
-
-
-
-
-C-------------------------------------------------------------------------------
-C ISSUE WHAT
-
+!======================================================================================================================
+! ISSUE WHAT
       SUBROUTINE TURBUL()
       USE CONFIG
+      CHARACTER*80 LLL
       
-      
-      
-      PRINT *,'   ENTREE DS TURBUL'
+      CALL LOG_DEBUG('ENTREE DS TURBUL')
       IF(main_IVTOT .EQ. 1)   THEN
         CALL LOG_DEBUG('VT CONSTANT')
         DO N = 1, modeles_NTOT
@@ -520,47 +532,15 @@ C ISSUE WHAT
 132   FORMAT(/'V MICRO VARIABLE AVEC PROFONDEUR')
       END
 
+!======================================================================================================================
+!> Calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
+!> la table des fonctions de partition ,a tous les niv du modele
+!>
+!> 40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
+!> Partit donnee pour 33 temperatures au plus ds la table.
 
-      END MODULE TURBUL
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      MODULE POPUL
-      USE READ_FILES
-      
-      !=====
-      ! Outputs
-      !=====
-
-      REAL*8, DIMENSION(3,MAX_partit_NPAR, MAX_modeles_NTOT) :: popul_P
-
-
-C-------------------------------------------------------------------------------
-C     ***calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
-C     ***la table des fonctions de partition ,a tous les niv du modele
-C     ***
-C
       SUBROUTINE POPUL()
       DIMENSION U(3), ALISTU(63), UE(50), TT(51)
-c           40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
-c           partit donnee pour 33 temperatures au plus ds la table.
-      REAL KB /1.38046E-16/, C1 = /4.8298E+15/
       
       DO N = 1, modeles_NTOT
         T = 5040./modeles_TETA(N)  ! TODO I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
@@ -603,103 +583,31 @@ c           partit donnee pour 33 temperatures au plus ds la table.
       RETURN
       END
 
-      END MODULE POPUL
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      MODULE POPADELH
       
-      !=====
-      ! Outputs
-      !=====
-      
-      REAL*8, DIMENSION(MAX_atomgrade_NBLEND) :: popadelh_CORCH,
-     + popadelh_CVdW
-      
-      
-      REAL*8, DIMENSION(MAX_atomgrade_NBLEND,MAX_modeles_NTOT) ::
-     + popadelh_POP, popadelh_A, popadelh_DELTA
 
 
-      CONTAINS
-
-
-C-------------------------------------------------------------------------------
-C     ***calcule la population au niveau inferieur de la transition
-C     ***la largeur doppler popadelh_DELTA et le coefficient d'elargissement
-C     ***le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
-C
-C Note: (JT) seems to use variables atomgrade_* and modeles_*
+!======================================================================================================================
+!> Calcule la population au niveau inferieur de la transition
+!> la largeur doppler popadelh_DELTA et le coefficient d'elargissement
+!> le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
+!
       SUBROUTINE POPADELH ()
       USE BK
       IMPLICIT NONE
 
       CHARACTER*1 ISI(1), ISS(1)
       INTEGER J, K
-      real KB,KIES,KII,NUL
+      real KIES,KII,NUL
       DIMENSION ALPHL(50)  ! TODO 50??
       CHARACTER*2 TTI, CC, OO, NN, MGG
 
-      DATA KB/1.38046E-16/, DEUXR/1.6634E+8/, C4/2.1179E+8/,
-     1 C6/3.76727E+11/, PI/3.141593/, C/2.997929E+10/
       DATA ISI/' '/, ISS/' '/
       DATA TTI/'TI'/,CC/' C'/,OO/' O'/,NN/' N'/,MGG/'MG'/
-      H  = 6.6252E-27
-      C5 = 2.*PI* (3.*PI**2/2.44)**0.4
-c
+
       DO K = 1, atomgrade_NBLEND
         popadelh_CORCH(k)=0.
         popadelh_CVdW(K)=0
@@ -709,8 +617,8 @@ c
         WRITE(6,104) atomgrade_ELEM(K)
         STOP
         
-15      IOO=atomgrade_IONI(K)
-C
+15      IOO = atomgrade_IONI(K)
+
         ! ISSUE File writing routine, TAKE THIS OUT!!!!
         WRITE (77,*) atomgrade_ELEM(k),atomgrade_LAMBDA(k)
         
@@ -721,12 +629,12 @@ C
           IF(popadelh_CORCH(K).LT.1.E-37)   THEN
             popadelh_CORCH(K)=0.67 * atomgrade_KIEX(K) +1
           END IF
-C               WRITE(6,125)  atomgrade_LAMBDA(K), popadelh_CORCH(K)
+!               WRITE(6,125)  atomgrade_LAMBDA(K), popadelh_CORCH(K)
           popadelh_CVdW(K)= CALCH(KII,IOO,atomgrade_KIEX(K),ISI,KIES,ISS)
           atomgrade_CH(K)= popadelh_CVdW(K) * popadelh_CORCH(K)
         END IF
 
-C
+!
         IF(atomgrade_CH(K) .LT. 1.E-20) THEN 
           IOPI=1
         ELSE
@@ -742,7 +650,7 @@ C
           TAP = 1.-ALPHL(N)
           TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
           popadelh_POP(K,N) = popul_P(IOO,J,N)*TOP*TAP
-C NOXIG: ISSUE what does it mean?
+! NOXIG: ISSUE what does it mean?
           IF(K .EQ. 1) popadelh_POP(K,N) = TOP*TAP*popul_P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
           popadelh_DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(turbul_VT(N)**2+DEUXR*T/partit_M(J))
           VREL = SQRT(C4*T*(1.+1./partit_M(J)))
@@ -755,7 +663,7 @@ C NOXIG: ISSUE what does it mean?
           popadelh_A(K,N) =GAMMA*(1.E-8*atomgrade_LAMBDA(K))**2 / (C6*popadelh_DELTA(K,N))
         END DO
       END DO
-C
+!
  101  FORMAT(' GamH au 10eme Niv du modele:', E15.3,'  Spielfieldel')
  104  FORMAT('     MANQUE LES FCTS DE PARTITION DU ',A2)
  125  FORMAT(3X ,' POUR',F9.3,'   ON CALCULE CH ',
@@ -766,53 +674,24 @@ C
 
 
 
-      END MODULE POPADELH
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      MODULE SELEKFH
-      USE PARAMETERS
- 
-      !=====
-      ! Outputs
-      !=====
-
-      REAL*8, DIMENSION(par_NP) :: selekfh_FL, selekfh_FCONT
-
-      CONTAINS
 
 ! TODO Fix Initializations
 ! TOdO explain parameters
 ! TODO verbose
 ! TODO discover what is input and what is output
 
-C-------------------------------------------------------------------------------
-C Sets the Voigt profile using Hjertings' constants.
-C
-C Note: convolution for molecules uses Gaussian profile.
-C
+!======================================================================================================================
+! Sets the Voigt profile using Hjertings' constants.
+!
+! Note: convolution for molecules uses Gaussian profile.
+!
 
 ! ISSUE with variable MM
-      SUBROUTINE SELEKFH(KIK,    ! 0/1, passed to FLINH
-     +                   DTOT,   ! ?
+      SUBROUTINE SELEKFH(DTOT,
      +                   GFAL, 
      +                   ECART, 
      +                   TAUH,
@@ -823,8 +702,6 @@ C
      +                  )
       USE READ_FILES
       USE PARAMETERS
-      USE BK
-      USE POPADELH
       IMPLICIT NONE
       PARAMETER(PARAMETER_NMOL=50000)
       INTEGER D, DTOT, DHM,DHP
@@ -834,7 +711,6 @@ C
       DIMENSION turbul_VT(50)
       DIMENSION BI(0:50)
       REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECART, ECAR, ECARTL, GFAL, KA
-
 
 
       DIMENSION 
@@ -852,8 +728,6 @@ C
      +          KAPPAM(50),
      +          KAPPT(50)
 
-      DATA DEUXR/1.6634E+8/,RPI/1.77245385/,C/2.997929E+10/
-C
 
       IF (atomgrade_NBLEND .NE. 0) then
         DO K = 1,atomgrade_NBLEND
@@ -876,7 +750,7 @@ C
           END DO
         end if
         
-        if(km_MBLEND.ne.0) then
+        if(km_MBLEND .ne. 0) then
           DO K=1,km_MBLEND
             ECARM(K) = ECARM(K)-main_PAS
             ECARTLM(K) = ECARM(K)
@@ -945,20 +819,20 @@ C
         
         IF((D.LT.DHM).OR.(D.GE.DHP)) THEN
           CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,
-     +     KIK, TTD(D))
+     +     config_KIK, TTD(D))
           selekfh_FL(D) = flin_F
         ELSE
           DO N = 1,modeles_NTOT
               TAUHD(N) = TAUH(D,N)
           END DO
           CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,
-     +     KIK,TAUHD, TTD(D))
+     +     config_KIK,TAUHD, TTD(D))
           selekfh_FL(D) = flin_F
         END IF
             
         ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
         CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, 
-     +   KIK, TTD(D))
+     +   config_KIK, TTD(D))
         selekfh_FCONT(D) = flin_F
       END DO  ! fin bcle sur D
       
@@ -975,122 +849,16 @@ C
 
 
 
-      END MODULE SELEKFH
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      MODULE BK
-      USE READ_FILES
-      USE PARAMETERS
-
-
-      !=====
-      ! Outputs
-      !=====
-      
-
-      REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: bk_B, bk_B1, bk_B2
-      REAL*8, DIMENSION(MAX_modeles_NTOT) :: bk_KC, bk_KC1, bk_KC2
-     + bk_PHN, bk_PH2 
-      REAL*8, DIMENSION(par_NP, MAX_modeles_NTOT) :: bk_KCD
-      REAL*8, DIMENSION(par_NP) :: bk_FC
-
-
-
-    
-      
-      CONTAINS
-      
-      
-
-
-C-------------------------------------------------------------------------------
-C Calculates the flux in the continuum.
-C
-      SUBROUTINE BK(LAMBD, TTD, DTOT, KIK, LZERO, LFIN)
+!======================================================================================================================
+!> Calculates the flux in the continuum.
+!
+      SUBROUTINE BK(LAMBD, TTD, DTOT, config_KIK, LZERO, LFIN)
       USE READ_FILES
       USE PARAMETERS
       IMPLICIT NONE
       INTEGER D, DTOT
-      REAL*8 LAMBD, NU, KB, LLZERO, LLFIN, NU1, NU2, LAMBDC, KCJ, KCN,
+      REAL*8 LAMBD, NU, LLZERO, LLFIN, NU1, NU2, LAMBDC, KCJ, KCN,
      + ALPH_N, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
      + LOG_PE  ! Created to avoid calculating ALOG10(PE) 3x
       REAL*8 LZERO, LFIN
@@ -1102,9 +870,6 @@ C
       
       LLZERO = LZERO
       LLFIN  = LFIN
-      C  = 2.997929E+10
-      H  = 6.6252E-27
-      KB = 1.38046E-16
       NU1 = C* 1.E+8 /LZERO
       AHNU1 = H*NU1
       C31 = (2*AHNU1) * (NU1/C)**2
@@ -1148,17 +913,17 @@ C
       
       ALPH01 = EXP(-AHNU1/(KB*T))
       bk_B1(0) = C31 * (ALPH01/(1.-ALPH01))
-      CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
       FC1 = flin_F
       
       ALPH02 = EXP(-AHNU2/(KB*T))
       bk_B2(0) = C32 * (ALPH02/(1.-ALPH02))
-      CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
       FC2 = flin_F
       
       ALPH0 = EXP(-AHNU/(KB*T))
       bk_B(0) = C3 * (ALPH0/(1.-ALPH0))
-      CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,KIK)
+      CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
       bk_FC = flin_F
 
       ILZERO = LZERO/100.
@@ -1197,5 +962,3 @@ C
       END
 
 
-      END MODULE BK
-      

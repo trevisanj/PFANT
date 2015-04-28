@@ -124,7 +124,7 @@ C
 C
 C           CALCUL DU FLUX
       IF (KIK .EQ. 0) THEN
-C               FORMULE A 6 OU 7 PTS
+        ! FORMULE A 6 OU 7 PTS
         IF(PTDISK) THEN
           IPOINT=7
           TOLIM=4.0
@@ -172,6 +172,7 @@ c     on verifie que le modele n'est pas trop court
       ELSEIF (KIK .EQ. 1) THEN
 C     FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
 C           (13PTS +PTS MILIEU)
+        ! TODO test this error condition
         IF(PTDISK)   then
           WRITE(6,1500)
           STOP
