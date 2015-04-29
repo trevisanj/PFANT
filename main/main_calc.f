@@ -195,7 +195,7 @@
       REAL LAMBD
       REAL*8 LZERO,LFIN
       REAL*8 ECART,ECARTM,L0,LF,lllhy
-      
+            
       DIMENSION
      5 GFAL(MAX_atomgrade_NBLEND),ECART(MAX_atomgrade_NBLEND),
      7 FI(1501),TFI(1501),
@@ -208,7 +208,14 @@
       DIMENSION DHMY(10),DHPY(10)
 
 
-!  *****************************************************************
+      ! Units for output files
+      INTEGER, PARAMETER ::
+     + UNIT_SPEC  = 17,
+     + UNIT_CONT  = 19,
+     + UNIT_NORM  = 20,
+     + UNIT_LINES = 32,
+     + UNIT_LOG   = 31 
+
 
 
 
@@ -228,12 +235,27 @@
 
       TETAEF = 5040/main_TEFF
 
-      FILEFLUX1 = TRIM(main_FILEFLUX) // '.spec'
-      FILEFLUX2 = TRIM(main_FILEFLUX) // '.cont'
-      FILEFLUX3 = TRIM(main_FILEFLUX) // '.norm'
-      OPEN(UNIT=17,FILE=FILEFLUX1,STATUS='unknown')
-      OPEN(UNIT=19,FILE=FILEFLUX2,STATUS='unknown')
-      OPEN(UNIT=20,FILE=FILEFLUX3,STATUS='unknown')
+
+      !-----
+      ! Output files opened here and left open until the end
+      !-----
+      !FILEFLUX1 = TRIM(main_FILEFLUX)//'.spec'
+      !FILEFLUX2 = TRIM(main_FILEFLUX)//'.cont'
+      !FILEFLUX3 = TRIM(main_FILEFLUX)//'.norm'
+      !OPEN(UNIT=UNIT_SPEC,FILE=FILEFLUX1,STATUS='unknown')
+      !OPEN(UNIT=UNIT_CONT,FILE=FILEFLUX2,STATUS='unknown')
+      !OPEN(UNIT=UNIT_NORM,FILE=FILEFLUX3,STATUS='unknown')
+      OPEN(UNIT=UNIT_SPEC, FILE=TRIM(main_FILEFLUX)//'.spec', ! spectrum
+     + STATUS='unknown')
+      OPEN(UNIT=UNIT_CONT, FILE=TRIM(main_FILEFLUX)//'.cont', ! continuum
+     + STATUS='unknown')
+      OPEN(UNIT=UNIT_NORM, FILE=TRIM(main_FILEFLUX)//'.norm', ! normalized
+     + STATUS='unknown')
+      OPEN(UNIT=UNIT_LINES,FILE=config_FN_LINES,              ! lines.pfant
+     + STATUS='UNKNOWN')
+      OPEN(UNIT=UNIT_LOG,  FILE=config_FN_LOG,                ! log.log 
+     + STATUS='UNKNOWN')  
+
 
 
       !=====
@@ -273,14 +295,10 @@
 
 
 
-
-
       !=====
       ! Main loop
       !=====
       DO WHILE .T. !Main loop!
-!
-
         ! ISSUE Explain DTOT
         DTOT = (LFIN-LZERO)/main_PAS + 1.0005
         
@@ -296,7 +314,7 @@
         LAMBD = (LZERO+LFIN)/2
         ILZERO = (LZERO/100.)*1E2
         ALZERO = LZERO -ILZERO
-!
+
         DO D = 1,DTOT
           TTD(D) = ALZERO+main_PAS*(D-1)
         END DO
@@ -376,7 +394,7 @@
         CALL FILTER_ATOMGRADE(LZERO, LFIN)
 
         IF(atomgrade_NBLEND .GT. 0) THEN
-          CALL POPADELH ()
+          CALL POPADELH()
 
           ! *************************************************************
           !                       VI
@@ -406,17 +424,15 @@
 
         CALL SELEKFH(DTOT, GFAL, ECART, TAUH, DHM,DHP, TTD, ECARTM)
 
-        CALL WRITE_LINES_PFANT(filename_LINES_PFANT)
-
+        ! TODO check if any of these variables is written, otherwise I could move this block further down
         LI = 10./main_PAS
         I1 = LI+1
         I2 = DTOT - LI
         IF (LFIN .GE. (main_LLFIN+20.)) THEN
           I2 = (main_LLFIN+10.-LZERO)/main_PAS + 1.0005
         END IF
-        ITOT=I2-I1+1
-
-        DO D=I1,I2
+        ITOT = I2-I1+1
+        DO D = I1,I2
           selekfh_FL(D) = selekfh_FL(D)*(10.**5)
           selekfh_FCONT(D) = selekfh_FCONT(D)*(10.**5)
           FN(D) = selekfh_FL(D) / selekfh_FCONT(D)
@@ -424,20 +440,82 @@
         L0 = main_LLZERO-10.
         LF = main_LLFIN+10.
 
-        CALL WRITE_LOG_LOG(filename_LOG_LOG)
 
-        AMG = main_XXCOR(8)
-        WRITE(17,1130)IKEYtot,(modeles_TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,modeles_NHE,AMG,
-     1   L0,LF,LZERO,LFIN,ITOT,main_PAS,main_ECHX,main_ECHY,main_FWHM
-        WRITE(17,1132) (selekfh_FL(D),D=I1,I2)
 
-        WRITE(19,1130)IKEYtot,(modeles_TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,modeles_NHE,AMG,
-     1   L0,LF,LZERO,LFIN,ITOT,main_PAS,main_ECHX,main_ECHY,main_FWHM
-        WRITE(19,1132) (selekfh_FCONT(D),D=I1,I2)
 
-        WRITE(20,1130)IKEYtot,(modeles_TIT(I),I=1,5),TETAEF,main_GLOG,main_ASALOG,modeles_NHE,AMG,
-     1   L0,LF,LZERO,LFIN,ITOT,main_PAS,main_ECHX,main_ECHY,main_FWHM
-        WRITE(20,1132) (FN(D),D=I1,I2)
+      
+        !=====
+        ! Writes results for current iteration into open files
+        !=====
+        AMG = main_XXCOR(8)  ! ISSUE is this assuming something to do with Magnesium?
+                
+        !-----
+        ! lines.pfant and fort.91
+        !-----
+122     FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,
+     +   'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
+125     FORMAT(A2,1X, I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,
+     +   F7.1)
+        WRITE(UNIT_LINES, 122)
+        IF (atomgrade_NBLEND .NE. 0) then
+          DO K=1,atomgrade_NBLEND
+            LOG_ABOND = ALOG10(atomgrade_ABONDS_ABO(K))
+            WRITE(UNIT_LINES,125)
+     +       atomgrade_ELEM(K),
+     +       atomgrade_IONI(K),
+     +       atomgrade_LAMBDA(K),
+     +       atomgrade_KIEX(K),
+     +       atomgrade_ALGF(K),
+     +       LOG_ABOND-main_AFSTAR+12,
+     +       atomgrade_CH(K),
+     +       atomgrade_GR(K),
+     +       atomgrade_GE(K),
+     +       atomgrade_ZINF(K),
+     +       popadelh_CORCH(K)
+
+            ! ISSUE: Is file "fort.91" still wanted???? So similar to above!!!
+            WRITE(91,121) atomgrade_ELEM(K),atomgrade_IONI(K),
+     +       atomgrade_LAMBDA(K),atomgrade_KIEX(K),atomgrade_ALGF(K),
+     +       LOG_ABOND-main_AFSTAR+12,atomgrade_CH(K),
+     +       atomgrade_GR(K),atomgrade_GE(K),atomgrade_ZINF(K),popadelh_CORCH(K)
+          END DO
+        END IF
+
+       
+
+        !-----
+        ! log.log
+        !-----
+        ! ISSUE So similar to the spectrum file!
+1130    FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
+        WRITE(UNIT_LOG, 1130)
+     +   I,
+     +   KEYtot,
+     +   (modeles_TIT(I),I=1,5),
+     +   TETAEF,
+     +   main_GLOG,
+     +   main_ASALOG,
+     +   modeles_NHE,
+     +   AMG,
+     +   L0,
+     +   LF,
+     +   LZERO,
+     +   LFIN,
+     +   ITOT,
+     +   main_PAS,
+     +   main_ECHX,
+     +   main_ECHY,
+     +   main_FWHM
+        DO D = I1,I2
+          WRITE(UNIT_LOG, *) L0+(D-1)*main_PAS, selekfh_FL(D)
+        END DO
+      
+        !-----
+        ! spectrum, continuum, normalized
+        !-----
+        CALL WRITE_SPEC_ITEM(UNIT_SPEC, selekfh_FL)
+        CALL WRITE_SPEC_ITEM(UNIT_CONT, selekfh_FCONT)
+        CALL WRITE_SPEC_ITEM(UNIT_NORM, selekfh_FN)
 
 
         !--logging--!
@@ -458,7 +536,12 @@
       END DO  !--Main loop--!
 
 669   CONTINUE
-      CLOSE(17)
+
+      CLOSE(UNIT_SPEC)
+      CLOSE(UNIT_CONT)
+      CLOSE(UNIT_NORM)
+      CLOSE(UNIT_LOG)
+      CLOSE(UNIT_LINES)
 
       !--logging--!
       CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
@@ -470,8 +553,6 @@
 !  *******************************************************************
 !           ZONE DE DEFINITION DES FORMATS
 !  *******************************************************************
-1130  FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
-1132  FORMAT(40000F15.5)
 501   FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,/
      1 2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
 117   FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
@@ -479,6 +560,56 @@
 707   FORMAT(1X,'IKEY=',I10,2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,
      1 2X,'I1=',I7,2X,'I2=',I7)
 712   FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
+
+
+
+!     ========
+      CONTAINS
+!     ========
+
+      ! These subroutines share the same variables as their parent PFCANT_CALCULATE()
+      
+      !> Used to write the "spectrum", "continuum", and "normalized".
+      !> Their writing pattern is very similar. THe header is the same,
+      !> only the "ITEM" changes from file to file.
+      SUBROUTINE WRITE_SPEC_ITEM(UNIT_, ITEM)
+      !> Unit number, either UNIT_SPEC, UNIT_CONT, UNIT_NORM
+      INTEGER, INTENT(IN) :: UNIT_
+      !> Either selekfh_FL, selekfh_FCONT, or selekfh_FN
+      REAL*8, INTENT(IN) :: ITEM(:)
+      
+      1130 FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
+      WRITE(UNIT_, 1130) 
+     + IKEYtot,
+     + (modeles_TIT(I),I=1,5),
+     + TETAEF,
+     + main_GLOG,
+     + main_ASALOG,
+     + modeles_NHE,
+     + AMG,
+     + L0,
+     + LF,
+     + LZERO,
+     + LFIN,
+     + ITOT,
+     + main_PAS,
+     + main_ECHX,
+     + main_ECHY,
+     + main_FWHM
+     
+       1132 FORMAT(40000F15.5)
+       WRITE(UNIT_SPEC,1132) (ITEM(D), D=I1,I2)
+
+     
+      END SUBROUTINE
+
+      
+      
+      
+      
+      
+      
+      
       END
 
 
