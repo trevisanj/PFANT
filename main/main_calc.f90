@@ -111,8 +111,8 @@ MODULE SYNTHESIS
 
   !> @TODO ISSUE this is used a lot, I gotta find out its meaning
   !> ISSUE I think it is the maximum number of calculation steps.
-  INTEGER, PARAMETER :: NP = 7000
-  PARAMETER(NMOL=50000,NT=10000)
+  INTEGER, PARAMETER :: NP = 7000, &
+                        NMOL = 50000  ! ISSUE what about this parameter, what does it mean?
 
   !=====
   ! Subroutine outputs
@@ -138,7 +138,6 @@ MODULE SYNTHESIS
   REAL*8, DIMENSION(NP) :: selekfh_FL, selekfh_FCONT
 
 
-
   !> Calculated by subroutine BK
   REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: bk_B, bk_B1, bk_B2
   !> Calculated by subroutine BK
@@ -150,9 +149,8 @@ MODULE SYNTHESIS
 
 
 
-
   !=====
-  ! Constants available to all subroutines in this file
+  ! Constants available to all subroutines within this module
   !=====
 
   REAL*8, PARAMETER, DIMENSION(10) :: &
