@@ -5,7 +5,7 @@
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
 ! 
-! Foobar is distributed in the hope that it will be useful,
+! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
@@ -281,9 +281,11 @@ MODULE SYNTHESIS
       DTOT = (LFIN-LZERO)/main_PAS + 1.0005
       
       !--logging--!
+      117 FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
       WRITE(LLL, 117) LZERO, LFIN, DTOT
       CALL LOG_INFO(LLL)
-      
+
+      !--halt situation--!      
       IF(DTOT .GT. 40000) THEN
         ! ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
         CALL PFANT_HALT('DTOT > 40000!')
@@ -300,13 +302,11 @@ MODULE SYNTHESIS
       CALL BK(LAMBD,TTD,DTOT,config_KIK,LZERO,LFIN)
 
       !--logging--!
+      501 FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,  2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
       WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
       CALL LOG_INFO(LLL)
 
-
-      ! ******************************************************************
       ! LECTURE TAU RAIE HYDROGENE ET INTERPOLATION DE TAUH
-      !
       ! Type *,' nom des fichiers TAU raies Hydrogene'
       IM = 0
       DO IH = 1,10
@@ -320,6 +320,7 @@ MODULE SYNTHESIS
           FILETOH = main_FILETOHY(IHT)
 
           !--logging--!
+          712 FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
           WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
           CALL LOG_INFO(LLL)
 
@@ -374,11 +375,8 @@ MODULE SYNTHESIS
       IF(atomgrade_NBLEND .GT. 0) THEN
         CALL POPADELH()
 
-        ! *************************************************************
-        !                       VI
-        !     CALCUL DU COEFFICIENT D ABSORPTION SELECTIF
-        !     ET CALCUL DU SPECTRE
-        !  ***************************************************************
+        ! -- VI --
+        ! CALCUL DU COEFFICIENT D ABSORPTION SELECTIF ET CALCUL DU SPECTRE
         DO K = 1, atomgrade_NBLEND
         
           ! IssuE check these variables, they may be misnamed
@@ -393,6 +391,7 @@ MODULE SYNTHESIS
       CALL USE_MOLECULAGRADE()
 
       !--debugging--!
+      704 FORMAT(1X,'MBLEND=',I10)
       WRITE(LLL, 704) km_MBLEND
       CALL LOG_DEBUG(LLL)
 
@@ -425,84 +424,14 @@ MODULE SYNTHESIS
       !=====
       ! Writes results for current iteration into open files
       !=====
-      AMG = main_XXCOR(8)  ! ISSUE is this assuming something to do with Magnesium?
-              
-      !-----
-      ! lines.pfant and fort.91
-      !-----
-      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
-      WRITE(UNIT_LINES, 122)
-      IF (atomgrade_NBLEND .NE. 0) then
-        DO K=1,atomgrade_NBLEND
-          LOG_ABOND = ALOG10(atomgrade_ABONDS_ABO(K))
-
-          125 FORMAT(A2,1X,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1, F7.1)
-          WRITE(UNIT_LINES, 125)     &
-           atomgrade_ELEM(K),        &
-           atomgrade_IONI(K),        &
-           atomgrade_LAMBDA(K),      &
-           atomgrade_KIEX(K),        &
-           atomgrade_ALGF(K),        &
-           LOG_ABOND-main_AFSTAR+12, &
-           atomgrade_CH(K),          &
-           atomgrade_GR(K),          &
-           atomgrade_GE(K),          &
-           atomgrade_ZINF(K),        &
-           popadelh_CORCH(K)                
-
-          ! ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
-         121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
-          WRITE(91,121)              &
-           atomgrade_ELEM(K),        &
-           atomgrade_IONI(K),        &
-           atomgrade_LAMBDA(K),      &
-           atomgrade_KIEX(K),        &
-           atomgrade_ALGF(K),        &
-           LOG_ABOND-main_AFSTAR+12, &
-           atomgrade_CH(K),          &
-           atomgrade_GR(K),          &
-           atomgrade_GE(K),          &
-           atomgrade_ZINF(K),        &
-           popadelh_CORCH(K)
-        END DO
-      END IF
-
-      !-----
-      ! log.log
-      !-----
-      ! ISSUE So similar to the spectrum file!
-      1130 FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
-      WRITE(UNIT_LOG, 1130)    &
-       I,                      &
-       KEYtot,                 &
-       (modeles_TIT(I),I=1,5), &
-       TETAEF,                 &
-       main_GLOG,              &
-       main_ASALOG,            &
-       modeles_NHE,            &
-       AMG,                    &
-       L0,                     &
-       LF,                     &
-       LZERO,                  &
-       LFIN,                   &
-       ITOT,                   &
-       main_PAS,               &
-       main_ECHX,              &
-       main_ECHY,              &
-       main_FWHM
-      DO D = I1,I2
-        WRITE(UNIT_LOG, *) L0+(D-1)*main_PAS, selekfh_FL(D)
-      END DO
-    
-      !-----
-      ! spectrum, continuum, normalized
-      !-----
-      CALL WRITE_SPEC_ITEM(UNIT_SPEC, selekfh_FL)
-      CALL WRITE_SPEC_ITEM(UNIT_CONT, selekfh_FCONT)
-      CALL WRITE_SPEC_ITEM(UNIT_NORM, FN)
-
+      CALL WITE_LINES_FORT91()                        ! lines.pfant and fort.91
+      CALL WRITE_LOG()                                ! log.log
+      CALL WRITE_SPEC_ITEM(UNIT_SPEC, selekfh_FL)     ! spectrum
+      CALL WRITE_SPEC_ITEM(UNIT_CONT, selekfh_FCONT)  ! continuum
+      CALL WRITE_SPEC_ITEM(UNIT_NORM, FN)             ! normalized
 
       !--logging--!
+      707 FORMAT(1X,'IKEY=',I10,2X,'LZERO=',F10.3,2X,'LFIN=',F10.3, 2X,'I1=',I7,2X,'I2=',I7)
       WRITE(LLL,707) IKEY, LZERO, LFIN, I1, I2
       CALL LOG_INFO(LLL)
 
@@ -510,6 +439,7 @@ MODULE SYNTHESIS
       IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
       !--logging--!
+      708 FORMAT(1X,'IKEY=',I10,2X,'IRH=',I6)
       WRITE(LLL, 708) IKEY, IRH
       CALL LOG_INFO(LLL)
       
@@ -518,8 +448,6 @@ MODULE SYNTHESIS
       IF(LFIN .GT. (main_LLFIN+20.)) LFIN = main_LLFIN+20.
 
     END DO  !--Main loop--!
-
-
 
     CLOSE(UNIT_SPEC)
     CLOSE(UNIT_CONT)
@@ -530,24 +458,11 @@ MODULE SYNTHESIS
     !--logging--!
     CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
     CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
-
-
-
-
-!  *******************************************************************
-!           ZONE DE DEFINITION DES FORMATS
-!  *******************************************************************
-
-501 FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,  2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
-117 FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
-704 FORMAT(1X,'MBLEND=',I10)
-707 FORMAT(1X,'IKEY=',I10,2X,'LZERO=',F10.3,2X,'LFIN=',F10.3, 2X,'I1=',I7,2X,'I2=',I7)
-712 FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
-
-
-
+    
   CONTAINS  !--still PFANT_CALCULATE()
-    ! These subroutines share the same variables as their parent PFCANT_CALCULATE()
+    ! These subroutines have total knowledge of the variable names and values that appear inside
+    ! their parent subroutine PFANT_CALCULATE(). http://www.personal.psu.edu/jhm/f90/statements/contains.html
+
       
     !> Used to write the "spectrum", "continuum", and "normalized".
     !> Their writing pattern is very similar. THe header is the same,
@@ -557,6 +472,8 @@ MODULE SYNTHESIS
       INTEGER, INTENT(IN) :: UNIT_
       !> Either selekfh_FL, selekfh_FCONT, or FN
       REAL*8, INTENT(IN) :: ITEM(:)
+      REAL*8 AMG
+      AMG = main_XXCOR(8)  ! ISSUE is this assuming something to do with Magnesium?
       
       1130 FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
       WRITE(UNIT_, 1130)       &
@@ -579,8 +496,312 @@ MODULE SYNTHESIS
      
       1132 FORMAT(40000F15.5)
       WRITE(UNIT_SPEC,1132) (ITEM(D), D=I1,I2)
-    END SUBROUTINE
-  END SUBROUTINE
+    END
+
+
+    !> Writes into lines.pfant and fort.91
+    SUBROUTINE WRITE_LINES_FORT91()
+      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
+      WRITE(UNIT_LINES, 122)
+      DO K=1,atomgrade_NBLEND
+        LOG_ABOND = ALOG10(atomgrade_ABONDS_ABO(K))
+
+        125 FORMAT(A2,1X,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1, F7.1)
+        WRITE(UNIT_LINES, 125)     &
+         atomgrade_ELEM(K),        &
+         atomgrade_IONI(K),        &
+         atomgrade_LAMBDA(K),      &
+         atomgrade_KIEX(K),        &
+         atomgrade_ALGF(K),        &
+         LOG_ABOND-main_AFSTAR+12, &
+         atomgrade_CH(K),          &
+         atomgrade_GR(K),          &
+         atomgrade_GE(K),          &
+         atomgrade_ZINF(K),        &
+         popadelh_CORCH(K)                
+
+        ! ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
+       121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
+        WRITE(91,121)              &
+         atomgrade_ELEM(K),        &
+         atomgrade_IONI(K),        &
+         atomgrade_LAMBDA(K),      &
+         atomgrade_KIEX(K),        &
+         atomgrade_ALGF(K),        &
+         LOG_ABOND-main_AFSTAR+12, &
+         atomgrade_CH(K),          &
+         atomgrade_GR(K),          &
+         atomgrade_GE(K),          &
+         atomgrade_ZINF(K),        &
+         popadelh_CORCH(K)
+      END DO
+    END
+
+
+
+    ! TODO Fix Initializations
+    ! TOdO explain parameters
+    ! TODO verbose
+    ! TODO discover what is input and what is output
+    !======================================================================================================================
+    ! Sets the Voigt profile using Hjertings' constants.
+    !
+    ! Note: convolution for molecules uses Gaussian profile.
+    !
+    
+    ! ISSUE with variable MM
+    SUBROUTINE SELEKFH()
+        USE READ_FILES
+        USE PARAMETERS
+        IMPLICIT NONE
+        PARAMETER(PARAMETER_NMOL=50000)
+        INTEGER D
+        REAL lambi
+        REAL KAPPA,KA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
+        REAL*8 ECAR,ECARTM,ECARM
+        DIMENSION turbul_VT(50)
+        DIMENSION BI(0:50)
+        REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECAR, ECARTL, KA
+
+        DIMENSION KAP(50),           &
+                  KAPPA(50),         &
+                  bk_KCD(par_NP,50), &
+                  KCI(50)
+
+        DIMENSION TAUHD(50)
+        DIMENSION DELTAM(PARAMETER_NMOL,50), &
+                  ECARM(PARAMETER_NMOL),     &
+                  ECARTLM(PARAMETER_NMOL),   &
+                  KAM(PARAMETER_NMOL),       &
+                  KAPPAM(50),                &
+                  KAPPT(50)
+
+
+        IF (atomgrade_NBLEND .NE. 0) then
+          DO K = 1,atomgrade_NBLEND
+            ECAR(K) = ECART(K)
+          END DO
+        END IF
+        
+        IF (km_MBLEND .NE. 0) then
+          DO K=1,km_MBLEND
+            ECARM(K) = ECARTM(K)
+          END DO
+        end if
+        
+        DO D = 1, DTOT
+          lambi = (6270+(D-1)*0.02)
+          if (atomgrade_NBLEND .ne. 0) then
+            DO K=1,atomgrade_NBLEND
+              ECAR(K)=ECAR(K)-main_PAS
+              ECARTL(K)=ECAR(K)
+            END DO
+          end if
+          
+          if(km_MBLEND .ne. 0) then
+            DO K=1,km_MBLEND
+              ECARM(K) = ECARM(K)-main_PAS
+              ECARTLM(K) = ECARM(K)
+            END DO
+          end if
+        
+          DO N = 1,modeles_NTOT
+            KAPPA(N) =0.
+            KAPPAM(N) =0.
+            T = 5040./modeles_TETA(N)
+            
+            ! atomes
+            if(atomgrade_NBLEND .EQ. 0) go to 260
+
+            DO  K=1,atomgrade_NBLEND
+              IF(ABS(ECARTL(K)) .GT. atomgrade_ZINF(K)) THEN
+                KA(K) = 0.
+              ELSE
+                V = ABS(ECAR(K)*1.E-8/popadelh_DELTA(K,N))
+                CALL HJENOR(popadelh_A(K,N), V, popadelh_DELTA(K,N), PHI)
+                KA(K) = PHI * popadelh_POP(K,N) * GFAL(K) * atomgrade_ABONDS_ABO(K)
+                IF(K .EQ. 1) KA(K) = PHI * popadelh_POP(K,N) * GFAL(K)
+
+              END IF
+              KAPPA(N) = KAPPA(N) + KA(K)
+            END DO   !  fin bcle sur K
+
+            260 CONTINUE
+
+            ! molecule
+            IF(km_MBLEND.EQ.0) GO TO 250
+            DO L=1,km_MBLEND
+              IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
+                KAM(L)=0.
+              else
+            
+                ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+                ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
+                DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(turbul_VT(N)**2+DEUXR*T/km_MM)
+                VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
+                PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
+                KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
+              end if
+              KAPPAM(N)=KAPPAM(N)+KAM(L)
+            END DO   !  fin bcle sur L
+          
+            250 CONTINUE
+            KAPPT(N) = KAPPA(N)+KAPPAM(N)
+            KCI(N) = bk_KCD(D,N)
+            KAP(N) = KAPPT(N)+KCI(N)
+            BI(N) = ((bk_B2(N)-bk_B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(N)
+          END DO    ! fin bcle sur N
+          
+          BI(0) = ((bk_B2(0)-bk_B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(0)
+          
+          !--logging--!
+          IF (D .EQ. 1 .OR. D .EQ. DTOT) THEN
+            150 FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,/,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
+            152 FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
+            151 FORMAT(' D=',I5,2X,'BI(0)=',E14.7,2X,'BI(1)=',E14.7,2X,'BI(NTOT)=',E14.7)
+
+            WRITE(LLL,151) D,BI(0),BI(1),BI(modeles_NTOT)
+            CALL LOG_DEBUG(LLL)
+            WRITE(LLL,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
+            CALL LOG_DEBUG(LLL)
+            WRITE(LLL,152)KAPPAM(1),KAPPAM(modeles_NTOT)
+            CALL LOG_DEBUG(LLL)
+          END IF
+          
+          IF((D .LT. DHM) .OR. (D .GE. DHP)) THEN
+            CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
+            selekfh_FL(D) = flin_F
+          ELSE
+            DO N = 1,modeles_NTOT
+                TAUHD(N) = TAUH(D,N)
+            END DO
+            CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK,TAUHD, TTD(D))
+            selekfh_FL(D) = flin_F
+          END IF
+              
+          ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
+          CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
+          selekfh_FCONT(D) = flin_F
+        END DO  ! fin bcle sur D
+    END
+
+
+    !======================================================================================================================
+    !> Calculates the flux in the continuum.
+    !
+    SUBROUTINE BK(LAMBD, TTD, DTOT, LZERO, LFIN)
+      USE READ_FILES
+      USE PARAMETERS
+      USE LOGGING
+      IMPLICIT NONE
+      INTEGER D, DTOT
+      REAL*8 LAMBD, NU, LLZERO, LLFIN, NU1, NU2, LAMBDC, KCJ, KCN,
+     + ALPH_N, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
+     + LOG_PE  ! Created to avoid calculating ALOG10(PE) 3x
+      REAL*8 LZERO, LFIN
+      REAL*8, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
+      REAL*8, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
+      CHARACTER*80 LLL
+      DIMENSION TTD(par_NP)
+      DIMENSION FTTC(par_NP)
+
+      
+      LLZERO = LZERO
+      LLFIN  = LFIN
+      NU1 = C* 1.E+8 /LZERO
+      AHNU1 = H*NU1
+      C31 = (2*AHNU1) * (NU1/C)**2
+      
+      DO N = 1,modeles_NTOT
+        T = 5040./modeles_TETA(N)
+        ALPH_N = EXP(-AHNU1/(KB*T))
+        bk_B1(N) = C31 * (ALPH_N/(1.-ALPH_N))
+        CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        bk_KC1(N) = TOTKAP(1)
+      END DO
+      
+      NU2 = C* 1.E+8 /LFIN
+      AHNU2 = H*NU2
+      C32 =(2*AHNU2) * (NU2/C)**2
+      DO N = 1,modeles_NTOT
+        ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
+        T = 5040./modeles_TETA(N)
+        ALPH_N = EXP(-AHNU2/(KB*T))
+        bk_B2(N) = C32 * (ALPH_N/(1.-ALPH_N))
+        CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        bk_KC2(N) = TOTKAP(1)
+      END DO
+      
+      NU = C* 1.E+8 /LAMBD
+      AHNU = H*NU
+      C3 =(2*AHNU) * (NU/C)**2
+      DO N=1,modeles_NTOT
+        T=5040./modeles_TETA(N)
+        ALPH_N = EXP(-AHNU/(KB*T))
+        bk_B(N) = C3 * (ALPH_N/(1.-ALPH_N))
+        CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
+        bk_PHN(N) = absoru_ZNH(absoru2_NMETA+4) *KB * T
+        bk_PH2(N) = absoru_ZNH(absoru2_NMETA+2) *KB * T
+        bk_KC(N) = TOTKAP(1)
+      END DO
+      
+      TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
+      T = 5040./TET0
+      
+      
+      ALPH01 = EXP(-AHNU1/(KB*T))
+      bk_B1(0) = C31 * (ALPH01/(1.-ALPH01))
+      CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
+      FC1 = flin_F
+      
+      ALPH02 = EXP(-AHNU2/(KB*T))
+      bk_B2(0) = C32 * (ALPH02/(1.-ALPH02))
+      CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
+      FC2 = flin_F
+      
+      ALPH0 = EXP(-AHNU/(KB*T))
+      bk_B(0) = C3 * (ALPH0/(1.-ALPH0))
+      CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
+      bk_FC = flin_F
+
+      ILZERO = LZERO/100.
+      ILZERO = 1E2*ILZERO
+      LAMBDC(1) = LZERO-ILZERO
+      LAMBDC(2) = LFIN-ILZERO
+      DO N=1,modeles_NTOT
+        KCJ(1,N)=bk_KC1(N)
+        KCJ(2,N)=bk_KC2(N)
+      END DO
+      DO N=1,modeles_NTOT
+        DO J=1,2
+          KCN(J)=KCJ(J,N)
+        END DO
+        CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
+        DO D=1,DTOT
+          bk_KCD(D,N)=FTTC(D)
+        END DO
+      END DO
+      
+      !--logging--!
+      153 FORMAT(' bk_KCD(1,1)=',E14.7,2X,'bk_KCD(1,NTOT)=',E14.7)
+      154 FORMAT(' bk_KCD(DTOT,1)=',E14.7,2X,'bk_KCD(DTOT,NTOT)=',E14.7)
+      WRITE(LLL,153) bk_KCD(1,1),bk_KCD(1,modeles_NTOT)
+      CALL LOGGING_DEBUG(LLL)
+      WRITE(LLL,154) bk_KCD(DTOT,1),bk_KCD(DTOT,modeles_NTOT)
+      CALL LOGGING_DEBUG(LLL)
+
+      10 CONTINUE
+    END
+
+
+
+
+
+
+
+
+
+  END SUBROUTINE PFANT_CALCULATE
 
 
 
@@ -794,266 +1015,4 @@ MODULE SYNTHESIS
 
 
 
-  ! TODO Fix Initializations
-  ! TOdO explain parameters
-  ! TODO verbose
-  ! TODO discover what is input and what is output
-  !======================================================================================================================
-  ! Sets the Voigt profile using Hjertings' constants.
-  !
-  ! Note: convolution for molecules uses Gaussian profile.
-  !
-  
-  ! ISSUE with variable MM
-  SUBROUTINE SELEKFH(DTOT,  &    
-                     GFAL,  &     
-                     ECART, &      
-                     TAUH,  &    
-                     DHM,   &   
-                     DHP,   &   
-                     TTD,   &   
-                     ECARTM &     
-                    )
-      USE READ_FILES
-      USE PARAMETERS
-      IMPLICIT NONE
-      PARAMETER(PARAMETER_NMOL=50000)
-      INTEGER D, DTOT, DHM,DHP
-      REAL lambi
-      REAL KAPPA,KA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
-      REAL*8 ECART,ECAR,ECARTM,ECARM
-      DIMENSION turbul_VT(50)
-      DIMENSION BI(0:50)
-      REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECART, ECAR, ECARTL, GFAL, KA
-
-      DIMENSION KAP(50),           &
-                KAPPA(50),         &
-                bk_KCD(par_NP,50), &
-                KCI(50)
-
-      DIMENSION TTD(par_NP),TAUHD(50),TAUH(par_NP,50)                         
-      DIMENSION DELTAM(PARAMETER_NMOL,50), &
-                ECARTM(PARAMETER_NMOL),    &
-                ECARM(PARAMETER_NMOL),     &
-                ECARTLM(PARAMETER_NMOL),   &
-                KAM(PARAMETER_NMOL),       &
-                KAPPAM(50),                &
-                KAPPT(50)
-
-
-      IF (atomgrade_NBLEND .NE. 0) then
-        DO K = 1,atomgrade_NBLEND
-          ECAR(K) = ECART(K)
-        END DO
-      END IF
-      
-      IF (km_MBLEND .NE. 0) then
-        DO K=1,km_MBLEND
-          ECARM(K) = ECARTM(K)
-        END DO
-      end if
-      
-      DO D = 1, DTOT
-        lambi = (6270+(D-1)*0.02)
-        if (atomgrade_NBLEND .ne. 0) then
-          DO K=1,atomgrade_NBLEND
-            ECAR(K)=ECAR(K)-main_PAS
-            ECARTL(K)=ECAR(K)
-          END DO
-        end if
-        
-        if(km_MBLEND .ne. 0) then
-          DO K=1,km_MBLEND
-            ECARM(K) = ECARM(K)-main_PAS
-            ECARTLM(K) = ECARM(K)
-          END DO
-        end if
-      
-        DO N = 1,modeles_NTOT
-          KAPPA(N) =0.
-          KAPPAM(N) =0.
-          T = 5040./modeles_TETA(N)
-          
-          ! atomes
-          if(atomgrade_NBLEND .EQ. 0) go to 260
-
-          DO  K=1,atomgrade_NBLEND
-            IF(ABS(ECARTL(K)) .GT. atomgrade_ZINF(K)) THEN
-              KA(K) = 0.
-            ELSE
-              V = ABS(ECAR(K)*1.E-8/popadelh_DELTA(K,N))
-              CALL HJENOR(popadelh_A(K,N), V, popadelh_DELTA(K,N), PHI)
-              KA(K) = PHI * popadelh_POP(K,N) * GFAL(K) * atomgrade_ABONDS_ABO(K)
-              IF(K .EQ. 1) KA(K) = PHI * popadelh_POP(K,N) * GFAL(K)
-
-            END IF
-            KAPPA(N) = KAPPA(N) + KA(K)
-          END DO   !  fin bcle sur K
-
-          260 CONTINUE
-
-          ! molecule
-          IF(km_MBLEND.EQ.0) GO TO 250
-          DO L=1,km_MBLEND
-            IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
-              KAM(L)=0.
-            else
-          
-              ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
-              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-              DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(turbul_VT(N)**2+DEUXR*T/km_MM)
-              VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
-              PHI=(EXP(-VM**2))/(RPI*DELTAM(L,N))
-              KAM(L)=PHI*km_GFM(L)*km_PNVJ(L,N)
-            end if
-            KAPPAM(N)=KAPPAM(N)+KAM(L)
-          END DO   !  fin bcle sur L
-        
-          250 CONTINUE
-          KAPPT(N) = KAPPA(N)+KAPPAM(N)
-          KCI(N) = bk_KCD(D,N)
-          KAP(N) = KAPPT(N)+KCI(N)
-          BI(N) = ((bk_B2(N)-bk_B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(N)
-        END DO    ! fin bcle sur N
-        
-        BI(0) = ((bk_B2(0)-bk_B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(0)
-        
-        !--logging--!
-        IF (D .EQ. 1 .OR. D .EQ. DTOT) THEN
-          150 FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,/,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
-          152 FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
-          151 FORMAT(' D=',I5,2X,'BI(0)=',E14.7,2X,'BI(1)=',E14.7,2X,'BI(NTOT)=',E14.7)
-
-          WRITE(LLL,151) D,BI(0),BI(1),BI(modeles_NTOT)
-          CALL LOG_DEBUG(LLL)
-          WRITE(LLL,150) D,KCI(1),KCI(modeles_NTOT),KAPPA(1),KAPPA(modeles_NTOT)
-          CALL LOG_DEBUG(LLL)
-          WRITE(LLL,152)KAPPAM(1),KAPPAM(modeles_NTOT)
-          CALL LOG_DEBUG(LLL)
-        END IF
-        
-        IF((D .LT. DHM) .OR. (D .GE. DHP)) THEN
-          CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
-          selekfh_FL(D) = flin_F
-        ELSE
-          DO N = 1,modeles_NTOT
-              TAUHD(N) = TAUH(D,N)
-          END DO
-          CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK,TAUHD, TTD(D))
-          selekfh_FL(D) = flin_F
-        END IF
-            
-        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
-        selekfh_FCONT(D) = flin_F
-      END DO  ! fin bcle sur D
-  END
-
-
-  !======================================================================================================================
-  !> Calculates the flux in the continuum.
-  !
-  SUBROUTINE BK(LAMBD, TTD, DTOT, config_KIK, LZERO, LFIN)
-    USE READ_FILES
-    USE PARAMETERS
-    USE LOGGING
-    IMPLICIT NONE
-    INTEGER D, DTOT
-    REAL*8 LAMBD, NU, LLZERO, LLFIN, NU1, NU2, LAMBDC, KCJ, KCN,
-   + ALPH_N, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
-   + LOG_PE  ! Created to avoid calculating ALOG10(PE) 3x
-    REAL*8 LZERO, LFIN
-    REAL*8, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
-    REAL*8, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
-    CHARACTER*80 LLL
-    DIMENSION TTD(par_NP)
-    DIMENSION FTTC(par_NP)
-
-    
-    LLZERO = LZERO
-    LLFIN  = LFIN
-    NU1 = C* 1.E+8 /LZERO
-    AHNU1 = H*NU1
-    C31 = (2*AHNU1) * (NU1/C)**2
-    
-    DO N = 1,modeles_NTOT
-      T = 5040./modeles_TETA(N)
-      ALPH_N = EXP(-AHNU1/(KB*T))
-      bk_B1(N) = C31 * (ALPH_N/(1.-ALPH_N))
-      CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-      bk_KC1(N) = TOTKAP(1)
-    END DO
-    
-    NU2 = C* 1.E+8 /LFIN
-    AHNU2 = H*NU2
-    C32 =(2*AHNU2) * (NU2/C)**2
-    DO N = 1,modeles_NTOT
-      ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
-      T = 5040./modeles_TETA(N)
-      ALPH_N = EXP(-AHNU2/(KB*T))
-      bk_B2(N) = C32 * (ALPH_N/(1.-ALPH_N))
-      CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-      bk_KC2(N) = TOTKAP(1)
-    END DO
-    
-    NU = C* 1.E+8 /LAMBD
-    AHNU = H*NU
-    C3 =(2*AHNU) * (NU/C)**2
-    DO N=1,modeles_NTOT
-      T=5040./modeles_TETA(N)
-      ALPH_N = EXP(-AHNU/(KB*T))
-      bk_B(N) = C3 * (ALPH_N/(1.-ALPH_N))
-      CALL ABSORU(LAMBD,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
-      bk_PHN(N) = absoru_ZNH(absoru2_NMETA+4) *KB * T
-      bk_PH2(N) = absoru_ZNH(absoru2_NMETA+2) *KB * T
-      bk_KC(N) = TOTKAP(1)
-    END DO
-    
-    TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
-    T = 5040./TET0
-    
-    
-    ALPH01 = EXP(-AHNU1/(KB*T))
-    bk_B1(0) = C31 * (ALPH01/(1.-ALPH01))
-    CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
-    FC1 = flin_F
-    
-    ALPH02 = EXP(-AHNU2/(KB*T))
-    bk_B2(0) = C32 * (ALPH02/(1.-ALPH02))
-    CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
-    FC2 = flin_F
-    
-    ALPH0 = EXP(-AHNU/(KB*T))
-    bk_B(0) = C3 * (ALPH0/(1.-ALPH0))
-    CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
-    bk_FC = flin_F
-
-    ILZERO = LZERO/100.
-    ILZERO = 1E2*ILZERO
-    LAMBDC(1) = LZERO-ILZERO
-    LAMBDC(2) = LFIN-ILZERO
-    DO N=1,modeles_NTOT
-      KCJ(1,N)=bk_KC1(N)
-      KCJ(2,N)=bk_KC2(N)
-    END DO
-    DO N=1,modeles_NTOT
-      DO J=1,2
-        KCN(J)=KCJ(J,N)
-      END DO
-      CALL FTLIN3(2,LAMBDC,KCN,DTOT,TTD,FTTC)
-      DO D=1,DTOT
-        bk_KCD(D,N)=FTTC(D)
-      END DO
-    END DO
-    
-    !--logging--!
-    153 FORMAT(' bk_KCD(1,1)=',E14.7,2X,'bk_KCD(1,NTOT)=',E14.7)
-    154 FORMAT(' bk_KCD(DTOT,1)=',E14.7,2X,'bk_KCD(DTOT,NTOT)=',E14.7)
-    WRITE(LLL,153) bk_KCD(1,1),bk_KCD(1,modeles_NTOT)
-    CALL LOGGING_DEBUG(LLL)
-    WRITE(LLL,154) bk_KCD(DTOT,1),bk_KCD(DTOT,modeles_NTOT)
-    CALL LOGGING_DEBUG(LLL)
-
-    10 CONTINUE
-  END
 END MODULE
