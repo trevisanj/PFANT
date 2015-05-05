@@ -16,8 +16,10 @@
 ! TODO Explain that each [subroutine] module declares the variables that it calculates
 ! TODO module dependence map
 !
+
+! 20150505 -- Comments by Paula Coelho in 2003
+!===PC2003 BEGIN===
 ! ======================================================================
-!
 !     >> pfantgrade.f << NOV 2003
 !
 !     este codigo eh uma uniao do codigo pfant03.f e do
@@ -60,7 +62,7 @@
 !     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
 !     atualizadas
 !
-!     c. incluidos c_filetoh_TAUHI(par_NP,50),TAUHY(10,par_NP,50) e excluido IHH(500)
+!     c. incluidos c_filetoh_TAUHI(NP,50),TAUHY(10,NP,50) e excluido IHH(500)
 !
 !     d. todo o codigo que se referia ao calculo das linha de H foram
 !     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -70,10 +72,10 @@
 !     e. segundo as instrucoes enviadas pela Marie Noel em 2001:
 !     - na rotina FTLIN3H foi incluida a linha
 !     'if (ftt(itot).ne.0.0) k2=itot'
-!     - DTOT foi substituido por par_NP nas dimensoes das matrizes
-!           BK : TTD(par_NP), bk_KCD(par_NP,5)
-!        LECTAUH : TTD(par_NP)
-!        SELEKFH : TTD(par_NP), bk_KCD(par_NP, 50), selekfh_FL(par_NP), TAUH(par_NP,50)`
+!     - DTOT foi substituido por NP nas dimensoes das matrizes
+!           BK : TTD(NP), bk_KCD(NP,5)
+!        LECTAUH : TTD(NP)
+!        SELEKFH : TTD(NP), bk_KCD(NP, 50), selekfh_FL(NP), TAUH(NP,50)`
 !
 !
 !     Tambem reduzi o numero de comentario que vao para a tela
@@ -81,8 +83,8 @@
 !
 ! ========================================================================
 !
-!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(par_NP) e o
-!     espectro normalizado FN(par_NP) {Paula, dez 2003}
+!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(NP) e o
+!     espectro normalizado FN(NP) {Paula, dez 2003}
 !
 !     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
 !     - abro mais dois arquivos binarios unit=19 (continuo) e 20 (normalizado)
@@ -96,7 +98,7 @@
 !     Portanto, para diferenciar os arquivos binarios criados,
 !     alem do arquivo normal criado como 'spe.' + nome no main.dat
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
-
+!===PC2003 END=== 
 
 
 !> Fantomol avec sous-programmes (MNP) -
@@ -106,7 +108,11 @@
 MODULE SYNTHESIS
   USE READ_FILES
 
-  PARAMETER(PARAMETER_NMOL=50000,NT=10000)
+
+  !> @TODO ISSUE this is used a lot, I gotta find out its meaning
+  !> ISSUE I think it is the maximum number of calculation steps.
+  INTEGER, PARAMETER :: NP = 7000
+  PARAMETER(NMOL=50000,NT=10000)
 
   !=====
   ! Subroutine outputs
@@ -129,7 +135,7 @@ MODULE SYNTHESIS
 
 
   !> Calculated by subroutine SELEKFH
-  REAL*8, DIMENSION(par_NP) :: selekfh_FL, selekfh_FCONT
+  REAL*8, DIMENSION(NP) :: selekfh_FL, selekfh_FCONT
 
 
 
@@ -138,9 +144,9 @@ MODULE SYNTHESIS
   !> Calculated by subroutine BK
   REAL*8, DIMENSION(MAX_modeles_NTOT) :: bk_KC, bk_KC1, bk_KC2, bk_PHN, bk_PH2
   !> Calculated by subroutine BK
-  REAL*8, DIMENSION(par_NP, MAX_modeles_NTOT) :: bk_KCD
+  REAL*8, DIMENSION(NP, MAX_modeles_NTOT) :: bk_KCD
   !> Calculated by subroutine BK
-  REAL*8, DIMENSION(par_NP) :: bk_FC
+  REAL*8, DIMENSION(NP) :: bk_FC
 
 
 
@@ -184,11 +190,11 @@ MODULE SYNTHESIS
     REAL*8 LAMBD, LZERO, LFIN, L0, LF, LLLHY
           
     REAL*8 GFAL(MAX_atomgrade_NBLEND), ECART(MAX_atomgrade_NBLEND), &
-     FI(1501),TFI(1501), ECARTM(PARAMETER_NMOL)
+     FI(1501),TFI(1501), ECARTM(NMOL)
 !   fonctions de partition TODO figure out what this comment refers to
 
-    REAL*8 TTD(par_NP), FN(par_NP), &
-           TAUH(par_NP, 50), TAUHY(10,par_NP,50), &
+    REAL*8 TTD(NP), FN(NP), &
+           TAUH(NP, 50), TAUHY(10,NP,50), &
            DHMY(10), DHPY(10)
 
     ! Units for output files
@@ -198,7 +204,6 @@ MODULE SYNTHESIS
      UNIT_NORM  = 20, &
      UNIT_LINES = 32, &
      UNIT_LOG   = 31 
-
 
 
 
@@ -458,11 +463,11 @@ MODULE SYNTHESIS
     !--logging--!
     CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
     CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
-    
+
   CONTAINS  !--still PFANT_CALCULATE()
+    
     ! These subroutines have total knowledge of the variable names and values that appear inside
     ! their parent subroutine PFANT_CALCULATE(). http://www.personal.psu.edu/jhm/f90/statements/contains.html
-
       
     !> Used to write the "spectrum", "continuum", and "normalized".
     !> Their writing pattern is very similar. THe header is the same,
@@ -552,9 +557,7 @@ MODULE SYNTHESIS
     ! ISSUE with variable MM
     SUBROUTINE SELEKFH()
         USE READ_FILES
-        USE PARAMETERS
         IMPLICIT NONE
-        PARAMETER(PARAMETER_NMOL=50000)
         INTEGER D
         REAL lambi
         REAL KAPPA,KA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
@@ -565,14 +568,14 @@ MODULE SYNTHESIS
 
         DIMENSION KAP(50),           &
                   KAPPA(50),         &
-                  bk_KCD(par_NP,50), &
+                  bk_KCD(NP,50), &
                   KCI(50)
 
         DIMENSION TAUHD(50)
-        DIMENSION DELTAM(PARAMETER_NMOL,50), &
-                  ECARM(PARAMETER_NMOL),     &
-                  ECARTLM(PARAMETER_NMOL),   &
-                  KAM(PARAMETER_NMOL),       &
+        DIMENSION DELTAM(NMOL,50), &
+                  ECARM(NMOL),     &
+                  ECARTLM(NMOL),   &
+                  KAM(NMOL),       &
                   KAPPAM(50),                &
                   KAPPT(50)
 
@@ -702,8 +705,8 @@ MODULE SYNTHESIS
       REAL*8, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
       REAL*8, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
       CHARACTER*80 LLL
-      DIMENSION TTD(par_NP)
-      DIMENSION FTTC(par_NP)
+      DIMENSION TTD(NP)
+      DIMENSION FTTC(NP)
 
       
       LLZERO = LZERO
@@ -793,22 +796,13 @@ MODULE SYNTHESIS
       10 CONTINUE
     END
 
-
-
-
-
-
-
-
-
   END SUBROUTINE PFANT_CALCULATE
-
-
 
 
 
   !======================================================================================================================
   ! ISSUE WHAT
+
   SUBROUTINE TURBUL()
     USE CONFIG
     CHARACTER*80 LLL
@@ -925,6 +919,7 @@ MODULE SYNTHESIS
   !> la largeur doppler popadelh_DELTA et le coefficient d'elargissement
   !> le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
   !
+
   SUBROUTINE POPADELH()
     USE LOGGING
     IMPLICIT NONE
@@ -1016,3 +1011,7 @@ MODULE SYNTHESIS
 
 
 END MODULE
+
+
+
+
