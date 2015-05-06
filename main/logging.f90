@@ -45,11 +45,15 @@ MODULE LOGGING
 CONTAINS
 
   !-------------------------------------------------------------------------------
-  !> Logs message at HALT level and halts program execution
+  !> Logs message at HALT level and halts program execution with error code -1.
+  !>
+  !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
+  !> due to an error situation (normal program execution ends with error code 0).
+
   SUBROUTINE PFANT_HALT(S)
     CHARACTER(LEN=*) :: S
     CALL DO_LOGGING(S, logging_HALT)
-    STOP
+    STOP -1
   END
   
   !-------------------------------------------------------------------------------
@@ -58,6 +62,7 @@ CONTAINS
   !> This allows the calling routine to log HALT-level messages before calling 
   !> PFANT_HALT(). As a rule, always call PFTANT_HALT() after 1 or more calls to
   !> LOG_HALT().
+  
   SUBROUTINE LOG_HALT(S)
     CHARACTER(LEN=*) :: S
     CALL DO_LOGGING(S, logging_HALT)
@@ -65,6 +70,7 @@ CONTAINS
 
   !-------------------------------------------------------------------------------
   !> Logs message as CRITICAL
+  
   SUBROUTINE LOG_CRITICAL(S)
     CHARACTER(LEN=*) :: S
     IF (logging_LEVEL .LE. logging_CRITICAL) THEN
@@ -74,6 +80,7 @@ CONTAINS
 
   !-------------------------------------------------------------------------------
   !> Logs message as ERROR
+  
   SUBROUTINE LOG_ERROR(S)
     CHARACTER(LEN=*) :: S
     IF (logging_LEVEL .LE. logging_ERROR) THEN
@@ -83,6 +90,7 @@ CONTAINS
 
   !-------------------------------------------------------------------------------
   !> Logs message as WARNING
+  
   SUBROUTINE LOG_WARNING(S)
     CHARACTER(LEN=*) :: S
     IF (logging_LEVEL .LE. logging_WARNING) THEN
@@ -92,6 +100,7 @@ CONTAINS
 
   !-------------------------------------------------------------------------------
   !> Logs message as INFO
+  
   SUBROUTINE LOG_INFO(S)
     CHARACTER(LEN=*) :: S
     IF (logging_LEVEL .LE. logging_INFO) THEN
@@ -101,6 +110,7 @@ CONTAINS
 
   !-------------------------------------------------------------------------------
   !> Logs message as DEBUG
+  
   SUBROUTINE LOG_DEBUG(S)
     CHARACTER(LEN=*) :: S
     IF (logging_LEVEL .LE. logging_DEBUG) THEN
@@ -108,8 +118,11 @@ CONTAINS
     END IF
   END
 
+  !===============================================================================
+  
   !-------------------------------------------------------------------------------
   !> Internal routine, MUST NOT be called from outside
+  
   SUBROUTINE DO_LOGGING(S, LEVEL)
   CHARACTER(LEN=*) :: S
   CHARACTER(LEN=8) :: T
