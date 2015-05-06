@@ -20,92 +20,92 @@
 !> - FILTER_MOLECULAGRADE: Selects spectral lines within LZERO-LFIN lambda interval
 !> - USE_MOLECULAGRADE: performs the calculations using the selected spectral lines
 
-MODULE MOLECULA
-  USE READ_FILES
-  USE CONFIG
+module molecula
+  use read_files
+  use config
 
-  !~INTEGER, PARAMETER :: MAX_LINES_PER_MOL=300000
+  !~integer, parameter :: max_lines_per_mol=300000
   ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
 
-  INTEGER, PARAMETER :: MAX_SOL_PER_MOL=200
+  integer, parameter :: max_sol_per_mol=200
 
-  !~ INTEGER, PARAMETER ::
-  !~+  MAX_km__LINES_TOTAL = MAX_LINES_PER_MOL*NUM_MOL
-  INTEGER, PARAMETER :: MAX_km__LINES_TOTAL=1400000
+  !~ integer, parameter ::
+  !~+  max_km__lines_total = max_lines_per_mol*num_mol
+  integer, parameter :: max_km__lines_total=1400000
 
   ! Specifies how many molecules to read
   ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
   ! (MT) Gonna ask BLB this
-  INTEGER km__NUMBER
+  integer km__number
 
-  INTEGER km__LINES_TOTAL  ! Total number of spectral line, counting all molecules
+  integer km__lines_total  ! Total number of spectral line, counting all molecules
 
-  CHARACTER*256 km__TITM, km__TITULO
+  character*256 km__titm, km__titulo
 
-  DIMENSION km__TITULO(NUM_MOL)
+  dimension km__titulo(num_mol)
 
-  REAL*8, DIMENSION(NUM_MOL) :: km__FE, km__DO, &
-   km__MM, km__AM, km__BM, km__UA, km__UB, km__TE, km__CRO, &
-   km__A0, km__A1, km__A2, km__A3, km__A4, km__ALS, km__S
+  real*8, dimension(num_mol) :: km__fe, km__do, &
+   km__mm, km__am, km__bm, km__ua, km__ub, km__te, km__cro, &
+   km__a0, km__a1, km__a2, km__a3, km__a4, km__als, km__s
 
-  INTEGER, DIMENSION(NUM_MOL)  :: km__ISE, km__NV, &
-   km__LINES_PER_MOL  !> This stores the number of spectral lines for each molecule
+  integer, dimension(num_mol)  :: km__ise, km__nv, &
+   km__lines_per_mol  !> This stores the number of spectral lines for each molecule
 
-  REAL*8, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) :: km__QQV, km__GGV, km__BBV, km__DDV, km__FACT
+  real*8, dimension(max_sol_per_mol, num_mol) :: km__qqv, km__ggv, km__bbv, km__ddv, km__fact
 
 
   !> "Index of Last Lambda Of Set-Of-Lines"
-  !> Points to lm__LMBDAM, km__SJ, km__JJ; km__LAST
+  !> Points to km__lmbdam, km__sj, km__jj; km__last
   !> This is mounted at reading to help with the filtering and avoid
-  !> allocating 2 dimensions for (lm__LMBDAM, km__SJ, km__JJ)
-  REAL*8, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) :: km__IOLLOSOL 
+  !> allocating 2 dimensions for (lm__lmbdam, km__sj, km__jj)
+  real*8, dimension(max_sol_per_mol, num_mol) :: km__iollosol 
 
-  REAL*8,  DIMENSION(MAX_km__LINES_TOTAL) :: km__LMBDAM
-  REAL*8,    DIMENSION(MAX_km__LINES_TOTAL) :: km__SJ, km__JJ
+  real*8,  dimension(max_km__lines_total) :: km__lmbdam
+  real*8,    dimension(max_km__lines_total) :: km__sj, km__jj
 
-  !~ INTEGER, DIMENSION(MAX_LINES_PER_MOL, NUM_MOL) ::
-  !~+  km__NUMLIN
+  !~ integer, dimension(max_lines_per_mol, num_mol) ::
+  !~+  km__numlin
 
 
   !=====
-  ! Variables filled by FILTER_MOLECULAGRADE()
+  ! Variables filled by filter_moleculagrade()
 
-  INTEGER km_MBLEND  ! Total number of spectral lines *filtered in*
+  integer km_mblend  ! Total number of spectral lines *filtered in*
 
-  ! Valid elements of these are from 1 to km_MBLEND
-  REAL*8, DIMENSION(MAX_km__LINES_TOTAL) :: km_LMBDAM
-  REAL*8, DIMENSION(MAX_km__LINES_TOTAL) :: km_SJ, km_JJ, km_GFM, km_ALARGM
+  ! Valid elements of these are from 1 to km_mblend
+  real*8, dimension(max_km__lines_total) :: km_lmbdam
+  real*8, dimension(max_km__lines_total) :: km_sj, km_jj, km_gfm, km_alargm
 
 
   !------
   ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
   !------
   ! This one points to the last index of the lines of each molecule within
-  ! km_LMBDAM, km_SJ and km_JJ (after the filtering)
+  ! km_lmbdam, km_sj and km_jj (after the filtering)
   ! Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
-  DIMENSION km_MBLENQ(NUM_MOL+1)
+  dimension km_mblenq(num_mol+1)
   ! This is similar but is a "local" one, it contains index of the last
-  ! line of each set of lines within km_LMBDAM, km_SJ and km_JJ
+  ! line of each set of lines within km_lmbdam, km_sj and km_jj
   ! **for the current molecule** I_MOL
   ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
   ! TODO Explain better
-  DIMENSION km_LN(MAX_SOL_PER_MOL+1, NUM_MOL)
+  dimension km_ln(max_sol_per_mol+1, num_mol)
 
-  ! ISSUE: "Warning: possible change of value in conversion from REAL(8) to REAL(4)"
-  REAL*8, DIMENSION(MAX_km__LINES_TOTAL, MAX_modeles_NTOT) :: km_PNVJ
+  ! ISSUE: "Warning: possible change of value in conversion from real(8) to real(4)"
+  real*8, dimension(max_km__lines_total, max_modeles_ntot) :: km_pnvj
 
   ! TODO test the pointers
-  REAL*8, PRIVATE, POINTER, DIMENSION(:) :: PPA, PB
+  real*8, private, pointer, dimension(:) :: ppa, pb
 
-  PRIVATE POINT_PPA_PB
+  private point_ppa_pb
 
-  SAVE
-CONTAINS
+  save
+contains
 
 
 
   !================================================================================================================================
-  !> READ_MOLECULAGRADE(): reads file moleculagrade.dat to fill variables km_*
+  !> Reads file moleculagrade.dat to fill variables km_*
   !>
   !> Reads molecular lines
   !>
