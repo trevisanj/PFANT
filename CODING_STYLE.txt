@@ -1,39 +1,33 @@
 Sketch of a coding style manual
 
-This file:
-- Restrict to 80 columns.
-
 Format
 ======
+  Now using the "modern" .f90-.f95 file format (instead of .f "punchcard").
 
-  Indents
-  -------
-  - Beginning of line: use 6 spaces (not tabs) at the beginning of a line,
-    since most editors seem not to understand the old tabbed format.
-  - IF, DO etc indents: let us use only 2 spaces because we are restricted
-    to 72 columns.
-  - Indents at continuation lines: no fixed rule; as a suggestion, put at
-    least one space between the continuation character and the continuation
-    line. 
-    Suggestion: continue with a 1-space indentation from the beginning line, 
-                i.e.:
+  Indentation
+  -----------
     
-            WRITE (*,*) 'A equals ', A, '; B equals ', B, '; C equals ',
-     +       C, 'D equals ', D            
-             ^1-space indentation after beginning line
-     ^6th column
+    - 2-space indentation for all IF, DO, SUBROUTINE etc. structures.
+  
+    - Continuation lines: suggestion: continue with a 1-space indentation 
+      from the beginning line, i.e.:
+    
+... WRITE (*,*) 'A equals ', A, '; B equals ', B, '; C equals ', &
+...  C, 'D equals ', D            
+     |
+     1-space indentation after beginning line
      
   
   Number of columns
   -----------------
-  - Restrict code to 72 columns (comments may surpass this)
-
-  Continuation
-  ------------
-  No fixed rule; as a suggestion, use "@" when the line contains a formula to
-  avoid the risk of messing with the formula because "@" cannot be part of a
-  formula, whereas the usual continuation characters ([+_0-9]) can be part of
-  a formula.
+  Rule for all 
+    .f90 and 
+    .txt files: *90-column maximum*.
+  This is probably a good a compromise between
+    predominant sense (which is 80-column, arguing about readability and ergonomics),
+    accessibility (code being read by different people on different system setups) and
+    horizontal space (not having to wrap formulas and long lines of code too often).
+  [Cesm0][StackEx0][JavaGuide]
   
 
 Common blocks
@@ -43,12 +37,18 @@ Do NOT use common blocks! Use Fortran MODULE to declare globals!
 
 Data types
 ==========
-REAL*4 vs. REAL*8
-As a thought (not put in practice yet):
-"If you must use floating point, use double precision unless you have reason
-to be concerned about memory use (your program uses large arrays) and you do
-not need much precision. Modern computers do not take significantly longer to
-process double precision values than they do to process reals." [1]
+  REAL*4 vs. REAL*8
+  -----------------
+  Now all real variables must be REAL*8.
+  The routine that reads file modeles.mod still has to declare REAL*4 to read this binary
+  file.
+
+  "If you must use floating point, use double precision unless you have reason
+  to be concerned about memory use (your program uses large arrays) and you do
+  not need much precision. Modern computers do not take significantly longer to
+  process double precision values than they do to process reals." [Uwm0]
+  
+  ISSUE the molecules part may break the rule, let us see when trying to run the thing.
 
 
 Programming
@@ -65,3 +65,11 @@ Programming
   logging can be silenced and/or sent to specific logging file using
   command-line config options.
 
+
+
+References
+==========
+[Cesm0] http://www.cesm.ucar.edu/working_groups/Software/dev_guide/dev_guide/node7.html
+[StackEx0] http://programmers.stackexchange.com/questions/148677/why-is-80-characters-the-standard-limit-for-code-width
+[JavaGuide] https://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s4.4-column-limit
+[Uwm0] http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html
