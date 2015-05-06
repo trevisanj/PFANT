@@ -283,7 +283,7 @@ MODULE SYNTHESIS
       ! ISSUE Explain DTOT
       DTOT = (LFIN-LZERO)/main_PAS + 1.0005
       
-      !--logging--!
+      !__logging__
       117 FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
       WRITE(LLL, 117) LZERO, LFIN, DTOT
       CALL LOG_INFO(LLL)
@@ -304,7 +304,7 @@ MODULE SYNTHESIS
 
       CALL BK(LAMBD,TTD,DTOT,config_KIK,LZERO,LFIN)
 
-      !--logging--!
+      !__logging__
       501 FORMAT(2X,2X,'LLZERO=',F10.3,2X,'LLFIN=',F10.3,  2X,'LZERO=',F10.3,2X,'LFIN=',F10.3,2X,'LAMBD 1/2=',F10.3)
       WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
       CALL LOG_INFO(LLL)
@@ -322,7 +322,7 @@ MODULE SYNTHESIS
           IHT = IH
           FILETOH = main_FILETOHY(IHT)
 
-          !--logging--!
+          !__logging__
           712 FORMAT(1X,'IM=',I3,2X,'Lambda H=',F8.3,2X,A,2X,'IH=',I5)
           WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
           CALL LOG_INFO(LLL)
@@ -343,7 +343,7 @@ MODULE SYNTHESIS
 
       IMY = IM
       IF(IMY .NE. 0) THEN
-        !--logging--!
+        !__logging__
         WRITE(LLL,*) (DHMY(IM), IM=1,IMY)
         CALL LOG_DEBUG(LLL)
         WRITE(LLL,*) (DHPY(IM), IM=1,IMY)
@@ -433,7 +433,7 @@ MODULE SYNTHESIS
       CALL WRITE_SPEC_ITEM(UNIT_CONT, selekfh_FCONT)  ! continuum
       CALL WRITE_SPEC_ITEM(UNIT_NORM, FN)             ! normalized
 
-      !--logging--!
+      !__logging__
       707 FORMAT(1X,'IKEY=',I10,2X,'LZERO=',F10.3,2X,'LFIN=',F10.3, 2X,'I1=',I7,2X,'I2=',I7)
       WRITE(LLL,707) IKEY, LZERO, LFIN, I1, I2
       CALL LOG_INFO(LLL)
@@ -441,7 +441,7 @@ MODULE SYNTHESIS
       IKEY = IKEY+1
       IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
-      !--logging--!
+      !__logging__
       708 FORMAT(1X,'IKEY=',I10,2X,'IRH=',I6)
       WRITE(LLL, 708) IKEY, IRH
       CALL LOG_INFO(LLL)
@@ -458,7 +458,7 @@ MODULE SYNTHESIS
     CLOSE(UNIT_LOG)
     CLOSE(UNIT_LINES)
 
-    !--logging--!
+    !__logging__
     CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
     CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
 
@@ -655,7 +655,7 @@ MODULE SYNTHESIS
           
           BI(0) = ((bk_B2(0)-bk_B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(0)
           
-          !--logging--!
+          !__logging__
           IF (D .EQ. 1 .OR. D .EQ. DTOT) THEN
             150 FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,/,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
             152 FORMAT(10X,'KAPPAM(1)=',E14.7,2X,'KAPPAM(NTOT)=',E14.7)
@@ -783,7 +783,7 @@ MODULE SYNTHESIS
         END DO
       END DO
       
-      !--logging--!
+      !__logging__
       153 FORMAT(' bk_KCD(1,1)=',E14.7,2X,'bk_KCD(1,NTOT)=',E14.7)
       154 FORMAT(' bk_KCD(DTOT,1)=',E14.7,2X,'bk_KCD(DTOT,NTOT)=',E14.7)
       WRITE(LLL,153) bk_KCD(1,1),bk_KCD(1,modeles_NTOT)

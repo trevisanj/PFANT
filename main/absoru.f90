@@ -272,7 +272,7 @@ CONTAINS
     ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
     ! =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 
-    !--logging--!
+    !__logging__
     86 FORMAT ('0LAMBDA KKK   C1'7X'MG'7X'SI1'7X'AL1'8X'H-'7X'H2-'7X'H2+'9X'H'7X'HE+'8X'HE'5X'K TOTAL/',2A4)
     WRITE (LLL,86) (absoru2_IUNITE(I),I=1,2)
     CALL LOG_DEBUG(LLL)
@@ -314,13 +314,13 @@ CONTAINS
       END DO
       TOTKAP(I)=(TOTKAP(I)+SCATEL+SCAT(1)+SCAT(2))
 
-      !--logging--!
+      !__logging__
       87 FORMAT (F9.1,I2,1P12E10.2)
       WRITE (LLL,87) WL,KKK,(ZZKK(M,I),M=1,MMM),TOTKAP(I)
       CALL LOG_DEBUG(LLL)
     END DO
 
-    !--logging--!
+    !__logging__
     89 FORMAT ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSITE='E11.4,' NBR.NOYAU D H/CM3='E11.4, &
                ' LOG10PE='0PF5.2,' TETA='F5.2)
     WRITE (LLL,89) SCATEL,SCAT(1),SCAT(2),au_RHO,au_TOC,ZLPE,TH

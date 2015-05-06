@@ -302,7 +302,7 @@
         ! ISSUE Explain DTOT
         DTOT = (LFIN-LZERO)/main_PAS + 1.0005
         
-        !--logging--!
+        !__logging__
         WRITE(LLL, 117) LZERO, LFIN, DTOT
         CALL LOG_INFO(LLL)
         
@@ -321,7 +321,7 @@
 
         CALL BK(LAMBD,TTD,DTOT,config_KIK,LZERO,LFIN)
 
-        !--logging--!
+        !__logging__
         WRITE(LLL,501) main_LLZERO,main_LLFIN,LZERO,LFIN,LAMBD
         CALL LOG_INFO(LLL)
 
@@ -341,7 +341,7 @@
             IHT = IH
             FILETOH = main_FILETOHY(IHT)
 
-            !--logging--!
+            !__logging__
             WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
             CALL LOG_INFO(LLL)
 
@@ -361,7 +361,7 @@
 
         IMY = IM
         IF(IMY .NE. 0) THEN
-          !--logging--!
+          !__logging__
           WRITE(LLL,*) (DHMY(IM), IM=1,IMY)
           CALL LOG_DEBUG(LLL)
           WRITE(LLL,*) (DHPY(IM), IM=1,IMY)
@@ -518,14 +518,14 @@
         CALL WRITE_SPEC_ITEM(UNIT_NORM, selekfh_FN)
 
 
-        !--logging--!
+        !__logging__
         WRITE(LLL,707) IKEY, LZERO, LFIN, I1, I2
         CALL LOG_INFO(LLL)
 
         IKEY = IKEY+1
         IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
 
-        !--logging--!
+        !__logging__
         WRITE(LLL, 708) IKEY, IRH
         CALL LOG_INFO(LLL)
         
@@ -543,7 +543,7 @@
       CLOSE(UNIT_LOG)
       CLOSE(UNIT_LINES)
 
-      !--logging--!
+      !__logging__
       CALL LOG_INFO('Flux sortant est en nu: Fnu x lambda')
       CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
 
@@ -1089,11 +1089,14 @@
           bk_KCD(D,N)=FTTC(D)
         END DO
       END DO
-      
-      IF (VERBOSE) THEN
-        WRITE(6,153) bk_KCD(1,1),bk_KCD(1,modeles_NTOT)
-        WRITE(6,154) bk_KCD(DTOT,1),bk_KCD(DTOT,modeles_NTOT)
-      END IF
+
+
+      !__logging__            
+      WRITE(LLL,153) bk_KCD(1,1),bk_KCD(1,modeles_NTOT)
+      CALL LOG_DEBUG(LLL)
+      WRITE(LLL,154) bk_KCD(DTOT,1),bk_KCD(DTOT,modeles_NTOT)
+      CALL LOG_DEBUG(LLL)
+
 10    CONTINUE
       RETURN
 

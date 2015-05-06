@@ -114,7 +114,7 @@ CONTAINS
   FUNCTION GET_MOLID(I_MOL)
     IMPLICIT NONE
     INTEGER I_MOL, GET_MOLID
-    CHARACTER*128 S  !--logging--!
+    CHARACTER*128 S  !__logging__
 
     !--assertion--!
     IF (.NOT. FLAG_SETUP) CALL PFANT_HALT('GET_MOLID(): forgot to call CONFIG_SETUP()')

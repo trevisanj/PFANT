@@ -371,7 +371,7 @@ MODULE MISC_MATH
     USE LOGGING
     IMPLICIT NONE
     DIMENSION X(N),Y(N),TT(ITOT),FTT(ITOT)
-    CHARACTER*256 S  !--logging--! 
+    CHARACTER*256 S  !__logging__ 
      
 !     WRITE(6,*) N
 !     105 FORMAT(7F10.3)

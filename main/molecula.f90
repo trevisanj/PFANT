@@ -5,7 +5,7 @@
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
 ! 
-! Foobar is distributed in the hope that it will be useful,
+! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
@@ -13,204 +13,92 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-      MODULE MOLECULA
-      USE READ_FILES
-      USE CONFIG
+MODULE MOLECULA
+  USE READ_FILES
+  USE CONFIG
 
-      !~INTEGER, PARAMETER :: MAX_LINES_PER_MOL=300000
-      ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
+  !~INTEGER, PARAMETER :: MAX_LINES_PER_MOL=300000
+  ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
 
-      INTEGER, PARAMETER :: MAX_SOL_PER_MOL=200
+  INTEGER, PARAMETER :: MAX_SOL_PER_MOL=200
 
-      !~ INTEGER, PARAMETER ::
-      !~+  MAX_km__LINES_TOTAL = MAX_LINES_PER_MOL*NUM_MOL
-      INTEGER, PARAMETER :: MAX_km__LINES_TOTAL=1400000
+  !~ INTEGER, PARAMETER ::
+  !~+  MAX_km__LINES_TOTAL = MAX_LINES_PER_MOL*NUM_MOL
+  INTEGER, PARAMETER :: MAX_km__LINES_TOTAL=1400000
 
-      ! Specifies how many molecules to read
-      ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
-      ! (MT) Gonna ask BLB this
-      INTEGER km__NUMBER
+  ! Specifies how many molecules to read
+  ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
+  ! (MT) Gonna ask BLB this
+  INTEGER km__NUMBER
 
-      INTEGER km__LINES_TOTAL  ! Total number of spectral line, counting all molecules
+  INTEGER km__LINES_TOTAL  ! Total number of spectral line, counting all molecules
 
-      CHARACTER*256 km__TITM, km__TITULO
+  CHARACTER*256 km__TITM, km__TITULO
 
-      DIMENSION km__TITULO(NUM_MOL)
+  DIMENSION km__TITULO(NUM_MOL)
 
-      REAL, DIMENSION(NUM_MOL) :: km__FE, km__DO,
-     +  km__MM, km__AM, km__BM, km__UA, km__UB, km__TE, km__CRO,
-     +  km__A0, km__A1, km__A2, km__A3, km__A4, km__ALS, km__S
+  REAL, DIMENSION(NUM_MOL) :: km__FE, km__DO,
+ +  km__MM, km__AM, km__BM, km__UA, km__UB, km__TE, km__CRO,
+ +  km__A0, km__A1, km__A2, km__A3, km__A4, km__ALS, km__S
 
-      INTEGER, DIMENSION(NUM_MOL)  :: km__ISE, km__NV,
-     +  km__LINES_PER_MOL  ! This stores the number of spectral lines for each molecule
+  INTEGER, DIMENSION(NUM_MOL)  :: km__ISE, km__NV,
+ +  km__LINES_PER_MOL  ! This stores the number of spectral lines for each molecule
 
-      REAL, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) ::
-     +  km__QQV, km__GGV, km__BBV, km__DDV, km__FACT
-
-
-      REAL, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) ::
-     +  km__IOLLOSOL ! "Index of Last Lambda Of Set-Of-Lines"
-                     ! Points to lm__LMBDAM, km__SJ, km__JJ; km__LAST
-                     ! This is mounted at reading to help with the filtering and avoid
-                     ! allocating 2 dimensions for (lm__LMBDAM, km__SJ, km__JJ)
-
-      REAL*8,  DIMENSION(MAX_km__LINES_TOTAL) ::
-     +  km__LMBDAM
-      REAL,    DIMENSION(MAX_km__LINES_TOTAL) ::
-     +  km__SJ, km__JJ
-
-      !~ INTEGER, DIMENSION(MAX_LINES_PER_MOL, NUM_MOL) ::
-      !~+  km__NUMLIN
+  REAL, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) ::
+ +  km__QQV, km__GGV, km__BBV, km__DDV, km__FACT
 
 
-      !=====
-      ! Variables filled by FILTER_MOLECULAGRADE()
+  REAL, DIMENSION(MAX_SOL_PER_MOL, NUM_MOL) ::
+ +  km__IOLLOSOL ! "Index of Last Lambda Of Set-Of-Lines"
+                 ! Points to lm__LMBDAM, km__SJ, km__JJ; km__LAST
+                 ! This is mounted at reading to help with the filtering and avoid
+                 ! allocating 2 dimensions for (lm__LMBDAM, km__SJ, km__JJ)
 
-      INTEGER km_MBLEND  ! Total number of spectral lines *filtered in*
+  REAL*8,  DIMENSION(MAX_km__LINES_TOTAL) ::
+ +  km__LMBDAM
+  REAL,    DIMENSION(MAX_km__LINES_TOTAL) ::
+ +  km__SJ, km__JJ
 
-      ! Valid elements of these are from 1 to km_MBLEND
-      REAL*8, DIMENSION(MAX_km__LINES_TOTAL) :: km_LMBDAM
-      REAL, DIMENSION(MAX_km__LINES_TOTAL) :: km_SJ, km_JJ, km_GFM,
-     +  km_ALARGM
-
-
-      !------
-      ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
-      !------
-      ! This one points to the last index of the lines of each molecule within
-      ! km_LMBDAM, km_SJ and km_JJ (after the filtering)
-      ! Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
-      DIMENSION km_MBLENQ(NUM_MOL+1)
-      ! This is similar but is a "local" one, it contains index of the last
-      ! line of each set of lines within km_LMBDAM, km_SJ and km_JJ
-      ! **for the current molecule** I_MOL
-      ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
-      ! TODO Explain better
-      DIMENSION km_LN(MAX_SOL_PER_MOL+1, NUM_MOL)
-
-      ! ISSUE: "Warning: possible change of value in conversion from REAL(8) to REAL(4)"
-      REAL, DIMENSION(MAX_km__LINES_TOTAL, MAX_modeles_NTOT) ::
-     + km_PNVJ
-
-      ! TODO test the pointers
-      REAL, PRIVATE, POINTER, DIMENSION(:) :: PPA, PB
-
-      SAVE
-
-C     ========
-      CONTAINS
-C     ========
+  !~ INTEGER, DIMENSION(MAX_LINES_PER_MOL, NUM_MOL) ::
+  !~+  km__NUMLIN
 
 
+  !=====
+  ! Variables filled by FILTER_MOLECULAGRADE()
+
+  INTEGER km_MBLEND  ! Total number of spectral lines *filtered in*
+
+  ! Valid elements of these are from 1 to km_MBLEND
+  REAL*8, DIMENSION(MAX_km__LINES_TOTAL) :: km_LMBDAM
+  REAL, DIMENSION(MAX_km__LINES_TOTAL) :: km_SJ, km_JJ, km_GFM,
+ +  km_ALARGM
 
 
-C================================================================================================================================
-C FILL_PPA_PB():
-C
-      SUBROUTINE POINT_PPA_PB(MOLID)
-      USE CONFIG
-      USE ERRORS
-      USE SAT4_DIE
-      USE LOGGING
-      IMPLICIT NONE
-      INTEGER MOLID
-      CHARACTER*192 S
-      
-      IF (MOLID .GT. NUM_MOL) THEN
-        WRITE (S, *) 'FILL_PPA_PB(): Invalid molecule ID (',
-     +   MOLID, ') must be maximum ', NUM_MOL
-        CALL PFANT_HALT(S)
-      END IF
+  !------
+  ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
+  !------
+  ! This one points to the last index of the lines of each molecule within
+  ! km_LMBDAM, km_SJ and km_JJ (after the filtering)
+  ! Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
+  DIMENSION km_MBLENQ(NUM_MOL+1)
+  ! This is similar but is a "local" one, it contains index of the last
+  ! line of each set of lines within km_LMBDAM, km_SJ and km_JJ
+  ! **for the current molecule** I_MOL
+  ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
+  ! TODO Explain better
+  DIMENSION km_LN(MAX_SOL_PER_MOL+1, NUM_MOL)
 
-      SELECT CASE (MOLID)  ! ISSUE Check molecule names and cases
-        CASE (1)  ! MgH
-          PPA => sat4_PMG
-          PB  => sat4_PPH
-        CASE (2)  ! C2
-          PPA => sat4_PPC2
-          PB  => sat4_PPC2
-        CASE (3, 4, 5)  ! CN blue,red, nir
-          PPA => sat4_PPC2
-          PB  => sat4_PN
-        CASE (6, 7, 8)  ! CH AX, BX, CX
-          PPA => sat4_PPC2
-          PB  => sat4_PPH
-        CASE (9)  ! 13
-          PPA => sat4_PC13
-          PB  => sat4_PPH
-        CASE (10)  ! CO nir
-          PPA => sat4_PPC2
-          PB  => sat4_PO
-        CASE (11)  ! NH blue
-          PPA => sat4_PN
-          PB  => sat4_PPH
-        CASE (12, 13)  ! OH blue,nir
-          PPA => sat4_PO
-          PB  => sat4_PPH
-        CASE (14)  ! FeH
-          PPA => sat4_PFE
-          PB  => sat4_PPH
-        CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-          PPA => sat4_PTI
-          PB  => sat4_PO
-      END SELECT
+  ! ISSUE: "Warning: possible change of value in conversion from REAL(8) to REAL(4)"
+  REAL, DIMENSION(MAX_km__LINES_TOTAL, MAX_modeles_NTOT) ::
+ + km_PNVJ
 
-      !~SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
-      !~  CASE (1)  ! MgH
-      !~    !~DO N = 1,modeles_NTOT
-      !~    !~  PPA(N)=sat4_PMG(N)
-      !~    !~  PB(N)=sat4_PPH(N)
-      !~    !~END DO
-      !~    PPA => sat4_PMG
-      !~    PB => sat4_PPH
-      !~  CASE (2)  ! C2
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PPC2(N)
-      !~      PB(N)=sat4_PPC2(N)
-      !~    END DO
-      !~  CASE (3, 4, 5)  ! CN blue,red, nir
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PPC2(N)
-      !~      PB(N)=sat4_PN(N)
-      !~    END DO
-      !~  CASE (6, 7, 8)  ! CH AX, BX, CX
-      !~    DO  N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PPC2(N)
-      !~      PB(N)=sat4_PPH(N)
-      !~    END DO
-      !~  CASE (9)  ! 13
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PC13(N)
-      !~      PB(N)=sat4_PPH(N)
-      !~    END DO
-      !~  CASE (10)  ! CO nir
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PPC2(N)
-      !~      PB(N)=sat4_PO(N)
-      !~    END DO
-      !~  CASE (11)  ! NH blue
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PN(N)
-      !~      PB(N)=sat4_PPH(N)
-      !~    END DO
-      !~  CASE (12, 13)  ! OH blue,nir
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PO(N)
-      !~      PB(N)=sat4_PPH(N)
-      !~    END DO
-      !~  CASE (14)  ! FeH
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PFE(N)
-      !~      PB(N)=sat4_PPH(N)
-      !~    END DO
-      !~  CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-      !~    DO N=1,modeles_NTOT
-      !~      PPA(N)=sat4_PTI(N)
-      !~      PB(N)=sat4_PO(N)
-      !~    END DO
-      !~END SELECT
-      END
+  ! TODO test the pointers
+  REAL, PRIVATE, POINTER, DIMENSION(:) :: PPA, PB
 
+  PRIVATE POINT_PPA_PB
+
+  SAVE
+CONTAINS
 
 
 
@@ -236,22 +124,21 @@ C
       CHARACTER(LEN=*) :: filename
       
       INTEGER UNIT_, I,
-     +  MOLID,   ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
-     +  I_LINE,  ! Counts lines within each molecule (reset at each new molecule)
-     +  NNV, IZ,
-     +  NUMLIN ,  ! Temporary variable
-     +  J_SET,
-     +  J_LINE
+       MOLID,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
+       I_LINE,  &  ! Counts lines within each molecule (reset at each new molecule)
+       NNV, IZ, &
+       NUMLIN , &  ! Temporary variable
+       J_SET,   &
+       J_LINE
       PARAMETER(UNIT_=199)
-      LOGICAL VERBOSE
-
-      VERBOSE = config_VERBOSE .AND. .TRUE. !--verbose--!
+      CHARACTER*80 LLL
 
       OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
 
-      IF (VERBOSE) WRITE (*,*) 'MAX_km__LINES_TOTAL = ',
-     + MAX_km__LINES_TOTAL
 
+      !__logging__
+      WRITE (LLL,*) 'MAX_km__LINES_TOTAL = ', MAX_km__LINES_TOTAL
+      CALL LOG_DEBUG(LLL)
 
 
       ! BLB: NUMBER -- number of molecules do be considered
@@ -261,7 +148,10 @@ C
 
       READ(UNIT_,'(A)') km__TITM
       !~READ(UNIT_,'(20A4)') km__TITM
-      IF (VERBOSE)  write (*,*) 'TITM--------------', km__TITM
+      
+      !__logging__
+      WRITE(LLL, *) 'TITM--------------', km__TITM
+      CALL LOG_DEBUG(LLL)
 
       ! BLB:
       ! BLB: km__NV -- number of transitions (v', v'') for each molecule
@@ -290,11 +180,11 @@ C
         ! BLB:          format: 20A4
         READ(UNIT_,'(A)') km__TITULO(MOLID)
 
-
-        IF (VERBOSE) THEN
-            WRITE(*,*) 'Molecule ID ', MOLID
-            WRITE(*,*) 'TITULO:  ', km__TITULO(MOLID)
-        END IF
+        !__logging__
+        WRITE(LLL,*) 'Molecule ID ', MOLID
+        CALL LOG_DEBUG(LLL)
+        WRITE(LLL,*) 'TITULO:  ', km__TITULO(MOLID)
+        CALL LOG_DEBUG(LLL)
 
         ! BLB: FE, DO, MM, AM, BM, UA, UB, Te, CRO
         ! BLB: Format: free
@@ -329,7 +219,9 @@ C
 
         NNV = km__NV(MOLID)
 
-        IF (VERBOSE)  WRITE(*,*) 'NV=', NNV
+        !__logging__
+        WRITE(LLL,*) 'NV=', NNV
+        CALL LOG_DEBUG(LLL)
 
         ! TODO type in documentation
         READ(UNIT_,*) (km__QQV(I, MOLID), I=1,NNV)
@@ -453,13 +345,13 @@ C N
      +        I_LINE, ! Index of km__LMBDAM, km__SJ, km__JJ
      +        I_FILTERED   ! Counts number of filtered lines (molecule-independent);
      +                     ! index of km_LMBDAM, km_SJ, km_JJ
-      LOGICAL VERBOSE, FLAG_IN
+      LOGICAL FLAG_IN
+      CHARACTER*80 LLL
 
-      VERBOSE = config_VERBOSE .AND. .FALSE. !--verbose--!
 
-
-      IF (VERBOSE) WRITE(*, *) 'config_NUM_MOL_ON = ', config_NUM_MOL_ON
-
+      !__logging__
+      WRITE(LLL, *) 'config_NUM_MOL_ON = ', config_NUM_MOL_ON
+      CALL LOG_DEBUG(LLL)
 
 
       ! Initializes the zero elements of the augmented matrices
@@ -476,13 +368,11 @@ C N
 
         I_MOL = I_MOL+1
 
-        IF (VERBOSE) then
-          WRITE(*, *) 'MOLECULE ID', MOLID, ': ',  !--verbose--!
-     +     km__TITULO(MOLID)
-
-          WRITE(*, *) 'Number of prospective Lambdas ------>',
-     +     km__LINES_PER_MOL(MOLID)
-        END IF
+        !__logging__
+        WRITE(LLL, *) 'MOLECULE ID', MOLID, ': ',  km__TITULO(MOLID)
+        CALL LOG_DEBUG(LLL)
+        WRITE(LLL, *) 'Number of prospective Lambdas ------>', km__LINES_PER_MOL(MOLID)
+        CALL LOG_DEBUG(LLL)
 
 
         ! Counters starting with "J_" restart at each molecule
@@ -556,102 +446,210 @@ C Note: depends on a few sat4_* variables
 C
 C Calculates the molecular absorption coefficient
 
-      SUBROUTINE USE_MOLECULAGRADE()
-      USE CONFIG
-      USE SAT4_DIE
-      IMPLICIT NONE
+  SUBROUTINE USE_MOLECULAGRADE()
+    USE CONFIG
+    USE SAT4_DIE
+    USE LOGGING
+    IMPLICIT NONE
 
-      REAL*8 T5040, PSI
-      REAL CSC, H, C, KB, CK, C2
-      REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO, RM
-      REAL QV, GV, BV, DV, FACTO
-      INTEGER I_MOL, J_SET, L, L_INI, L_FIN, N, NNV, MOLID
+    REAL*8 T5040, PSI
+    REAL CSC, H, C, KB, C2
+    REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO, RM
+    REAL QV, GV, BV, DV, FACTO
+    INTEGER I_MOL, J_SET, L, L_INI, L_FIN, N, NNV, MOLID
+    CHARACTER*80 LLL
 
-      LOGICAL VERBOSE
+    REAL*8, PARAMETER :: H  = 6.6252E-27,   &
+                         C  = 2.997929E+10, &
+                         KB = 1.38046E-16,  &
+                         C2 = 8.8525E-13
 
-      DATA H  /6.6252E-27/,
-     +     C  /2.997929E+10/,
-     +     KB /1.38046E-16/,
-     +     CK /2.85474E-04/,  ! ISSUE not used
-     +     C2 /8.8525E-13/    ! ISSUE not used
+    DO I_MOL = 1, config_NUM_MOL_ON
+      MOLID = GET_MOLID(I_MOL)
 
-      VERBOSE = config_VERBOSE .AND. .FALSE. !--verbose--!
+      WRITE(LLL, *) 'MOLECULE ID ', MOLID, ': ', km__TITULO(MOLID)
+      CALL LOG_DEBUG(LLL)
 
-      DO I_MOL = 1, config_NUM_MOL_ON
-        MOLID = GET_MOLID(I_MOL)
+      CALL POINT_PPA_PB(MOLID)
 
-        IF (VERBOSE) WRITE(*, *) 'MOLECULE ID ', MOLID, ': ',  !--verbose--!
-     +   km__TITULO(MOLID)
+      NNV = km__NV(MOLID)
 
-        CALL POINT_PPA_PB(MOLID)
-
-        NNV = km__NV(MOLID)
-
-        FE  = km__FE(MOLID)
-        DO_ = km__DO(MOLID)
-        MM  = km__MM(MOLID)
-        AM  = km__AM(MOLID)
-        BM  = km__BM(MOLID)  ! ISSUE Not used!!
-        UA  = km__UA(MOLID)
-        UB  = km__UB(MOLID)
-        TE  = km__TE(MOLID)
-        CRO = km__CRO(MOLID)
+      FE  = km__FE(MOLID)
+      DO_ = km__DO(MOLID)
+      MM  = km__MM(MOLID)
+      AM  = km__AM(MOLID)
+      BM  = km__BM(MOLID)  ! ISSUE Not used!!
+      UA  = km__UA(MOLID)
+      UB  = km__UB(MOLID)
+      TE  = km__TE(MOLID)
+      CRO = km__CRO(MOLID)
 
 
-        !======
-        ! This part of the code calculates km_PNVL(
-        RM = AM*BM/MM
-        DO N = 1,modeles_NTOT
-          T5040 = modeles_TETA(N)/5040
-          PSI = DO_*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-
-     @          1.5*ALOG10(RM)-ALOG10(UA*UB)-13.670
-          PSI = 10.**PSI
+      !======
+      ! This part of the code calculates km_PNVL(
+      RM = AM*BM/MM
+      DO N = 1,modeles_NTOT
+        T5040 = modeles_TETA(N)/5040
+        PSI = DO_*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-
+   @          1.5*ALOG10(RM)-ALOG10(UA*UB)-13.670
+        PSI = 10.**PSI
 
-          DO J_SET = 1,NNV
-            QV = km__QQV(J_SET, MOLID)
-            GV = km__GGV(J_SET, MOLID)
-            BV = km__BBV(J_SET, MOLID)
-            DV = km__DDV(J_SET, MOLID)
+        DO J_SET = 1,NNV
+          QV = km__QQV(J_SET, MOLID)
+          GV = km__GGV(J_SET, MOLID)
+          BV = km__BBV(J_SET, MOLID)
+          DV = km__DDV(J_SET, MOLID)
 
-            L_INI = km_LN(J_SET, MOLID)+1
-            L_FIN = km_LN(J_SET+1, MOLID)
+          L_INI = km_LN(J_SET, MOLID)+1
+          L_FIN = km_LN(J_SET+1, MOLID)
 
-            ! L is index within km_LMBDAM, km_SJ and km_JJ
-            DO L= L_INI, L_FIN
-              ! PC: default value for CSC does not exist physically
-              CSC = EXP(-H*C/KB*modeles_TETA(N)/5040.*
-     @                  (TE+GV+BV*(km_JJ(L)+1)*km_JJ(L))
-     @                 )*
-     @              (2.-CRO)*(2.*km_JJ(L)+1.)*
-     @              EXP(H*C/KB*modeles_TETA(N)/5040.*
-     @                  (DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV)
-     @                 )
+          ! L is index within km_LMBDAM, km_SJ and km_JJ
+          DO L= L_INI, L_FIN
+            ! PC: default value for CSC does not exist physically
+            CSC = EXP(-H*C/KB*modeles_TETA(N)/5040.*
+   @                  (TE+GV+BV*(km_JJ(L)+1)*km_JJ(L))
+   @                 )*
+   @              (2.-CRO)*(2.*km_JJ(L)+1.)*
+   @              EXP(H*C/KB*modeles_TETA(N)/5040.*
+   @                  (DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV)
+   @                 )
 
-              ! ISSUE What to do with this REAL*4 vs. REAL*8 thing?
-              km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-            END DO
-
-
-            ! Takes advantage of current J_SET loop so it is not necessary to create
-            ! another double loop as in the original KAPMOL to calculate km_GFM
-            IF (N .EQ. 1) THEN
-              ! Because GFM does not depend on N, runs this part just once, when N is 1.
-              FACTO = km__FACT(J_SET, MOLID)
-              km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*FE*QV*
-     @                    km_SJ(L)*FACTO
-            END IF
+            ! ISSUE What to do with this REAL*4 vs. REAL*8 thing?
+            km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
           END DO
+
+
+          ! Takes advantage of current J_SET loop so it is not necessary to create
+          ! another double loop as in the original KAPMOL to calculate km_GFM
+          IF (N .EQ. 1) THEN
+            ! Because GFM does not depend on N, runs this part just once, when N is 1.
+            FACTO = km__FACT(J_SET, MOLID)
+            km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*FE*QV*
+   @                    km_SJ(L)*FACTO
+          END IF
         END DO
-      END DO !--end of I_MOL loop--!
-
-      DO L = 1,km_MBLEND
-        km_ALARGM(L) = 0.1
       END DO
+    END DO !--end of I_MOL loop--!
 
-      RETURN
+    DO L = 1,km_MBLEND
+      km_ALARGM(L) = 0.1
+    END DO
 
-      END
+    RETURN
+
+  END
 
 
 
-      END MODULE MOLECULA
+  !================================================================================================================================
+
+  !> Private subroutine; pointer operation; assigns address of variable PPA and PB depending on the molecule ID.
+  !>
+  !> This was originally a vector copy element-by-element in old routine KAPMOL. However, as
+  !> PPA and PB contents are not changed after the assignment, it is reasonable to just point
+  !> to the source vectors (way faster).
+  SUBROUTINE POINT_PPA_PB(MOLID)
+    USE CONFIG
+    USE ERRORS
+    USE SAT4_DIE
+    USE LOGGING
+    IMPLICIT NONE
+    INTEGER MOLID
+    CHARACTER*192 S
+    
+    IF (MOLID .GT. NUM_MOL) THEN
+      WRITE (S, *) 'FILL_PPA_PB(): Invalid molecule ID (', MOLID, ') must be maximum ', NUM_MOL
+      CALL PFANT_HALT(S)
+    END IF
+
+    SELECT CASE (MOLID)  ! ISSUE Check molecule names and cases
+      CASE (1)  ! MgH
+        PPA => sat4_PMG
+        PB  => sat4_PPH
+      CASE (2)  ! C2
+        PPA => sat4_PPC2
+        PB  => sat4_PPC2
+      CASE (3, 4, 5)  ! CN blue,red, nir
+        PPA => sat4_PPC2
+        PB  => sat4_PN
+      CASE (6, 7, 8)  ! CH AX, BX, CX
+        PPA => sat4_PPC2
+        PB  => sat4_PPH
+      CASE (9)  ! 13
+        PPA => sat4_PC13
+        PB  => sat4_PPH
+      CASE (10)  ! CO nir
+        PPA => sat4_PPC2
+        PB  => sat4_PO
+      CASE (11)  ! NH blue
+        PPA => sat4_PN
+        PB  => sat4_PPH
+      CASE (12, 13)  ! OH blue,nir
+        PPA => sat4_PO
+        PB  => sat4_PPH
+      CASE (14)  ! FeH
+        PPA => sat4_PFE
+        PB  => sat4_PPH
+      CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
+        PPA => sat4_PTI
+        PB  => sat4_PO
+    END SELECT
+
+    !> @TODO Original select, remove when the above workds
+    !~SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
+    !~  CASE (1)  ! MgH
+    !~    !~DO N = 1,modeles_NTOT
+    !~    !~  PPA(N)=sat4_PMG(N)
+    !~    !~  PB(N)=sat4_PPH(N)
+    !~    !~END DO
+    !~    PPA => sat4_PMG
+    !~    PB => sat4_PPH
+    !~  CASE (2)  ! C2
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PPC2(N)
+    !~      PB(N)=sat4_PPC2(N)
+    !~    END DO
+    !~  CASE (3, 4, 5)  ! CN blue,red, nir
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PPC2(N)
+    !~      PB(N)=sat4_PN(N)
+    !~    END DO
+    !~  CASE (6, 7, 8)  ! CH AX, BX, CX
+    !~    DO  N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PPC2(N)
+    !~      PB(N)=sat4_PPH(N)
+    !~    END DO
+    !~  CASE (9)  ! 13
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PC13(N)
+    !~      PB(N)=sat4_PPH(N)
+    !~    END DO
+    !~  CASE (10)  ! CO nir
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PPC2(N)
+    !~      PB(N)=sat4_PO(N)
+    !~    END DO
+    !~  CASE (11)  ! NH blue
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PN(N)
+    !~      PB(N)=sat4_PPH(N)
+    !~    END DO
+    !~  CASE (12, 13)  ! OH blue,nir
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PO(N)
+    !~      PB(N)=sat4_PPH(N)
+    !~    END DO
+    !~  CASE (14)  ! FeH
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PFE(N)
+    !~      PB(N)=sat4_PPH(N)
+    !~    END DO
+    !~  CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
+    !~    DO N=1,modeles_NTOT
+    !~      PPA(N)=sat4_PTI(N)
+    !~      PB(N)=sat4_PO(N)
+    !~    END DO
+    !~END SELECT
+  END
+
+END MODULE MOLECULA
