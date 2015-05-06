@@ -109,7 +109,7 @@ MODULE SYNTHESIS
   USE READ_FILES
 
 
-  !> @TODO ISSUE this is used a lot, I gotta find out its meaning
+  !> @todo ISSUE this is used a lot, I gotta find out its meaning
   !> ISSUE I think it is the maximum number of calculation steps.
   INTEGER, PARAMETER :: NP = 7000, &
                         NMOL = 50000  ! ISSUE what about this parameter, what does it mean?

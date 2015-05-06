@@ -13,9 +13,8 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-
-!-------------------------------------------------------------------------------
-!> 
+!> Subroutines FLIN1() and FLINH()
+!>
 !> Calcul du flux ou de l'intensite par la methode d'integration
 !> a 6 pts (ou 13pts) de R.Cayrel (these).
 !> nouvelle methode de calcul de to . flin_TO(1) est calcule et

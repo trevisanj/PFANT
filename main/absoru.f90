@@ -1,25 +1,26 @@
-!> @TODO remove au_* prefixes
+!> @todo remove au_* prefixes
 
 
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> Module ABSORU
 !>
 !> Public: only subroutine ABSORU() and variable absoru_ZNH
-MODULE ABSORU
+MODULE MOD_ABSORU
+  USE ABSORU_DATA
 
   !=====
   !> Outputs
@@ -40,126 +41,36 @@ MODULE ABSORU
   ! TODO Identify outputs and inputs
   ! TODO CHECK ALL TYPES
   ! TODO CHECK ALL SIZES
-  
-  
+
+
   INTEGER, DIMENSION(2) :: au_JSHYD
   INTEGER au_JH, au_JFZ
-  
-  
-  
+
+
+
   REAL au_AHE, au_AH, au_AHEP, au_UH1, au_ZEMH, au_UHEP1, au_UHE1, au_ZEUHE1, &
    au_UL,au_AC, &  !> mean ionization degree
    au_STIMU, au_AVM, au_ZNU1, au_ZNU2, au_ZNU3, au_ZMUZE, &
    au_ZMU, & !> POIDS MOLECULAIRE MOYEN
    au_PG, &  !> PRESSION TOTALE EN DYNES/cm**2
-   au_PE, au_RHO, & !> DENSITE (G-CM-3) 
+   au_PE, au_RHO, & !> DENSITE (G-CM-3)
    au_TOC  !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
- 
-  REAL, DIMENSION(19) :: au_ZLH, au_ZLHEP
+
   REAL, DIMENSION(2, 19) :: au_G2D  !> FACTEUR DE GAUNT BOUND FREE
-  
-  REAL, DIMENSION(5) :: au_ZLHEM, au_STWTM, au_ZEXPM
-  REAL, DIMENSION(10) :: au_ZLHE, au_ZEXP, au_ZEFF4
-  REAL, DIMENSION(20) :: au_ZEUH, au_ZEUHEP 
+
+  REAL, DIMENSION(5) :: au_ZEXPM
+  REAL, DIMENSION(10) :: au_ZEXP
+  REAL, DIMENSION(20) :: au_ZEUH, au_ZEUHEP
   REAL, DIMENSION(11) :: au_ZK
   REAL, DIMENSION(30, 9) :: au_ZKM,  &
    au_AC2    !> ionization degree of metals
 
-  REAL, DIMENSION(46) :: au_GRDM, au_U2, au_WINV
-  REAL, DIMENSION(4) :: au_YY, au_AA
-  REAL, DIMENSION(18) :: au_ZLETAG
-  REAL, DIMENSION(12,18) :: au_G3D
-  REAL, DIMENSION(126) :: au_RHOG
   REAL, DIMENSION(3) :: au_AC1  !> au_AC1(1): ionization degree of H
                                 !> au_AC1(2): ionization degree of HE+
                                 !> au_AC1(3): ionization degree of HE
 
-  
-  
-  
-  REAL, DIMENSION(30) :: au_ZNU 
+  REAL, DIMENSION(30) :: au_ZNU
   CHARACTER*80 LLL
-
-  DIMENSION G3D1(12,9), G3D2(12,9)
-
-  EQUIVALENCE (au_G3D(1,1),G3D1(1,1)),(au_G3D(1,10),G3D2(1,1))
-
-  !> DONNEES POUR H2+ =TABLE DE BATES(1952) COMPLETEE PAR HARVARD(1964)
-  !> ------------------
-  !> au_WINV=NU/C,au_GRDM=(-NU/DNU/DR)*R*D(R),U1=-U(1S SIGMA/R),au_U2=U(+2P SIGM
-  !> DONNEES POUR L'HELIUM NEUTRE
-  !> ----------------------------
-  !> au_ZLHEM(K)ET au_STWTM(K)=LAMBDAS DES DISCONTINUITES  ET VALEUR DU POIDS
-  !> STATISTIQUE CORRESPONDANT
-  !> au_ZLHE(L) ET au_ZEFF4(L)=SUITE DES DISCONTINUITEES ET SECTIONS EFFICACE
-  !> CORRESPONDANTES
-  !> DONNEES POUR L'HYDROGENE GRANT=MON. NOT. VOL. 118 P. 241 1958
-  !> ------------------------
-  !> au_G3D(I,J) =FACTEUR DE GAUNT EN FONCTION DE au_RHO ET DE LOG(-ETA)
-  !> au_RHO(I)  =VALEUR DE au_RHO CORRESPONDANTES
-  !> au_ZLETAG(J)=VALEUR DE LOG(-ETA)
-  !> au_YY=ZEROS DU POLYNOME DE LAGUERRE=CHANDRASEKHAR RADIATIVE TRANSFER
-  !> au_AA=NBR. DE CHRISTOFFEL CORRESPONDANT
-  !> DONNEES POUR QUASI MOLECULE H+H (DOYLE,APJ,153,187.1968)
-  DATA au_WINV/361.9,429.9,514.4,615.3,733.7,869.7,1028.7,1226.2,1460.9    &
-  ,1737.3,2044.4,2407.4,2851.6,3378.1,3986.8,4677.7,5477.3,6442.5,75       &
-  74.3,8872.9,10338.2,12064.6,14049.7,16352.9,18996.2,22056.2,25576.       &
-  8,29634.9,34307.2,39703.3,45943.9,53171.7,61529.1,71213.6,82433.7,       &
-  95441.4,110445.3,127774.4,147406.7,169671.2,194568.0,221877.7,2516       &
-  00.4,282968.2,312800.5,329032.7/
-  DATA au_GRDM/1729.881 ,1591.634 ,1450.598 ,1317.928 ,1198.805 ,1091.6    &
-  34 ,994.4223,896.8127,805.5777,722.7092,649.4024,583.2669,517.9283       &
-  ,457.7689,405.1793,358.9641,316.3347,275.7371,238.9641,206.6136,18       &
-  0.4781,153.5857,130.4781,109.6813,91.9920,76.1753,62.7092,50.9960,       &
-  40.9562,32.5498,25.4263,19.6693,14.9920,11.2470,8.2869,5.9960,4.23       &
-  11,2.8900,1.9020,1.1733,0.6781,0.3544,0.1605,0.0602,0.0171,0.0000/
-  DATA U1/0.00263,0.00286,0.00322,0.00372,0.00435,0.00511,0.00600,0.       &
-  00701,0.00821,0.00958,0.01190,0.01305,0.01522,0.01772,0.02061,0.02       &
-  394,0.02775,0.03207,0.03699,0.04257,0.04884,0.05584,0.06367,0.0722       &
-  9,0.08180,0.09216,0.10340,0.11542,0.12815,0.14147,0.15511,0.16871,       &
-  0.18167,0.19309,0.20167,0.20525,0.20052,0.18186,0.13996,0.05794,-0       &
-  .09644,-0.39105,-0.99032,-2.39840,-7.14260,-85.0/
-  DATA au_U2/0.00114,0.00124,0.00145,0.00178,0.00221,0.00277,0.00342,0.    &
-  00416,0.00508,0.00615,0.00745,0.00899,0.01083,0.01302,0.01561,0.01       &
-  869,0.02237,0.02676,0.03195,0.03810,0.04540,0.05412,0.06445,0.0767       &
-  6,0.09140,0.10889,0.12977,0.15473,0.18466,0.22057,0.26382,0.31606,       &
-  0.37932,0.45618,0.54997,0.66493,0.80665,0.98279,1.20442,1.48940,1.       &
-  87040,2.41450,3.28470,4.97840,9.99460,85.0/
-  DATA au_ZLHEM/504.3,2601.0,3122.0,3422.0,3680.0/,au_STWTM/1.0,3.0,1.0,9. &
-  0,3.0/,au_ZLHE/0.0,0.0,7932.0,14380.0,22535.0,32513.0,44313.0,57936.0    &
-  ,73383.0,90603.0/,au_ZEFF4/0.0,0.0,1.069373 ,1.028328 ,1.022291 ,1.01    &
-  8358,1.015639,1.013614,1.012019,1.011869/,au_ZLH/911.8,3647.0,8205.9,    &
-  14588.2,22794.1,32823.5,44676.4,58352.9,73852.8,91176.3,110323.4,1       &
-  31293.9,154088.0,178705.6,205146.7,233411.4,263499.6,295411.3,3291       &
-  46.5/,au_ZLHEP/227.8,911.8,2050.6,3645.6,5696.2,8202.5,11164.5,14582.    &
-  3,18455.7,22784.8,27569.6,32810.1,38506.3,44658.2,51265.8,58329.0,       &
-  65848.0,73822.6,82253.0/
-  DATA G3D1/2.885,2.419,2.047,1.679,1.468,1.323,1.212,1.124,1.051,0.9      &
-  89,0.810,0.693,2.906,2.420,2.049,1.684,1.474,1.330,1.220,1.133,1.0       &
-  61,1.000,0.824,0.708,2.912,2.430,2.072,1.723,1.527,1.395,1.296,1.2       &
-  18,1.155,1.102,0.951,0.856,2.892,2.423,2.082,1.760,1.583,1.469,1.3       &
-  85,1.320,1.268,1.226,1.111,1.045,2.815,2.365,2.046,1.755,1.604,1.5       &
-  07,1.438,1.387,1.346,1.314,1.230,1.185,2.715,2.280,1.978,1.709,1.5       &
-  73,1.488,1.428,1.383,1.348,1.320,1.249,1.208,2.615,2.194,1.906,1.6       &
-  54,1.530,1.452,1.398,1.357,1.326,1.303,1.237,1.202,2.231,1.868,1.6       &
-  29,1.440,1.352,1.298,1.261,1.235,1.215,1.198,1.158,1.136,1.955,1.6       &
-  35,1.445,1.303,1.238,1.201,1.175,1.157,1.144,1.133,1.106,1.091/
-  DATA G3D2/1.807,1.518,1.357,1.239,1.187,1.157,1.137,1.123,1.112,1.       &
-  104,1.082,1.065,1.707,1.446,1.303,1.201,1.157,1.131,1.115,1.103,1.       &
-  094,1.087,1.069,1.054,1.634,1.394,1.266,1.175,1.136,1.114,1.100,1.       &
-  089,1.081,1.075,1.056,1.046,1.579,1.357,1.239,1.157,1.121,1.102,1.       &
-  088,1.079,1.072,1.067,1.049,1.042,1.497,1.302,1.201,1.131,1.101,1.       &
-  085,1.073,1.066,1.060,1.055,1.042,1.034,1.442,1.265,1.175,1.113,1.       &
-  088,1.073,1.064,1.057,1.052,1.046,1.035,1.030,1.400,1.237,1.156,1.       &
-  101,1.078,1.065,1.057,1.051,1.045,1.042,1.032,1.026,1.367,1.217,1.       &
-  142,1.091,1.071,1.059,1.051,1.045,1.041,1.037,1.029,1.024,1.342,1.       &
-  200,1.130,1.084,1.065,1.053,1.047,1.042,1.037,1.034,1.026,1.022/
-  DATA au_RHOG/1.010,1.025,1.050,1.100,1.150,1.200,1.250,1.300,1.350,1.    &
-  400,1.600,1.800/,au_ZLETAG/-3.0000,-2.0000,-1.0000,-0.6021,-0.3010,-0    &
-  .1249,0.0000,0.3979,0.6990,0.8751,1.0000,1.0969,1.1761,1.3010,1.39       &
-  79,1.4771,1.5441,1.6021/,au_YY/0.3225,1.7458,4.5366,9.3951/,au_AA/0.6032 &
-  ,0.3574,0.0389,0.0005/
-  END
 
 CONTAINS
 
@@ -177,7 +88,7 @@ CONTAINS
     DIMENSION ZZKK(11,2),TOTKAP(2),DIF(2,3),SCATH(2),ZZK(11,2),SCAT(2)
 
     DATA DIF/5.799E-13,8.14E-13,1.422E-6,1.28E-6,2.784,1.61/
-      
+
     ILT = CALLAM
     IF (CALPE .EQ. 2) GO TO 9003
 
@@ -201,13 +112,13 @@ CONTAINS
     au_ZNU2 = au_ZNU1*absoru2_ABHEL
     au_ZNU3 = au_ZNU1*absoru2_ABMET
     au_ZMUZE = 1.008*au_ZNU1+4.003*au_ZNU2+au_AVM*au_ZNU3
-    
+
     IF ((CALTH.EQ.2).AND.(CALLAM.EQ.2)) GO TO 5016
     IF (CALTH.EQ.2) GO TO 9001
     IF (TH.LE.0.8) ITH=1
     IF (TH.GT.0.8) ITH=2
     NSET = absoru2_NUMSET(ITH)-1
-    
+
     9001 CONTINUE
     DO I = 1,NSET
       IF (ABS(WL-absoru2_WI(I+1,ITH)).LE.0.50) GO TO 8000
@@ -230,7 +141,7 @@ CONTAINS
       IF (WL.GT.1026.0) GO TO 9021
       SCATH(1)=4.0E-24
       GO TO 9023
-      
+
       9020 CONTINUE
       IF (WL.GT.1200.0) GO TO 9021
       WLH=1200.0
@@ -244,7 +155,7 @@ CONTAINS
     9023 CONTINUE
 
     GO TO 5018
-    
+
     5016 CONTINUE
     IF ((au_JFZ.NE.2).OR.(ILT.EQ.1)) GO TO 5017
     ILT=CALLAM-1
@@ -268,7 +179,7 @@ CONTAINS
     CALL IONIPE (TH,ZLPE,CALTH,CALMET)
     MM=absoru2_NMETA+1
     MMM=absoru2_NMETA+6
-    SCATEL=9.559063E-13*au_PE*TH    
+    SCATEL=9.559063E-13*au_PE*TH
     ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
     ! =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 
@@ -279,7 +190,7 @@ CONTAINS
 
     KKK=au_JFZ
     MIN=MM
-    
+
     DO I=1,au_JFZ
       DO M=1,absoru2_NMETA
         ZZKK(M,I)=0.0
@@ -308,7 +219,7 @@ CONTAINS
         4222 CONTINUE
         ZZKK(M,I)=ZZK(M,I)*absoru_ZNH(M)/UNIT
         IF (M.EQ.(absoru2_NMETA+2)) ZZKK(M,I)=ZZKK(M,I)*au_PE
-        
+
         4221 CONTINUE
         TOTKAP(I)=TOTKAP(I)+ZZKK(M,I)
       END DO
@@ -341,7 +252,7 @@ CONTAINS
   SUBROUTINE GAUNTH (WL)
     au_JH = 0
     DO 1410 I=1,au_JFZ
-    
+
 
       DO J=1,19
         JJ=J
@@ -352,7 +263,8 @@ CONTAINS
       1333  CONTINUE
       IF (I .NE. 2) GO TO 1334
 
-      ! 
+      !
+
       ! CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
       !
 
@@ -361,20 +273,20 @@ CONTAINS
       END DO
 
       GO TO 1420
-        
+
       1334 CONTINUE
       JS=JJ
       GO TO 1340
-        
+
       1335 CONTINUE
       !
       ! C'EST UNE DISCONTINUITE DE L'HYDROGENE
       !
       au_JH=1
       IF (I .EQ. 1) GO TO 1334
-      
+
       JS = JJ+1
-        
+
       1340 CONTINUE
       au_JSHYD(I) = JS
 
@@ -384,53 +296,53 @@ CONTAINS
         COND=au_ZLH(J)-WL
         IF (ABS(COND).LE.0.50) GO TO 1122
         IF (COND.LT.0.0) GO TO 1410
-        
+
         !=====
         ! Assignment of au_G2D(I,J), alternative 1
         !=====
-        
+
         ZQ=WL*J**2/COND
         RK=SQRT(ZQ)
         GO TO (1111,1113,1115,1117,1119,2000,2010), J
-          
+
         ! MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
 
         1111 DELTA=8.*RK/SQRT(ZQ+1.0)
         GO TO 1120
-          
+
         1113 DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
         GO TO 1120
-          
+
         1115 DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.)**4.5
         GO TO 1120
-          
-        1117 DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+6800.)*ZQ+20736.)*ZQ+12288.)/ &
-                   (9.*(ZQ+16.)**6.5)
+
+        1117 DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+6800.)* &
+                   ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
         GO TO 1120
-          
-        1119 DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171875.)*
+
+        1119 DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171875.)* &
                    ((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(9.*(ZQ+25.)**8.5)
         GO TO 1120
-          
+
         ! HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
 
         2000 ZP=(ZQ+36.)**5.25
-        DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+2262816.E &
-        2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+1 &
-        290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
+        DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+ &
+        2262816.E2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+ &
+        1290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
         GO TO 1120
-        
+
         2010 ZP=(ZQ+49.)**6.25
-        DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060 &
-        .E3)*ZQ+2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((22974 &
-        2.5*ZQ+1968907.E1)*ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ &
+        DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060.E3)*ZQ+ &
+        2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((229742.5*ZQ+1968907.E1)* &
+        ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ &
         +1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
-     
-        1120 au_G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/
+
+        1120 au_G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/ &
                          (SQRT(ZQ+ZJ**2)*(1.-EXP(-6.283185*RK)))
         GO TO 1410
-          
-          
+
+
         !=====
         ! Assignment of au_G2D(I,J), alternative 2
         !=====
@@ -458,7 +370,7 @@ CONTAINS
 
 
   !-------------------------------------------------------------------------------
-  !> @TODO ISSUE WHAT
+  !> @todo ISSUE WHAT
   !>
   !> A.M COLLE   8/5/69
   !>
@@ -475,37 +387,37 @@ CONTAINS
     INTEGER*4 CALLAM,CALTH
 
     IF (CALTH.EQ.2) GO TO 1001
-    
+
     HCBKTM  = 0.2854306E-3*TH*1.0E8
     au_AHE  = 0.9717088E-12*TH**3
     au_AH   = 0.2429272E-12*TH**3
     au_AHEP = 16.*au_AH
     au_UH1  = 1.096788E-3*HCBKTM
     au_ZEMH = EXP(-au_UH1)
-    
+
     IF (TH.GT.1.4) GO TO 1001
-    
+
     DO J = 1,20
       UH=au_UH1/J**2
       au_ZEUH(J)=EXP(UH-au_UH1)/J**3
     ENDDO
 
-    au_ZEUH(20) = au_ZEUH(20)*8000.  ! ISSUE why this (ask MT)?     
+    au_ZEUH(20) = au_ZEUH(20)*8000.  ! ISSUE why this (ask MT)?
     au_UHEP1 = 4.389087E-3*HCBKTM
     IF (TH .GT. 0.3) GO TO 5290
-    
+
     DO J=1,20
       UHEP=au_UHEP1/J**2
       au_ZEUHEP(J) = EXP(UHEP-au_UHEP1)/J**3
     END DO
 
     au_ZEUHEP(20) = au_ZEUHEP(20)*8000.
-    
+
     5290 CONTINUE
     au_UHE1 = HCBKTM/504.3
     au_ZEUHE1 = EXP(-au_UHE1)
     IF (TH .GT. 0.8) GO TO 1001
-    
+
     COMHE=-HCBKTM*(1.0/au_ZLHEM(1))
     DO K = 1,5
       au_ZEXPM(K)=EXP(COMHE+HCBKTM*(1.0/au_ZLHEM(K)))*au_STWTM(K)
@@ -518,7 +430,7 @@ CONTAINS
     1001 IF ((CALLAM.EQ.2).AND.(CALTH.EQ.2)) GO TO 5010
 
     au_UL = HCBKTM/WL
-    
+
     5010 RETURN
   END
 
@@ -535,14 +447,13 @@ CONTAINS
   !> POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
   !>
   !>     A.M COLLE   13/5/69
- 
+
   SUBROUTINE SAHATH(TH)
-    DIMENSION POTION(6),C1(3),C2(3),C3(3),C4(3)
-    DATA C1 /0.0,-7.526612E-3,5.708280E-2/, &
-         C2 /0.0,1.293852E-1,-1.823574E-1/, &
-         C3 /0.0,-11.34061,-6.434060/,      & 
-         C4 /0.0,28.85946,25.80507/,        &
-     POTION /2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/
+    REAL, PARAMETER :: POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/)
+    REAL, PARAMETER :: C1(3) = (/0.0,-7.526612E-3,5.708280E-2/)
+    REAL, PARAMETER :: C2(3) = (/0.0,1.293852E-1,-1.823574E-1/)
+    REAL, PARAMETER :: C3(3) = (/0.0,-11.34061,-6.434060/)
+    REAL, PARAMETER :: C4(3) = (/0.0,28.85946,25.80507/)
 
     DO N = 2,3
       au_ZK(absoru2_NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))
@@ -582,7 +493,6 @@ CONTAINS
 
 
   !-------------------------------------------------------------------------------
-  !> ATHYHE():
   !> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
   !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
@@ -590,17 +500,24 @@ CONTAINS
   !> A.M COLLE  07/12/1970
 
   SUBROUTINE ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
+    USE READ_FILES
     IMPLICIT NONE
-    INTEGER*4 CALLAM,CALTH
-    DIMENSION TGAUNT(5),TRHOG(5),OPNU(46),ZZK(11,2),COTE(2),SNIV(2),EXPO(2),CUK(2), &
-              CONS(2),AN(2),C1(3),C2(3),C3(3),C4(3),C5(3),C6(3),EXPON(2)
-
-    DATA EXPO/-68.88230,-71.45087/,CONS/3.3,3.6/,COTE/3.136954E-23,8.1 & 
-    95952E-24/,SNIV/0.55,0.485/,CUK/0.3025,0.235225/,AN/0.3099204E-21, &
-    0.22849203E-21/,C1/-2.850692E-2,-7.056869E-3,3.591294E-3/,C2/0.208 &
-    0816,0.1809394,-0.1959804/,C3/2.549101,-1.828635,4.233733/,C4/-14. &
-    97997,8.900841,-20.84862/,C5/0.0,-17.78231,0.0/,C6/0.0,-7.89472E-2 &
-    ,0.0/
+    INTEGER*4 CALLAM,CALTH, JHE, JHEP, JHEM
+    REAL*8 WL, TH
+    REAL*8 :: TGAUNT(5),TRHOG(5),OPNU(46),ZZK(11,2), EXPON(2)
+    REAL*8, PARAMETER ::                                  &
+     EXPO(2) = (/-68.88230,-71.45087/),                   &
+     CONS(2) = (/3.3,3.6/),                               &
+     COTE(2) = (/3.136954E-23,8.195952E-24/),             &
+     SNIV(2) = (/0.55,0.485/),                            &
+     CUK(2)  = (/0.3025,0.235225/),                       &
+     AN(2)   = (/0.3099204E-21, 0.22849203E-21/),         &
+     C1(3)   = (/-2.850692E-2,-7.056869E-3,3.591294E-3/), &
+     C2(3)   = (/0.2080816,0.1809394,-0.1959804/),        &
+     C3(3)   = (/2.549101,-1.828635,4.233733/),           &
+     C4(3)   = (/-14.97997,8.900841,-20.84862/),          &
+     C5(3)   = (/0.0,-17.78231,0.0/),                     &
+     C6(3)   = (/0.0,-7.89472E-2,0.0/)
     JHE  = 0
     JHEP = 0
     JHEM = 0
@@ -611,18 +528,18 @@ CONTAINS
     ! 157871.62 = M*Z**2*E**4/(2*K*(H/2*PI)**
     ! M ET E SONT LA MASSE ET LA CHARGE DE L'ELECTRON,H ET K LES CONSTAN
     ! DE PLANCK ET DE BOLTZMANN
-    GCONST = 31.3213*TH     
+    GCONST = 31.3213*TH
 
     IF (au_UL .LT. 100.0) GO TO 1333
-      
+
     ! au_UL=H*NU/(K*T)
     au_STIMU=1.0
     GO TO 1334
-      
+
     1333 au_STIMU = 1.0-EXP(-au_UL)
     1334 STIMU3   = au_STIMU/au_UL**3
     IF (CALLAM.EQ.2) GO TO 1335
-      
+
     ZNL = ALOG(WL)
     ZLAMIN = 1.0E8/WL
     DO N = 1,2
@@ -636,23 +553,23 @@ CONTAINS
 
     ZZK(absoru2_NMETA+1,1)=0.0
     GO TO 6210
-      
+
     6060 IF ((CALLAM.EQ.2).AND.(INDTH.EQ.1)) GO TO 6100
 
     INDTH = 1
     IF (WL.LE.16419.0) GO TO 6070
-      
+
     ALTHMB = 0.0
     GO TO 6190
-      
+
     6070 WLM = WL/1.0E3
     IF (WL.GT.14200.0) GO TO 6090
-      
+
     ZKAS =(((5.95244E-4*WLM-0.0204842)*WLM+0.164790)*WLM+0.178708)*WLM+0.680133E-2
     GO TO 6100
-      
+
     6090 WLM=16.149-WLM
-    ZKAS = ((0.273236E-2*WLM-0.411288E-1)*WLM+0.220190)*WLM**2+0.269818     
+    ZKAS = ((0.273236E-2*WLM-0.411288E-1)*WLM+0.220190)*WLM**2+0.269818
 
     6100 FACT = 1.0-EXP((-TH)*28.54310E+3/WL)
 
@@ -669,17 +586,17 @@ CONTAINS
     6190 ALTHML=(WL/1.0E6)*(((-5.939*TH+11.934)*TH-3.2062)+(WL/1.0E3)* &
      ((-0.34592*TH+7.0355)*TH-0.40192))+((0.027039*TH-0.011493)*TH+0.0053666)
 
-    ! ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1     
+    ! ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
     ZZK(absoru2_NMETA+1,1) = ALTHMB+ALTHML
 
     ! -- II --  H2-
     ! H2- SOMMERVILLE: APJ. VOL. 139 P. 195 1963
     6210 IF (TH .LT. 0.5) GO TO 2050
     IF (WL .GE. 3040.0) GO TO 2070
-      
+
     2050 ZZK(absoru2_NMETA+2,1)=0.0
     GO TO 2080
-      
+
     2070 DKSQ=911.27/WL
     ZZK(absoru2_NMETA+2,1)=(((0.09319*TH+2.857-0.9316/TH)/DKSQ-(2.6*TH+6.831-4.993/TH))/ &
      DKSQ+(35.29*TH-9.804-10.62/TH)-(74.52*TH-62.48+0.4679/TH)*DKSQ)*1.0E-29
@@ -688,7 +605,7 @@ CONTAINS
     ! H2+ BATES: HARVARD JUIN 1964  (RESULTATS *1.0E+39)
 
     2080 IF ((TH.LT.0.25).OR.((ZLAMIN.LT.au_WINV(1)).OR.(ZLAMIN.GT.au_WINV(46)))) GO TO 1012
-     
+
     BKT=3.19286E-2/TH  ! BKT=K*T EN RYDBERGS POUR H2+
 
     DO J=1,46
@@ -772,7 +689,7 @@ CONTAINS
       1846 IF (CARO .EQ. 1.0) GO TO 1850
       CAETA=1.0
 
-      ! 
+      !
       ! INTERPOLATION SUR au_RHO SEULEMENT
       !
       GO TO 1849
@@ -788,17 +705,18 @@ CONTAINS
       1850 TGAUNT(K)=au_G3D(JR,JE)
       GO TO 1855
 
-      1851 TGAUNT(K)=((au_G3D(JR-1,JE-1)*(RHOG2-TRHOG(K))+au_G3D(JR,JE-1)*CARO)*
-       (ZLETA2-TEMPOR)+(au_G3D(JR,JE)*CARO+au_G3D(JR-1,JE)*(RHOG2-TRHOG(K)))*CAETA)/DIFRO/DIFETA
+      1851 TGAUNT(K)=((au_G3D(JR-1,JE-1)*(RHOG2-TRHOG(K))+au_G3D(JR,JE-1)*CARO)* &
+       (ZLETA2-TEMPOR)+(au_G3D(JR,JE)*CARO+au_G3D(JR-1,JE)*(RHOG2-TRHOG(K)))*CAETA)/ &
+       DIFRO/DIFETA
       GO TO 1855
-      
+
       1847 CALL LOG_CRITICAL('0 ON SORT DE LA TABLE DE GFF')
     1855 CONTINUE
 
     G3=0.0
     DO K=1,4
       G3=G3+TGAUNT(K)*au_AA(K)  ! G3: FACTEUR DE GAUNT FREE FREE
-    END DO  
+    END DO
     GO TO 4199
 
     1809 ZZK(absoru2_NMETA+4,1)=0.0
@@ -913,14 +831,14 @@ CONTAINS
 
         5621 IF (ABS(WL-au_ZLHEM(3+N)).GT.0.50) GO TO 5640
         ! NIVEAUX 4 A 7 DE HE1
-      
+
         ANU=AN(N)/WL+EXPON(N)
         GO TO 5730
 
         5640 au_ZK=1.097224E-3*au_ZLHEM(3+N)*WL/(au_ZLHEM(3+N)-WL)
         RK=SQRT(au_ZK)
         UK=1.0+CUK(N)*au_ZK
-        ANU=(COTE(N)/(WL*(1.0-EXP(-6.283185*RK)))*(au_ZK/UK   )**6*((1.0+au_ZK)/
+        ANU=(COTE(N)/(WL*(1.0-EXP(-6.283185*RK)))*(au_ZK/UK   )**6*((1.0+au_ZK)/ &
          UK)*((4.0+au_ZK)/UK)*EXP(-4.0*RK*ATAN(1.0/(SNIV(N)*RK))))+EXPON(N)
         GO TO 5730
 
@@ -986,7 +904,7 @@ CONTAINS
   !> Reference: 'VARDYA' APJ VOL.133,P.107,1961
   !>
   !> A.M COLLE  18/01/1971
-  
+
   SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
     INTEGER*4 CALTH,CALMET
     REAL KTH
@@ -1062,7 +980,7 @@ CONTAINS
     absoru_ZNH(absoru2_NMETA+6)=au_ZNU2*PARTH/(1.0+W5+W6)
     absoru_ZNH(absoru2_NMETA+5)=absoru_ZNH(absoru2_NMETA+6)*W5
     au_RHO=1.6602E-24*PARTH*au_ZMUZE  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
-    au_ZMU=au_RHO*41904.28E+7/(TH*au_PG)  ! 41904.275E+7: 8.313697E+7*5040.39, OU 
+    au_ZMU=au_RHO*41904.28E+7/(TH*au_PG)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
                                           ! 8.313697E+7: CONSTANTE DES GAZ
-  END
-END MODULE ABSORU
+  END SUBROUTINE IONIPE
+END MODULE MOD_ABSORU

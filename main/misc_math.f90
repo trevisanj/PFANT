@@ -13,7 +13,8 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-! MISCellaneous MATHs: re-usable Math library
+!> MISCellaneous MATHs: re-usable Math library
+
 MODULE MISC_MATH
   CONTAINS
 
@@ -156,7 +157,7 @@ MODULE MISC_MATH
   END
 
   !-------------------------------------------------------------------------------
-  !> @TODO ISSUE WHAT
+  !> @todo ISSUE WHAT
       FUNCTION IINF(FR,ITOT,IA,IZ)
       DIMENSION FR(ITOT)
       IA2=IA+1
@@ -189,7 +190,7 @@ MODULE MISC_MATH
   END
 
   !-------------------------------------------------------------------------------
-  !> @TODO ISSUE WHAT
+  !> @todo ISSUE WHAT
   FUNCTION MINI(IFA, NTOT, IA, IZ)
     INTEGER NTOT, IA, IZ
     INTEGER, DIMENSION(NTOT) :: IFA
@@ -204,7 +205,7 @@ MODULE MISC_MATH
   END
 
   !-------------------------------------------------------------------------------
-  !> @TODO ISSUE WHAT
+  !> @todo ISSUE WHAT
   FUNCTION MAXI(IFA, NTOT, IA, IZ)
     INTEGER NTOT, IA, IZ
     INTEGER, DIMENSION(NTOT) :: IFA
@@ -504,7 +505,7 @@ C ISSUE WHAT
     FTT(K) = FT
     RETURN
     
-7    !> @TODO Document this error situation
+7    !> @todo Document this error situation
     10 CONTINUE
     100 FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION AVEC T=',E15.7)
     WRITE(S,100) T

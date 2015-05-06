@@ -77,7 +77,7 @@ CONTAINS
       
 
   !================================================================================================================================
-  !> @TODO Find better name()
+  !> @todo Find better name()
   !>
   !> Note: this is originally subroutine "LECTAUH" without the file reading part
   !>

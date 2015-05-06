@@ -13,11 +13,11 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-C> CONFIG module:
-C> - Configuration globals with their default values
-C> - Routines to parse command-line arguments
-C> - All globals have prefix "config_"
-C>
+!> Command-line parsing and respective global variable declarations
+!> - Configuration globals with their default values
+!> - Routines to parse command-line arguments
+!> - All globals have prefix "config_"
+
 MODULE CONFIG
   USE LOGGING
 
@@ -76,15 +76,15 @@ MODULE CONFIG
 CONTAINS
 
 
-  C================================================================================================================================
-  C> Does various setup operations.
-  C>
-  C>   - sets up configuration defaults,
-  C>   - parses command-line arguments, and
-  C>   - does other necessary operations.
-  C>
-  C> Must be called at system startup
-  C
+  !================================================================================================================================
+  !> Does various setup operations.
+  !>
+  !>   - sets up configuration defaults,
+  !>   - parses command-line arguments, and
+  !>   - does other necessary operations.
+  !>
+  !> Must be called at system startup
+  
   SUBROUTINE CONFIG_SETUP()
     USE LOGGING
     USE argparser
@@ -101,7 +101,6 @@ CONTAINS
 
     CALL MAKE_MOLIDS()
     FLAG_SETUP = .TRUE.
-
   END
 
 
@@ -110,7 +109,7 @@ CONTAINS
   !> Returns molecule ID given index
   !>
   !> Molecule ID is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within PFANT.
-  !
+  
   FUNCTION GET_MOLID(I_MOL)
     IMPLICIT NONE
     INTEGER I_MOL, GET_MOLID
@@ -119,7 +118,7 @@ CONTAINS
     !--assertion--!
     IF (.NOT. FLAG_SETUP) CALL PFANT_HALT('GET_MOLID(): forgot to call CONFIG_SETUP()')
 
-    !--spill check--!
+    !__spill check__
     IF (I_MOL .GT. config_NUM_MOL_ON) THEN
       WRITE (S, *) 'GET_MOLID(): Invalid molecule index I_MOL (', &
        I_MOL, ') must be maximum ', config_NUM_MOL_ON
@@ -155,7 +154,7 @@ CONTAINS
 
   !================================================================================================================================
   !> Fills config_MOLIDS_ON and config_NUM_MOL_ON
-  !
+  
   SUBROUTINE MAKE_MOLIDS()
     IMPLICIT NONE
     INTEGER I_MOL, J, MOLID
@@ -176,14 +175,13 @@ CONTAINS
       END IF
     END DO
     config_NUM_MOL_ON = I_MOL
-  END
+  END SUBROUTINE
 
 
   !================================================================================================================================
   !> Parses and validates all command-line arguments.
   !>
-  
-  !
+
   subroutine parseargs()
     use options2
     use CONFIG
@@ -264,15 +262,7 @@ CONTAINS
         stop 'sort this shit'
       end if
     end do
-  end
+  end subroutine parseargs
 
 
 END MODULE
-
-
-
-
-
-
-
-
