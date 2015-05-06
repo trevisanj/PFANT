@@ -24,6 +24,9 @@
 !>
 !> Outputs ONLY in module variables: flin_TO, flin_F
 !> NO LONGER modifying arguments F and CAVA (they are no longer arguments; CAVA (error code) extinct)
+
+!> @ingroup gr_math, gr_data
+
 MODULE FLIN
   IMPLICIT NONE
 
@@ -87,28 +90,35 @@ CONTAINS
 
 
   !> Generic routine, called by FLIN1() and FLINH()
-  !> KAP -- 
-  !> B -- 
-  !> NH -- probably modeles_NH
-  !> NTOT -- probably modeles_NTOT
-  !> PTDISK -- (logical) probably main_PTDISK
-  !>           .TRUE. : 7 points
-  !>           .FALSE.: 6 points ISSUE BIG using 7 points in FLIN1 MODE!!!!!!!!!!!!!!!
-  !> MU -- probably main_MU
-  !> KIK -- (old "IOP") (integer), accepts 0 or 1
-  !>        if 0, uses the 6/7 point formula
-  !> TAUHD -- used only in FLINH mode
-  !> TTD_D -- just for logging purpose, it will be shown if the system halts
-  !> MODE_ -- (logical; internal) .TRUE. : behaves as FLINH
-  !>                              .FALSE.: behaves as FLIN1
+  !>
+  !> @todo ISSUE BIG using 7 points in FLIN1 MODE!!!!!!!!!!!!!!!
+  
   SUBROUTINE FLIN_(KAP, B, NH, NTOT, PTDISK, MU, KIK, TAUHD, MODE_)
     USE READ_FILES
     IMPLICIT NONE
-    INTEGER KIK
-    LOGICAL PTDISK, MODE_
-    REAL NH, KAP, MU
-    REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: B
-    REAL*8, DIMENSION(MAX_modeles_NTOT) :: NH, KAP, TAUHD
+    !> ?
+    REAL*8, INTENT(IN) :: KAP(MAX_modeles_NTOT)
+    !> ?
+    REAL*8, INTENT(IN) :: B(0:MAX_modeles_NTOT)
+    !> Source is probably @ref read_files::modeles_nh
+    REAL*8, INTENT(IN) :: NH(MAX_modeles_NTOT)
+    !> Source is probably @ref read_files::modeles_NTOT
+    INTEGER, INTENT(IN) :: NTOT
+    !> Source is probably @ref read_files::main_PTDISK
+    !> @li if .TRUE. : 7 points
+    !> @li .FALSE.   : 6 points
+    LOGICAL, INTENT(IN) :: PTDISK
+    !> Source is probably @REF read_files::main_MU
+    REAL*8, INTENT(IN) :: MU
+    !> (old "IOP") accepts 0 or 1.
+    !> @li if 0, uses the 6/7 point formulation
+    !> @li if 1, uses the 26-point formulation
+    INTEGER, INTENT(IN) :: KIK
+    !> Used only in FLINH mode
+    REAL*8, INTENT(IN) :: TAUHD(MAX_modeles_NTOT)
+    !> Internal, either @ref mode_flin1 or @ref mode_flinh
+    LOGICAL, INTENT(IN) :: MODE_
+
     REAL*8, DIMENSION(13) :: FP, CC, BB
     REAL*8, DIMENSION(26) :: BBB
 
