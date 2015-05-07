@@ -116,74 +116,74 @@ contains
   !>       molecules in FILTER_MOLECULAGRADE() when they are already in memory.
   !>
 
-  SUBROUTINE READ_MOLECULAGRADE(filename)
-    USE ERRORS
-    USE CONFIG
-    IMPLICIT NONE
-    CHARACTER(LEN=*) :: filename
+  subroutine read_moleculagrade(filename)
+    use errors
+    use config
+    implicit none
+    character(len=*) :: filename
     
-    INTEGER UNIT_, I,
-     MOLID,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
-     I_LINE,  &  ! Counts lines within each molecule (reset at each new molecule)
-     NNV, IZ, &
-     NUMLIN , &  ! Temporary variable
-     J_SET,   &
-     J_LINE
-    PARAMETER(UNIT_=199)
-    CHARACTER*80 LLL
+    integer unit_, i,
+     molid,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
+     i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
+     nnv, iz, &
+     numlin , &  ! Temporary variable
+     j_set,   &
+     j_line
+    parameter(unit_=199)
+    character*80 lll
 
-    OPEN(UNIT=UNIT_,FILE=filename, STATUS='OLD')
+    open(unit=unit_,file=filename, status='old')
 
 
     !__logging__
-    WRITE (LLL,*) 'MAX_km__LINES_TOTAL = ', MAX_km__LINES_TOTAL
-    CALL LOG_DEBUG(LLL)
+    write (lll,*) 'max_km__lines_total = ', max_km__lines_total
+    call log_debug(lll)
 
 
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured
 
-    READ(UNIT_,*) km__NUMBER
+    read(unit_,*) km__number
 
-    READ(UNIT_,'(A)') km__TITM
+    read(unit_,'(a)') km__titm
     !~READ(UNIT_,'(20A4)') km__TITM
     
     !__logging__
-    WRITE(LLL, *) 'TITM--------------', km__TITM
-    CALL LOG_DEBUG(LLL)
+    write(lll, *) 'titm--------------', km__titm
+    call log_debug(lll)
 
     ! BLB:
     ! BLB: km__NV -- number of transitions (v', v'') for each molecule
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    READ(UNIT_,*) (km__NV(MOLID), MOLID=1,NUM_MOL)
+    read(unit_,*) (km__nv(molid), molid=1,num_mol)
 
     !__spill check__
-    DO MOLID = 1, NUM_MOL
-      IF (km__NV(MOLID) .GT. MAX_SOL_PER_MOL) THEN
-          WRITE(LLL,*) 'READ_MOLECULAGRADE(): molecule ID ', MOLID,
-   +       ' has NV = ', km__NV(MOLID), ' (maximum is ',
-   +       MAX_SOL_PER_MOL, ')'
-          STOP ERROR_EXCEEDED
-        END IF
-    END DO
+    do molid = 1, num_mol
+      if (km__nv(molid) .gt. max_sol_per_mol) then
+          write(lll,*) 'read_moleculagrade(): molecule id ', molid,
+   +       ' has nv = ', km__nv(molid), ' (maximum is ',
+   +       max_sol_per_mol, ')'
+          stop error_exceeded
+        end if
+    end do
 
-    I_LINE = 0
-    DO MOLID = 1, km__NUMBER
+    i_line = 0
+    do molid = 1, km__number
 
       ! TODO check spill in each element in km__NV
 
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
-      READ(UNIT_,'(A)') km__TITULO(MOLID)
+      read(unit_,'(a)') km__titulo(molid)
 
       !__logging__
-      WRITE(LLL,*) 'Molecule ID ', MOLID
-      CALL LOG_DEBUG(LLL)
-      WRITE(LLL,*) 'TITULO:  ', km__TITULO(MOLID)
-      CALL LOG_DEBUG(LLL)
+      write(lll,*) 'molecule id ', molid
+      call log_debug(lll)
+      write(lll,*) 'titulo:  ', km__titulo(molid)
+      call log_debug(lll)
 
       ! BLB: FE, DO, MM, AM, BM, UA, UB, Te, CRO
       ! BLB: Format: free
@@ -202,53 +202,51 @@ contains
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
 
-      READ(UNIT_,*) km__FE(MOLID), km__DO(MOLID), km__MM(MOLID),
-   +             km__AM(MOLID), km__BM(MOLID), km__UA(MOLID),
-   +             km__UB(MOLID), km__TE(MOLID), km__CRO(MOLID)
+      read(unit_,*) km__fe(molid), km__do(molid), km__mm(molid),
+   +             km__am(molid), km__bm(molid), km__ua(molid),
+   +             km__ub(molid), km__te(molid), km__cro(molid)
 
 
       ! ISSUE Documentation
       ! ISSUE !P! My sample file is blank here
-      READ(UNIT_,'(2X,I3, 5F10.6, 10X, F6.3)') km__ISE(MOLID),
-   +    km__A0(MOLID), km__A1(MOLID), km__A2(MOLID),
-   +    km__A3(MOLID), km__A4(MOLID), km__ALS(MOLID)
+      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km__ise(molid),
+   +    km__a0(molid), km__a1(molid), km__a2(molid),
+   +    km__a3(molid), km__a4(molid), km__als(molid)
 
       ! Issue what is S??
-      READ(UNIT_,*) km__S(MOLID)
+      read(unit_,*) km__s(molid)
 
-      NNV = km__NV(MOLID)
+      nnv = km__nv(molid)
 
       !__logging__
-      WRITE(LLL,*) 'NV=', NNV
-      CALL LOG_DEBUG(LLL)
+      write(lll,*) 'nv=', nnv
+      call log_debug(lll)
 
       ! TODO type in documentation
-      READ(UNIT_,*) (km__QQV(I, MOLID), I=1,NNV)
-      READ(UNIT_,*) (km__GGV(I, MOLID), I=1,NNV)
-      READ(UNIT_,*) (km__BBV(I, MOLID), I=1,NNV)
-      READ(UNIT_,*) (km__DDV(I, MOLID), I=1,NNV)
-      READ(UNIT_,*) (km__FACT(I, MOLID),I=1,NNV)
+      read(unit_,*) (km__qqv(i, molid), i=1,nnv)
+      read(unit_,*) (km__ggv(i, molid), i=1,nnv)
+      read(unit_,*) (km__bbv(i, molid), i=1,nnv)
+      read(unit_,*) (km__ddv(i, molid), i=1,nnv)
+      read(unit_,*) (km__fact(i, molid),i=1,nnv)
 
-      DO I = 1,NNV
-        km__DDV(I, MOLID)=1.E-6*km__DDV(I, MOLID)
-      END DO
+      do i = 1,nnv
+        km__ddv(i, molid)=1.e-6*km__ddv(i, molid)
+      end do
 
 
       !~L = (MOLID-1)*MAX_LINES_PER_MOL+1  ! Initial index for all vectors inside this loop
-      J_SET = 0
-      J_LINE = 0 ! Counts how many lines per molecule and stores.
-      DO WHILE (.TRUE.)
-        I_LINE = I_LINE+1
+      j_set = 0
+      j_line = 0 ! Counts how many lines per molecule and stores.
+      do while (.true.)
+        i_line = i_line+1
 
         !__spill check__: checks if exceeds maximum number of elements allowed
         ! ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
-        IF (I_LINE .GT. MAX_km__LINES_TOTAL) THEN
-          WRITE(*,*) 'READ_MOLECULAGRADE(): '
-   +       //'exceeded maximum number of spectral lines total = ',
-   +       MAX_km__LINES_TOTAL,
-   +       ' (at molecule ID ', MOLID, ')'
-          STOP ERROR_EXCEEDED
-        END IF
+        if (i_line .gt. max_km__lines_total) then
+          write(*,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ',
+           max_km__lines_total, ' (at molecule id ', molid, ')'
+          stop error_exceeded
+        end if
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
         ! BLB: Format: free
@@ -279,40 +277,38 @@ contains
         ! BLB:           .
         ! BLB:
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a certain molecula
-        READ(UNIT_,*) km__LMBDAM(I_LINE),
-   +         km__SJ(I_LINE),
-   +         km__JJ(I_LINE), IZ, NUMLIN
+        read(unit_,*) km__lmbdam(i_line), km__sj(i_line), km__jj(i_line), iz, numlin
 
         !~km__NUMLIN(J_LAMBDA, MOLID) = NUMLIN
 
-        IF (NUMLIN .NE. 0) THEN
-          J_SET = J_SET+1
-          km__IOLLOSOL(J_SET, MOLID) = I_LINE
-        END IF
+        if (numlin .ne. 0) then
+          j_set = j_set+1
+          km__iollosol(j_set, molid) = i_line
+        end if
 
-        J_LINE = J_LINE+1
+        j_line = j_line+1
 
-        IF (NUMLIN .EQ. 9) EXIT
-      END DO
+        if (numlin .eq. 9) exit
+      end do
 
-      !--Consistency check--!
-      ! J_SET must match NNV
-      IF(J_SET .NE. NNV) THEN
-        WRITE(*,*) 'READ_MOLECULAGRADE(): ',
-   +     'Incorrect number of set-of-lines: ', J_SET,
-   +     '(should be ', NNV, ')  (in molecule number ', MOLID, ')'
-        STOP ERROR_BAD_VALUE
-      END IF
+      !__consistency check__: J_SET must match NNV
+      if(j_set .ne. nnv) then
+        write(lll,*) 'read_moleculagrade():  incorrect number of set-of-lines: ', j_set,
+   +     '(should be ', nnv, ')  (in molecule number ', molid, ')'
+        call pfant_halt(lll)
+      end if
 
-      km__LINES_PER_MOL(MOLID) = J_LINE
+      km__lines_per_mol(molid) = j_line
 
-      WRITE (*,*) 'This molecule has ', J_LINE, ' lines'
-    END DO
+      !__logging__
+      write(lll,*) 'This molecule has ', j_line, ' lines'
+      call log_debug(lll)
+    end do
 
-    km__LINES_TOTAL = I_LINE
+    km__lines_total = i_line
 
-    CLOSE(UNIT_)
-  END
+    close(unit_)
+  end
 
 
 
@@ -320,13 +316,16 @@ contains
   !> @ingroup gr_filter
   !> Sweeps km__* to populate a few km_* depending on the interval LZERO-LFIN
 
-  SUBROUTINE FILTER_MOLECULAGRADE(LZERO, LFIN)
-    USE CONFIG
-    USE ERRORS
-    IMPLICIT NONE
-
-    REAL*8 LZERO, LFIN, LAMBDA
-    INTEGER I,
+  subroutine filter_moleculagrade(lzero, lfin)
+    use config
+    use errors
+    implicit none
+    !> Lower edge of wavelength interval
+    real*8, intent(in) :: lzero
+    !> Upper edge of wavelength interval
+    real*8, intent(in) :: lfin
+    real*8 :: lambda
+    integer i,
             MOLID,          &  ! Counts molecule ID, from 1 to NUM_MOL
             I_MOL,          &  ! Counts molecules that are "switched on"
             J_DUMMY, J_SET, &

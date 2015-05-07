@@ -49,7 +49,7 @@ Data types
   "If you must use floating point, use double precision unless you have reason
   to be concerned about memory use (your program uses large arrays) and you do
   not need much precision. Modern computers do not take significantly longer to
-  process double precision values than they do to process reals." [Uwm0]
+  process double precision values than they do to process reals." @ref Uwm0
   
   ISSUE the molecules part may break the rule, let us see when trying to run the thing.
 
@@ -70,13 +70,4 @@ Programming
 
 
 
-References
-==========
-@anchor Cesm0 [Cesm0] http://www.cesm.ucar.edu/working_groups/Software/dev_guide/dev_guide/node7.html
-
-@anchor StackEx0 [StackEx0] http://programmers.stackexchange.com/questions/148677/why-is-80-characters-the-standard-limit-for-code-width
-
-@anchor JavaGuide [JavaGuide] https://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s4.4-column-limit
-
-@anchor Uwm0 [Uwm0] http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html
 */

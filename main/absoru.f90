@@ -16,58 +16,88 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_math
 !> Module ABSORU
 !>
+!> Original comment block:
+!> @verbatim
+!> PARTH =NBRE TOTAL DE NOYAUX PAR CM3
+!> PG    =PRESSION TOTALE EN DYNES/CM2
+!> ZMU   =POIDS MOLECULAIRE MOYEN
+!> RHO   =DENSITE (G-CM-3)
+!> TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
+!> AC    =DEGRE D'IONISATION MOYEN
+!> AC1(1)=  ''        ''     DE H
+!> AC1(2)=  ''        ''     DE HE+
+!> AC1(3)=  ''        ''     DE HE
+!> AC2   =  ''        ''     DES METAUX
+!> PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
+!> ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+!> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
+!> @endverbatim
 !> Public: only subroutine ABSORU() and variable absoru_ZNH
-MODULE MOD_ABSORU
-  USE ABSORU_DATA
+
+module mod_absoru
+  use absoru_data
 
   !=====
-  !> Outputs
+  ! Outputs
   !=====
-  ! ISSUE Why 12?
-  real*8, DIMENSION(12) :: absoru_ZNH  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
-
+  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
+  real*8, dimension(12) :: absoru_znh  ! ISSUE Why 12?
 
 
   ! Down here all private
   ! vvvvvvvvvvvvvvvvvvvvv
 
   ! Subroutines
-  PRIVATE GAUNTH, TEMPA, SAHATH, ATHYHE, IONIPE
+  private gaunth, tempa, sahath, athyhe, ionipe
 
-  PRIVATE
+  private
 
   ! TODO Identify outputs and inputs
   ! TODO CHECK ALL TYPES
   ! TODO CHECK ALL SIZES
 
 
-  INTEGER, DIMENSION(2) :: au_JSHYD
-  INTEGER au_JH, au_JFZ
+  integer, dimension(2) :: au_jshyd
+  integer au_jh, au_jfz
 
 
+  real*8 au_ahe, au_ah, au_ahep, au_uh1, au_zemh, au_uhep1, au_uhe1, au_zeuhe1, &
+   au_ul, &
+   au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, &
+   au_pe
 
-  REAL au_AHE, au_AH, au_AHEP, au_UH1, au_ZEMH, au_UHEP1, au_UHE1, au_ZEUHE1, &
-   au_UL,au_AC, &  !> mean ionization degree
-   au_STIMU, au_AVM, au_ZNU1, au_ZNU2, au_ZNU3, au_ZMUZE, &
-   au_ZMU, & !> POIDS MOLECULAIRE MOYEN
-   au_PG, &  !> PRESSION TOTALE EN DYNES/cm**2
-   au_PE, au_RHO, & !> DENSITE (G-CM-3)
-   au_TOC  !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
 
-  real*8, DIMENSION(2, 19) :: au_G2D  !> FACTEUR DE GAUNT BOUND FREE
+   !> MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
+   real*8 au_avm
+   !> POIDS MOLECULAIRE MOYEN
+   real*8 au_zmu
+   !> PRESSION TOTALE EN DYNES/cm**2
+   real*8 au_pg
+   !> DENSITE (G-CM-3)
+   real*8 au_rho
+   !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
+   real*8 au_toc 
+   !> DEGRE D'IONISATION MOYEN
+   real*8 au_ac
 
+
+  !> FACTEUR DE GAUNT BOUND FREE
+  real*8, DIMENSION(2, 19) :: au_G2D  
   real*8, DIMENSION(5) :: au_ZEXPM
   real*8, DIMENSION(10) :: au_ZEXP
   real*8, DIMENSION(20) :: au_ZEUH, au_ZEUHEP
   real*8, DIMENSION(11) :: au_ZK
-  real*8, DIMENSION(30, 9) :: au_ZKM,  &
-   au_AC2    !> ionization degree of metals
+  real*8 :: au_ZKM(30, 9)
+  !> DEGRE D'IONISATION DES METAUX
+  real*8 :: au_AC2(30, 9)
 
-  real*8, DIMENSION(3) :: au_AC1  !> au_AC1(1): ionization degree of H
-                                !> au_AC1(2): ionization degree of HE+
-                                !> au_AC1(3): ionization degree of HE
+  !> @li au_AC1(1): DEGRE D'IONIZATION DE H
+  !> @li au_AC1(2): DEGRE D'IONIZATION DE HE+
+  !> @li au_AC1(3): DEGRE D'IONIZATION DE HE
+  real*8, DIMENSION(3) :: au_AC1  
 
   real*8, DIMENSION(30) :: au_ZNU
   CHARACTER*80 LLL
@@ -75,6 +105,7 @@ MODULE MOD_ABSORU
 CONTAINS
 
   !-------------------------------------------------------------------------------
+  !> @ingroup data
   !> Calculates the "continuum absorption"
   !>
   !> Note1: 1/3 things that need to be changed to include scattering (other software
@@ -82,161 +113,160 @@ CONTAINS
   !>
   !> Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
-  !>
-  SUBROUTINE ABSORU(WL,TH,ZLPE,CALLAM,CALTH,CALPE,CALMET,CALU,KKK,TOTKAP)
-    INTEGER*4 CALU,CALMET,CALLAM,CALTH,CALPE,PMAX,CALSOR
-    DIMENSION ZZKK(11,2),TOTKAP(2),DIF(2,3),SCATH(2),ZZK(11,2),SCAT(2)
+ 
+  subroutine absoru(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
+    integer*4 calu,calmet,callam,calth,calpe,pmax,calsor
+    dimension zzkk(11,2),totkap(2),dif(2,3),scath(2),zzk(11,2),scat(2)
 
-    DATA DIF/5.799E-13,8.14E-13,1.422E-6,1.28E-6,2.784,1.61/
+    data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
 
-    ILT = CALLAM
-    IF (CALPE .EQ. 2) GO TO 9003
+    ilt = callam
+    if (calpe .eq. 2) go to 9003
 
-    ! au_AVM: MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
     ! SUM1: SOMME DES ABONDANCES DES METAUX
-    SUM1 = 0.0
-    SUM2 = 0.0
-    DO I = 1,absoru2_NM
-      SUM1 = SUM1+absoru2_ZP(I)
-    END DO
-    SUM2 = SUM2+absoru2_ZP(I)*absoru2_ZM(I)
-    au_AVM = SUM2/SUM1
+    sum1 = 0.0
+    sum2 = 0.0
+    do i = 1,absoru2_nm
+      sum1 = sum1+absoru2_zp(i)
+    end do
+    sum2 = sum2+absoru2_zp(i)*absoru2_zm(i)
+    au_avm = sum2/sum1
 
     ! au_ZNU1,au_ZNU2,au_ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
 
-    DO I = 1,absoru2_NM
-      au_ZNU(I) = absoru2_ZP(I)/SUM1
-    END DO
+    do i = 1,absoru2_nm
+      au_znu(i) = absoru2_zp(i)/sum1
+    end do
 
-    au_ZNU1 = 1.0/(1.0+absoru2_ABMET+absoru2_ABHEL)
-    au_ZNU2 = au_ZNU1*absoru2_ABHEL
-    au_ZNU3 = au_ZNU1*absoru2_ABMET
-    au_ZMUZE = 1.008*au_ZNU1+4.003*au_ZNU2+au_AVM*au_ZNU3
+    au_znu1 = 1.0/(1.0+absoru2_abmet+absoru2_abhel)
+    au_znu2 = au_znu1*absoru2_abhel
+    au_znu3 = au_znu1*absoru2_abmet
+    au_zmuze = 1.008*au_znu1+4.003*au_znu2+au_avm*au_znu3
 
-    IF ((CALTH.EQ.2).AND.(CALLAM.EQ.2)) GO TO 5016
-    IF (CALTH.EQ.2) GO TO 9001
-    IF (TH.LE.0.8) ITH=1
-    IF (TH.GT.0.8) ITH=2
-    NSET = absoru2_NUMSET(ITH)-1
+    if ((calth.eq.2).and.(callam.eq.2)) go to 5016
+    if (calth.eq.2) go to 9001
+    if (th.le.0.8) ith=1
+    if (th.gt.0.8) ith=2
+    nset = absoru2_numset(ith)-1
 
-    9001 CONTINUE
-    DO I = 1,NSET
-      IF (ABS(WL-absoru2_WI(I+1,ITH)).LE.0.50) GO TO 8000
-      IF (WL.LT.absoru2_WI(I+1,ITH)) GO TO 7000
-    END DO
+    9001 continue
+    do i = 1,nset
+      if (abs(wl-absoru2_wi(i+1,ith)).le.0.50) go to 8000
+      if (wl.lt.absoru2_wi(i+1,ith)) go to 7000
+    end do
 
-    7000 CONTINUE
-    au_JFZ=1
-    GO TO 9002
+    7000 continue
+    au_jfz=1
+    go to 9002
 
-    8000 CONTINUE
-    au_JFZ=2
+    8000 continue
+    au_jfz=2
 
     ! DIFFUSION DE RAYLEIGH PAR H ET H2 (DALGARNO) HARVARD JUIN 1964
     ! SCATH(1)=DIFFUSION DE H
     ! SCATH(2)=DIFFUSION DE H2
-    9002 CONTINUE
-    DO 9023 I=1,2
-      IF (I.EQ.2) GO TO 9020
-      IF (WL.GT.1026.0) GO TO 9021
-      SCATH(1)=4.0E-24
-      GO TO 9023
+    9002 continue
+    do 9023 i=1,2
+      if (i.eq.2) go to 9020
+      if (wl.gt.1026.0) go to 9021
+      scath(1)=4.0e-24
+      go to 9023
 
-      9020 CONTINUE
-      IF (WL.GT.1200.0) GO TO 9021
-      WLH=1200.0
-      GO TO 9022
+      9020 continue
+      if (wl.gt.1200.0) go to 9021
+      wlh=1200.0
+      go to 9022
 
-      9021 CONTINUE
-      WLH=WL
-      9022 CONTINUE
-      WL4=WLH**4
-      SCATH(I)=(DIF(I,1)+DIF(I,2)/SQRT(WL4)+DIF(I,3)/WL4)/WL4
-    9023 CONTINUE
+      9021 continue
+      wlh=wl
+      9022 continue
+      wl4=wlh**4
+      scath(i)=(dif(i,1)+dif(i,2)/sqrt(wl4)+dif(i,3)/wl4)/wl4
+    9023 continue
 
-    GO TO 5018
+    go to 5018
 
-    5016 CONTINUE
-    IF ((au_JFZ.NE.2).OR.(ILT.EQ.1)) GO TO 5017
-    ILT=CALLAM-1
+    5016 continue
+    if ((au_jfz.ne.2).or.(ilt.eq.1)) go to 5017
+    ilt=callam-1
 
-    5018 CONTINUE
-    CALL GAUNTH(WL)
+    5018 continue
+    call gaunth(wl)
 
-    5017  CONTINUE
-    CALL TEMPA(WL,TH,CALTH,CALLAM)
-    IF (CALTH.EQ.2) GO TO 9007
-    CALL SAHATH(TH)
+    5017  continue
+    call tempa(wl,th,calth,callam)
+    if (calth.eq.2) go to 9007
+    call sahath(th)
 
-    9007 CONTINUE
-    IF ((CALTH.EQ.2).AND.(CALLAM.EQ.2)) GO TO 9006
-    CALL ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
+    9007 continue
+    if ((calth.eq.2).and.(callam.eq.2)) go to 9006
+    call athyhe (wl,th,calth,callam,zzk)
 
-    9006 CONTINUE
-    IF (CALMET.EQ.1) GO TO 9003 ! ISSUE line doing nothing
+    9006 continue
+    if (calmet.eq.1) go to 9003 ! issue line doing nothing
 
-    9003 CONTINUE
-    CALL IONIPE (TH,ZLPE,CALTH,CALMET)
-    MM=absoru2_NMETA+1
-    MMM=absoru2_NMETA+6
-    SCATEL=9.559063E-13*au_PE*TH
+    9003 continue
+    call ionipe (th,zlpe,calth,calmet)
+    mm=absoru2_nmeta+1
+    mmm=absoru2_nmeta+6
+    scatel=9.559063e-13*au_pe*th
     ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
     ! =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 
     !__logging__
-    86 FORMAT ('0LAMBDA KKK   C1'7X'MG'7X'SI1'7X'AL1'8X'H-'7X'H2-'7X'H2+'9X'H'7X'HE+'8X'HE'5X'K TOTAL/',2A4)
-    WRITE (LLL,86) (absoru2_IUNITE(I),I=1,2)
-    CALL LOG_DEBUG(LLL)
+    86 format ('0LAMBDA KKK   c1'7x'mg'7x'si1'7x'al1'8x'h-'7x'h2-'7x'h2+'9x'h'7x'he+'8x'he'5x'k total/',2a4)
+    write (lll,86) (absoru2_iunite(i),i=1,2)
+    call log_debug(lll)
 
-    KKK=au_JFZ
-    MIN=MM
+    kkk=au_jfz
+    min=mm
 
-    DO I=1,au_JFZ
-      DO M=1,absoru2_NMETA
-        ZZKK(M,I)=0.0
-      END DO
-    END DO
+    do i=1,au_jfz
+      do m=1,absoru2_nmeta
+        zzkk(m,i)=0.0
+      end do
+    end do
 
-    TOTKAP(2)=0.
-    IF (CALU.EQ.1) UNIT=au_RHO
+    totkap(2)=0.
+    if (calu.eq.1) unit=au_rho
     IF (CALU.EQ.2) UNIT=au_TOC ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
 
-    SCATEL=SCATEL/UNIT
-    DO I=1,KKK
-      TOTKAP(I)=0.0
-      SCAT(1)=SCATH(1)*absoru_ZNH(absoru2_NMETA+4)/UNIT
-      SCAT(2)=SCATH(2)*absoru_ZNH(absoru2_NMETA+2)/UNIT
-      DO M = MIN,MMM
-        ! LES absoru_ZNH POUR LES METAUX SONT EN CM-3*1.0E-18
-        IF ((M.NE.(absoru2_NMETA+1)).AND.(M.NE.(absoru2_NMETA+3))) GO TO 4222
+    scatel=scatel/unit
+    do i=1,kkk
+      totkap(i)=0.0
+      scat(1)=scath(1)*absoru_znh(absoru2_nmeta+4)/unit
+      scat(2)=scath(2)*absoru_znh(absoru2_nmeta+2)/unit
+      do m = min,mmm
+        ! les absoru_znh pour les metaux sont en cm-3*1.0e-18
+        if ((m.ne.(absoru2_nmeta+1)).and.(m.ne.(absoru2_nmeta+3))) go to 4222
 
-        IF (M.EQ.(absoru2_NMETA+1)) &
-         ZZKK(M,I)=ZZK(M,I)*(absoru_ZNH(absoru2_NMETA+4)*au_PE*1.E-26)/UNIT
-        IF (M.EQ.(absoru2_NMETA+3)) &
-         ZZKK(M,I)=ZZK(M,I)*((absoru_ZNH(absoru2_NMETA+4)*1.E-19)*(absoru_ZNH(MMAX+7)*1.0E-20))/UNIT
-        GO TO 4221
+        if (m.eq.(absoru2_nmeta+1)) &
+         zzkk(m,i)=zzk(m,i)*(absoru_znh(absoru2_nmeta+4)*au_pe*1.e-26)/unit
+        if (m.eq.(absoru2_nmeta+3)) &
+         zzkk(m,i)=zzk(m,i)*((absoru_znh(absoru2_nmeta+4)*1.e-19)*(absoru_znh(mmax+7)*1.0e-20))/unit
+        go to 4221
 
-        4222 CONTINUE
-        ZZKK(M,I)=ZZK(M,I)*absoru_ZNH(M)/UNIT
-        IF (M.EQ.(absoru2_NMETA+2)) ZZKK(M,I)=ZZKK(M,I)*au_PE
+        4222 continue
+        zzkk(m,i)=zzk(m,i)*absoru_znh(m)/unit
+        if (m.eq.(absoru2_nmeta+2)) zzkk(m,i)=zzkk(m,i)*au_pe
 
-        4221 CONTINUE
-        TOTKAP(I)=TOTKAP(I)+ZZKK(M,I)
-      END DO
-      TOTKAP(I)=(TOTKAP(I)+SCATEL+SCAT(1)+SCAT(2))
+        4221 continue
+        totkap(i)=totkap(i)+zzkk(m,i)
+      end do
+      totkap(i)=(totkap(i)+scatel+scat(1)+scat(2))
 
       !__logging__
-      87 FORMAT (F9.1,I2,1P12E10.2)
-      WRITE (LLL,87) WL,KKK,(ZZKK(M,I),M=1,MMM),TOTKAP(I)
-      CALL LOG_DEBUG(LLL)
-    END DO
+      87 format (f9.1,i2,1p12e10.2)
+      write (lll,87) wl,kkk,(zzkk(m,i),m=1,mmm),totkap(i)
+      call log_debug(lll)
+    end do
 
     !__logging__
-    89 FORMAT ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSITE='E11.4,' NBR.NOYAU D H/CM3='E11.4, &
+    89 format ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSITE='E11.4,' NBR.NOYAU D H/CM3='E11.4, &
                ' LOG10PE='0PF5.2,' TETA='F5.2)
-    WRITE (LLL,89) SCATEL,SCAT(1),SCAT(2),au_RHO,au_TOC,ZLPE,TH
-    CALL LOG_DEBUG(LLL)
-  END
+    write (lll,89) scatel,scat(1),scat(2),au_rho,au_toc,zlpe,th
+    call log_debug(lll)
+  end
 
 
   !-------------------------------------------------------------------------------
@@ -244,8 +274,7 @@ CONTAINS
   !> Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
   !> (i.e., a statistical weight)
   !>
-  !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE"
-  !> Reference: J.A.Gaunth 1930.
+  !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930 
   !>
   !> A.M COLLE   19/8/69
 

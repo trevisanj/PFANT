@@ -723,7 +723,10 @@ CONTAINS
   !> Also looks into abonds_ELE(:) to fill atomgrade_ABOND_ABONDS
 
   subroutine filter_atomgrade(lzero, lfin)
-    real*8 lzero, lfin
+    !> Lower edge of wavelength interval
+    real*8, intent(in) :: lzero
+    !> Upper edge of wavelength interval
+    real*8, intent(in) :: lfin
     integer j, k
     character*192 lll
 

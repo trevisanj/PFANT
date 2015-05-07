@@ -19,11 +19,15 @@ Structure of PFANT code
 */
 
 /**
-@defgroup gr_config System configuration
+@defgroup gr_config System
+@brief System configuration and startup
+THis group contains modules and routines dedicated to setting up the environment state
+for the numerical calculations.
 
 @defgroup gr_math Maths
 
 @defgroup gr_io Input/Output
+@brief I/O and logging routines.
 This group contains
 @li routines to read input files
 @li logging routines

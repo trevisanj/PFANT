@@ -21,13 +21,11 @@ module dissoc
   use read_files
   implicit none
 
-
   integer, private, parameter :: &
    z_electron = 99,  &  ! Fictitious atomic number of electron
    z_h_star   = 100, &  ! Fictitious atomic number of "H*"
    z_h        = 1,   &  ! Atomic number of Hydrogen
    z_he       = 2       ! Atomic number of Helium
-
 
 
   ! They will be pointer targets at molecula.f:POINT_PPA_PB()
@@ -55,7 +53,6 @@ module dissoc
 
 contains
 
-
   !================================================================================================================================
   !> Subroutine d'equilibre dissociatif
   ! ISSUE WHAT
@@ -70,7 +67,6 @@ contains
     integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
      nelemi, nelemxi, k1, k2, k3, kd, kf
     character*128 lll
-
 
     !
     !*****IMPUT A
@@ -274,7 +270,7 @@ contains
     
     heh    = ccomp(z_he)/ccomp(z_h)  ! Helium-to-Hydrogen ratio by number
 
-    ! Evaluation of log kp(mol)
+    ! EVALUATION OF LOG KP(MOL)
     do 1025 j =1, dissoc_nmol
       aplogj = dissoc_c(j,5)
       do 1026 k=1,4
@@ -287,7 +283,7 @@ contains
     dhh = (((0.1196952e-02*t-0.2125713e-01)*t+0.1545253e+00)*(-0.5161452e+01))*t+0.1277356e+02
     dhh = exp(dhh/econst)
 
-    ! Evaluation of the ionization constants
+    ! EVALUATION OF THE IONIZATION CONSTANTS
     tem25 = tem**2*sqrt(tem)
     do 1060 i = 1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
@@ -297,13 +293,13 @@ contains
     hkp = kp(z_h)
     if (t-0.6) 1084, 1072, 1072
 
-    ! Preliminary value of pH at high temperatures (ISSUE is this potential hidrogenionico??)
+    ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES (ISSUE is this potential hidrogenionico??)
     1084 continue
     pph = sqrt(hkp *(pg/(1.0+heh)+hkp ))-hkp
     ph  = pph**2/hkp
     go to 1102
 
-    ! Preliminary value of ph at low temperatures
+    ! PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
     1072 continue
     if (pg/dhh - 0.1) 1073, 1073, 1074
     
@@ -315,177 +311,177 @@ contains
     1074 continue
     ph = 0.5*(sqrt(dhh*(dhh+4.0*pg/(1.0+heh)))-dhh)
 
-    ! Evaluation of the fictitious pressures of hydrogen
-    ! pg = ph+phh+2.0*pph+heh*(ph+2.0*phh+pph)  ! issue i may have commented this by accident
-    1102 CONTINUE
-    U = (1.0+2.0*HEH)/DHH
-    Q = 1.0+HEH
-    R = (2.0+HEH)*SQRT(HKP )
-    S = -1.0*PG
-    X = SQRT(PH)
-    ITERAT = 0
+    ! EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
+    ! PG = PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)  ! issue i may have commented this by accident
+    1102 continue
+    u = (1.0+2.0*heh)/dhh
+    q = 1.0+heh
+    r = (2.0+heh)*sqrt(hkp )
+    s = -1.0*pg
+    x = sqrt(ph)
+    iterat = 0
     
-    1103 CONTINUE
-    F  = ((U*X**2+Q)*X+R)*X+S
-    DF = 2.0*(2.0*U*X**2+Q)*X+R
-    XR = X-F/DF
-    IF (ABS((X-XR)/XR)-EPSDIE) 1105, 1105, 1106
+    1103 continue
+    f  = ((u*x**2+q)*x+r)*x+s
+    df = 2.0*(2.0*u*x**2+q)*x+r
+    xr = x-f/df
+    if (abs((x-xr)/xr)-epsdie) 1105, 1105, 1106
     
-    1106 CONTINUE
-    ITERAT=ITERAT+1
-    IF (ITERAT-50) 1104,1104,1107
+    1106 continue
+    iterat=iterat+1
+    if (iterat-50) 1104,1104,1107
 
-    1107 CONTINUE
+    1107 continue
     
-    6108 FORMAT(1H1,'NOT CONVERGE IN DIE  TEM=', F9.2, 5X, 'PG=', E12.5, 5X 'X1=', &
-                E12.5, 5X,'X2=', E12.5, 5X, 'PH=', E12.5)
-    WRITE(LLL, 6108) TEM,PG,X,XR,PH
-    CALL LOG_WARNING(LLL)
+    6108 format(1h1,'Not converge in die  tem=', f9.2, 5x, 'pg=', e12.5, 5x 'x1=', &
+                e12.5, 5x,'x2=', e12.5, 5x, 'ph=', e12.5)
+    write(lll, 6108) tem,pg,x,xr,ph
+    call log_warning(lll)
     
-    GO TO 1105
+    go to 1105
 
-    1104 CONTINUE
-    X = XR
+    1104 continue
+    x = xr
     
-    GO TO 1103
+    go to 1103
 
-    1105 CONTINUE
-    PH  = XR**2
-    PHH = PH**2/DHH
-    PPH = SQRT(HKP *PH)
-    FPH = PH+2.0*PHH+PPH
+    1105 continue
+    ph  = xr**2
+    phh = ph**2/dhh
+    pph = sqrt(hkp *ph)
+    fph = ph+2.0*phh+pph
 
     ! ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
     ! THe current dissoc.dat has no Z=100 (neither 99).
     ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
-    P(Z_H_STAR) = PPH
+    p(z_h_star) = pph
 
 
     ! EVALUATION OF THE FICTITIOUS PRESSURE OF EACH ELEMENT
-    DO 1070 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      FP(NELEMI) = CCOMP(NELEMI)*FPH
-    1070 CONTINUE
+    do 1070 i=1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      fp(nelemi) = ccomp(nelemi)*fph
+    1070 continue
 
     ! CHECK OF INITIALIZATION
-    PE = P(Z_ELECTRON)
+    pe = p(z_electron)
 
-    IF(PH-P(Z_H)) 1402,1402,1401
+    if(ph-p(z_h)) 1402,1402,1401
     
-    1401 CONTINUE
-    DO 1403 I=1,dissoc_NMETAL
+    1401 continue
+    do 1403 i=1,dissoc_nmetal
       ! ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE
-      NELEMI=dissoc_NELEMX(I)
-      P(NELEMI) = FP(NELEMI)*EXP(-5.0*T/ECONST)
-    1403 CONTINUE
-    P(Z_H) = PH   ! ISSUE: overwriting P(1)
+      nelemi=dissoc_nelemx(i)
+      p(nelemi) = fp(nelemi)*exp(-5.0*t/econst)
+    1403 continue
+    p(z_h) = ph   ! ISSUE: overwriting P(1)
 
     ! RUSSELL EQUATIONS
-    1402 CONTINUE
-    NITER = 0
-    1040 CONTINUE
-    DO 1030 I =1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      FX(NELEMI) = -FP(NELEMI)+P(NELEMI)*(1.0 + KP(NELEMI)/PE)  ! ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright?
-      DFX(NELEMI) = 1.0 + KP(NELEMI)/PE
-    1030 CONTINUE
+    1402 continue
+    niter = 0
+    1040 continue
+    do 1030 i =1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      fx(nelemi) = -fp(nelemi)+p(nelemi)*(1.0 + kp(nelemi)/pe)  ! ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright?
+      dfx(nelemi) = 1.0 + kp(nelemi)/pe
+    1030 continue
 
-    SPNION = 0.0
-    DO 1041 J=1,dissoc_NMOL
-      MMAXJ  = dissoc_MMAX(J)
-      PMOLJL = -APMLOG(J)
-      DO 1042 M =1,MMAXJ
-        NELEMJ = dissoc_NELEM(M,J)
-        NATOMJ = dissoc_NATOM(M,J)
-        PMOLJL = PMOLJL + FLOAT(NATOMJ)*ALOG10(P(NELEMJ))
-      1042 CONTINUE
+    spnion = 0.0
+    do 1041 j=1,dissoc_nmol
+      mmaxj  = dissoc_mmax(j)
+      pmoljl = -apmlog(j)
+      do 1042 m =1,mmaxj
+        nelemj = dissoc_nelem(m,j)
+        natomj = dissoc_natom(m,j)
+        pmoljl = pmoljl + float(natomj)*alog10(p(nelemj))
+      1042 continue
       
-      IF(PMOLJL - (PGLOG+1.0) ) 1046,1046,1047
+      if(pmoljl - (pglog+1.0) ) 1046,1046,1047
       
-      1047 CONTINUE
-      DO 1048 M =1,MMAXJ
-        NELEMJ = dissoc_NELEM(M,J)
-        NATOMJ = dissoc_NATOM(M,J)
+      1047 continue
+      do 1048 m =1,mmaxj
+        nelemj = dissoc_nelem(m,j)
+        natomj = dissoc_natom(m,j)
 
         ! ISSUE BIG! at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
-        P(NELEMJ)=1.0E-2*P(NELEMJ)
-        PMOLJL = PMOLJL + FLOAT(NATOMJ)*(-2.0)
-      1048 CONTINUE
+        p(nelemj)=1.0e-2*p(nelemj)
+        pmoljl = pmoljl + float(natomj)*(-2.0)
+      1048 continue
 
-      1046 PMOLJ = EXP(PMOLJL/ECONST)
-      DO 1044 M =1,MMAXJ
-        NELEMJ = dissoc_NELEM(M,J)
-        NATOMJ = dissoc_NATOM(M,J)
-        ATOMJ = FLOAT(NATOMJ)
+      1046 pmolj = exp(pmoljl/econst)
+      do 1044 m =1,mmaxj
+        nelemj = dissoc_nelem(m,j)
+        natomj = dissoc_natom(m,j)
+        atomj = float(natomj)
 
-        IF (NELEMJ .EQ. Z_ELECTRON) THEN  ! ISSUE This bit suggests that Z=99 is allowed in the molecules part
-          SPNION = SPNION + PMOLJ
-        END IF
+        if (nelemj .eq. z_electron) then  ! ISSUE This bit suggests that Z=99 is allowed in the molecules part
+          spnion = spnion + pmolj
+        end if
 
-        DO 1043 I=1,dissoc_NMETAL
-          NELEMI = dissoc_NELEMX(I)
-          IF(NELEMJ .EQ. NELEMI) GO TO 1045
-          GO TO 1043
-          1045 FX(NELEMI) = FX(NELEMI) + ATOMJ*PMOLJ
-          DFX(NELEMI) = DFX(NELEMI) + ATOMJ**2*PMOLJ/P(NELEMI)
-        1043 CONTINUE
-      1044 CONTINUE
-      PPMOL(J) = PMOLJ
-    1041 CONTINUE
+        do 1043 i=1,dissoc_nmetal
+          nelemi = dissoc_nelemx(i)
+          if(nelemj .eq. nelemi) go to 1045
+          go to 1043
+          1045 fx(nelemi) = fx(nelemi) + atomj*pmolj
+          dfx(nelemi) = dfx(nelemi) + atomj**2*pmolj/p(nelemi)
+        1043 continue
+      1044 continue
+      ppmol(j) = pmolj
+    1041 continue
 
     ! SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
-    DO 2001 I=1,dissoc_NMETAL
-      NELEMI=dissoc_NELEMX(I)
-      WA(I)=ALOG10(P(NELEMI)+1.0E-30)
-    2001 CONTINUE
+    do 2001 i=1,dissoc_nmetal
+      nelemi=dissoc_nelemx(i)
+      wa(i)=alog10(p(nelemi)+1.0e-30)
+    2001 continue
 
-    IMAXP1 = dissoc_NMETAL+1
-    WA(IMAXP1) = ALOG10(PE+1.0E-30)
-    DELTA = 0.0
-    DO 1050 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      PREV(NELEMI) = P(NELEMI) - FX(NELEMI)/DFX(NELEMI)
-      PREV(NELEMI) = ABS(PREV(NELEMI))
+    imaxp1 = dissoc_nmetal+1
+    wa(imaxp1) = alog10(pe+1.0e-30)
+    delta = 0.0
+    do 1050 i=1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      prev(nelemi) = p(nelemi) - fx(nelemi)/dfx(nelemi)
+      prev(nelemi) = abs(prev(nelemi))
 
-      IF (PREV(NELEMI) .LT. 1.0E-30) PREV(NELEMI)=1.0E-30
+      if (prev(nelemi) .lt. 1.0e-30) prev(nelemi)=1.0e-30
 
-      Z(NELEMI) = PREV(NELEMI)/P(NELEMI)
-      DELTA = DELTA + ABS(Z(NELEMI) - 1.0)
+      z(nelemi) = prev(nelemi)/p(nelemi)
+      delta = delta + abs(z(nelemi) - 1.0)
 
-      IF (dissoc_SWITER) 2500,2500,2501
+      if (dissoc_switer) 2500,2500,2501
 
-      2501 CONTINUE
-      P(NELEMI) = (PREV(NELEMI) + P(NELEMI) )*0.5
-      GO TO 1050
+      2501 continue
+      p(nelemi) = (prev(nelemi) + p(nelemi) )*0.5
+      go to 1050
 
-      2500 CONTINUE
-      P(NELEMI) = PREV(NELEMI)
-    1050 CONTINUE
+      2500 continue
+      p(nelemi) = prev(nelemi)
+    1050 continue
 
 
     ! IONIZATION EQUILIBRIUM
-    PEREV = 0.0
-    DO 1061 I=1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      PEREV = PEREV + KP(NELEMI)*P(NELEMI)
-    1061 CONTINUE
+    perev = 0.0
+    do 1061 i=1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      perev = perev + kp(nelemi)*p(nelemi)
+    1061 continue
 
-    PEREV = SQRT(PEREV/(1.0+SPNION/PE))
-    DELTA = DELTA + ABS((PE-PEREV)/PE)
-    PE = (PEREV + PE)*0.5  ! Note that it has an equivalence with the last element of P
-    P(Z_ELECTRON)=PE
+    perev = sqrt(perev/(1.0+spnion/pe))
+    delta = delta + abs((pe-perev)/pe)
+    pe = (perev + pe)*0.5  ! Note that it has an equivalence with the last element of P
+    p(z_electron)=pe
 
-    IF (DELTA - dissoc_EPS) 1051,1051,1052
+    if (delta - dissoc_eps) 1051,1051,1052
 
-    1052 CONTINUE
-    NITER = NITER+1
-    IF (NITER-dissoc_NIMAX) 1040,1040,1054
+    1052 continue
+    niter = niter+1
+    if (niter-dissoc_nimax) 1040,1040,1054
 
-    1054 CONTINUE
-    6055 FORMAT(1H0,39H *DOES NOT CONVERGE AFTER ITERATIONS OF,I4/////)
-    WRITE(LLL,6055) dissoc_NIMAX
-    CALL LOG_WARNING(LLL)
+    1054 continue
+    6055 format(1h0,39h *Does not converge after iterations of,i4/////)
+    write(lll,6055) dissoc_nimax
+    call log_warning(lll)
 
-    1051 CONTINUE
-  END
-END MODULE DISSOC
+    1051 continue
+  end
+end module dissoc
