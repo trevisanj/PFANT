@@ -13,7 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup molecula
+!> @ingroup gr_math
 !> This module corresponds to 2015- subroutine KAPMOL, which was split in three parts.
 !> 
 !> - READ_MOLECULAGRADE: Reads file
@@ -240,7 +240,7 @@ contains
       DO WHILE (.TRUE.)
         I_LINE = I_LINE+1
 
-        ! *BOUNDARY CHECK*: checks if exceeds maximum number of elements allowed
+        !__spill check__: checks if exceeds maximum number of elements allowed
         ! ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
         IF (I_LINE .GT. MAX_km__LINES_TOTAL) THEN
           WRITE(*,*) 'READ_MOLECULAGRADE(): '
@@ -317,6 +317,7 @@ contains
 
 
   !================================================================================================================================
+  !> @ingroup gr_filter
   !> Sweeps km__* to populate a few km_* depending on the interval LZERO-LFIN
 
   SUBROUTINE FILTER_MOLECULAGRADE(LZERO, LFIN)

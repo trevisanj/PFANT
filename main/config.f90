@@ -13,6 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_config
 !> Command-line parsing and respective global variable declarations
 !> - Configuration globals with their default values
 !> - Routines to parse command-line arguments

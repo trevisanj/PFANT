@@ -21,15 +21,27 @@ Structure of PFANT code
 /**
 @defgroup gr_config System configuration
 
-@defgroup gr_math   Maths
+@defgroup gr_math Maths
 
-@defgroup gr_io     Input/Output
+@defgroup gr_io Input/Output
 This group contains
 @li routines to read input files
 @li logging routines
 
 @defgroup gr_data DATA statements
+@brief Places where you can find @c DATA statements.
 This group gathers all modules and subroutines that contain @c DATA statements.
 
+@defgroup gr_filter Filtering routines
+@brief @c lzero - @c lfin -dependent filtering
+
+This group gathers all routines that filter arrays depending on @c lzero - @c lfin wavelength
+interval.
+
+Filtering is analogous to SQL
+@code
+SELECT ... WHERE lzero <= &lambda; <= lfin
+@endcode
 
 */
+

@@ -13,6 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_io
 !> Module "FILETOH"
 !>
 !> Routines that deal with the FILETOH files: reading and related calculations
@@ -44,9 +45,9 @@ MODULE FILETOH
 
   ! Private variables, shared between routines below
   REAL(8), PRIVATE, DIMENSION(MAX_filetoh_JJMAX) :: mi_LLAMBDH         
-  REAL, PRIVATE, DIMENSION(MAX_filetoh_JJMAX, MAX_modeles_NTOT) :: mi_TTH
-  REAL, PRIVATE, DIMENSION(MAX_filetoh_JJMAX) :: mi_ALLH, mi_TAUHN
-  REAL, PRIVATE, DIMENSION(filetoh_NP) :: mi_FTTH(filetoh_NP)
+  real*8, PRIVATE, DIMENSION(MAX_filetoh_JJMAX, MAX_modeles_NTOT) :: mi_TTH
+  real*8, PRIVATE, DIMENSION(MAX_filetoh_JJMAX) :: mi_ALLH, mi_TAUHN
+  real*8, PRIVATE, DIMENSION(filetoh_NP) :: mi_FTTH(filetoh_NP)
   INTEGER, PRIVATE :: JJMAX
 
 
@@ -89,7 +90,7 @@ CONTAINS
   !>   ILZERO -- integer version of variable LZERO in main module
   SUBROUTINE FILETOH_AUH(DTOT, TTD, ILZERO)
     INTEGER DTOT, ILZERO
-    REAL, DIMENSION(filetoh_NP) :: TTD
+    real*8, DIMENSION(filetoh_NP) :: TTD
     INTEGER D
 
     JJMAX = 2*f_filetoh_JMAX-1
@@ -161,7 +162,7 @@ CONTAINS
   !> ISSUE: Get description for this routine, what it does
   SUBROUTINE FTLIN3H(DTOT,TTD)
     INTEGER DTOT
-    REAL, DIMENSION(filetoh_NP) :: TTD
+    real*8, DIMENSION(filetoh_NP) :: TTD
     
     J=2
     KK=1

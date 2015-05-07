@@ -13,6 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_config
 !> Command-line parser.
 !>
 !> I took the original from the Fortran wiki:
@@ -60,7 +61,8 @@ contains
   !>   ! things changed
   !> end do
   !> \endcode
-  subroutine getopt (options, optindex, arg, arglen, stat, &
+  
+  subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
 

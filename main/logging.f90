@@ -13,6 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_io
 !> Routines to write text to screen and/or log file.
 !>
 !> Usage:

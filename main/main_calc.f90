@@ -100,7 +100,7 @@
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
 !===PC2003 END=== 
 
-
+!> @ingroup gr_math
 !> Fantomol avec sous-programmes (MNP) -
 !> Calcul possible de 100 angstrom en 100 angstrom.
 !> Flux sortant est en nu: Fnu x lambda
@@ -562,7 +562,7 @@ MODULE SYNTHESIS
         REAL*8 ECAR,ECARTM,ECARM
         DIMENSION turbul_VT(50)
         DIMENSION BI(0:50)
-        REAL, DIMENSION(MAX_atomgrade_NBLEND) :: ECAR, ECARTL, KA
+        real*8, DIMENSION(MAX_atomgrade_NBLEND) :: ECAR, ECARTL, KA
 
         DIMENSION KAP(50),           &
                   KAPPA(50),         &

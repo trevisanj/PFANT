@@ -26,7 +26,7 @@ MODULE MOD_ABSORU
   !> Outputs
   !=====
   ! ISSUE Why 12?
-  REAL, DIMENSION(12) :: absoru_ZNH  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+  real*8, DIMENSION(12) :: absoru_ZNH  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
 
 
 
@@ -56,20 +56,20 @@ MODULE MOD_ABSORU
    au_PE, au_RHO, & !> DENSITE (G-CM-3)
    au_TOC  !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
 
-  REAL, DIMENSION(2, 19) :: au_G2D  !> FACTEUR DE GAUNT BOUND FREE
+  real*8, DIMENSION(2, 19) :: au_G2D  !> FACTEUR DE GAUNT BOUND FREE
 
-  REAL, DIMENSION(5) :: au_ZEXPM
-  REAL, DIMENSION(10) :: au_ZEXP
-  REAL, DIMENSION(20) :: au_ZEUH, au_ZEUHEP
-  REAL, DIMENSION(11) :: au_ZK
-  REAL, DIMENSION(30, 9) :: au_ZKM,  &
+  real*8, DIMENSION(5) :: au_ZEXPM
+  real*8, DIMENSION(10) :: au_ZEXP
+  real*8, DIMENSION(20) :: au_ZEUH, au_ZEUHEP
+  real*8, DIMENSION(11) :: au_ZK
+  real*8, DIMENSION(30, 9) :: au_ZKM,  &
    au_AC2    !> ionization degree of metals
 
-  REAL, DIMENSION(3) :: au_AC1  !> au_AC1(1): ionization degree of H
+  real*8, DIMENSION(3) :: au_AC1  !> au_AC1(1): ionization degree of H
                                 !> au_AC1(2): ionization degree of HE+
                                 !> au_AC1(3): ionization degree of HE
 
-  REAL, DIMENSION(30) :: au_ZNU
+  real*8, DIMENSION(30) :: au_ZNU
   CHARACTER*80 LLL
 
 CONTAINS
@@ -449,11 +449,11 @@ CONTAINS
   !>     A.M COLLE   13/5/69
 
   SUBROUTINE SAHATH(TH)
-    REAL, PARAMETER :: POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/)
-    REAL, PARAMETER :: C1(3) = (/0.0,-7.526612E-3,5.708280E-2/)
-    REAL, PARAMETER :: C2(3) = (/0.0,1.293852E-1,-1.823574E-1/)
-    REAL, PARAMETER :: C3(3) = (/0.0,-11.34061,-6.434060/)
-    REAL, PARAMETER :: C4(3) = (/0.0,28.85946,25.80507/)
+    real*8, PARAMETER :: POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/)
+    real*8, PARAMETER :: C1(3) = (/0.0,-7.526612E-3,5.708280E-2/)
+    real*8, PARAMETER :: C2(3) = (/0.0,1.293852E-1,-1.823574E-1/)
+    real*8, PARAMETER :: C3(3) = (/0.0,-11.34061,-6.434060/)
+    real*8, PARAMETER :: C4(3) = (/0.0,28.85946,25.80507/)
 
     DO N = 2,3
       au_ZK(absoru2_NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))

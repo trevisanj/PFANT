@@ -13,312 +13,310 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+!> @ingroup gr_math
 !> Subroutines SAT4 and DIE
 !>
 !> Prefix "sat4_" denotes variables filled by SAT4() (or indirectly, DIE())
-MODULE DISSOC
-  USE READ_FILES
-  IMPLICIT NONE
+module dissoc
+  use read_files
+  implicit none
 
 
-  INTEGER, PRIVATE, PARAMETER :: &
-   Z_ELECTRON = 99,  &  ! Fictitious atomic number of electron
-   Z_H_STAR   = 100, &  ! Fictitious atomic number of "H*"
-   Z_H        = 1,   &  ! Atomic number of Hydrogen
-   Z_HE       = 2       ! Atomic number of Helium
+  integer, private, parameter :: &
+   z_electron = 99,  &  ! Fictitious atomic number of electron
+   z_h_star   = 100, &  ! Fictitious atomic number of "H*"
+   z_h        = 1,   &  ! Atomic number of Hydrogen
+   z_he       = 2       ! Atomic number of Helium
 
 
 
   ! They will be pointer targets at molecula.f:POINT_PPA_PB()
-  REAL, TARGET, DIMENSION(MAX_modeles_NTOT) :: sat4_PPH, sat4_PPC2, &
-   sat4_PN, &
-   sat4_PC13, sat4_PMG, sat4_PO, sat4_PTI, sat4_PFE
+  real*8, target, dimension(max_modeles_ntot) :: sat4_pph, sat4_ppc2, &
+   sat4_pn, &
+   sat4_pc13, sat4_pmg, sat4_po, sat4_pti, sat4_pfe
 
+  real*8, private, dimension(max_z) :: &
+   ip,     & ! ?
+   ccomp,  & ! ?
+   uiidui, & ! ?
+   fp,     & ! ?
+   kp,     & ! ?
+   p         ! Pressure
 
-  ! ISSUE These variables are assigned but never used!!!
-  REAL, DIMENSION(MAX_modeles_NTOT) :: sat4_PNG, sat4_PIG
+  real*8, private, dimension(max_dissoc_nmol) :: &
+   ppmol, apmlog
 
-  REAL, PRIVATE, DIMENSION(MAX_Z) :: &
-   IP,     & ! ?
-   CCOMP,  & ! ?
-   UIIDUI, & ! ?
-   FP,     & ! ?
-   KP,     & ! ?
-   P         ! Pressure
-
-  REAL, PRIVATE, DIMENSION(MAX_dissoc_NMOL) :: &
-   PPMOL, APMLOG
-
-  REAL PE ! Fictitious pressure of electron?? ISSUE: is it?
+  real pe ! Fictitious pressure of electron?? ISSUE: is it?
 
   ! ISSUE I won't do it this way until I sort the conflicts in DIE
   !~REAL PE ! Fictitious pressure of the electron?? is it? ISSUE
   !~EQUIVALENCE (P(Z_ELECTRON), P_ELECTRON)
 
 
-CONTAINS
+contains
 
 
   !================================================================================================================================
-  !> SUBROUTINE D'EQUILIBRE DISSOCIATIF
+  !> Subroutine d'equilibre dissociatif
   ! ISSUE WHAT
-  SUBROUTINE SAT4()
-    USE CONFIG
-    IMPLICIT NONE
-    REAL, DIMENSION(MAX_modeles_NTOT, MAX_dissoc_NMETAL) :: XP
-    REAL  KPLOG, ECONST, FPLOG, &
-     PDFPL, PELOG, PGLOG, PIONL, PLOG, PMOLL, TEM, PG, THETA, XLOG
-    REAL*8 CCLOGI
-    INTEGER I, IG0I, IG1I, IQ, IR, IRL, IRR, ITO, ITX, J, JCOUNT, NBL, &
-     NELEMI, NELEMXI, K1, K2, K3, KD, KF
-    CHARACTER*128 LLL
+
+  subroutine sat4()
+    use config
+    implicit none
+    real*8, dimension(max_modeles_ntot, max_dissoc_nmetal) :: xp
+    real  kplog, econst, fplog, &
+     pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
+    real*8 cclogi
+    integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
+     nelemi, nelemxi, k1, k2, k3, kd, kf
+    character*128 lll
 
 
     !
     !*****IMPUT A
 
-    ECONST = 4.342945E-1
+    econst = 4.342945e-1
 
     ! Infers other variables from variables dissoc__* (notice the double underscore)
-    DO I = 1, dissoc_NMETAL
-      CCLOGI = dissoc__CCLOG(I)+main_AFSTAR
+    do i = 1, dissoc_nmetal
+      cclogi = dissoc__cclog(i)+main_afstar
       ! ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
-      CCLOGI = CCLOGI+main_XXCOR(I)
-      IF(I .EQ .1) CCLOGI = 0.0
-      IF(I .EQ .2) CCLOGI = -1.0
+      cclogi = cclogi+main_xxcor(i)
+      if(i .eq .1) cclogi = 0.0
+      if(i .eq .2) cclogi = -1.0
 
-      NELEMXI = dissoc_NELEMX(I)
-      IG0I = dissoc__IG0(I)
-      IG1I = dissoc__IG1(I)
+      nelemxi = dissoc_nelemx(i)
+      ig0i = dissoc__ig0(i)
+      ig1i = dissoc__ig1(i)
 
-      IP(NELEMXI) = dissoc__IP(I)
-      UIIDUI(NELEMXI) = IG1I * 0.661 / IG0I
-      CCOMP(NELEMXI) = EXP(CCLOGI/ECONST)
+      ip(nelemxi) = dissoc__ip(i)
+      uiidui(nelemxi) = ig1i * 0.661 / ig0i
+      ccomp(nelemxi) = exp(cclogi/econst)
 
       !~     !--debugging--!
       !~     WRITE(LLL, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
       !~+     dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
       !~+     IG0I, IG1I, CCLOGI-main_AFSTAR
       !~     CALL LOG_DEBUG(LLL)
-    END DO
+    end do
 
     !
     !*****INPUT D
 
     ! STARTING VALUE OF THE SOLUTION
-    DO 1400 I = 1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      P(NELEMI) = 1.0E-20
-    1400 CONTINUE
+    do 1400 i = 1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      p(nelemi) = 1.0e-20
+    1400 continue
 
     ! ISSUE What if atomic number 99 was already in dissoc.dat?
-    P(Z_ELECTRON) = 1.0E-10
+    p(z_electron) = 1.0e-10
     ! ISSUE: what about 100?
 
     !*****INPUT E
-    DO 1020 ITO = 1,modeles_NTOT
-      THETA = modeles_TETA(ITO)
-      TEM = 5040.0/THETA
-      PG = modeles_PG(ITO)
-      PGLOG = ALOG10(PG)
 
-      CALL DIE(TEM,PG)
+    ! @todo issue this block has no comments
+    do 1020 ito = 1,modeles_ntot
+      theta = modeles_teta(ito)
+      tem = 5040.0/theta
+      pg = modeles_pg(ito)
+      pglog = alog10(pg)
 
-      PE = P(Z_ELECTRON)
-      PELOG = ALOG10(PE)
+      call die(tem,pg)
 
-      DO 1303 I=1,dissoc_NMETAL
-        NELEMI = dissoc_NELEMX(I)
+      pe = p(z_electron)
+      pelog = alog10(pe)
 
-        FPLOG  = ALOG10(FP(NELEMI))
-        XP(ITO,I) = P(NELEMI)+1.0E-30
-        PLOG   = ALOG10( XP(ITO,I) )
-        PDFPL  = PLOG - FPLOG
-        IF (MOD(I,5)) 1303,1304,1303
-        1304 CONTINUE
-      1303 CONTINUE
+      do 1303 i=1,dissoc_nmetal
+        nelemi = dissoc_nelemx(i)
 
-      IRL = 120
-      DO 1184 I=1,dissoc_NMETAL
-        NELEMI = dissoc_NELEMX(I)
+        fplog  = alog10(fp(nelemi))
+        xp(ito,i) = p(nelemi)+1.0e-30
+        plog   = alog10( xp(ito,i) )
+        pdfpl  = plog - fplog
+        if (mod(i,5)) 1303,1304,1303
+        1304 continue
+      1303 continue
 
-        PLOG   = ALOG10(P(NELEMI)+1.0E-30)
-        KPLOG  = ALOG10(KP(NELEMI)+1.0E-30)
-        PIONL  = PLOG + KPLOG - PELOG
-        XLOG   = PIONL - PGLOG
+      irl = 120
+      do 1184 i=1,dissoc_nmetal
+        nelemi = dissoc_nelemx(i)
 
-        IF (I .NE. dissoc_NMETAL ) GO TO 1450
-        IQ  = I / 120
-        IR  = dissoc_NMETAL - IQ * 120
-        IRL = IR / 3
-        GO TO 1460
+        plog   = alog10(p(nelemi)+1.0e-30)
+        kplog  = alog10(kp(nelemi)+1.0e-30)
+        pionl  = plog + kplog - pelog
+        xlog   = pionl - pglog
 
-        1450 IF (MOD(I,120))  1184,1460,1184
+        if (i .ne. dissoc_nmetal ) go to 1450
+        iq  = i / 120
+        ir  = dissoc_nmetal - iq * 120
+        irl = ir / 3
+        go to 1460
 
-        1460 NBL = 0
+        1450 if (mod(i,120))  1184,1460,1184
+
+        1460 nbl = 0
         
-        DO 1470  K1=1,120,3
-          NBL = NBL + 1
-          K2 = K1 + 1
-          K3 = K1 + 2
-          IF ( NBL.EQ.IRL + 1)  GO TO 1480
-          CONTINUE
+        do 1470  k1=1,120,3
+          nbl = nbl + 1
+          k2 = k1 + 1
+          k3 = k1 + 2
+          if ( nbl.eq.irl + 1)  go to 1480
+          continue
 
-          IF (MOD(NBL,5)) 1470,1500,1470
-          1500 CONTINUE
-        1470 CONTINUE
+          if (mod(nbl,5)) 1470,1500,1470
+          1500 continue
+        1470 continue
 
-        GO TO 1184
+        go to 1184
 
-        1480 CONTINUE
-        IRR = IR - IRL*3
-        IF (IRR .EQ. 0)  GO TO 1184
-        GO TO (1482,1484), IRR
+        1480 continue
+        irr = ir - irl*3
+        if (irr .eq. 0)  go to 1184
+        go to (1482,1484), irr
         
-        1482 CONTINUE
+        1482 continue
         
-        GO TO 1184
+        go to 1184
 
-        1484 CONTINUE
-      1184 CONTINUE
+        1484 continue
+      1184 continue
 
-      IRL = 120
-      KD =-119
-      DO 1084 J=1,dissoc_NMOL
-        JCOUNT = JCOUNT + 1
-        PMOLL  = ALOG10(PPMOL(J)+1.0E-30)
-        XLOG   = PMOLL - PGLOG
+      irl = 120
+      kd =-119
+      do 1084 j=1,dissoc_nmol
+        jcount = jcount + 1
+        pmoll  = alog10(ppmol(j)+1.0e-30)
+        xlog   = pmoll - pglog
 
-        IF (J .NE. dissoc_NMOL) GO TO 2450
-        IQ = J/120
-        IR =  dissoc_NMOL - IQ*120
-        IRL = IR/3
-        GO TO 2460
+        if (j .ne. dissoc_nmol) go to 2450
+        iq = j/120
+        ir =  dissoc_nmol - iq*120
+        irl = ir/3
+        go to 2460
 
-        2450 IF (MOD(J,120)) 2184,2460,2184
+        2450 if (mod(j,120)) 2184,2460,2184
 
-        2460 NBL = 0
+        2460 nbl = 0
 
-        KD = KD + 120
-        KF = KD + 119
-        DO 2470  K1=KD,KF,3
-          NBL = NBL + 1
-          K2 = K1 + 1
-          K3 = K1 + 2
-          IF ( NBL.EQ.IRL + 1)  GO TO 2480
-          CONTINUE
+        kd = kd + 120
+        kf = kd + 119
+        do 2470  k1=kd,kf,3
+          nbl = nbl + 1
+          k2 = k1 + 1
+          k3 = k1 + 2
+          if ( nbl.eq.irl + 1)  go to 2480
+          continue
 
-          IF (MOD(NBL,5)) 2470,2500,2470
+          if (mod(nbl,5)) 2470,2500,2470
 
-          2500 CONTINUE
-        2470 CONTINUE
-        GO TO 2184
+          2500 continue
+        2470 continue
+        go to 2184
 
-        2480 CONTINUE
+        2480 continue
         
-        IRR = IR - IRL*3
+        irr = ir - irl*3
         
-        IF (IRR .EQ. 0)  GO TO 2184
+        if (irr .eq. 0)  go to 2184
         
-        GO TO (2482,2484), IRR
+        go to (2482,2484), irr
         
-        2482 CONTINUE
+        2482 continue
 
-        GO TO 2184
+        go to 2184
         
-        2484 CONTINUE
-        2184 CONTINUE
-      1084 CONTINUE
-    1020 CONTINUE
+        2484 continue
+        2184 continue
+      1084 continue
+    1020 continue
 
     !--debugging--!
-    DO I=1,4
-      WRITE(LLL,'(7E11.4)') (XP(ITX,I),ITX=1,modeles_NTOT)
-      CALL LOG_DEBUG(LLL)
-    END DO
+    do i=1,4
+      write(lll,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
+      call log_debug(lll)
+    end do
 
-    DO 51 ITX=1,modeles_NTOT
-      sat4_PPH(ITX)=XP(ITX,1)
-      sat4_PPC2(ITX)=XP(ITX,3)
-      sat4_PN(ITX)=XP(ITX,4)
-      sat4_PO(ITX)=XP(ITX,5)
-      sat4_PC13(ITX)=XP(ITX,6)
-      sat4_PTI(ITX)=XP(ITX,15)
-      sat4_PMG(ITX)=XP(ITX,8)
-      sat4_PNG(ITX)=XP(ITX,9)   ! ISSUE Not used
-      sat4_PIG(ITX)=XP(ITX,10)  ! ISSUE Not used
-      sat4_PFE(ITX)=XP(ITX,16)
-    51 CONTINUE
-
-  END
+    do 51 itx=1,modeles_ntot
+      sat4_pph(itx)=xp(itx,1)
+      sat4_ppc2(itx)=xp(itx,3)
+      sat4_pn(itx)=xp(itx,4)
+      sat4_po(itx)=xp(itx,5)
+      sat4_pc13(itx)=xp(itx,6)
+      sat4_pti(itx)=xp(itx,15)
+      sat4_pmg(itx)=xp(itx,8)
+      sat4_pfe(itx)=xp(itx,16)
+    51 continue
+  end
 
 
-C================================================================================================================================
-C> DIE9
-C ISSUE WHAT
-  SUBROUTINE DIE(TEM, PG)
-    USE CONFIG
-    USE READ_FILES
-    REAL TEM, PG
-    REAL, DIMENSION(MAX_Z) :: FX, DFX, Z, PREV
-    REAL, DIMENSION(MAX_dissoc_NMETAL) :: WA
-    REAL APLOGJ, ATOMJ, DELTA, DF, DHH, ECONST, EPSDIE, &
-     F, FPH, HEH, HKP, PEREV, PGLOG, PH, PMOLJ, PMOLJL, Q, R, S, &
-     SPNION, T, TEM25, U, X, XR, PPH, PHH
-    INTEGER I, IMAXP1, ITERAT, J, K, KM5, M, MMAXJ, NELEMI, NELEMJ, &
-     NATOMJ, NITER
-    CHARACTER*128 LLL
+  !================================================================================================================================
+  !> DIE9
+  ! ISSUE WHAT
 
-    ECONST = 4.342945E-1
-    EPSDIE = 5.0E-3
-    T      = 5040.0/TEM
-    PGLOG  = ALOG10(PG)
+  subroutine die(tem, pg)
+    use config
+    use read_files
+    real*8 tem, pg
+    real*8, dimension(max_z) :: fx, dfx, z, prev
+    real*8, dimension(max_dissoc_nmetal) :: wa
+    real aplogj, atomj, delta, df, dhh, econst, epsdie, &
+     f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
+     spnion, t, tem25, u, x, xr, pph, phh
+    integer i, imaxp1, iterat, j, k, km5, m, mmaxj, nelemi, nelemj, &
+     natomj, niter
+    character*128 lll
+
+    econst = 4.342945e-1
+    epsdie = 5.0e-3
+    t      = 5040.0/tem
+    pglog  = alog10(pg)
     
-    HEH    = CCOMP(Z_HE)/CCOMP(Z_H)  ! HELIUM-TO-HYDROGEN RATIO BY NUMBER
+    heh    = ccomp(z_he)/ccomp(z_h)  ! Helium-to-Hydrogen ratio by number
 
-    ! EVALUATION OF LOG KP(MOL)
-    DO 1025 J =1, dissoc_NMOL
-      APLOGJ = dissoc_C(J,5)
-      DO 1026 K=1,4
-        KM5 = 5-K
-        APLOGJ = APLOGJ*T + dissoc_C(J,KM5)
-      1026 CONTINUE
-      APMLOG(J) = APLOGJ
-    1025 CONTINUE
+    ! Evaluation of log kp(mol)
+    do 1025 j =1, dissoc_nmol
+      aplogj = dissoc_c(j,5)
+      do 1026 k=1,4
+        km5 = 5-k
+        aplogj = aplogj*t + dissoc_c(j,km5)
+      1026 continue
+      apmlog(j) = aplogj
+    1025 continue
 
-    DHH = (((0.1196952E-02*T-0.2125713E-01)*T+0.1545253E+00)*(-0.5161452E+01))*T+0.1277356E+02
-    DHH = EXP(DHH/ECONST)
+    dhh = (((0.1196952e-02*t-0.2125713e-01)*t+0.1545253e+00)*(-0.5161452e+01))*t+0.1277356e+02
+    dhh = exp(dhh/econst)
 
-    ! EVALUATION OF THE IONIZATION CONSTANTS
-    TEM25 = TEM**2*SQRT(TEM)
-    DO 1060 I = 1,dissoc_NMETAL
-      NELEMI = dissoc_NELEMX(I)
-      KP(NELEMI) =UIIDUI(NELEMI)*TEM25*EXP(-IP(NELEMI)*T/ECONST)
-    1060 CONTINUE
+    ! Evaluation of the ionization constants
+    tem25 = tem**2*sqrt(tem)
+    do 1060 i = 1,dissoc_nmetal
+      nelemi = dissoc_nelemx(i)
+      kp(nelemi) =uiidui(nelemi)*tem25*exp(-ip(nelemi)*t/econst)
+    1060 continue
 
-    HKP = KP(Z_H)
-    IF (T-0.6) 1084, 1072, 1072
+    hkp = kp(z_h)
+    if (t-0.6) 1084, 1072, 1072
 
-    ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
-    1084 CONTINUE
-    PPH = SQRT(HKP *(PG/(1.0+HEH)+HKP ))-HKP
-    PH  = PPH**2/HKP
-    GO TO 1102
+    ! Preliminary value of pH at high temperatures (ISSUE is this potential hidrogenionico??)
+    1084 continue
+    pph = sqrt(hkp *(pg/(1.0+heh)+hkp ))-hkp
+    ph  = pph**2/hkp
+    go to 1102
 
-    ! PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
-    1072 CONTINUE
-    IF (PG/DHH - 0.1) 1073, 1073, 1074
+    ! Preliminary value of ph at low temperatures
+    1072 continue
+    if (pg/dhh - 0.1) 1073, 1073, 1074
     
-    1073 CONTINUE
-    PH = PG/(1.0+HEH)
-    GO TO 1102
+    1073 continue
+    ph = pg/(1.0+heh)
+    go to 1102
 
 
-    1074 CONTINUE
-    PH = 0.5*(SQRT(DHH*(DHH+4.0*PG/(1.0+HEH)))-DHH)
+    1074 continue
+    ph = 0.5*(sqrt(dhh*(dhh+4.0*pg/(1.0+heh)))-dhh)
 
-    ! EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-    ! PG = PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)  ! issue I may have commented this by accident
+    ! Evaluation of the fictitious pressures of hydrogen
+    ! pg = ph+phh+2.0*pph+heh*(ph+2.0*phh+pph)  ! issue i may have commented this by accident
     1102 CONTINUE
     U = (1.0+2.0*HEH)/DHH
     Q = 1.0+HEH
