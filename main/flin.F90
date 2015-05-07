@@ -141,7 +141,7 @@ CONTAINS
         TOLIM=4.0
       ELSE
         IF (MODE_ .EQ. MODE_FLIN1) THEN
-          IPOINT = 7  ! ISSUE BIG !!!!! I kept this behaviour until I get feedback from BLB
+          IPOINT = 7  !> @todo ISSUE BIG !!!!! I kept this behaviour until I get feedback from BLB
         ELSE
           IPOINT = 6
         END IF
@@ -150,7 +150,7 @@ CONTAINS
 
       ! On verifie que le modele n'est pas trop court
       IF (flin_TO(NTOT) .LT. TOLIM) THEN
-        ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
 
         WRITE(LLL,1504)
         CALL LOG_HALT(LLL)
@@ -184,7 +184,7 @@ CONTAINS
       ! FORMULE A 26 PTS (NE MARCHE QUE POUR LE FLUX!)
       ! (13PTS +PTS MILIEU)
       
-      ! TODO test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
+      !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
       IF(PTDISK) THEN
         1500 FORMAT('LE SP FLIN_ NE PEUT CALCULER L INTENSITE EN 1 PT ', &
                     'DU DISQUE AVEC LA FORMULE A 26PTS (UTILISER 7PTS KIK=0)')
@@ -194,7 +194,7 @@ CONTAINS
       TOLIM=5.487  ! Le modele doit aller au moins a une prof TOLIM
 
       IF(flin_TO(NTOT) .LT. TOLIM) THEN
-        ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
 
         WRITE(LLL,1504)
         CALL LOG_HALT(LLL)

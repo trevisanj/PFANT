@@ -138,7 +138,7 @@ contains
         tolim=4.0
       else
         if (mode_ .eq. mode_flin1) then
-          ipoint = 7  ! issue big !!!!! i kept this behaviour until i get feedback from blb
+          ipoint = 7  !> @todo ISSUE big !!!!! i kept this behaviour until i get feedback from blb
         else
           ipoint = 6
         end if
@@ -147,7 +147,7 @@ contains
 
       ! On verifie que le modele n'est pas trop court
       if (flin_to(ntot) .lt. tolim) then
-        ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
 
         write(lll,1504)
         call log_halt(lll)
@@ -181,7 +181,7 @@ contains
       ! Formule a 26 pts (ne marche que pour le flux!)
       ! (13pts +pts milieu)
       
-      ! TODO test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
+      !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
       if(ptdisk) then
         1500 format('Le sp flin_ ne peut calculer l intensite en 1 pt ', &
                     'du disque avec la formule a 26pts (utiliser 7pts kik=0)')
@@ -191,7 +191,7 @@ contains
       tolim=5.487  ! Le modele doit aller au moins a une prof TOLIM
 
       if(flin_to(ntot) .lt. tolim) then
-        ! TODO MAKE IT FALL HERE!!!!! (TEST THIS)
+        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
 
         write(lll,1504)
         call log_halt(lll)

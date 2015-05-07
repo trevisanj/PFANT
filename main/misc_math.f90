@@ -415,7 +415,7 @@ MODULE MISC_MATH
       FTT(K)=FT
       RETURN
       
-      ! TODO test this label "10", somehow make it fall here
+      !> @todo test this label "10", somehow make it fall here
       10 CONTINUE
       100 FORMAT('ON SORT DE LA TABLE D INTERPOLATION AVEC T=',E15.7, '. LISTE DES X: ', 8E15.7)
       WRITE(S,100) T, (X(I),I=1,N)
@@ -452,7 +452,7 @@ C ISSUE WHAT
   END
 
 
-  ! ISSUE: is this still useful?? (NOT SWITCHED ON!!!)
+  !> @todo ISSUE: is this still useful?? (NOT SWITCHED ON!!!)
   !-------------------------------------------------------------------------------
   !> INTERPOLATION PARABOLIQUE
   !> DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
@@ -514,7 +514,7 @@ C ISSUE WHAT
   END
 
   !-------------------------------------------------------------------------------
-  ! ISSUE WHAT
+  !> @todo ISSUE WHAT
   !> Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
 
   SUBROUTINE NAITK3(XdI, XdIp1, XdIp2, XdIp3, YdI, YdIp1, YdIp2, YdIp3, XX, FX)

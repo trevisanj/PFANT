@@ -19,21 +19,22 @@
 !> - Routines to parse command-line arguments
 !> - All globals have prefix "config_"
 
-MODULE CONFIG
-  USE LOGGING
+module config
+  use logging
 
-  INTEGER, PARAMETER :: NUM_MOL=21  ! Number of molecules configured in the program.
+  integer, parameter :: num_mol=21  ! Number of molecules configured in the program.
                                     ! Conceptually, this should be defined in molecula.f, but there would be cyclic USEs
 
-  INTEGER config_logging_LEVEL /logging_INFO/
-  LOGICAL config_DEBUG /.FALSE./    ! Allows for debugging messages
-
-
+  !> Logging level (from @ref logging module).
+  !>
+  !> Possible values: logging::logging_halt, logging::logging_critical, logging::logging_error,
+  !> logging::logging_warning, logging::logging_info (default), logging::logging_debug
+  integer config_loglevel = logging_info
 
   !=====
   ! File names
   
-  CHARACTER*256 config_FN_DISSOC
+  character*256 config_fn_dissoc
 
 
   !=====
@@ -41,40 +42,46 @@ MODULE CONFIG
   !=====
 
   ! These are configurable
-  INTEGER config_NUM_MOL_OFF /0/ ! Number of molecules switched off (excluded from calculations)
-  INTEGER, DIMENSION(NUM_MOL) :: config_MOLIDS_OFF  ! IDs=indexes of the molecules to be switched off
 
-  ! These are filled by MAKE_MOLIDS()
-  INTEGER, DIMENSION(NUM_MOL) :: config_MOLIDS_ON  ! List of molecule IDs. Valid indexes range from 1 to km__NUMBER
-  INTEGER config_NUM_MOL_ON  ! This is actually = NUM_MOL-config_NUM_MOL_OFF
+  !> Number of molecules switched off (excluded from calculations)
+  integer :: config_num_mol_off = 0
+  !> List of molecule ids that are be switched off. Complement of config_molids_on.
+  integer :: config_molids_off (num_mol)
+
+  ! These are filled by make_molids()
+
+  !> List of molecule ids that are switched on. Complement of config_molids_off.
+  integer, dimension(num_mol) :: config_molids_on
+  !> This is actually <code> = num_mol-config_num_mol_off </code>
+  integer config_num_mol_on 
 
 
   !=====
   ! Misc
   !=====
 
+  !> Interpolation type of turbul_VT
+  !> @li 1: (default) linear
+  !> @li 2: parabolic
+  integer config_interp = 1
 
-  ! Interpolation type of turbul_VT
-  ! 1: linear
-  ! 2: parabolic
-  INTEGER config_INTERP /1/
 
-
-  ! Selector for subroutines FLIN1() and FLINH():
-  ! 0: (default) integration using 6/7 points depending on main_PTDISK;
-  ! 1: 26-point integration
-  INTEGER config_KIK /0/
+  !> Selector for subroutines FLIN1() and FLINH():
+  !> @li 0: (default) integration using 6/7 points depending on main_PTDISK;
+  !> @li 1: 26-point integration
+  integer :: config_kik = 0
 
 
 
   !=====
   ! Private variables
   !=====
-  LOGICAL, PRIVATE :: FLAG_SETUP = .FALSE.
 
-  PRIVATE STR2INT
+  logical, private :: flag_setup = .false.
 
-CONTAINS
+  private str2int
+
+contains
 
 
   !================================================================================================================================
@@ -86,97 +93,95 @@ CONTAINS
   !>
   !> Must be called at system startup
   
-  SUBROUTINE CONFIG_SETUP()
-    USE LOGGING
-    USE argparser
-      IMPLICIT NONE
+  subroutine config_setup()
+    use logging
+    use argparser
+    implicit none
 
-    !> @todo parse command-line here
+    ! Parses command line
+    call parseargs()
 
-    CALL parseargs()
-
-
-
-    logging_LEVEL = config_logging_LEVEL  ! sets logging level at LOGGING module based on config variable
+    ! Configures modules
+    logging_level = config_loglevel  ! sets logging level at logging module based on config variable
 
 
-    CALL MAKE_MOLIDS()
-    FLAG_SETUP = .TRUE.
-  END
+    call make_molids()
+
+    flag_setup = .true.
+  end
 
 
 
   !================================================================================================================================
-  !> Returns molecule ID given index
+  !> Returns molecule id given index
   !>
-  !> Molecule ID is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within PFANT.
+  !> Molecule id is a number from 1 to num_mol, which is uniquely related to a chemical molecule within pfant.
   
-  FUNCTION GET_MOLID(I_MOL)
-    IMPLICIT NONE
-    INTEGER I_MOL, GET_MOLID
-    CHARACTER*128 S  !__logging__
+  function get_molid(i_mol)
+    implicit none
+    integer i_mol, get_molid
+    character*80 s  !__logging__
 
     !--assertion--!
-    IF (.NOT. FLAG_SETUP) CALL PFANT_HALT('GET_MOLID(): forgot to call CONFIG_SETUP()')
+    if (.not. flag_setup) call pfant_halt('get_molid(): forgot to call config_setup()')
 
     !__spill check__
-    IF (I_MOL .GT. config_NUM_MOL_ON) THEN
-      WRITE (S, *) 'GET_MOLID(): Invalid molecule index I_MOL (', &
-       I_MOL, ') must be maximum ', config_NUM_MOL_ON
-      CALL PFANT_HALT(S)
-    END IF
+    if (i_mol .gt. config_num_mol_on) then
+      write (s, *) 'get_molid(): invalid molecule index i_mol (', &
+       i_mol, ') must be maximum ', config_num_mol_on
+      call pfant_halt(s)
+    end if
 
-    GET_MOLID = config_MOLIDS_ON(I_MOL)
-    RETURN
-  END
+    get_molid = config_molids_on(i_mol)
+    return
+  end
 
   !================================================================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by MOLID is "on" or "off"
+  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on" or "off"
 
-  FUNCTION MOLECULE_IS_ON(MOLID)
-    IMPLICIT NONE
-    INTEGER MOLID, J
-    LOGICAL MOLECULE_IS_ON
+  function molecule_is_on(molid)
+    implicit none
+    integer molid, j
+    logical molecule_is_on
 
     !--assertion--!
-    IF (.NOT. FLAG_SETUP) &
-     CALL PFANT_HALT('MOLECULE_IS_ON(): ' &
-     //'forgot to call CONFIG_SETUP()')
+    if (.not. flag_setup) &
+     call pfant_halt('molecule_is_on(): forgot to call config_setup()')
 
-    MOlECULE_IS_ON = .TRUE.
-    DO J = 1, config_NUM_MOL_OFF
-      IF (MOLID .EQ. config_MOLIDS_OFF(J)) THEN
-        MOLECULE_IS_ON = .FALSE.
-        EXIT
-      END IF
-    END DO
-  END
+    molecule_is_on = .true.
+    do j = 1, config_num_mol_off
+      if (molid .eq. config_molids_off(j)) then
+        molecule_is_on = .false.
+        exit
+      end if
+    end do
+  end
 
 
   !================================================================================================================================
-  !> Fills config_MOLIDS_ON and config_NUM_MOL_ON
+  !> Fills config_molids_on and config_num_mol_on
   
-  SUBROUTINE MAKE_MOLIDS()
-    IMPLICIT NONE
-    INTEGER I_MOL, J, MOLID
-    LOGICAL IS_OFF
+  subroutine make_molids()
+    implicit none
+    integer i_mol, j, molid
+    logical is_off
 
-    I_MOL = 0
-    DO MOLID = 1, NUM_MOL
-      IS_OFF = .FALSE.  ! Whether molecule I_MOL is off
-      DO J = 1, config_NUM_MOL_OFF
-        IF (MOLID .EQ. config_MOLIDS_OFF(J)) THEN
-          IS_OFF = .TRUE.
-          EXIT
-        END IF
-      END DO
-      IF (.NOT. IS_OFF) THEN
-        I_MOL = I_MOL+1
-        config_MOLIDS_ON(I_MOL) = MOLID
-      END IF
-    END DO
-    config_NUM_MOL_ON = I_MOL
-  END SUBROUTINE
+    i_mol = 0
+    do molid = 1, num_mol
+      is_off = .false.  ! Whether molecule I_MOL is off
+      do j = 1, config_num_mol_off
+        if (molid .eq. config_molids_off(j)) then
+          is_off = .true.
+          exit
+        end if
+      end do
+      if (.not. is_off) then
+        i_mol = i_mol+1
+        config_molids_on(i_mol) = molid
+      end if
+    end do
+    config_num_mol_on = i_mol
+  end subroutine
 
 
   !================================================================================================================================
@@ -195,11 +200,13 @@ CONTAINS
     logical err_out
     type(option) options(3), opt
 
-    options(1) = option('loglevel', 'l', .TRUE., 'Logging level (1: debug; 2: info; 3: warning; 4: error; 5: critical; 6: halt)', 'level')
-    options(2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine TURBUL() (1: linear; 2: parabolic)', 'type')
-    options(3) = option('kik', 'i', .TRUE., 'Selector for subroutines FLIN1() and FLINH() (0 (default): integration using 6/7 '//&
-     'points depending on main_PTDISK; 1: 26-point integration)', 'type')
-
+    options(1) = option('loglevel', 'l', .TRUE., 'Logging level (1: debug; 2: info; 3: '&
+     'warning; 4: error; 5: critical; 6: halt)', 'level')
+    options(2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine '&
+     'TURBUL() (1: linear; 2: parabolic)', 'type')
+    options(3) = option('kik', 'i', .TRUE., 'Selector for subroutines FLIN1() and '&
+     'FLINH() (0 (default): integration using 6/7 points depending on main_PTDISK; '&
+     '1: 26-point integration)', 'type')
 
     err_out = .FALSE.
 
@@ -225,9 +232,9 @@ CONTAINS
             case ('loglevel')
               iTemp = parseint(opt, o_arg)
               select case (iTemp)
-                case (1, 2, 3, 4, 5, 6)
-                  config_logging_LEVEL = iTemp*10
-                  write(*,*) 'setting logging level to ', config_logging_LEVEL
+                case (10, 20, 30, 40, 50, 60)
+                  config_loglevel = iTemp*10
+                  write(*,*) 'setting logging level to ', config_loglevel
                 case default
                   err_out = .TRUE.
               end select
@@ -237,7 +244,7 @@ CONTAINS
               select case (iTemp)
                 case (1, 2)
                   config_INTERP = iTemp
-                  write(*,*) 'setting config_interp to ', config_INTERP
+                  write(*,*) 'setting config_interp to ', config_interp
                 case default
                   err_out = .TRUE.
               end select

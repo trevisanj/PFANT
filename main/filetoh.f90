@@ -22,7 +22,6 @@
 !>   f_filetoh_* -- read directly from file
 !>   c_filetoh_* -- calculated
 !> TODO: The distinction above may be temporary, it is easier to merge prefixes than to split them
-!
 
 module filetoh
   use read_files
@@ -74,7 +73,7 @@ CONTAINS
     READ(UNIT_,'(5F14.3)') (f_filetoh_LAMBDH(J), J=1,f_filetoh_JMAX)
     READ(UNIT_,'(5E12.4)') ((f_filetoh_TH(J,N), J=1,f_filetoh_JMAX), N=1,modeles_NTOT)
 
-    ! TODO Check JMAX spill here
+    !> @todo Check JMAX spill here
 
     CLOSE(UNIT_)
   END
@@ -88,7 +87,7 @@ CONTAINS
   !> Arguments:
   !>   DTOT -- Number of calculation steps, I think. ISSUE: better explanation
   !>           Calculated as: DTOT = (LFIN-LZERO)/main_PAS + 1.0005
-  !>   TTD -- ISSUE: get explanation ! TODO get from MT
+  !>   TTD -- ISSUE: get explanation @todo get from MT
   !>          Calculated as: TTD(D) = ALZERO+main_PAS*(D-1)
   !>   ILZERO -- integer version of variable LZERO in main module
   SUBROUTINE FILETOH_AUH(DTOT, TTD, ILZERO)
@@ -162,7 +161,7 @@ CONTAINS
 
 
   !-------------------------------------------------------------------------------
-  !> ISSUE: Get description for this routine, what it does
+  !> @todo ISSUE: Get description for this routine, what it does
   SUBROUTINE FTLIN3H(DTOT,TTD)
     INTEGER DTOT
     real*8, DIMENSION(filetoh_NP) :: TTD

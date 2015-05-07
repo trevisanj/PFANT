@@ -49,7 +49,7 @@ module options2
 
 contains
 
-! TODO UPDATE DOCUMENTATION
+!> @todo UPDATE DOCUMENTATION
 
   !> Parse command line options. Options and their arguments must come before
   !> all non-option arguments. Short options have the form "-X", long options

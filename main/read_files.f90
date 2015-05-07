@@ -16,14 +16,11 @@
 !> @ingroup gr_io
 module read_files
   implicit none
+      ! Variables filled by READ_DISSOC() (file dissoc.dat)
 
+      !> @todo ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
 
-
-
-!> Variables filled by READ_DISSOC() (file dissoc.dat)
-!> ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
-
-!> Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
+      !> Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
       integer, parameter :: max_dissoc_nmetal=50  ! Limit number of metal rows in dissoc.dat
 
 
@@ -63,7 +60,7 @@ module read_files
 
 
 
-!> Variables filled by READ_MAIN() (file main.dat)
+! Variables filled by READ_MAIN() (file main.dat)
       character main_titrav*10, main_fileflux*64
       logical   main_ecrit, main_ptdisk
       real*8    main_pas, main_echx, main_echy, main_fwhm, &
@@ -82,7 +79,7 @@ module read_files
       real*8, dimension(max_dissoc_nmetal) :: main_xxcor   ! This vector goes along with dissoc_ELEMS and dissoc_NELEMX
 
 
-!> Variables filled by READ_ABONDS() (file abonds.dat)
+! Variables filled by READ_ABONDS() (file abonds.dat)
       integer, parameter :: max_abonds_nabond=100  ! Limit number of abundances in abonds.dat
       integer abonds_nabond
       character*2 abonds_ele
@@ -92,10 +89,7 @@ module read_files
                 abonds_abo(max_abonds_nabond)   ! This is calculated
 
 
-
-
-
-!> Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
+! Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
 
 
       integer, parameter :: &
@@ -109,13 +103,13 @@ module read_files
       ! Only these variables had their sizes specified originally
 
 
-!> ISSUE: Can I just declare everything as DOUBLE PRECISION (by default!!)??
-!> (MT) Yes and modeles.mod could become an ASCII file!!!
+!> @todo ISSUE: Can I just declare everything as DOUBLE PRECISION (by default!!)?? (MT) Yes and modeles.mod could become an ASCII file!!!
+
       real atomgrade_kiex, atomgrade__kiex
       real*8 atomgrade_gr, atomgrade_lambda, atomgrade__lambda
 
 
-!> ISSUE: nobody cares about ABONDR_DUMMY. Why? I might have the answer, this is taken from elsewere, file abonds.dat, maybe
+!> @todo ISSUE: nobody cares about ABONDR_DUMMY. Why? I might have the answer, this is taken from elsewere, file abonds.dat, maybe
 
 
       ! Filtered variables
@@ -144,8 +138,8 @@ module read_files
 
 
 
-!> Variables filled by READ_PARTIT() (file partit.dat)
-!> ---------------------------------------------------
+! Variables filled by READ_PARTIT() (file partit.dat)
+! ---------------------------------------------------
       ! Limit number of "items" in partit.dat:
       ! - Maximum value for partit_npar
       ! - Second dimension of partit_tabu
@@ -168,9 +162,13 @@ module read_files
 
 
 
+        ! NION   =
+        ! XI(J,I)=POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATIO
+        ! PF(J,I)=FONCTION DE PARTITION         ''   ''     ''      ''   ''
 
-!> Variables filled by READ_ABSORU2() (file absoru2.dat)
-!> ---------------------------------------------------
+
+! Variables filled by READ_ABSORU2() (file absoru2.dat)
+! ---------------------------------------------------
       ! Maximum value for absoru_NM
       integer, parameter :: max_absoru2_nm=30
       ! Maximum value for absoru2_NR(J)
@@ -178,18 +176,28 @@ module read_files
       ! Maximum value for each element of absoru2_NUMSET
       integer, parameter :: max_absoru2_numset_i=41
 
-      integer absoru2_nm, absoru2_nmeta, absoru2_numset, absoru2_nr, absoru2_nomet
+      integer absoru2_nm, absoru2_nmeta, absoru2_numset, absoru2_nr
+
+      !> NOM DE L'ELEMENT
+      character*2 :: absoru2_nomet(max_absoru2_nm)
+
       real*8 absoru2_abmet, absoru2_abhel
       real absoru2_pf, absoru2_wi, absoru2_xi, absoru2_zm, absoru2_zp
-      character*4 absoru2_titre, absoru2_iunite  ! issue: i am not sure about this, made this from the format below
+
+      !> @todo ISSUE: i am not sure about these character*4, made this from the format below
+      character*4 absoru2_titre, absoru2_iunite
 
       dimension  absoru2_iunite(2), absoru2_titre(17), &
                  absoru2_nr(max_absoru2_nm), &
                  absoru2_zp(max_absoru2_nm), &
-                 absoru2_zm(max_absoru2_nm), &
-                 absoru2_xi(max_absoru2_nm, max_absoru2_nrr), &
-                 absoru2_pf(max_absoru2_nm, max_absoru2_nrr), &
-                 absoru2_nomet(max_absoru2_nm)
+                 absoru2_zm(max_absoru2_nm)
+                 
+
+      !> XI(J,I) = POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATION
+      real*8 :: absoru2_xi(max_absoru2_nm, max_absoru2_nrr)
+      ! PF(J,I) = FONCTION DE PARTITION DE L'ELEMENT J AU STADE D'IONISATION
+      real*8 :: absoru2_pf(max_absoru2_nm, max_absoru2_nrr)
+
 
       dimension absoru2_wi(max_absoru2_numset_i, 2), absoru2_numset(2)
 
@@ -206,7 +214,7 @@ module read_files
       character*4 modeles_tit
       character*20 modeles_tiabs ! I just want to see this string at testing
 
-      ! TODO create REAL*4 temp locals, then transfer to REAL*8 ones
+      !> @todo create REAL*4 temp locals, then transfer to REAL*8 ones
       real*4 modeles_detef, modeles_dglog, modeles_dsalog, &
              modeles_asalalf, modeles_nhe, &
              modeles_nh, modeles_teta, modeles_pe, modeles_pg, &
@@ -217,7 +225,7 @@ module read_files
                 modeles_pe(max_modeles_ntot), &
                 modeles_pg(max_modeles_ntot), &
                 modeles_t5l(max_modeles_ntot), &
-                bid(16), &  ! ISSUE: I counted 12... let's see, I have to see INEWMARCS... actually, it seems that it should be 12!! &
+                bid(16), &  !> @todo ISSUE: I counted 12... let's see, I have to see INEWMARCS... actually, it seems that it should be 12!! &
                 modeles_tit(5)
 
 
@@ -279,9 +287,9 @@ CONTAINS
 
     !> rows 03.(0-2) (three conditional rows that MUST exist if and only if main_VVT(1) > 900)
     !> =============
-    !> ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
-    !> ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
-    !> ISSUE Documentation
+    !> @todo ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
+    !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
+    !> @todo ISSUE Documentation
     !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
       read(unit_, *) main_ivtot
@@ -314,7 +322,7 @@ CONTAINS
 
     !> line 07 -- XXCOR(I)
     !> =======
-    !> ISSUE: Should be a column in dissoc.dat !!!!!
+    !> @todo ISSUE: Should be a column in dissoc.dat !!!!!
     !> (MT) I agree
 
     ! Feature "XXCOR" --
@@ -452,9 +460,9 @@ CONTAINS
       1010 continue
       j = j+1
 
-      !> ISSUE: This 1X does not appear in my sample dissoc.dat file
-      !> ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
-      !> ISSUE: THere is no 1X
+      !> @todo ISSUE: This 1X does not appear in my sample dissoc.dat file
+      !> @todo ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
+      !> @todo ISSUE: THere is no 1X
       !      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
 
 
@@ -549,8 +557,8 @@ CONTAINS
         ! Extra tasks (i.e., apart from reading file) [1], [2]:
         !
         ! [1] Searches dissoc.dat' metals table by atomic symbol to get value of XXCOR variable
-        ! ISSUE: lot of effort to keep dubious feature
-        ! ISSUE: This is the thing that Beatriz mentioned that is not used anymore
+        !> @todo ISSUE: lot of effort to keep dubious feature
+        !> @todo ISSUE: This is the thing that Beatriz mentioned that is not used anymore
 
         flag_found = .false.
         do k = 1, dissoc_nmetal
@@ -569,7 +577,7 @@ CONTAINS
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
 
-        ! ISSUE Why "-12" ??
+        !> @todo ISSUE Why "-12" ??
         abonds_abo(j) = 10.**(abonds_abol(j)-12.)
         abonds_abo(j) = abonds_abo(j)*fstar
       end if
@@ -614,7 +622,7 @@ CONTAINS
   !> @endverbatim
   !>
   !> TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
-  !> ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
+  !> @todo ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
   !> (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!
   !> TODO Assertions in test to see if numbers match what they are supposed to
   !> PROPOSE: use READ()'s "END=" option
@@ -650,7 +658,7 @@ CONTAINS
      atomgrade__abondr_dummy(k), finrai
 
 
-    ! ISSUE Why this? Document!!!
+    !> @todo ISSUE Why this? Document!!!
     if (atomgrade_gr(k) .lt. 1e-37) atomgrade_gr(k) = 2.21e15 / atomgrade_lambda(k)**2
 
     if (finrai .eq. 1) go to 10
@@ -670,7 +678,7 @@ CONTAINS
     !   perform this search for all atomgrade rows and then filter atomgrade_ABONDS_ABO together
     !   with other variables in FILTER_ATOMGRADE(), which is probably cheaper.
 
-    ! ISSUE Why name was "ABONDRAIH"?? Did it mean "abundances of hydrogen lines"? I ask this because if it has really a physical meaning, I shouldn't bury this inside read_files.f
+    !> @todo ISSUE Why name was "ABONDRAIH"?? Did it mean "abundances of hydrogen lines"? I ask this because if it has really a physical meaning, I shouldn't bury this inside read_files.f
 
     flag_found = .false.
     do  j = 1, abonds_nabond
@@ -690,7 +698,7 @@ CONTAINS
     10 continue
     atomgrade__nblend = k
 
-! ISSUE
+!> @todo ISSUE
 ! MENTION: last atomic line wasn't being used!! (this has been fixed/changed). Original code:
 !~	K=1
 !~9	READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
@@ -849,7 +857,7 @@ CONTAINS
   !> CALMET=1 SI ON NE TIENT PAS COMPTE DES METAUX
   !> CALMET=2 SI ON    TIENT     COMPTE DES METAUX
   !>
-  !> ISSUE: as opposed to original description, CALMET was being ignored in original routine LECTUR()
+  !> @todo ISSUE: as opposed to original description, CALMET was being ignored in original routine LECTUR()
   !> (MT) ???
   !> (JT) I guess it is a remain of sth and nowadays the metals are always taken into account
   !>
@@ -901,11 +909,10 @@ CONTAINS
         call pfant_halt(lll)
       end if
 
-
       do i = 1, nrr
         ! neant="nothing"
         ! NION is also not used
-        ! ISSUE: NOMET is not used in the program
+        !> @todo ISSUE: NOMET is not used in the program
         read (unit_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
          nion, absoru2_xi(j,i), absoru2_pf(j,i)
 
@@ -917,112 +924,105 @@ CONTAINS
         ! XI(J,I)=POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATIO
         ! PF(J,I)=FONCTION DE PARTITION         ''   ''     ''      ''   ''
 
-        absoru2_XI(J, I) = absoru2_XI(J, I)*2.302585
-        absoru2_PF(J, I) = absoru2_PF(J, I)*2.302585
-      END DO
+        absoru2_xi(j, i) = absoru2_xi(j, i)*2.302585
+        absoru2_pf(j, i) = absoru2_pf(j, i)*2.302585
+      end do
     END DO
 
 
-    READ (UNIT_, '(2I2)') (absoru2_NUMSET(ITH), ITH=1,2)
+    read (unit_, '(2i2)') (absoru2_numset(ith), ith=1,2)
 
-!> ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
-
-
-    !__spill check__: Checks if exceeds maximum number of elements allowed
-    IF (absoru2_NUMSET(1) .GT. MAX_absoru2_NUMSET_I) THEN
-      WRITE(LLL,*) 'READ_ABSORU2(): NUMSET(1) = ', absoru2_NUMSET(1), &
-       ' exceeded maximum of', MAX_absoru2_NUMSET_I
-      CALL PFANT_HALT(LLL)
-    END IF
-    !__spill check__: Checks if exceeds maximum number of elements allowed
-    IF (absoru2_NUMSET(2) .GT. MAX_absoru2_NUMSET_I) THEN
-      WRITE(LLL,*) 'READ_ABSORU2(): NUMSET(2) = ', absoru2_NUMSET(2), &
-       ' exceeded maximum of', MAX_absoru2_NUMSET_I
-      CALL PFANT_HALT(LLL)
-    END IF
-
-
-    ! orig NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
-    ! orig POUR H,HE ET HE+
-    ! orig PREMIERE LISTE POUR TH.LE.0.8  ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
-    DO ITH = 1,2
-      NSET = absoru2_NUMSET(ITH)
-      READ (UNIT_,'(8F10.1)') (absoru2_WI(I,ITH),I=1,NSET)
-    END DO
-
-  END
-
-
-!================================================================================================================================
-!> READ_MODELE(): reads single record from file modeles.mod into
-!>                 variables modeles_*
-!>
-!> Original UNIT: 18
-!>
-!> orig SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
-!> orig SUR LE FICHIER ACCES DIRECT
-!>
-!> Depends on main_INUM
-!> ISSUE: depends on other main_* but I think not for long
-
-  SUBROUTINE READ_MODELE(filename)
-    IMPLICIT NONE
-    INTEGER UNIT_
-    PARAMETER(UNIT_=199)
-    CHARACTER(LEN=*) :: filename
-    REAL*8 DDT, DDG, DDAB
-    INTEGER I, &
-            ID_   ! TODO This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
-    CHARACTER*192 LLL
-
-
-    OPEN(UNIT=UNIT_, ACCESS='DIRECT',STATUS='OLD', FILE=filename, RECL=1200)
-
-    ID_ = 1
-
-    ! TODO better to give error if main_INUM is not set
-    ! TODO Check if FORTRAN initializes variables to zero automatically: can I rely on this??
-    ! TODO Maybe implement variable main_FLAG to FLAG that main.dat has been read already
-    IF (main_INUM .GT. 0) ID_ = main_INUM  ! Selects record number
-
-!> ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
-!> (MT) ASSERT main_NHE == modeles_NHE
-
-
-    READ(UNIT_, REC=ID_) modeles_NTOT, modeles_DETEF, modeles_DGLOG, &
-     modeles_DSALOG, modeles_ASALALF, modeles_NHE, modeles_TIT, &
-     modeles_TIABS
-    IF (modeles_NTOT .EQ. 9999) THEN
-      ! ISSUE perhaps I should check the condition that leads to this error
-      ! TODO STOP with error level
-      CALL PFANT_HALT('LE MODELE DESIRE NE EST PAS SUR LE FICHIER')
-    END IF
+!> @todo ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
 
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    IF (modeles_NTOT .GT. MAX_modeles_NTOT) THEN
-      WRITE(LLL,*) 'READ_MODEABSORU2(): NUMSET(1) = ',absoru2_NUMSET(1), &
-       ' exceeded maximum of', MAX_absoru2_NUMSET_I
-      CALL PFANT_HALT(LLL)
-    END IF
+    if (absoru2_numset(1) .gt. max_absoru2_numset_i) then
+      write(lll,*) 'read_absoru2(): numset(1) = ', absoru2_numset(1), &
+       ' exceeded maximum of', max_absoru2_numset_i
+      call pfant_halt(lll)
+    end if
+    !__spill check__: Checks if exceeds maximum number of elements allowed
+    if (absoru2_numset(2) .gt. max_absoru2_numset_i) then
+      write(lll,*) 'read_absoru2(): numset(2) = ', absoru2_numset(2), &
+       ' exceeded maximum of', max_absoru2_numset_i
+      call pfant_halt(lll)
+    end if
 
 
+    ! NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
+    ! POUR H,HE ET HE+
+    ! PREMIERE LISTE POUR TH.LE.0.8  ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
+    do ith = 1,2
+      nset = absoru2_numset(ith)
+      read (unit_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
+    end do
 
-    WRITE(6, *) 'modeles_DETEF', modeles_DETEF
-    WRITE(*, *) 'modeles_DGLOG', modeles_DGLOG
-    WRITE(*, *) 'modeles_DSALOG', modeles_DSALOG
+  end
 
 
-    DDT  = ABS(main_TEFF-modeles_DETEF)
-    DDG = ABS(main_GLOG-modeles_DGLOG)
-    DDAB = ABS(main_ASALOG-modeles_DSALOG)
+  !================================================================================================================================
+  !> Reads single record from file modeles.mod into variables modeles_*
+  !>
+  !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN INUM LE NUM DU MODELE
+  !> SUR LE FICHIER ACCES DIRECT
+  !>
+  !> Depends on main_INUM
+  !> @todo ISSUE: depends on other main_* but I think not for long
 
-!      ! ISSUE: Variable DNHE does not exist!!! Anyway, it is not used
-!      ! ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
-!      DDHE= ABS(modeles_NHE-DNHE)
+  subroutine read_modele(filename)
+    implicit none
+    integer unit_
+    parameter(unit_=199)
+    character(len=*) :: filename
+    real*8 ddt, ddg, ddab
+    integer i, &
+            id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
+    character*92 lll
 
-    ! ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks
-    ! (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
+
+    open(unit=unit_, access='direct',status='old', file=filename, recl=1200)
+
+    id_ = 1
+
+    !> @todo better to give error if main_INUM is not set
+    !> @todo Check if FORTRAN initializes variables to zero automatically: can I rely on this??
+    !> @todo Maybe implement variable main_FLAG to FLAG that main.dat has been read already
+    if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
+
+    !> @todo ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
+    !> (MT) ASSERT main_NHE == modeles_NHE
+
+
+    read(unit_, rec=id_) modeles_ntot, modeles_detef, modeles_dglog, &
+     modeles_dsalog, modeles_asalalf, modeles_nhe, modeles_tit, &
+     modeles_tiabs
+    if (modeles_ntot .eq. 9999) then
+      !> @todo ISSUE perhaps I should check the condition that leads to this error
+      call pfant_halt('Le modele desire ne est pas sur le fichier')
+    end if
+
+
+    !__spill check__: Checks if exceeds maximum number of elements allowed
+    if (modeles_ntot .gt. max_modeles_ntot) then
+      write(lll,*) 'read_modeles(): numset(1) = ',absoru2_numset(1), &
+       ' exceeded maximum of', max_absoru2_numset_i
+      call pfant_halt(lll)
+    end if
+
+    write(lll, *) 'modeles_detef', modeles_detef
+    call log_debug(lll)
+    write(lll, *) 'modeles_dglog', modeles_dglog
+    call log_debug(lll)
+    write(lll, *) 'modeles_dsalog', modeles_dsalog
+    call log_debug(lll)
+
+    ddt  = abs(main_teff-modeles_detef)
+    ddg = abs(main_glog-modeles_dglog)
+    ddab = abs(main_asalog-modeles_dsalog)
+
+
+    !> @todo ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
+    !> @todo ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks  (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
 
 
 !~9	READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
@@ -1040,34 +1040,28 @@ CONTAINS
 !~	IF(DDAB.GT.0.01)   GO TO 9
 
 
-    ! TODO ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
-    ! TODO Get the epsilon from MT
-    IF(DDT .GT. 1.0) THEN
-      WRITE(LLL,*) 'ABS(main_TEFF-modeles_DETEF) = ', DDT, ' > 1.0'
-      CALL PFANT_HALT(LLL)
-    END IF
-    IF(DDG .GT. 0.01) THEN
-      WRITE(LLL,*) 'ABS(main_GLOG-modeles_DGLOG) = ', DDG, ' > 0.01'
-      CALL PFANT_HALT(LLL)
-    END IF
-    IF(DDAB .GT. 0.01) THEN
-      WRITE(LLL,*) 'ABS(main_ASALOG-modeles_DSALOG) = ', DDAB, ' > 0.01'
-      CALL PFANT_HALT(LLL)
-    END IF
+    !> @todo ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
+    !> @todo Get the epsilon from MT
+    if(ddt .gt. 1.0) then
+      write(lll,*) 'abs(main_teff-modeles_detef) = ', ddt, ' > 1.0'
+      call pfant_halt(lll)
+    end if
+    if(ddg .gt. 0.01) then
+      write(lll,*) 'abs(main_glog-modeles_dglog) = ', ddg, ' > 0.01'
+      call pfant_halt(lll)
+    end if
+    if(ddab .gt. 0.01) then
+      write(lll,*) 'abs(main_asalog-modeles_dsalog) = ', ddab, ' > 0.01'
+      call pfant_halt(lll)
+    end if
 
+    read(unit_, rec=id_) bid, &
+         (modeles_nh(i), &
+          modeles_teta(i), &
+          modeles_pe(i), &
+          modeles_pg(i), &
+          modeles_t5l(i), i=1,modeles_ntot)
 
-
-    READ(UNIT_, REC=ID_) BID, &
-         (modeles_NH(I), &
-          modeles_TETA(I), &
-          modeles_PE(I), &
-          modeles_PG(I), &
-          modeles_T5L(I), I=1,modeles_NTOT)
-
-
-    CLOSE(UNIT_)
-  END
-
-
-
-END MODULE READ_FILES
+    close(unit_)
+  end
+end module read_files

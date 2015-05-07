@@ -13,8 +13,8 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-! TODO Explain that each [subroutine] module declares the variables that it calculates
-! TODO module dependence map
+!> @todo Explain that each [subroutine] module declares the variables that it calculates
+!> @todo module dependence map
 !
 
 ! 20150505 -- Comments by Paula Coelho in 2003
@@ -110,9 +110,9 @@ MODULE SYNTHESIS
 
 
   !> @todo ISSUE this is used a lot, I gotta find out its meaning
-  !> ISSUE I think it is the maximum number of calculation steps.
+  !> @todo ISSUE I think it is the maximum number of calculation steps.
   INTEGER, PARAMETER :: NP = 7000, &
-                        NMOL = 50000  ! ISSUE what about this parameter, what does it mean?
+                        NMOL = 50000  !> @todo ISSUE what about this parameter, what does it mean?
 
   !=====
   ! Subroutine outputs
@@ -176,7 +176,7 @@ MODULE SYNTHESIS
 
 
   !======================================================================================================================      
-  SUBROUTINE PFANT_CALCULATE()  ! ISSUE Find a nicer name for this routine. It is what PFANT DOES
+  SUBROUTINE PFANT_CALCULATE()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
     REAL*8 LZERO, LFIN
     CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
 
@@ -256,13 +256,13 @@ MODULE SYNTHESIS
     CALL SAT4()
 
 
-    ! ISSUE Explain what it does
+    !> @todo ISSUE Explain what it does
     XLZERO = main_LLZERO-20.
     XLFIN = XLZERO+main_AINT+20.
     IF(XLFIN .GE. (main_LLFIN+20.)) THEN
       IKEYTOT = 1
     ELSE
-      ! ISSUE it seems that I could write this using a modulus operator
+      !> @todo ISSUE it seems that I could write this using a modulus operator
       DO I = 2,250
         XLFIN = XLFIN+main_AINT
         IF(XLFIN .GE. (main_LLFIN+20.)) EXIT
@@ -280,7 +280,7 @@ MODULE SYNTHESIS
     ! Main loop
     !=====
     DO WHILE .T. !Main loop!
-      ! ISSUE Explain DTOT
+      !> @todo ISSUE Explain DTOT
       DTOT = (LFIN-LZERO)/main_PAS + 1.0005
       
       !__logging__
@@ -290,7 +290,7 @@ MODULE SYNTHESIS
 
       !--halt situation--!      
       IF(DTOT .GT. 40000) THEN
-        ! ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
+        !> @todo ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
         CALL PFANT_HALT('DTOT > 40000!')
       END IF
 
@@ -327,7 +327,7 @@ MODULE SYNTHESIS
           WRITE(LLL,712) IM, LLHY(IH), FILETOH, IHT
           CALL LOG_INFO(LLL)
 
-          ! ISSUE Extract this from main loop. Not too hard: c_filetoh_* just need one extra dimension
+          !> @todo ISSUE Extract this from main loop. Not too hard: c_filetoh_* just need one extra dimension
           CALL READ_FILETOH(FILETOH)
           CALL FILETOH_AUH(DTOT,TTD, ILZERO)
 
@@ -382,10 +382,10 @@ MODULE SYNTHESIS
         ! CALCUL DU COEFFICIENT D ABSORPTION SELECTIF ET CALCUL DU SPECTRE
         DO K = 1, atomgrade_NBLEND
         
-          ! IssuE check these variables, they may be misnamed
+          !> @todo ISSUE check these variables, they may be misnamed
           GFAL(K) = atomgrade_GF(K)*C2*(atomgrade_LAMBDA(K)*1.E-8)**2
           
-          ! issuE What is ECART?
+          !> @todo ISSUE What is ECART?
           ECART(K) = atomgrade_LAMBDA(K)-LZERO+main_PAS
         END DO
       END IF
@@ -404,7 +404,7 @@ MODULE SYNTHESIS
 
       CALL SELEKFH(DTOT, GFAL, ECART, TAUH, DHM,DHP, TTD, ECARTM)
 
-      ! TODO check if any of these variables is written, otherwise I could move this block further down
+      !> @todo check if any of these variables is written, otherwise I could move this block further down
       LI = 10./main_PAS
       I1 = LI+1
       I2 = DTOT - LI
@@ -439,7 +439,7 @@ MODULE SYNTHESIS
       CALL LOG_INFO(LLL)
 
       IKEY = IKEY+1
-      IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door! ISSUE what does this condition mean?
+      IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door!> @todo ISSUE what does this condition mean?
 
       !__logging__
       708 FORMAT(1X,'IKEY=',I10,2X,'IRH=',I6)
@@ -476,7 +476,7 @@ MODULE SYNTHESIS
       !> Either selekfh_FL, selekfh_FCONT, or FN
       REAL*8, INTENT(IN) :: ITEM(:)
       REAL*8 AMG
-      AMG = main_XXCOR(8)  ! ISSUE is this assuming something to do with Magnesium?
+      AMG = main_XXCOR(8)  !> @todo ISSUE is this assuming something to do with Magnesium?
       
       1130 FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
       WRITE(UNIT_, 1130)       &
@@ -523,7 +523,7 @@ MODULE SYNTHESIS
          atomgrade_ZINF(K),        &
          popadelh_CORCH(K)                
 
-        ! ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
+        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
        121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
         WRITE(91,121)              &
          atomgrade_ELEM(K),        &
@@ -542,17 +542,17 @@ MODULE SYNTHESIS
 
 
 
-    ! TODO Fix Initializations
-    ! TOdO explain parameters
-    ! TODO verbose
-    ! TODO discover what is input and what is output
+    !> @todo Fix Initializations
+    !> @todo explain parameters
+    !> @todo verbose
+    !> @todo discover what is input and what is output
     !======================================================================================================================
     ! Sets the Voigt profile using Hjertings' constants.
     !
     ! Note: convolution for molecules uses Gaussian profile.
     !
     
-    ! ISSUE with variable MM
+    !> @todo ISSUE with variable MM
     SUBROUTINE SELEKFH()
         USE READ_FILES
         IMPLICIT NONE
@@ -636,7 +636,7 @@ MODULE SYNTHESIS
                 KAM(L)=0.
               else
             
-                ! ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+                !> @todo ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
                 ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
                 DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(turbul_VT(N)**2+DEUXR*T/km_MM)
                 VM=ABS(ECARM(L)*1.E-08/DELTAM(L,N))
@@ -725,7 +725,7 @@ MODULE SYNTHESIS
       AHNU2 = H*NU2
       C32 =(2*AHNU2) * (NU2/C)**2
       DO N = 1,modeles_NTOT
-        ! TODO: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
+        !> @todo: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
         T = 5040./modeles_TETA(N)
         ALPH_N = EXP(-AHNU2/(KB*T))
         bk_B2(N) = C32 * (ALPH_N/(1.-ALPH_N))
@@ -799,7 +799,7 @@ MODULE SYNTHESIS
 
 
   !======================================================================================================================
-  ! ISSUE WHAT
+  !> @todo ISSUE WHAT
 
   SUBROUTINE TURBUL()
     USE CONFIG
@@ -825,8 +825,8 @@ MODULE SYNTHESIS
         CALL FTLIN3(min_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
    +     modeles_T5L, turbul_VT)
       ELSEIF (config_INTERP .EQ. 2) THEN
-        ! ISSUE ask if still useful mbecause it was switched off.
-        ! TODO Test this interpolation
+        !> @todo ISSUE ask if still useful mbecause it was switched off.
+        !> @todo Test this interpolation
         CALL FT2(main_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
    +     modeles_T5L,turbul_VT)
       END IF
@@ -871,7 +871,7 @@ MODULE SYNTHESIS
     DIMENSION U(3), ALISTU(63), UE(50), TT(51)
     
     DO N = 1, modeles_NTOT
-      T = 5040./modeles_TETA(N)  ! TODO I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
+      T = 5040./modeles_TETA(N)  !> @todo I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
       UE(N) = C1*KB*T/modeles_PE(N)*T**1.5
       DO J = 1, partit_NPAR
         KMAX = partit_JKMAX(J)
@@ -924,7 +924,7 @@ MODULE SYNTHESIS
     CHARACTER*1 ISI(1), ISS(1)
     INTEGER J, K
     REAL*8 KIES,KII,NUL
-    DIMENSION ALPHL(50)  ! TODO 50??
+    DIMENSION ALPHL(50)  !> @todo 50??
     DATA ISI/' '/, ISS/' '/
 
     DO K = 1, atomgrade_NBLEND
@@ -958,7 +958,7 @@ MODULE SYNTHESIS
       !*************************************************************************************************
       !*************************************************************************************************
       !*************************************************************************************************
-      ! ISSUE File writing routine, TAKE THIS OUT!!!!
+      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!!
       WRITE (77,*) atomgrade_ELEM(k),atomgrade_LAMBDA(k)
       
       IF(atomgrade_CH(K).LT.1.E-37)  THEN

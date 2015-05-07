@@ -34,7 +34,7 @@ module molecula
   integer, parameter :: max_km__lines_total=1400000
 
   ! Specifies how many molecules to read
-  ! ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
+  !> @todo ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
   ! (MT) Gonna ask BLB this
   integer km__number
 
@@ -88,13 +88,13 @@ module molecula
   ! line of each set of lines within km_lmbdam, km_sj and km_jj
   ! **for the current molecule** I_MOL
   ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
-  ! TODO Explain better
+  !> @todo Explain better
   dimension km_ln(max_sol_per_mol+1, num_mol)
 
-  ! ISSUE: "Warning: possible change of value in conversion from real(8) to real(4)"
+  !> @todo ISSUE: "Warning: possible change of value in conversion from real(8) to real(4)"
   real*8, dimension(max_km__lines_total, max_modeles_ntot) :: km_pnvj
 
-  ! TODO test the pointers
+  !> @todo test the pointers
   real*8, private, pointer, dimension(:) :: ppa, pb
 
   private point_ppa_pb
@@ -172,7 +172,7 @@ contains
     i_line = 0
     do molid = 1, km__number
 
-      ! TODO check spill in each element in km__NV
+      !> @todo check spill in each element in km__NV
 
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
@@ -207,13 +207,13 @@ contains
    +             km__ub(molid), km__te(molid), km__cro(molid)
 
 
-      ! ISSUE Documentation
-      ! ISSUE !P! My sample file is blank here
+      !> @todo ISSUE Documentation
+      !> @todo ISSUE !P! My sample file is blank here
       read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km__ise(molid),
    +    km__a0(molid), km__a1(molid), km__a2(molid),
    +    km__a3(molid), km__a4(molid), km__als(molid)
 
-      ! Issue what is S??
+      !> @todo ISSUE what is S??
       read(unit_,*) km__s(molid)
 
       nnv = km__nv(molid)
@@ -222,7 +222,7 @@ contains
       write(lll,*) 'nv=', nnv
       call log_debug(lll)
 
-      ! TODO type in documentation
+      !> @todo type in documentation
       read(unit_,*) (km__qqv(i, molid), i=1,nnv)
       read(unit_,*) (km__ggv(i, molid), i=1,nnv)
       read(unit_,*) (km__bbv(i, molid), i=1,nnv)
@@ -241,7 +241,7 @@ contains
         i_line = i_line+1
 
         !__spill check__: checks if exceeds maximum number of elements allowed
-        ! ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
+        !> @todo ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
         if (i_line .gt. max_km__lines_total) then
           write(*,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ',
            max_km__lines_total, ' (at molecule id ', molid, ')'
@@ -268,7 +268,7 @@ contains
         ! BLB:       Q3 - 11
         ! BLB:       R3 - 12
         ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file moleculagrade.dat
-        ! ISSUE (question) Where does moleculagrade.dat come from?
+        !> @todo ISSUE (question) Where does moleculagrade.dat come from?
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of the first (v',v'') set of lines
         ! BLB:           = 2 for the last line of the second (v', v'') set of lines  ISSUE never used
@@ -384,13 +384,13 @@ contains
           ! Reached last line of current set of lines
 
 
-*            ! ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
+*            !> @todo ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
 *            IF (.NOT. FLAG_IN) THEN
-*              ! TODO, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
-*              ! TODO but I can give a *WARNING*, more for testing than for anything else, actually
+*              !> @todo, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
+*              !> @todo but I can give a *WARNING*, more for testing than for anything else, actually
 *
 *              !--error checking--!
-*              ! TODO test this error
+*              !> @todo test this error
 *              WRITE (*, *) 'FILTER_MOLECULAGRADE(): Molecule ID ',MOLID,
 *     +            ' titled  "', km__TITULO(MOLID), '"'
 *              WRITE (*, *) 'Set of lines ', (J_SET), 'has no lambda '
@@ -489,7 +489,7 @@ contains
                   (2.-CRO)*(2.*km_JJ(L)+1.)*                                             &
                   EXP(H*C/KB*modeles_TETA(N)/5040.*(DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV))
 
-            ! ISSUE What to do with this REAL*4 vs. REAL*8 thing?
+            !> @todo ISSUE What to do with this REAL*4 vs. REAL*8 thing?
             km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
           END DO
 
@@ -533,7 +533,7 @@ contains
       CALL PFANT_HALT(S)
     END IF
 
-    SELECT CASE (MOLID)  ! ISSUE Check molecule names and cases
+    SELECT CASE (MOLID)  !> @todo ISSUE Check molecule names and cases
       CASE (1)  ! MgH
         PPA => sat4_PMG
         PB  => sat4_PPH
@@ -567,7 +567,7 @@ contains
     END SELECT
 
     !> @todo Original select, remove when the above workds
-    !~SELECT CASE (I_MOL)  ! ISSUE Check molecule names and cases
+    !~SELECT CASE (I_MOL)  !> @todo ISSUE Check molecule names and cases
     !~  CASE (1)  ! MgH
     !~    !~DO N = 1,modeles_NTOT
     !~    !~  PPA(N)=sat4_PMG(N)

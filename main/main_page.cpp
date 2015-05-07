@@ -18,7 +18,10 @@ Structure of PFANT code
 
 */
 
-/**
+/*
+I THink I won't need these groups no longer with Doxygen 1.8.9
+
+
 @defgroup gr_config System
 @brief System configuration and startup
 THis group contains modules and routines dedicated to setting up the environment state

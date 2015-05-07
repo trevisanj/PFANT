@@ -44,7 +44,8 @@ module mod_absoru
   ! Outputs
   !=====
   !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
-  real*8, dimension(12) :: absoru_znh  ! ISSUE Why 12?
+  !> @todo ISSUE Why 12?
+  real*8, dimension(12) :: absoru_znh  
 
 
   ! Down here all private
@@ -59,50 +60,40 @@ module mod_absoru
   !> @todo CHECK ALL TYPES
   !> @todo CHECK ALL SIZES
 
-
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
 
 
   real*8 au_ahe, au_ah, au_ahep, au_uh1, au_zemh, au_uhep1, au_uhe1, au_zeuhe1, &
-   au_ul, &
-   au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, &
-   au_pe
+   au_ul, au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, au_pe
 
 
-   !> MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
-   real*8 au_avm
-   !> POIDS MOLECULAIRE MOYEN
-   real*8 au_zmu
-   !> PRESSION TOTALE EN DYNES/cm**2
-   real*8 au_pg
-   !> DENSITE (G-CM-3)
-   real*8 au_rho
-   !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
-   real*8 au_toc 
-   !> DEGRE D'IONISATION MOYEN
-   real*8 au_ac
+   
+   real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
+   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
+   real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
+   real*8 au_rho  !< DENSITE (G-CM-3)
+   real*8 au_toc  !< NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
+   real*8 au_ac   !< DEGRE D'IONISATION MOYEN
+
+  real*8 :: au_g2d(2, 19)  !< FACTEUR DE GAUNT BOUND FREE
+  real*8, dimension(5) :: au_zexpm
+  real*8, dimension(10) :: au_zexp
+  real*8, dimension(20) :: au_zeuh, au_zeuhep
+  real*8, dimension(11) :: au_zk
+  real*8 :: au_zkm(30, 9)
+  real*8 :: au_ac2(30, 9) !< DEGRE D'IONISATION DES METAUX
+
+  real*8, dimension(3) :: au_ac1  !< Ionization degrees of H, He+ and He
+                                  !! @li au_AC1(1): DEGRE D'IONIZATION DE H
+                                  !! @li au_AC1(2): DEGRE D'IONIZATION DE HE+
+                                  !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
 
 
-  !> FACTEUR DE GAUNT BOUND FREE
-  real*8, DIMENSION(2, 19) :: au_G2D  
-  real*8, DIMENSION(5) :: au_ZEXPM
-  real*8, DIMENSION(10) :: au_ZEXP
-  real*8, DIMENSION(20) :: au_ZEUH, au_ZEUHEP
-  real*8, DIMENSION(11) :: au_ZK
-  real*8 :: au_ZKM(30, 9)
-  !> DEGRE D'IONISATION DES METAUX
-  real*8 :: au_AC2(30, 9)
+  real*8, dimension(30) :: au_znu
+  character*80 lll
 
-  !> @li au_AC1(1): DEGRE D'IONIZATION DE H
-  !> @li au_AC1(2): DEGRE D'IONIZATION DE HE+
-  !> @li au_AC1(3): DEGRE D'IONIZATION DE HE
-  real*8, DIMENSION(3) :: au_AC1  
-
-  real*8, DIMENSION(30) :: au_ZNU
-  CHARACTER*80 LLL
-
-CONTAINS
+contains
 
   !-------------------------------------------------------------------------------
   !> @ingroup data
@@ -203,7 +194,7 @@ CONTAINS
     call athyhe (wl,th,calth,callam,zzk)
 
     9006 continue
-    if (calmet.eq.1) go to 9003 ! issue line doing nothing
+    if (calmet.eq.1) go to 9003 !> @todo ISSUE line doing nothing
 
     9003 continue
     call ionipe (th,zlpe,calth,calmet)
@@ -401,8 +392,6 @@ CONTAINS
   !-------------------------------------------------------------------------------
   !> @todo ISSUE WHAT
   !>
-  !> A.M COLLE   8/5/69
-  !>
   !> @verbatim
   !> HCBKTM=(H*C/K*T)*1.0E8
   !> 0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
@@ -413,6 +402,8 @@ CONTAINS
   !> C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
   !> ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
   !> @endverbatim
+  !>
+  !> @author A.M COLLE   8/5/69
   
   subroutine tempa(wl,th,calth,callam)
     integer*4 callam,calth
@@ -433,7 +424,7 @@ CONTAINS
       au_zeuh(j)=exp(uh-au_uh1)/j**3
     enddo
 
-    au_zeuh(20) = au_zeuh(20)*8000.  ! issue why this (ask mt)?
+    au_zeuh(20) = au_zeuh(20)*8000.  !> @todo ISSUE why this (ask mt)?
     au_uhep1 = 4.389087e-3*hcbktm
     if (th .gt. 0.3) go to 5290
 
@@ -533,10 +524,11 @@ CONTAINS
   !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
   !>
-  !> A.M COLLE  07/12/1970
+  !> @author A.M COLLE  07/12/1970
 
   subroutine athyhe (wl,th,calth,callam,zzk)
     use read_files
+    use logging
     implicit none
     integer*4 callam,calth, jhe, jhep, jhem
     real*8 wl, th
@@ -623,7 +615,7 @@ CONTAINS
     6190 althml=(wl/1.0e6)*(((-5.939*th+11.934)*th-3.2062)+(wl/1.0e3)* &
      ((-0.34592*th+7.0355)*th-0.40192))+((0.027039*th-0.011493)*th+0.0053666)
 
-    ! ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
+    !> @todo ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
     zzk(absoru2_nmeta+1,1) = althmb+althml
 
     ! -- II --  H2-
@@ -747,7 +739,8 @@ CONTAINS
        difro/difeta
       go to 1855
 
-      1847 call log_critical('0 on sort de la table de gff')
+      1847 continue
+      call log_critical('0 on sort de la table de gff')
     1855 continue
 
     g3=0.0
@@ -940,7 +933,7 @@ CONTAINS
   !>
   !> Reference: 'VARDYA' APJ VOL.133,P.107,1961
   !>
-  !> A.M COLLE  18/01/1971
+  !> @author A.M COLLE  18/01/1971
 
   subroutine ionipe(th,zlpe,calth,calmet)
     integer*4 calth,calmet

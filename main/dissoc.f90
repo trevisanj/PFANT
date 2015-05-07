@@ -46,7 +46,7 @@ module dissoc
 
   real pe ! Fictitious pressure of electron?? ISSUE: is it?
 
-  ! ISSUE I won't do it this way until I sort the conflicts in DIE
+  !> @todo ISSUE I won't do it this way until I sort the conflicts in DIE
   !~REAL PE ! Fictitious pressure of the electron?? is it? ISSUE
   !~EQUIVALENCE (P(Z_ELECTRON), P_ELECTRON)
 
@@ -55,7 +55,7 @@ contains
 
   !================================================================================================================================
   !> Subroutine d'equilibre dissociatif
-  ! ISSUE WHAT
+  !> @todo ISSUE WHAT
 
   subroutine sat4()
     use config
@@ -76,7 +76,7 @@ contains
     ! Infers other variables from variables dissoc__* (notice the double underscore)
     do i = 1, dissoc_nmetal
       cclogi = dissoc__cclog(i)+main_afstar
-      ! ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
+      !> @todo ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
       cclogi = cclogi+main_xxcor(i)
       if(i .eq .1) cclogi = 0.0
       if(i .eq .2) cclogi = -1.0
@@ -105,9 +105,9 @@ contains
       p(nelemi) = 1.0e-20
     1400 continue
 
-    ! ISSUE What if atomic number 99 was already in dissoc.dat?
+    !> @todo ISSUE What if atomic number 99 was already in dissoc.dat?
     p(z_electron) = 1.0e-10
-    ! ISSUE: what about 100?
+    !> @todo ISSUE: what about 100?
 
     !*****INPUT E
 
@@ -248,7 +248,7 @@ contains
 
   !================================================================================================================================
   !> DIE9
-  ! ISSUE WHAT
+  !> @todo ISSUE WHAT
 
   subroutine die(tem, pg)
     use config
@@ -312,7 +312,7 @@ contains
     ph = 0.5*(sqrt(dhh*(dhh+4.0*pg/(1.0+heh)))-dhh)
 
     ! EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-    ! PG = PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)  ! issue i may have commented this by accident
+    ! PG = PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)  !> @todo ISSUE i may have commented this by accident
     1102 continue
     u = (1.0+2.0*heh)/dhh
     q = 1.0+heh
@@ -351,7 +351,7 @@ contains
     pph = sqrt(hkp *ph)
     fph = ph+2.0*phh+pph
 
-    ! ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
+    !> @todo ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
     ! THe current dissoc.dat has no Z=100 (neither 99).
     ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
     p(z_h_star) = pph
@@ -370,11 +370,11 @@ contains
     
     1401 continue
     do 1403 i=1,dissoc_nmetal
-      ! ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE
+      !> @todo ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE
       nelemi=dissoc_nelemx(i)
       p(nelemi) = fp(nelemi)*exp(-5.0*t/econst)
     1403 continue
-    p(z_h) = ph   ! ISSUE: overwriting P(1)
+    p(z_h) = ph   !> @todo ISSUE: overwriting P(1)
 
     ! RUSSELL EQUATIONS
     1402 continue
@@ -382,7 +382,7 @@ contains
     1040 continue
     do 1030 i =1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      fx(nelemi) = -fp(nelemi)+p(nelemi)*(1.0 + kp(nelemi)/pe)  ! ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright?
+      fx(nelemi) = -fp(nelemi)+p(nelemi)*(1.0 + kp(nelemi)/pe)  !> @todo ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright?
       dfx(nelemi) = 1.0 + kp(nelemi)/pe
     1030 continue
 
@@ -403,7 +403,7 @@ contains
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
 
-        ! ISSUE BIG! at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
+        !> @todo ISSUE BIG! at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
         p(nelemj)=1.0e-2*p(nelemj)
         pmoljl = pmoljl + float(natomj)*(-2.0)
       1048 continue
@@ -414,7 +414,7 @@ contains
         natomj = dissoc_natom(m,j)
         atomj = float(natomj)
 
-        if (nelemj .eq. z_electron) then  ! ISSUE This bit suggests that Z=99 is allowed in the molecules part
+        if (nelemj .eq. z_electron) then  !> @todo ISSUE This bit suggests that Z=99 is allowed in the molecules part
           spnion = spnion + pmolj
         end if
 
