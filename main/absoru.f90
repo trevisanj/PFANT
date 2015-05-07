@@ -55,9 +55,9 @@ module mod_absoru
 
   private
 
-  ! TODO Identify outputs and inputs
-  ! TODO CHECK ALL TYPES
-  ! TODO CHECK ALL SIZES
+  !> @todo Identify outputs and inputs
+  !> @todo CHECK ALL TYPES
+  !> @todo CHECK ALL SIZES
 
 
   integer, dimension(2) :: au_jshyd
@@ -229,7 +229,7 @@ CONTAINS
 
     totkap(2)=0.
     if (calu.eq.1) unit=au_rho
-    IF (CALU.EQ.2) UNIT=au_TOC ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
+    If (calu.eq.2) unit=au_toc ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
 
     scatel=scatel/unit
     do i=1,kkk
@@ -278,124 +278,124 @@ CONTAINS
   !>
   !> A.M COLLE   19/8/69
 
-  SUBROUTINE GAUNTH (WL)
-    au_JH = 0
-    DO 1410 I=1,au_JFZ
+  subroutine gaunth (wl)
+    au_jh = 0
+    do 1410 i=1,au_jfz
 
 
-      DO J=1,19
-        JJ=J
-        IF (ABS(WL-au_ZLH(J)) .LE. 0.5) GO TO 1335
-        IF (WL .LT. au_ZLH(J)) GO TO 1333
-      END DO
+      do j=1,19
+        jj=j
+        if (abs(wl-au_zlh(j)) .le. 0.5) go to 1335
+        if (wl .lt. au_zlh(j)) go to 1333
+      end do
 
-      1333  CONTINUE
-      IF (I .NE. 2) GO TO 1334
+      1333  continue
+      if (i .ne. 2) go to 1334
 
       !
 
       ! CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
       !
 
-      DO J = 1,19
-        au_G2D(2,J)=au_G2D(1,J)
-      END DO
+      do j = 1,19
+        au_g2d(2,j)=au_g2d(1,j)
+      end do
 
-      GO TO 1420
+      go to 1420
 
-      1334 CONTINUE
-      JS=JJ
-      GO TO 1340
+      1334 continue
+      js=jj
+      go to 1340
 
-      1335 CONTINUE
+      1335 continue
       !
       ! C'EST UNE DISCONTINUITE DE L'HYDROGENE
       !
-      au_JH=1
-      IF (I .EQ. 1) GO TO 1334
+      au_jh=1
+      if (i .eq. 1) go to 1334
 
-      JS = JJ+1
+      js = jj+1
 
-      1340 CONTINUE
-      au_JSHYD(I) = JS
+      1340 continue
+      au_jshyd(i) = js
 
-      DO 1410 J=JS,19
-        ZJ=J
-        IF (J.GT.7) GO TO 1400
-        COND=au_ZLH(J)-WL
-        IF (ABS(COND).LE.0.50) GO TO 1122
-        IF (COND.LT.0.0) GO TO 1410
+      do 1410 j=js,19
+        zj=j
+        if (j.gt.7) go to 1400
+        cond=au_zlh(j)-wl
+        if (abs(cond).le.0.50) go to 1122
+        if (cond.lt.0.0) go to 1410
 
         !=====
-        ! Assignment of au_G2D(I,J), alternative 1
+        ! assignment of au_g2d(i,j), alternative 1
         !=====
 
-        ZQ=WL*J**2/COND
-        RK=SQRT(ZQ)
-        GO TO (1111,1113,1115,1117,1119,2000,2010), J
+        zq=wl*j**2/cond
+        rk=sqrt(zq)
+        go to (1111,1113,1115,1117,1119,2000,2010), j
 
-        ! MENZEL ET PEKERIS=MON. NOT. VOL. 96 P. 77 1935
+        ! menzel et pekeris=mon. not. vol. 96 p. 77 1935
 
-        1111 DELTA=8.*RK/SQRT(ZQ+1.0)
-        GO TO 1120
+        1111 delta=8.*rk/sqrt(zq+1.0)
+        go to 1120
 
-        1113 DELTA=(16.*RK*(3.*ZQ+4.)*(5.*ZQ+4.))/(ZQ+4.)**2.5
-        GO TO 1120
+        1113 delta=(16.*rk*(3.*zq+4.)*(5.*zq+4.))/(zq+4.)**2.5
+        go to 1120
 
-        1115 DELTA=(24.*RK*((13.*ZQ+78.)*ZQ+81.)*((29.*ZQ+126.)*ZQ+81.))/(ZQ+9.)**4.5
-        GO TO 1120
+        1115 delta=(24.*rk*((13.*zq+78.)*zq+81.)*((29.*zq+126.)*zq+81.))/(zq+9.)**4.5
+        go to 1120
 
-        1117 DELTA=32.*RK*(((197.*ZQ+3152.)*ZQ+13056.)*ZQ+12288.)*(((539.*ZQ+6800.)* &
-                   ZQ+20736.)*ZQ+12288.)/(9.*(ZQ+16.)**6.5)
-        GO TO 1120
+        1117 delta=32.*rk*(((197.*zq+3152.)*zq+13056.)*zq+12288.)*(((539.*zq+6800.)* &
+                   zq+20736.)*zq+12288.)/(9.*(zq+16.)**6.5)
+        go to 1120
 
-        1119 DELTA=40.*RK*((((1083.*ZQ+36100.)*ZQ+372250.)*ZQ+1312500.)*ZQ+1171875.)* &
-                   ((((3467.*ZQ+95700.)*ZQ+786250.)*ZQ+2062500.)*ZQ+1171875.)/(9.*(ZQ+25.)**8.5)
-        GO TO 1120
+        1119 delta=40.*rk*((((1083.*zq+36100.)*zq+372250.)*zq+1312500.)*zq+1171875.)* &
+                   ((((3467.*zq+95700.)*zq+786250.)*zq+2062500.)*zq+1171875.)/(9.*(zq+25.)**8.5)
+        go to 1120
 
-        ! HAGIHARA AND SOMA=J.OF ASTR. AND GEOPHYS. JAPANESE VOL. 20 P. 59 1
+        ! hagihara and soma=j.of astr. and geophys. japanese vol. 20 p. 59 1
 
-        2000 ZP=(ZQ+36.)**5.25
-        DELTA=48.*RK*((((((38081.*ZQ+1953540.)*ZQ+3348086.E1)*ZQ+ &
-        2262816.E2)*ZQ+5458752.E2)*ZQ+3023309.E2)/ZP)*((((((10471.*ZQ+628260.)*ZQ+ &
-        1290902.E1)*ZQ+1087085.E2)*ZQ+34992.0E4)*ZQ+3023309.E2)/25./ZP)
-        GO TO 1120
+        2000 zp=(zq+36.)**5.25
+        delta=48.*rk*((((((38081.*zq+1953540.)*zq+3348086.e1)*zq+ &
+        2262816.e2)*zq+5458752.e2)*zq+3023309.e2)/zp)*((((((10471.*zq+628260.)*zq+ &
+        1290902.e1)*zq+1087085.e2)*zq+34992.0e4)*zq+3023309.e2)/25./zp)
+        go to 1120
 
-        2010 ZP=(ZQ+49.)**6.25
-        DELTA=56.*RK*(((((((56740.9*ZQ+5560608.)*ZQ+1993433.E2)*ZQ+3248060.E3)*ZQ+ &
-        2428999.E4)*ZQ+7372604.E4)*ZQ+6228579.E4)/ZP)*(((((((229742.5*ZQ+1968907.E1)* &
-        ZQ+6067219.E2)*ZQ+8290160.E3)*ZQ+5002406.E4)*ZQ &
-        +1144025.E5)*ZQ+6228579.E4)/20.25/ZP)
+        2010 zp=(zq+49.)**6.25
+        delta=56.*rk*(((((((56740.9*zq+5560608.)*zq+1993433.e2)*zq+3248060.e3)*zq+ &
+        2428999.e4)*zq+7372604.e4)*zq+6228579.e4)/zp)*(((((((229742.5*zq+1968907.e1)* &
+        zq+6067219.e2)*zq+8290160.e3)*zq+5002406.e4)*zq &
+        +1144025.e5)*zq+6228579.e4)/20.25/zp)
 
-        1120 au_G2D(I,J)=5.441398*RK*J*EXP(-4.*RK*ATAN(ZJ/RK))*DELTA/ &
-                         (SQRT(ZQ+ZJ**2)*(1.-EXP(-6.283185*RK)))
-        GO TO 1410
+        1120 au_g2d(i,j)=5.441398*rk*j*exp(-4.*rk*atan(zj/rk))*delta/ &
+                         (sqrt(zq+zj**2)*(1.-exp(-6.283185*rk)))
+        go to 1410
 
 
         !=====
         ! Assignment of au_G2D(I,J), alternative 2
         !=====
-        1122 CONTINUE
-        GO TO (1123,1125,1127,1129,1131,2020,2030), J
-        1123 au_G2D(I,J)=0.7973
-        GO TO 1410
-        1125 au_G2D(I,J)=0.8762
-        GO TO 1410
-        1127 au_G2D(I,J)=0.9075
-        GO TO 1410
-        1129 au_G2D(I,J)=0.9247
-        GO TO 1410
-        1131 au_G2D(I,J)=0.9358
-        GO TO 1410
-        2020 au_G2D(I,J)=0.9436
-        GO TO 1410
-        2030 au_G2D(I,J)=0.9494
-        GO TO 1410
-        1400 au_G2D(I,J)=1.0
+        1122 continue
+        go to (1123,1125,1127,1129,1131,2020,2030), j
+        1123 au_g2d(i,j)=0.7973
+        go to 1410
+        1125 au_g2d(i,j)=0.8762
+        go to 1410
+        1127 au_g2d(i,j)=0.9075
+        go to 1410
+        1129 au_g2d(i,j)=0.9247
+        go to 1410
+        1131 au_g2d(i,j)=0.9358
+        go to 1410
+        2020 au_g2d(i,j)=0.9436
+        go to 1410
+        2030 au_g2d(i,j)=0.9494
+        go to 1410
+        1400 au_g2d(i,j)=1.0
 
-    1410 CONTINUE  ! This works as the "END DO" for two loops
-    1420 RETURN
-  END
+    1410 continue  ! This works as the "END DO" for two loops
+    1420 return
+  end
 
 
   !-------------------------------------------------------------------------------
@@ -403,6 +403,7 @@ CONTAINS
   !>
   !> A.M COLLE   8/5/69
   !>
+  !> @verbatim
   !> HCBKTM=(H*C/K*T)*1.0E8
   !> 0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
   !> 0.0043890867=CONSTANTE DE RYDBERG POUR HE+*1.0E-8  MOORE 1950 (HE4
@@ -411,69 +412,73 @@ CONTAINS
   !> au_AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
   !> C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
   !> ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
-  !
-  SUBROUTINE TEMPA(WL,TH,CALTH,CALLAM)
-    INTEGER*4 CALLAM,CALTH
+  !> @endverbatim
+  
+  subroutine tempa(wl,th,calth,callam)
+    integer*4 callam,calth
 
-    IF (CALTH.EQ.2) GO TO 1001
+    if (calth.eq.2) go to 1001
 
-    HCBKTM  = 0.2854306E-3*TH*1.0E8
-    au_AHE  = 0.9717088E-12*TH**3
-    au_AH   = 0.2429272E-12*TH**3
-    au_AHEP = 16.*au_AH
-    au_UH1  = 1.096788E-3*HCBKTM
-    au_ZEMH = EXP(-au_UH1)
+    hcbktm  = 0.2854306e-3*th*1.0e8
+    au_ahe  = 0.9717088e-12*th**3
+    au_ah   = 0.2429272e-12*th**3
+    au_ahep = 16.*au_ah
+    au_uh1  = 1.096788e-3*hcbktm
+    au_zemh = exp(-au_uh1)
 
-    IF (TH.GT.1.4) GO TO 1001
+    if (th.gt.1.4) go to 1001
 
-    DO J = 1,20
-      UH=au_UH1/J**2
-      au_ZEUH(J)=EXP(UH-au_UH1)/J**3
-    ENDDO
+    do j = 1,20
+      uh=au_uh1/j**2
+      au_zeuh(j)=exp(uh-au_uh1)/j**3
+    enddo
 
-    au_ZEUH(20) = au_ZEUH(20)*8000.  ! ISSUE why this (ask MT)?
-    au_UHEP1 = 4.389087E-3*HCBKTM
-    IF (TH .GT. 0.3) GO TO 5290
+    au_zeuh(20) = au_zeuh(20)*8000.  ! issue why this (ask mt)?
+    au_uhep1 = 4.389087e-3*hcbktm
+    if (th .gt. 0.3) go to 5290
 
-    DO J=1,20
-      UHEP=au_UHEP1/J**2
-      au_ZEUHEP(J) = EXP(UHEP-au_UHEP1)/J**3
-    END DO
+    do j=1,20
+      uhep=au_uhep1/j**2
+      au_zeuhep(j) = exp(uhep-au_uhep1)/j**3
+    end do
 
-    au_ZEUHEP(20) = au_ZEUHEP(20)*8000.
+    au_zeuhep(20) = au_zeuhep(20)*8000.
 
-    5290 CONTINUE
-    au_UHE1 = HCBKTM/504.3
-    au_ZEUHE1 = EXP(-au_UHE1)
-    IF (TH .GT. 0.8) GO TO 1001
+    5290 continue
+    au_uhe1 = hcbktm/504.3
+    au_zeuhe1 = exp(-au_uhe1)
+    if (th .gt. 0.8) go to 1001
 
-    COMHE=-HCBKTM*(1.0/au_ZLHEM(1))
-    DO K = 1,5
-      au_ZEXPM(K)=EXP(COMHE+HCBKTM*(1.0/au_ZLHEM(K)))*au_STWTM(K)
-    END DO
+    comhe=-hcbktm*(1.0/au_zlhem(1))
+    do k = 1,5
+      au_zexpm(k)=exp(comhe+hcbktm*(1.0/au_zlhem(k)))*au_stwtm(k)
+    end do
 
-    DO L=3,10
-      au_ZEXP(L)= EXP(COMHE+HCBKTM*(1.0/au_ZLHE(L)))/L**3
-    END DO
+    do l=3,10
+      au_zexp(l)= exp(comhe+hcbktm*(1.0/au_zlhe(l)))/l**3
+    end do
 
-    1001 IF ((CALLAM.EQ.2).AND.(CALTH.EQ.2)) GO TO 5010
+    1001 if ((callam.eq.2).and.(calth.eq.2)) go to 5010
 
-    au_UL = HCBKTM/WL
+    au_ul = hcbktm/wl
 
-    5010 RETURN
-  END
+    5010 return
+  end
 
 
 
   !-------------------------------------------------------------------------------
+  !> @ingroup gr_data
   !> SAHA's equation: ionization equilibrium: relative number of atoms in each
   !> ionization state
   !>
+  !> @verbatim
   !> LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
   !> LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
   !> CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
   !> 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
   !> POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
+  !> @endverbatim
   !>
   !>     A.M COLLE   13/5/69
 
@@ -484,440 +489,443 @@ CONTAINS
     real*8, PARAMETER :: C3(3) = (/0.0,-11.34061,-6.434060/)
     real*8, PARAMETER :: C4(3) = (/0.0,28.85946,25.80507/)
 
-    DO N = 2,3
-      au_ZK(absoru2_NMETA+N)=EXP(((C1(N)*TH+C2(N))*TH+C3(N))*TH+C4(N))
-    END DO
+    do n = 2,3
+      au_zk(absoru2_nmeta+n)=exp(((c1(n)*th+c2(n))*th+c3(n))*th+c4(n))
+    end do
 
-    TEMPOR=2.5*ALOG(5040.39/TH)
-    TEMPO=TEMPOR-1.098794
-    DO 2 N = 4,5
-      au_ZK(absoru2_NMETA+N)=POTION(N)*TH-TEMPO
-      IF (N .EQ. 4) GO TO 12
-      IF  (au_ZK(absoru2_NMETA+5).LT.100.0) GO TO 12
+    tempor=2.5*alog(5040.39/th)
+    tempo=tempor-1.098794
+    do 2 n = 4,5
+      au_zk(absoru2_nmeta+n)=potion(n)*th-tempo
+      if (n .eq. 4) go to 12
+      if  (au_zk(absoru2_nmeta+5).lt.100.0) go to 12
 
-      au_ZK(absoru2_NMETA+5)=0.0
-      GO TO 2
+      au_zk(absoru2_nmeta+5)=0.0
+      go to 2
 
-      12 CONTINUE
-      au_ZK(absoru2_NMETA+N)=EXP(-au_ZK(absoru2_NMETA+N))
-    2 CONTINUE
+      12 continue
+      au_zk(absoru2_nmeta+n)=exp(-au_zk(absoru2_nmeta+n))
+    2 continue
 
-    DO 2270 J=1,absoru2_NM
-      NRR=absoru2_NR(J)
-      DO 2270 I=1,NRR
-        au_ZKM(J,I)=TH*absoru2_XI(J,I)-absoru2_PF(J,I)-TEMPO
-        IF (au_ZKM(J,I).LT.100.0) GO TO 2269
-        au_ZKM(J,I)=0.0
-        GO TO 2270
-        2269 au_ZKM(J,I)=EXP(-au_ZKM(J,I))
-    2270 CONTINUE
-    TEMPO=TEMPOR+0.2875929
-    DO N=1,6,5
-      au_ZK(absoru2_NMETA+N)=EXP( POTION(N)*TH+TEMPO)
-    END DO
-    RETURN
-  END
+    do 2270 j=1,absoru2_nm
+      nrr=absoru2_nr(j)
+      do 2270 i=1,nrr
+        au_zkm(j,i)=th*absoru2_xi(j,i)-absoru2_pf(j,i)-tempo
+        if (au_zkm(j,i).lt.100.0) go to 2269
+        au_zkm(j,i)=0.0
+        go to 2270
+        2269 au_zkm(j,i)=exp(-au_zkm(j,i))
+    2270 continue
+
+    tempo=tempor+0.2875929
+    do n=1,6,5
+      au_zk(absoru2_nmeta+n)=exp( potion(n)*th+tempo)
+    end do
+    return
+  end
 
 
 
 
   !-------------------------------------------------------------------------------
+  !> @ingroup gr_data
   !> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
   !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
   !>
   !> A.M COLLE  07/12/1970
 
-  SUBROUTINE ATHYHE (WL,TH,CALTH,CALLAM,ZZK)
-    USE READ_FILES
-    IMPLICIT NONE
-    INTEGER*4 CALLAM,CALTH, JHE, JHEP, JHEM
-    REAL*8 WL, TH
-    REAL*8 :: TGAUNT(5),TRHOG(5),OPNU(46),ZZK(11,2), EXPON(2)
-    REAL*8, PARAMETER ::                                  &
-     EXPO(2) = (/-68.88230,-71.45087/),                   &
-     CONS(2) = (/3.3,3.6/),                               &
-     COTE(2) = (/3.136954E-23,8.195952E-24/),             &
-     SNIV(2) = (/0.55,0.485/),                            &
-     CUK(2)  = (/0.3025,0.235225/),                       &
-     AN(2)   = (/0.3099204E-21, 0.22849203E-21/),         &
-     C1(3)   = (/-2.850692E-2,-7.056869E-3,3.591294E-3/), &
-     C2(3)   = (/0.2080816,0.1809394,-0.1959804/),        &
-     C3(3)   = (/2.549101,-1.828635,4.233733/),           &
-     C4(3)   = (/-14.97997,8.900841,-20.84862/),          &
-     C5(3)   = (/0.0,-17.78231,0.0/),                     &
-     C6(3)   = (/0.0,-7.89472E-2,0.0/)
-    JHE  = 0
-    JHEP = 0
-    JHEM = 0
-    IF (CALLAM.EQ.1) INDTH = 0
-    JHYT = 1
+  subroutine athyhe (wl,th,calth,callam,zzk)
+    use read_files
+    implicit none
+    integer*4 callam,calth, jhe, jhep, jhem
+    real*8 wl, th
+    real*8 :: tgaunt(5),trhog(5),opnu(46),zzk(11,2), expon(2)
+    real*8, parameter ::                                  &
+     expo(2) = (/-68.88230,-71.45087/),                   &
+     cons(2) = (/3.3,3.6/),                               &
+     cote(2) = (/3.136954e-23,8.195952e-24/),             &
+     sniv(2) = (/0.55,0.485/),                            &
+     cuk(2)  = (/0.3025,0.235225/),                       &
+     an(2)   = (/0.3099204e-21, 0.22849203e-21/),         &
+     c1(3)   = (/-2.850692e-2,-7.056869e-3,3.591294e-3/), &
+     c2(3)   = (/0.2080816,0.1809394,-0.1959804/),        &
+     c3(3)   = (/2.549101,-1.828635,4.233733/),           &
+     c4(3)   = (/-14.97997,8.900841,-20.84862/),          &
+     c5(3)   = (/0.0,-17.78231,0.0/),                     &
+     c6(3)   = (/0.0,-7.89472e-2,0.0/)
+    jhe  = 0
+    jhep = 0
+    jhem = 0
+    if (callam.eq.1) indth = 0
+    jhyt = 1
 
     ! 31.3213   = 157871.62/5040.39;
     ! 157871.62 = M*Z**2*E**4/(2*K*(H/2*PI)**
     ! M ET E SONT LA MASSE ET LA CHARGE DE L'ELECTRON,H ET K LES CONSTAN
     ! DE PLANCK ET DE BOLTZMANN
-    GCONST = 31.3213*TH
+    gconst = 31.3213*th
 
-    IF (au_UL .LT. 100.0) GO TO 1333
+    if (au_ul .lt. 100.0) go to 1333
 
     ! au_UL=H*NU/(K*T)
+
     au_STIMU=1.0
     GO TO 1334
 
-    1333 au_STIMU = 1.0-EXP(-au_UL)
-    1334 STIMU3   = au_STIMU/au_UL**3
-    IF (CALLAM.EQ.2) GO TO 1335
+    1333 au_stimu = 1.0-exp(-au_ul)
+    1334 stimu3   = au_stimu/au_ul**3
+    if (callam.eq.2) go to 1335
 
-    ZNL = ALOG(WL)
-    ZLAMIN = 1.0E8/WL
-    DO N = 1,2
-      EXPON(N)=EXP(EXPO(N)+CONS(N)*ZNL)
-    END DO
+    znl = alog(wl)
+    zlamin = 1.0e8/wl
+    do n = 1,2
+      expon(n)=exp(expo(n)+cons(n)*znl)
+    end do
 
     ! -- I --  H-
     ! H- GINGERICH: HARVARD JUIN 1964 (RESULTATS*1.0E-26)
 
-    1335 IF (TH .GE. 0.3) GO TO 6060
+    1335 if (th .ge. 0.3) go to 6060
 
-    ZZK(absoru2_NMETA+1,1)=0.0
-    GO TO 6210
+    zzk(absoru2_nmeta+1,1)=0.0
+    go to 6210
 
-    6060 IF ((CALLAM.EQ.2).AND.(INDTH.EQ.1)) GO TO 6100
+    6060 if ((callam.eq.2).and.(indth.eq.1)) go to 6100
 
-    INDTH = 1
-    IF (WL.LE.16419.0) GO TO 6070
+    indth = 1
+    if (wl.le.16419.0) go to 6070
 
-    ALTHMB = 0.0
-    GO TO 6190
+    althmb = 0.0
+    go to 6190
 
-    6070 WLM = WL/1.0E3
-    IF (WL.GT.14200.0) GO TO 6090
+    6070 wlm = wl/1.0e3
+    if (wl.gt.14200.0) go to 6090
 
-    ZKAS =(((5.95244E-4*WLM-0.0204842)*WLM+0.164790)*WLM+0.178708)*WLM+0.680133E-2
-    GO TO 6100
+    zkas =(((5.95244e-4*wlm-0.0204842)*wlm+0.164790)*wlm+0.178708)*wlm+0.680133e-2
+    go to 6100
 
-    6090 WLM=16.149-WLM
-    ZKAS = ((0.273236E-2*WLM-0.411288E-1)*WLM+0.220190)*WLM**2+0.269818
+    6090 wlm=16.149-wlm
+    zkas = ((0.273236e-2*wlm-0.411288e-1)*wlm+0.220190)*wlm**2+0.269818
 
-    6100 FACT = 1.0-EXP((-TH)*28.54310E+3/WL)
+    6100 fact = 1.0-exp((-th)*28.54310e+3/wl)
 
     !
     ! TRANSITION BOUND-FREE= GELTMAN APJ. VOL. 136 P. 935 1962
     !
 
-    ALTHMB = ZKAS*4.158E-1*TH**2.5*EXP(1.726*TH)*FACT
+    althmb = zkas*4.158e-1*th**2.5*exp(1.726*th)*fact
 
     !
     ! TRANSITION FREE-FREE=T L JOHN (OCT.1963)
     !
 
-    6190 ALTHML=(WL/1.0E6)*(((-5.939*TH+11.934)*TH-3.2062)+(WL/1.0E3)* &
-     ((-0.34592*TH+7.0355)*TH-0.40192))+((0.027039*TH-0.011493)*TH+0.0053666)
+    6190 althml=(wl/1.0e6)*(((-5.939*th+11.934)*th-3.2062)+(wl/1.0e3)* &
+     ((-0.34592*th+7.0355)*th-0.40192))+((0.027039*th-0.011493)*th+0.0053666)
 
     ! ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
-    ZZK(absoru2_NMETA+1,1) = ALTHMB+ALTHML
+    zzk(absoru2_nmeta+1,1) = althmb+althml
 
     ! -- II --  H2-
     ! H2- SOMMERVILLE: APJ. VOL. 139 P. 195 1963
-    6210 IF (TH .LT. 0.5) GO TO 2050
-    IF (WL .GE. 3040.0) GO TO 2070
+    6210 if (th .lt. 0.5) go to 2050
+    if (wl .ge. 3040.0) go to 2070
 
-    2050 ZZK(absoru2_NMETA+2,1)=0.0
-    GO TO 2080
+    2050 zzk(absoru2_nmeta+2,1)=0.0
+    go to 2080
 
-    2070 DKSQ=911.27/WL
-    ZZK(absoru2_NMETA+2,1)=(((0.09319*TH+2.857-0.9316/TH)/DKSQ-(2.6*TH+6.831-4.993/TH))/ &
-     DKSQ+(35.29*TH-9.804-10.62/TH)-(74.52*TH-62.48+0.4679/TH)*DKSQ)*1.0E-29
+    2070 dksq=911.27/wl
+    zzk(absoru2_nmeta+2,1)=(((0.09319*th+2.857-0.9316/th)/dksq-(2.6*th+6.831-4.993/th))/ &
+     dksq+(35.29*th-9.804-10.62/th)-(74.52*th-62.48+0.4679/th)*dksq)*1.0e-29
 
     ! -- III --  H2+
     ! H2+ BATES: HARVARD JUIN 1964  (RESULTATS *1.0E+39)
 
-    2080 IF ((TH.LT.0.25).OR.((ZLAMIN.LT.au_WINV(1)).OR.(ZLAMIN.GT.au_WINV(46)))) GO TO 1012
+    2080 if ((th.lt.0.25).or.((zlamin.lt.au_winv(1)).or.(zlamin.gt.au_winv(46)))) go to 1012
 
-    BKT=3.19286E-2/TH  ! BKT=K*T EN RYDBERGS POUR H2+
+    bkt=3.19286e-2/th  ! BKT=K*T EN RYDBERGS POUR H2+
 
-    DO J=1,46
-      OPNU(J)=2.51E-3*au_GRDM(J)*(EXP(U1(J)/BKT)-(EXP(-au_U2(J)/BKT)))
-    END DO
+    do j=1,46
+      opnu(j)=2.51e-3*au_grdm(j)*(exp(u1(j)/bkt)-(exp(-au_u2(j)/bkt)))
+    end do
 
-    DO J = 1,46
-      JJ=J
-      IF (ABS(ZLAMIN-au_WINV(J)) .LE. 0.5) GO TO 1014
-      IF (ZLAMIN .LT. au_WINV(J)) GO TO 1015
-    END DO
+    do j = 1,46
+      jj=j
+      if (abs(zlamin-au_winv(j)) .le. 0.5) go to 1014
+      if (zlamin .lt. au_winv(j)) go to 1015
+    end do
 
-    1014 ZZK(absoru2_NMETA+3,1)=OPNU(JJ)
-    GO TO 1016
+    1014 zzk(absoru2_nmeta+3,1)=opnu(jj)
+    go to 1016
 
     ! INTERPOLATION LINEAIRE
-    1015 ZZK(absoru2_NMETA+3,1)=(OPNU(JJ-1)*au_WINV(JJ)-OPNU(JJ)*au_WINV(JJ-1)+ &
-     (OPNU(JJ)-OPNU(JJ-1))*ZLAMIN)/(au_WINV(JJ)-au_WINV(JJ-1))
-    GO TO 1016
+    1015 zzk(absoru2_nmeta+3,1)=(opnu(jj-1)*au_winv(jj)-opnu(jj)*au_winv(jj-1)+ &
+     (opnu(jj)-opnu(jj-1))*zlamin)/(au_winv(jj)-au_winv(jj-1))
+    go to 1016
 
-    1012 ZZK(absoru2_NMETA+3,1)=0.0
+    1012 zzk(absoru2_nmeta+3,1)=0.0
 
     ! CAS OU WL EST UNE DISCONTINUITE
-    1016 IF (au_JFZ.NE.2) GO TO 1017
-    DO N = 1,3
-      ZZK(absoru2_NMETA+N,2)=ZZK(absoru2_NMETA+N,1)
-    END DO
+    1016 if (au_jfz.ne.2) go to 1017
+    do n = 1,3
+      zzk(absoru2_nmeta+n,2)=zzk(absoru2_nmeta+n,1)
+    end do
 
     ! -- IV --  H
     ! H UNSOLD (1955) PAGE 168
     ! FACTEUR DE GAUNT FREE-FREE POUR H=GRANT M.N.,VOL.118
     ! SYMBOLES CF VARDYA APJ.SUP. VOL. 8,P.277,1964
-    1017  IF (TH.GT.1.4) GO TO 1809
-    DO 1855 K=1,4
-      TRHOG(K)=SQRT(1.0+au_UL/au_YY(K))
-      IF (TRHOG(K).GE.1.01) GO TO 1820
-      IF (TRHOG(K).NE.1.0) TGAUNT(K)=2.0/(TRHOG(K)-1.0)
-      IF (TRHOG(K).EQ.1.0) GO TO 1856
+    1017  if (th.gt.1.4) go to 1809
+    do 1855 k=1,4
+      trhog(k)=sqrt(1.0+au_ul/au_yy(k))
+      if (trhog(k).ge.1.01) go to 1820
+      if (trhog(k).ne.1.0) tgaunt(k)=2.0/(trhog(k)-1.0)
+      if (trhog(k).eq.1.0) go to 1856
 
-      TGAUNT(K)=0.5513289*ALOG(TGAUNT(K))  ! 0.5513289=SQRT(3)/PI
-      GO TO 1855
+      tgaunt(k)=0.5513289*alog(tgaunt(k))  ! 0.5513289=SQRT(3)/PI
+      go to 1855
 
-      1856 TGAUNT(K)=0.0
-      GO TO 1855
+      1856 tgaunt(k)=0.0
+      go to 1855
 
-      1820 IF (TRHOG(K).LE.1.8) GO TO 1830
+      1820 if (trhog(k).le.1.8) go to 1830
 
-      TEMPOR=(TRHOG(K)-1.0)*SQRT(GCONST/(au_YY(K)+au_UL))
-      ANY=TEMPOR**(-0.6666667)
-      TGAUNT(K)=(-0.01312*ANY+0.21775)*ANY+1.0
-      GO TO 1855
+      tempor=(trhog(k)-1.0)*sqrt(gconst/(au_yy(k)+au_ul))
+      any=tempor**(-0.6666667)
+      tgaunt(k)=(-0.01312*any+0.21775)*any+1.0
+      go to 1855
 
-      1830 TEMPOR=0.2171473*ALOG(GCONST/(au_YY(K)+au_UL))  ! 0.2171473=0.434294482/2
-      IF ((TEMPOR.LT.au_ZLETAG(1)).OR.(TEMPOR.GT.au_ZLETAG(18))) GO TO 1847
+      1830 tempor=0.2171473*alog(gconst/(au_yy(k)+au_ul))  ! 0.2171473=0.434294482/2
+      if ((tempor.lt.au_zletag(1)).or.(tempor.gt.au_zletag(18))) go to 1847
 
       ! INTERPOLATION A PARTIR DE LA TABLE 1 DE GRANT (1958)
-      DO IR=1,12
-        JR=IR
-        IF (ABS(TRHOG(K)-au_RHOG(IR)).LE.1.0E-4) GO TO 1836
-        IF  (TRHOG(K).LT.au_RHOG(IR)) GO TO 1837
-      END DO
+      do ir=1,12
+        jr=ir
+        if (abs(trhog(k)-au_rhog(ir)).le.1.0e-4) go to 1836
+        if  (trhog(k).lt.au_rhog(ir)) go to 1837
+      end do
 
-      1836 CARO=1.0
+      1836 caro=1.0
       !
       ! INTERPOLATION SUR LOG(-ETA) SEULEMENT
       !
-      GO TO 1838
+      go to 1838
 
-      1837 RHOG1=au_RHOG(JR-1)
-      CARO=TRHOG(K)-RHOG1
+      1837 rhog1=au_rhog(jr-1)
+      caro=trhog(k)-rhog1
 
-      1838  RHOG2=au_RHOG(JR)
-      IF (CARO.EQ.1.0) DIFRO=1.0
-      IF (CARO.NE.1.0) DIFRO=RHOG2-RHOG1
-      DO IE=1,18
-        JE=IE
-        IF (ABS(TEMPOR-au_ZLETAG(IE)).LE.1.0E-4) GO TO 1846
-        IF  (TEMPOR.LT.au_ZLETAG(IE)) GO TO 1848
-      END DO
+      1838  rhog2=au_rhog(jr)
+      if (caro.eq.1.0) difro=1.0
+      if (caro.ne.1.0) difro=rhog2-rhog1
+      do ie=1,18
+        je=ie
+        if (abs(tempor-au_zletag(ie)).le.1.0e-4) go to 1846
+        if  (tempor.lt.au_zletag(ie)) go to 1848
+      end do
 
-      1846 IF (CARO .EQ. 1.0) GO TO 1850
-      CAETA=1.0
+      1846 if (caro .eq. 1.0) go to 1850
+      caeta=1.0
 
       !
       ! INTERPOLATION SUR au_RHO SEULEMENT
       !
-      GO TO 1849
+      go to 1849
 
-      1848 ZLETA1=au_ZLETAG(JE-1)
-      CAETA=TEMPOR-ZLETA1
+      1848 zleta1=au_zletag(je-1)
+      caeta=tempor-zleta1
 
-      1849  ZLETA2=au_ZLETAG(JE)
-      IF(CAETA.EQ.1.0)  DIFETA=1.0
-      IF(CAETA.NE.1.0)  DIFETA=ZLETA2-ZLETA1
-      GO TO 1851
+      1849  zleta2=au_zletag(je)
+      if(caeta.eq.1.0)  difeta=1.0
+      if(caeta.ne.1.0)  difeta=zleta2-zleta1
+      go to 1851
 
-      1850 TGAUNT(K)=au_G3D(JR,JE)
-      GO TO 1855
+      1850 tgaunt(k)=au_g3d(jr,je)
+      go to 1855
 
-      1851 TGAUNT(K)=((au_G3D(JR-1,JE-1)*(RHOG2-TRHOG(K))+au_G3D(JR,JE-1)*CARO)* &
-       (ZLETA2-TEMPOR)+(au_G3D(JR,JE)*CARO+au_G3D(JR-1,JE)*(RHOG2-TRHOG(K)))*CAETA)/ &
-       DIFRO/DIFETA
-      GO TO 1855
+      1851 tgaunt(k)=((au_g3d(jr-1,je-1)*(rhog2-trhog(k))+au_g3d(jr,je-1)*caro)* &
+       (zleta2-tempor)+(au_g3d(jr,je)*caro+au_g3d(jr-1,je)*(rhog2-trhog(k)))*caeta)/ &
+       difro/difeta
+      go to 1855
 
-      1847 CALL LOG_CRITICAL('0 ON SORT DE LA TABLE DE GFF')
-    1855 CONTINUE
+      1847 call log_critical('0 on sort de la table de gff')
+    1855 continue
 
-    G3=0.0
-    DO K=1,4
-      G3=G3+TGAUNT(K)*au_AA(K)  ! G3: FACTEUR DE GAUNT FREE FREE
-    END DO
-    GO TO 4199
+    g3=0.0
+    do k=1,4
+      g3=g3+tgaunt(k)*au_aa(k)  ! G3: FACTEUR DE GAUNT FREE FREE
+    end do
+    go to 4199
 
-    1809 ZZK(absoru2_NMETA+4,1)=0.0
-    JHYT=0
+    1809 zzk(absoru2_nmeta+4,1)=0.0
+    jhyt=0
 
-    4199 CONTINUE
-    DO 4200 I=1,au_JFZ
-      IF (((I.EQ.1).AND.(JHYT.NE.0)).OR.(au_JH.EQ.1)) GO TO 4201
+    4199 continue
+    do 4200 i=1,au_jfz
+      if (((i.eq.1).and.(jhyt.ne.0)).or.(au_jh.eq.1)) go to 4201
       !
       ! WL N'EST PAS UNE DISCONTINUITE DE H
       !
-      IF (I.EQ.2) ZZK(absoru2_NMETA+4,2)=ZZK(absoru2_NMETA+4,1)
-      GO TO 1451
+      if (i.eq.2) zzk(absoru2_nmeta+4,2)=zzk(absoru2_nmeta+4,1)
+      go to 1451
 
-      4201 SIGH=0.0
-      JS=au_JSHYD(I)
-      DO J=JS,19
-        SIGH=SIGH+au_G2D(I,J)*au_ZEUH(J)  ! RAPPEL: au_G2D: FACTEUR DE GAUNT BOUND FREE
-      END DO
+      4201 sigh=0.0
+      js=au_jshyd(i)
+      do j=js,19
+        sigh=sigh+au_g2d(i,j)*au_zeuh(j)  ! RAPPEL: au_G2D: FACTEUR DE GAUNT BOUND FREE
+      end do
 
-      BH=SIGH+(au_ZEUH(20)-(1.0-G3)*au_ZEMH)/(2*au_UH1)
-      ZZK(absoru2_NMETA+4,I)=au_AH*BH*STIMU3
+      bh=sigh+(au_zeuh(20)-(1.0-g3)*au_zemh)/(2*au_uh1)
+      zzk(absoru2_nmeta+4,i)=au_ah*bh*stimu3
 
       !
       ! -- V -- HE+
       ! HE+  VARDYA APJ.SUP. VOL. 8,P.277,1964
-      1451 IF (TH.GT.0.3) GO TO 1552
-      SIGHEP=0.0
-      DO J=1,19
-        JJ=J
-        IF (ABS(WL-au_ZLHEP(J)).LE.0.50) GO TO 1465
-        IF (WL.LT.au_ZLHEP(J)) GO TO 1463
-      END DO
+      1451 if (th.gt.0.3) go to 1552
+      sighep=0.0
+      do j=1,19
+        jj=j
+        if (abs(wl-au_zlhep(j)).le.0.50) go to 1465
+        if (wl.lt.au_zlhep(j)) go to 1463
+      end do
 
-      1463 JJS=JJ
-      GO TO 1470
+      1463 jjs=jj
+      go to 1470
 
-      1465 JHEP=1
-      IF (I.EQ.1) GO TO 1463
+      1465 jhep=1
+      if (i.eq.1) go to 1463
 
-      JJS=JJ+1
+      jjs=jj+1
 
-      1470 IF ((I.EQ.1).OR.(JHEP.EQ.1)) GO TO 1471
+      1470 if ((i.eq.1).or.(jhep.eq.1)) go to 1471
 
       !
       ! WL N'EST PAS UNE DISCONTINUITE DE HE+
       !
 
-      ZZK(absoru2_NMETA+5,2)=ZZK(absoru2_NMETA+5,1)
-      GO TO 1554
+      zzk(absoru2_nmeta+5,2)=zzk(absoru2_nmeta+5,1)
+      go to 1554
 
-      1471 CONTINUE
-      DO JJ=JJS,19
-        SIGHEP=SIGHEP+au_ZEUHEP(JJ)
-      END DO
-      BHEP=SIGHEP+au_ZEUHEP(20)/(2*au_UHEP1)
-      ZZK(absoru2_NMETA+5,I)=au_AHEP*BHEP*STIMU3
-      GO TO 1554
+      1471 continue
+      do jj=jjs,19
+        sighep=sighep+au_zeuhep(jj)
+      end do
+      bhep=sighep+au_zeuhep(20)/(2*au_uhep1)
+      zzk(absoru2_nmeta+5,i)=au_ahep*bhep*stimu3
+      go to 1554
 
-      1552 ZZK(absoru2_NMETA+5,I)=0.0
+      1552 zzk(absoru2_nmeta+5,i)=0.0
 
       !
       ! -- VI -- HE
       ! HE  VARDYA: APJ. SUP. 80 VOL. 8 P. 277 JANVIER 1964
-      1554 IF (TH.LE.0.8) GO TO 5400
-      ZZK(absoru2_NMETA+6,I)=0.0
-      GO TO 4200
+      1554 if (th.le.0.8) go to 5400
+      zzk(absoru2_nmeta+6,i)=0.0
+      go to 4200
 
-      5400 IF ((I.EQ.2).AND.(au_JH.EQ.1)) GO TO 5872
+      5400 if ((i.eq.2).and.(au_jh.eq.1)) go to 5872
 
-      SIGHEM=0.0
-      SIGHE=0.0
-      IF ((WL-au_ZLHEM(5)).GT.0.50) GO TO 5740
+      sighem=0.0
+      sighe=0.0
+      if ((wl-au_zlhem(5)).gt.0.50) go to 5740
 
-      DO K=1,5
-        KK=K
-        IF (ABS(WL-au_ZLHEM(K)).LE.0.50) GO TO 5490
-        IF (WL.LT.au_ZLHEM(K)) GO TO 5470
-      END DO
+      do k=1,5
+        kk=k
+        if (abs(wl-au_zlhem(k)).le.0.50) go to 5490
+        if (wl.lt.au_zlhem(k)) go to 5470
+      end do
 
-      5470 KKS=KK
-      GO TO 5540
+      5470 kks=kk
+      go to 5540
 
-      5490 JHEM=1
-      IF (I.EQ.1) GO TO 5470
+      5490 jhem=1
+      if (i.eq.1) go to 5470
 
-      KKS=KK+1
-      IF (KKS.GT.5) GO TO 5740
+      kks=kk+1
+      if (kks.gt.5) go to 5740
 
-      5540 IF ((JHEM.EQ.1).OR.(I.EQ.1)) GO TO 5541
+      5540 if ((jhem.eq.1).or.(i.eq.1)) go to 5541
       !
       ! WL N'EST PAS = A UNE VALEUR DE au_ZLHEM
       ! RAPPEL  au_ZLHEM=504,2601,3122,3422,3680 A.
       !
-      GO TO 5741
+      go to 5741
 
-      5541 CONTINUE
-      DO 5730 K=KKS,5
-        GO TO (5560,5560,5560,5620,5680),K
+      5541 continue
+      do 5730 k=kks,5
+        go to (5560,5560,5560,5620,5680),k
 
-        5560 IF (K.EQ.2) ZNL1=ZNL
+        5560 if (k.eq.2) znl1=znl
 
-        IF (K.NE.2) ZNL1=1.0
-        ANU=EXP(((((C1(K)*ZNL+C2(K))*ZNL+C3(K))*ZNL+C4(K))*ZNL1+C5(K))*ZNL1+C6(K))*1.0E-18
-        GO TO 5730
+        if (k.ne.2) znl1=1.0
+        anu=exp(((((c1(k)*znl+c2(k))*znl+c3(k))*znl+c4(k))*znl1+c5(k))*znl1+c6(k))*1.0e-18
+        go to 5730
 
-        5620 N=1
+        5620 n=1
 
         !
         ! GOLDBERG APJ. VOL. 90 P. 414 1939 ET UNDERHILL PUB. COP. OBS. N0.
         !
 
-        5621 IF (ABS(WL-au_ZLHEM(3+N)).GT.0.50) GO TO 5640
+        5621 if (abs(wl-au_zlhem(3+n)).gt.0.50) go to 5640
         ! NIVEAUX 4 A 7 DE HE1
 
-        ANU=AN(N)/WL+EXPON(N)
-        GO TO 5730
+        anu=an(n)/wl+expon(n)
+        go to 5730
 
-        5640 au_ZK=1.097224E-3*au_ZLHEM(3+N)*WL/(au_ZLHEM(3+N)-WL)
-        RK=SQRT(au_ZK)
-        UK=1.0+CUK(N)*au_ZK
-        ANU=(COTE(N)/(WL*(1.0-EXP(-6.283185*RK)))*(au_ZK/UK   )**6*((1.0+au_ZK)/ &
-         UK)*((4.0+au_ZK)/UK)*EXP(-4.0*RK*ATAN(1.0/(SNIV(N)*RK))))+EXPON(N)
-        GO TO 5730
+        5640 au_zk=1.097224e-3*au_zlhem(3+n)*wl/(au_zlhem(3+n)-wl)
+        rk=sqrt(au_zk)
+        uk=1.0+cuk(n)*au_zk
+        anu=(cote(n)/(wl*(1.0-exp(-6.283185*rk)))*(au_zk/uk   )**6*((1.0+au_zk)/ &
+         uk)*((4.0+au_zk)/uk)*exp(-4.0*rk*atan(1.0/(sniv(n)*rk))))+expon(n)
+        go to 5730
 
-        5680 N=2
-        GO TO 5621
+        5680 n=2
+        go to 5621
 
-        SIGHEM=SIGHEM+ANU*au_ZEXPM(K)
-      5730 CONTINUE
+        sighem=sighem+anu*au_zexpm(k)
+      5730 continue
 
-      BHEM=SIGHEM*au_STIMU
-      GO TO 5741
+      bhem=sighem*au_stimu
+      go to 5741
 
-      5740 BHEM=0.0
+      5740 bhem=0.0
       ! NIVEAUX 8 ET SQ (N.GE.3)
-      5741 CONTINUE
-      DO L=3,9
-        LL=L
-        IF (ABS(WL-au_ZLHE(L)).LE.0.50) GO TO 5810
-        IF  (WL.LT.au_ZLHE(L)) GO TO 5790
-      END DO
+      5741 continue
+      do l=3,9
+        ll=l
+        if (abs(wl-au_zlhe(l)).le.0.50) go to 5810
+        if  (wl.lt.au_zlhe(l)) go to 5790
+      end do
 
-      5790 LLS=LL
-      GO TO 5860
+      5790 lls=ll
+      go to 5860
 
-      5810 JHE=1
-      IF (I.EQ.1) GO TO 5790
+      5810 jhe=1
+      if (i.eq.1) go to 5790
 
-      5840 LLS=LL+1
+      5840 lls=ll+1
 
-      5860 IF ((I.EQ.1).OR.(JHE.EQ.1)) GO TO 5861
+      5860 if ((i.eq.1).or.(jhe.eq.1)) go to 5861
       !
       ! WL N'EST PAS = A UNE VALEUR DE au_ZLHE
       !
-      GO TO 5871
+      go to 5871
 
-      5861 CONTINUE
-      DO L=LLS,9
-        SIGHE=SIGHE+au_ZEXP(L)*au_ZEFF4(L)
-      END DO
-      BHE=SIGHE+(1807.240*au_ZEXP(10)-0.8072399*au_ZEUHE1)/(2*au_UHE1)
+      5861 continue
+      do l=lls,9
+        sighe=sighe+au_zexp(l)*au_zeff4(l)
+      end do
+      bhe=sighe+(1807.240*au_zexp(10)-0.8072399*au_zeuhe1)/(2*au_uhe1)
 
-      5871 ZZK(absoru2_NMETA+6,I)=au_AHE*BHE*STIMU3+BHEM
-      GO TO 4200
+      5871 zzk(absoru2_nmeta+6,i)=au_ahe*bhe*stimu3+bhem
+      go to 4200
 
       !
       ! WL N'EST PAS UNE DISCONTINUITE DE HE
       !
-      5872 ZZK(absoru2_NMETA+6,2)=ZZK(absoru2_NMETA+6,1)
-    4200 CONTINUE
-  END
+      5872 zzk(absoru2_nmeta+6,2)=zzk(absoru2_nmeta+6,1)
+    4200 continue
+  end
 
 
 
@@ -934,82 +942,82 @@ CONTAINS
   !>
   !> A.M COLLE  18/01/1971
 
-  SUBROUTINE IONIPE(TH,ZLPE,CALTH,CALMET)
-    INTEGER*4 CALTH,CALMET
-    REAL KTH
-    DIMENSION PHI(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
-     PA(10)
+  subroutine ionipe(th,zlpe,calth,calmet)
+    integer*4 calth,calmet
+    real kth
+    dimension phi(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
+     pa(10)
 
-    KTH = 6.956948E-13/TH  ! 6.956948E-13 = 1.38024E-16*5040.39
-    au_PE=EXP(ZLPE*2.302585)
-    SIGM3=0.0
+    kth = 6.956948e-13/th  ! 6.956948E-13 = 1.38024E-16*5040.39
+    au_pe=exp(zlpe*2.302585)
+    sigm3=0.0
 
-    DO J=1,absoru2_NM
-      NRR=absoru2_NR(J)
-      SIGM1=0.0
-      SIGM2=0.0
-      PA(1)=1.0
-      DO I = 1,NRR
-        IF ((PA(I).LE.0.0).OR.(au_ZKM(J,I).LE.0.0)) GO TO 2375
-        PA(I+1)=PA(I)*(au_ZKM(J,I)/au_PE)
-        SIGM1=I*PA(I+1)+SIGM1
-        SIGM2=SIGM2+PA(I+1)
-      END DO
+    do j=1,absoru2_nm
+      nrr=absoru2_nr(j)
+      sigm1=0.0
+      sigm2=0.0
+      pa(1)=1.0
+      do i = 1,nrr
+        if ((pa(i).le.0.0).or.(au_zkm(j,i).le.0.0)) go to 2375
+        pa(i+1)=pa(i)*(au_zkm(j,i)/au_pe)
+        sigm1=i*pa(i+1)+sigm1
+        sigm2=sigm2+pa(i+1)
+      end do
 
-      2375 CONTINUE
-      DEN=1.0+SIGM2
-      PHI(J)=SIGM1/DEN
-      DO I=1,NRR
-        au_AC2(J,I)=PA(I)/DEN
-      END DO
-      SIGM3=SIGM3+au_ZNU(J)*PHI(J)
-    END DO
+      2375 continue
+      den=1.0+sigm2
+      phi(j)=sigm1/den
+      do i=1,nrr
+        au_ac2(j,i)=pa(i)/den
+      end do
+      sigm3=sigm3+au_znu(j)*phi(j)
+    end do
 
-    IF (CALTH.EQ.2) GO TO 2390
-    IF (TH.GE.0.25) GO TO 2382
+    if (calth.eq.2) go to 2390
+    if (th.ge.0.25) go to 2382
 
-    TEMPOR=0.0
-    ANY=0.0
-    COND=0.0
-    GO TO 2390
+    tempor=0.0
+    any=0.0
+    cond=0.0
+    go to 2390
 
-    2382 CONTINUE
-    ANY=1.0/au_ZK(absoru2_NMETA+3)
-    TEMPOR=1.0/au_ZK(absoru2_NMETA+2)
-    COND=1.0/au_ZK(absoru2_NMETA+1)
+    2382 continue
+    any=1.0/au_zk(absoru2_nmeta+3)
+    tempor=1.0/au_zk(absoru2_nmeta+2)
+    cond=1.0/au_zk(absoru2_nmeta+1)
 
-    2390 CONTINUE
-    W2=au_ZK(absoru2_NMETA+4)/au_PE
-    W1=W2*ANY
-    W3=au_PE*COND
-    W4=au_ZNU2*au_ZK(absoru2_NMETA+6)*(au_PE+2*au_ZK(absoru2_NMETA+5))/ &
-       ((au_PE+au_ZK(absoru2_NMETA+6))*au_PE+au_ZK(absoru2_NMETA+6)*au_ZK(absoru2_NMETA+5))+ &
-       (au_ZNU3*SIGM3)
-    FUN1=au_ZNU1*W1+2*(TEMPOR+W1)*W4
-    FUN2=au_ZNU1*(W2-W3)+(1.0+W2+W3)*W4
-    PH=2*au_ZNU1*au_PE/(FUN2+SQRT(FUN2**2+4*FUN1*au_ZNU1*au_PE))
-    absoru_ZNH(absoru2_NMETA+4)=PH/KTH
-    absoru_ZNH(absoru2_NMETA+2)=PH*TEMPOR*absoru_ZNH(absoru2_NMETA+4)
-    absoru_ZNH(absoru2_NMETA+1)=absoru_ZNH(absoru2_NMETA+4)*W3
-    absoru_ZNH(absoru2_NMETA+7)=absoru_ZNH(absoru2_NMETA+4)*W2
-    absoru_ZNH(absoru2_NMETA+3)=absoru_ZNH(absoru2_NMETA+7)*PH*ANY
-    TP1=absoru_ZNH(absoru2_NMETA+1)+absoru_ZNH(absoru2_NMETA+4)+absoru_ZNH(absoru2_NMETA+7)
-    TP2=absoru_ZNH(absoru2_NMETA+2)+absoru_ZNH(absoru2_NMETA+3)
-    au_TOC=2*TP2+TP1
-    PARTH=au_TOC/au_ZNU1 ! NBRE TOTAL DE NOYAUX PAR CM3
-    PPAR=(TP1+TP2+PARTH*(au_ZNU2+au_ZNU3))*KTH
-    au_PG=PPAR+au_PE
-    au_AC=au_PE/PPAR
-    W5=au_ZK(absoru2_NMETA+6)/au_PE
-    W6=au_ZK(absoru2_NMETA+5)*W5/au_PE
-    S=1.0+W5+W6
-    au_AC1(1)=W2/(1.0+W2)
-    au_AC1(2)=W6/S
-    au_AC1(3)=W5/S
-    absoru_ZNH(absoru2_NMETA+6)=au_ZNU2*PARTH/(1.0+W5+W6)
-    absoru_ZNH(absoru2_NMETA+5)=absoru_ZNH(absoru2_NMETA+6)*W5
-    au_RHO=1.6602E-24*PARTH*au_ZMUZE  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
-    au_ZMU=au_RHO*41904.28E+7/(TH*au_PG)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
-                                          ! 8.313697E+7: CONSTANTE DES GAZ
-  END SUBROUTINE IONIPE
-END MODULE MOD_ABSORU
+    2390 continue
+    w2=au_zk(absoru2_nmeta+4)/au_pe
+    w1=w2*any
+    w3=au_pe*cond
+    w4=au_znu2*au_zk(absoru2_nmeta+6)*(au_pe+2*au_zk(absoru2_nmeta+5))/ &
+       ((au_pe+au_zk(absoru2_nmeta+6))*au_pe+au_zk(absoru2_nmeta+6)*au_zk(absoru2_nmeta+5))+ &
+       (au_znu3*sigm3)
+    fun1=au_znu1*w1+2*(tempor+w1)*w4
+    fun2=au_znu1*(w2-w3)+(1.0+w2+w3)*w4
+    ph=2*au_znu1*au_pe/(fun2+sqrt(fun2**2+4*fun1*au_znu1*au_pe))
+    absoru_znh(absoru2_nmeta+4)=ph/kth
+    absoru_znh(absoru2_nmeta+2)=ph*tempor*absoru_znh(absoru2_nmeta+4)
+    absoru_znh(absoru2_nmeta+1)=absoru_znh(absoru2_nmeta+4)*w3
+    absoru_znh(absoru2_nmeta+7)=absoru_znh(absoru2_nmeta+4)*w2
+    absoru_znh(absoru2_nmeta+3)=absoru_znh(absoru2_nmeta+7)*ph*any
+    tp1=absoru_znh(absoru2_nmeta+1)+absoru_znh(absoru2_nmeta+4)+absoru_znh(absoru2_nmeta+7)
+    tp2=absoru_znh(absoru2_nmeta+2)+absoru_znh(absoru2_nmeta+3)
+    au_toc=2*tp2+tp1
+    parth=au_toc/au_znu1 ! NBRE TOTAL DE NOYAUX PAR CM3
+    ppar=(tp1+tp2+parth*(au_znu2+au_znu3))*kth
+    au_pg=ppar+au_pe
+    au_ac=au_pe/ppar
+    w5=au_zk(absoru2_nmeta+6)/au_pe
+    w6=au_zk(absoru2_nmeta+5)*w5/au_pe
+    s=1.0+w5+w6
+    au_ac1(1)=w2/(1.0+w2)
+    au_ac1(2)=w6/s
+    au_ac1(3)=w5/s
+    absoru_znh(absoru2_nmeta+6)=au_znu2*parth/(1.0+w5+w6)
+    absoru_znh(absoru2_nmeta+5)=absoru_znh(absoru2_nmeta+6)*w5
+    au_rho=1.6602e-24*parth*au_zmuze  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
+    au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
+                                          ! 8.313697e+7: constante des gaz
+  end subroutine ionipe
+end module mod_absoru

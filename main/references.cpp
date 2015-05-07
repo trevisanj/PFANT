@@ -9,5 +9,5 @@
 
 @anchor Uwm0 [Uwm0] http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html
 
-@anchor Gaunth1930 J.A.Gaunth 1930. http://dx.doi.org/10.1098%2Frsta.1930.0005
+@anchor Gaunth1930 [Gaunth1930] J.A.Gaunth 1930. http://en.wikipedia.org/wiki/Gaunt_factor http://dx.doi.org/10.1098%2Frsta.1930.0005
 */

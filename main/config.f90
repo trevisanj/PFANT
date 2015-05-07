@@ -91,7 +91,7 @@ CONTAINS
     USE argparser
       IMPLICIT NONE
 
-    ! TODO parse command-line here
+    !> @todo parse command-line here
 
     CALL parseargs()
 
@@ -188,7 +188,7 @@ CONTAINS
     use CONFIG
     use logging
     implicit none
-    integer k  ! TODO for debugging, take it out
+    integer k  !> @todo for debugging, take it out
     integer o_len, o_stat, o_remain, o_offset, o_index, iTemp
     character*500 o_arg
     character*128 lll

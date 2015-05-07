@@ -24,12 +24,15 @@
 !> TODO: The distinction above may be temporary, it is easier to merge prefixes than to split them
 !
 
-MODULE FILETOH
-  USE READ_FILES
+module filetoh
+  use read_files
 
-  !> Globals filled at file reading
-  !> MAX_filetoh_JJMAX = MAX_f_filetoh_JMAX*2-1
-  INTEGER, PARAMETER :: filetoh_NP=7000, MAX_filetoh_JJMAX=99, MAX_filetoh_JMAX=50
+  !> @todo issue there is another NP hanging around
+  !> @todo issue what
+  integer, parameter :: filetoh_np=7000
+  integer, parameter :: max_filetoh_jmax=50
+  !> @code max_filetoh_jjmax = max_f_filetoh_jmax*2-1 @endcode
+  integer, parameter :: max_filetoh_jjmax=max_filetoh_jmax*2-1
 
   !> Read directly from file
   !> Note: PFANT doesn't use these variables, they are useful only for the unit testing  
