@@ -18,7 +18,7 @@
 !> - Configuration globals with their default values
 !> - Routines to parse command-line arguments
 !> - All globals have prefix "config_"
-
+  
 module config
   use logging
 
