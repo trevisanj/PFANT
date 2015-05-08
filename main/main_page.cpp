@@ -10,6 +10,24 @@ Introduction
 PFANT is spectral synthesis software written in Fortran.
 This page will get you started in the structure of the code.
 
+Clone repository
+----------------
+
+@code
+$ mkdir github
+$ cd github/
+ $ git clone https://github.com/trevisanj/pfant
+Cloning into 'pfant'...
+remote: Counting objects: 841, done.
+remote: Compressing objects: 100% (193/193), done.
+remote: Total 841 (delta 119), reused 0 (delta 0), pack-reused 644
+Receiving objects: 100% (841/841), 11.14 MiB | 3.94 MiB/s, done.
+Resolving deltas: 100% (550/550), done.
+Checking connectivity... done.
+$ 
+@endcode
+
+
 
 Structure of PFANT code
 =======================
