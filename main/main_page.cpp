@@ -28,6 +28,33 @@ $
 @endcode
 
 
+Setting up SSH
+--------------
+
+ls -al ~/.ssh
+
+sh-keygen -t rsa -C "juliotrevisan@gmail.com"
+
+
+ssh-add ~/.ssh/id_rsa
+
+
+ $ pluma  ~/.ssh/id_rsa.pub
+
+ssh -T git@github.com
+
+https://help.github.com/articles/changing-a-remote-s-url/
+https://help.github.com/articles/generating-ssh-keys/
+
+
+j@heliseed ~/Documents/projects/pypfant/pfant/github/pfant $ git remote -v
+
+
+j@heliseed ~/Documents/projects/pypfant/pfant/github/pfant $ git remote set-url origin git@github.com:trevisanj/pfant.git
+
+
+j@heliseed ~/Documents/projects/pypfant/pfant/github/pfant $ git push
+
 
 Structure of PFANT code
 =======================
@@ -48,6 +75,7 @@ for the numerical calculations.
 @defgroup gr_math Maths
 
 @defgroup gr_io Input/Output
+
 @brief I/O and logging routines.
 This group contains
 @li routines to read input files
