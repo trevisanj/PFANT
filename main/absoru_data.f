@@ -129,4 +129,5 @@ C> DONNEES POUR QUASI MOLECULE H+H (DOYLE,APJ,153,187.1968)
       real*8, dimension(12,18) :: au_g3d  !> au_g3d(i,j) = facteur de gaunt en fonction de au_rho et de log(-eta)
       equivalence (au_g3d(1,1),g3d1(1,1)),(au_g3d(1,10),g3d2(1,1))
 
-      end module absoru_data
+      contains
+      end module absoru_mod_data

@@ -43,21 +43,21 @@
 !> @todo CHECK ALL SIZES
 
 module absoru_mod
-  use absoru_data
+  use absoru_mod_data
 
   !=====
   ! Outputs
   !=====
   !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
   !> @todo ISSUE Why 12?
-  real*8, dimension(12) :: absoru_znh  
+  real*8, dimension(12) :: absoru_znh
 
 
   ! Down here all private
   ! vvvvvvvvvvvvvvvvvvvvv
 
   ! Subroutines
-  private gaunth, tempa, sahath, athyhe, ionipe
+  private gaunth, tempa, sahath, athyhe, ionipOe
 
   private
 
@@ -70,7 +70,7 @@ module absoru_mod
    au_ul, au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, au_pe
 
 
-   
+
   real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
   real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
@@ -106,7 +106,7 @@ contains
   !>
   !> Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
- 
+
   subroutine absoru(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
     integer*4 calu,calmet,callam,calth,calpe,pmax,calsor
     dimension zzkk(11,2),totkap(2),dif(2,3),scath(2),zzk(11,2),scat(2)
@@ -267,7 +267,7 @@ contains
   !> Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
   !> (i.e., a statistical weight)
   !>
-  !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930 
+  !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930
   !>
   !> A.M COLLE   19/8/69
 
@@ -406,7 +406,7 @@ contains
   !> @endverbatim
   !>
   !> @author A.M COLLE   8/5/69
-  
+
   subroutine tempa(wl,th,calth,callam)
     integer*4 callam,calth
 

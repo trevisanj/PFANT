@@ -13,254 +13,272 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_io
+!> Most of file reading routines.
+!>
+!> This module contains most of the file reading routines
+!> @sa filetoh, molecula
+!> @todo create REAL*4 temp locals, then transfer to REAL*8 ones
+!>
+!> Note that all reading routines expect a @c filename parameter.
+!> @todo create a "File reading" page to explain the situation of main.dat, dissoc.dat etc referring to a concept rather than a file of that name.
+
 module read_files
   implicit none
-      ! Variables filled by READ_DISSOC() (file dissoc.dat)
 
-      !> @todo ISSUE: I find very confusing NELEMX (metal atoms) versus NELEM (molecules)
+      !=====
+      ! Parameters
+      !=====
 
-      !> Number of elements actually used is specified by variable dissoc_NMETAL <= MAX_dissoc_NMETAL
-      integer, parameter :: max_dissoc_nmetal=50  ! Limit number of metal rows in dissoc.dat
-
-
-      integer, parameter :: max_z = 100  ! Maximum atomic number that can be found in dissoc.dat
-
-      !> Maximum possible value of modeles_NTOT
+      !> Maximum number of metal rows in dissoc.dat
+      !> (number of elements actually used is specified by variable
+      !> dissoc_nmetal <= max_dissoc_nmetal)
+      integer, parameter :: max_dissoc_nmetal=50
+      !> Maximum number of molecule rows in dissoc.dat
+      !> @todo ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
+      integer, parameter:: max_dissoc_nmol=600
+      !> Maximum atomic number that can be found in dissoc.dat
+      integer, parameter :: max_z = 100
+      !> Maximum possible value of modeles_ntot
       integer, parameter :: max_modeles_ntot=50
-
-
-
-      ! dissoc.dat, metals part
-      integer dissoc_nmetal, dissoc_nimax, dissoc_nelemx
-      character*2 dissoc_elems
-      integer dissoc__ig0, dissoc__ig1
-      real dissoc__ip, dissoc__cclog
-      dimension dissoc_elems(max_dissoc_nmetal),  & ! Only this ...
-                dissoc_nelemx(max_dissoc_nmetal), & ! ... and this are used directly.
-      ! JT2015 I introduced these variables, double underscore to emphasize that they
-      !        are not just old variables that had a prefix added.
-                dissoc__ip(max_dissoc_nmetal),    & ! These other 4 variables are used
-                dissoc__ig0(max_dissoc_nmetal),   & ! for filling local variables
-                dissoc__ig1(max_dissoc_nmetal),   & ! within SAT4()
-                dissoc__cclog(max_dissoc_nmetal)    !
-
-      ! dissoc.dat, molecules part
-      integer, parameter:: max_dissoc_nmol=600  ! Limit number of molecule rows ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
-      character dissoc_mol*3
-      integer dissoc_nmol, dissoc_mmax, dissoc_nelem, dissoc_natom
-      real dissoc_c, dissoc_eps, dissoc_switer
-      dimension dissoc_mol(max_dissoc_nmol), &
-                dissoc_c(max_dissoc_nmol, 5), &
-                dissoc_mmax(max_dissoc_nmol), &
-                dissoc_nelem(5, max_dissoc_nmol), &
-                dissoc_natom(5, max_dissoc_nmol)
-
-
-
-
-
-! Variables filled by READ_MAIN() (file main.dat)
-      character main_titrav*10, main_fileflux*64
-      logical   main_ecrit, main_ptdisk
-      real*8    main_pas, main_echx, main_echy, main_fwhm, &
-                main_mu, main_afstar, main_llzero, &
-                main_llfin, main_aint, &
-                main_teff, main_glog, main_asalog, main_nhe
-      integer   main_ivtot, & ! affects TURBUL() ISSUE what
-                              ! = 1 -- "VT" constant
-                              ! > 1 -- "VT" variable
-                main_inum
-      character main_filetohy*64
-
-      dimension main_filetohy(10)
-      dimension main_titrav(20)
-      real*8, dimension(max_modeles_ntot) :: main_vvt, main_tolv
-      real*8, dimension(max_dissoc_nmetal) :: main_xxcor   ! This vector goes along with dissoc_ELEMS and dissoc_NELEMX
-
-
-! Variables filled by READ_ABONDS() (file abonds.dat)
-      integer, parameter :: max_abonds_nabond=100  ! Limit number of abundances in abonds.dat
-      integer abonds_nabond
-      character*2 abonds_ele
-      real*8 abonds_abol, abonds_abo
-      dimension abonds_ele(max_abonds_nabond), &
-                abonds_abol(max_abonds_nabond), &
-                abonds_abo(max_abonds_nabond)   ! This is calculated
-
-
-! Variables filled by READ_ATOMGRADE() (file atomgrade.dat)
-
-
+      !> Maximum number of abundances in abonds.dat
+      integer, parameter :: max_abonds_nabond=100
       integer, parameter :: &
-       max_atomgrade__nblend=13000, & ! Half of the maximum the number of rows in atomgrade.dat
-       max_atomgrade_nblend=8000      ! Maximum number of spectral lines possible within the interval LZERO, LFIN
-
-      integer*4 atomgrade_nblend, atomgrade__nblend
-      character*2 atomgrade_elem, atomgrade__elem
-      integer*4 atomgrade_ioni, atomgrade__ioni
-
-      ! Only these variables had their sizes specified originally
-
-
-!> @todo ISSUE: Can I just declare everything as DOUBLE PRECISION (by default!!)?? (MT) Yes and modeles.mod could become an ASCII file!!!
-
-      real atomgrade_kiex, atomgrade__kiex
-      real*8 atomgrade_gr, atomgrade_lambda, atomgrade__lambda
-
-
-!> @todo ISSUE: nobody cares about ABONDR_DUMMY. Why? I might have the answer, this is taken from elsewere, file abonds.dat, maybe
-
-
-      ! Filtered variables
-      real*8, dimension(max_atomgrade__nblend) :: &
-       atomgrade_ge, atomgrade_zinf, atomgrade_abondr_dummy, atomgrade_algf, &
-       atomgrade_gf, atomgrade_ch
-      real*8 atomgrade_abonds_abo
-      dimension atomgrade_elem(max_atomgrade_nblend), &
-                atomgrade_ioni(max_atomgrade_nblend), &
-                atomgrade_lambda(max_atomgrade_nblend), &
-                atomgrade_kiex(max_atomgrade_nblend), &
-                atomgrade_gr(max_atomgrade_nblend), &
-                atomgrade_abonds_abo(max_atomgrade_nblend)
-
-
-      ! File originals
-      real*8, dimension(max_atomgrade__nblend) :: atomgrade__abondr_dummy, &
-       atomgrade__algf, atomgrade__ch, atomgrade__ge, atomgrade__zinf, &
-       atomgrade__gr
-      real*8 atomgrade__abonds_abo
-      dimension atomgrade__elem(max_atomgrade__nblend), &
-                atomgrade__ioni(max_atomgrade__nblend), &
-                atomgrade__lambda(max_atomgrade__nblend), &
-                atomgrade__kiex(max_atomgrade__nblend), &
-                atomgrade__abonds_abo(max_atomgrade__nblend)  ! will be filled by searching atomgrade__ELEM within abonds_ELE
-
-
-
-! Variables filled by READ_PARTIT() (file partit.dat)
-! ---------------------------------------------------
-      ! Limit number of "items" in partit.dat:
-      ! - Maximum value for partit_npar
-      ! - Second dimension of partit_tabu
+       max_atomgrade__nblend=13000, & !< Half of the maximum the number of rows in atomgrade.dat
+       max_atomgrade_nblend=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
+      !> Maximum number of "items" in partit.dat:
+      !> @li Maximum value for partit_npar
+      !> @li Second dimension of partit_tabu
       integer, parameter :: max_partit_npar=85
-      ! Third dimension of partit_TABU
+      !> Third dimension of partit_TABU
       integer, parameter :: max_partit_kmax=63
-
-      character*2  partit_el
-      integer partit_npar
-
-      real*8, dimension (max_partit_npar) :: partit_ki1, partit_pa, &
-       partit_m, partit_tini, partit_ki2
-      integer, dimension (max_partit_npar) :: partit_jkmax
-      real partit_tabu
-      dimension partit_el(max_partit_npar), &
-                partit_tabu(max_partit_npar, 3, max_partit_kmax)
-
-
-
-
-
-
-        ! NION   =
-        ! XI(J,I)=POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATIO
-        ! PF(J,I)=FONCTION DE PARTITION         ''   ''     ''      ''   ''
-
-
-! Variables filled by READ_ABSORU2() (file absoru2.dat)
-! ---------------------------------------------------
-      ! Maximum value for absoru_NM
+      !> Maximum value for absoru_NM
       integer, parameter :: max_absoru2_nm=30
-      ! Maximum value for absoru2_NR(J)
+      !> Maximum value for absoru2_NR(J)
       integer, parameter :: max_absoru2_nrr=9
-      ! Maximum value for each element of absoru2_NUMSET
+      !> Maximum value for each element of absoru2_NUMSET
       integer, parameter :: max_absoru2_numset_i=41
 
-      integer absoru2_nm, absoru2_nmeta, absoru2_numset, absoru2_nr
 
-      !> NOM DE L'ELEMENT
-      character*2 :: absoru2_nomet(max_absoru2_nm)
+      !=====
+      ! Variables filled by read_dissoc() (file dissoc.dat)
+      !=====
 
-      real*8 absoru2_abmet, absoru2_abhel
-      real absoru2_pf, absoru2_wi, absoru2_xi, absoru2_zm, absoru2_zp
+      ! dissoc.dat, metals part
+      integer dissoc_nmetal !< number of elements considered in chemical equilibrium
+      integer dissoc_nimax  !< maximum number of iterations in Newton-Rapson method
+      character*2 dissoc_elems(max_dissoc_nmetal)    !< Elements table field 1/6: element symbol
+      integer     dissoc_nelemx(max_dissoc_nmetal)   !< Elements table field 2/6: atomic number
+      real*8      dissoc__ip(max_dissoc_nmetal)      !< Elements table field 3/6: ?
+      integer     dissoc__ig0(max_dissoc_nmetal),  & !< Elements table field 4/6: ?
+                  dissoc__ig1(max_dissoc_nmetal)     !< Elements table field 5/6: ?
+      real*8      dissoc__cclog(max_dissoc_nmetal)   !< Elements table field 6/6: ?
 
+      ! dissoc.dat, molecules part
+      character*3 dissoc_mol(max_dissoc_nmol)     !< Molecules table field 01: molecule name
+      real*8 dissoc_c(max_dissoc_nmol, 5)         !< Molecules table fields 02-06
+      integer dissoc_mmax(max_dissoc_nmol), &     !< Molecules table field 07
+              dissoc_nelem(5, max_dissoc_nmol), & !< Molecules table fields 08, 10, ...
+              dissoc_natom(5, max_dissoc_nmol)    !< Molecules table fields 09, 11, ...
+      integer dissoc_nmol
+      real*8 dissoc_eps,   & !< if abs((x(i+1)-x(i))/x(i)) .le. eps: converged
+             dissoc_switer   !< flag affecting x(i+1)
+                             !< @li if switer .gt. 0 then x(i+1)=0.5*(x(i+1)+x(i))
+                             !< @li if switer .le. 0 then x(i+1)=x(i+1)
+
+
+      !=====
+      ! Variables filled by read_main() (file main.dat)
+      !=====
+      character*64 main_fileflux  !< ?doc?
+      logical   main_ecrit_obsolete, & !< obsolete (old verbose flag)
+                main_ptdisk    !< ?doc?
+      real*8    main_pas,    & !< ?doc?
+                main_echx,   & !< ?doc?
+                main_echy,   & !< ?doc?
+                main_fwhm,   & !< ?doc?
+                main_mu,     & !< ?doc?
+                main_afstar, & !< ?doc?
+                main_llzero, & !< ?doc?
+                main_llfin,  & !< ?doc?
+                main_aint,   & !< ?doc?
+                main_teff,   & !< ?doc?
+                main_glog,   & !< ?doc?
+                main_asalog, & !< ?doc?
+                main_nhe       !< ?doc?
+      integer   main_ivtot, & !< affects turbul() issue what
+                              !< = 1 -- "vt" constant
+                              !< > 1 -- "vt" variable
+                main_inum !< ?doc?
+      character*64 main_filetohy(10) !< ?doc? Names of ten outputs files that will contain ???
+
+      character*10 main_titrav(20) !< ?doc?
+      real*8 :: main_vvt(max_modeles_ntot), & !< ?doc?
+                main_tolv(max_modeles_ntot)   !< ?doc?
+      !> This vector goes along with dissoc_ELEMS and dissoc_NELEMX
+      !> @todo would go better as a column in dissoc.dat or eliminated
+      real*8 :: main_xxcor(max_dissoc_nmetal) !< ?doc?
+
+
+      !=====
+      ! Variables filled by read_abonds() (file abonds.dat)
+      !=====
+      integer abonds_nabond !< ?doc?
+      character*2 abonds_ele(max_abonds_nabond)     !< ?doc?
+      real*8      abonds_abol(max_abonds_nabond), & !< ?doc?
+                  abonds_abo(max_abonds_nabond)     !< ?doc? This is calculated
+
+
+      !=====
+      ! Variables filled by read_atomgrade() (file atomgrade.dat)
+      !=====
+      ! atomgrade.dat, file originals
+      integer atomgrade__nblend !< ?doc?
+      character*2 atomgrade__elem(max_atomgrade__nblend) !< ?doc?
+      integer, dimension(max_atomgrade__nblend) :: &
+       atomgrade__ioni !< ?doc?
+      real*8, dimension(max_atomgrade__nblend) :: &
+       atomgrade__lambda,       & !< ?doc?
+       atomgrade__kiex,         & !< ?doc?
+       atomgrade__algf,         & !< ?doc?
+       atomgrade__ch,           & !< ?doc?
+       atomgrade__gr,           & !< ?doc?
+       atomgrade__ge,           & !< ?doc?
+       atomgrade__zinf,         & !< ?doc?
+       atomgrade__abondr_dummy, & !< ?doc?
+       atomgrade__abonds_abo  !< will be filled by "inner join" by searching
+                              !< atomgrade__elem through abonds_ele
+
+      ! atomgrade.dat, filtered variables
+      ! Very similar to above; differences are
+      ! - single underscore
+      ! - additional variable "gf", which equals 10**algf
+      integer atomgrade_nblend !< ?doc?
+      character*2 atomgrade_elem(max_atomgrade_nblend) !< ?doc?
+      integer, dimension(max_atomgrade_nblend) :: &
+       atomgrade_ioni !< ?doc?
+      real*8, dimension(max_atomgrade__nblend) :: &
+       atomgrade_lambda,       & !< ?doc?
+       atomgrade_kiex,         & !< ?doc?
+       atomgrade_algf,         & !< ?doc?
+       atomgrade_ch,           & !< ?doc?
+       atomgrade_gr,           & !< ?doc?
+       atomgrade_ge,           & !< ?doc?
+       atomgrade_zinf,         & !< ?doc?
+       atomgrade_abondr_dummy, & !< ?doc?
+       atomgrade_gf,           & !< ?doc?
+       atomgrade_abonds_abo      !< ?doc?
+
+
+      !=====
+      ! Variables filled by read_partit() (file partit.dat)
+      !=====
+      character*2, dimension(max_partit_npar) :: &
+       partit_el !< ?doc?
+      integer partit_npar !< ?doc?
+
+      real*8, dimension (max_partit_npar) :: &
+       partit_ki1,  & !< ?doc?
+       partit_pa,   & !< ?doc?
+       partit_m,    & !< ?doc?
+       partit_tini, & !< ?doc?
+       partit_ki2
+      integer, dimension (max_partit_npar) :: &
+       partit_jkmax !< ?doc?
+
+      real*8, dimension (max_partit_npar, 3, max_partit_kmax) :: &
+       partit_tabu !< ?doc?
+
+
+      !=====
+      ! Variables filled by read_absoru2() (file absoru2.dat)
+      !=====
+      integer absoru2_nm,    & !< NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
+              absoru2_nmeta, & !< NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
+              absoru2_numset(2) !< NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
+                                !< POUR H,HE ET HE+
+
+      character*2 :: absoru2_nomet(max_absoru2_nm) !< NOM DE L'ELEMENT
+      real*8 absoru2_abmet, & !< ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
+             absoru2_abhel    !< ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
       !> @todo ISSUE: i am not sure about these character*4, made this from the format below
-      character*4 absoru2_titre, absoru2_iunite
+      character*4 absoru2_titre(17) !< ?doc?
 
-      dimension  absoru2_iunite(2), absoru2_titre(17), &
-                 absoru2_nr(max_absoru2_nm), &
-                 absoru2_zp(max_absoru2_nm), &
-                 absoru2_zm(max_absoru2_nm)
-                 
+      !> Two possibilities
+      !> @li IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
+      !> @li IUNITE=' NOYAU H' SI ON VEUT CALCULER KAPPA PAR NOYAU D'HYDROGENE
+      character*4 absoru2_iunite(2)
 
-      !> XI(J,I) = POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATION
-      real*8 :: absoru2_xi(max_absoru2_nm, max_absoru2_nrr)
-      ! PF(J,I) = FONCTION DE PARTITION DE L'ELEMENT J AU STADE D'IONISATION
-      real*8 :: absoru2_pf(max_absoru2_nm, max_absoru2_nrr)
-
-
-      dimension absoru2_wi(max_absoru2_numset_i, 2), absoru2_numset(2)
-
-
-
+      integer, dimension(max_absoru2_nm) :: &
+       absoru2_nr !< NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
+      real*8, dimension(max_absoru2_nm) :: &
+       absoru2_zp, & !< ZP=NBR. D'ABONDANCE DE L'ELEMENT
+       absoru2_zm    !< ZM=POIDS MOLECULAIRE DE L'ELEMENT
+      real*8, dimension(max_absoru2_nm, max_absoru2_nrr) :: &
+        absoru2_xi,&!< XI(J,I) = POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATION
+        absoru2_pf  !< PF(J,I) = FONCTION DE PARTITION DE L'ELEMENT J AU STADE D'IONISATION
+      real*8 absoru2_wi(max_absoru2_numset_i, 2) !< ?doc?
 
 
-!> Variables filled by READ_MODELE() (file modeles.mod)
-!> ----------------------------------------------------
+
+
+
+      !=====
+      ! Variables filled by READ_MODELE() (file modeles.mod)
+      !=====
+      !> @todo (MT) modeles.mod could become an ASCII file
 
       ! Attention: one has to specify sizes of all the variables here, because
       ! this may change with compiler
-      integer*4 modeles_ntot
-      character*4 modeles_tit
-      character*20 modeles_tiabs ! I just want to see this string at testing
-
-      !> @todo create REAL*4 temp locals, then transfer to REAL*8 ones
-      real*4 modeles_detef, modeles_dglog, modeles_dsalog, &
-             modeles_asalalf, modeles_nhe, &
-             modeles_nh, modeles_teta, modeles_pe, modeles_pg, &
-             modeles_t5l, bid
-
-      dimension modeles_nh(max_modeles_ntot), &
-                modeles_teta(max_modeles_ntot), &
-                modeles_pe(max_modeles_ntot), &
-                modeles_pg(max_modeles_ntot), &
-                modeles_t5l(max_modeles_ntot), &
-                bid(16), &  !> @todo ISSUE: I counted 12... let's see, I have to see INEWMARCS... actually, it seems that it should be 12!! &
-                modeles_tit(5)
+      integer*4 modeles_ntot !< ?doc?
+      character*4 modeles_tit(5) !< ?doc?
+      character*20 modeles_tiabs !< ?doc? I just want to see this string at testing
+      real*4 modeles_detef,   & !< ?doc?
+             modeles_dglog,   & !< ?doc?
+             modeles_dsalog,  & !< ?doc?
+             modeles_asalalf, & !< ?doc?
+             modeles_nhe,     & !< ?doc?
+             bid(16)            !< ?doc?
+      real*4, dimension(max_modeles_ntot) :: &
+       modeles_nh,   & !< ?doc?
+       modeles_teta, & !< ?doc?
+       modeles_pe,   & !< ?doc?
+       modeles_pg,   & !< ?doc?
+       modeles_t5l     !< ?doc?
 
 
 
-
+      !=====
+      ! Private variables (internal function)
+      !=====
 
       ! Flags indicating whether corresponding routine has already been called.
       ! There is a strict order in which files must be read, because there are
       ! consistency checks and inner joins being percormed while reading files.
-      ! At the moment, this order is reinforces: DISSOC -> MAIN -> ABONDS -> ATOMGRADE
-      logical, private :: flag_read_abonds = .false., &
-                          flag_read_main   = .false., &
-                          flag_read_dissoc = .false.
-
+      ! At the moment, this order is reinforced:
+      ! read_dissoc -> read_main -> read_abonds -> read_atomgrade
+      logical, private :: &
+       flag_read_abonds = .false., & !< Whether read_abonds() has already been called
+       flag_read_main   = .false., & !< Whether read_main() has already been called
+       flag_read_dissoc = .false.    !< Whether read_dissoc() has already been called
 
 
       SAVE
-
 CONTAINS
 
-
-
-!================================================================================================================================
-!> Reads file main.dat to fill variables main_*
-!>
-!> Original UNIT: 4
-!>
-!> IMPORTANT: Depends on variable dissoc_NMETAL (this variable is filled
-!>            by READ_DISSOC())
+  !================================================================================================================================
+  !> Reads file main.dat to fill variables main_*
+  !>
+  !> @note Must be called after read_dissoc().
+  !> @todo ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
+  !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
+  !> @todo ISSUE Documentation
+  !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
   subroutine read_main(filename)
     implicit none
     integer unit_
     parameter(unit_=4)
-    character(len=*) :: filename
+    character(len=*), intent(in) :: filename
     integer ih, i
     character*80 lll
 
@@ -270,27 +288,17 @@ CONTAINS
 
     open(unit=unit_,file=filename, status='old')
 
-    !> row 01: object name, e.g. "sun"
-    !> =======
+    ! row 01: object name, e.g. "sun"
     read(unit_, '(20a)') main_titrav
 
-    !> row 02: ???
-    !> =======
-    !> Example:  T      0.02 5.0   1.    .12
-    read(unit_, *) main_ecrit, main_pas, main_echx, main_echy, main_fwhm
+    ! row 02
+    read(unit_, *) main_ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
 
-    !> row 03
-    !> =======
-    !> Example: 0.9
+    ! row 03
     read(unit_, *) main_vvt(1)
     main_ivtot = 1
 
-    !> rows 03.(0-2) (three conditional rows that MUST exist if and only if main_VVT(1) > 900)
-    !> =============
-    !> @todo ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
-    !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
-    !> @todo ISSUE Documentation
-    !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
+    ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
       read(unit_, *) main_ivtot
       ! ivtot, affects subroutine turbul() issue what
@@ -304,64 +312,44 @@ CONTAINS
       read(unit_,*) (main_vvt(i) ,i=1, main_ivtot)
     end if
 
-
-    !> line 04
-    !> =======
-    !> Example:      5777  4.44  0       0.1  1
+    ! row 04
     read(unit_, *) main_teff, main_glog, main_asalog, main_nhe,main_inum
 
-    !> line 05
-    !> =======
-    !> Example:      F       1.
+    ! row 05
     read(unit_, *) main_ptdisk, main_mu
 
-    !> line 06
-    !> =======
-    !> Example: 0
+    ! row 06
     read(unit_, *) main_afstar  ! metallicity of the star (in log scale)
 
-    !> line 07 -- XXCOR(I)
-    !> =======
-    !> @todo ISSUE: Should be a column in dissoc.dat !!!!!
-    !> (MT) I agree
-
-    ! Feature "XXCOR" --
+    ! row 07: XXCOR(i)
+    ! @todo ISSUE: Should be a column in dissoc.dat !!!!!
+    ! (MT) I agree
     read(unit_, *)(main_xxcor(i), i=1, dissoc_nmetal)
 
-    !> line 08 -- part of filename
-    !> =======
-    !> This line will define the names of other three files to be read:
-    !>   cont.<FILEFLUX>
-    !>   norm.<FILEFLUX>
-    !>   spec.<FILEFLUX>
+    ! row 08 -- part of a filename
+    ! This line will define the names of three output files:
+    !   FILEFLUX.cont
+    !   FILEFLUX.norm
+    !   FILEFLUX.spec
     read(unit_, '(a)') main_fileflux
 
-    !> line 09 --
-    !> =======
-    !>     AINT =intervalle de calcul
-
-    !> Example:      4800    4820   50
+    ! row 09
     read(unit_, *) main_llzero, main_llfin, main_aint
 
-
-  !> rows 10-19 -- file names, in sync with variable LLHY
-  !> ===========
-  !> Example: thkappa
-  !>          thiota
-  !>          ththeta
-  !>          theta
-  !>          thzeta
-  !>          thepsilon
-  !>          thdelta
-  !>          thgamma
-  !>          thbeta
-  !>          thalpha
-
+    ! rows 10-19: file names, in sync with variable LLHY. Example:
+    ! thkappa
+    ! thiota
+    ! ththeta
+    ! theta
+    ! thzeta
+    ! thepsilon
+    ! thdelta
+    ! thgamma
+    ! thbeta
+    ! thalpha
     do ih = 1, 10
       read(unit_, '(a)') main_filetohy(ih)
     end do
-
-
 
     close(unit=unit_)
     flag_read_main = .true.
@@ -370,20 +358,20 @@ CONTAINS
 
 
 
-!================================================================================================================================
-!> Reads file dissoc.dat to fill variables dissoc_*
-!>
-!> Original UNIT: 23
-!>
-!> This file must end with a blank row so that the routine can detect
-!> the end of the file
+  !================================================================================================================================
+  !> Reads file dissoc.dat to fill variables dissoc_*
+  !>
+  !> @attention This file must end with a <b>blank row</b> so that the routine can detect
+  !> the end of the file.
 
-
-!> TODO Various tests:
-!> TODO - mismatched NMETAL and metal rows
-!> TODO - check if NMETAL and NMOL match what they are supposed to (assertions in test)
-
-!> PROPOSE: use READ()'s "END=" option
+  !> @todo Various tests:
+  !> @todo - mismatched NMETAL and metal rows
+  !> @todo - check if NMETAL and NMOL match what they are supposed to (assertions in test)
+  !> @todo ISSUE: This 1X does not appear in my sample dissoc.dat file
+  !> @todo ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
+  !> @todo ISSUE: THere is no 1X
+  !<      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
+  !> @todo PROPOSE: use READ()'s "END=" option
 
   subroutine read_dissoc(filename)
     integer unit_
@@ -400,26 +388,10 @@ CONTAINS
 
     open(unit=unit_,file=filename, status='old')
 
-    !> row 01
-    !> =======
-    !> NMETAL - NUMBER OF ELEMENTS CONSIDERED IN CHEMICAL EQUILIBRIUM
-    !> NIMAX  - MAXIMUM NUMBER OF ITERATION IN NEWTON-RAPSON METHOD
-    !> EPS    - IF ABS((X(I+1)-X(I))/X(I)).LE. EPS; CONVERGED
-    !> SWITER - IF SWITER .GT. 0;   X(I+1)=0.5*(X(I+1)+X(I))
-    !>          IF SWITER .LE. 0;   X(I+1)=X(I+1)
-    !>
-    !> Example:    18  100    0.005   -1.0
+    ! row 01
     read(unit_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
-    !> rows 2 to NMETAL+1
-    !> ==================
-    !> 6 columns:
-    !>   col 1 -- symbol of chemical element
-    !>   col 2 -- atomic number "N"
-    !>   col 3 -- (?)
-    !>   col 4 -- (?)
-    !>   col 5 -- (?)
-    !>   col 6 -- (?)
+    ! rows 02 to NMETAL+1: 6-column rows
     do i = 1, dissoc_nmetal
       read (unit_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
        symbol, dissoc_nelemx(i), dissoc__ip(i), &
@@ -448,22 +420,16 @@ CONTAINS
 
       end do
 
-      !> rows NMETAL+2 till end-of-file
-      !> ==============================
-      !>   col  1     -- "name" of molecule
-      !>   cols 2-6   -- !>(J, 1-5)
-      !>   col  7     -- MMAX(J) (number of subsequent columns)/2
-      !>   cols 8-... -- Maximum of 8 columns here.
-      !>                 Pairs (NELEM(M), NATOM(M)), M = 1 to MMAX(J) ISSUE NELEM(M) is atomic number, what about NATOM(M)???
+      ! rows NMETAL+2 till end-of-file
+      !   col  1     -- "name" of molecule
+      !   cols 2-6   -- c(J, 1-5)
+      !   col  7     -- mmax(j) (number of subsequent columns)/2
+      !   cols 8-... -- maximum of 8 columns here.
+      !                 pairs (nelem(m), natom(m)), m = 1 to mmax(j)
       j = 0
 
       1010 continue
       j = j+1
-
-      !> @todo ISSUE: This 1X does not appear in my sample dissoc.dat file
-      !> @todo ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
-      !> @todo ISSUE: THere is no 1X
-      !      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
 
 
       read(unit_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
@@ -476,13 +442,14 @@ CONTAINS
       mmaxj = dissoc_mmax(j)
       if(mmaxj .eq. 0) go to 1014  ! means end-of-file
 
+      !__consistency check__:
       if (mmaxj .gt. 4) then
         write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
          '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
         call pfant_halt(lll)
       end if
 
-
+      !__consistency check__
       do m = 1, 4
         flag_found = .false.
         do i = 1, dissoc_nmetal
@@ -521,15 +488,20 @@ CONTAINS
   !> In addition, searches elements in dissoc atoms table to take XXCOR values.
   !>
   !> The input file has 3 columns:
-  !>   1) Empty space or "1"
-  !>   2) 2-character atomic element symbol (?)
-  !>   3) absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
+  !> @li Empty space or "1"
+  !> @li 2-character atomic element symbol (?)
+  !> @li absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
   !>
-  !> The end of the file is signalled by two rows containing only "1" each at
-  !> column 1 and nothing else at the others
+  !> @attention The end of the file is signalled by two rows containing only "1" each at
+  !> column 1 and nothing else at the others, i.e.,
+  !> @verbatim
+  !> .......(last data row).......
+  !> 1
+  !> 1
+  !> @endverbatim
   !>
-  !> TODO Test one row!!!
-  !> PROPOSE: use READ()'s "END=" option
+  !> @todo Test one row!!!
+  !> @todo use READ()'s "END=" option
 
   subroutine read_abonds(filename)
     implicit none
@@ -621,11 +593,11 @@ CONTAINS
   !>     col 8 -- signals end-of-file. If "1", reading stops
   !> @endverbatim
   !>
-  !> TODO: give error if blows MAX!!!!!!!!!!!!!!!!!
+  !> @todo give error if blows MAX!!!!!!!!!!!!!!!!!
   !> @todo ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
   !> (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!
-  !> TODO Assertions in test to see if numbers match what they are supposed to
-  !> PROPOSE: use READ()'s "END=" option
+  !> @todo Assertions in test to see if numbers match what they are supposed to
+  !> @todo use READ()'s "END=" option
 
   subroutine read_atomgrade(filename)
     implicit none
@@ -670,15 +642,18 @@ CONTAINS
       call pfant_halt(lll)
     end if
 
-    ! Searches atomgrade's element within abonds' elements and copies corresponding
-    ! abonds_ABO value into atomgrade_ABONDS_ABO. Halts program if element not found.
-    ! This is a "inner join" (SQL terminology)!
-    ! Historical note: this corresponds to old routine "ABONDRAIH". The search was being carried out
-    !   every time (LZERO, LFIN) changed and only for the filtered atomgrade rows. I decided to
-    !   perform this search for all atomgrade rows and then filter atomgrade_ABONDS_ABO together
-    !   with other variables in FILTER_ATOMGRADE(), which is probably cheaper.
-
-    !> @todo ISSUE Why name was "ABONDRAIH"?? Did it mean "abundances of hydrogen lines"? I ask this because if it has really a physical meaning, I shouldn't bury this inside read_files.f
+    !> Besides reading the file, this routine searches atomgrade's element within abonds'
+    !> elements and copies corresponding
+    !> abonds_abo value into atomgrade_abonds_abo. Halts program if element not found.
+    !>
+    !> In database terminology, this is sort of a "inner join".
+    !>
+    !> @note Historically, this corresponds to old routine "abondraih". The search was
+    !>   being carried out every time (lzero, lfin) changed and only for the filtered
+    !>   atomgrade rows. I decided to perform this search for all atomgrade rows and
+    !>   then filter atomgrade_abonds_abo together with other variables in
+    !>   filter_atomgrade(), which is probably cheaper.
+    !> @todo issue why name was "abondraih"?? did it mean "abundances of hydrogen lines"? i ask this because if it has really a physical meaning, i shouldn't bury this inside read_files.f
 
     flag_found = .false.
     do  j = 1, abonds_nabond
@@ -699,21 +674,21 @@ CONTAINS
     atomgrade__nblend = k
 
 !> @todo ISSUE
-! MENTION: last atomic line wasn't being used!! (this has been fixed/changed). Original code:
-!~	K=1
-!~9	READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
-!~	READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
-!~	1 ABONDR(K),FINRAI
-!~	write(34,103)ELEM(K),IONI(K),LAMBDA(K)
-!~	GF(K)=10.**ALGF(K)
+!> MENTION: last atomic line wasn't being used!! (this has been fixed/changed). Original code commented in subroutine
+!~  K=1
+!~9 READ(14,103)ELEM(K),IONI(K),LAMBDA(K)
+!~  READ(14,*) KIEX(K),ALGF(K),CH(K),GR(K),GE(K),ZINF(K),
+!~  1 ABONDR(K),FINRAI
+!~  write(34,103)ELEM(K),IONI(K),LAMBDA(K)
+!~  GF(K)=10.**ALGF(K)
 !~C        IF(K.EQ.1) GF(K)=10**AGGF
-!~	IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / LAMBDA(K)**2
-!~	IF(FINRAI.EQ.1) GO TO 10
-!~	IF(((LAMBDA(K).GT.LFIN).OR.(LAMBDA(K).LT.LZERO))) GO TO 205
-!~	K=K+1
-!~205	CONTINUE
-!~	GO TO 9
-!~10	NBLEND=K-1
+!~  IF(GR(K).LT.1E-37)   GR(K)=2.21E15 / LAMBDA(K)**2
+!~  IF(FINRAI.EQ.1) GO TO 10
+!~  IF(((LAMBDA(K).GT.LFIN).OR.(LAMBDA(K).LT.LZERO))) GO TO 205
+!~  K=K+1
+!~205 CONTINUE
+!~  GO TO 9
+!~10  NBLEND=K-1
 
     close(unit=unit_)
 
@@ -723,12 +698,9 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> @ingroup gr_filter
-  !> selects only spectral lines within range LZERO, LFIN
+  !> Selects only spectral lines within range lzero, lfin + performs "inner join".
   !>
   !> Populates variables atomgrade_* (single underscore)
-  !>
-  !> Also looks into abonds_ELE(:) to fill atomgrade_ABOND_ABONDS
 
   subroutine filter_atomgrade(lzero, lfin)
     !> Lower edge of wavelength interval
@@ -781,11 +753,13 @@ CONTAINS
   !> LECTURE DES FCTS DE PARTITION
   !>
   !> Rows in this file alternate between:
+  !> @verbatim
   !> 1) 8-column row
   !>    col 8 -- signals end-of-file. If 1, it ignores the row and
   !>             stops reading
   !>
   !> 2) Series of rows to fill in partit_TABU(J, :, :)
+  !> @endverbatim
 
   subroutine read_partit(filename)
     implicit none
@@ -848,9 +822,7 @@ CONTAINS
   !> Attention: variables absoru2_ZP, absoru2_XI, and absoru2_PF
   !>            undergo transformation!
   !>
-  !> Obs: this routine is in essence the old routine called "LECTUR"
-  !>
-  !> I think SSP means "SubProgram" but it is a typo with an additional "S"
+  !> @note Historically, this routine is in essence the old routine called "LECTUR"
   !>
   !> CE SSP PERMET DE LIRE LES ABONDANCES ET LA TABLE D'IONISATION CHOI
   !> PUIS LES DONNEES CORRESPONDANTS AUX ABSORBANTS METALLIQUES SI NECE
@@ -884,7 +856,6 @@ CONTAINS
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
     read (unit_,'(2i2, 19a4)') absoru2_nm, absoru2_nmeta, &
           (absoru2_iunite(i),i=1,2), (absoru2_titre(i),i=1,17)
-
 
     !__spill check__: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. max_absoru2_nm) then
@@ -932,7 +903,7 @@ CONTAINS
 
     read (unit_, '(2i2)') (absoru2_numset(ith), ith=1,2)
 
-!> @todo ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
+  !> @todo ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
 
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
@@ -951,7 +922,7 @@ CONTAINS
 
     ! NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
     ! POUR H,HE ET HE+
-    ! PREMIERE LISTE POUR TH.LE.0.8  ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
+    ! PREMIERE LISTE POUR TH.LE.0.8 ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
     do ith = 1,2
       nset = absoru2_numset(ith)
       read (unit_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
@@ -1025,19 +996,19 @@ CONTAINS
     !> @todo ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks  (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
 
 
-!~9	READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
-!~	WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
+!~9 READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
+!~  WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
 !~        write(6,108) TIABS
-!~	IF(NTOT.EQ.9999)   GO TO 6
-!~	DDT  = ABS(TEFF-DETEF)
-!~C	DDTA  = ABS(TETAEF-DETAEF)
-!~	DDG = ABS(GLOG-DGLOG)
-!~	DDAB = ABS(ASALOG-DSALOG)
-!~	DDHE= ABS(NHE-DNHE)
-!~C	DDIF = DDTA+DDG+DDAB+DDHE
-!~5	IF(DDT.GT.1.0)   GO TO 9
-!~	IF(DDG.GT.0.01)   GO TO 9
-!~	IF(DDAB.GT.0.01)   GO TO 9
+!~  IF(NTOT.EQ.9999)   GO TO 6
+!~  DDT  = ABS(TEFF-DETEF)
+!~C DDTA  = ABS(TETAEF-DETAEF)
+!~  DDG = ABS(GLOG-DGLOG)
+!~  DDAB = ABS(ASALOG-DSALOG)
+!~  DDHE= ABS(NHE-DNHE)
+!~C DDIF = DDTA+DDG+DDAB+DDHE
+!~5 IF(DDT.GT.1.0)   GO TO 9
+!~  IF(DDG.GT.0.01)   GO TO 9
+!~  IF(DDAB.GT.0.01)   GO TO 9
 
 
     !> @todo ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
