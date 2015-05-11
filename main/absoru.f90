@@ -17,7 +17,6 @@
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> @ingroup gr_math
-!> Module ABSORU
 !>
 !> Original comment block:
 !> @verbatim
@@ -35,9 +34,15 @@
 !> ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
 !> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 !> @endverbatim
-!> Public: only subroutine ABSORU() and variable absoru_ZNH
+!>
+!> Contains subroutine absoru() and subroutines called by it.
+!>
+!> Public: only subroutine absoru() and variable absoru_znh
+!> @todo Identify outputs and inputs
+!> @todo CHECK ALL TYPES
+!> @todo CHECK ALL SIZES
 
-module mod_absoru
+module absoru_mod
   use absoru_data
 
   !=====
@@ -56,9 +61,6 @@ module mod_absoru
 
   private
 
-  !> @todo Identify outputs and inputs
-  !> @todo CHECK ALL TYPES
-  !> @todo CHECK ALL SIZES
 
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
@@ -69,12 +71,12 @@ module mod_absoru
 
 
    
-   real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
-   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
-   real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
-   real*8 au_rho  !< DENSITE (G-CM-3)
-   real*8 au_toc  !< NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
-   real*8 au_ac   !< DEGRE D'IONISATION MOYEN
+  real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
+  real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
+  real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
+  real*8 au_rho  !< DENSITE (G-CM-3)
+  real*8 au_toc  !< NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
+  real*8 au_ac   !< DEGRE D'IONISATION MOYEN
 
   real*8 :: au_g2d(2, 19)  !< FACTEUR DE GAUNT BOUND FREE
   real*8, dimension(5) :: au_zexpm

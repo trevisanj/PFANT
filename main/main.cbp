@@ -31,36 +31,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="commons.f">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="config.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="errors.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="main_calc.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="main_io.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="molecula.f">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="original_merged_reference.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="read_files.f">
-			<Option weight="1" />
-		</Unit>
-		<Unit filename="sat4_die.f">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="write_files.f">
-			<Option weight="2" />
-		</Unit>
+		<Unit filename="absoru.f90" />
+		<Unit filename="absoru_data.f" />
+		<Unit filename="config.f90" />
+		<Unit filename="dissoc.f90" />
+		<Unit filename="filetoh.f90" />
+		<Unit filename="flin.f90" />
+		<Unit filename="logging.f90" />
+		<Unit filename="main_calc.f90" />
+		<Unit filename="misc_math.f90" />
+		<Unit filename="molecula.f90" />
+		<Unit filename="options2.f90" />
+		<Unit filename="pfant.f90" />
+		<Unit filename="read_files.f90" />
 		<Extensions>
 			<code_completion />
 			<envvars />
