@@ -108,7 +108,12 @@ contains
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
 
   subroutine absoru(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
-    integer*4 calu,calmet,callam,calth,calpe,pmax,calsor
+    use read_files
+    implicit none
+    real*8 wl, th, zlpe, totkap, dif, scat, scatel, scath, sum1, sum2, unit, wl4, &
+     wlh, zzk, zzkk
+    integer i, ilt, ith, kkk, m, min, mm, mmax, mmm, nset
+    integer*4 calu,calmet,callam,calth,calpe
     dimension zzkk(11,2),totkap(2),dif(2,3),scath(2),zzk(11,2),scat(2)
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
@@ -272,6 +277,9 @@ contains
   !> A.M COLLE   19/8/69
 
   subroutine gaunth (wl)
+    implicit none
+    real*8 wl, cond, delta, rk, zj, zp, zq
+    integer i, j, jj, js
     au_jh = 0
     do 1410 i=1,au_jfz
 
@@ -408,7 +416,10 @@ contains
   !> @author A.M COLLE   8/5/69
 
   subroutine tempa(wl,th,calth,callam)
-    integer*4 callam,calth
+    implicit none
+    real*8 wl, th, comhe, hcbktm, uh, uhep
+    integer j, k, l
+    integer callam,calth
 
     if (calth.eq.2) go to 1001
 
@@ -476,17 +487,22 @@ contains
   !>     A.M COLLE   13/5/69
 
   SUBROUTINE SAHATH(TH)
-    real*8, PARAMETER :: POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/)
-    real*8, PARAMETER :: C1(3) = (/0.0,-7.526612E-3,5.708280E-2/)
-    real*8, PARAMETER :: C2(3) = (/0.0,1.293852E-1,-1.823574E-1/)
-    real*8, PARAMETER :: C3(3) = (/0.0,-11.34061,-6.434060/)
-    real*8, PARAMETER :: C4(3) = (/0.0,28.85946,25.80507/)
+    use read_files
+    implicit none
+    real*8 th, tempo, tempor
+    integer i, j, n, nrr
+    real*8, PARAMETER :: &
+     POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/), &
+     C1(3) = (/0.0,-7.526612E-3,5.708280E-2/), &
+     C2(3) = (/0.0,1.293852E-1,-1.823574E-1/), &
+     C3(3) = (/0.0,-11.34061,-6.434060/), &
+     C4(3) = (/0.0,28.85946,25.80507/)
 
     do n = 2,3
       au_zk(absoru2_nmeta+n)=exp(((c1(n)*th+c2(n))*th+c3(n))*th+c4(n))
     end do
 
-    tempor=2.5*alog(5040.39/th)
+    tempor=2.5*log(5040.39/th)
     tempo=tempor-1.098794
     do 2 n = 4,5
       au_zk(absoru2_nmeta+n)=potion(n)*th-tempo
@@ -527,12 +543,22 @@ contains
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
   !>
   !> @author A.M COLLE  07/12/1970
+  !>
 
   subroutine athyhe (wl,th,calth,callam,zzk)
     use read_files
     use logging
     implicit none
-    integer*4 callam,calth, jhe, jhep, jhem
+
+
+    ! Note variable named "zk_"
+    !   - local "zk" renamed to "zk_"
+    !   - old COMMON "zk" so far is a module variable named au_zk
+    real*8 althmb, althml, anu, any, bh, bhe, bhem, bhep, bkt, caeta, caro, difeta, &
+     difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
+     stimu3, tempor, uk, wlm, zkas, zlamin, zleta1, zleta2, znl, znl1, zk_
+    integer i, ie, indth, ir, j, je, jhyt, jj, jjs, jr, js, k, kk, kks, l, ll, lls, n
+    integer callam,calth, jhe, jhep, jhem
     real*8 wl, th
     real*8 :: tgaunt(5),trhog(5),opnu(46),zzk(11,2), expon(2)
     real*8, parameter ::                                  &
@@ -571,7 +597,7 @@ contains
     1334 stimu3   = au_stimu/au_ul**3
     if (callam.eq.2) go to 1335
 
-    znl = alog(wl)
+    znl = log(wl)
     zlamin = 1.0e8/wl
     do n = 1,2
       expon(n)=exp(expo(n)+cons(n)*znl)
@@ -676,7 +702,7 @@ contains
       if (trhog(k).ne.1.0) tgaunt(k)=2.0/(trhog(k)-1.0)
       if (trhog(k).eq.1.0) go to 1856
 
-      tgaunt(k)=0.5513289*alog(tgaunt(k))  ! 0.5513289=SQRT(3)/PI
+      tgaunt(k)=0.5513289*log(tgaunt(k))  ! 0.5513289=SQRT(3)/PI
       go to 1855
 
       1856 tgaunt(k)=0.0
@@ -689,7 +715,7 @@ contains
       tgaunt(k)=(-0.01312*any+0.21775)*any+1.0
       go to 1855
 
-      1830 tempor=0.2171473*alog(gconst/(au_yy(k)+au_ul))  ! 0.2171473=0.434294482/2
+      1830 tempor=0.2171473*log(gconst/(au_yy(k)+au_ul))  ! 0.2171473=0.434294482/2
       if ((tempor.lt.au_zletag(1)).or.(tempor.gt.au_zletag(18))) go to 1847
 
       ! INTERPOLATION A PARTIR DE LA TABLE 1 DE GRANT (1958)
@@ -867,11 +893,11 @@ contains
         anu=an(n)/wl+expon(n)
         go to 5730
 
-        5640 au_zk=1.097224e-3*au_zlhem(3+n)*wl/(au_zlhem(3+n)-wl)
-        rk=sqrt(au_zk)
-        uk=1.0+cuk(n)*au_zk
-        anu=(cote(n)/(wl*(1.0-exp(-6.283185*rk)))*(au_zk/uk   )**6*((1.0+au_zk)/ &
-         uk)*((4.0+au_zk)/uk)*exp(-4.0*rk*atan(1.0/(sniv(n)*rk))))+expon(n)
+        5640 zk_=1.097224e-3*au_zlhem(3+n)*wl/(au_zlhem(3+n)-wl)
+        rk=sqrt(zk_)
+        uk=1.0+cuk(n)*zk_
+        anu=(cote(n)/(wl*(1.0-exp(-6.283185*rk)))*(zk_/uk   )**6*((1.0+zk_)/ &
+         uk)*((4.0+zk_)/uk)*exp(-4.0*rk*atan(1.0/(sniv(n)*rk))))+expon(n)
         go to 5730
 
         5680 n=2
@@ -898,7 +924,7 @@ contains
       5810 jhe=1
       if (i.eq.1) go to 5790
 
-      5840 lls=ll+1
+      lls=ll+1
 
       5860 if ((i.eq.1).or.(jhe.eq.1)) go to 5861
       !
@@ -936,10 +962,18 @@ contains
   !> Reference: 'VARDYA' APJ VOL.133,P.107,1961
   !>
   !> @author A.M COLLE  18/01/1971
+  !>
+  !> @todo consider creating module variables to avoid passing parameter to subroutine
 
   subroutine ionipe(th,zlpe,calth,calmet)
+    use read_files
+    implicit none
+    real*8 th, zlpe, any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
+     sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
+    integer i, j, nrr
+
     integer*4 calth,calmet
-    real kth
+    real*8 kth
     dimension phi(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
      pa(10)
 
@@ -1015,4 +1049,4 @@ contains
     au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
                                           ! 8.313697e+7: constante des gaz
   end subroutine ionipe
-end module mod_absoru
+end module absoru_mod
