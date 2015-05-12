@@ -1,15 +1,15 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -98,7 +98,7 @@
 !     Portanto, para diferenciar os arquivos binarios criados,
 !     alem do arquivo normal criado como 'spe.' + nome no main.dat
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
-!===PC2003 END=== 
+!===PC2003 END===
 
 !> @ingroup gr_math
 !> Fantomol avec sous-programmes (MNP) -
@@ -112,7 +112,7 @@ MODULE SYNTHESIS
   !> @todo ISSUE this is used a lot, I gotta find out its meaning
   !> @todo ISSUE I think it is the maximum number of calculation steps.
   INTEGER, PARAMETER :: NP = 7000, &
-                        NMOL = 50000  !> @todo ISSUE what about this parameter, what does it mean?
+                        NMOL = 50000  !> @todo issue ?what? ?doc? about this parameter, what does it mean?
 
   !=====
   ! Subroutine outputs
@@ -158,12 +158,12 @@ MODULE SYNTHESIS
    3970.076, 4101.748, 4340.468, 4861.332, 6562.817/)
   REAL*8, PARAMETER :: &
     C = 2.997929E+10,  &
-    H = 6.6252E-27,    & 
+    H = 6.6252E-27,    &
    KB = 1.38046E-16,   &
    PI = 3.141593,      &
    C1 = 4.8298E+15,    &
    C2 = 8.8525E-13,    &
-   C4 = 2.1179E+8,     & 
+   C4 = 2.1179E+8,     &
    C6 = 3.76727E+11,   &
    DEUXR = 1.6634E+8,  &
    RPI = 1.77245385
@@ -175,18 +175,18 @@ MODULE SYNTHESIS
 
 
 
-  !======================================================================================================================      
+  !======================================================================================================================
   SUBROUTINE PFANT_CALCULATE()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
     REAL*8 LZERO, LFIN
     CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
 
     INTEGER D,DTOT
     INTEGER DHM,DHP,DHMY,DHPY
-    
+
     CHARACTER FILETOH*260
-    
-    REAL*8 LAMBD, LZERO, LFIN, L0, LF, LLLHY
-          
+
+    REAL*8 LAMBD, L0, LF, LLLHY
+
     REAL*8 GFAL(MAX_atomgrade_NBLEND), ECART(MAX_atomgrade_NBLEND), &
      FI(1501),TFI(1501), ECARTM(NMOL)
 !   fonctions de partition TODO figure out what this comment refers to
@@ -201,7 +201,7 @@ MODULE SYNTHESIS
      UNIT_CONT  = 19, &
      UNIT_NORM  = 20, &
      UNIT_LINES = 32, &
-     UNIT_LOG   = 31 
+     UNIT_LOG   = 31
 
 
 
@@ -243,7 +243,7 @@ MODULE SYNTHESIS
     ! Calculation begins!
     !=====
 
-    CALL TURBUL()     
+    CALL TURBUL()
 
     ! -- III --
     ! CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
@@ -282,13 +282,13 @@ MODULE SYNTHESIS
     DO WHILE .T. !Main loop!
       !> @todo ISSUE Explain DTOT
       DTOT = (LFIN-LZERO)/main_PAS + 1.0005
-      
+
       !__logging__
       117 FORMAT(5X,'LZERO=',F10.3,10X,'LFIN=',F10.3,5X,'DTOT=',I7)
       WRITE(LLL, 117) LZERO, LFIN, DTOT
       CALL LOG_INFO(LLL)
 
-      !--halt situation--!      
+      !--halt situation--!
       IF(DTOT .GT. 40000) THEN
         !> @todo ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
         CALL PFANT_HALT('DTOT > 40000!')
@@ -381,11 +381,11 @@ MODULE SYNTHESIS
         ! -- VI --
         ! CALCUL DU COEFFICIENT D ABSORPTION SELECTIF ET CALCUL DU SPECTRE
         DO K = 1, atomgrade_NBLEND
-        
+
           !> @todo ISSUE check these variables, they may be misnamed
           GFAL(K) = atomgrade_GF(K)*C2*(atomgrade_LAMBDA(K)*1.E-8)**2
-          
-          !> @todo ISSUE What is ECART?
+
+          !> @todo issue ?what? ?doc? is ECART?
           ECART(K) = atomgrade_LAMBDA(K)-LZERO+main_PAS
         END DO
       END IF
@@ -423,7 +423,7 @@ MODULE SYNTHESIS
 
 
 
-    
+
       !=====
       ! Writes results for current iteration into open files
       !=====
@@ -439,13 +439,13 @@ MODULE SYNTHESIS
       CALL LOG_INFO(LLL)
 
       IKEY = IKEY+1
-      IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door!> @todo ISSUE what does this condition mean?
+      IF (IKEY .GT. IKEYTOT) EXIT !Main loop exit door!> @todo issue ?what? ?doc? does this condition mean?
 
       !__logging__
       708 FORMAT(1X,'IKEY=',I10,2X,'IRH=',I6)
       WRITE(LLL, 708) IKEY, IRH
       CALL LOG_INFO(LLL)
-      
+
       LZERO = LZERO+main_AINT
       LFIN = LFIN+main_AINT
       IF(LFIN .GT. (main_LLFIN+20.)) LFIN = main_LLFIN+20.
@@ -463,10 +463,10 @@ MODULE SYNTHESIS
     CALL LOG_INFO('Flux absolu sortant a ete multiplie par 10**5')
 
   CONTAINS  !--still PFANT_CALCULATE()
-    
+
     ! These subroutines have total knowledge of the variable names and values that appear inside
     ! their parent subroutine PFANT_CALCULATE(). http://www.personal.psu.edu/jhm/f90/statements/contains.html
-      
+
     !> Used to write the "spectrum", "continuum", and "normalized".
     !> Their writing pattern is very similar. THe header is the same,
     !> only the "ITEM" changes from file to file.
@@ -477,7 +477,7 @@ MODULE SYNTHESIS
       REAL*8, INTENT(IN) :: ITEM(:)
       REAL*8 AMG
       AMG = main_XXCOR(8)  !> @todo ISSUE is this assuming something to do with Magnesium?
-      
+
       1130 FORMAT(I5, 5A4, 5F15.5, 4F10.1, I10, 4F15.5)
       WRITE(UNIT_, 1130)       &
        IKEYtot,                &
@@ -494,9 +494,9 @@ MODULE SYNTHESIS
        ITOT,                   &
        main_PAS,               &
        main_ECHX,              &
-       main_ECHY,              &          
-       main_FWHM                         
-     
+       main_ECHY,              &
+       main_FWHM
+
       1132 FORMAT(40000F15.5)
       WRITE(UNIT_SPEC,1132) (ITEM(D), D=I1,I2)
     END
@@ -521,7 +521,7 @@ MODULE SYNTHESIS
          atomgrade_GR(K),          &
          atomgrade_GE(K),          &
          atomgrade_ZINF(K),        &
-         popadelh_CORCH(K)                
+         popadelh_CORCH(K)
 
         !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
        121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
@@ -551,7 +551,7 @@ MODULE SYNTHESIS
     !
     ! Note: convolution for molecules uses Gaussian profile.
     !
-    
+
     !> @todo ISSUE with variable MM
     SUBROUTINE SELEKFH()
         USE READ_FILES
@@ -583,13 +583,13 @@ MODULE SYNTHESIS
             ECAR(K) = ECART(K)
           END DO
         END IF
-        
+
         IF (km_MBLEND .NE. 0) then
           DO K=1,km_MBLEND
             ECARM(K) = ECARTM(K)
           END DO
         end if
-        
+
         DO D = 1, DTOT
           lambi = (6270+(D-1)*0.02)
           if (atomgrade_NBLEND .ne. 0) then
@@ -598,19 +598,19 @@ MODULE SYNTHESIS
               ECARTL(K)=ECAR(K)
             END DO
           end if
-          
+
           if(km_MBLEND .ne. 0) then
             DO K=1,km_MBLEND
               ECARM(K) = ECARM(K)-main_PAS
               ECARTLM(K) = ECARM(K)
             END DO
           end if
-        
+
           DO N = 1,modeles_NTOT
             KAPPA(N) =0.
             KAPPAM(N) =0.
             T = 5040./modeles_TETA(N)
-            
+
             ! atomes
             if(atomgrade_NBLEND .EQ. 0) go to 260
 
@@ -635,7 +635,7 @@ MODULE SYNTHESIS
               IF( ABS(ECARTLM(L)) .GT. km_ALARGM(L) )  then
                 KAM(L)=0.
               else
-            
+
                 !> @todo ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
                 ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
                 DELTAM(L,N)=(1.E-8*km_LMBDAM(L))/C*SQRT(turbul_VT(N)**2+DEUXR*T/km_MM)
@@ -645,16 +645,16 @@ MODULE SYNTHESIS
               end if
               KAPPAM(N)=KAPPAM(N)+KAM(L)
             END DO   !  fin bcle sur L
-          
+
             250 CONTINUE
             KAPPT(N) = KAPPA(N)+KAPPAM(N)
             KCI(N) = bk_KCD(D,N)
             KAP(N) = KAPPT(N)+KCI(N)
             BI(N) = ((bk_B2(N)-bk_B1(N))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(N)
           END DO    ! fin bcle sur N
-          
+
           BI(0) = ((bk_B2(0)-bk_B1(0))*(FLOAT(D-1)))/(FLOAT(DTOT-1)) + bk_B1(0)
-          
+
           !__logging__
           IF (D .EQ. 1 .OR. D .EQ. DTOT) THEN
             150 FORMAT(' D=',I5,2X,'KCI(1)=',E14.7,2X,'KCI(NTOT)=',E14.7,/,10X,'KAPPA(1)=',E14.7,2X,'KAPPA(NTOT)=',E14.7)
@@ -668,7 +668,7 @@ MODULE SYNTHESIS
             WRITE(LLL,152)KAPPAM(1),KAPPAM(modeles_NTOT)
             CALL LOG_DEBUG(LLL)
           END IF
-          
+
           IF((D .LT. DHM) .OR. (D .GE. DHP)) THEN
             CALL FLIN1(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
             selekfh_FL(D) = flin_F
@@ -679,7 +679,7 @@ MODULE SYNTHESIS
             CALL FLINH(KAP,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK,TAUHD, TTD(D))
             selekfh_FL(D) = flin_F
           END IF
-              
+
           ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
           CALL FLIN1(KCI,BI,modeles_NH,modeles_NTOT,main_PTDISK,main_MU, config_KIK, TTD(D))
           selekfh_FCONT(D) = flin_F
@@ -689,6 +689,7 @@ MODULE SYNTHESIS
 
     !======================================================================================================================
     !> Calculates the flux in the continuum.
+    !> @todo Issue thete is a lot of calculation here that is independent from lzero and lfin
     !
     SUBROUTINE BK(LAMBD, TTD, DTOT, LZERO, LFIN)
       USE READ_FILES
@@ -706,13 +707,13 @@ MODULE SYNTHESIS
       DIMENSION TTD(NP)
       DIMENSION FTTC(NP)
 
-      
+
       LLZERO = LZERO
       LLFIN  = LFIN
       NU1 = C* 1.E+8 /LZERO
       AHNU1 = H*NU1
       C31 = (2*AHNU1) * (NU1/C)**2
-      
+
       DO N = 1,modeles_NTOT
         T = 5040./modeles_TETA(N)
         ALPH_N = EXP(-AHNU1/(KB*T))
@@ -720,7 +721,7 @@ MODULE SYNTHESIS
         CALL ABSORU(LLZERO,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
         bk_KC1(N) = TOTKAP(1)
       END DO
-      
+
       NU2 = C* 1.E+8 /LFIN
       AHNU2 = H*NU2
       C32 =(2*AHNU2) * (NU2/C)**2
@@ -732,7 +733,7 @@ MODULE SYNTHESIS
         CALL ABSORU(LLFIN,modeles_TETA(N),ALOG10(modeles_PE(N)),1,1,1,1,2,1,KKK,TOTKAP)
         bk_KC2(N) = TOTKAP(1)
       END DO
-      
+
       NU = C* 1.E+8 /LAMBD
       AHNU = H*NU
       C3 =(2*AHNU) * (NU/C)**2
@@ -745,21 +746,21 @@ MODULE SYNTHESIS
         bk_PH2(N) = absoru_ZNH(absoru2_NMETA+2) *KB * T
         bk_KC(N) = TOTKAP(1)
       END DO
-      
-      TET0 = FTETA0(modeles_PG, modeles_TETA)     !on extrapole modeles_TETA pour modeles_NH=0
+
+      TET0 = FTETA0(modeles_PG, modeles_TETA, modeles_NTOT)     !on extrapole modeles_TETA pour modeles_NH=0
       T = 5040./TET0
-      
-      
+
+
       ALPH01 = EXP(-AHNU1/(KB*T))
       bk_B1(0) = C31 * (ALPH01/(1.-ALPH01))
       CALL FLIN1(bk_KC1,bk_B1,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
       FC1 = flin_F
-      
+
       ALPH02 = EXP(-AHNU2/(KB*T))
       bk_B2(0) = C32 * (ALPH02/(1.-ALPH02))
       CALL FLIN1(bk_KC2,bk_B2,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
       FC2 = flin_F
-      
+
       ALPH0 = EXP(-AHNU/(KB*T))
       bk_B(0) = C3 * (ALPH0/(1.-ALPH0))
       CALL FLIN1(bk_KC,bk_B,modeles_NH,modeles_NTOT,main_PTDISK,main_MU,config_KIK)
@@ -782,7 +783,7 @@ MODULE SYNTHESIS
           bk_KCD(D,N)=FTTC(D)
         END DO
       END DO
-      
+
       !__logging__
       153 FORMAT(' bk_KCD(1,1)=',E14.7,2X,'bk_KCD(1,NTOT)=',E14.7)
       154 FORMAT(' bk_KCD(DTOT,1)=',E14.7,2X,'bk_KCD(DTOT,NTOT)=',E14.7)
@@ -799,12 +800,12 @@ MODULE SYNTHESIS
 
 
   !======================================================================================================================
-  !> @todo ISSUE WHAT
+  !> @todo issue ?what? ?doc?
 
   SUBROUTINE TURBUL()
     USE CONFIG
     CHARACTER*80 LLL
-    
+
     CALL LOG_DEBUG('ENTREE DS TURBUL')
     IF(main_IVTOT .EQ. 1)   THEN
       CALL LOG_DEBUG('VT CONSTANT')
@@ -820,7 +821,7 @@ MODULE SYNTHESIS
       CALL LOG_DEBUG('    VT')
       WRITE(LLL,101) (main_VVT(I),I=1,IVTOT)
       CALL LOG_DEBUG(LLL)
-      
+
       IF(config_INTERP .EQ. 1) THEN
         CALL FTLIN3(min_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
    +     modeles_T5L, turbul_VT)
@@ -830,8 +831,8 @@ MODULE SYNTHESIS
         CALL FT2(main_IVTOT, main_TOLV, main_VVT, modeles_NTOT,
    +     modeles_T5L,turbul_VT)
       END IF
-        
-      
+
+
       NT2 = modeles_NTOT-2
       DO N = 1, NT2, 3
         102 FORMAT(3(I5,2F8.3,5X))
@@ -869,7 +870,7 @@ MODULE SYNTHESIS
   !> Partit donnee pour 33 temperatures au plus ds la table.
   SUBROUTINE POPUL()
     DIMENSION U(3), ALISTU(63), UE(50), TT(51)
-    
+
     DO N = 1, modeles_NTOT
       T = 5040./modeles_TETA(N)  !> @todo I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
       UE(N) = C1*KB*T/modeles_PE(N)*T**1.5
@@ -937,7 +938,7 @@ MODULE SYNTHESIS
       104 FORMAT('MANQUE LES FCTS DE PARTITION DU ', A2)
       WRITE(LLL,104) atomgrade_ELEM(K)
       CALL PFANT_HALT(LLL)
-      
+
       15 CONTINUE
       IOO = atomgrade_IONI(K)
 
@@ -960,7 +961,7 @@ MODULE SYNTHESIS
       !*************************************************************************************************
       !> @todo ISSUE File writing routine, TAKE THIS OUT!!!!
       WRITE (77,*) atomgrade_ELEM(k),atomgrade_LAMBDA(k)
-      
+
       IF(atomgrade_CH(K).LT.1.E-37)  THEN
         KIES=(12398.54/atomgrade_LAMBDA(K)) + atomgrade_KIEX(K)
         IF(IOO.EQ.1)   KII=partit_KI1(J)
@@ -976,12 +977,12 @@ MODULE SYNTHESIS
       END IF
 
 !
-      IF(atomgrade_CH(K) .LT. 1.E-20) THEN 
+      IF(atomgrade_CH(K) .LT. 1.E-20) THEN
         IOPI=1
       ELSE
         IOPI=2
       END IF
-      
+
       DO  N=1,modeles_NTOT
         T=5040./modeles_TETA(N)
         NUL= C* 1.E+8 /atomgrade_LAMBDA(K)
@@ -991,7 +992,7 @@ MODULE SYNTHESIS
         TAP = 1.-ALPHL(N)
         TOP = 10.**(-atomgrade_KIEX(K)*modeles_TETA(N))
         popadelh_POP(K,N) = popul_P(IOO,J,N)*TOP*TAP
-        ! NOXIG: ISSUE what does it mean?
+        ! NOXIG: issue ?what? ?doc? does it mean?
         IF(K .EQ. 1) popadelh_POP(K,N) = TOP*TAP*popul_P(IOO,J,N)*sat4_PO(N)/sat4_PPH(N)
         popadelh_DELTA(K,N) =(1.E-8*atomgrade_LAMBDA(K))/C*SQRT(turbul_VT(N)**2+DEUXR*T/partit_M(J))
         VREL = SQRT(C4*T*(1.+1./partit_M(J)))

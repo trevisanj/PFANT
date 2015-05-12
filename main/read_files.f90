@@ -105,7 +105,7 @@ module read_files
                 main_glog,   & !< ?doc?
                 main_asalog, & !< ?doc?
                 main_nhe       !< ?doc?
-      integer   main_ivtot, & !< affects turbul() issue what
+      integer   main_ivtot, & !< affects turbul() issue ?what? ?doc?
                               !< = 1 -- "vt" constant
                               !< > 1 -- "vt" variable
                 main_inum !< ?doc?
@@ -301,7 +301,7 @@ CONTAINS
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
       read(unit_, *) main_ivtot
-      ! ivtot, affects subroutine turbul() issue what
+      ! ivtot, affects subroutine turbul() issue ?what? ?doc?
       if (main_ivtot .gt. max_modeles_ntot) then
         write (lll, *) 'main_ivtot .gt. max_modeles_ntot (', &
          main_ivtot, ' .gt. ', max_modeles_ntot, ')'

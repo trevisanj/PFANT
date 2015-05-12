@@ -1,15 +1,15 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,10 +22,10 @@ module dissoc
   implicit none
 
   integer, private, parameter :: &
-   z_electron = 99,  &  ! Fictitious atomic number of electron
-   z_h_star   = 100, &  ! Fictitious atomic number of "H*"
-   z_h        = 1,   &  ! Atomic number of Hydrogen
-   z_he       = 2       ! Atomic number of Helium
+   z_electron = 99,  &  !< Fictitious atomic number of electron
+   z_h_star   = 100, &  !< Fictitious atomic number of "H*"
+   z_h        = 1,   &  !< Atomic number of Hydrogen
+   z_he       = 2       !< Atomic number of Helium
 
 
   ! They will be pointer targets at molecula.f:POINT_PPA_PB()
@@ -44,7 +44,7 @@ module dissoc
   real*8, private, dimension(max_dissoc_nmol) :: &
    ppmol, apmlog
 
-  real pe ! Fictitious pressure of electron?? ISSUE: is it?
+  real*8, private :: pe !< Fictitious pressure of electron?? ISSUE: is it?
 
   !> @todo ISSUE I won't do it this way until I sort the conflicts in DIE
   !~REAL PE ! Fictitious pressure of the electron?? is it? ISSUE
@@ -55,13 +55,13 @@ contains
 
   !================================================================================================================================
   !> Subroutine d'equilibre dissociatif
-  !> @todo ISSUE WHAT
+  !> @todo issue ?what? ?doc?
 
   subroutine sat4()
     use config
     implicit none
     real*8, dimension(max_modeles_ntot, max_dissoc_nmetal) :: xp
-    real  kplog, econst, fplog, &
+    real*8  kplog, econst, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
     integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
@@ -78,8 +78,8 @@ contains
       cclogi = dissoc__cclog(i)+main_afstar
       !> @todo ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
       cclogi = cclogi+main_xxcor(i)
-      if(i .eq .1) cclogi = 0.0
-      if(i .eq .2) cclogi = -1.0
+      if(i .eq. 1) cclogi = 0.0
+      if(i .eq. 2) cclogi = -1.0
 
       nelemxi = dissoc_nelemx(i)
       ig0i = dissoc__ig0(i)
@@ -105,7 +105,7 @@ contains
       p(nelemi) = 1.0e-20
     1400 continue
 
-    !> @todo ISSUE What if atomic number 99 was already in dissoc.dat?
+    !> @todo issue ?what? ?doc? if atomic number 99 was already in dissoc.dat?
     p(z_electron) = 1.0e-10
     !> @todo ISSUE: what about 100?
 
@@ -116,19 +116,19 @@ contains
       theta = modeles_teta(ito)
       tem = 5040.0/theta
       pg = modeles_pg(ito)
-      pglog = alog10(pg)
+      pglog = log10(pg)
 
       call die(tem,pg)
 
       pe = p(z_electron)
-      pelog = alog10(pe)
+      pelog = log10(pe)
 
       do 1303 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        fplog  = alog10(fp(nelemi))
+        fplog  = log10(fp(nelemi))
         xp(ito,i) = p(nelemi)+1.0e-30
-        plog   = alog10( xp(ito,i) )
+        plog   = log10( xp(ito,i) )
         pdfpl  = plog - fplog
         if (mod(i,5)) 1303,1304,1303
         1304 continue
@@ -138,8 +138,9 @@ contains
       do 1184 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        plog   = alog10(p(nelemi)+1.0e-30)
-        kplog  = alog10(kp(nelemi)+1.0e-30)
+        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here???
+        plog   = log10(p(nelemi)+1.0e-30)
+        kplog  = log10(kp(nelemi)+1.0e-30)
         pionl  = plog + kplog - pelog
         xlog   = pionl - pglog
 
@@ -152,7 +153,7 @@ contains
         1450 if (mod(i,120))  1184,1460,1184
 
         1460 nbl = 0
-        
+
         do 1470  k1=1,120,3
           nbl = nbl + 1
           k2 = k1 + 1
@@ -170,9 +171,9 @@ contains
         irr = ir - irl*3
         if (irr .eq. 0)  go to 1184
         go to (1482,1484), irr
-        
+
         1482 continue
-        
+
         go to 1184
 
         1484 continue
@@ -182,7 +183,7 @@ contains
       kd =-119
       do 1084 j=1,dissoc_nmol
         jcount = jcount + 1
-        pmoll  = alog10(ppmol(j)+1.0e-30)
+        pmoll  = log10(ppmol(j)+1.0e-30)
         xlog   = pmoll - pglog
 
         if (j .ne. dissoc_nmol) go to 2450
@@ -211,17 +212,17 @@ contains
         go to 2184
 
         2480 continue
-        
+
         irr = ir - irl*3
-        
+
         if (irr .eq. 0)  go to 2184
-        
+
         go to (2482,2484), irr
-        
+
         2482 continue
 
         go to 2184
-        
+
         2484 continue
         2184 continue
       1084 continue
@@ -248,15 +249,16 @@ contains
 
   !================================================================================================================================
   !> DIE9
-  !> @todo ISSUE WHAT
+  !> @todo issue ?what? ?doc?
 
   subroutine die(tem, pg)
     use config
     use read_files
+    implicit none
     real*8 tem, pg
     real*8, dimension(max_z) :: fx, dfx, z, prev
     real*8, dimension(max_dissoc_nmetal) :: wa
-    real aplogj, atomj, delta, df, dhh, econst, epsdie, &
+    real*8 aplogj, atomj, delta, df, dhh, econst, epsdie, &
      f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
      spnion, t, tem25, u, x, xr, pph, phh
     integer i, imaxp1, iterat, j, k, km5, m, mmaxj, nelemi, nelemj, &
@@ -266,8 +268,8 @@ contains
     econst = 4.342945e-1
     epsdie = 5.0e-3
     t      = 5040.0/tem
-    pglog  = alog10(pg)
-    
+    pglog  = log10(pg)
+
     heh    = ccomp(z_he)/ccomp(z_h)  ! Helium-to-Hydrogen ratio by number
 
     ! EVALUATION OF LOG KP(MOL)
@@ -302,7 +304,7 @@ contains
     ! PRELIMINARY VALUE OF PH AT LOW TEMPERATURES
     1072 continue
     if (pg/dhh - 0.1) 1073, 1073, 1074
-    
+
     1073 continue
     ph = pg/(1.0+heh)
     go to 1102
@@ -320,29 +322,29 @@ contains
     s = -1.0*pg
     x = sqrt(ph)
     iterat = 0
-    
+
     1103 continue
     f  = ((u*x**2+q)*x+r)*x+s
     df = 2.0*(2.0*u*x**2+q)*x+r
     xr = x-f/df
     if (abs((x-xr)/xr)-epsdie) 1105, 1105, 1106
-    
+
     1106 continue
     iterat=iterat+1
     if (iterat-50) 1104,1104,1107
 
     1107 continue
-    
+
     6108 format(1h1,'Not converge in die  tem=', f9.2, 5x, 'pg=', e12.5, 5x 'x1=', &
                 e12.5, 5x,'x2=', e12.5, 5x, 'ph=', e12.5)
     write(lll, 6108) tem,pg,x,xr,ph
     call log_warning(lll)
-    
+
     go to 1105
 
     1104 continue
     x = xr
-    
+
     go to 1103
 
     1105 continue
@@ -367,7 +369,7 @@ contains
     pe = p(z_electron)
 
     if(ph-p(z_h)) 1402,1402,1401
-    
+
     1401 continue
     do 1403 i=1,dissoc_nmetal
       !> @todo ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE
@@ -393,11 +395,12 @@ contains
       do 1042 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
-        pmoljl = pmoljl + float(natomj)*alog10(p(nelemj))
+        !> @todo log(p) called many times, should try to optimize
+        pmoljl = pmoljl + float(natomj)*log10(p(nelemj))
       1042 continue
-      
+
       if(pmoljl - (pglog+1.0) ) 1046,1046,1047
-      
+
       1047 continue
       do 1048 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
@@ -432,11 +435,11 @@ contains
     ! SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
     do 2001 i=1,dissoc_nmetal
       nelemi=dissoc_nelemx(i)
-      wa(i)=alog10(p(nelemi)+1.0e-30)
+      wa(i)=log10(p(nelemi)+1.0e-30)
     2001 continue
 
     imaxp1 = dissoc_nmetal+1
-    wa(imaxp1) = alog10(pe+1.0e-30)
+    wa(imaxp1) = log10(pe+1.0e-30)
     delta = 0.0
     do 1050 i=1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)

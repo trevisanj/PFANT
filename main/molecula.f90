@@ -213,7 +213,7 @@ contains
    +    km__a0(molid), km__a1(molid), km__a2(molid),
    +    km__a3(molid), km__a4(molid), km__als(molid)
 
-      !> @todo ISSUE what is S??
+      !> @todo issue ?what? ?doc? is S??
       read(unit_,*) km__s(molid)
 
       nnv = km__nv(molid)
@@ -489,7 +489,7 @@ contains
                   (2.-CRO)*(2.*km_JJ(L)+1.)*                                             &
                   EXP(H*C/KB*modeles_TETA(N)/5040.*(DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV))
 
-            !> @todo ISSUE What to do with this REAL*4 vs. REAL*8 thing?
+            !> @todo issue ?what? ?doc? to do with this REAL*4 vs. REAL*8 thing?
             km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
           END DO
 

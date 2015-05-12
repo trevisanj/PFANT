@@ -1,15 +1,15 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -18,7 +18,7 @@
 !> - Configuration globals with their default values
 !> - Routines to parse command-line arguments
 !> - All globals have prefix "config_"
-  
+
 module config
   use logging
 
@@ -29,11 +29,11 @@ module config
   !>
   !> Possible values: logging::logging_halt, logging::logging_critical, logging::logging_error,
   !> logging::logging_warning, logging::logging_info (default), logging::logging_debug
-  integer config_loglevel = logging_info
+  integer :: config_loglevel = logging_info
 
   !=====
   ! File names
-  
+
   character*256 config_fn_dissoc
 
 
@@ -53,7 +53,7 @@ module config
   !> List of molecule ids that are switched on. Complement of config_molids_off.
   integer, dimension(num_mol) :: config_molids_on
   !> This is actually <code> = num_mol-config_num_mol_off </code>
-  integer config_num_mol_on 
+  integer config_num_mol_on
 
 
   !=====
@@ -63,7 +63,7 @@ module config
   !> Interpolation type of turbul_VT
   !> @li 1: (default) linear
   !> @li 2: parabolic
-  integer config_interp = 1
+  integer :: config_interp = 1
 
 
   !> Selector for subroutines FLIN1() and FLINH():
@@ -92,10 +92,9 @@ contains
   !>   - does other necessary operations.
   !>
   !> Must be called at system startup
-  
+
   subroutine config_setup()
     use logging
-    use argparser
     implicit none
 
     ! Parses command line
@@ -116,7 +115,7 @@ contains
   !> Returns molecule id given index
   !>
   !> Molecule id is a number from 1 to num_mol, which is uniquely related to a chemical molecule within pfant.
-  
+
   function get_molid(i_mol)
     implicit none
     integer i_mol, get_molid
@@ -160,7 +159,7 @@ contains
 
   !================================================================================================================================
   !> Fills config_molids_on and config_num_mol_on
-  
+
   subroutine make_molids()
     implicit none
     integer i_mol, j, molid
@@ -190,7 +189,6 @@ contains
 
   subroutine parseargs()
     use options2
-    use CONFIG
     use logging
     implicit none
     integer k  !> @todo for debugging, take it out
@@ -200,12 +198,12 @@ contains
     logical err_out
     type(option) options(3), opt
 
-    options(1) = option('loglevel', 'l', .TRUE., 'Logging level (1: debug; 2: info; 3: '&
+    options(1) = option('loglevel', 'l', .TRUE., 'Logging level (1: debug; 2: info; 3: '//&
      'warning; 4: error; 5: critical; 6: halt)', 'level')
-    options(2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine '&
+    options(2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine '//&
      'TURBUL() (1: linear; 2: parabolic)', 'type')
-    options(3) = option('kik', 'i', .TRUE., 'Selector for subroutines FLIN1() and '&
-     'FLINH() (0 (default): integration using 6/7 points depending on main_PTDISK; '&
+    options(3) = option('kik', 'i', .TRUE., 'Selector for subroutines FLIN1() and '//&
+     'FLINH() (0 (default): integration using 6/7 points depending on main_PTDISK; '//&
      '1: 26-point integration)', 'type')
 
     err_out = .FALSE.
@@ -248,7 +246,7 @@ contains
                 case default
                   err_out = .TRUE.
               end select
-              
+
             case ('kik')
               iTemp = parseint(opt, o_arg)
               select case(iTemp)
@@ -256,6 +254,7 @@ contains
                   config_KIK = iTemp
                 case default
                   err_out = .TRUE.
+              end select
           end select
 
           if (err_out) then

@@ -1,558 +1,663 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> @ingroup gr_math
 !> MISCellaneous MATHs: re-usable Math library
 
-MODULE MISC_MATH
-  CONTAINS
+module misc_math
+  implicit none
+contains
 
   !> Computes the Voight function.
   !>
-  !>     ***ROUTINE COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
-  !>     ***- TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
-  !>     *** LA FONCTION EST ENSUITE NORMALISEE
+  !> @verbatim
+  !> COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
+  !> - TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
+  !> LA FONCTION EST ENSUITE NORMALISEE
+  !> @endverbatim
   !>
-  !> Arguments:
-  !>   X --
-  !>   Y --
-  !>   DEL --
-  !>   PHI -- output
-  !>
-  !> Reference:
-  !>   Q.S.R.T.   VOL16,611 (1976)
+  !> @todo sort this reference Reference: Q.S.R.T. VOL16,611 (1976)
 
-  SUBROUTINE HJENOR(Y,X,DEL,PHI)
-    IMPLICIT NONE
-    REAL*8 X,Y
-    real*8 VOIGT
-    real*8 VV,UU,CO
-    REAL*8 B(22),RI(15),XN(15)/10.,9.,2*8.,7.,6.,5.,4.,7*3./,        &
-     YN(15)/3*.6,.5,2*.4,4*.3,1.,.9,.8,2*.7/,D0(35),D1(35),D2(35)    &
-     ,D3(35),D4(35),HN(35),H/.201/,XX(3)/.5246476,1.65068,.7071068/  &
-     ,HH(3)/.2562121,.2588268E-1,.2820948/,NBY2(19)/9.5,9.,8.5,8.,   &
-     7.5,7.,6.5,6.,5.5,5.,4.5,4.,3.5,3.,2.5,2.,1.5,1.,.5/,C(21)/     &
-     .7093602E-7,-.2518434E-6,.8566874E-6,-.2787638E-5,.866074E-5,   &
-     -.2565551E-4,.7228775E-4,-.1933631E-3,.4899520E-3,-.1173267E-2, &
-     .2648762E-2,-.5623190E-2, .1119601E-1,-.2084976E-1,.3621573E-1, &
-     -.5851412E-1,.8770816E-1, -.121664,.15584,-.184,.2/
-    LOGICAL TRU/.FALSE./
+  subroutine hjenor(y,x,del,phi)
+    real*8, intent(in) :: &
+     x,   & !< ?doc?
+     y,   & !< ?doc?
+     del    !< ?doc?
+    real*8, intent(out) :: phi    !< ?doc?
+    real*8 voigt
+    real*8 vv,uu
+    real*8 b(22),ri(15),xn(15)/10.,9.,2*8.,7.,6.,5.,4.,7*3./,        &
+     yn(15)/3*.6,.5,2*.4,4*.3,1.,.9,.8,2*.7/,d0(35),d1(35),d2(35)    &
+     ,d3(35),d4(35),hn(35),h/.201/,xx(3)/.5246476,1.65068,.7071068/  &
+     ,hh(3)/.2562121,.2588268e-1,.2820948/,nby2(19)/9.5,9.,8.5,8.,   &
+     7.5,7.,6.5,6.,5.5,5.,4.5,4.,3.5,3.,2.5,2.,1.5,1.,.5/,c(21)/     &
+     .7093602e-7,-.2518434e-6,.8566874e-6,-.2787638e-5,.866074e-5,   &
+     -.2565551e-4,.7228775e-4,-.1933631e-3,.4899520e-3,-.1173267e-2, &
+     .2648762e-2,-.5623190e-2, .1119601e-1,-.2084976e-1,.3621573e-1, &
+     -.5851412e-1,.8770816e-1, -.121664,.15584,-.184,.2/
+    logical tru/.false./
+    real*8 c0, dx, v, u, y2
+    integer i, j, min, max, n
 
-    TRU=.FALSE.
-    B(1)=0.
-    B(2)=0.7093602E-7
+    tru=.false.
+    b(1)=0.
+    b(2)=0.7093602e-7
 
-    IF (TRU) GO TO 104
+    if (tru) go to 104
 
     ! REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
-    TRU=.TRUE.
+    tru=.true.
 
-    DO 101 I=1,15
-    101 RI(I)=-I/2.
+    do 101 i=1,15
+    101 ri(i)=-i/2.
 
-    DO 103 I=1,25
-      HN(I)=H*(I-.5)
-      C0=4.*HN(I)*HN(I)/25.-2.
+    do 103 i=1,25
+      hn(i)=h*(i-.5)
+      c0=4.*hn(i)*hn(i)/25.-2.
 
-      DO 102 J=2,21
-      102 B(J+1)=C0*B(J)-B(J-1)+C(J)
-        
-      D0(I)=HN(I)*(B(22)-B(21))/5.
-      D1(I)=1.-2.*HN(I)*D0(I)
-      D2(I)=(HN(I)*D1(I)+D0(I))/RI(2)
-      D3(I)=(HN(I)*D2(I)+D1(I))/RI(3)
-      D4(I)=(HN(I)*D3(I)+D2(I))/RI(4)
+      do 102 j=2,21
+      102 b(j+1)=c0*b(j)-b(j-1)+c(j)
+
+      d0(i)=hn(i)*(b(22)-b(21))/5.
+      d1(i)=1.-2.*hn(i)*d0(i)
+      d2(i)=(hn(i)*d1(i)+d0(i))/ri(2)
+      d3(i)=(hn(i)*d2(i)+d1(i))/ri(3)
+      d4(i)=(hn(i)*d3(i)+d2(i))/ri(4)
 
       ! write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
-    103 CONTINUE
+    103 continue
 
-    104 IF (X-5.) 105,112,112
-    105 IF (Y-1.) 110,110,106
-    106 IF (X.GT.1.85*(3.6-Y)) GO TO 112
+    104 if (x-5.) 105,112,112
+    105 if (y-1.) 110,110,106
+    106 if (x.gt.1.85*(3.6-y)) go to 112
 
     ! REGION II CONTINUED FRACTION .COMPUTE NUMBER OF TERMS NEEDED
     ! write(6,*)'region II'
-    IF (Y.LT.1.45) GO TO 107
-    I=Y+Y
-    GO TO 108
+    if (y.lt.1.45) go to 107
+    i=int(y+y) !> @todo issue added int conversion but not sure if this is the logic
+    go to 108
 
-    107 CONTINUE
-    I=11.*Y
+    107 continue
+    i=int(11.*y)
 
-    108 CONTINUE
-    J=X+X+1.85
-    MAX=XN(J)*YN(I)+.46
-    MIN=MIN0(16,21-2*MAX)
+    108 continue
+    j=int(x+x+1.85) !> @todo issue added int conversion but not sure if this is the logic
+    max=int(xn(j)*yn(i)+.46) !> @todo issue added int conversion but not sure if this is the logic
+    min=min0(16,21-2*max)
 
     ! EVALUATED CONTINUED FRACTION
-    UU=Y
-    VV=X
-    DO 109 J=MIN,19
-      U=NBY2(J)/(UU*UU+VV*VV)
-      UU=Y+U*UU
-      VV=X-U*VV
-    109 CONTINUE
-    VOIGT=UU/(UU*UU+VV*VV)/1.772454
-    GO TO 10
+    uu=y
+    vv=x
+    do 109 j=min,19
+      u=nby2(j)/(uu*uu+vv*vv)
+      uu=y+u*uu
+      vv=x-u*vv
+    109 continue
+    voigt=uu/(uu*uu+vv*vv)/1.772454
+    go to 10
 
-    110 CONTINUE
-    Y2=Y*Y
-    IF (X+Y.GE.5.) GO TO 113
+    110 continue
+    y2=y*y
+    if (x+y.ge.5.) go to 113
 
     ! REGION I. COMMPUTE DAWSON'S FUNCTION AT X FROM TAYLOR SERIES
-    N=INT(X/H)
-    DX=X-HN(N+1)
-    U=(((D4(N+1)*DX+D3(N+1))*DX+D2(N+1))*DX+D1(N+1))*DX+D0(N+1)
-    V=1.-2.*X*U
+    n=int(x/h)
+    dx=x-hn(n+1)
+    u=(((d4(n+1)*dx+d3(n+1))*dx+d2(n+1))*dx+d1(n+1))*dx+d0(n+1)
+    v=1.-2.*x*u
 
     ! TAYLOR SERIES EXPANSION ABOUT Y=0.0
-    VV=EXP(Y2-X*X)*COS(2.*X*Y)/1.128379-Y*V
+    vv=exp(y2-x*x)*cos(2.*x*y)/1.128379-y*v
     ! write(6,*) n,u,dx,d0(n+1),d1(n+1),d2(n+1),d3(n+1),d4(n+1)
-    UU=-Y
-    MAX=5.+(12.5-X)*.8*Y
-    DO 111 I=2,MAX,2
-      U=(X*V+U)/RI(I)
-      V=(X*U+V)/RI(I+1)
-      UU=-UU*Y2
-      VV=VV+V*UU
-    111 CONTINUE
-    VOIGT=1.128379*VV
-    ! write(6,*)'region I ',voigt,vv,x,y,del
-    GO TO 10
+    uu=-y
+    max=int(5.+(12.5-x)*.8*y) !> @todo issue added int conversion but not sure if this is the logic
+    do 111 i=2,max,2
+      u=(x*v+u)/ri(i)
+      v=(x*u+v)/ri(i+1)
+      uu=-uu*y2
+      vv=vv+v*uu
+    111 continue
+    voigt=1.128379*vv
+    ! write(6,*)'region i ',voigt,vv,x,y,del
+    go to 10
 
-    112 CONTINUE
-    Y2=Y*Y
-    IF (Y.LT.11.-.6875*X) GO TO 113
+    112 continue
+    y2=y*y
+    if (y.lt.11.-.6875*x) go to 113
 
     !  REGION IIIB  2 POINT GAUSS-HERMITE QUADRATURE
-    U=X-XX(3)
-    V=X+XX(3)
-    VOIGT=Y*(HH(3)/(Y2+U*U)+HH(3)/(Y2+V*V))
+    u=x-xx(3)
+    v=x+xx(3)
+    voigt=y*(hh(3)/(y2+u*u)+hh(3)/(y2+v*v))
     ! write(6,*)'region IIIb ', voigt
-    GO TO 10
+    go to 10
 
     !  REGION IIIA 4-POINT GAUSS-HERMITE QUADRATURE.
-    113 CONTINUE
-    U=X-XX(1)
-    V=X+XX(1)
-    UU=X-XX(2)
-    VV=X+XX(2)
-    VOIGT=Y*(HH(1)/(Y2+U*U)+HH(1)/(Y2+V*V)+HH(2)/(Y2+UU*UU)+HH(2)/(Y2+VV*VV))
+    113 continue
+    u=x-xx(1)
+    v=x+xx(1)
+    uu=x-xx(2)
+    vv=x+xx(2)
+    voigt=y*(hh(1)/(y2+u*u)+hh(1)/(y2+v*v)+hh(2)/(y2+uu*uu)+hh(2)/(y2+vv*vv))
     ! write(6,*)'region IIIa',voigt
 
-    10 CONTINUE
-    PHI = VOIGT /  (1.772454 * DEL)
+    10 continue
+    phi = voigt /  (1.772454 * del)
     ! write(6,*)phi
-  END
+  end
 
-  !-------------------------------------------------------------------------------
-  !> @todo ISSUE WHAT
-      FUNCTION IINF(FR,ITOT,IA,IZ)
-      DIMENSION FR(ITOT)
-      IA2=IA+1
-      IINF=IA
-      FMIN=FR(IA)
-      DO 1 I=IA2,IZ
-        IF(FR(I).GT.FMIN) GO TO 1
-        FMIN=FR(I)
-        IINF=I
-1     CONTINUE
-      RETURN
-      END
+  !---------------------------------------------------------------------------------------
+  !> Returns index of minimum value of fr within interval [ia, iz]
+  !>
+  !> Returns
+  !> i* (ia <= i* <= iz) such that
+  !> fr(i*) = minimum( fr(i), ia <= i <= iz)
+  integer function iinf(fr,itot,ia,iz)
+    real*8, intent(in):: fr(itot) !< search vector
+    integer, intent(in) :: &
+     itot, & !< size of vector fr
+     ia,   & !< interval lower index
+     iz      !< interval upper index
+    integer i, ia2
+    real*8 fmin
+
+    ia2=ia+1
+    iinf=ia
+    fmin=fr(ia)
+    do 1 i=ia2,iz
+      if(fr(i).gt.fmin) go to 1
+      fmin=fr(i)
+      iinf=i
+    1 continue
+  end
 
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
+  !> Returns index of maximum value of fr within interval [ia, iz]
+  !>
   !> UNE FONCTION FR EST CONNUE EN ITOT POINTS. ON CHERCHE ENTRE
   !> LES POINTS IA ET IZ QUEL EST L INDICE I OU CETTE FONCTION
   !> EST MAXIMUM.
-  FUNCTION ISUP(FR, ITOT, IA, IZ)
-    DIMENSION FR(ITOT)
-    IA2=IA+1
-    ISUP=IA
-    FMAX=FR(IA)
-    DO 1 I=IA2,IZ
-      IF(FR(I) .LT. FMAX) GO TO 1
-      FMAX=FR(I)
-      ISUP=I
-    1 CONTINUE
-    RETURN
-  END
 
-  !-------------------------------------------------------------------------------
-  !> @todo ISSUE WHAT
-  FUNCTION MINI(IFA, NTOT, IA, IZ)
-    INTEGER NTOT, IA, IZ
-    INTEGER, DIMENSION(NTOT) :: IFA
-    MINI=IFA(IA)
-    IA2=IA+1
-    DO I=IA2,IZ
-      IF(IFA(I) .LT. MINI) THEN
-        MINI=IFA(I)
-      END IF
-    END DO
-    RETURN
-  END
+  integer function isup(fr, itot, ia, iz)
+    real*8, intent(in):: fr(itot) !< search vector
+    integer, intent(in) :: &
+     itot, & !< size of vector fr
+     ia,   & !< interval lower index
+     iz      !< interval upper index
+    integer i, ia2
+    real*8 fmax
 
-  !-------------------------------------------------------------------------------
-  !> @todo ISSUE WHAT
-  FUNCTION MAXI(IFA, NTOT, IA, IZ)
-    INTEGER NTOT, IA, IZ
-    INTEGER, DIMENSION(NTOT) :: IFA
-    MAXI=IFA(IA)
-    IA2=IA+1
-    DO I=IA2,IZ
-      IF(IFA(I).GT.MAXI) THEN
-        MAXI=IFA(I)
-      END IF
-    END DO
-    RETURN
-  END
+    ia2=ia+1
+    isup=ia
+    fmax=fr(ia)
+    do 1 i=ia2,iz
+      if(fr(i) .lt. fmax) go to 1
+      fmax=fr(i)
+      isup=i
+    1 continue
+  end
 
-  !-------------------------------------------------------------------------------
-  !> X -- TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS
-  !>      CROISSANTES
-  !> Y -- TABLEAU DES VALEURS ASSOCIEES DE LA FONCTION A INTEGRER
-  !> P -- TABLEAU DES VALEURS DE LA PRIMITIVE AUX POINTS X(I)
-  !> N --
-  !> PDEB -- VALEUR DE LA PRIMITIVE POUR X(1),PREMIERE VALEUR
-  !>         DU TABLEAU
+  !---------------------------------------------------------------------------------------
+  !> Returns minimum value of ifa within interval [ia, iz]
   !>
-  !> METHODE: LA VALEUR DE L'INTEGRALE SUR L'INTERVALLE X(I), X(I+1)
+  !> This function is designed for integer vectors.
+
+  integer function mini(ifa, ntot, ia, iz)
+    integer, intent(in) :: &
+     ifa(ntot), & !< search vector
+     ntot,      & !< size of vector ifa
+     ia,        & !< interval lower index
+     iz           !< interval upper index
+    integer i, ia2
+
+    mini=ifa(ia)
+    ia2=ia+1
+    do i=ia2,iz
+      if(ifa(i) .lt. mini) then
+        mini=ifa(i)
+      end if
+    end do
+  end
+
+  !---------------------------------------------------------------------------------------
+  !> Returns maximum value of ifa within interval [ia, iz]
+
+  integer function maxi(ifa, ntot, ia, iz)
+    integer, intent(in) :: &
+     ifa(ntot), & !< search vector
+     ntot,      & !< size of vector ifa
+     ia,        & !< interval lower index
+     iz           !< interval upper index
+    integer i, ia2
+
+    maxi=ifa(ia)
+    ia2=ia+1
+    do i=ia2,iz
+      if(ifa(i).gt.maxi) then
+        maxi=ifa(i)
+      end if
+    end do
+  end
+
+  !---------------------------------------------------------------------------------------
+  !> Numerical integration
+  !>
+  !> *METHODE*: LA VALEUR DE L'INTEGRALE SUR L'INTERVALLE X(I), X(I+1)
   !>   EST CALCULEE PAR LA FORMULE DE SIMPSON, LA VALEUR DE Y AU POINT
   !>   MILIEU ETANT CALCULEE PAR INTERPOLATION CUBIQUE, PAR LA ROUTINE
-  !>   AITK3
-  SUBROUTINE INTEGRA(X, Y, P, N, PDEB)
-    DIMENSION X(N),Y(N), P(0:N)
-    P(1) = PDEB
-      
+  !>   naitk3()
+  subroutine integra(x, y, p, n, pdeb)
+    real*8, intent(in) :: &
+     x(n), & !< TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS CROISSANTES
+     y(n), & !< TABLEAU DES VALEURS ASSOCIEES DE LA FONCTION A INTEGRER
+     pdeb    !< VALEUR DE LA PRIMITIVE POUR X(1),PREMIERE VALEUR DU TABLEAU
+    integer, intent(in) :: n !< Size of x, y, and p
+    real*8, intent(out) :: p(0:n) !< TABLEAU DES VALEURS DE LA PRIMITIVE AUX POINTS X(I)
+    real*8 fx, xmilieu
+    integer i, j
+
+    p(1) = pdeb
+
     ! CAS SPECIAL DU PREMIER INTERVALLE
-    XMILIEU=(X(1)+X(2))/2.
-    CALL NAITK3(X(1),X(2),X(3),X(4), Y(1),Y(2),Y(3),Y(4),XMILIEU,FX)
-    P(2) = P(1)+((X(2)-X(1))/6.)*(Y(1)+Y(2)+4.*FX)
-      
+    xmilieu=(x(1)+x(2))/2.
+    call naitk3(x(1),x(2),x(3),x(4), y(1),y(2),y(3),y(4),xmilieu,fx)
+    p(2) = p(1)+((x(2)-x(1))/6.)*(y(1)+y(2)+4.*fx)
+
     ! CAS GENERAL
-    DO I=2,N-2
-      XMILIEU = (X(I)+X(I+1))/2.
-      J = I-1
-      CALL NAITK3(X(J),X(J+1),X(J+2),X(J+3),Y(J),Y(J+1),Y(J+2),Y(J+3),XMILIEU,FX)
-      P(I+1) = P(I)+((Y(I)+Y(I+1)+4.*FX)/6.)*(X(I+1)-X(I))
-    END DO
-      
+    do i=2,n-2
+      xmilieu = (x(i)+x(i+1))/2.
+      j = i-1
+      call naitk3(x(j),x(j+1),x(j+2),x(j+3),y(j),y(j+1),y(j+2),y(j+3),xmilieu,fx)
+      p(i+1) = p(i)+((y(i)+y(i+1)+4.*fx)/6.)*(x(i+1)-x(i))
+    end do
+
     ! CAS SPECIAL DERNIER INTERVALLE
-    XMILIEU = (X(N-1)+X(N))/2.
-    J = N-3
-    CALL NAITK3(X(J),X(J+1),X(J+2),X(J+3),Y(J),Y(J+1),Y(J+2),Y(J+3),XMILIEU,FX)
-    P(N) = P(N-1)+((X(N)-X(N-1))/6.)*(Y(N-1)+Y(N)+4.*FX)
-  END
+    xmilieu = (x(n-1)+x(n))/2.
+    j = n-3
+    call naitk3(x(j),x(j+1),x(j+2),x(j+3),y(j),y(j+1),y(j+2),y(j+3),xmilieu,fx)
+    p(n) = p(n-1)+((x(n)-x(n-1))/6.)*(y(n-1)+y(n)+4.*fx)
+  end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> CALCUL DE CH VAN DER WAALS  APPROXIMATIONS D UNSOLD (1955)
-  !> SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54  SINON 82-55
-  FUNCTION CALCH(KII, IZ, KIEX1, IS1, KIEX2, IS2)
-    REAL KII,KIEX1,KIEX2,NET1C,NET2C
-    DIMENSION IS(4), IL(4)
-    CHARACTER*1 IS, IBL
-    CHARACTER*1 IS1, IS2
-    
-    DATA IBL/' '/
-    DATA IS/'S','P','D','F'/
-    DATA IL/1,-5,-17,-35/
-    
-    IF (IS1 .NE. IBL) GO TO 1
-    C61 = 1.61E-33*(13.5*IZ / (KII-KIEX1))**2
-    C62 = 1.61E-33*(13.5*IZ / (KII-KIEX2))**2
-    GO TO 10
-      
-    1 CONTINUE
-    DO 2 I=1,4
-      IF(IS1.EQ.IS(I)) GO TO 3
-    2 CONTINUE
+  !>
+  !> SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54, SINON 82-55
+  !> @todo improve documentation ?doc?
+  real*8 function calch(kii, iz, kiex1, is1, kiex2, is2)
+    real*8, intent(in) :: &
+     kii,   & !< ?doc?
+     kiex1, & !< ?doc?
+     kiex2    !< ?doc?
+    integer, intent(in) :: iz !< ?doc?
+    character*1, intent(in) :: &
+     is1, & !< ?doc?
+     is2    !< ?doc?
+    real*8 net1c, net2c, c61, c62
+    integer, parameter :: il(4) = (/1,-5,-17,-35/)
+    character*1, parameter :: &
+     is(4) = (/'s','p','d','f'/), &
+     ibl = ' '
+    integer il1, il2, izc, i
 
-    3 CONTINUE
-    IL1=IL(I)
-    DO 4 I=1,4
-      IF(IS2.EQ.IS(I)) GO TO 5
-    4 CONTINUE
+    if (is1 .ne. ibl) go to 1
+    c61 = 1.61e-33*(13.5*iz / (kii-kiex1))**2
+    c62 = 1.61e-33*(13.5*iz / (kii-kiex2))**2
+    go to 10
 
-    5 CONTINUE
-    IL2 = IL(I)
-    IZC = IZ**2
-    NET1C = 13.5 * IZC / (KII-KIEX1)
-    NET2C = 13.5 * IZC / (KII-KIEX2)
-    C61 = 3.22E-34 * NET1C *(5*NET1C+IL1)/ IZC
-    C62 = 3.22E-34 * NET2C *(5*NET2C+IL2)/ IZC
-     
-    10 CALCH = C62-C61
-    RETURN
-  END
+    1 continue
+    do 2 i=1,4
+      if(is1 .eq. is(i)) go to 3
+    2 continue
+
+    3 continue
+    il1=il(i)
+    do 4 i=1,4
+      if(is2 .eq. is(i)) go to 5
+    4 continue
+
+    5 continue
+    il2 = il(i)
+    izc = iz**2
+    net1c = 13.5 * izc / (kii-kiex1)
+    net2c = 13.5 * izc / (kii-kiex2)
+    c61 = 3.22e-34 * net1c *(5*net1c+il1)/ izc
+    c62 = 3.22e-34 * net2c *(5*net2c+il2)/ izc
+
+    10 calch = c62-c61
+    return
+  end
 
 
 
-!===============================================================================
-! INTERPOLATION ROUTINES
-!===============================================================================
+  !===============================================================================
+  ! INTERPOLATION ROUTINES
+  !===============================================================================
 
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> INTERPOLATION D UNE LISTE A PAS NON CONSTANT
   !>
   !> EXTRAPOLE TETA(PG) POUR PG=0
+  !> @verbatim
   !> ***TETA1 extrapolation parabolique sur les 3 derniers pts
   !> ***TETA2      "             "      sur les pts 2 3 et 4
   !> ***TETA3      "        lineaire    sur les 2 derniers pts
   !> (ici seul TETA3 est utilise)
-  FUNCTION FTETA0(PG,TETA)
-    REAL*4 PP1(5),TT1(5),PP2(5),TT2(5)
+  !> @endverbatim
+  !>
+  !> @todo reference
+  !>
+  !> @todo Function used in specific context, called by BK only. I don't know if not better there.
+  real*8 function fteta0(pg, teta, n)
+    !> Size of vectors pf and teta; example source is read_files::modeles_ntot
+    integer, intent(in) :: n
+    real*8, intent(in), dimension(n) :: &
+      pg, & !< Example source is read_files::modeles_pg
+      teta  !< Example source is read_files::modeles_teta
+    real*8, dimension(5) :: pp1,tt1,pp2,tt2
+    integer i
+    real*8 teta3
 
-    !~LOGICAL ECRIT  I think this has been tested already, no need to verbose flag, would slow down the maths
-    !~ECRIT=.FALSE.
-    PP1(1)=PG(1)
-    TT1(1)=TETA(1)
-    IF(ECRIT) write(6,*) PG(1), TETA(1)
-    DO I=2,5
-      PP1(I)=PG(I)
-      PP2(I-1)=PG(I)
-      TT1(I)=TETA(I)
-      TT2(I-1)=TETA(I)
-      !~IF(ECRIT) write(6,*) PG(I), TETA(I)
-    END DO
-    ! TETA1=FT(0.,5,PP1,TT1)
-    ! TETA2=FT(0.,4,PP2,TT2)
-    TETA3=TT1(1) - PP1(1) * (TT1(1)-TT1(2)) / (PP1(1)-PP1(2))
-    !~IF(ECRIT) WRITE(6,*)TETA3
-    FTETA0= TETA3
-    RETURN
-  END
+    !~logical ecrit  i think this has been tested already, no need to verbose flag, would slow down the maths
+    !~ecrit=.false.
+    pp1(1)=pg(1)
+    tt1(1)=teta(1)
+    !~if(ecrit) write(6,*) pg(1), teta(1)
+    do i=2,5
+      pp1(i)=pg(i)
+      pp2(i-1)=pg(i)
+      tt1(i)=teta(i)
+      tt2(i-1)=teta(i)
+      !~if(ecrit) write(6,*) pg(i), teta(i)
+    end do
+    ! teta1=ft(0.,5,pp1,tt1)
+    ! teta2=ft(0.,4,pp2,tt2)
+    teta3=tt1(1) - pp1(1) * (tt1(1)-tt1(2)) / (pp1(1)-pp1(2))
+    !~if(ecrit) write(6,*)teta3
+    fteta0= teta3
+    return
+  end
 
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> INTERPOLATION D UNE LISTE A PAS NON CONSTANT
-  FUNCTION FT(T,N,X,F)
-    DIMENSION X(N),F(N)
-    DO 1 J = 1,N
-      I = J
-      IF(T-X(J)) 3, 2, 1
-      2 CONTINUE
-      FT = F(J)
-      RETURN
-    1 CONTINUE
+  !> @todo improve documentation ?doc?
 
-    3 CONTINUE
-    IF (I. EQ. 1) I = 2
-    IF (I. GE. N) I = N-1
-    
-    T0 = T-X(I-1)
-    T1 = T-X(I)
-    T2 = T-X(I+1)
-    U0 = X(I+1)-X(I-1)
-    U1 = X(I+1)-X(I)
-    U2 = X(I)-X(I-1)
-    A  = T0/U0
-    B  = T1/U1
-    C  = T2/U2
-    D  = T0/U1
-    E  = T1/U0
-    FT = F(I+1)*A*B - F(I)*D*C + F(I-1)*E*C
-  END
+  real*8 function ft(t,n,x,f)
+    integer, intent(in) :: n !< Size of vectors x and f
+    real*8, intent(in) :: &
+     t,    & !< ?doc?
+     x(n), & !< ?doc?
+     f(n)    !< ?doc?
+    real*8 t0, t1, t2, u0, u1, u2, a, b, c, d, e
+    integer i, j
+
+    do 1 j = 1,n
+      i = j
+      if(t-x(j)) 3, 2, 1
+      2 continue
+      ft = f(j)
+      return
+    1 continue
+
+    3 continue
+    if (i .eq. 1) i = 2
+    if (i .ge. n) i = n-1
+
+    t0 = t-x(i-1)
+    t1 = t-x(i)
+    t2 = t-x(i+1)
+    u0 = x(i+1)-x(i-1)
+    u1 = x(i+1)-x(i)
+    u2 = x(i)-x(i-1)
+    a  = t0/u0
+    b  = t1/u1
+    c  = t2/u2
+    d  = t0/u1
+    e  = t1/u0
+    ft = f(i+1)*a*b - f(i)*d*c + f(i-1)*e*c
+  end
 
 
-!-------------------------------------------------------------------------------
-  SUBROUTINE FTLIN3(N,X,Y,ITOT,TT,FTT)
-    USE LOGGING
-    IMPLICIT NONE
-    DIMENSION X(N),Y(N),TT(ITOT),FTT(ITOT)
-    CHARACTER*256 S  !__logging__ 
-     
-!     WRITE(6,*) N
-!     105 FORMAT(7F10.3)
-!     WRITE (6,105) (X(J),J=1,N)
-!     WRITE (6,105) (Y(J),J=1,N)
-!     
+  !---------------------------------------------------------------------------------------
+  !> @todo ?what? ?doc?
+  !>
+  !> @todo This routine is very similar to filetoh::ftlin3h(). Explain why ftlin3h() exists, what the differences are, etc.
+  !>
+  !> @todo actually all these ft routines are similar. I don't know what to do. A lot of code duplication, but each routine is a bit different
 
-    J=2
-    DO 4 K=1,ITOT
-      T=TT(K)
-      ! 103 FORMAT(5X,F10.3)
-      ! WRITE(6,103)T
-      JJ=J-1
-      DO 1 J=JJ,N
-        IF(T-X(J) ) 3,2,1
-      1 CONTINUE
-      
-      GO TO 10
-      
-      2 CONTINUE
-      FT=Y(J)
-      IF(J.EQ.1) J=J+1
-      GO TO 4
-      ! 3   WRITE(6,*) '   J=',J
-      
-      3 CONTINUE
-      IF(J.EQ.1) GO TO 10
-      
-      U0= Y(J)-Y(J-1)
-      T0= X(J)-X(J-1)
-      T1=   T -X(J-1)
-      ! 104 FORMAT(I5,7F9.3)
-      ! WRITE(6,104) J, X(J-1), Y(J-1), X(J),Y(J), U0,T0,T1
-      T2= T1/T0
-      DY= U0*T2
-      FT= Y(J-1) + DY
-      
-      4 CONTINUE
-      FTT(K)=FT
-      RETURN
-      
+  subroutine ftlin3(n,x,y,itot,tt,ftt)
+    use logging
+    integer, intent(in) :: &
+     n, & !< Size of vectors x and y
+     itot !< Size of vectors tt and ftt
+    real*8, intent(in) :: &
+     x(n),     & !< ?doc?
+     y(n),     & !< ?doc?
+     tt(itot)    !< ?doc?
+    real*8, intent(out) :: &
+     ftt(itot)   !< ?doc?
+
+    real*8 ft, dy, t0, t1, t2, u0, t
+    integer i, j, jj, k
+    character*80 lll  !__logging__
+
+!     write(6,*) n
+!     105 format(7f10.3)
+!     write (6,105) (x(j),j=1,n)
+!     write (6,105) (y(j),j=1,n)
+!
+
+    j=2
+    do 4 k=1,itot
+      t=tt(k)
+      ! 103 format(5x,f10.3)
+      ! write(6,103)t
+      jj=j-1
+      do 1 j=jj,n
+        if(t-x(j) ) 3,2,1
+      1 continue
+
+      go to 10
+
+      2 continue
+      ft=y(j)
+      if(j.eq.1) j=j+1
+      go to 4
+      ! 3   write(6,*) '   j=',j
+
+      3 continue
+      if(j.eq.1) go to 10
+
+      u0= y(j)-y(j-1)
+      t0= x(j)-x(j-1)
+      t1=   t -x(j-1)
+      ! 104 format(i5,7f9.3)
+      ! write(6,104) j, x(j-1), y(j-1), x(j),y(j), u0,t0,t1
+      t2= t1/t0
+      dy= u0*t2
+      ft= y(j-1) + dy
+
+      4 continue
+      ftt(k)=ft
+      return
+
       !> @todo test this label "10", somehow make it fall here
-      10 CONTINUE
-      100 FORMAT('ON SORT DE LA TABLE D INTERPOLATION AVEC T=',E15.7, '. LISTE DES X: ', 8E15.7)
-      WRITE(S,100) T, (X(I),I=1,N)
-      CALL PFANT_HALT(S)
-    END
+      10 continue
+      100 format('On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
+      write(lll,100) t, (x(i),i=1,n)
+      call pfant_halt(lll)
+    end
 
 
 
-C-------------------------------------------------------------------------------
-C ISSUE WHAT
-!
-!       interpolation
-!
-  FUNCTION FAITK30(XX, X, Y, N)
-    DIMENSION X(0:N), Y(0:N)
-    IF (XX .LT. X(2)) THEN
-      I=0
-      GOTO 200
-    ELSE 
-      IF (XX.GT.X(N-2)) THEN
-        I = N-3
-        GOTO 200
-      ELSE
-      DO J = 2, N-2
-        IF(XX .LE. X(J)) GO TO 100
-      END DO
-    ENDIF
-    
-    100 CONTINUE
-    I = J-2
+  !---------------------------------------------------------------------------------------
+  !> interpolation
+  !> @ todo ?what? ?doc? maybe will be found in BLB's book "Numerical Recipes"
 
-    200 CALL NAITK3(X(I),X(I+1),X(I+2),X(I+3),Y(I),Y(I+1),Y(I+2),Y(I+3),XX,RESULTA)
-    FAITK30 = RESULTA
-  END
+  real*8 function faitk30(xx, x, y, n)
+    integer, intent(in) :: n !< Size of vectors x and y
+    real*8, intent(in) :: &
+     xx,     & !< ?doc?
+     x(0:n), & !< ?doc?
+     y(0:n)    !< ?doc?
+    integer i, j
+    real*8 resulta
+    if (xx .lt. x(2)) then
+      i=0
+      goto 200
+    else if (xx.gt.x(n-2)) then
+      i = n-3
+      goto 200
+    else
+      do j = 2, n-2
+        if(xx .le. x(j)) go to 100
+      end do
+    endif
+
+    100 continue
+    i = j-2
+
+    200 call naitk3(x(i),x(i+1),x(i+2),x(i+3),y(i),y(i+1),y(i+2),y(i+3),xx,resulta)
+    faitk30 = resulta
+  end
 
 
-  !> @todo ISSUE: is this still useful?? (NOT SWITCHED ON!!!)
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> INTERPOLATION PARABOLIQUE
   !> DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
   !> AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
+  !> @todo ISSUE: is this still useful?? (NOT SWITCHED ON!!!)
 
-  SUBROUTINE FT2(N,X,Y,ITOT,TT,FTT)
-    USE LOGGING
-    IMPLICIT NONE
-    DIMENSION  X(N),Y(N),TT(ITOT),FTT(ITOT)
-    CHARACTER*128 S
-    INV = -1
-    IF (X(N).LT.X(1)) INV = 1
-    DO 4 K = 1,ITOT
-    T = TT(K)
-    IF (INV) 5, 6, 6
-    5 CONTINUE
-    DO 1 J = 1,N
-      I = J
-      IF (T-X(J)) 3, 2, 1
-    1 CONTINUE
-    GO TO 10
-    
-    6 CONTINUE
-    DO 7 J = 1, N
-      I = J
-      IF(T-X(J)) 7, 2, 3
-    7 CONTINUE
-    GO TO 10
-    
-    2 CONTINUE
-    FT = Y(J)
-    GO TO 4
-    
-    3 CONTINUE
-    IF (I .EQ. 1) I = 2
-    IF (I .GE. N) I = N-1
-    T0 = T-X(I-1)
-    T1 = T-X(I)
-    T2 = T-X(I+1)
-    U0 = X(I+1)-X(I-1)
-    U1 = X(I+1)-X(I)
-    U2 = X(I)-X(I-1)
-    A  = T0/U0
-    B  = T1/U1
-    C  = T2/U2
-    D  = T0/U1
-    E  = T1/U0
-    FT = Y(I+1)*A*B - Y(I)*D*C + Y(I-1)*E*C
-    
-    4 CONTINUE
-    FTT(K) = FT
-    RETURN
-    
-7    !> @todo Document this error situation
-    10 CONTINUE
-    100 FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION AVEC T=',E15.7)
-    WRITE(S,100) T
-    CALL PFANT_HALT(S)
-  END
+  subroutine ft2(n,x,y,itot,tt,ftt)
+    use logging
+    integer, intent(in) :: &
+     n, & !< Size of vectors x and y
+     itot !< Size of vectors tt and ftt
+    real*8, intent(in) :: &
+     x(n),     & !< ?doc?
+     y(n),     & !< ?doc?
+     tt(itot)    !< ?doc?
+    real*8, intent(out) :: &
+     ftt(itot)   !< ?doc?
+    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
+    integer i, inv, j, k
+    character*80 lll
 
-  !-------------------------------------------------------------------------------
-  !> @todo ISSUE WHAT
-  !> Nouvelle subroutine NAITK3 remplace AITK3 et AITK30
+    inv = -1
+    if (x(n).lt.x(1)) inv = 1
+    do 4 k = 1,itot
+    t = tt(k)
+    if (inv) 5, 6, 6
+    5 continue
+    do 1 j = 1,n
+      i = j
+      if (t-x(j)) 3, 2, 1
+    1 continue
+    go to 10
 
-  SUBROUTINE NAITK3(XdI, XdIp1, XdIp2, XdIp3, YdI, YdIp1, YdIp2, YdIp3, XX, FX)
-    IMPLICIT NONE
-    REAL XdI, XdIp1, XdIp2, XdIp3, YdI, YdIp1, YdIp2, YdIp3, XX, FX
-   
-    U   = XdI
-    V   = XdIp1
-    FU  = YdI
-    FV  = YdIp1
-    F01 =(FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    U   = XdIp2
-    FU  = YdIp2
-    F12 = (FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    U   = XdIp3
-    FU  = YdIp3
-    F13 = (FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    U    = XdI
-    FU   = F01
-    V    = XdIp2
-    FV   = F12
-    F012 = (FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    U    = XdIp2
-    FU   = F12
-    V    = XdIp3
-    FV   = F13
-    F123 = (FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    U     = XdI
-    V     = XdIp3
-    FU    = F012
-    FV    = F123
-    F0123 = (FU*(V-XX)-FV*(U-XX))/(V-U)
-    
-    FX = F0123
-  END
-END MODULE MISC_MATH
+    6 continue
+    do 7 j = 1, n
+      i = j
+      if(t-x(j)) 7, 2, 3
+    7 continue
+    go to 10
+
+    2 continue
+    ft = y(j)
+    go to 4
+
+    3 continue
+    if (i .eq. 1) i = 2
+    if (i .ge. n) i = n-1
+    t0 = t-x(i-1)
+    t1 = t-x(i)
+    t2 = t-x(i+1)
+    u0 = x(i+1)-x(i-1)
+    u1 = x(i+1)-x(i)
+    u2 = x(i)-x(i-1)
+    a  = t0/u0
+    b  = t1/u1
+    c  = t2/u2
+    d  = t0/u1
+    e  = t1/u0
+    ft = y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
+
+    4 continue
+    ftt(k) = ft
+    return
+
+    !> @todo Document this error situation
+    10 continue
+    100 format(5x,'On sort de la table d interpolation avec t=',e15.7)
+    write(lll,100) t
+    call pfant_halt(lll)
+  end
+
+  !---------------------------------------------------------------------------------------
+  !> Nouvelle subroutine naitk3, remplace aitk3 et aitk30.
+  !> @todo issue ?what? ?doc?
+
+  subroutine naitk3(xdi, xdip1, xdip2, xdip3, ydi, ydip1, ydip2, ydip3, xx, fx)
+    real*8, intent(in) :: &
+     xdi,   & !< ?doc?
+     xdip1, & !< ?doc?
+     xdip2, & !< ?doc?
+     xdip3, & !< ?doc?
+     ydi,   & !< ?doc?
+     ydip1, & !< ?doc?
+     ydip2, & !< ?doc?
+     ydip3, & !< ?doc?
+     xx       !< ?doc?
+    real*8, intent(out) :: &
+     fx       !< ?doc?
+    real*8 f01, f12, f13, f012, f123, f0123, fu, fv, u, v
+
+    u   = xdi
+    v   = xdip1
+    fu  = ydi
+    fv  = ydip1
+    f01 =(fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    u   = xdip2
+    fu  = ydip2
+    f12 = (fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    u   = xdip3
+    fu  = ydip3
+    f13 = (fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    u    = xdi
+    fu   = f01
+    v    = xdip2
+    fv   = f12
+    f012 = (fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    u    = xdip2
+    fu   = f12
+    v    = xdip3
+    fv   = f13
+    f123 = (fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    u     = xdi
+    v     = xdip3
+    fu    = f012
+    fv    = f123
+    f0123 = (fu*(v-xx)-fv*(u-xx))/(v-u)
+
+    fx = f0123
+  end
+end module misc_math

@@ -1,15 +1,15 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -21,36 +21,46 @@
 !> Variables
 !>   f_filetoh_* -- read directly from file
 !>   c_filetoh_* -- calculated
-!> TODO: The distinction above may be temporary, it is easier to merge prefixes than to split them
+!> @todo The distinction above may be temporary, it is easier to merge prefixes than to split them
+!>
+!> @todo this part of the program needs implementation of the filtering thing
+
+!>
 
 module filetoh
   use read_files
+  implicit none
 
-  !> @todo issue there is another NP hanging around
-  !> @todo issue what
-  integer, parameter :: filetoh_np=7000
-  integer, parameter :: max_filetoh_jmax=50
-  !> @code max_filetoh_jjmax = max_f_filetoh_jmax*2-1 @endcode
+  integer, parameter :: &
+   filetoh_np=7000, &  !< ?doc? @todo issue there is another NP hanging around
+   max_filetoh_jmax=50 !< ?doc?
+  !> Tied with other constants by relation: @code max_filetoh_jjmax = max_f_filetoh_jmax*2-1 @endcode
   integer, parameter :: max_filetoh_jjmax=max_filetoh_jmax*2-1
 
-  !> Read directly from file
-  !> Note: PFANT doesn't use these variables, they are useful only for the unit testing  
-  REAL*8 f_filetoh_LAMBDH
-  CHARACTER f_filetoh_TITRE*80, f_filetoh_TTT*11
-  DIMENSION f_filetoh_TH(MAX_f_filetoh_JMAX, MAX_modeles_NTOT), f_filetoh_LAMBDH(MAX_f_filetoh_JMAX)
-     
-     
-  !> Calculated for external use
-  DIMENSION c_filetoh_TAUHI(filetoh_NP, MAX_modeles_NTOT)
-  INTEGER c_filetoh_DHMI, c_filetoh_DHPI
+  !=====
+  ! Read directly from file
+  !=====
+  ! Note: PFANT doesn't use these variables, they are useful only for the unit testing
+  character f_filetoh_titre*80, f_filetoh_ttt*11
+  real*8 :: f_filetoh_th(max_filetoh_jmax, max_modeles_ntot), f_filetoh_lambdh(max_filetoh_jmax)
+  integer f_filetoh_jmax
 
+  !=====
+  ! Calculated for external use
+  !=====
+  real*8 c_filetoh_tauhi(filetoh_np, max_modeles_ntot)
+  integer c_filetoh_dhmi, c_filetoh_dhpi
 
-  ! Private variables, shared between routines below
-  REAL(8), PRIVATE, DIMENSION(MAX_filetoh_JJMAX) :: mi_LLAMBDH         
-  real*8, PRIVATE, DIMENSION(MAX_filetoh_JJMAX, MAX_modeles_NTOT) :: mi_TTH
-  real*8, PRIVATE, DIMENSION(MAX_filetoh_JJMAX) :: mi_ALLH, mi_TAUHN
-  real*8, PRIVATE, DIMENSION(filetoh_NP) :: mi_FTTH(filetoh_NP)
-  INTEGER, PRIVATE :: JJMAX
+  !=====
+  ! Private variables, shared between routines
+  !=====
+  private
+
+  real*8, dimension(max_filetoh_jjmax) :: mi_llambdh, mi_allh, mi_tauhn
+  real*8 :: mi_tth(max_filetoh_jjmax, max_modeles_ntot)
+  real*8 :: mi_ftth(filetoh_np)
+
+  !  integer :: jjmax
 
 
   SAVE
@@ -60,59 +70,63 @@ CONTAINS
 
   !================================================================================================================================
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
-  !
-  SUBROUTINE READ_FILETOH(filename)
-    INTEGER UNIT_
-    PARAMETER(UNIT_=199)
-    CHARACTER*256 filename
 
-    OPEN(UNIT=UNIT_,FILE=filename,STATUS='OLD')
-    READ(UNIT_,'(A80)') f_filetoh_TITRE
-    READ(UNIT_,'(I4)') f_filetoh_TTT
-    READ(UNIT_,'(I4)') f_filetoh_JMAX
-    READ(UNIT_,'(5F14.3)') (f_filetoh_LAMBDH(J), J=1,f_filetoh_JMAX)
-    READ(UNIT_,'(5E12.4)') ((f_filetoh_TH(J,N), J=1,f_filetoh_JMAX), N=1,modeles_NTOT)
+  subroutine read_filetoh(filename)
+    integer unit_
+    parameter(unit_=199)
+    character*256 filename
+    integer j, n
 
-    !> @todo Check JMAX spill here
+    open(unit=unit_,file=filename,status='old')
+    read(unit_,'(a80)') f_filetoh_titre
+    read(unit_,'(i4)') f_filetoh_ttt
+    read(unit_,'(i4)') f_filetoh_jmax
+    read(unit_,'(5f14.3)') (f_filetoh_lambdh(j), j=1,f_filetoh_jmax)
+    read(unit_,'(5e12.4)') ((f_filetoh_th(j,n), j=1,f_filetoh_jmax), n=1,modeles_ntot)
 
-    CLOSE(UNIT_)
-  END
-      
+    !> @todo Check jmax spill here
+
+    close(unit_)
+  end
+
 
   !================================================================================================================================
-  !> @todo Find better name()
+  !> @todo ?what? Find better name
   !>
-  !> Note: this is originally subroutine "LECTAUH" without the file reading part
-  !>
-  !> Arguments:
-  !>   DTOT -- Number of calculation steps, I think. ISSUE: better explanation
-  !>           Calculated as: DTOT = (LFIN-LZERO)/main_PAS + 1.0005
-  !>   TTD -- ISSUE: get explanation @todo get from MT
-  !>          Calculated as: TTD(D) = ALZERO+main_PAS*(D-1)
-  !>   ILZERO -- integer version of variable LZERO in main module
-  SUBROUTINE FILETOH_AUH(DTOT, TTD, ILZERO)
-    INTEGER DTOT, ILZERO
-    real*8, DIMENSION(filetoh_NP) :: TTD
-    INTEGER D
+  !> @note this is originally subroutine "LECTAUH" without the file reading part
 
-    JJMAX = 2*f_filetoh_JMAX-1
-    JMA1 = f_filetoh_JMAX-1
-    DO JJ = 1, f_filetoh_JMAX
-      DEL = f_filetoh_LAMBDH(f_filetoh_JMAX+1-JJ)-f_filetoh_LAMBDH(1)
-      mi_LLAMBDH(JJ) = f_filetoh_LAMBDH(f_filetoh_JMAX+1-JJ)-2*DEL
-    END DO
-    DO JJ = f_filetoh_JMAX+1, JJMAX
-      mi_LLAMBDH(JJ) = f_filetoh_LAMBDH(JJ-JMA1)
-    END DO
-    DO N = 1, modeles_NTOT
-      DO JJ = 1, f_filetoh_JMAX
-        mi_TTH(JJ, N) = f_filetoh_TH(f_filetoh_JMAX+1-JJ, N)
-      END DO
-      DO JJ = f_filetoh_JMAX+1, JJMAX
-        mi_TTH(JJ, N) = f_filetoh_TH(JJ-JMA1, N)
-      END DO
-    END DO
-    
+  subroutine filetoh_auh(dtot, ttd, ilzero)
+    !> ?doc? Number of calculation steps, I think. ISSUE: better explanation
+    !> Calculated as: @code dtot = (lfin-lzero)/main_pas + 1.0005 @endcode
+    integer, intent(in) :: dtot
+    !> integer version of variable lzero in main module
+    integer, intent(in) :: ilzero
+    !> ?doc? Calculated as: ttd(d) = alzero+main_pas*(d-1)
+    real*8, intent(in) :: ttd(filetoh_np)
+
+    integer d, j, jj, jma1, n
+    real*8 del
+
+    integer jjmax !< @todo may become filetoh_jjmax
+
+    jjmax = 2*f_filetoh_jmax-1
+    jma1 = f_filetoh_jmax-1
+    do jj = 1, f_filetoh_jmax
+      del = f_filetoh_lambdh(f_filetoh_jmax+1-jj)-f_filetoh_lambdh(1)
+      mi_llambdh(jj) = f_filetoh_lambdh(f_filetoh_jmax+1-jj)-2*del
+    end do
+    do jj = f_filetoh_jmax+1, jjmax
+      mi_llambdh(jj) = f_filetoh_lambdh(jj-jma1)
+    end do
+    do n = 1, modeles_ntot
+      do jj = 1, f_filetoh_jmax
+        mi_tth(jj, n) = f_filetoh_th(f_filetoh_jmax+1-jj, n)
+      end do
+      do jj = f_filetoh_jmax+1, jjmax
+        mi_tth(jj, n) = f_filetoh_th(jj-jma1, n)
+      end do
+    end do
+
     !~WRITE(6,'(A80)') f_filetoh_TITRE
     !~WRITE(6,'(A11)') f_filetoh_TTT
     !~WRITE(6,'('' f_filetoh_JMAX='',I3)') f_filetoh_JMAX
@@ -125,100 +139,113 @@ CONTAINS
     !~END DO
 
 
-    DO J = 1,JJMAX
-      mi_ALLH(J) = mi_LLAMBDH(J)-ILZERO
-    END DO
+    do j = 1,jjmax
+      mi_allh(j) = mi_llambdh(j)-ilzero
+    end do
 
-      
+
     !~ WRITE(6, '('' mi_ALLH(1)='',F8.3,2X,''mi_ALLH(JJMAX)='',F8.3,2X)')
     !~+      mi_ALLH(1),mi_ALLH(JJMAX)
     !~ WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
     !~       JJMAX, modeles_NTOT, DTOT
 
-    
-    DO N = 1,modeles_NTOT
-      DO J = 1,JJMAX
-        mi_TAUHN(J) = mi_TTH(J,N)
-      END DO
-      
-      CALL FTLIN3H(DTOT,TTD)
-      
-      DO D = 1,DTOT
-        c_filetoh_TAUHI(D, N) = mi_FTTH(D)
-      END DO
-    END DO
+
+    do n = 1,modeles_ntot
+      do j = 1,jjmax
+        mi_tauhn(j) = mi_tth(j,n)
+      end do
+
+      call ftlin3h()
+
+      do d = 1,dtot
+        c_filetoh_tauhi(d, n) = mi_ftth(d)
+      end do
+    end do
 
 
    !~ !--debugging--!
-   !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)') 
+   !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
    !~+ c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
    !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
    !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
    !~+ c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
-    
-    RETURN
-  END
+
+    return
+
+  contains
+    !-------------------------------------------------------------------------------
+    !> @todo ISSUE ?what?
+    !>
+    !> @todo This routine is *very similar to misc_math::ftlin3()*, I think the latter
+    !> has been duplicated to build ftlin3h(). Not sure what to do. At least write more
+    !> about the differences.
+    !>
+    !> Uses variables from parent filetoh_auh():
+    !> @li dtot
+    !> @li ttd
+    !> @li jjmax
+    !>
+    subroutine ftlin3h()
+      real*8 dy, ft, t, t0, t1, t2, u0
+      integer j, k, kk, jj, kk1, kq
+
+      j=2
+      kk=1
+      24 continue
+      do 4 k = kk,dtot
+        kq=k
+        t=ttd(k)
+
+        jj=j-1
+        do 1  j=jj,jjmax
+          if(t-mi_allh(j) ) 3,2,1
+          1 continue
+          go to 10
+          2 ft=mi_tauhn(j)
+        if(j .eq. 1) j = j+1
+        go to 4
+
+        3 if (j .eq. 1) go to 10
+        u0 = mi_tauhn(j)-mi_tauhn(j-1)
+        t0 = mi_allh(j)-mi_allh(j-1)
+        t1 = t-mi_allh(j-1)
+
+        t2= t1/t0
+        dy= u0*t2
+        ft= mi_tauhn(j-1) + dy
+        mi_ftth(k) = ft
+      4 continue
+
+      14 continue
+
+      do k=1,dtot
+        if(mi_ftth(k).ne.0.0) go to 20
+      end do
+
+      20 c_filetoh_dhmi = k
+
+      if (c_filetoh_dhmi .eq. dtot) c_filetoh_dhmi = 1
+      kk1 = c_filetoh_dhmi+1
+      do k = kk1,dtot
+        if (mi_ftth(k) .eq. 0.0) go to 30
+      end do
+
+      30 c_filetoh_dhpi = k
+
+      ! (Paula Coelho 21/11/04) instrucao da Marie Noel
+      if (mi_ftth(dtot) .ne. 0.0) c_filetoh_dhpi = dtot
+
+      return
+
+      10 mi_ftth(k) = 0.
+      j = j+1
+
+      kk = kq
+      kk = kk+1
+      if (kq .gt. dtot) go to 14
+      go to 24
+    end
+  end
 
 
-  !-------------------------------------------------------------------------------
-  !> @todo ISSUE: Get description for this routine, what it does
-  SUBROUTINE FTLIN3H(DTOT,TTD)
-    INTEGER DTOT
-    real*8, DIMENSION(filetoh_NP) :: TTD
-    
-    J=2
-    KK=1
-    24 DO K = KK,DTOT
-      KQ=K
-      T=TTD(K)
-
-      JJ=J-1
-      DO 1  J=JJ,JJMAX
-        IF(T-mi_ALLH(J) ) 3,2,1
-        1 CONTINUE
-        GO TO 10
-        2 FT=mi_TAUHN(J)
-      IF(J .EQ. 1) J = J+1
-      GO TO 4
-      
-      3 IF (J .EQ. 1) GO TO 10
-      U0 = mi_TAUHN(J)-mi_TAUHN(J-1)
-      T0 =  mi_ALLH(J)- mi_ALLH(J-1)
-      T1 =        T- mi_ALLH(J-1)
-      
-      T2= T1/T0
-      DY= U0*T2
-      FT= mi_TAUHN(J-1) + DY
-      mi_FTTH(K) = FT
-    END DO
-
-    14 CONTINUE
-
-    DO K=1,DTOT
-      IF(mi_FTTH(K).NE.0.0) GO TO 20
-    END DO
-    
-    20 c_filetoh_DHMI = K
-
-    IF (c_filetoh_DHMI .EQ. DTOT) c_filetoh_DHMI = 1       
-    KK1 = c_filetoh_DHMI+1
-    DO K = KK1,DTOT
-      IF (mi_FTTH(K) .EQ. 0.0) GO TO 30
-    END DO
-    
-    30 c_filetoh_DHPI = K
-
-    ! (Paula Coelho 21/11/04) instrucao da Marie Noel
-    IF (mi_FTTH(DTOT) .NE. 0.0) c_filetoh_DHPI = DTOT
-
-    RETURN
-    
-    10 mi_FTTH(K) = 0.
-    J = J+1
-    
-    KK = KQ
-    KK = KK+1
-    IF (KQ .GT. DTOT) GO TO 14
-    GO TO 24
-  END
-END MODULE FILETOH
+end module filetoh

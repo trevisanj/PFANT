@@ -31,6 +31,9 @@ This is probably a good a compromise between
   accessibility (code being read by different people on different system setups) and
   horizontal space (not having to wrap formulas and long lines of code too often).
 @ref Cesm0 @ref StackEx0 @ref JavaGuide
+
+
+
   
 
 Common blocks
@@ -57,6 +60,27 @@ Data types
 Programming
 ===========
 
+  Always IMPLICIT NONE
+  --------------------
+  Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
+  Advantages:
+  @li type of variables becomes clear (not all code readers will know about Fortran i-n 
+      convention;
+  @li we are forced to declare real variables as real*8.
+
+  Variable declarations
+  ---------------------
+  @li Always use intent(in/out) for subroutine arguments. This will allow the reader to
+      know which arguments are inputs and which arguments are outputs for the subroutine.
+  @li <b>Module globals and subroutine/function arguments</b>: declare *only one* variable per
+      code line, and document the variable.
+  @li <b>Any variable</b>: document the variable if its use/purpose is not obviuos.
+  
+  Function/subroutines
+  --------------------
+  Write documentation explaining what the function/subroutine does and whenever possible,
+  why it was created.
+
   Logging (i.e., printing things on the screen)
   -------
   For outputting messages on the screen, use the routines in the LOGGING
@@ -67,6 +91,19 @@ Programming
   LOG_CRITICAL(), LOG_ERROR(), LOG_WARNING(), LOG_INFO(), LOG_DEBUG(), and
   logging can be silenced and/or sent to specific logging file using
   command-line config options.
+
+
+Documenting
+===========
+
+@todo Doxygen Fortran section
+
+  Note that
+  @code !> @endcode refers to what comes after, and
+  @code !< @endcode refers to what comes before.
+  
+  
+  
 
 
 

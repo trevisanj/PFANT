@@ -1,42 +1,45 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> Subroutines FLIN1() and FLINH()
+!> Subroutines flin1() and flinh()
 !>
 !> Calcul du flux ou de l'intensite par la methode d'integration
 !> a 6 pts (ou 13pts) de R.Cayrel (these).
-!> nouvelle methode de calcul de to . flin_TO(1) est calcule et
+!> nouvelle methode de calcul de to . flin_to(1) est calcule et
 !> est different de 0 (On pose flin_TO(0)=0)   -Avril 1988-
 !>
-!> Originally by Roger Cayrel
+!> @author Roger Cayrel
 !>
-!> Outputs ONLY in module variables: flin_TO, flin_F
-!> NO LONGER modifying arguments F and CAVA (they are no longer arguments; CAVA (error code) extinct)
+!> @note Outputs in module variables: flin::flin_to, flin::flin_f
 
 !> @ingroup gr_math, gr_data
 
 module flin
+  use read_files
   implicit none
 
   !=====
   !> Output variables
   !=====
-  real*8, dimension(0:50) flin_to
+  real*8, dimension(0:50) :: flin_to
   real*8 flin_f
 
-  private, real*8 :: td2, td,tp, cd, cp, c1, c2, c3
+
+  private
+
+  real*8 :: td2, td,tp, cd, cp, c1, c2, c3
   dimension td2(26),td(6),tp(7),cd(6),cp(7),c1(13),c2(12),c3(12)
 
   data td /0.038,0.154,0.335,0.793,1.467,3.890 /
@@ -52,50 +55,55 @@ module flin
   data c3 /.023823,.030806,.027061,.019274,.010946,.006390, &
    .003796,.002292,.001398,.000860,.000533,.000396/
 
-  logical, private, parameter :: mode_flinh = .true., &
-                                 mode_flin1 = .false.
+  logical, parameter :: mode_flinh = .true., &
+                        mode_flin1 = .false.
 
   !> This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
-  real*8, private, dimension(max_modeles_ntot) :: dummy_tauhd
+  real*8, dimension(max_modeles_ntot) :: dummy_tauhd
+
+  private flin_ ! private subroutine
 
 contains
   !---------------------------------------------------------------------------------------------------
+
+  !> See routine flin_() for description of parameters
   subroutine flin1(kap, b, nh, ntot, ptdisk, mu, kik)
-    integer kik
-    logical ptdisk
-    real nh, kap, mu
-    real*8, dimension(0:max_modeles_ntot) :: b
-    real*8, dimension(max_modeles_ntot) :: nh, kap
-    call flin_((kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
+    real*8, intent(in), dimension(max_modeles_ntot) :: kap, nh
+    real*8, dimension(0:max_modeles_ntot), intent(in) :: b
+    logical, intent(in) :: ptdisk
+    real*8, intent(in) :: mu
+    integer, intent(in) :: ntot, kik
+    call flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
   end
-      
+
 
   !---------------------------------------------------------------------------------------------------
   !>
   !> Two differences from FLIN1()
-  !> 1) adds TAUHD vector to flin_TO
+  !> 1) adds tauhd vector to flin_TO
   !> 2) ignores PTDISK ISSUE!!!
   !>
   subroutine flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
-    integer kik
-    logical ptdisk
-    real nh, kap, mu
-    real*8, dimension(0:max_modeles_ntot) :: b
-    real*8, dimension(max_modeles_ntot) :: nh, kap, tauhd
-    call flin_((kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_flinh)
+    real*8, intent(in), dimension(max_modeles_ntot) :: kap, nh, tauhd
+    real*8, dimension(0:max_modeles_ntot), intent(in) :: b
+    logical, intent(in) :: ptdisk
+    real*8, intent(in) :: mu
+    integer, intent(in) :: ntot, kik
+    call flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_flinh)
   end
 
 
   !> Generic routine, called by flin1() and flinh()
   !>
   !> @todo ISSUE BIG using 7 points in flin1() MODE!!!!!!!!!!!!!!!
-  
+
   subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
     use read_files
+    use misc_math
     implicit none
-    !> ?
+    !> ?doc?
     real*8, intent(in) :: kap(max_modeles_ntot)
-    !> ?
+    !> ?doc?
     real*8, intent(in) :: b(0:max_modeles_ntot)
     !> Source is probably @ref read_files::modeles_nh
     real*8, intent(in) :: nh(max_modeles_ntot)
@@ -116,15 +124,19 @@ contains
     !> Internal, either @ref mode_flin1 or @ref mode_flinh
     logical, intent(in) :: mode_
 
-    real*8, dimension(13) :: fp, cc, bb
+    real*8, dimension(13) :: fp, cc, bb, tt
     real*8, dimension(26) :: bbb
+
+    real*8 epsi, t, tolim
+    integer ipoint, l, m, n
+    character*80 lll
 
     ! Calcul de flin_to
     epsi=0.05
     flin_to(0)=0.
     flin_to(1)=nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
     call integra(nh,kap,flin_to, ntot,flin_to(1))
-    if (mode_ .eq. mode_flinh) then  ! flinh() mode only!!!
+    if (mode_ .eqv. mode_flinh) then  ! flinh() mode only!!!
       do n=1,ntot
       flin_to(n) = flin_to(n)+tauhd(n)
       end do
@@ -137,7 +149,7 @@ contains
         ipoint=7
         tolim=4.0
       else
-        if (mode_ .eq. mode_flin1) then
+        if (mode_ .eqv. mode_flin1) then
           ipoint = 7  !> @todo ISSUE big !!!!! i kept this behaviour until i get feedback from blb
         else
           ipoint = 6
@@ -152,13 +164,10 @@ contains
         write(lll,1504)
         call log_halt(lll)
         write(lll,1503) ntot, flin_to(ntot)
-        call log_halt(lll)
-        call log_halt('')
-        write(lll,131) ttd_d
         call pfant_halt(lll)
       end if
 
-      2 continue
+      continue
       do l=1,ipoint
         if(ptdisk) then
           tt(l) = tp(l)*mu
@@ -180,7 +189,7 @@ contains
     elseif (kik .eq. 1) then
       ! Formule a 26 pts (ne marche que pour le flux!)
       ! (13pts +pts milieu)
-      
+
       !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
       if(ptdisk) then
         1500 format('Le sp flin_ ne peut calculer l intensite en 1 pt ', &
@@ -196,9 +205,6 @@ contains
         write(lll,1504)
         call log_halt(lll)
         write(lll,1503) ntot, flin_to(ntot)
-        call log_halt(lll)
-        call log_halt('')
-        write(lll,131) ttd_d
         call pfant_halt(lll)
       end if
 
@@ -213,12 +219,12 @@ contains
         fp(m) = c1(m)*bbb(l) + c2(m)*bbb(l+1) + c3(m)*bbb(l+2)
         cc(m) = c2(m)
       end do
-      
+
       fp(13) = c1(13)*bbb(26)
       bb(13) = bbb(26)
       cc(13) = c1(13)
       ! Ces bb et cc ne servent que pour les sorties (pas au calcul)
-      
+
       flin_f=0.
       do l=1,13
         flin_f = flin_f+fp(l)
@@ -231,6 +237,5 @@ contains
 
     1503  format(i10,5x,3hto=,f10.4)
     1504  format(18H Modele trop court)
-    131   format('Ennui au calcul du flux (cf ligne precedente)', ' a lambd=',f10.3)
   end
 end module flin
