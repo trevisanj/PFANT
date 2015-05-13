@@ -336,7 +336,7 @@ CONTAINS
     ! row 09
     read(unit_, *) main_llzero, main_llfin, main_aint
 
-    ! rows 10-19: file names, in sync with variable LLHY. Example:
+    ! rows 10-19: file names, in sync with constant synthesis::llhy. Example:
     ! thkappa
     ! thiota
     ! ththeta
