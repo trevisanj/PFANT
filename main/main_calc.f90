@@ -87,7 +87,7 @@
 !     espectro normalizado FN(FILETOH_NP) {Paula, dez 2003}
 !
 !     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
-!     - abro mais dois arquivos binarios unit=19 (continuo) e 20 (normalizado)
+!     - abro mais dois arquivos binarios unit=UNIT_CONT (continuo) e UNIT_NORM (normalizado)
 !     - rotina SELEKFH:
 !           - recebe tbem selekfh_FCONT e FN
 !           - selekfh_FCONT eh calculado passando p/ a rotina FLIN1 apenas o
@@ -185,6 +185,8 @@ module synthesis
      UNIT_NORM  = 20, &
      UNIT_LINES = 32, &
      UNIT_LOG   = 31
+    !<  amount to stretch calculation interval (both to the left and to the right)
+    real*8, parameter :: LAMBDA_STRETCH = 20.
 
     real*8 lzero, lfin
     character*256 fileflux, fileflux2, fileflux3
@@ -260,42 +262,41 @@ module synthesis
 
 
     !> @todo ISSUE Explain what it does
-    xlzero = main_llzero-20.
-    xlfin = xlzero+main_aint+20.
-    if(xlfin .ge. (main_llfin+20.)) then
+    xlzero = main_llzero-LAMBDA_STRETCH
+    xlfin = xlzero+main_aint+LAMBDA_STRETCH
+    if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
       !> @todo issue it seems that i could write this using a modulus operator
       do i = 2,250
         xlfin = xlfin+main_aint
-        if(xlfin .ge. (main_llfin+20.)) exit
+        if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
-    lzero = main_llzero-20.
-    lfin = lzero+main_aint+20.
+    lzero = main_llzero-LAMBDA_STRETCH
+    lfin = lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
-
 
 
     !=====
     ! Main loop
     !=====
     do while (.true.)
-      !> @todo issue explain dtot
+      ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = (lfin-lzero)/main_pas + 1.0005
+
+      !__spill check__
+      if(dtot .gt. FILETOH_NP) then
+        write(lll,*) 'dtot = ', dtot, ' Exceeds maximum of ', FILETOH_NP
+        call pfant_halt(lll)
+      end if
 
       !__logging__
       117 format(5x,'lzero=',f10.3,10x,'lfin=',f10.3,5x,'dtot=',i7)
       write(lll, 117) lzero, lfin, dtot
       call log_info(lll)
-
-      !--halt situation--!
-      if(dtot .gt. 40000) then
-        !> @todo ISSUE: DOCUMENT THIS; see arrays that may be blown and therefore tie this 40000 to some parameter
-        call pfant_halt('dtot > 40000!')
-      end if
 
       lambd = (lzero+lfin)/2
       ilzero = (lzero/100.)*1e2
@@ -311,6 +312,8 @@ module synthesis
       501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3,  2x,'lzero=',f10.3,2x,'lfin=',f10.3,2x,'lambd 1/2=',f10.3)
       write(lll,501) main_llzero,main_llfin,lzero,lfin,lambd
       call log_info(lll)
+
+
 
       ! Lecture tau raie hydrogene et interpolation de tauh
       ! Type *,' nom des fichiers TAU raies Hydrogene'
@@ -343,6 +346,8 @@ module synthesis
           end do
         end if
       end do
+
+
 
       imy = im
       if(imy .ne. 0) then
@@ -411,7 +416,7 @@ module synthesis
       li = 10./main_pas
       i1 = li+1
       i2 = dtot - li
-      if (lfin .ge. (main_llfin+20.)) then
+      if (lfin .ge. (main_llfin+LAMBDA_STRETCH)) then
         i2 = (main_llfin+10.-lzero)/main_pas + 1.0005
       end if
       itot = i2-i1+1
@@ -451,7 +456,7 @@ module synthesis
 
       lzero = lzero+main_aint
       lfin = lfin+main_aint
-      if(lfin .gt. (main_llfin+20.)) lfin = main_llfin+20.
+      if(lfin .gt. (main_llfin+LAMBDA_STRETCH)) lfin = main_llfin+LAMBDA_STRETCH
 
     end do  ! main loop
 

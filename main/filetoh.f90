@@ -32,18 +32,26 @@ module filetoh
   implicit none
 
   integer, parameter :: &
-   FILETOH_NP=7000, &  !< ?doc? Maximum number of ?
-   max_filetoh_jmax=50 !< ?doc?
-  !> Tied with other constants by relation: @code max_filetoh_jjmax = max_f_filetoh_jmax*2-1 @endcode
-  integer, parameter :: max_filetoh_jjmax=max_filetoh_jmax*2-1
+   FILETOH_NP=7000, &    !< ?doc? Maximum number of ?
+   MAX_FILETOH_JMAX=50,& !< ?doc?
+   FILETOH_N=10          !< Number of "filetoh" files
+  !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_F_FILETOH_JMAX*2-1 @endcode
+  integer, parameter :: MAX_FILETOH_JJMAX=MAX_FILETOH_JMAX*2-1
 
   !=====
   ! Read directly from file
   !=====
-  ! Note: PFANT doesn't use these variables, they are useful only for the unit testing
-  character f_filetoh_titre*80, f_filetoh_ttt*11
-  real*8 :: f_filetoh_th(max_filetoh_jmax, MAX_MODELES_NTOT), f_filetoh_lambdh(max_filetoh_jmax)
-  integer f_filetoh_jmax
+  ! These are read by read_filetoh() and processed by filetoh_auh()
+  !> ?doc?
+  character*80 f_filetoh_titre(FILETOH_N)
+  !> ?doc?
+  character*11 f_filetoh_ttt(FILETOH_N)
+  !> ?doc?
+  real*8, dimension(MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: f_filetoh_th
+  !> ?doc?
+  real*8, dimension(MAX_FILETOH_JMAX) :: f_filetoh_lambdh
+  !> ?doc?
+  integer f_filetoh_jmax(FILETOH_N)
 
   !=====
   ! Calculated for external use
@@ -56,8 +64,8 @@ module filetoh
   !=====
   private
 
-  real*8, dimension(max_filetoh_jjmax) :: mi_llambdh, mi_allh, mi_tauhn
-  real*8 :: mi_tth(max_filetoh_jjmax, MAX_MODELES_NTOT)
+  real*8, dimension(MAX_FILETOH_JJMAX) :: mi_llambdh, mi_allh, mi_tauhn
+  real*8 :: mi_tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
   real*8 :: mi_ftth(FILETOH_NP)
 
   !  integer :: jjmax
@@ -78,9 +86,9 @@ CONTAINS
     integer j, n
 
     open(unit=unit_,file=filename,status='old')
-    read(unit_,'(a80)') f_filetoh_titre
-    read(unit_,'(i4)') f_filetoh_ttt
-    read(unit_,'(i4)') f_filetoh_jmax
+    read(unit_,'(a80)') f_filetoh_titre(i)
+    read(unit_,'(i4)') f_filetoh_ttt(i)
+    read(unit_,'(i4)') f_filetoh_jmax(i)
     read(unit_,'(5f14.3)') (f_filetoh_lambdh(j), j=1,f_filetoh_jmax)
     read(unit_,'(5e12.4)') ((f_filetoh_th(j,n), j=1,f_filetoh_jmax), n=1,modeles_ntot)
 
@@ -163,12 +171,12 @@ CONTAINS
     end do
 
 
-   !~ !--debugging--!
-   !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
-   !~+ c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
-   !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
-   !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
-   !~+ c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
+    !~ !--debugging--!
+    !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
+    !~+ c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
+    !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
+    !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
+    !~+ c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
 
     return
 
