@@ -21,29 +21,29 @@
 !> - Call CRITICAL() / ERROR() / WARNING() / INFO() / DEBUG()
 !>
 !> Logging message will only be shown if logging_LEVEL is <= corresponding level of subroutine called.
-!> E.g., corresponding level of subroutine DEBUG() is logging_DEBUG
-MODULE LOGGING
+!> E.g., corresponding level of subroutine DEBUG() is LOGGING_DEBUG
+module logging
 
   !> Logging levels copied from Python
-  INTEGER, PARAMETER ::   &
-   logging_HALT     = 60, &  !< Maximum logging level; logging just before system halts
-   logging_CRITICAL = 50, &
-   logging_ERROR    = 40, &
-   logging_WARNING  = 30, &
-   logging_INFO     = 20, &
-   logging_DEBUG    = 10
+  integer, parameter ::   &
+   LOGGING_HALT     = 60, &  !< Maximum logging level; logging just before system halts
+   LOGGING_CRITICAL = 50, &
+   LOGGING_ERROR    = 40, &
+   LOGGING_WARNING  = 30, &
+   LOGGING_INFO     = 20, &
+   LOGGING_DEBUG    = 10
 
 
   !=====
   !> Configurable variable
   !=====
-  INTEGER :: logging_LEVEL = logging_DEBUG
+  integer :: logging_level = LOGGING_DEBUG
 
 
 
-  PRIVATE :: DO_LOGGING
+  private :: do_logging
 
-CONTAINS
+contains
 
   !-------------------------------------------------------------------------------
   !> Logs message at HALT level and halts program execution with error code -1.
@@ -51,31 +51,43 @@ CONTAINS
   !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
   !> due to an error situation (normal program execution ends with error code 0).
 
-  SUBROUTINE PFANT_HALT(S)
-    CHARACTER(LEN=*) :: S
-    CALL DO_LOGGING(S, logging_HALT)
-    STOP -1
-  END
+  subroutine pfant_halt(s, is_bug)
+    character(len=*), intent(in) :: s
+    !> (default=.false.) Whether halting program because of a bug.
+    logical, optional, intent(in) :: is_bug
+    IF (.NOT. PRESENT(IS_BUG)) is_bug = .False.
+
+    call do_logging(s, LOGGING_HALT)
+    !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
+    IF (is_bug) THEN
+      call do_logging('*************************************', LOGGING_HALT)
+      call do_logging('* This is a bug! ********************', LOGGING_HALT)
+      call do_logging('* Please help to fix it by mailing **', LOGGING_HALT)
+      call do_logging('**the message above to the authors. *', LOGGING_HALT)
+      call do_logging('*************************************', LOGGING_HALT)
+    end if
+    stop -1
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as HALT. Logs unconditionally (independent of logging level).
   !>
-  !> This allows the calling routine to log HALT-level messages before calling
-  !> PFANT_HALT(). As a rule, always call PFTANT_HALT() after 1 or more calls to
-  !> LOG_HALT().
+  !> This allows the calling routine to log halt-level messages before calling
+  !> pfant_halt(). As a rule, always call pftant_halt() after 1 or more calls to
+  !> log_halt().
 
-  SUBROUTINE LOG_HALT(S)
-    CHARACTER(LEN=*) :: S
-    CALL DO_LOGGING(S, logging_HALT)
-  END
+  subroutine log_halt(s)
+    character(len=*), intent(in) :: s
+    call do_logging(s, LOGGING_HALT)
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as CRITICAL
 
   SUBROUTINE LOG_CRITICAL(S)
-    CHARACTER(LEN=*) :: S
-    IF (logging_LEVEL .LE. logging_CRITICAL) THEN
-      CALL DO_LOGGING(S, logging_CRITICAL)
+    CHARACTER(LEN=*), intent(in) :: S
+    IF (logging_LEVEL .LE. LOGGING_CRITICAL) THEN
+      CALL DO_LOGGING(S, LOGGING_CRITICAL)
     END IF
   END
 
@@ -83,9 +95,9 @@ CONTAINS
   !> Logs message as ERROR
 
   SUBROUTINE LOG_ERROR(S)
-    CHARACTER(LEN=*) :: S
-    IF (logging_LEVEL .LE. logging_ERROR) THEN
-    CALL DO_LOGGING(S, logging_ERROR)
+    CHARACTER(LEN=*), intent(in) :: S
+    IF (logging_LEVEL .LE. LOGGING_ERROR) THEN
+    CALL DO_LOGGING(S, LOGGING_ERROR)
     END IF
   END
 
@@ -93,9 +105,9 @@ CONTAINS
   !> Logs message as WARNING
 
   SUBROUTINE LOG_WARNING(S)
-    CHARACTER(LEN=*) :: S
-    IF (logging_LEVEL .LE. logging_WARNING) THEN
-    CALL DO_LOGGING(S, logging_WARNING)
+    CHARACTER(LEN=*), intent(in) :: S
+    IF (logging_LEVEL .LE. LOGGING_WARNING) THEN
+    CALL DO_LOGGING(S, LOGGING_WARNING)
     END IF
   END
 
@@ -103,9 +115,9 @@ CONTAINS
   !> Logs message as INFO
 
   SUBROUTINE LOG_INFO(S)
-    CHARACTER(LEN=*) :: S
-    IF (logging_LEVEL .LE. logging_INFO) THEN
-    CALL DO_LOGGING(S, logging_INFO)
+    CHARACTER(LEN=*), intent(in) :: S
+    IF (logging_LEVEL .LE. LOGGING_INFO) THEN
+    CALL DO_LOGGING(S, LOGGING_INFO)
     END IF
   END
 
@@ -113,9 +125,9 @@ CONTAINS
   !> Logs message as DEBUG
 
   SUBROUTINE LOG_DEBUG(S)
-    CHARACTER(LEN=*) :: S
-    IF (logging_LEVEL .LE. logging_DEBUG) THEN
-    CALL DO_LOGGING(S, logging_DEBUG)
+    CHARACTER(LEN=*), intent(in) :: S
+    IF (logging_LEVEL .LE. LOGGING_DEBUG) THEN
+    CALL DO_LOGGING(S, LOGGING_DEBUG)
     END IF
   END
 
@@ -125,22 +137,22 @@ CONTAINS
   !> Internal routine, MUST NOT be called from outside
 
   SUBROUTINE DO_LOGGING(S, LEVEL)
-  CHARACTER(LEN=*) :: S
+  CHARACTER(LEN=*), intent(in) :: S
   CHARACTER(LEN=8) :: T
   INTEGER LEVEL
 
   SELECT CASE (LEVEL)
-    CASE (logging_HALT)
+    CASE (LOGGING_HALT)
       T = 'HALTING'
-    CASE (logging_CRITICAL)
+    CASE (LOGGING_CRITICAL)
       T = 'CRITICAL'
-    CASE (logging_ERROR)
+    CASE (LOGGING_ERROR)
       T = 'ERROR'
-    CASE (logging_WARNING)
+    CASE (LOGGING_WARNING)
       T = 'WARNING'
-    CASE (logging_INFO)
+    CASE (LOGGING_INFO)
       T = 'INFO'
-  CASE (logging_DEBUG)
+  CASE (LOGGING_DEBUG)
       T = 'DEBUG'
     END SELECT
 

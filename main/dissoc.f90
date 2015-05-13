@@ -22,18 +22,18 @@ module dissoc
   implicit none
 
   integer, private, parameter :: &
-   z_electron = 99,  &  !< Fictitious atomic number of electron
-   z_h_star   = 100, &  !< Fictitious atomic number of "H*"
-   z_h        = 1,   &  !< Atomic number of Hydrogen
-   z_he       = 2       !< Atomic number of Helium
+   Z_ELECTRON = 99,  &  !< Fictitious atomic number of electron
+   Z_H_STAR   = 100, &  !< Fictitious atomic number of "H*"
+   Z_H        = 1,   &  !< Atomic number of Hydrogen
+   Z_HE       = 2       !< Atomic number of Helium
 
 
   ! They will be pointer targets at molecula.f:POINT_PPA_PB()
-  real*8, target, dimension(max_modeles_ntot) :: sat4_pph, sat4_ppc2, &
+  real*8, target, dimension(MAX_MODELES_NTOT) :: sat4_pph, sat4_ppc2, &
    sat4_pn, &
    sat4_pc13, sat4_pmg, sat4_po, sat4_pti, sat4_pfe
 
-  real*8, private, dimension(max_z) :: &
+  real*8, private, dimension(MAX_Z) :: &
    ip,     & ! ?
    ccomp,  & ! ?
    uiidui, & ! ?
@@ -41,7 +41,7 @@ module dissoc
    kp,     & ! ?
    p         ! Pressure
 
-  real*8, private, dimension(max_dissoc_nmol) :: &
+  real*8, private, dimension(MAX_DISSOC_NMOL) :: &
    ppmol, apmlog
 
   real*8, private :: pe !< Fictitious pressure of electron?? ISSUE: is it?
@@ -60,7 +60,7 @@ contains
   subroutine sat4()
     use config
     implicit none
-    real*8, dimension(max_modeles_ntot, max_dissoc_nmetal) :: xp
+    real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
     real*8  kplog, econst, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
@@ -106,7 +106,7 @@ contains
     1400 continue
 
     !> @todo issue ?what? ?doc? if atomic number 99 was already in dissoc.dat?
-    p(z_electron) = 1.0e-10
+    p(Z_ELECTRON) = 1.0e-10
     !> @todo ISSUE: what about 100?
 
     !*****INPUT E
@@ -120,7 +120,7 @@ contains
 
       call die(tem,pg)
 
-      pe = p(z_electron)
+      pe = p(Z_ELECTRON)
       pelog = log10(pe)
 
       do 1303 i=1,dissoc_nmetal
@@ -256,8 +256,8 @@ contains
     use read_files
     implicit none
     real*8 tem, pg
-    real*8, dimension(max_z) :: fx, dfx, z, prev
-    real*8, dimension(max_dissoc_nmetal) :: wa
+    real*8, dimension(MAX_Z) :: fx, dfx, z, prev
+    real*8, dimension(MAX_DISSOC_NMETAL) :: wa
     real*8 aplogj, atomj, delta, df, dhh, econst, epsdie, &
      f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
      spnion, t, tem25, u, x, xr, pph, phh
@@ -270,7 +270,7 @@ contains
     t      = 5040.0/tem
     pglog  = log10(pg)
 
-    heh    = ccomp(z_he)/ccomp(z_h)  ! Helium-to-Hydrogen ratio by number
+    heh    = ccomp(Z_HE)/ccomp(Z_H)  ! Helium-to-Hydrogen ratio by number
 
     ! EVALUATION OF LOG KP(MOL)
     do 1025 j =1, dissoc_nmol
@@ -292,7 +292,7 @@ contains
       kp(nelemi) =uiidui(nelemi)*tem25*exp(-ip(nelemi)*t/econst)
     1060 continue
 
-    hkp = kp(z_h)
+    hkp = kp(Z_H)
     if (t-0.6) 1084, 1072, 1072
 
     ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES (ISSUE is this potential hidrogenionico??)
@@ -356,7 +356,7 @@ contains
     !> @todo ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
     ! THe current dissoc.dat has no Z=100 (neither 99).
     ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
-    p(z_h_star) = pph
+    p(Z_H_STAR) = pph
 
 
     ! EVALUATION OF THE FICTITIOUS PRESSURE OF EACH ELEMENT
@@ -366,9 +366,9 @@ contains
     1070 continue
 
     ! CHECK OF INITIALIZATION
-    pe = p(z_electron)
+    pe = p(Z_ELECTRON)
 
-    if(ph-p(z_h)) 1402,1402,1401
+    if(ph-p(Z_H)) 1402,1402,1401
 
     1401 continue
     do 1403 i=1,dissoc_nmetal
@@ -376,7 +376,7 @@ contains
       nelemi=dissoc_nelemx(i)
       p(nelemi) = fp(nelemi)*exp(-5.0*t/econst)
     1403 continue
-    p(z_h) = ph   !> @todo ISSUE: overwriting P(1)
+    p(Z_H) = ph   !> @todo ISSUE: overwriting P(1)
 
     ! RUSSELL EQUATIONS
     1402 continue
@@ -417,7 +417,7 @@ contains
         natomj = dissoc_natom(m,j)
         atomj = float(natomj)
 
-        if (nelemj .eq. z_electron) then  !> @todo ISSUE This bit suggests that Z=99 is allowed in the molecules part
+        if (nelemj .eq. Z_ELECTRON) then  !> @todo ISSUE This bit suggests that Z=99 is allowed in the molecules part
           spnion = spnion + pmolj
         end if
 
@@ -472,7 +472,7 @@ contains
     perev = sqrt(perev/(1.0+spnion/pe))
     delta = delta + abs((pe-perev)/pe)
     pe = (perev + pe)*0.5  ! Note that it has an equivalence with the last element of P
-    p(z_electron)=pe
+    p(Z_ELECTRON)=pe
 
     if (delta - dissoc_eps) 1051,1051,1052
 

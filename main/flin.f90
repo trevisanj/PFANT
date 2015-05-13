@@ -59,7 +59,7 @@ module flin
                         mode_flin1 = .false.
 
   !> This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
-  real*8, dimension(max_modeles_ntot) :: dummy_tauhd
+  real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
 
   private flin_ ! private subroutine
 
@@ -68,8 +68,8 @@ contains
 
   !> See routine flin_() for description of parameters
   subroutine flin1(kap, b, nh, ntot, ptdisk, mu, kik)
-    real*8, intent(in), dimension(max_modeles_ntot) :: kap, nh
-    real*8, dimension(0:max_modeles_ntot), intent(in) :: b
+    real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh
+    real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b
     logical, intent(in) :: ptdisk
     real*8, intent(in) :: mu
     integer, intent(in) :: ntot, kik
@@ -84,8 +84,8 @@ contains
   !> 2) ignores PTDISK ISSUE!!!
   !>
   subroutine flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
-    real*8, intent(in), dimension(max_modeles_ntot) :: kap, nh, tauhd
-    real*8, dimension(0:max_modeles_ntot), intent(in) :: b
+    real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh, tauhd
+    real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b
     logical, intent(in) :: ptdisk
     real*8, intent(in) :: mu
     integer, intent(in) :: ntot, kik
@@ -102,11 +102,11 @@ contains
     use misc_math
     implicit none
     !> ?doc?
-    real*8, intent(in) :: kap(max_modeles_ntot)
+    real*8, intent(in) :: kap(MAX_MODELES_NTOT)
     !> ?doc?
-    real*8, intent(in) :: b(0:max_modeles_ntot)
+    real*8, intent(in) :: b(0:MAX_MODELES_NTOT)
     !> Source is probably @ref read_files::modeles_nh
-    real*8, intent(in) :: nh(max_modeles_ntot)
+    real*8, intent(in) :: nh(MAX_MODELES_NTOT)
     !> Source is probably @ref read_files::modeles_NTOT
     integer, intent(in) :: ntot
     !> Source is probably @ref read_files::main_PTDISK
@@ -120,7 +120,7 @@ contains
     !> @li if 1, uses the 26-point formulation
     integer, intent(in) :: kik
     !> Used only in FLINH mode
-    real*8, intent(in) :: tauhd(max_modeles_ntot)
+    real*8, intent(in) :: tauhd(MAX_MODELES_NTOT)
     !> Internal, either @ref mode_flin1 or @ref mode_flinh
     logical, intent(in) :: mode_
 

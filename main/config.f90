@@ -22,14 +22,14 @@
 module config
   use logging
 
-  integer, parameter :: num_mol=21  ! Number of molecules configured in the program.
+  integer, parameter :: NUM_MOL=21  ! Number of molecules configured in the program.
                                     ! Conceptually, this should be defined in molecula.f, but there would be cyclic USEs
 
   !> Logging level (from @ref logging module).
   !>
-  !> Possible values: logging::logging_halt, logging::logging_critical, logging::logging_error,
-  !> logging::logging_warning, logging::logging_info (default), logging::logging_debug
-  integer :: config_loglevel = logging_info
+  !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
+  !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
+  integer :: config_loglevel = LOGGING_INFO
 
   !=====
   ! File names
@@ -46,13 +46,13 @@ module config
   !> Number of molecules switched off (excluded from calculations)
   integer :: config_num_mol_off = 0
   !> List of molecule ids that are be switched off. Complement of config_molids_on.
-  integer :: config_molids_off (num_mol)
+  integer :: config_molids_off (NUM_MOL)
 
   ! These are filled by make_molids()
 
   !> List of molecule ids that are switched on. Complement of config_molids_off.
-  integer, dimension(num_mol) :: config_molids_on
-  !> This is actually <code> = num_mol-config_num_mol_off </code>
+  integer, dimension(NUM_MOL) :: config_molids_on
+  !> This is actually <code> = NUM_MOL-config_num_mol_off </code>
   integer config_num_mol_on
 
 
@@ -114,7 +114,7 @@ contains
   !================================================================================================================================
   !> Returns molecule id given index
   !>
-  !> Molecule id is a number from 1 to num_mol, which is uniquely related to a chemical molecule within pfant.
+  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
 
   function get_molid(i_mol)
     implicit none
@@ -166,7 +166,7 @@ contains
     logical is_off
 
     i_mol = 0
-    do molid = 1, num_mol
+    do molid = 1, NUM_MOL
       is_off = .false.  ! Whether molecule I_MOL is off
       do j = 1, config_num_mol_off
         if (molid .eq. config_molids_off(j)) then

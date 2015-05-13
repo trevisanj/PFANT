@@ -60,37 +60,51 @@ Data types
 Programming
 ===========
 
-  Always IMPLICIT NONE
-  --------------------
-  Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
-  Advantages:
-  @li type of variables becomes clear (not all code readers will know about Fortran i-n 
-      convention;
-  @li we are forced to declare real variables as real*8.
+Always IMPLICIT NONE
+--------------------
+Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
+Advantages:
+@li type of variables becomes clear (not all code readers will know about Fortran i-n 
+    convention;
+@li we are forced to declare real variables as real*8.
 
-  Variable declarations
-  ---------------------
-  @li Always use intent(in/out) for subroutine arguments. This will allow the reader to
-      know which arguments are inputs and which arguments are outputs for the subroutine.
-  @li <b>Module globals and subroutine/function arguments</b>: declare *only one* variable per
-      code line, and document the variable.
-  @li <b>Any variable</b>: document the variable if its use/purpose is not obviuos.
-  
-  Function/subroutines
-  --------------------
-  Write documentation explaining what the function/subroutine does and whenever possible,
-  why it was created.
+Case convention
+---------------
+All symbol (variable, function, subroutine, module) names are now declared in *lowercase*,
+except for *constants* which are all *UPPERCASE*.
 
-  Logging (i.e., printing things on the screen)
-  -------
-  For outputting messages on the screen, use the routines in the LOGGING
-  module (not just WRITE or PRINT). This may give a bit more work
-  (may require one extra line of code if the string is formatted), but
-  there are good reasons. for that.
-  There are different routines to be used, such as
-  LOG_CRITICAL(), LOG_ERROR(), LOG_WARNING(), LOG_INFO(), LOG_DEBUG(), and
-  logging can be silenced and/or sent to specific logging file using
-  command-line config options.
+@note The main reasons for this was a limitation in Doxygen, which converts all symbols
+to lowercase in the HTMLs anyway (fix has been asked for but no action yet
+http://doxygen.10944.n7.nabble.com/The-lowercase-problem-when-using-the-Doxygen-with-Fortran-td1243.html).
+It sucks to have to change your code conventions because of the documentation tool, but
+considering all you get from Doxygen, it seemed to be a good trade-off. The symbols could
+have been left in uppercase in the source code and would appear in lowercase in the HTML,
+but this would be kind of confusing.
+
+
+Variable declarations
+---------------------
+@li Always use intent(in/out) for subroutine arguments. This will allow the reader to
+    know which arguments are inputs and which arguments are outputs for the subroutine.
+@li <b>Module globals and subroutine/function arguments</b>: declare *only one* variable per
+    code line, and document the variable.
+@li <b>Any variable</b>: document the variable if its use/purpose is not obviuos.
+
+Function/subroutines
+--------------------
+Write documentation explaining what the function/subroutine does and whenever possible,
+why it was created.
+
+Logging (i.e., printing things on the screen)
+-------
+For outputting messages on the screen, use the routines in the LOGGING
+module (not just WRITE or PRINT). This may give a bit more work
+(may require one extra line of code if the string is formatted), but
+there are good reasons. for that.
+There are different routines to be used, such as
+LOG_CRITICAL(), LOG_ERROR(), LOG_WARNING(), LOG_INFO(), LOG_DEBUG(), and
+logging can be silenced and/or sent to specific logging file using
+command-line config options.
 
 
 Documenting
@@ -103,7 +117,24 @@ Documenting
   @code !< @endcode refers to what comes before.
   
   
-  
+Tags
+----
+Some tags used in comments throughout the source code:
+@verbatim
+__logging__      Marks bit of code whose purpose is to output log messages
+
+__spill check__  Marks bit of code destinated to verify whether we are trying to assign
+                 an element beyond the size of a vector/matrix, commonly performed while
+                 reading files.
+                 
+__bug__          Marks a bug situation.
+
+?doc?            Item (variable/subroutine etc) lacks proper documentation.
+
+?what?           More serious version of ?doc?: crucial item (variable/subroutine etc)
+                 is undocumented. This is reserved undocumented items that seem
+                 important.
+@endverbatim
 
 
 

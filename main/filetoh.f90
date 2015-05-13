@@ -32,7 +32,7 @@ module filetoh
   implicit none
 
   integer, parameter :: &
-   filetoh_np=7000, &  !< ?doc? @todo issue there is another NP hanging around
+   FILETOH_NP=7000, &  !< ?doc? Maximum number of ?
    max_filetoh_jmax=50 !< ?doc?
   !> Tied with other constants by relation: @code max_filetoh_jjmax = max_f_filetoh_jmax*2-1 @endcode
   integer, parameter :: max_filetoh_jjmax=max_filetoh_jmax*2-1
@@ -42,13 +42,13 @@ module filetoh
   !=====
   ! Note: PFANT doesn't use these variables, they are useful only for the unit testing
   character f_filetoh_titre*80, f_filetoh_ttt*11
-  real*8 :: f_filetoh_th(max_filetoh_jmax, max_modeles_ntot), f_filetoh_lambdh(max_filetoh_jmax)
+  real*8 :: f_filetoh_th(max_filetoh_jmax, MAX_MODELES_NTOT), f_filetoh_lambdh(max_filetoh_jmax)
   integer f_filetoh_jmax
 
   !=====
   ! Calculated for external use
   !=====
-  real*8 c_filetoh_tauhi(filetoh_np, max_modeles_ntot)
+  real*8 c_filetoh_tauhi(FILETOH_NP, MAX_MODELES_NTOT)
   integer c_filetoh_dhmi, c_filetoh_dhpi
 
   !=====
@@ -57,8 +57,8 @@ module filetoh
   private
 
   real*8, dimension(max_filetoh_jjmax) :: mi_llambdh, mi_allh, mi_tauhn
-  real*8 :: mi_tth(max_filetoh_jjmax, max_modeles_ntot)
-  real*8 :: mi_ftth(filetoh_np)
+  real*8 :: mi_tth(max_filetoh_jjmax, MAX_MODELES_NTOT)
+  real*8 :: mi_ftth(FILETOH_NP)
 
   !  integer :: jjmax
 
@@ -102,7 +102,7 @@ CONTAINS
     !> integer version of variable lzero in main module
     integer, intent(in) :: ilzero
     !> ?doc? Calculated as: ttd(d) = alzero+main_pas*(d-1)
-    real*8, intent(in) :: ttd(filetoh_np)
+    real*8, intent(in) :: ttd(FILETOH_NP)
 
     integer d, j, jj, jma1, n
     real*8 del

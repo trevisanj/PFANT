@@ -31,32 +31,32 @@ module read_files
 
       !> Maximum number of metal rows in dissoc.dat
       !> (number of elements actually used is specified by variable
-      !> dissoc_nmetal <= max_dissoc_nmetal)
-      integer, parameter :: max_dissoc_nmetal=50
+      !> dissoc_nmetal <= MAX_DISSOC_NMETAL)
+      integer, parameter :: MAX_DISSOC_NMETAL=50
       !> Maximum number of molecule rows in dissoc.dat
       !> @todo ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules)
-      integer, parameter:: max_dissoc_nmol=600
+      integer, parameter:: MAX_DISSOC_NMOL=600
       !> Maximum atomic number that can be found in dissoc.dat
-      integer, parameter :: max_z = 100
+      integer, parameter :: MAX_Z = 100
       !> Maximum possible value of modeles_ntot
-      integer, parameter :: max_modeles_ntot=50
+      integer, parameter :: MAX_MODELES_NTOT=50
       !> Maximum number of abundances in abonds.dat
-      integer, parameter :: max_abonds_nabond=100
+      integer, parameter :: MAX_ABONDS_NABOND=100
       integer, parameter :: &
-       max_atomgrade__nblend=13000, & !< Half of the maximum the number of rows in atomgrade.dat
-       max_atomgrade_nblend=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
+       MAX_ATOMGRADE__NBLEND=13000, & !< Half of the maximum the number of rows in atomgrade.dat
+       MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
       !> Maximum number of "items" in partit.dat:
       !> @li Maximum value for partit_npar
       !> @li Second dimension of partit_tabu
-      integer, parameter :: max_partit_npar=85
+      integer, parameter :: MAX_PARTIT_NPAR=85
       !> Third dimension of partit_TABU
-      integer, parameter :: max_partit_kmax=63
+      integer, parameter :: MAX_PARTIT_KMAX=63
       !> Maximum value for absoru_NM
-      integer, parameter :: max_absoru2_nm=30
+      integer, parameter :: MAX_ABSORU2_NM=30
       !> Maximum value for absoru2_NR(J)
-      integer, parameter :: max_absoru2_nrr=9
+      integer, parameter :: MAX_ABSORU2_NRR=9
       !> Maximum value for each element of absoru2_NUMSET
-      integer, parameter :: max_absoru2_numset_i=41
+      integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
 
       !=====
@@ -66,19 +66,19 @@ module read_files
       ! dissoc.dat, metals part
       integer dissoc_nmetal !< number of elements considered in chemical equilibrium
       integer dissoc_nimax  !< maximum number of iterations in Newton-Rapson method
-      character*2 dissoc_elems(max_dissoc_nmetal)    !< Elements table field 1/6: element symbol
-      integer     dissoc_nelemx(max_dissoc_nmetal)   !< Elements table field 2/6: atomic number
-      real*8      dissoc__ip(max_dissoc_nmetal)      !< Elements table field 3/6: ?
-      integer     dissoc__ig0(max_dissoc_nmetal),  & !< Elements table field 4/6: ?
-                  dissoc__ig1(max_dissoc_nmetal)     !< Elements table field 5/6: ?
-      real*8      dissoc__cclog(max_dissoc_nmetal)   !< Elements table field 6/6: ?
+      character*2 dissoc_elems(MAX_DISSOC_NMETAL)    !< Elements table field 1/6: element symbol
+      integer     dissoc_nelemx(MAX_DISSOC_NMETAL)   !< Elements table field 2/6: atomic number
+      real*8      dissoc__ip(MAX_DISSOC_NMETAL)      !< Elements table field 3/6: ?
+      integer     dissoc__ig0(MAX_DISSOC_NMETAL),  & !< Elements table field 4/6: ?
+                  dissoc__ig1(MAX_DISSOC_NMETAL)     !< Elements table field 5/6: ?
+      real*8      dissoc__cclog(MAX_DISSOC_NMETAL)   !< Elements table field 6/6: ?
 
       ! dissoc.dat, molecules part
-      character*3 dissoc_mol(max_dissoc_nmol)     !< Molecules table field 01: molecule name
-      real*8 dissoc_c(max_dissoc_nmol, 5)         !< Molecules table fields 02-06
-      integer dissoc_mmax(max_dissoc_nmol), &     !< Molecules table field 07
-              dissoc_nelem(5, max_dissoc_nmol), & !< Molecules table fields 08, 10, ...
-              dissoc_natom(5, max_dissoc_nmol)    !< Molecules table fields 09, 11, ...
+      character*3 dissoc_mol(MAX_DISSOC_NMOL)     !< Molecules table field 01: molecule name
+      real*8 dissoc_c(MAX_DISSOC_NMOL, 5)         !< Molecules table fields 02-06
+      integer dissoc_mmax(MAX_DISSOC_NMOL), &     !< Molecules table field 07
+              dissoc_nelem(5, MAX_DISSOC_NMOL), & !< Molecules table fields 08, 10, ...
+              dissoc_natom(5, MAX_DISSOC_NMOL)    !< Molecules table fields 09, 11, ...
       integer dissoc_nmol
       real*8 dissoc_eps,   & !< if abs((x(i+1)-x(i))/x(i)) .le. eps: converged
              dissoc_switer   !< flag affecting x(i+1)
@@ -112,20 +112,20 @@ module read_files
       character*64 main_filetohy(10) !< ?doc? Names of ten outputs files that will contain ???
 
       character*10 main_titrav(20) !< ?doc?
-      real*8 :: main_vvt(max_modeles_ntot), & !< ?doc?
-                main_tolv(max_modeles_ntot)   !< ?doc?
+      real*8 :: main_vvt(MAX_MODELES_NTOT), & !< ?doc?
+                main_tolv(MAX_MODELES_NTOT)   !< ?doc?
       !> This vector goes along with dissoc_ELEMS and dissoc_NELEMX
       !> @todo would go better as a column in dissoc.dat or eliminated
-      real*8 :: main_xxcor(max_dissoc_nmetal) !< ?doc?
+      real*8 :: main_xxcor(MAX_DISSOC_NMETAL) !< ?doc?
 
 
       !=====
       ! Variables filled by read_abonds() (file abonds.dat)
       !=====
       integer abonds_nabond !< ?doc?
-      character*2 abonds_ele(max_abonds_nabond)     !< ?doc?
-      real*8      abonds_abol(max_abonds_nabond), & !< ?doc?
-                  abonds_abo(max_abonds_nabond)     !< ?doc? This is calculated
+      character*2 abonds_ele(MAX_ABONDS_NABOND)     !< ?doc?
+      real*8      abonds_abol(MAX_ABONDS_NABOND), & !< ?doc?
+                  abonds_abo(MAX_ABONDS_NABOND)     !< ?doc? This is calculated
 
 
       !=====
@@ -133,10 +133,10 @@ module read_files
       !=====
       ! atomgrade.dat, file originals
       integer atomgrade__nblend !< ?doc?
-      character*2 atomgrade__elem(max_atomgrade__nblend) !< ?doc?
-      integer, dimension(max_atomgrade__nblend) :: &
+      character*2 atomgrade__elem(MAX_ATOMGRADE__NBLEND) !< ?doc?
+      integer, dimension(MAX_ATOMGRADE__NBLEND) :: &
        atomgrade__ioni !< ?doc?
-      real*8, dimension(max_atomgrade__nblend) :: &
+      real*8, dimension(MAX_ATOMGRADE__NBLEND) :: &
        atomgrade__lambda,       & !< ?doc?
        atomgrade__kiex,         & !< ?doc?
        atomgrade__algf,         & !< ?doc?
@@ -153,10 +153,10 @@ module read_files
       ! - single underscore
       ! - additional variable "gf", which equals 10**algf
       integer atomgrade_nblend !< ?doc?
-      character*2 atomgrade_elem(max_atomgrade_nblend) !< ?doc?
-      integer, dimension(max_atomgrade_nblend) :: &
+      character*2 atomgrade_elem(MAX_ATOMGRADE_NBLEND) !< ?doc?
+      integer, dimension(MAX_ATOMGRADE_NBLEND) :: &
        atomgrade_ioni !< ?doc?
-      real*8, dimension(max_atomgrade__nblend) :: &
+      real*8, dimension(MAX_ATOMGRADE__NBLEND) :: &
        atomgrade_lambda,       & !< ?doc?
        atomgrade_kiex,         & !< ?doc?
        atomgrade_algf,         & !< ?doc?
@@ -172,20 +172,20 @@ module read_files
       !=====
       ! Variables filled by read_partit() (file partit.dat)
       !=====
-      character*2, dimension(max_partit_npar) :: &
+      character*2, dimension(MAX_PARTIT_NPAR) :: &
        partit_el !< ?doc?
       integer partit_npar !< ?doc?
 
-      real*8, dimension (max_partit_npar) :: &
+      real*8, dimension (MAX_PARTIT_NPAR) :: &
        partit_ki1,  & !< ?doc?
        partit_pa,   & !< ?doc?
        partit_m,    & !< ?doc?
        partit_tini, & !< ?doc?
        partit_ki2
-      integer, dimension (max_partit_npar) :: &
+      integer, dimension (MAX_PARTIT_NPAR) :: &
        partit_jkmax !< ?doc?
 
-      real*8, dimension (max_partit_npar, 3, max_partit_kmax) :: &
+      real*8, dimension (MAX_PARTIT_NPAR, 3, MAX_PARTIT_KMAX) :: &
        partit_tabu !< ?doc?
 
 
@@ -197,7 +197,7 @@ module read_files
               absoru2_numset(2) !< NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
                                 !< POUR H,HE ET HE+
 
-      character*2 :: absoru2_nomet(max_absoru2_nm) !< NOM DE L'ELEMENT
+      character*2 :: absoru2_nomet(MAX_ABSORU2_NM) !< NOM DE L'ELEMENT
       real*8 absoru2_abmet, & !< ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
              absoru2_abhel    !< ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
       !> @todo ISSUE: i am not sure about these character*4, made this from the format below
@@ -208,15 +208,15 @@ module read_files
       !> @li IUNITE=' NOYAU H' SI ON VEUT CALCULER KAPPA PAR NOYAU D'HYDROGENE
       character*4 absoru2_iunite(2)
 
-      integer, dimension(max_absoru2_nm) :: &
+      integer, dimension(MAX_ABSORU2_NM) :: &
        absoru2_nr !< NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
-      real*8, dimension(max_absoru2_nm) :: &
+      real*8, dimension(MAX_ABSORU2_NM) :: &
        absoru2_zp, & !< ZP=NBR. D'ABONDANCE DE L'ELEMENT
        absoru2_zm    !< ZM=POIDS MOLECULAIRE DE L'ELEMENT
-      real*8, dimension(max_absoru2_nm, max_absoru2_nrr) :: &
+      real*8, dimension(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) :: &
         absoru2_xi,&!< XI(J,I) = POTENTIEL D'IONISATION DE L'ELEMENT J AU STADE D'IONISATION
         absoru2_pf  !< PF(J,I) = FONCTION DE PARTITION DE L'ELEMENT J AU STADE D'IONISATION
-      real*8 absoru2_wi(max_absoru2_numset_i, 2) !< ?doc?
+      real*8 absoru2_wi(MAX_ABSORU2_NUMSET_I, 2) !< ?doc?
 
 
 
@@ -238,7 +238,7 @@ module read_files
              modeles_asalalf, & !< ?doc?
              modeles_nhe,     & !< ?doc?
              bid(16)            !< ?doc?
-      real*4, dimension(max_modeles_ntot) :: &
+      real*4, dimension(MAX_MODELES_NTOT) :: &
        modeles_nh,   & !< ?doc?
        modeles_teta, & !< ?doc?
        modeles_pe,   & !< ?doc?
@@ -302,9 +302,9 @@ CONTAINS
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
       read(unit_, *) main_ivtot
       ! ivtot, affects subroutine turbul() issue ?what? ?doc?
-      if (main_ivtot .gt. max_modeles_ntot) then
-        write (lll, *) 'main_ivtot .gt. max_modeles_ntot (', &
-         main_ivtot, ' .gt. ', max_modeles_ntot, ')'
+      if (main_ivtot .gt. MAX_MODELES_NTOT) then
+        write (lll, *) 'main_ivtot .gt. MAX_MODELES_NTOT (', &
+         main_ivtot, ' .gt. ', MAX_MODELES_NTOT, ')'
          call pfant_halt(lll)
       end if
 
@@ -411,10 +411,10 @@ CONTAINS
         dissoc_elems(i) = symbol
 
         !__spill check__
-        if (dissoc_nelemx(i) .gt. max_z) then
+        if (dissoc_nelemx(i) .gt. MAX_Z) then
           write(lll,*) 'read_dissoc(): metal # ', i, ': nelemxi = ', &
            dissoc_nelemx(i), ' over maximum allowed (', &
-           max_z, ')'
+           MAX_Z, ')'
           call pfant_halt(lll)
         end if
 
@@ -637,8 +637,8 @@ CONTAINS
     k = k+1
 
     !__spill check__: checks if exceeds maximum number of elements allowed
-    if (k .gt. max_atomgrade__nblend) then
-      write(lll,*) 'read_atomgrade(): exceeded maximum of', max_atomgrade__nblend, ' spectral lines'
+    if (k .gt. MAX_ATOMGRADE__NBLEND) then
+      write(lll,*) 'read_atomgrade(): exceeded maximum of', MAX_ATOMGRADE__NBLEND, ' spectral lines'
       call pfant_halt(lll)
     end if
 
@@ -717,9 +717,9 @@ CONTAINS
 
 
         !__spill check__: checks if exceeds maximum number of elements allowed
-        if (k .gt. max_atomgrade_nblend) then
+        if (k .gt. MAX_ATOMGRADE_NBLEND) then
           write(lll,*) 'filter_atomgrade(): exceeded maximum of', &
-           max_atomgrade_nblend, ' spectral lines'
+           MAX_ATOMGRADE_NBLEND, ' spectral lines'
           call pfant_halt(lll)
         end if
 
@@ -788,8 +788,8 @@ CONTAINS
       if (finpar .ne. 1) then
 
         !__spill check__: checks if exceeds maximum number of elements allowed
-        if (j .gt. max_partit_npar) then
-          write(lll,*) 'read_partit(): par exceeded maximum of ', max_partit_npar
+        if (j .gt. MAX_PARTIT_NPAR) then
+          write(lll,*) 'read_partit(): par exceeded maximum of ', MAX_PARTIT_NPAR
           call pfant_halt(lll)
         end if
 
@@ -797,9 +797,9 @@ CONTAINS
         kmax = partit_jkmax(j)
 
         !__spill check__: checks if exceeds maximum number of elements allowed
-        if (kmax .gt. max_partit_kmax) then
+        if (kmax .gt. MAX_PARTIT_KMAX) then
           write(lll,*) 'read_partit(): par number', j, 'kmax=', kmax, &
-           ' exceeded maximum of', max_partit_kmax
+           ' exceeded maximum of', MAX_PARTIT_KMAX
           call pfant_halt(lll)
         end if
 
@@ -858,8 +858,8 @@ CONTAINS
           (absoru2_iunite(i),i=1,2), (absoru2_titre(i),i=1,17)
 
     !__spill check__: checks if exceeds maximum number of elements allowed
-    if (absoru2_nm .gt. max_absoru2_nm) then
-      write(lll,*) 'read_absoru2(): nm=', absoru2_nm, ' exceeded maximum of', max_absoru2_nm
+    if (absoru2_nm .gt. MAX_ABSORU2_NM) then
+      write(lll,*) 'read_absoru2(): nm=', absoru2_nm, ' exceeded maximum of', MAX_ABSORU2_NM
       call pfant_halt(lll)
     end if
 
@@ -875,8 +875,8 @@ CONTAINS
       nrr = absoru2_nr(j)
 
       ! checks if exceeds maximum number of elements allowed
-      if (nrr .gt. max_absoru2_nrr) then
-        write(lll,*) 'read_absoru2(): j = ', j, 'nr=', nrr, ' exceeded maximum of', max_absoru2_nrr
+      if (nrr .gt. MAX_ABSORU2_NRR) then
+        write(lll,*) 'read_absoru2(): j = ', j, 'nr=', nrr, ' exceeded maximum of', MAX_ABSORU2_NRR
         call pfant_halt(lll)
       end if
 
@@ -907,15 +907,15 @@ CONTAINS
 
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (absoru2_numset(1) .gt. max_absoru2_numset_i) then
+    if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
       write(lll,*) 'read_absoru2(): numset(1) = ', absoru2_numset(1), &
-       ' exceeded maximum of', max_absoru2_numset_i
+       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
       call pfant_halt(lll)
     end if
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (absoru2_numset(2) .gt. max_absoru2_numset_i) then
+    if (absoru2_numset(2) .gt. MAX_ABSORU2_NUMSET_I) then
       write(lll,*) 'read_absoru2(): numset(2) = ', absoru2_numset(2), &
-       ' exceeded maximum of', max_absoru2_numset_i
+       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
       call pfant_halt(lll)
     end if
 
@@ -974,9 +974,9 @@ CONTAINS
 
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (modeles_ntot .gt. max_modeles_ntot) then
+    if (modeles_ntot .gt. MAX_MODELES_NTOT) then
       write(lll,*) 'read_modeles(): numset(1) = ',absoru2_numset(1), &
-       ' exceeded maximum of', max_absoru2_numset_i
+       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
       call pfant_halt(lll)
     end if
 

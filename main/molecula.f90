@@ -27,11 +27,16 @@ module molecula
   !~integer, parameter :: max_lines_per_mol=300000
   ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
 
-  integer, parameter :: max_sol_per_mol=200
+  integer, parameter :: MAX_SOL_PER_MOL=200
 
   !~ integer, parameter ::
-  !~+  max_km__lines_total = max_lines_per_mol*num_mol
-  integer, parameter :: max_km__lines_total=1400000
+  !~+  MAX_KM__LINES_TOTAL = max_lines_per_mol*NUM_MOL
+  integer, parameter :: &
+   MAX_KM__LINES_TOTAL=1400000, & !< Maximum number of spectral lines in moleculagrade.dat
+                                  !< pertaining all molecules
+   MAX_KM_MBLEND=200000 !< Maximum number of spectral lines that can be filtered in at a
+                        !< filtering operation performed by filter_moleculagrade()
+
 
   ! Specifies how many molecules to read
   !> @todo ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
@@ -42,39 +47,46 @@ module molecula
 
   character*256 km__titm, km__titulo
 
-  dimension km__titulo(num_mol)
+  dimension km__titulo(NUM_MOL)
 
-  real*8, dimension(num_mol) :: km__fe, km__do, &
+  real*8, dimension(NUM_MOL) :: km__fe, km__do, &
    km__mm, km__am, km__bm, km__ua, km__ub, km__te, km__cro, &
    km__a0, km__a1, km__a2, km__a3, km__a4, km__als, km__s
 
-  integer, dimension(num_mol)  :: km__ise, km__nv, &
+  integer, dimension(NUM_MOL)  :: km__ise, km__nv, &
    km__lines_per_mol  !> This stores the number of spectral lines for each molecule
 
-  real*8, dimension(max_sol_per_mol, num_mol) :: km__qqv, km__ggv, km__bbv, km__ddv, km__fact
+  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km__qqv, km__ggv, km__bbv, km__ddv, km__fact
 
 
   !> "Index of Last Lambda Of Set-Of-Lines"
   !> Points to km__lmbdam, km__sj, km__jj; km__last
   !> This is mounted at reading to help with the filtering and avoid
   !> allocating 2 dimensions for (lm__lmbdam, km__sj, km__jj)
-  real*8, dimension(max_sol_per_mol, num_mol) :: km__iollosol 
+  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km__iollosol 
 
-  real*8,  dimension(max_km__lines_total) :: km__lmbdam
-  real*8,    dimension(max_km__lines_total) :: km__sj, km__jj
+  real*8,  dimension(MAX_KM__LINES_TOTAL) :: &
+   km__lmbdam, &
+   km__sj,     &
+   km__jj
 
-  !~ integer, dimension(max_lines_per_mol, num_mol) ::
+  !~ integer, dimension(max_lines_per_mol, NUM_MOL) ::
   !~+  km__numlin
 
 
   !=====
   ! Variables filled by filter_moleculagrade()
+  !=====
 
   integer km_mblend  ! Total number of spectral lines *filtered in*
 
   ! Valid elements of these are from 1 to km_mblend
-  real*8, dimension(max_km__lines_total) :: km_lmbdam
-  real*8, dimension(max_km__lines_total) :: km_sj, km_jj, km_gfm, km_alargm
+  real*8, dimension(MAX_KM_MBLEND) :: &
+    km_lmbdam, & !< ?doc?      
+    km_sj,     & !< ?doc?  
+    km_jj,     & !< ?doc?  
+    km_gfm,    & !< ?doc?   
+    km_alargm    !< ?doc?    
 
 
   !------
@@ -83,16 +95,16 @@ module molecula
   ! This one points to the last index of the lines of each molecule within
   ! km_lmbdam, km_sj and km_jj (after the filtering)
   ! Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
-  dimension km_mblenq(num_mol+1)
+  dimension km_mblenq(NUM_MOL+1)
   ! This is similar but is a "local" one, it contains index of the last
   ! line of each set of lines within km_lmbdam, km_sj and km_jj
   ! **for the current molecule** I_MOL
   ! Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
   !> @todo Explain better
-  dimension km_ln(max_sol_per_mol+1, num_mol)
+  dimension km_ln(MAX_SOL_PER_MOL+1, NUM_MOL)
 
   !> @todo ISSUE: "Warning: possible change of value in conversion from real(8) to real(4)"
-  real*8, dimension(max_km__lines_total, max_modeles_ntot) :: km_pnvj
+  real*8, dimension(MAX_KM__LINES_TOTAL, MAX_MODELES_NTOT) :: km_pnvj
 
   !> @todo test the pointers
   real*8, private, pointer, dimension(:) :: ppa, pb
@@ -136,7 +148,7 @@ contains
 
 
     !__logging__
-    write (lll,*) 'max_km__lines_total = ', max_km__lines_total
+    write (lll,*) 'MAX_KM__LINES_TOTAL = ', MAX_KM__LINES_TOTAL
     call log_debug(lll)
 
 
@@ -157,14 +169,14 @@ contains
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(unit_,*) (km__nv(molid), molid=1,num_mol)
+    read(unit_,*) (km__nv(molid), molid=1,NUM_MOL)
 
     !__spill check__
-    do molid = 1, num_mol
-      if (km__nv(molid) .gt. max_sol_per_mol) then
+    do molid = 1, NUM_MOL
+      if (km__nv(molid) .gt. MAX_SOL_PER_MOL) then
           write(lll,*) 'read_moleculagrade(): molecule id ', molid,
    +       ' has nv = ', km__nv(molid), ' (maximum is ',
-   +       max_sol_per_mol, ')'
+   +       MAX_SOL_PER_MOL, ')'
           stop error_exceeded
         end if
     end do
@@ -242,9 +254,9 @@ contains
 
         !__spill check__: checks if exceeds maximum number of elements allowed
         !> @todo ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
-        if (i_line .gt. max_km__lines_total) then
+        if (i_line .gt. MAX_KM__LINES_TOTAL) then
           write(*,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ',
-           max_km__lines_total, ' (at molecule id ', molid, ')'
+           MAX_KM__LINES_TOTAL, ' (at molecule id ', molid, ')'
           stop error_exceeded
         end if
 
@@ -326,28 +338,28 @@ contains
     real*8, intent(in) :: lfin
     real*8 :: lambda
     integer i,
-            MOLID,          &  ! Counts molecule ID, from 1 to NUM_MOL
-            I_MOL,          &  ! Counts molecules that are "switched on"
-            J_DUMMY, J_SET, &
-            I_LINE,         &  ! Index of km__LMBDAM, km__SJ, km__JJ
-            I_FILTERED      &  ! Counts number of filtered lines (molecule-independent);
-                               !  index of km_LMBDAM, km_SJ, km_JJ
-    LOGICAL FLAG_IN
-    CHARACTER*80 LLL
+            molid,          &  ! Counts molecule id, from 1 to NUM_MOL
+            i_mol,          &  ! Counts molecules that are "switched on"
+            j_dummy, j_set, &
+            i_line,         &  ! Index of km__lmbdam, km__sj, km__jj
+            i_filtered      &  ! Counts number of filtered lines (molecule-independent);
+                               !  index of km_lmbdam, km_sj, km_jj
+    logical flag_in
+    character*100 lll
 
 
     !__logging__
-    WRITE(LLL, *) 'config_NUM_MOL_ON = ', config_NUM_MOL_ON
-    CALL LOG_DEBUG(LLL)
+    write(lll, *) 'config_num_mol_on = ', config_num_mol_on
+    call log_debug(lll)
 
 
     ! Initializes the zero elements of the augmented matrices
-    km_MBLENQ(1) = 0
-    DO I = 1, NUM_MOL
-      km_LN(1, I) = 0
-    END DO
+    km_mblenq(1) = 0
+    do i = 1, NUM_MOL
+      km_ln(1, i) = 0
+    end do
 
-    I_FILTERED = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
+    i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     I_LINE = 1
     I_MOL = 0
     DO MOLID = 1, NUM_MOL
@@ -371,6 +383,15 @@ contains
         IF ((LAMBDA .GE. LZERO) .AND. (LAMBDA .LE. LFIN)) THEN
           ! Filters in a new spectral line!
           I_FILTERED = I_FILTERED+1
+
+          !__spill check__
+          if (i_filtered .gt. MAX_KM_MBLEND) then
+            write(lll, *) 'filter_moleculagrade(): Number of filtered lines '//&
+             'exceeded maximum of ', MAX_KM_MBLEND
+            call pfant_halt(lll, .True.)
+          end if
+
+
 
           km_LMBDAM(I_FILTERED) = LAMBDA
           km_SJ(I_FILTERED) = km__SJ(I_LINE)
@@ -505,7 +526,7 @@ contains
       END DO
     END DO !--end of I_MOL loop--!
 
-    DO L = 1,km_MBLEND
+    DO L = 1, km_MBLEND
       km_ALARGM(L) = 0.1
     END DO
   END

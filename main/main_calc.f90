@@ -62,7 +62,7 @@
 !     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
 !     atualizadas
 !
-!     c. incluidos c_filetoh_TAUHI(NP,50),TAUHY(10,NP,50) e excluido IHH(500)
+!     c. incluidos c_filetoh_TAUHI(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
 !
 !     d. todo o codigo que se referia ao calculo das linha de H foram
 !     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -72,10 +72,10 @@
 !     e. segundo as instrucoes enviadas pela Marie Noel em 2001:
 !     - na rotina FTLIN3H foi incluida a linha
 !     'if (ftt(itot).ne.0.0) k2=itot'
-!     - DTOT foi substituido por NP nas dimensoes das matrizes
-!           BK : TTD(NP), bk_KCD(NP,5)
-!        LECTAUH : TTD(NP)
-!        SELEKFH : TTD(NP), bk_KCD(NP, 50), selekfh_FL(NP), TAUH(NP,50)`
+!     - DTOT foi substituido por FILETOH_NP nas dimensoes das matrizes
+!           BK : TTD(FILETOH_NP), bk_KCD(FILETOH_NP,5)
+!        LECTAUH : TTD(FILETOH_NP)
+!        SELEKFH : TTD(FILETOH_NP), bk_KCD(FILETOH_NP, 50), selekfh_FL(FILETOH_NP), TAUH(FILETOH_NP,50)`
 !
 !
 !     Tambem reduzi o numero de comentario que vao para a tela
@@ -83,8 +83,8 @@
 !
 ! ========================================================================
 !
-!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(NP) e o
-!     espectro normalizado FN(NP) {Paula, dez 2003}
+!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(FILETOH_NP) e o
+!     espectro normalizado FN(FILETOH_NP) {Paula, dez 2003}
 !
 !     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
 !     - abro mais dois arquivos binarios unit=19 (continuo) e 20 (normalizado)
@@ -105,47 +105,46 @@
 !> Calcul possible de 100 angstrom en 100 angstrom.
 !> Flux sortant est en nu: Fnu x lambda
 !> Flux absolu sortant a ete multiplie par 10**5
-MODULE SYNTHESIS
-  USE READ_FILES
+module synthesis
+  use read_files
+  use molecula
+  use filetoh
+  use logging
+  implicit none
 
-
-  !> @todo ISSUE this is used a lot, I gotta find out its meaning
-  !> @todo ISSUE I think it is the maximum number of calculation steps.
-  INTEGER, PARAMETER :: NP = 7000, &
-                        NMOL = 50000  !> @todo issue ?what? ?doc? about this parameter, what does it mean?
 
   !=====
   ! Subroutine outputs
   !=====
   ! The following variables have the prefix of the subroutine that is responsible for them.
 
-  !> Calculated by subroutine POPUL
-  REAL*8, DIMENSION(3,MAX_partit_NPAR, MAX_modeles_NTOT) :: popul_P
+  !> Calculated by subroutine popul
+  real*8, dimension(3,MAX_PARTIT_NPAR, MAX_MODELES_NTOT) :: popul_p
 
 
-  !> Calculated by subroutine TURBUL
-  REAL*8, DIMENSION(MAX_modeles_NTOT) :: turbul_VT
+  !> Calculated by subroutine turbul
+  real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 
 
-  !> Calculated by subroutine POPADELH
-  REAL*8, DIMENSION(MAX_atomgrade_NBLEND) :: popadelh_CORCH, popadelh_CVdW
-  !> Calculated by subroutine POPADELH
-  REAL*8, DIMENSION(MAX_atomgrade_NBLEND,MAX_modeles_NTOT) :: &
-   popadelh_POP, popadelh_A, popadelh_DELTA
+  !> calculated by subroutine popadelh
+  real*8, dimension(MAX_ATOMGRADE_NBLEND) :: popadelh_corch, popadelh_cvdw
+  !> Calculated by subroutine popadelh
+  real*8, dimension(MAX_ATOMGRADE_NBLEND,MAX_MODELES_NTOT) :: &
+   popadelh_pop, popadelh_a, popadelh_delta
 
 
-  !> Calculated by subroutine SELEKFH
-  REAL*8, DIMENSION(NP) :: selekfh_FL, selekfh_FCONT
+  !> Calculated by subroutine selekfh
+  real*8, dimension(FILETOH_NP) :: selekfh_fl, selekfh_fcont
 
 
-  !> Calculated by subroutine BK
-  REAL*8, DIMENSION(0:MAX_modeles_NTOT) :: bk_B, bk_B1, bk_B2
-  !> Calculated by subroutine BK
-  REAL*8, DIMENSION(MAX_modeles_NTOT) :: bk_KC, bk_KC1, bk_KC2, bk_PHN, bk_PH2
-  !> Calculated by subroutine BK
-  REAL*8, DIMENSION(NP, MAX_modeles_NTOT) :: bk_KCD
-  !> Calculated by subroutine BK
-  REAL*8, DIMENSION(NP) :: bk_FC
+  !> Calculated by subroutine bk
+  real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b, bk_b1, bk_b2
+  !> Calculated by subroutine bk
+  real*8, dimension(MAX_MODELES_NTOT) :: bk_kc, bk_kc1, bk_kc2, bk_phn, bk_ph2
+  !> Calculated by subroutine bk
+  real*8, Dimension(FILETOH_NP, MAX_MODELES_NTOT) :: bk_kcd
+  !> Calculated by subroutine bk
+  real*8, Dimension(FILETOH_NP) :: bk_fc
 
 
 
@@ -168,7 +167,7 @@ MODULE SYNTHESIS
    DEUXR = 1.6634E+8,  &
    RPI = 1.77245385
 
-  REAL*8, PARAMETER :: C5 = 2.*PI* (3.*PI**2/2.44)**0.4
+  real*8, parameter :: C5 = 2.*PI* (3.*PI**2/2.44)**0.4
 
 
   CONTAINS
@@ -176,33 +175,35 @@ MODULE SYNTHESIS
 
 
   !======================================================================================================================
-  SUBROUTINE PFANT_CALCULATE()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
-    REAL*8 LZERO, LFIN
-    CHARACTER*256 FILEFLUX, FILEFLUX2,FILEFLUX3
-
-    INTEGER D,DTOT
-    INTEGER DHM,DHP,DHMY,DHPY
-
-    CHARACTER FILETOH*260
-
-    REAL*8 LAMBD, L0, LF, LLLHY
-
-    REAL*8 GFAL(MAX_atomgrade_NBLEND), ECART(MAX_atomgrade_NBLEND), &
-     FI(1501),TFI(1501), ECARTM(NMOL)
-!   fonctions de partition TODO figure out what this comment refers to
-
-    REAL*8 TTD(NP), FN(NP), &
-           TAUH(NP, 50), TAUHY(10,NP,50), &
-           DHMY(10), DHPY(10)
-
+  subroutine pfant_calculate()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
     ! Units for output files
-    INTEGER, PARAMETER ::
+    integer, parameter :: &
      UNIT_SPEC  = 17, &
      UNIT_CONT  = 19, &
      UNIT_NORM  = 20, &
      UNIT_LINES = 32, &
      UNIT_LOG   = 31
 
+    real*8 lzero, lfin
+    character*256 fileflux, fileflux2, fileflux3
+
+    integer :: &
+     d,        &
+     dtot,     &
+     dhmy(10), &
+     dhpy(10)
+    integer dhm,dhp
+
+    character filetoh*260
+
+    real*8 lambd, l0, lf, lllhy
+
+    real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
+     fi(1501),tfi(1501), ecartm(MAX_KM_MBLEND)
+!   fonctions de partition TODO figure out what this comment refers to
+
+    REAL*8 ttd(FILETOH_NP), fn(FILETOH_NP), &
+           tauh(FILETOH_NP, 50), tauhy(10,FILETOH_NP,50)
 
 
     !=====
@@ -211,31 +212,31 @@ MODULE SYNTHESIS
 
 
     ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
-    CALL READ_DISSOC(config_FN_DISSOC)
-    CALL READ_MAIN(config_FN_MAIN)
-    CALL READ_PARTIT(config_FN_PARTIT)  ! LECTURE DES FCTS DE PARTITION
-    CALL READ_ABSORU2(config_FN_ABSORU2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-    CALL READ_MODELE(config_FN_MODELES)  ! LECTURE DU MODELE
-    CALL READ_ABONDS(config_FN_ABONDS)
-    CALL READ_ATOMGRADE(config_FN_ATOMGRADE)
+    call read_dissoc(config_fn_dissoc)
+    call read_main(config_fn_main)
+    call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
+    call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+    call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
+    call read_abonds(config_fn_abonds)
+    call read_atomgrade(config_fn_atomgrade)
 
-    TETAEF = 5040/main_TEFF
+    tetaef = 5040/main_teff
 
 
     !-----
     ! Output files opened here and left open until the end
     !-----
-    !FILEFLUX1 = TRIM(main_FILEFLUX)//'.spec'
-    !FILEFLUX2 = TRIM(main_FILEFLUX)//'.cont'
-    !FILEFLUX3 = TRIM(main_FILEFLUX)//'.norm'
-    !OPEN(UNIT=UNIT_SPEC,FILE=FILEFLUX1,STATUS='unknown')
-    !OPEN(UNIT=UNIT_CONT,FILE=FILEFLUX2,STATUS='unknown')
-    !OPEN(UNIT=UNIT_NORM,FILE=FILEFLUX3,STATUS='unknown')
-    OPEN(UNIT=UNIT_SPEC, FILE=TRIM(main_FILEFLUX)//'.spec', STATUS='unknown')  ! spectrum
-    OPEN(UNIT=UNIT_CONT, FILE=TRIM(main_FILEFLUX)//'.cont', STATUS='unknown')  ! continuum
-    OPEN(UNIT=UNIT_NORM, FILE=TRIM(main_FILEFLUX)//'.norm', STATUS='unknown')  ! normalized
-    OPEN(UNIT=UNIT_LINES,FILE=config_FN_LINES, STATUS='UNKNOWN')               ! lines.pfant
-    OPEN(UNIT=UNIT_LOG,  FILE=config_FN_LOG, STATUS='UNKNOWN')                 ! log.log
+    !fileflux1 = trim(main_fileflux)//'.spec'
+    !fileflux2 = trim(main_fileflux)//'.cont'
+    !fileflux3 = trim(main_fileflux)//'.norm'
+    !open(unit=unit_spec,file=fileflux1,status='unknown')
+    !open(unit=unit_cont,file=fileflux2,status='unknown')
+    !open(unit=unit_norm,file=fileflux3,status='unknown')
+    open(unit=unit_spec, file=trim(main_fileflux)//'.spec', status='unknown')  ! spectrum
+    open(unit=unit_cont, file=trim(main_fileflux)//'.cont', status='unknown')  ! continuum
+    open(unit=unit_norm, file=trim(main_fileflux)//'.norm', status='unknown')  ! normalized
+    open(unit=unit_lines,file=config_fn_lines, status='unknown')               ! lines.pfant
+    open(unit=unit_log,  file=config_fn_log, status='unknown')                 ! log.log
 
 
 
@@ -243,43 +244,43 @@ MODULE SYNTHESIS
     ! Calculation begins!
     !=====
 
-    CALL TURBUL()
+    call turbul()
 
     ! -- III --
     ! CALCUL DE QUANT  NE DEPENDANT QUE DU METAL ET DU MODELE
     ! POPULATION DU NIV FOND DES IONS
-    CALL POPUL(modeles_TETA,modeles_PE,modeles_NTOT,partit_TINI,partit_PA,partit_JKMAX,partit_KI1,partit_KI2,partit_NPAR,partit_TABU,popul_P)
+    call popul()
 
     ! -- IV --
     ! CALCUL DES QUANTITES NE DEPENDANT QUE DU
     ! MODELE ET DE LAMBDA : bk_B(N)   bk_KC(N)   bk_FC
-    CALL SAT4()
+    call sat4()
 
 
     !> @todo ISSUE Explain what it does
-    XLZERO = main_LLZERO-20.
-    XLFIN = XLZERO+main_AINT+20.
-    IF(XLFIN .GE. (main_LLFIN+20.)) THEN
-      IKEYTOT = 1
-    ELSE
-      !> @todo ISSUE it seems that I could write this using a modulus operator
-      DO I = 2,250
-        XLFIN = XLFIN+main_AINT
-        IF(XLFIN .GE. (main_LLFIN+20.)) EXIT
-      END DO
-      IKEYTOT = I
-    END IF
+    xlzero = main_llzero-20.
+    xlfin = xlzero+main_aint+20.
+    if(xlfin .ge. (main_llfin+20.)) then
+      ikeytot = 1
+    else
+      !> @todo issue it seems that i could write this using a modulus operator
+      do i = 2,250
+        xlfin = xlfin+main_aint
+        if(xlfin .ge. (main_llfin+20.)) exit
+      end do
+      ikeytot = i
+    end if
 
-    LZERO = main_LLZERO-20.
-    LFIN = LZERO+main_AINT+20.
-    IKEY = 1
+    lzero = main_llzero-20.
+    lfin = lzero+main_aint+20.
+    ikey = 1
 
 
 
     !=====
     ! Main loop
     !=====
-    DO WHILE .T. !Main loop!
+    do while (.true.)
       !> @todo ISSUE Explain DTOT
       DTOT = (LFIN-LZERO)/main_PAS + 1.0005
 
@@ -558,22 +559,26 @@ MODULE SYNTHESIS
         IMPLICIT NONE
         INTEGER D
         REAL lambi
-        REAL KAPPA,KA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
-        REAL*8 ECAR,ECARTM,ECARM
+        REAL*8 :: &
+         KAPPA,KAP,bk_KCD,KCI,KAM,KAPPAM,KAPPT
+        REAL*8 ECARTM,ECARM
         DIMENSION turbul_VT(50)
         DIMENSION BI(0:50)
-        real*8, DIMENSION(MAX_atomgrade_NBLEND) :: ECAR, ECARTL, KA
+        real*8, DIMENSION(MAX_ATOMGRADE_NBLEND) :: &
+         ECAR, &
+         ECARTL, &
+         KA
 
         DIMENSION KAP(50),           &
                   KAPPA(50),         &
-                  bk_KCD(NP,50), &
+                  bk_KCD(FILETOH_NP,50), &
                   KCI(50)
 
         DIMENSION TAUHD(50)
-        DIMENSION DELTAM(NMOL,50), &
-                  ECARM(NMOL),     &
-                  ECARTLM(NMOL),   &
-                  KAM(NMOL),       &
+        DIMENSION DELTAM(MAX_KM_MBLEND,50), &
+                  ECARM(MAX_KM_MBLEND),     &
+                  ECARTLM(MAX_KM_MBLEND),   &
+                  KAM(MAX_KM_MBLEND),       &
                   KAPPAM(50),                &
                   KAPPT(50)
 
@@ -701,11 +706,14 @@ MODULE SYNTHESIS
      + ALPH_N, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
      + LOG_PE  ! Created to avoid calculating ALOG10(PE) 3x
       REAL*8 LZERO, LFIN
-      REAL*8, DIMENSION(2, MAX_modeles_NTOT) :: KCJ
+      REAL*8, DIMENSION(2, MAX_MODELES_NTOT) :: KCJ
       REAL*8, DIMENSION(2) :: KCN, LAMBDC, TOTKAP
       CHARACTER*80 LLL
-      DIMENSION TTD(NP)
-      DIMENSION FTTC(NP)
+
+      !> @todo this ttd is repeating its declaration...
+
+      DIMENSION TTD(FILETOH_NP)
+      DIMENSION FTTC(FILETOH_NP)
 
 
       LLZERO = LZERO
