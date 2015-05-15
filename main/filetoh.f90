@@ -34,7 +34,7 @@ module filetoh
   integer, parameter :: &
    FILETOH_NP=7000, &    !< ?doc? Maximum number of ?
    MAX_FILETOH_JMAX=50,& !< ?doc?
-   FILETOH_NUMFILES=10          !< Number of "filetoh" files
+   FILETOH_NUMFILES=10   !< Number of "filetoh" files
   !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_F_FILETOH_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX=MAX_FILETOH_JMAX*2-1
 
@@ -68,11 +68,10 @@ module filetoh
   !=====
   ! Private variables, shared between routines
   !=====
-  private
 
-  real*8, dimension(MAX_FILETOH_JJMAX) :: mi_llambdh, mi_allh, mi_tauhn
-  real*8 :: mi_tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
-  real*8 :: mi_ftth(FILETOH_NP)
+  real*8, private, dimension(MAX_FILETOH_JJMAX) :: mi_llambdh, mi_allh, mi_tauhn
+  real*8, private :: mi_tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
+  real*8, private :: mi_ftth(FILETOH_NP)
 
   !  integer :: jjmax
 

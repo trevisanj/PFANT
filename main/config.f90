@@ -259,7 +259,7 @@ contains
 
           if (err_out) then
             write (lll, *) 'Argument out of range for option ', get_option_name(opt)
-            call PFANT_HALT(lll)
+            call pfant_halt(lll)
           end if
 
       end select

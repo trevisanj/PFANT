@@ -81,6 +81,24 @@ considering all you get from Doxygen, it seemed to be a good trade-off. The symb
 have been left in uppercase in the source code and would appear in lowercase in the HTML,
 but this would be kind of confusing.
 
+Name conventions
+----------------
+
+@li Routines synthesis::synthesis_ and absoru::absoru_ names have a trailing underscore in order to
+    differentiate from their respective module names;
+    
+@li Prefixes are now used extensively throughout the code to group variables according
+    to some meaning, for example:
+    @code
+    main_ptdisk     ! variable comes from file main.dat
+    selekfh_fl      ! variable is calculated by subroutine synthesis::selekfh()
+    MAX_PARTIT_NPAR ! constant having maximum allowed value of variable partit_npar
+    ...
+    @endcode
+    Every module explains the meaning of its own prefixes.
+    
+    
+
 
 Variable declarations
 ---------------------

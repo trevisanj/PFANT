@@ -28,8 +28,7 @@ C> DONNEES POUR L'HYDROGENE GRANT=MON. NOT. VOL. 118 P. 241 1958
 C> DONNEES POUR QUASI MOLECULE H+H (DOYLE,APJ,153,187.1968)
 
 
-
-      module absoru_mod_data
+      module absoru_data
 
       real*8, parameter :: au_winv(46) = (
      +/361.9,429.9,514.4,615.3,733.7,869.7,1028.7,1226.2,1460.9

@@ -108,12 +108,14 @@
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
 
 module synthesis
+  use filetoh
   use read_files
   use molecula
-  use filetoh
   use logging
   implicit none
 
+
+!  integer, parameter :: FILETOH_NP=7000
 
   !=====
   ! Subroutine outputs
@@ -144,9 +146,9 @@ module synthesis
   !> Calculated by subroutine bk
   real*8, dimension(MAX_MODELES_NTOT) :: bk_kc, bk_kc1, bk_kc2, bk_phn, bk_ph2
   !> Calculated by subroutine bk
-  real*8, Dimension(FILETOH_NP, MAX_MODELES_NTOT) :: bk_kcd
+  real*8, dimension(FILETOH_NP, MAX_MODELES_NTOT) :: bk_kcd
   !> Calculated by subroutine bk
-  real*8, Dimension(FILETOH_NP) :: bk_fc
+  real*8, dimension(FILETOH_NP) :: bk_fc
 
 
 
@@ -154,10 +156,10 @@ module synthesis
   ! Constants available to all subroutines within this module
   !=====
 
-  REAL*8, PARAMETER, DIMENSION(10) :: &
+  real*8, parameter, dimension(10) :: &
    LLHY = (/3750.150, 3770.630, 3797.900, 3835.390, 3889.050, &
    3970.076, 4101.748, 4340.468, 4861.332, 6562.817/) !< ?doc? ?what? One number for each filetoh, what does it mean?
-  REAL*8, PARAMETER :: & !< ?doc?
+  real*8, parameter :: & !< ?doc?
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
    KB = 1.38046E-16,   & !< ?doc?
@@ -170,14 +172,14 @@ module synthesis
    RPI = 1.77245385      !< ?doc?
 
   real*8, parameter :: &
-   C5 = 2.*PI* (3.*PI**2/2.44)**0.4  & !< ?doc?
+   C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
   CONTAINS
 
 
 
   !======================================================================================================================
-  subroutine pfant_calculate()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
+  subroutine synthesis_()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
     ! Units for output files
     integer, parameter :: &
      UNIT_SPEC  = 17, &
@@ -319,7 +321,7 @@ module synthesis
       ! Lecture tau raie hydrogene et interpolation de tauh
       ! Type *,' nom des fichiers TAU raies Hydrogene'
       call filetoh_auh(dtot, ttd, ilzero) ! Old "LECTAUH()".
-                                          ! This now calculates c_filetoh_* for all 
+                                          ! This now calculates c_filetoh_* for all
                                           ! filetohy files
       im = 0
       do ih = 1,FILETOH_NUMFILES
@@ -706,9 +708,9 @@ module synthesis
     !
     subroutine bk()
       integer d
-      real*8 nu, llzero, llfin, nu1, nu2, lambdc, kcj, kcn,
-     + alph_n, ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
-     + log_pe  ! Created to avoid calculating ALOG10(PE) 3x
+      real*8 nu, llzero, llfin, nu1, nu2, &
+       alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
+       log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
       real*8, dimension(2) :: kcn, lambdc, totkap
       character*80 lll
@@ -801,7 +803,7 @@ module synthesis
       10 continue
     end
 
-  end subroutine pfant_calculate
+  end subroutine synthesis_
 
 
 

@@ -50,18 +50,17 @@ contains
   !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
   !> due to an error situation (normal program execution ends with error code 0).
 
-  subroutine pfant_halt(s, is_bug, fuck)
+  subroutine pfant_halt(s, is_bug)
     !> Log message
     character(len=*), intent(in) :: s
     !> (default=.false.) Whether halting program because of a bug.
-    logical, intent(in) :: is_bug
-    integer fuck
+    logical, optional, intent(in) :: is_bug
     logical is_bug_ ! Argument is_bug, or default value if not passed.
-    !IF (.NOT. PRESENT(IS_BUG)) then
-    !  is_bug_ = .False.
-    !else
-    !  is_bug_ = is_bug
-    !end if
+    IF (.NOT. PRESENT(IS_BUG)) then
+      is_bug_ = .False.
+    else
+      is_bug_ = is_bug
+    end if
 
     call do_logging(s, LOGGING_HALT)
     !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported

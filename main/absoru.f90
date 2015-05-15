@@ -42,8 +42,8 @@
 !> @todo CHECK ALL TYPES
 !> @todo CHECK ALL SIZES
 
-module absoru_mod
-  use absoru_mod_data
+module absoru
+  use absoru_data
 
   !=====
   ! Outputs
@@ -101,13 +101,15 @@ contains
   !> @ingroup data
   !> Calculates the "continuum absorption"
   !>
-  !> Note1: 1/3 things that need to be changed to include scattering (other software
+  !> Routine name has trailing underscore to differentiate from module name.
+  !>
+  !> @note 1/3 things that need to be changed to include scattering (other software
   !>       e.g. Upsalla already have this)
   !>
-  !> Note2: 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
+  !> @note 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
 
-  subroutine absoru(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
+  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
     use read_files
     implicit none
     real*8 wl, th, zlpe, totkap, dif, scat, scatel, scath, sum1, sum2, unit, wl4, &
