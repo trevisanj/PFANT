@@ -40,8 +40,6 @@ module logging
   !=====
   integer :: logging_level = LOGGING_DEBUG
 
-
-
   private :: do_logging
 
 contains
@@ -52,17 +50,18 @@ contains
   !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
   !> due to an error situation (normal program execution ends with error code 0).
 
-  subroutine pfant_halt(s, is_bug)
+  subroutine pfant_halt(s, is_bug, fuck)
     !> Log message
     character(len=*), intent(in) :: s
     !> (default=.false.) Whether halting program because of a bug.
-    logical, optional, intent(in) :: is_bug
+    logical, intent(in) :: is_bug
+    integer fuck
     logical is_bug_ ! Argument is_bug, or default value if not passed.
-    IF (.NOT. PRESENT(IS_BUG)) then
-      is_bug_ = .False.
-    else
-      is_bug_ = is_bug
-    end if
+    !IF (.NOT. PRESENT(IS_BUG)) then
+    !  is_bug_ = .False.
+    !else
+    !  is_bug_ = is_bug
+    !end if
 
     call do_logging(s, LOGGING_HALT)
     !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
@@ -93,78 +92,78 @@ contains
   !-------------------------------------------------------------------------------
   !> Logs message as CRITICAL
 
-  SUBROUTINE LOG_CRITICAL(S)
-    CHARACTER(LEN=*), intent(in) :: S
-    IF (logging_LEVEL .LE. LOGGING_CRITICAL) THEN
-      CALL DO_LOGGING(S, LOGGING_CRITICAL)
-    END IF
-  END
+  subroutine log_critical(s)
+    character(len=*), intent(in) :: s
+    if (logging_level .le. LOGGING_CRITICAL) then
+      call do_logging(s, LOGGING_CRITICAL)
+    end if
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as ERROR
 
-  SUBROUTINE LOG_ERROR(S)
-    CHARACTER(LEN=*), intent(in) :: S
-    IF (logging_LEVEL .LE. LOGGING_ERROR) THEN
-    CALL DO_LOGGING(S, LOGGING_ERROR)
-    END IF
-  END
+  subroutine log_error(s)
+    character(len=*), intent(in) :: s
+    if (logging_level .le. LOGGING_ERROR) then
+    call do_logging(s, LOGGING_ERROR)
+    end if
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as WARNING
 
-  SUBROUTINE LOG_WARNING(S)
-    CHARACTER(LEN=*), intent(in) :: S
-    IF (logging_LEVEL .LE. LOGGING_WARNING) THEN
-    CALL DO_LOGGING(S, LOGGING_WARNING)
-    END IF
-  END
+  subroutine log_warning(s)
+    character(len=*), intent(in) :: s
+    if (logging_level .le. LOGGING_WARNING) then
+    call do_logging(s, LOGGING_WARNING)
+    end if
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as INFO
 
-  SUBROUTINE LOG_INFO(S)
-    CHARACTER(LEN=*), intent(in) :: S
-    IF (logging_LEVEL .LE. LOGGING_INFO) THEN
-    CALL DO_LOGGING(S, LOGGING_INFO)
-    END IF
-  END
+  subroutine log_info(s)
+    character(len=*), intent(in) :: s
+    if (logging_level .le. LOGGING_INFO) then
+    call do_logging(s, LOGGING_INFO)
+    end if
+  end
 
   !-------------------------------------------------------------------------------
   !> Logs message as DEBUG
 
-  SUBROUTINE LOG_DEBUG(S)
-    CHARACTER(LEN=*), intent(in) :: S
-    IF (logging_LEVEL .LE. LOGGING_DEBUG) THEN
-    CALL DO_LOGGING(S, LOGGING_DEBUG)
-    END IF
-  END
+  subroutine log_debug(s)
+    character(len=*), intent(in) :: s
+    if (logging_level .le. LOGGING_DEBUG) then
+    call do_logging(s, LOGGING_DEBUG)
+    end if
+  end
 
   !===============================================================================
 
   !-------------------------------------------------------------------------------
   !> Internal routine, MUST NOT be called from outside
 
-  SUBROUTINE DO_LOGGING(S, LEVEL)
-  CHARACTER(LEN=*), intent(in) :: S
-  CHARACTER(LEN=8) :: T
-  INTEGER LEVEL
+  subroutine do_logging(s, level)
+  character(len=*), intent(in) :: s
+  character(len=8) :: t
+  integer level
 
-  SELECT CASE (LEVEL)
-    CASE (LOGGING_HALT)
-      T = 'HALTING'
-    CASE (LOGGING_CRITICAL)
-      T = 'CRITICAL'
-    CASE (LOGGING_ERROR)
-      T = 'ERROR'
-    CASE (LOGGING_WARNING)
-      T = 'WARNING'
-    CASE (LOGGING_INFO)
-      T = 'INFO'
-  CASE (LOGGING_DEBUG)
-      T = 'DEBUG'
-    END SELECT
+  select case (level)
+    case (logging_halt)
+      t = 'HALTING'
+    case (LOGGING_CRITICAL)
+      t = 'CRITICAL'
+    case (LOGGING_ERROR)
+      t = 'ERROR'
+    case (LOGGING_WARNING)
+      t = 'WARNING'
+    case (LOGGING_INFO)
+      t = 'INFO'
+  case (LOGGING_DEBUG)
+      t = 'DEBUG'
+    end select
 
-    WRITE(*,*) '(', T, ') :: ', TRIM(S)
-  END
-END MODULE LOGGING
+    write(*,*) '(', t, ') :: ', trim(s)
+  end
+end module logging

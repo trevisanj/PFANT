@@ -1,21 +1,21 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> @ingroup gr_math
 !> This module corresponds to 2015- subroutine KAPMOL, which was split in three parts.
-!> 
+!>
 !> - READ_MOLECULAGRADE: Reads file
 !> - FILTER_MOLECULAGRADE: Selects spectral lines within LZERO-LFIN lambda interval
 !> - USE_MOLECULAGRADE: performs the calculations using the selected spectral lines
@@ -23,6 +23,7 @@
 module molecula
   use read_files
   use config
+  use dissoc
 
   !~integer, parameter :: max_lines_per_mol=300000
   ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
@@ -63,7 +64,7 @@ module molecula
   !> Points to km__lmbdam, km__sj, km__jj; km__last
   !> This is mounted at reading to help with the filtering and avoid
   !> allocating 2 dimensions for (lm__lmbdam, km__sj, km__jj)
-  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km__iollosol 
+  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km__iollosol
 
   real*8,  dimension(MAX_KM__LINES_TOTAL) :: &
    km__lmbdam, &
@@ -82,11 +83,11 @@ module molecula
 
   ! Valid elements of these are from 1 to km_mblend
   real*8, dimension(MAX_KM_MBLEND) :: &
-    km_lmbdam, & !< ?doc?      
-    km_sj,     & !< ?doc?  
-    km_jj,     & !< ?doc?  
-    km_gfm,    & !< ?doc?   
-    km_alargm    !< ?doc?    
+    km_lmbdam, & !< ?doc?
+    km_sj,     & !< ?doc?
+    km_jj,     & !< ?doc?
+    km_gfm,    & !< ?doc?
+    km_alargm    !< ?doc?
 
 
   !------
@@ -129,12 +130,9 @@ contains
   !>
 
   subroutine read_moleculagrade(filename)
-    use errors
-    use config
-    implicit none
     character(len=*) :: filename
-    
-    integer unit_, i,
+
+    integer unit_, i, &
      molid,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
      i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
      nnv, iz, &
@@ -142,7 +140,7 @@ contains
      j_set,   &
      j_line
     parameter(unit_=199)
-    character*80 lll
+    character*128 lll
 
     open(unit=unit_,file=filename, status='old')
 
@@ -159,7 +157,7 @@ contains
 
     read(unit_,'(a)') km__titm
     !~READ(UNIT_,'(20A4)') km__TITM
-    
+
     !__logging__
     write(lll, *) 'titm--------------', km__titm
     call log_debug(lll)
@@ -174,10 +172,9 @@ contains
     !__spill check__
     do molid = 1, NUM_MOL
       if (km__nv(molid) .gt. MAX_SOL_PER_MOL) then
-          write(lll,*) 'read_moleculagrade(): molecule id ', molid,
-   +       ' has nv = ', km__nv(molid), ' (maximum is ',
-   +       MAX_SOL_PER_MOL, ')'
-          stop error_exceeded
+          write(lll,*) 'read_moleculagrade(): molecule id ', molid, &
+           ' has nv = ', km__nv(molid), ' (maximum is ', MAX_SOL_PER_MOL, ')'
+          call pfant_halt(lll)
         end if
     end do
 
@@ -214,16 +211,16 @@ contains
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
 
-      read(unit_,*) km__fe(molid), km__do(molid), km__mm(molid),
-   +             km__am(molid), km__bm(molid), km__ua(molid),
-   +             km__ub(molid), km__te(molid), km__cro(molid)
+      read(unit_,*) km__fe(molid), km__do(molid), km__mm(molid), &
+       km__am(molid), km__bm(molid), km__ua(molid), &
+       km__ub(molid), km__te(molid), km__cro(molid)
 
 
       !> @todo ISSUE Documentation
       !> @todo ISSUE !P! My sample file is blank here
-      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km__ise(molid),
-   +    km__a0(molid), km__a1(molid), km__a2(molid),
-   +    km__a3(molid), km__a4(molid), km__als(molid)
+      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km__ise(molid), &
+       km__a0(molid), km__a1(molid), km__a2(molid), &
+       km__a3(molid), km__a4(molid), km__als(molid)
 
       !> @todo issue ?what? ?doc? is S??
       read(unit_,*) km__s(molid)
@@ -255,9 +252,9 @@ contains
         !__spill check__: checks if exceeds maximum number of elements allowed
         !> @todo ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
         if (i_line .gt. MAX_KM__LINES_TOTAL) then
-          write(*,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ',
+          write(lll,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ', &
            MAX_KM__LINES_TOTAL, ' (at molecule id ', molid, ')'
-          stop error_exceeded
+          call pfant_halt(lll)
         end if
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
@@ -305,8 +302,8 @@ contains
 
       !__consistency check__: J_SET must match NNV
       if(j_set .ne. nnv) then
-        write(lll,*) 'read_moleculagrade():  incorrect number of set-of-lines: ', j_set,
-   +     '(should be ', nnv, ')  (in molecule number ', molid, ')'
+        write(lll,*) 'read_moleculagrade():  incorrect number of set-of-lines: ', j_set, &
+         '(should be ', nnv, ')  (in molecule number ', molid, ')'
         call pfant_halt(lll)
       end if
 
@@ -329,20 +326,17 @@ contains
   !> Sweeps km__* to populate a few km_* depending on the interval LZERO-LFIN
 
   subroutine filter_moleculagrade(lzero, lfin)
-    use config
-    use errors
-    implicit none
     !> Lower edge of wavelength interval
     real*8, intent(in) :: lzero
     !> Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     real*8 :: lambda
-    integer i,
+    integer i, &
             molid,          &  ! Counts molecule id, from 1 to NUM_MOL
             i_mol,          &  ! Counts molecules that are "switched on"
             j_dummy, j_set, &
             i_line,         &  ! Index of km__lmbdam, km__sj, km__jj
-            i_filtered      &  ! Counts number of filtered lines (molecule-independent);
+            i_filtered         ! Counts number of filtered lines (molecule-independent);
                                !  index of km_lmbdam, km_sj, km_jj
     logical flag_in
     character*100 lll
@@ -355,23 +349,23 @@ contains
 
     ! Initializes the zero elements of the augmented matrices
     km_mblenq(1) = 0
-    do i = 1, NUM_MOL
+    do i = 1, num_mol
       km_ln(1, i) = 0
     end do
 
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
-    I_LINE = 1
-    I_MOL = 0
-    DO MOLID = 1, NUM_MOL
-      IF (.NOT. MOLECULE_IS_ON(MOLID)) CYCLE
+    i_line = 1
+    i_mol = 0
+    do molid = 1, num_mol
+      if (.not. molecule_is_on(molid)) cycle
 
-      I_MOL = I_MOL+1
+      i_mol = i_mol+1
 
       !__logging__
-      WRITE(LLL, *) 'MOLECULE ID', MOLID, ': ',  km__TITULO(MOLID)
-      CALL LOG_DEBUG(LLL)
-      WRITE(LLL, *) 'Number of prospective Lambdas ------>', km__LINES_PER_MOL(MOLID)
-      CALL LOG_DEBUG(LLL)
+      write(lll, *) 'molecule id', molid, ': ',  km__titulo(molid)
+      call log_debug(lll)
+      write(lll, *) 'number of prospective lambdas ------>', km__lines_per_mol(molid)
+      call log_debug(lll)
 
 
       ! Counters starting with "J_" restart at each molecule
@@ -380,59 +374,59 @@ contains
       DO J_DUMMY = 1, km__LINES_PER_MOL(MOLID)
         LAMBDA = km__LMBDAM(I_LINE)
 
-        IF ((LAMBDA .GE. LZERO) .AND. (LAMBDA .LE. LFIN)) THEN
+        if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
           ! Filters in a new spectral line!
-          I_FILTERED = I_FILTERED+1
+          i_filtered = i_filtered+1
 
           !__spill check__
-          if (i_filtered .gt. MAX_KM_MBLEND) then
-            write(lll, *) 'filter_moleculagrade(): Number of filtered lines '//&
-             'exceeded maximum of ', MAX_KM_MBLEND
-            call pfant_halt(lll, .True.)
+          if (i_filtered .gt. max_km_mblend) then
+            write(lll, *) 'filter_moleculagrade(): number of filtered lines '//&
+             'exceeded maximum of ', max_km_mblend
+            call pfant_halt(lll, .true.)
           end if
 
 
 
-          km_LMBDAM(I_FILTERED) = LAMBDA
-          km_SJ(I_FILTERED) = km__SJ(I_LINE)
-          km_JJ(I_FILTERED) = km__JJ(I_LINE)
+          km_lmbdam(i_filtered) = lambda
+          km_sj(i_filtered) = km__sj(i_line)
+          km_jj(i_filtered) = km__jj(i_line)
 
-          FLAG_IN = .TRUE.
+          flag_in = .true.
 
-        END IF
+        end if
 
-        IF (I_LINE .EQ. km__IOLLOSOL(J_SET, MOLID)) THEN
+        if (i_line .eq. km__iollosol(j_set, molid)) then
           ! Reached last line of current set of lines
 
 
-*            !> @todo ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
-*            IF (.NOT. FLAG_IN) THEN
-*              !> @todo, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
-*              !> @todo but I can give a *WARNING*, more for testing than for anything else, actually
-*
-*              !--error checking--!
-*              !> @todo test this error
-*              WRITE (*, *) 'FILTER_MOLECULAGRADE(): Molecule ID ',MOLID,
-*     +            ' titled  "', km__TITULO(MOLID), '"'
-*              WRITE (*, *) 'Set of lines ', (J_SET), 'has no lambda '
-*     +            //'within ', LZERO, ' <= lambda <= ', LFIN
-*              WRITE (*, *) 'The algorithm is not prepared for this, '
-*     +            //'sorry!'
-*              STOP ERROR_BAD_VALUE
-*            END IF
+!           !> @todo ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
+!           IF (.NOT. FLAG_IN) THEN
+!             !> @todo, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
+!             !> @todo but I can give a *WARNING*, more for testing than for anything else, actually
+!
+!             !--error checking--!
+!             !> @todo test this error
+!             WRITE (*, *) 'FILTER_MOLECULAGRADE(): Molecule ID ',MOLID,
+!    +            ' titled  "', km__TITULO(MOLID), '"'
+!             WRITE (*, *) 'Set of lines ', (J_SET), 'has no lambda '
+!    +            //'within ', LZERO, ' <= lambda <= ', LFIN
+!             WRITE (*, *) 'The algorithm is not prepared for this, '
+!    +            //'sorry!'
+!             STOP ERROR_BAD_VALUE
+!           END IF
 
-          km_LN(J_SET+1, I_MOL) = I_FILTERED  ! Yes, J_SET+1, not J_SET, remember km_LN first row is all ZEROes.
-          J_SET = J_SET+1
-        END IF
+          km_ln(j_set+1, i_mol) = i_filtered  ! Yes, J_SET+1, not J_SET, remember km_LN first row is all ZEROes.
+          j_set = j_set+1
+        end if
 
-        I_LINE = I_LINE+1
-      END DO
+        i_line = i_line+1
+      end do
 
-      km_MBLENQ(I_MOL+1) = I_FILTERED  ! Yes, I_MOL+1, not I_MOL, remember km_MBLENQ(1) is ZERO.
-    END DO !--end of MOLID loop--!
+      km_mblenq(i_mol+1) = i_filtered  ! Yes, I_MOL+1, not I_MOL, remember km_MBLENQ(1) is ZERO.
+    end do !--end of MOLID loop--!
 
-    km_MBLEND = I_FILTERED
-  END
+    km_mblend = i_filtered
+  end
 
 
 
@@ -445,91 +439,85 @@ contains
 !>
 !> Uses km_* filled by FILTER_MOLECULAGRADE()
 
-  SUBROUTINE USE_MOLECULAGRADE()
-    USE CONFIG
-    USE SAT4_DIE
-    USE LOGGING
-    IMPLICIT NONE
+  subroutine use_moleculagrade()
+    real*8 t5040, psi
+    real*8 csc
+    real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
+    real*8 qv, gv, bv, dv, facto
+    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molid
+    character*80 lll
 
-    REAL*8 T5040, PSI
-    REAL CSC, H, C, KB, C2
-    REAL FE, DO_, MM, AM, BM, UA, UB, TE, CRO, RM
-    REAL QV, GV, BV, DV, FACTO
-    INTEGER I_MOL, J_SET, L, L_INI, L_FIN, N, NNV, MOLID
-    CHARACTER*80 LLL
-
-    REAL*8, PARAMETER :: H  = 6.6252E-27,   &
+    real*8, parameter :: H  = 6.6252E-27,   &
                          C  = 2.997929E+10, &
                          KB = 1.38046E-16,  &
                          C2 = 8.8525E-13
 
-    DO I_MOL = 1, config_NUM_MOL_ON
-      MOLID = GET_MOLID(I_MOL)
+    do i_mol = 1, config_num_mol_on
+      molid = get_molid(i_mol)
 
       !__logging__
-      WRITE(LLL, *) 'MOLECULE ID ', MOLID, ': ', km__TITULO(MOLID)
-      CALL LOG_DEBUG(LLL)
+      write(lll, *) 'molecule id ', molid, ': ', km__titulo(molid)
+      call log_debug(lll)
 
-      CALL POINT_PPA_PB(MOLID)
+      call point_ppa_pb(molid)
 
-      NNV = km__NV(MOLID)
+      nnv = km__nv(molid)
 
-      FE  = km__FE(MOLID)
-      DO_ = km__DO(MOLID)
-      MM  = km__MM(MOLID)
-      AM  = km__AM(MOLID)
-      BM  = km__BM(MOLID)
-      UA  = km__UA(MOLID)
-      UB  = km__UB(MOLID)
-      TE  = km__TE(MOLID)
-      CRO = km__CRO(MOLID)
+      fe  = km__fe(molid)
+      do_ = km__do(molid)
+      mm  = km__mm(molid)
+      am  = km__am(molid)
+      bm  = km__bm(molid)
+      ua  = km__ua(molid)
+      ub  = km__ub(molid)
+      te  = km__te(molid)
+      cro = km__cro(molid)
 
 
       !======
-      ! This part of the code calculates km_PNVL(
-      RM = AM*BM/MM
-      DO N = 1,modeles_NTOT
-        T5040 = modeles_TETA(N)/5040
-        PSI = DO_*modeles_TETA(N)+2.5*ALOG10(modeles_TETA(N))-1.5*ALOG10(RM)-&
-              ALOG10(UA*UB)-13.670
-        PSI = 10.**PSI
+      ! This part of the code calculates km_PNVL
+      rm = am*bm/mm
+      do n = 1,modeles_ntot
+        t5040 = modeles_teta(n)/5040
+        psi = do_*modeles_teta(n)+2.5*log10(modeles_teta(n))-1.5*log10(rm)-&
+              log10(ua*ub)-13.670
+        psi = 10.**psi
 
-        DO J_SET = 1,NNV
-          QV = km__QQV(J_SET, MOLID)
-          GV = km__GGV(J_SET, MOLID)
-          BV = km__BBV(J_SET, MOLID)
-          DV = km__DDV(J_SET, MOLID)
+        do j_set = 1,nnv
+          qv = km__qqv(j_set, molid)
+          gv = km__ggv(j_set, molid)
+          bv = km__bbv(j_set, molid)
+          dv = km__ddv(j_set, molid)
 
-          L_INI = km_LN(J_SET, MOLID)+1
-          L_FIN = km_LN(J_SET+1, MOLID)
+          l_ini = km_ln(j_set, molid)+1
+          l_fin = km_ln(j_set+1, molid)
 
-          ! L is index within km_LMBDAM, km_SJ and km_JJ
-          DO L= L_INI, L_FIN
-            ! PC: default value for CSC does not exist physically
-            CSC = EXP(-H*C/KB*modeles_TETA(N)/5040.*(TE+GV+BV*(km_JJ(L)+1)*km_JJ(L)))*   &
-                  (2.-CRO)*(2.*km_JJ(L)+1.)*                                             &
-                  EXP(H*C/KB*modeles_TETA(N)/5040.*(DV*(km_JJ(L)*(km_JJ(L)+1))**2+2.*BV))
+          ! l is index within km_lmbdam, km_sj and km_jj
+          do l= l_ini, l_fin
+            ! PC2003: default value for CSC does not exist physically
+            csc = exp(-H*C/KB*modeles_teta(n)/5040.*(te+gv+bv*(km_jj(l)+1)*km_jj(l)))*   &
+                  (2.-cro)*(2.*km_jj(l)+1.)*                                             &
+                  exp(H*C/KB*modeles_teta(n)/5040.*(dv*(km_jj(l)*(km_jj(l)+1))**2+2.*bv))
 
-            !> @todo issue ?what? ?doc? to do with this REAL*4 vs. REAL*8 thing?
             km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
-          END DO
+          end do
 
 
-          ! Takes advantage of current J_SET loop so it is not necessary to create
-          ! another double loop as in the original KAPMOL to calculate km_GFM
-          IF (N .EQ. 1) THEN
-            ! Because GFM does not depend on N, runs this part just once, when N is 1.
-            FACTO = km__FACT(J_SET, MOLID)
-            km_GFM(L) = C2*((1.E-8*km_LMBDAM(L))**2)*FE*QV*km_SJ(L)*FACTO
-          END IF
-        END DO
-      END DO
-    END DO !--end of I_MOL loop--!
+          ! Takes advantage of current j_set loop so it is not necessary to create
+          ! another double loop as in the original KAPMOL() to calculate km_gfm
+          if (n .eq. 1) then
+            ! Because gfm does not depend on n, runs this part just once, when n is 1.
+            facto = km__fact(j_set, molid)
+            km_gfm(l) = C2*((1.e-8*km_lmbdam(l))**2)*fe*qv*km_sj(l)*facto
+          end if
+        end do
+      end do
+    end do ! end of i_mol loop
 
-    DO L = 1, km_MBLEND
-      km_ALARGM(L) = 0.1
-    END DO
-  END
+    do l = 1, km_mblend
+      km_alargm(l) = 0.1
+    end do
+  end
 
 
 
@@ -540,52 +528,48 @@ contains
   !> This was originally a vector copy element-by-element in old routine KAPMOL. However, as
   !> PPA and PB contents are not changed after the assignment, it is reasonable to just point
   !> to the source vectors (way faster).
-  SUBROUTINE POINT_PPA_PB(MOLID)
-    USE CONFIG
-    USE ERRORS
-    USE SAT4_DIE
-    USE LOGGING
-    IMPLICIT NONE
-    INTEGER MOLID
-    CHARACTER*192 S
-    
-    IF (MOLID .GT. NUM_MOL) THEN
-      WRITE (S, *) 'FILL_PPA_PB(): Invalid molecule ID (', MOLID, ') must be maximum ', NUM_MOL
-      CALL PFANT_HALT(S)
-    END IF
+  subroutine point_ppa_pb(molid)
+    implicit none
+    integer molid
+    character*192 s
 
-    SELECT CASE (MOLID)  !> @todo ISSUE Check molecule names and cases
-      CASE (1)  ! MgH
-        PPA => sat4_PMG
-        PB  => sat4_PPH
-      CASE (2)  ! C2
-        PPA => sat4_PPC2
-        PB  => sat4_PPC2
-      CASE (3, 4, 5)  ! CN blue,red, nir
-        PPA => sat4_PPC2
-        PB  => sat4_PN
-      CASE (6, 7, 8)  ! CH AX, BX, CX
-        PPA => sat4_PPC2
-        PB  => sat4_PPH
-      CASE (9)  ! 13
-        PPA => sat4_PC13
-        PB  => sat4_PPH
-      CASE (10)  ! CO nir
-        PPA => sat4_PPC2
-        PB  => sat4_PO
-      CASE (11)  ! NH blue
-        PPA => sat4_PN
-        PB  => sat4_PPH
-      CASE (12, 13)  ! OH blue,nir
-        PPA => sat4_PO
-        PB  => sat4_PPH
-      CASE (14)  ! FeH
-        PPA => sat4_PFE
-        PB  => sat4_PPH
-      CASE (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
-        PPA => sat4_PTI
-        PB  => sat4_PO
-    END SELECT
+    if (molid .gt. num_mol) then
+      write (s, *) 'point_ppa_pb(): invalid molecule id (', molid, ') must be maximum ', num_mol
+      call pfant_halt(s)
+    end if
+
+    select case (molid)  !> @todo ISSUE Check molecule names and cases
+      case (1)  ! MgH
+        ppa => sat4_pmg
+        pb  => sat4_pph
+      case (2)  ! C2
+        ppa => sat4_ppc2
+        pb  => sat4_ppc2
+      case (3, 4, 5)  ! CN blue,red, nir
+        ppa => sat4_ppc2
+        pb  => sat4_pn
+      case (6, 7, 8)  ! CH AX, BX, CX
+        ppa => sat4_ppc2
+        pb  => sat4_pph
+      case (9)  ! 13
+        ppa => sat4_pc13
+        pb  => sat4_pph
+      case (10)  ! CO nir
+        ppa => sat4_ppc2
+        pb  => sat4_po
+      case (11)  ! NH blue
+        ppa => sat4_pn
+        pb  => sat4_pph
+      case (12, 13)  ! OH blue,nir
+        ppa => sat4_po
+        pb  => sat4_pph
+      case (14)  ! FeH
+        ppa => sat4_pfe
+        pb  => sat4_pph
+      case (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
+        ppa => sat4_pti
+        pb  => sat4_po
+    end select
 
     !> @todo Original select, remove when the above workds
     !~SELECT CASE (I_MOL)  !> @todo ISSUE Check molecule names and cases
@@ -642,6 +626,6 @@ contains
     !~      PB(N)=sat4_PO(N)
     !~    END DO
     !~END SELECT
-  END
+  end
 
-END MODULE MOLECULA
+end module molecula
