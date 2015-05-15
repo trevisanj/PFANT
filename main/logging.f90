@@ -23,6 +23,7 @@
 !> Logging message will only be shown if logging_LEVEL is <= corresponding level of subroutine called.
 !> E.g., corresponding level of subroutine DEBUG() is LOGGING_DEBUG
 module logging
+  implicit none
 
   !> Logging levels copied from Python
   integer, parameter ::   &
@@ -52,13 +53,21 @@ contains
   !> due to an error situation (normal program execution ends with error code 0).
 
   subroutine pfant_halt(s, is_bug)
+    !> Log message
     character(len=*), intent(in) :: s
     !> (default=.false.) Whether halting program because of a bug.
     logical, optional, intent(in) :: is_bug
-    IF (.NOT. PRESENT(IS_BUG)) is_bug = .False.
+    logical is_bug_ ! Argument is_bug, or default value if not passed.
+    IF (.NOT. PRESENT(IS_BUG)) then
+      is_bug_ = .False.
+    else
+      is_bug_ = is_bug
+    end if
 
     call do_logging(s, LOGGING_HALT)
     !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
+    !> @todo actually, as a third thought, I may use this not necessarily meaning bug, but ask kindly for the used to tell us what happened to help us improve the software.
+    !> @todo the time to solve this is when I tackle all the error situations systematically
     IF (is_bug) THEN
       call do_logging('*************************************', LOGGING_HALT)
       call do_logging('* This is a bug! ********************', LOGGING_HALT)

@@ -223,6 +223,8 @@ module synthesis
     call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
     call read_abonds(config_fn_abonds)
     call read_atomgrade(config_fn_atomgrade)
+    call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
+
 
     tetaef = 5040/main_teff
 
@@ -314,11 +316,13 @@ module synthesis
       call log_info(lll)
 
 
-
       ! Lecture tau raie hydrogene et interpolation de tauh
       ! Type *,' nom des fichiers TAU raies Hydrogene'
+      call filetoh_auh(dtot, ttd, ilzero) ! Old "LECTAUH()".
+                                          ! This now calculates c_filetoh_* for all 
+                                          ! filetohy files
       im = 0
-      do ih = 1,10
+      do ih = 1,FILETOH_NUMFILES
         allhy = LLHY(ih)-lzero
         lllhy = LLHY(ih)
         if (((allhy .gt. 0) .and. (allhy .le. (main_aint+55.))) .or. &
@@ -326,28 +330,22 @@ module synthesis
           im = im+1
           irh = 1
           iht = ih
-          filetoh = main_filetohy(iht)
 
           !__logging__
           712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,a,2x,'ih=',i5)
-          write(lll,712) im, LLHY(ih), filetoh, iht
+          write(lll,712) im, LLHY(ih), filetoh, main_filetohy(iht)
           call log_info(lll)
 
-          !> @todo issue extract this from main loop. not too hard: c_filetoh_* just need one extra dimension
-          call read_filetoh(filetoh)
-          call filetoh_auh(dtot,ttd, ilzero)
 
-          dhmy(im) = c_filetoh_dhmi
-          dhpy(im) = c_filetoh_dhpi
+          dhmy(im) = c_filetoh_dhmi(ih)
+          dhpy(im) = c_filetoh_dhpi(ih)
           do n = 1,modeles_ntot
             do d = 1,dtot
-              tauhy(im, d, n) = c_filetoh_tauhi(d,n)
+              tauhy(im, d, n) = c_filetoh_tauhi(ih,d,n)
             end do
           end do
         end if
       end do
-
-
 
       imy = im
       if(imy .ne. 0) then
