@@ -1,4 +1,4 @@
-GFORTRAN module version '10' created from /home/j/Documents/projects/pypfant/pfant/github/master/main/pfant.f90
+GFORTRAN module version '10' created from /home/j/Documents/projects/pypfant/pfant/github/master/main/logging.f90
 MD5:ad45e059a7807f95ad505b538d35a683 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()

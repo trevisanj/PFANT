@@ -44,22 +44,27 @@
 
 module absoru
   use absoru_data
+  implicit none
+
+  private ! Almost everythin is private here
+
+  !> Public subroutine
+  public absoru_
 
   !=====
   ! Outputs
   !=====
   !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
   !> @todo ISSUE Why 12?
-  real*8, dimension(12) :: absoru_znh
+  real*8, public, dimension(12) :: absoru_znh
 
 
   ! Down here all private
   ! vvvvvvvvvvvvvvvvvvvvv
 
+! I guess this statement is no longer needed, since private is the default deal here
   ! Subroutines
-  private gaunth, tempa, sahath, athyhe, ionipOe
-
-  private
+  ! private gaunth, tempa, sahath, athyhe, ionipOe
 
 
   integer, dimension(2) :: au_jshyd
@@ -108,14 +113,15 @@ contains
   !>
   !> @note 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
+  !> @todo structure arguments for all routines in this file
 
   subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
     use read_files
     implicit none
-    real*8 wl, th, zlpe, totkap, dif, scat, scatel, scath, sum1, sum2, unit, wl4, &
+    real*8 wl, th, zlpe, dif, scat, scatel, scath, sum1, sum2, unit, wl4, &
      wlh, zzk, zzkk
     integer i, ilt, ith, kkk, m, min, mm, mmax, mmm, nset
-    integer*4 calu,calmet,callam,calth,calpe
+    integer calu,calmet,callam,calth,calpe, totkap
     dimension zzkk(11,2),totkap(2),dif(2,3),scath(2),zzk(11,2),scat(2)
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
@@ -227,6 +233,7 @@ contains
       end do
     end do
 
+    !> @todo investigate whether totkap is actually integer or real!
     totkap(2)=0.
     if (calu.eq.1) unit=au_rho
     If (calu.eq.2) unit=au_toc ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
@@ -1051,4 +1058,4 @@ contains
     au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
                                           ! 8.313697e+7: constante des gaz
   end subroutine ionipe
-end module absoru_mod
+end module absoru

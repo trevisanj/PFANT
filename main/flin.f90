@@ -25,19 +25,23 @@
 !> @note Outputs in module variables: flin::flin_to, flin::flin_f
 
 !> @ingroup gr_math, gr_data
+!>
+!> @todo gotta check, flin_to is never used, but I am pretty sure it used to be, in the original,
+!> I may have deleted sth
 
 module flin
   use read_files
   implicit none
+  private
 
+  public flinh ! Public subroutine
   !=====
   !> Output variables
   !=====
-  real*8, dimension(0:50) :: flin_to
-  real*8 flin_f
+  real*8, public, dimension(0:50) :: flin_to
+  real*8, public :: flin_f
 
 
-  private
 
   real*8 :: td2, td,tp, cd, cp, c1, c2, c3
   dimension td2(26),td(6),tp(7),cd(6),cp(7),c1(13),c2(12),c3(12)
@@ -95,7 +99,7 @@ contains
 
   !> Generic routine, called by flin1() and flinh()
   !>
-  !> @todo ISSUE BIG using 7 points in flin1() MODE!!!!!!!!!!!!!!!
+  !> @todo ISSUE TOP using 7 points in flin1() MODE!!!!!!!!!!!!!!!
 
   subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
     use read_files

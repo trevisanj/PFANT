@@ -147,6 +147,8 @@ __spill check__  Marks bit of code destinated to verify whether we are trying to
                  
 __bug__          Marks a bug situation.
 
+__temporary__    Temporary code to keep going, but will require future action.
+
 ?doc?            Item (variable/subroutine etc) lacks proper documentation.
 
 ?what?           More serious version of ?doc?: crucial item (variable/subroutine etc)

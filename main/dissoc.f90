@@ -406,7 +406,7 @@ contains
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
 
-        !> @todo ISSUE BIG! at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
+        !> @todo ISSUE TOP at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
         p(nelemj)=1.0e-2*p(nelemj)
         pmoljl = pmoljl + float(natomj)*(-2.0)
       1048 continue

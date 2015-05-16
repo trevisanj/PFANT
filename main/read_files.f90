@@ -229,16 +229,15 @@ module read_files
 
       ! Attention: one has to specify sizes of all the variables here, because
       ! this may change with compiler
-      integer*4 modeles_ntot !< ?doc?
+      integer modeles_ntot !< ?doc?
       character*4 modeles_tit(5) !< ?doc?
       character*20 modeles_tiabs !< ?doc? I just want to see this string at testing
-      real*4 modeles_detef,   & !< ?doc?
+      real*8 modeles_detef,   & !< ?doc?
              modeles_dglog,   & !< ?doc?
              modeles_dsalog,  & !< ?doc?
              modeles_asalalf, & !< ?doc?
-             modeles_nhe,     & !< ?doc?
-             bid(16)            !< ?doc?
-      real*4, dimension(MAX_MODELES_NTOT) :: &
+             modeles_nhe        !< ?doc?
+      real*8, dimension(MAX_MODELES_NTOT) :: &
        modeles_nh,   & !< ?doc?
        modeles_teta, & !< ?doc?
        modeles_pe,   & !< ?doc?
@@ -951,6 +950,25 @@ CONTAINS
     character*92 lll
 
 
+    ! Variables declared only for reading from binary file, then their values will be copied to modeles_*
+    ! Same names as modeles_* but have the "r_" prefix.
+    integer*4 r_modeles_ntot
+    real*4 r_modeles_detef,   &
+           r_modeles_dglog,   &
+           r_modeles_dsalog,  &
+           r_modeles_asalalf, &
+           r_modeles_nhe,     &
+           bid(16)
+    real*4, dimension(MAX_MODELES_NTOT) :: &
+     r_modeles_nh,   &
+     r_modeles_teta, &
+     r_modeles_pe,   &
+     r_modeles_pg,   &
+     r_modeles_t5l
+
+
+
+
     open(unit=unit_, access='direct',status='old', file=filename, recl=1200)
 
     id_ = 1
@@ -964,19 +982,19 @@ CONTAINS
     !> (MT) ASSERT main_NHE == modeles_NHE
 
 
-    read(unit_, rec=id_) modeles_ntot, modeles_detef, modeles_dglog, &
-     modeles_dsalog, modeles_asalalf, modeles_nhe, modeles_tit, &
-     modeles_tiabs
-    if (modeles_ntot .eq. 9999) then
+    read(unit_, rec=id_) r_modeles_ntot, r_modeles_detef, r_modeles_dglog, &
+     r_modeles_dsalog, r_modeles_asalalf, r_modeles_nhe, modeles_tit, &
+     modeles_tiabs  ! Note that modeles_tit and modeles_titabs are read directly because they are chars
+    if (r_modeles_ntot .eq. 9999) then
       !> @todo ISSUE perhaps I should check the condition that leads to this error
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
 
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (modeles_ntot .gt. MAX_MODELES_NTOT) then
-      write(lll,*) 'read_modeles(): numset(1) = ',absoru2_numset(1), &
-       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
+    if (r_modeles_ntot .gt. MAX_MODELES_NTOT) then
+      write(lll,*) 'read_modele(): modeles_ntot = ',r_modeles_ntot, &
+       ' exceeded maximum of', MAX_MODELES_NTOT
       call pfant_halt(lll)
     end if
 
@@ -987,9 +1005,9 @@ CONTAINS
     write(lll, *) 'modeles_dsalog', modeles_dsalog
     call log_debug(lll)
 
-    ddt  = abs(main_teff-modeles_detef)
-    ddg = abs(main_glog-modeles_dglog)
-    ddab = abs(main_asalog-modeles_dsalog)
+    ddt  = abs(main_teff-r_modeles_detef)
+    ddg = abs(main_glog-r_modeles_dglog)
+    ddab = abs(main_asalog-r_modeles_dsalog)
 
 
     !> @todo ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
@@ -1010,7 +1028,6 @@ CONTAINS
 !~  IF(DDG.GT.0.01)   GO TO 9
 !~  IF(DDAB.GT.0.01)   GO TO 9
 
-
     !> @todo ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
     !> @todo Get the epsilon from MT
     if(ddt .gt. 1.0) then
@@ -1026,13 +1043,28 @@ CONTAINS
       call pfant_halt(lll)
     end if
 
+
     read(unit_, rec=id_) bid, &
          (modeles_nh(i), &
-          modeles_teta(i), &
-          modeles_pe(i), &
-          modeles_pg(i), &
-          modeles_t5l(i), i=1,modeles_ntot)
-
+          r_modeles_teta(i), &
+          r_modeles_pe(i), &
+          r_modeles_pg(i), &
+          r_modeles_t5l(i), i=1,r_modeles_ntot)
     close(unit_)
+
+    ! ready to copy (& convert) variables to their counterparts
+    modeles_ntot    = r_modeles_ntot     ! integer(4)-to-integer(?)
+    modeles_detef   = r_modeles_detef    ! real(4) to real(8)
+    modeles_dglog   = r_modeles_dglog    ! "
+    modeles_dsalog  = r_modeles_dsalog   ! "
+    modeles_asalalf = r_modeles_asalalf  ! "
+    modeles_nhe     = r_modeles_nhe      ! "
+    do i = 1, modeles_ntot
+      modeles_nh(i)   = r_modeles_nh(i)   ! real(4) to real(8)
+      modeles_teta(i) = r_modeles_teta(i) ! "
+      modeles_pe(i)   = r_modeles_pe(i)   ! "
+      modeles_pg(i)   = r_modeles_pg(i)   ! "
+      modeles_t5l(i)  = r_modeles_t5l(i)  ! "
+    end do
   end
 end module read_files

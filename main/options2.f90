@@ -318,31 +318,6 @@ contains
 
   !================================================================================================================================
 
-  !> Converts string to integer with error logging
-  !
-  integer function parseint(opt, s)
-    !> Option, will be used only in case of error
-    type(option), intent(in) :: opt
-
-    !> If the parsed option requires an argument, arg contains
-    !> the first len(arg) (but at most 500) characters of that argument.
-    !> Otherwise its value is undefined. If the arguments length exceeds 500
-    !> characters and err is .true., a warning is issued.
-    character(len=*), intent(in) :: s
-
-
-    character*128 lll
-
-    read(s, *, err=20) parseint
-    go to 30
-
-    20 write(lll, *) 'Error parsing option ', get_option_name(opt), &
-     ': invalid integer argument: ''', trim(s), ''''
-    call give_error(lll)
-
-    30 continue
-  end
-
 
   !> Returns option name with single quotes.
   !>

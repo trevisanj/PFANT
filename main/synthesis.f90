@@ -112,10 +112,12 @@ module synthesis
   use read_files
   use molecula
   use logging
+  use config
+  use flin
+  use misc_math
+  use absoru
   implicit none
 
-
-!  integer, parameter :: FILETOH_NP=7000
 
   !=====
   ! Subroutine outputs
@@ -202,8 +204,6 @@ module synthesis
 
     character filetoh*260
 
-    real*8 lambd, l0, lf, lllhy
-
     real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
      fi(1501),tfi(1501), ecartm(MAX_KM_MBLEND)
 !   fonctions de partition TODO figure out what this comment refers to
@@ -211,6 +211,12 @@ module synthesis
     REAL*8 ttd(FILETOH_NP), fn(FILETOH_NP), &
            tauh(FILETOH_NP, 50), tauhy(10,FILETOH_NP,50)
 
+
+    integer i, i1, i2, ih, ih1, ikey, ikeytot, iht, ilzero, im, imy, irh, itot, k, l, li,&
+     n
+    real*8 lambd, l0, lf, lllhy, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
+     ahnu2, alph0, alph01, alph02
+    character*96 lll  !__logging__
 
     !=====
     ! Read/setup
@@ -485,6 +491,7 @@ module synthesis
       !> either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
+
       amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
 
       1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
@@ -514,6 +521,7 @@ module synthesis
     !> Writes into lines.pfant and fort.91
 
     subroutine write_lines_fort91()
+      real*8 log_abond
       122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
       write(UNIT_LINES, 122)
       do k=1,atomgrade_nblend
@@ -565,140 +573,140 @@ module synthesis
     !> @todo ISSUE with variable MM
 
     subroutine selekfh()
-        use read_files
-        implicit none
-        integer d
-        real lambi
-        real*8 :: &
-         kappa,kap,bk_kcd,kci,kam,kappam,kappt
-        real*8 ecartm,ecarm
-        dimension turbul_vt(50)
-        dimension bi(0:50)
-        real*8, dimension(MAX_ATOMGRADE_NBLEND) :: &
-         ecar, &
-         ecartl, &
-         ka
+      implicit none
+      integer d
+      real lambi
+      real*8 :: &
+       kappa,kap,bk_kcd,kci,kam,kappam,kappt
+      real*8 ecartm,ecarm
+      real*8 :: bi(0:50)
+      real*8, dimension(MAX_ATOMGRADE_NBLEND) :: &
+       ecar, &
+       ecartl, &
+       ka
+      dimension kap(50),           &
+                kappa(50),         &
+                bk_kcd(filetoh_np,50), &
+                kci(50)
+      dimension tauhd(50)
+      dimension deltam(max_km_mblend,50), &
+                ecarm(max_km_mblend),     &
+                ecartlm(max_km_mblend),   &
+                kam(max_km_mblend),       &
+                kappam(50),               &
+                kappt(50)
+      real*8 deltam, ecartlm, phi, t, tauhd, v, vm
 
-        dimension kap(50),           &
-                  kappa(50),         &
-                  bk_kcd(filetoh_np,50), &
-                  kci(50)
-
-        dimension tauhd(50)
-        dimension deltam(max_km_mblend,50), &
-                  ecarm(max_km_mblend),     &
-                  ecartlm(max_km_mblend),   &
-                  kam(max_km_mblend),       &
-                  kappam(50),               &
-                  kappt(50)
+      real*8 km_mm !__temporary__
 
 
+      if (atomgrade_nblend .ne. 0) then
+        do k = 1,atomgrade_nblend
+          ecar(k) = ecart(k)
+        end do
+      end if
+
+      if (km_mblend .ne. 0) then
+        do k=1,km_mblend
+          ecarm(k) = ecartm(k)
+        end do
+      end if
+
+      do d = 1, dtot
+        lambi = (6270+(d-1)*0.02)
         if (atomgrade_nblend .ne. 0) then
-          do k = 1,atomgrade_nblend
-            ecar(k) = ecart(k)
+          do k=1,atomgrade_nblend
+            ecar(k)=ecar(k)-main_pas
+            ecartl(k)=ecar(k)
           end do
         end if
 
-        if (km_mblend .ne. 0) then
+        if(km_mblend .ne. 0) then
           do k=1,km_mblend
-            ecarm(k) = ecartm(k)
+            ecarm(k) = ecarm(k)-main_pas
+            ecartlm(k) = ecarm(k)
           end do
         end if
 
-        do d = 1, dtot
-          lambi = (6270+(d-1)*0.02)
-          if (atomgrade_nblend .ne. 0) then
-            do k=1,atomgrade_nblend
-              ecar(k)=ecar(k)-main_pas
-              ecartl(k)=ecar(k)
-            end do
-          end if
+        do n = 1,modeles_ntot
+          kappa(n) =0.
+          kappam(n) =0.
+          t = 5040./modeles_teta(n)
 
-          if(km_mblend .ne. 0) then
-            do k=1,km_mblend
-              ecarm(k) = ecarm(k)-main_pas
-              ecartlm(k) = ecarm(k)
-            end do
-          end if
+          ! atomes
+          if(atomgrade_nblend .eq. 0) go to 260
 
+          do  k=1,atomgrade_nblend
+            if(abs(ecartl(k)) .gt. atomgrade_zinf(k)) then
+              ka(k) = 0.
+            else
+              v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
+              call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
+              ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_abonds_abo(k)
+              if(k .eq. 1) ka(k) = phi * popadelh_pop(k,n) * gfal(k)
+
+            end if
+            kappa(n) = kappa(n) + ka(k)
+          end do   !  fin bcle sur k
+
+          260 continue
+
+          ! molecule
+          if(km_mblend.eq.0) go to 250
+          do l=1,km_mblend
+            if( abs(ecartlm(l)) .gt. km_alargm(l) )  then
+              kam(l)=0.
+            else
+
+              !> @todo ISSUE TOP uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
+              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
+              km_mm = 1  !__temporary__ Only to compile, but needs urgent action
+              deltam(l,n)=(1.e-8*km_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_mm)
+              vm=abs(ecarm(l)*1.e-08/deltam(l,n))
+              phi=(exp(-vm**2))/(RPI*deltam(l,n))
+              kam(l)=phi*km_gfm(l)*km_pnvj(l,n)
+            end if
+            kappam(n)=kappam(n)+kam(l)
+          end do   !  fin bcle sur l
+
+          250 continue
+          kappt(n) = kappa(n)+kappam(n)
+          kci(n) = bk_kcd(d,n)
+          kap(n) = kappt(n)+kci(n)
+          bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(dtot-1)) + bk_b1(n)
+        end do    ! fin bcle sur n
+
+        bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(dtot-1)) + bk_b1(0)
+
+        !__logging__
+        if (d .eq. 1 .or. d .eq. dtot) then
+          150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,/,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
+          152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
+          151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
+
+          write(lll,151) d,bi(0),bi(1),bi(modeles_ntot)
+          call log_debug(lll)
+          write(lll,150) d,kci(1),kci(modeles_ntot),kappa(1),kappa(modeles_ntot)
+          call log_debug(lll)
+          write(lll,152)kappam(1),kappam(modeles_ntot)
+          call log_debug(lll)
+        end if
+
+        if((d .lt. dhm) .or. (d .ge. dhp)) then
+          call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
+          selekfh_fl(d) = flin_f
+        else
           do n = 1,modeles_ntot
-            kappa(n) =0.
-            kappam(n) =0.
-            t = 5040./modeles_teta(n)
+              tauhd(n) = tauh(d,n)
+          end do
+          call flinh(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik,tauhd, ttd(d))
+          selekfh_fl(d) = flin_f
+        end if
 
-            ! atomes
-            if(atomgrade_nblend .eq. 0) go to 260
-
-            do  k=1,atomgrade_nblend
-              if(abs(ecartl(k)) .gt. atomgrade_zinf(k)) then
-                ka(k) = 0.
-              else
-                v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
-                call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
-                ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_abonds_abo(k)
-                if(k .eq. 1) ka(k) = phi * popadelh_pop(k,n) * gfal(k)
-
-              end if
-              kappa(n) = kappa(n) + ka(k)
-            end do   !  fin bcle sur k
-
-            260 continue
-
-            ! molecule
-            if(km_mblend.eq.0) go to 250
-            do l=1,km_mblend
-              if( abs(ecartlm(l)) .gt. km_alargm(l) )  then
-                kam(l)=0.
-              else
-
-                !> @todo ISSUE uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
-                ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-                deltam(l,n)=(1.e-8*km_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_mm)
-                vm=abs(ecarm(l)*1.e-08/deltam(l,n))
-                phi=(exp(-vm**2))/(RPI*deltam(l,n))
-                kam(l)=phi*km_gfm(l)*km_pnvj(l,n)
-              end if
-              kappam(n)=kappam(n)+kam(l)
-            end do   !  fin bcle sur l
-
-            250 continue
-            kappt(n) = kappa(n)+kappam(n)
-            kci(n) = bk_kcd(d,n)
-            kap(n) = kappt(n)+kci(n)
-            bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(dtot-1)) + bk_b1(n)
-          end do    ! fin bcle sur n
-
-          bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(dtot-1)) + bk_b1(0)
-
-          !__logging__
-          if (d .eq. 1 .or. d .eq. dtot) then
-            150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,/,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
-            152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
-            151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
-
-            write(lll,151) d,bi(0),bi(1),bi(modeles_ntot)
-            call log_debug(lll)
-            write(lll,150) d,kci(1),kci(modeles_ntot),kappa(1),kappa(modeles_ntot)
-            call log_debug(lll)
-            write(lll,152)kappam(1),kappam(modeles_ntot)
-            call log_debug(lll)
-          end if
-
-          if((d .lt. dhm) .or. (d .ge. dhp)) then
-            call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
-            selekfh_fl(d) = flin_f
-          else
-            do n = 1,modeles_ntot
-                tauhd(n) = tauh(d,n)
-            end do
-            call flinh(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik,tauhd, ttd(d))
-            selekfh_fl(d) = flin_f
-          end if
-
-          ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-          call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
-          selekfh_fcont(d) = flin_f
-        end do  ! fin bcle sur d
+        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
+        call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
+        selekfh_fcont(d) = flin_f
+      end do  ! fin bcle sur d
     end
 
 
@@ -712,9 +720,12 @@ module synthesis
        alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
-      real*8, dimension(2) :: kcn, lambdc, totkap
+      real*8, dimension(2) :: kcn, lambdc
+      integer totkap(2)
       character*80 lll
       real*8 ::  fttc(FILETOH_NP)
+      real*8 c3, c31, c32, fc1, fc2, flin_f, t, tet0
+      integer j, kkk
 
       llzero = lzero
       llfin  = lfin
@@ -726,7 +737,7 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu1/(KB*t))
         bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-        call absoru(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
         bk_kc1(n) = totkap(1)
       end do
 
@@ -738,7 +749,7 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu2/(KB*t))
         bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-        call absoru(llfin,modeles_teta(n),alog10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
         bk_kc2(n) = totkap(1)
       end do
 
@@ -749,7 +760,7 @@ module synthesis
         t=5040./modeles_teta(n)
         alph_n = exp(-ahnu/(KB*t))
         bk_b(n) = c3 * (alph_n/(1.-alph_n))
-        call absoru(lambd,modeles_teta(n),alog10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
         bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
         bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
         bk_kc(n) = totkap(1)
@@ -800,7 +811,7 @@ module synthesis
       write(lll,154) bk_kcd(dtot,1),bk_kcd(dtot,modeles_ntot)
       call logging_debug(lll)
 
-      10 continue
+      continue
     end
 
   end subroutine synthesis_
@@ -813,6 +824,7 @@ module synthesis
   subroutine turbul()
     use config
     character*80 lll
+    integer i, nt2, n
 
     call log_debug('entree des turbul')
     if(main_ivtot .eq. 1)   then
@@ -824,14 +836,14 @@ module synthesis
       101 format(10f8.3)
       call log_debug('vt variable avec la profondeur')
       call log_debug('    log to')
-      write(lll,101) (main_tolv(i),i=1,ivtot)
+      write(lll,101) (main_tolv(i),i=1,main_ivtot)
       call log_debug(lll)
       call log_debug('    vt')
-      write(lll,101) (main_vvt(i),i=1,ivtot)
+      write(lll,101) (main_vvt(i),i=1,main_ivtot)
       call log_debug(lll)
 
       if(config_interp .eq. 1) then
-        call ftlin3(min_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
+        call ftlin3(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
       elseif (config_interp .eq. 2) then
         !> @todo issue ask if still useful mbecause it was switched off.
         !> @todo test this interpolation
@@ -874,7 +886,9 @@ module synthesis
   !> 40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
   !> Partit donnee pour 33 temperatures au plus ds la table.
   subroutine popul()
-    dimension u(3), alistu(63), ue(50), tt(51)
+    real*8 u(3), alistu(63), ue(50), tt(51), &
+     aa, bb, uuu, x, y, t, tki2
+    integer j, k, kmax, l, n
 
     do n = 1, modeles_ntot
       t = 5040./modeles_teta(n)  !> @todo I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
@@ -925,12 +939,11 @@ module synthesis
   !
 
   subroutine popadelh()
-    use logging
     implicit none
-    character*1 isi(1), iss(1)
-    integer j, k
-    real*8 kies,kii,nul
-    dimension alphl(50)  !> @todo 50??
+    character*1 isi, iss
+    integer j, k, ioo, iopi, n
+    real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel
+    character*80 lll
     data isi/' '/, iss/' '/
 
     do k = 1, atomgrade_nblend

@@ -1,5 +1,5 @@
-GFORTRAN module version '10' created from /home/j/Documents/projects/pypfant/pfant/github/master/main/pfant.f90
-MD5:83dcff37edddd6bb0f1cfe1e8409898b -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '10' created from /home/j/Documents/projects/pypfant/pfant/github/master/main/read_files.f90
+MD5:abf05bb48143451806a63fdecf5df9b6 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -188,322 +188,318 @@ UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13000')) 0 () () () 0 0)
-45 'bid' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '16')) 0 () () () 0 0)
-46 'dissoc__cclog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+45 'dissoc__cclog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-47 'dissoc__ig0' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+46 'dissoc__ig0' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-48 'dissoc__ig1' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+47 'dissoc__ig1' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-49 'dissoc__ip' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+48 'dissoc__ip' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-50 'dissoc_c' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+49 'dissoc_c' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (2 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '600') (CONSTANT (INTEGER 4 0 0 0 INTEGER
 ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '5')) 0 () () () 0 0)
-51 'dissoc_elems' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+50 'dissoc_elems' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-52 'dissoc_eps' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+51 'dissoc_eps' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-53 'dissoc_mmax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+52 'dissoc_mmax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '600')) 0 () () () 0 0)
-54 'dissoc_mol' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+53 'dissoc_mol' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '600')) 0 () () () 0 0)
-55 'dissoc_natom' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+54 'dissoc_natom' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '5') (CONSTANT (INTEGER
 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '600'))
 0 () () () 0 0)
-56 'dissoc_nelem' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+55 'dissoc_nelem' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '5') (CONSTANT (INTEGER
 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '600'))
 0 () () () 0 0)
-57 'dissoc_nelemx' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+56 'dissoc_nelemx' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-58 'dissoc_nimax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+57 'dissoc_nimax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () () 0 () () () 0 0)
-59 'dissoc_nmetal' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+58 'dissoc_nmetal' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () () 0 () () () 0 0)
-60 'dissoc_nmol' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+59 'dissoc_nmol' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () () 0 () () () 0 0)
-61 'dissoc_switer' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+60 'dissoc_switer' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-62 'filter_atomgrade' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 63
-0 (64 65) () 0 () () () 0 0)
-66 'main_afstar' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+61 'filter_atomgrade' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 62
+0 (63 64) () 0 () () () 0 0)
+65 'main_afstar' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-67 'main_aint' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+66 'main_aint' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-68 'main_asalog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+67 'main_asalog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-69 'main_echx' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+68 'main_echx' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-70 'main_echy' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+69 'main_echy' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-71 'main_ecrit_obsolete' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+70 'main_ecrit_obsolete' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0
 () () 0 () () () 0 0)
-72 'main_fileflux' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+71 'main_fileflux' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (CHARACTER 1 0 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '64'))) 0 0 () () 0 () () () 0 0)
-73 'main_filetohy' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+72 'main_filetohy' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '64'))) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '10')) 0 () () () 0 0)
-74 'main_fwhm' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+73 'main_fwhm' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-75 'main_glog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+74 'main_glog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-76 'main_inum' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+75 'main_inum' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
 () 0 0)
-77 'main_ivtot' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+76 'main_ivtot' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
 () 0 0)
-78 'main_llfin' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+77 'main_llfin' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-79 'main_llzero' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+78 'main_llzero' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-80 'main_mu' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+79 'main_mu' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-81 'main_nhe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+80 'main_nhe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-82 'main_pas' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+81 'main_pas' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-83 'main_ptdisk' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+82 'main_ptdisk' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0
 () () 0 () () () 0 0)
-84 'main_teff' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+83 'main_teff' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-85 'main_titrav' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+84 'main_titrav' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10'))) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '20')) 0 () () () 0 0)
-86 'main_tolv' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+85 'main_tolv' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-87 'main_vvt' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+86 'main_vvt' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-88 'main_xxcor' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+87 'main_xxcor' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-89 'max_abonds_nabond' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+88 'max_abonds_nabond' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
-90 'max_absoru2_nm' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+89 'max_absoru2_nm' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '30') () 0 () () () 0 0)
-91 'max_absoru2_nrr' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+90 'max_absoru2_nrr' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '9') () 0 () () () 0 0)
-92 'max_absoru2_numset_i' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+91 'max_absoru2_numset_i' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-93 'max_atomgrade__nblend' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+92 'max_atomgrade__nblend' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13000') () 0 () () () 0 0)
-94 'max_atomgrade_nblend' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+93 'max_atomgrade_nblend' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-95 'max_dissoc_nmetal' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+94 'max_dissoc_nmetal' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
-96 'max_dissoc_nmol' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+95 'max_dissoc_nmol' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '600') () 0 () () () 0 0)
-97 'max_modeles_ntot' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+96 'max_modeles_ntot' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
-98 'max_partit_kmax' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+97 'max_partit_kmax' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
-99 'max_partit_npar' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
+98 'max_partit_npar' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
-100 'max_z' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+99 'max_z' 'read_files' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
-101 'modeles_asalalf' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () ()
+100 'modeles_asalalf' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-102 'modeles_detef' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () ()
+101 'modeles_detef' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-103 'modeles_dglog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () ()
+102 'modeles_dglog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-104 'modeles_dsalog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () ()
+103 'modeles_dsalog' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-105 'modeles_nh' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ())
+104 'modeles_nh' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-106 'modeles_nhe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 4 0 0 0 REAL ()) 0 0 () ()
+105 'modeles_nhe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () ()
 0 () () () 0 0)
-107 'modeles_ntot' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+106 'modeles_ntot' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () () 0 () () () 0 0)
-108 'modeles_pe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ())
+107 'modeles_pe' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-109 'modeles_pg' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ())
+108 'modeles_pg' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-110 'modeles_t5l' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ())
+109 'modeles_t5l' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-111 'modeles_teta' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 4 0 0 0 REAL ())
+110 'modeles_teta' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-112 'modeles_tiabs' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+111 'modeles_tiabs' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (CHARACTER 1 0 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '20'))) 0 0 () () 0 () () () 0 0)
-113 'modeles_tit' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+112 'modeles_tit' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4'))) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '5')) 0 () () () 0 0)
-114 'partit_el' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+113 'partit_el' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '85')) 0 () () () 0 0)
-115 'partit_jkmax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+114 'partit_jkmax' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-116 'partit_ki1' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+115 'partit_ki1' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-117 'partit_ki2' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+116 'partit_ki2' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-118 'partit_m' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+117 'partit_m' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-119 'partit_npar' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+118 'partit_npar' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () () 0 () () () 0 0)
-120 'partit_pa' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+119 'partit_pa' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-121 'partit_tabu' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+120 'partit_tabu' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (3 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '63')) 0 () () () 0 0)
-122 'partit_tini' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
+121 'partit_tini' 'read_files' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN EXPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-123 'read_abonds' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+122 'read_abonds' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-124 0 (125) () 0 () () () 0 0)
-126 'read_absoru2' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+123 0 (124) () 0 () () () 0 0)
+125 'read_absoru2' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-127 0 (128) () 0 () () () 0 0)
-129 'read_atomgrade' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+126 0 (127) () 0 () () () 0 0)
+128 'read_atomgrade' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-130 0 (131) () 0 () () () 0 0)
-132 'read_dissoc' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+129 0 (130) () 0 () () () 0 0)
+131 'read_dissoc' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-133 0 (134) () 0 () () () 0 0)
-135 'read_files' 'read_files' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+132 0 (133) () 0 () () () 0 0)
+134 'read_files' 'read_files' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
 0)
-136 'read_main' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
-DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 137 0 (138) ()
+135 'read_main' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 136 0 (137) ()
 0 () () () 0 0)
-139 'read_modele' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+138 'read_modele' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-140 0 (141) () 0 () () () 0 0)
-142 'read_partit' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
+139 0 (140) () 0 () () () 0 0)
+141 'read_partit' 'read_files' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-143 0 (144) () 0 () () () 0 0)
-64 'lzero' '' '' 63 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+142 0 (143) () 0 () () () 0 0)
+63 'lzero' '' '' 62 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-65 'lfin' '' '' 63 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+64 'lfin' '' '' 62 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-125 'filename' '' '' 124 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+124 'filename' '' '' 123 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-128 'filename' '' '' 127 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+127 'filename' '' '' 126 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-131 'filename' '' '' 130 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+130 'filename' '' '' 129 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-134 'filename' '' '' 133 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+133 'filename' '' '' 132 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-138 'filename' '' '' 137 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+137 'filename' '' '' 136 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-141 'filename' '' '' 140 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+140 'filename' '' '' 139 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-144 'filename' '' '' 143 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+143 'filename' '' '' 142 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
 )
@@ -522,28 +518,27 @@ UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 'atomgrade_elem' 0 36 'atomgrade_ge' 0 37 'atomgrade_gf' 0 38
 'atomgrade_gr' 0 39 'atomgrade_ioni' 0 40 'atomgrade_kiex' 0 41
 'atomgrade_lambda' 0 42 'atomgrade_nblend' 0 43 'atomgrade_zinf' 0 44
-'bid' 0 45 'dissoc__cclog' 0 46 'dissoc__ig0' 0 47 'dissoc__ig1' 0 48
-'dissoc__ip' 0 49 'dissoc_c' 0 50 'dissoc_elems' 0 51 'dissoc_eps' 0 52
-'dissoc_mmax' 0 53 'dissoc_mol' 0 54 'dissoc_natom' 0 55 'dissoc_nelem'
-0 56 'dissoc_nelemx' 0 57 'dissoc_nimax' 0 58 'dissoc_nmetal' 0 59
-'dissoc_nmol' 0 60 'dissoc_switer' 0 61 'filter_atomgrade' 0 62
-'main_afstar' 0 66 'main_aint' 0 67 'main_asalog' 0 68 'main_echx' 0 69
-'main_echy' 0 70 'main_ecrit_obsolete' 0 71 'main_fileflux' 0 72
-'main_filetohy' 0 73 'main_fwhm' 0 74 'main_glog' 0 75 'main_inum' 0 76
-'main_ivtot' 0 77 'main_llfin' 0 78 'main_llzero' 0 79 'main_mu' 0 80
-'main_nhe' 0 81 'main_pas' 0 82 'main_ptdisk' 0 83 'main_teff' 0 84
-'main_titrav' 0 85 'main_tolv' 0 86 'main_vvt' 0 87 'main_xxcor' 0 88
-'max_abonds_nabond' 0 89 'max_absoru2_nm' 0 90 'max_absoru2_nrr' 0 91
-'max_absoru2_numset_i' 0 92 'max_atomgrade__nblend' 0 93
-'max_atomgrade_nblend' 0 94 'max_dissoc_nmetal' 0 95 'max_dissoc_nmol' 0
-96 'max_modeles_ntot' 0 97 'max_partit_kmax' 0 98 'max_partit_npar' 0 99
-'max_z' 0 100 'modeles_asalalf' 0 101 'modeles_detef' 0 102
-'modeles_dglog' 0 103 'modeles_dsalog' 0 104 'modeles_nh' 0 105
-'modeles_nhe' 0 106 'modeles_ntot' 0 107 'modeles_pe' 0 108 'modeles_pg'
-0 109 'modeles_t5l' 0 110 'modeles_teta' 0 111 'modeles_tiabs' 0 112
-'modeles_tit' 0 113 'partit_el' 0 114 'partit_jkmax' 0 115 'partit_ki1'
-0 116 'partit_ki2' 0 117 'partit_m' 0 118 'partit_npar' 0 119 'partit_pa'
-0 120 'partit_tabu' 0 121 'partit_tini' 0 122 'read_abonds' 0 123
-'read_absoru2' 0 126 'read_atomgrade' 0 129 'read_dissoc' 0 132
-'read_files' 0 135 'read_main' 0 136 'read_modele' 0 139 'read_partit' 0
-142)
+'dissoc__cclog' 0 45 'dissoc__ig0' 0 46 'dissoc__ig1' 0 47 'dissoc__ip'
+0 48 'dissoc_c' 0 49 'dissoc_elems' 0 50 'dissoc_eps' 0 51 'dissoc_mmax'
+0 52 'dissoc_mol' 0 53 'dissoc_natom' 0 54 'dissoc_nelem' 0 55
+'dissoc_nelemx' 0 56 'dissoc_nimax' 0 57 'dissoc_nmetal' 0 58
+'dissoc_nmol' 0 59 'dissoc_switer' 0 60 'filter_atomgrade' 0 61
+'main_afstar' 0 65 'main_aint' 0 66 'main_asalog' 0 67 'main_echx' 0 68
+'main_echy' 0 69 'main_ecrit_obsolete' 0 70 'main_fileflux' 0 71
+'main_filetohy' 0 72 'main_fwhm' 0 73 'main_glog' 0 74 'main_inum' 0 75
+'main_ivtot' 0 76 'main_llfin' 0 77 'main_llzero' 0 78 'main_mu' 0 79
+'main_nhe' 0 80 'main_pas' 0 81 'main_ptdisk' 0 82 'main_teff' 0 83
+'main_titrav' 0 84 'main_tolv' 0 85 'main_vvt' 0 86 'main_xxcor' 0 87
+'max_abonds_nabond' 0 88 'max_absoru2_nm' 0 89 'max_absoru2_nrr' 0 90
+'max_absoru2_numset_i' 0 91 'max_atomgrade__nblend' 0 92
+'max_atomgrade_nblend' 0 93 'max_dissoc_nmetal' 0 94 'max_dissoc_nmol' 0
+95 'max_modeles_ntot' 0 96 'max_partit_kmax' 0 97 'max_partit_npar' 0 98
+'max_z' 0 99 'modeles_asalalf' 0 100 'modeles_detef' 0 101 'modeles_dglog'
+0 102 'modeles_dsalog' 0 103 'modeles_nh' 0 104 'modeles_nhe' 0 105
+'modeles_ntot' 0 106 'modeles_pe' 0 107 'modeles_pg' 0 108 'modeles_t5l'
+0 109 'modeles_teta' 0 110 'modeles_tiabs' 0 111 'modeles_tit' 0 112
+'partit_el' 0 113 'partit_jkmax' 0 114 'partit_ki1' 0 115 'partit_ki2' 0
+116 'partit_m' 0 117 'partit_npar' 0 118 'partit_pa' 0 119 'partit_tabu'
+0 120 'partit_tini' 0 121 'read_abonds' 0 122 'read_absoru2' 0 125
+'read_atomgrade' 0 128 'read_dissoc' 0 131 'read_files' 0 134 'read_main'
+0 135 'read_modele' 0 138 'read_partit' 0 141)
