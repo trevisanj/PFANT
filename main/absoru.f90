@@ -233,6 +233,8 @@ contains
       end do
     end do
 
+
+GIVE ERROR CUZ I STOPPED HERE
     !> @todo investigate whether totkap is actually integer or real!
     totkap(2)=0.
     if (calu.eq.1) unit=au_rho
