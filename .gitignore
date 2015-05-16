@@ -1,4 +1,11 @@
 codeBlocks
+Debug
+Release
+obj
 bin
-debug
+*.o
+*.mod
+*.exe
+
+
 
