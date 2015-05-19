@@ -329,7 +329,7 @@ contains
 
       20 write(lll, *) 'Error parsing option ', get_option_name(opt), &
        ': invalid integer argument: ''', trim(s), ''''
-      call give_error(lll)
+      call pfant_halt(lll)
 
       30 continue
     end

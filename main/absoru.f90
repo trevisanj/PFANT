@@ -118,11 +118,26 @@ contains
   subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
     use read_files
     implicit none
-    real*8 wl, th, zlpe, dif, scat, scatel, scath, sum1, sum2, unit, wl4, &
-     wlh, zzk, zzkk
-    integer i, ilt, ith, kkk, m, min, mm, mmax, mmm, nset
-    integer calu,calmet,callam,calth,calpe, totkap
-    dimension zzkk(11,2),totkap(2),dif(2,3),scath(2),zzk(11,2),scat(2)
+    real*8, intent(in) :: &
+     wl,       & !< ?doc?
+     th,       & !< ?doc?
+     zlpe        !< ?doc?
+    integer, intent(in) :: &
+     callam, & !< ?doc?
+     calth,  & !< ?doc?
+     calpe,  & !< ?doc?
+     calmet, & !< ?doc?
+     calu      !< ?doc?
+    integer, intent(out) :: &
+     kkk       !< ?doc?
+    real*8, intent(out) :: &
+     totkap(2) !< ?doc?
+
+
+    real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &
+     scatel, sum1, sum2, unit, wl4, wlh
+
+    integer i, ilt, ith, m, min, mm, mmm, nset
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
 
@@ -206,13 +221,13 @@ contains
 
     9007 continue
     if ((calth.eq.2).and.(callam.eq.2)) go to 9006
-    call athyhe (wl,th,calth,callam,zzk)
+    call athyhe (wl,th,callam,zzk)
 
     9006 continue
     if (calmet.eq.1) go to 9003 !> @todo ISSUE line doing nothing
 
     9003 continue
-    call ionipe (th,zlpe,calth,calmet)
+    call ionipe (th,zlpe,calth)
     mm=absoru2_nmeta+1
     mmm=absoru2_nmeta+6
     scatel=9.559063e-13*au_pe*th
@@ -233,8 +248,6 @@ contains
       end do
     end do
 
-
-GIVE ERROR CUZ I STOPPED HERE
     !> @todo investigate whether totkap is actually integer or real!
     totkap(2)=0.
     if (calu.eq.1) unit=au_rho
@@ -252,7 +265,7 @@ GIVE ERROR CUZ I STOPPED HERE
         if (m.eq.(absoru2_nmeta+1)) &
          zzkk(m,i)=zzk(m,i)*(absoru_znh(absoru2_nmeta+4)*au_pe*1.e-26)/unit
         if (m.eq.(absoru2_nmeta+3)) &
-         zzkk(m,i)=zzk(m,i)*((absoru_znh(absoru2_nmeta+4)*1.e-19)*(absoru_znh(mmax+7)*1.0e-20))/unit
+         zzkk(m,i)=zzk(m,i)*((absoru_znh(absoru2_nmeta+4)*1.e-19)*(absoru_znh(absoru2_nmeta+7)*1.0e-20))/unit
         go to 4221
 
         4222 continue
@@ -556,7 +569,7 @@ GIVE ERROR CUZ I STOPPED HERE
   !> @author A.M COLLE  07/12/1970
   !>
 
-  subroutine athyhe (wl,th,calth,callam,zzk)
+  subroutine athyhe (wl,th,callam,zzk)
     use read_files
     use logging
     implicit none
@@ -569,7 +582,7 @@ GIVE ERROR CUZ I STOPPED HERE
      difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
      stimu3, tempor, uk, wlm, zkas, zlamin, zleta1, zleta2, znl, znl1, zk_
     integer i, ie, indth, ir, j, je, jhyt, jj, jjs, jr, js, k, kk, kks, l, ll, lls, n
-    integer callam,calth, jhe, jhep, jhem
+    integer callam, jhe, jhep, jhem
     real*8 wl, th
     real*8 :: tgaunt(5),trhog(5),opnu(46),zzk(11,2), expon(2)
     real*8, parameter ::                                  &
@@ -976,14 +989,14 @@ GIVE ERROR CUZ I STOPPED HERE
   !>
   !> @todo consider creating module variables to avoid passing parameter to subroutine
 
-  subroutine ionipe(th,zlpe,calth,calmet)
+  subroutine ionipe(th,zlpe,calth)
     use read_files
     implicit none
     real*8 th, zlpe, any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
     integer i, j, nrr
 
-    integer*4 calth,calmet
+    integer*4 calth
     real*8 kth
     dimension phi(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
      pa(10)

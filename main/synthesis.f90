@@ -193,7 +193,6 @@ module synthesis
     real*8, parameter :: LAMBDA_STRETCH = 20.
 
     real*8 lzero, lfin
-    character*256 fileflux, fileflux2, fileflux3
 
     integer :: &
      d,        &
@@ -205,14 +204,14 @@ module synthesis
     character filetoh*260
 
     real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
-     fi(1501),tfi(1501), ecartm(MAX_KM_MBLEND)
+     ecartm(MAX_KM_MBLEND)
 !   fonctions de partition TODO figure out what this comment refers to
 
     REAL*8 ttd(FILETOH_NP), fn(FILETOH_NP), &
            tauh(FILETOH_NP, 50), tauhy(10,FILETOH_NP,50)
 
 
-    integer i, i1, i2, ih, ih1, ikey, ikeytot, iht, ilzero, im, imy, irh, itot, k, l, li,&
+    integer i, i1, i2, ih, ikey, ikeytot, iht, ilzero, im, imy, irh, itot, k, l, li,&
      n
     real*8 lambd, l0, lf, lllhy, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
      ahnu2, alph0, alph01, alph02
@@ -295,7 +294,7 @@ module synthesis
     !=====
     do while (.true.)
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
-      dtot = (lfin-lzero)/main_pas + 1.0005
+      dtot = int((lfin-lzero)/main_pas + 1.0005)
 
       !__spill check__
       if(dtot .gt. FILETOH_NP) then
@@ -309,8 +308,8 @@ module synthesis
       call log_info(lll)
 
       lambd = (lzero+lfin)/2
-      ilzero = (lzero/100.)*1e2
-      alzero = lzero -ilzero
+      ilzero = int(lzero/100.)*100
+      alzero = lzero-ilzero
 
       do d = 1,dtot
         ttd(d) = alzero+main_pas*(d-1)
@@ -404,7 +403,7 @@ module synthesis
         end do
       end if
 
-      call filter_moleculagrade()
+      call filter_moleculagrade(lzero, lfin)
       call use_moleculagrade()
 
       !--debugging--!
@@ -416,14 +415,14 @@ module synthesis
         ecartm(l) = km_lmbdam(l)-lzero + main_pas
       end do
 
-      call selekfh(dtot, gfal, ecart, tauh, dhm,dhp, ttd, ecartm)
+      call selekfh()
 
       !> @todo check if any of these variables is written, otherwise I could move this block further down
-      li = 10./main_pas
+      li = int(10./main_pas)
       i1 = li+1
       i2 = dtot - li
       if (lfin .ge. (main_llfin+LAMBDA_STRETCH)) then
-        i2 = (main_llfin+10.-lzero)/main_pas + 1.0005
+        i2 = int((main_llfin+10.-lzero)/main_pas + 1.0005)
       end if
       itot = i2-i1+1
       do d = i1,i2
@@ -441,7 +440,7 @@ module synthesis
       !=====
       ! Writes results for current iteration into open files
       !=====
-      call wite_lines_fort91()                        ! lines.pfant and fort.91
+      call write_lines_fort91()                        ! lines.pfant and fort.91
       call write_log()                                ! log.log
       call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
@@ -486,12 +485,11 @@ module synthesis
     !> only the "ITEM" changes from file to file.
 
     subroutine write_spec_item(unit_, item)
-    !> unit number, either UNIT_SPEC, UNIT_CONT, UNIT_NORM
+      !> unit number, either UNIT_SPEC, UNIT_CONT, UNIT_NORM
       integer, intent(in) :: unit_
       !> either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
-
       amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
 
       1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
@@ -515,6 +513,38 @@ module synthesis
 
       1132 format(40000f15.5)
       WRITE(unit_,1132) (item(d), d=i1,i2)
+    end
+
+    !> Writes into file log.log
+    !> @todo issue too similar to write_spec_item
+
+    subroutine write_log()
+      integer d
+      real*8 amg
+      amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
+
+      1130  format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
+      write(UNIT_LOG, 1130) &
+       ikeytot, &
+       (modeles_tit(i),i=1,5), &
+       tetaef, &
+       main_glog, &
+       main_asalog, &
+       modeles_nhe, &
+       amg, &
+       l0, &
+       lf, &
+       lzero, &
+       lfin, &
+       itot, &
+       main_pas, &
+       main_echx, &
+       main_echy, &
+       main_fwhm
+
+      do d = i1,i2
+        write(UNIT_LOG, *) l0+(d-1)*main_pas, selekfh_fl(d)
+      end do
     end
 
 
@@ -560,42 +590,34 @@ module synthesis
 
 
 
-    !> @todo Fix Initializations
-    !> @todo explain parameters
-    !> @todo verbose
-    !> @todo discover what is input and what is output
     !======================================================================================================================
-    ! Sets the Voigt profile using Hjertings' constants.
-    !
-    ! Note: convolution for molecules uses Gaussian profile.
-    !
-
+    !> Sets the Voigt profile using Hjertings' constants.
+    !>
+    !> @note Convolution for molecules uses Gaussian profile.
+    !>
     !> @todo ISSUE with variable MM
 
     subroutine selekfh()
-      implicit none
       integer d
-      real lambi
-      real*8 :: &
-       kappa,kap,bk_kcd,kci,kam,kappam,kappt
-      real*8 ecartm,ecarm
-      real*8 :: bi(0:50)
+      real*8 :: bi(0:MAX_MODELES_NTOT)
       real*8, dimension(MAX_ATOMGRADE_NBLEND) :: &
        ecar, &
        ecartl, &
        ka
-      dimension kap(50),           &
-                kappa(50),         &
-                bk_kcd(filetoh_np,50), &
-                kci(50)
-      dimension tauhd(50)
-      dimension deltam(max_km_mblend,50), &
-                ecarm(max_km_mblend),     &
-                ecartlm(max_km_mblend),   &
-                kam(max_km_mblend),       &
-                kappam(50),               &
-                kappt(50)
-      real*8 deltam, ecartlm, phi, t, tauhd, v, vm
+      real*8, dimension(MAX_MODELES_NTOT) :: &
+       kap,    &
+       kappa,  &
+       kci,    &
+       tauhd,  &
+       kappam, &
+       kappt
+      real*8, dimension(MAX_KM_MBLEND) :: &
+       ecarm,   &
+       ecartlm, &
+       kam
+      real*8 :: &
+       deltam(max_km_mblend,MAX_MODELES_NTOT), &
+       phi, t, v, vm, lambi
 
       real*8 km_mm !__temporary__
 
@@ -693,18 +715,18 @@ module synthesis
         end if
 
         if((d .lt. dhm) .or. (d .ge. dhp)) then
-          call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
+          call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
           selekfh_fl(d) = flin_f
         else
           do n = 1,modeles_ntot
               tauhd(n) = tauh(d,n)
           end do
-          call flinh(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik,tauhd, ttd(d))
+          call flinh(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik,tauhd)
           selekfh_fl(d) = flin_f
         end if
 
         ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik, ttd(d))
+        call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
         selekfh_fcont(d) = flin_f
       end do  ! fin bcle sur d
     end
@@ -712,20 +734,23 @@ module synthesis
 
     !======================================================================================================================
     !> Calculates the flux in the continuum.
-    !> @todo Issue thete is a lot of calculation here that is independent from lzero and lfin
-    !
+    !> @todo Issue there is a lot of calculation here that is independent from lzero and lfin
+    !> @todo issue Variable totkap(2) was declared as INTEGER but its use suggested that it was real. Changed to real (please confirm).
+    !> @note Variable totkap(2) was declared as INTEGER but its usage suggested that it was real; furthermore, the compiler
+    !> @todo log_pe not used yet
+    !>       was telling me
+
     subroutine bk()
-      integer d
+
       real*8 nu, llzero, llfin, nu1, nu2, &
        alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
-      real*8, dimension(2) :: kcn, lambdc
-      integer totkap(2)
+      real*8, dimension(2) :: kcn, lambdc, totkap
       character*80 lll
       real*8 ::  fttc(FILETOH_NP)
       real*8 c3, c31, c32, fc1, fc2, flin_f, t, tet0
-      integer j, kkk
+      integer d, j, kkk
 
       llzero = lzero
       llfin  = lfin
@@ -737,7 +762,7 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu1/(KB*t))
         bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
         bk_kc1(n) = totkap(1)
       end do
 
@@ -749,7 +774,7 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu2/(KB*t))
         bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
         bk_kc2(n) = totkap(1)
       end do
 
@@ -760,7 +785,7 @@ module synthesis
         t=5040./modeles_teta(n)
         alph_n = exp(-ahnu/(KB*t))
         bk_b(n) = c3 * (alph_n/(1.-alph_n))
-        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,1,kkk,totkap)
+        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
         bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
         bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
         bk_kc(n) = totkap(1)
@@ -785,8 +810,7 @@ module synthesis
       call flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
       bk_fc = flin_f
 
-      ilzero = lzero/100.
-      ilzero = 1e2*ilzero
+      ilzero = int(lzero/100.)*100
       lambdc(1) = lzero-ilzero
       lambdc(2) = lfin-ilzero
       do n=1,modeles_ntot
@@ -807,9 +831,9 @@ module synthesis
       153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
       154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
       write(lll,153) bk_kcd(1,1),bk_kcd(1,modeles_ntot)
-      call logging_debug(lll)
+      call log_debug(lll)
       write(lll,154) bk_kcd(dtot,1),bk_kcd(dtot,modeles_ntot)
-      call logging_debug(lll)
+      call log_debug(lll)
 
       continue
     end

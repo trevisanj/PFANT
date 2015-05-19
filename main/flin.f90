@@ -34,12 +34,14 @@ module flin
   implicit none
   private
 
-  public flinh ! Public subroutine
+  public flinh, flin1 ! Public subroutine
   !=====
   !> Output variables
   !=====
+  !> ?doc?
   real*8, public, dimension(0:50) :: flin_to
-  real*8, public :: flin_f
+  !> ?doc?
+  real*8, public :: flin_f = 0
 
 
 
@@ -87,6 +89,7 @@ contains
   !> 1) adds tauhd vector to flin_TO
   !> 2) ignores PTDISK ISSUE!!!
   !>
+  
   subroutine flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
     real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh, tauhd
     real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b

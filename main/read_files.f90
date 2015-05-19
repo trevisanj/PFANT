@@ -23,6 +23,7 @@
 !> @todo create a "File reading" page to explain the situation of main.dat, dissoc.dat etc referring to a concept rather than a file of that name.
 
 module read_files
+      use logging
   implicit none
 
       !=====
@@ -51,7 +52,7 @@ module read_files
       integer, parameter :: MAX_PARTIT_NPAR=85
       !> Third dimension of partit_TABU
       integer, parameter :: MAX_PARTIT_KMAX=63
-      !> Maximum value for absoru_NM
+      !> Maximum value for absoru2_NM
       integer, parameter :: MAX_ABSORU2_NM=30
       !> Maximum value for absoru2_NR(J)
       integer, parameter :: MAX_ABSORU2_NRR=9
