@@ -223,16 +223,16 @@ contains
       character(len=*), intent(in) :: name
       integer :: i
 
-      write(*,*) '>>>>> looking up @', name, '@'
+      ! todo take it out write(*,*) '>>>>> looking up @', name, '@'
 
       do i = 1, size(options)
-        write(*,*) '>>>>> checking if @', options(i)%name, '@'
+        ! todo take it out write(*,*) '>>>>> checking if @', options(i)%name, '@'
         if (name == options(i)%name) then
-          write (*,*) '>>>>> IT IS'
+          ! todo take it out write (*,*) '>>>>> IT IS'
           lookup_long = i
           return
         else
-          write (*,*) '>>>>> IT IS NOT'
+          ! todo take it out write (*,*) '>>>>> IT IS NOT'
         end if
       end do
       ! if we get to this point, the option was not found

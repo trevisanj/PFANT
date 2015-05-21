@@ -401,11 +401,12 @@ CONTAINS
         ! because sat4() and die() count on this
         select case (i)
           case (1)
-            if (symbol .ne. 'h ') &
-             call pfant_halt('first element must be hydrogen ("h ")!')
+            if (trim(symbol) .ne. 'H') &
+             write(lll,*) 'First element must be hydrogen ("H "), not "', symbol, '"!'
+             call pfant_halt(lll)
           case (2)
-            if (symbol .ne. 'he' .and. symbol .ne. 'he') &
-             call pfant_halt('second element must be helium ("he")!')
+            if (symbol .ne. 'HE' .and. symbol .ne. 'He') &
+             call pfant_halt('Second element must be helium ("He")!')
         end select
 
         dissoc_elems(i) = symbol

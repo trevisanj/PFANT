@@ -749,7 +749,7 @@ module synthesis
       real*8, dimension(2) :: kcn, lambdc, totkap
       character*80 lll
       real*8 ::  fttc(FILETOH_NP)
-      real*8 c3, c31, c32, fc1, fc2, flin_f, t, tet0
+      real*8 c3, c31, c32, fc1, fc2, t, tet0
       integer d, j, kkk
 
       llzero = lzero

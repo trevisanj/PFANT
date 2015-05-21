@@ -94,6 +94,7 @@ contains
   !> Must be called at system startup
 
   subroutine config_setup()
+    call log_info('=== Configuring system...')
     ! Parses command line
     call parseargs()
 
@@ -115,16 +116,16 @@ contains
 
   function get_molid(i_mol)
     integer i_mol, get_molid
-    character*80 s  !__logging__
+    character*80 lll  !__logging__
 
     !--assertion--!
     if (.not. flag_setup) call pfant_halt('get_molid(): forgot to call config_setup()')
 
     !__spill check__
     if (i_mol .gt. config_num_mol_on) then
-      write (s, *) 'get_molid(): invalid molecule index i_mol (', &
+      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
        i_mol, ') must be maximum ', config_num_mol_on
-      call pfant_halt(s)
+      call pfant_halt(lll)
     end if
 
     get_molid = config_molids_on(i_mol)
@@ -187,6 +188,7 @@ contains
 
   subroutine parseargs()
     use options2
+    use misc
     integer k  !> @todo for debugging, take it out
     integer o_len, o_stat, o_remain, o_offset, o_index, iTemp
     character*500 o_arg
@@ -197,8 +199,8 @@ contains
 
 
 
-    options( 1) = option('loglevel', 'l', .TRUE., 'Logging level (1: debug; 2: info; 3: '//&
-     'warning; 4: error; 5: critical; 6: halt)', 'level')
+    options( 1) = option('loglevel', 'l', .TRUE., 'Logging level (debug/info/'//&
+     'warning/error/critical/halt)', 'level')
     options( 2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine '//&
      'TURBUL() (1: linear; 2: parabolic)', 'type')
     options( 3) = option('kik', 'k', .TRUE., 'Selector for subroutines FLIN1() and '//&
@@ -218,13 +220,17 @@ contains
     do while (.TRUE.)
       call getopt(options, o_index, o_arg, o_len, o_stat, o_offset, o_remain)
 
-      write(*,*) 'o_index = ', o_index
-      write(*,*) 'o_arg = ', o_arg
-      write(*,*) 'o_len = ', o_len
-      write(*,*) 'o_stat = ', o_stat
-      write(*,*) 'o_offset = ', o_offset
-      write(*,*) 'o_remain = ', o_remain
-      write(*,*) '---------------------------'
+      ! Debugging. Note that log_debug() cannot be used we don't know yet the logging level
+      ! that the user wants.
+      if (.false.) then
+        write(*,*) 'o_index = ', o_index
+        write(*,*) 'o_arg = ', o_arg
+        write(*,*) 'o_len = ', o_len
+        write(*,*) 'o_stat = ', o_stat
+        write(*,*) 'o_offset = ', o_offset
+        write(*,*) 'o_remain = ', o_remain
+        write(*,*) '---------------------------'
+      end if
 
       select case(o_stat)
         case (1,2,3)  ! parsing stopped (no error)
@@ -235,15 +241,23 @@ contains
           ! "Uses" config options: validates and assigns to proper config_* variables.
           select case(opt%name)  ! It is more legible select by option name than by index
             case ('loglevel')
-              iTemp = parseint(opt, o_arg)
-              select case (iTemp)
-                case (10, 20, 30, 40, 50, 60)
-                  config_loglevel = iTemp*10
-                  write(*,*) 'setting logging level to ', config_loglevel
+              select case (to_lower(o_arg))
+                case ('debug')
+                  config_loglevel = LOGGING_DEBUG
+                case ('info')
+                  config_loglevel = LOGGING_INFO
+                case ('warning')
+                  config_loglevel = LOGGING_WARNING
+                case ('critical')
+                  config_loglevel = LOGGING_CRITICAL
+                case ('error')
+                  config_loglevel = LOGGING_ERROR
+                case ('halt')
+                  config_loglevel = LOGGING_HALT
                 case default
                   err_out = .TRUE.
               end select
-
+              if (.NOT. err_out) write(*,*) 'setting logging level to ', to_lower(o_arg)
             case ('interp')
               iTemp = parseint(opt, o_arg)
               select case (iTemp)
@@ -297,6 +311,7 @@ contains
         stop 'sort this shit'
       end if
     end do
+
 
   contains
     !----------
