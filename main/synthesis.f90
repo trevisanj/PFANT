@@ -582,7 +582,7 @@ module synthesis
          atomgrade_zinf(k),        &
          popadelh_corch(k)
 
-        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
+        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat??? (MT): It is not necessary for me.
        121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
         write(91,121)              &
          atomgrade_elem(k),        &
@@ -854,7 +854,7 @@ module synthesis
 
 
   !======================================================================================================================
-  !> @todo issue ?what? ?doc?
+  !> @todo issue ?what? ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
 
   subroutine turbul()
     use config
@@ -1013,7 +1013,7 @@ module synthesis
       !*************************************************************************************************
       !*************************************************************************************************
       !*************************************************************************************************
-      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!!
+      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!! (MT) I've never used this file.
       write (77,*) atomgrade_elem(k),atomgrade_lambda(k)
 
       if(atomgrade_ch(k).lt.1.e-37)  then
@@ -1046,7 +1046,14 @@ module synthesis
         tap = 1.-alphl(n)
         top = 10.**(-atomgrade_kiex(k)*modeles_teta(n))
         popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
+
+
         ! NOXIG: issue ?what? ?doc? does it mean?
+        !> @todo noxig means number of atoms of oxygen
+        !>
+        !> @todo atomgrade first element must be oxygen
+        !>
+        !> @todo there is still another place
         if(k .eq. 1) popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         popadelh_delta(k,n) =(1.e-8*atomgrade_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
