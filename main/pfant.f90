@@ -1,6 +1,8 @@
 !> Varying task (default: synthesis)
 !>
 !> @todo incorporate hydro and inewmarcs
+!>
+!> @todo Canonic cases: Sun, Arcturus
 
 program pfant
   use config

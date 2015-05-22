@@ -595,7 +595,7 @@ module synthesis
     !>
     !> @note Convolution for molecules uses Gaussian profile.
     !>
-    !> @todo ISSUE with variable MM
+    !> @todo MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
 
     subroutine selekfh()
       integer d
