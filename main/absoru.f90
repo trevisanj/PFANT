@@ -55,7 +55,7 @@ module absoru
   ! Outputs
   !=====
   !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
-  !> @todo ISSUE Why 12?
+  !> @todo ISSUE Why 12? (MT): It seems that it should be longer.
   real*8, public, dimension(12) :: absoru_znh
 
 
@@ -224,7 +224,7 @@ contains
     call athyhe (wl,th,callam,zzk)
 
     9006 continue
-    if (calmet.eq.1) go to 9003 !> @todo ISSUE line doing nothing
+    if (calmet.eq.1) go to 9003 !> @todo ISSUE line doing nothing (MT): Very clever!!!
 
     9003 continue
     call ionipe (th,zlpe,calth)
@@ -461,7 +461,7 @@ contains
       au_zeuh(j)=exp(uh-au_uh1)/j**3
     enddo
 
-    au_zeuh(20) = au_zeuh(20)*8000.  !> @todo ISSUE why this (ask mt)?
+    au_zeuh(20) = au_zeuh(20)*8000.  !> @todo ISSUE big why this (ask mt)? (MT): Why 20? Why 8000.?
     au_uhep1 = 4.389087e-3*hcbktm
     if (th .gt. 0.3) go to 5290
 

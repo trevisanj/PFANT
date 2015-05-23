@@ -103,8 +103,16 @@
 !> @ingroup gr_math
 !> Fantomol avec sous-programmes (MNP) -
 !> Calcul possible de 100 angstrom en 100 angstrom.
-!> Flux sortant est en nu: Fnu x lambda
-!> Flux absolu sortant a ete multiplie par 10**5
+!> @note Flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)
+!>
+!> @note Unit of flux: erg*s^-1*cm^-2/(Hz*ster), however (see next note)
+!>
+!> @note Actually what is called "flux" would be more accurately called "Specific intensity" [Gray Stellar Photospheres 3rd Ed. Eq 5.1]
+!>
+!> @note Flux absolu sortant a ete multiplie par 10**5
+!>
+
+!>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
 
 module synthesis
@@ -181,7 +189,7 @@ module synthesis
 
 
   !======================================================================================================================
-  subroutine synthesis_()  !> @todo ISSUE Find a nicer name for this routine. It is what PFANT DOES
+  subroutine synthesis_()
     ! Units for output files
     integer, parameter :: &
      UNIT_SPEC  = 17, &
@@ -196,7 +204,7 @@ module synthesis
 
     integer :: &
      d,        &
-     dtot,     &
+     dtot,     & ! (MT): The flux will be calculated for dtot different wavelenghts
      dhmy(10), &
      dhpy(10)
     integer dhm,dhp
@@ -211,7 +219,10 @@ module synthesis
            tauh(FILETOH_NP, 50), tauhy(10,FILETOH_NP,50)
 
 
-    integer i, i1, i2, ih, ikey, ikeytot, iht, ilzero, im, imy, irh, itot, k, l, li,&
+    integer i, i1, i2, ih, &
+     ikey,    & ! ikey-th main_aint-large calculation interval
+     ikeytot, & ! total number of main_aint-large calculation intervals
+     iht, ilzero, im, imy, irh, itot, k, l, li,&
      n
     real*8 lambd, l0, lf, lllhy, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
      ahnu2, alph0, alph01, alph02
@@ -490,7 +501,7 @@ module synthesis
       !> either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
-      amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
+      amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium? (MT) I think that they did this because the alpha-enhanced is specified nowhere.
 
       1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
@@ -516,7 +527,7 @@ module synthesis
     end
 
     !> Writes into file log.log
-    !> @todo issue too similar to write_spec_item
+    !> @todo issue too similar to write_spec_item (MT): Either get rid of it or include it as an optional output.
 
     subroutine write_log()
       integer d
@@ -571,7 +582,7 @@ module synthesis
          atomgrade_zinf(k),        &
          popadelh_corch(k)
 
-        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat???
+        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat??? (MT): It is not necessary for me.
        121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
         write(91,121)              &
          atomgrade_elem(k),        &
@@ -843,7 +854,7 @@ module synthesis
 
 
   !======================================================================================================================
-  !> @todo issue ?what? ?doc?
+  !> @todo issue ?what? ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
 
   subroutine turbul()
     character*80 lll
@@ -1001,7 +1012,7 @@ module synthesis
       !*************************************************************************************************
       !*************************************************************************************************
       !*************************************************************************************************
-      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!!
+      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!! (MT) I've never used this file.
       write (77,*) atomgrade_elem(k),atomgrade_lambda(k)
 
       if(atomgrade_ch(k).lt.1.e-37)  then
@@ -1034,7 +1045,14 @@ module synthesis
         tap = 1.-alphl(n)
         top = 10.**(-atomgrade_kiex(k)*modeles_teta(n))
         popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
+
+
         ! NOXIG: issue ?what? ?doc? does it mean?
+        !> @todo noxig means number of atoms of oxygen
+        !>
+        !> @todo atomgrade first element must be oxygen
+        !>
+        !> @todo there is still another place
         if(k .eq. 1) popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         popadelh_delta(k,n) =(1.e-8*atomgrade_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
