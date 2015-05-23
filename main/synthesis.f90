@@ -398,7 +398,7 @@ module synthesis
           !> @todo ISSUE check these variables, they may be misnamed
           gfal(k) = atomgrade_gf(k)*C2*(atomgrade_lambda(k)*1.e-8)**2
 
-          !> @todo issue ?what? ?doc? is ECART?
+          !> @todo issue ?what? ?doc? is ECART? (MT): some sort of delta lambda
           ecart(k) = atomgrade_lambda(k)-lzero+main_pas
         end do
       end if
