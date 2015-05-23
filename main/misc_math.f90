@@ -17,6 +17,7 @@
 !> MISCellaneous MATHs: re-usable Math library
 
 module misc_math
+  use logging
   implicit none
 contains
 
@@ -440,7 +441,6 @@ contains
   !> @todo actually all these ft routines are similar. I don't know what to do. A lot of code duplication, but each routine is a bit different
 
   subroutine ftlin3(n,x,y,itot,tt,ftt)
-    use logging
     integer, intent(in) :: &
      n, & !< Size of vectors x and y
      itot !< Size of vectors tt and ftt

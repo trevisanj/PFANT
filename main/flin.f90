@@ -34,6 +34,7 @@
 
 module flin
   use read_files
+  use misc_math
   implicit none
   private
 
@@ -108,8 +109,6 @@ contains
   !> @todo ISSUE TOP using 7 points in flin1() MODE!!!!!!!!!!!!!!!
 
   subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
-    use read_files
-    use misc_math
     implicit none
     !> ?doc?
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)

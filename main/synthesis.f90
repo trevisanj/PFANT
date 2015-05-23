@@ -846,7 +846,6 @@ module synthesis
   !> @todo issue ?what? ?doc?
 
   subroutine turbul()
-    use config
     character*80 lll
     integer i, nt2, n
 
