@@ -550,7 +550,15 @@ CONTAINS
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
 
-        !> @todo ISSUE ask MT Why "-12" ??
+        !> @todo ISSUE ask MT Why "-12" ?? (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12
+
+        !> @note What is in abonds.dat is log10(NX/NH) - [Fe/H]
+
+        !> @note What is in dissoc.dat is log10(NX/NH) - 12 - [Fe/H]
+
+        !> @todo issue abundances in abonds.dat and dissoc.dat correspond to (X/H) - [Fe/H]. The purpose is to [X/Fe] = 0.0
+
+        !> @todo issue dissoc.dat has redundant information: all abundances are these but with 12 subtracted and they should match!
         abonds_abo(j) = 10.**(abonds_abol(j)-12.)
         abonds_abo(j) = abonds_abo(j)*fstar
       end if
@@ -580,9 +588,9 @@ CONTAINS
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atomgrade_ELEM(K) FILLDOC
-  !>     col 2 -- atomgrade_IONI(K) FILLDOC
-  !>     col 3 -- atomgrade_LAMBDA(K) FILLDOC
+  !>     col 1 -- 2-letter atomgrade_ELEM(K) ?doc?
+  !>     col 2 -- atomgrade_IONI(K) ?doc?
+  !>     col 3 -- atomgrade_LAMBDA(K) ?doc?
   !>   even row
   !>     col 1 --
   !>     col 2 --
@@ -630,8 +638,10 @@ CONTAINS
      atomgrade__zinf(k), &
      atomgrade__abondr_dummy(k), finrai
 
-
-    !> @todo ISSUE ask MT Why this? Document!!!
+    !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
+    !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
+    !>
+    !> @todo issue ask BLB 2.21e15 stand for? + reference
     if (atomgrade_gr(k) .lt. 1e-37) atomgrade_gr(k) = 2.21e15 / atomgrade_lambda(k)**2
 
     if (finrai .eq. 1) go to 10

@@ -1044,7 +1044,6 @@ module synthesis
 
         tap = 1.-alphl(n)
         top = 10.**(-atomgrade_kiex(k)*modeles_teta(n))
-        popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
 
 
         ! NOXIG: issue ?what? ?doc? does it mean?
@@ -1052,8 +1051,16 @@ module synthesis
         !>
         !> @todo atomgrade first element must be oxygen
         !>
-        !> @todo there is still another place
-        if(k .eq. 1) popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
+        !> @todo ISSUE BIG CONSIDERING Oxygen 1 but may have been filtered out!
+        !>
+        !> @todo ISSUE ask BLB why is Oxygen treated differently
+
+        if(k .eq. 1) then
+          popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
+        else
+          popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
+        end if
+
         popadelh_delta(k,n) =(1.e-8*atomgrade_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
         if (iopi .eq. 1) then
