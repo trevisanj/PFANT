@@ -198,7 +198,7 @@ module read_files
               absoru2_numset(2) !< NUMSET=NUMBER DE LAMBDAS CONSIDERES POUR LA LISTE DES DISCONTINUITES
                                 !< POUR H,HE ET HE+
 
-      character*2 :: absoru2_nomet(MAX_ABSORU2_NM) !< NOM DE L'ELEMENT
+      character*2 :: absoru2_nomet(MAX_ABSORU2_NM) !< NOM DE L'ELEMENT; not used
       real*8 absoru2_abmet, & !< ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
              absoru2_abhel    !< ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
       !> @todo ISSUE: i am not sure about these character*4, made this from the format below
@@ -550,7 +550,15 @@ CONTAINS
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
 
-        !> @todo ISSUE Why "-12" ??
+        !> @todo ISSUE ask MT Why "-12" ?? (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12
+
+        !> @note What is in abonds.dat is log10(NX/NH) - [Fe/H]
+
+        !> @note What is in dissoc.dat is log10(NX/NH) - 12 - [Fe/H]
+
+        !> @todo issue abundances in abonds.dat and dissoc.dat correspond to (X/H) - [Fe/H]. The purpose is to [X/Fe] = 0.0
+
+        !> @todo issue dissoc.dat has redundant information: all abundances are these but with 12 subtracted and they should match!
         abonds_abo(j) = 10.**(abonds_abol(j)-12.)
         abonds_abo(j) = abonds_abo(j)*fstar
       end if
@@ -580,9 +588,9 @@ CONTAINS
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atomgrade_ELEM(K) FILLDOC
-  !>     col 2 -- atomgrade_IONI(K) FILLDOC
-  !>     col 3 -- atomgrade_LAMBDA(K) FILLDOC
+  !>     col 1 -- 2-letter atomgrade_ELEM(K) ?doc?
+  !>     col 2 -- atomgrade_IONI(K) ?doc?
+  !>     col 3 -- atomgrade_LAMBDA(K) ?doc?
   !>   even row
   !>     col 1 --
   !>     col 2 --
@@ -630,8 +638,10 @@ CONTAINS
      atomgrade__zinf(k), &
      atomgrade__abondr_dummy(k), finrai
 
-
-    !> @todo ISSUE Why this? Document!!!
+    !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
+    !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
+    !>
+    !> @todo issue ask BLB 2.21e15 stand for? + reference
     if (atomgrade_gr(k) .lt. 1e-37) atomgrade_gr(k) = 2.21e15 / atomgrade_lambda(k)**2
 
     if (finrai .eq. 1) go to 10
@@ -827,12 +837,6 @@ CONTAINS
   !>
   !> CE SSP PERMET DE LIRE LES ABONDANCES ET LA TABLE D'IONISATION CHOI
   !> PUIS LES DONNEES CORRESPONDANTS AUX ABSORBANTS METALLIQUES SI NECE
-  !> CALMET=1 SI ON NE TIENT PAS COMPTE DES METAUX
-  !> CALMET=2 SI ON    TIENT     COMPTE DES METAUX
-  !>
-  !> @todo ISSUE: as opposed to original description, CALMET was being ignored in original routine LECTUR()
-  !> (MT) ???
-  !> (JT) I guess it is a remain of sth and nowadays the metals are always taken into account
   !>
 
   subroutine read_absoru2(filename)
@@ -884,7 +888,6 @@ CONTAINS
       do i = 1, nrr
         ! neant="nothing"
         ! NION is also not used
-        !> @todo ISSUE: NOMET is not used in the program
         read (unit_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
          nion, absoru2_xi(j,i), absoru2_pf(j,i)
 
@@ -980,9 +983,6 @@ CONTAINS
     !> @todo Maybe implement variable main_FLAG to FLAG that main.dat has been read already
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
-    !> @todo ISSUE: Variable NHE read again from a different file!!!!!!!!! I decided to opt for modeles_NHE because it overwrites main_NHE
-    !> (MT) ASSERT main_NHE == modeles_NHE
-
 
     read(unit_, rec=id_) r_modeles_ntot, r_modeles_detef, r_modeles_dglog, &
      r_modeles_dsalog, r_modeles_asalalf, r_modeles_nhe, modeles_tit, &
@@ -1030,8 +1030,13 @@ CONTAINS
 !~  IF(DDG.GT.0.01)   GO TO 9
 !~  IF(DDAB.GT.0.01)   GO TO 9
 
-    !> @todo ABS(main_NHE - modeles_NHE) <= 0.01     <--- this is the epsilon
-    !> @todo Get the epsilon from MT
+    !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
+
+    if (abs(main_nhe-modeles_nhe) .gt. 0.001) then
+      !__consistency check__
+      call pfant_halt('modeles nhe must match main nhe')
+    end if
+
     if(ddt .gt. 1.0) then
       write(lll,*) 'abs(main_teff-modeles_detef) = ', ddt, ' > 1.0'
       call pfant_halt(lll)

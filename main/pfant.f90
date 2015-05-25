@@ -1,6 +1,8 @@
 !> Varying task (default: synthesis)
 !>
 !> @todo incorporate hydro and inewmarcs
+!>
+!> @todo Canonic cases: Sun, Arcturus
 
 program pfant
   use config
@@ -121,7 +123,7 @@ subroutine print_welcome(unit_)
   write(unit_,*) '               `        `          |  _ \|  ___/ \  | \ | |_   _|       '
   write(unit_,*) '        @        `  `              | |_) | |_ / _ \ |  \| | | |       ` '
   write(unit_,*) '   _                @              |  __/|  _/ ___ \| |\  | | |         '
-  write(unit_,*) '__(o)______________________________|_|___|_|/_/___\_\_|_\_|_|_|_________'
+  write(unit_,*) '__|o|______________________________|_|___|_|/_/___\_\_|_\_|_|_|_________'
   write(unit_,*) ''
   write(unit_,*) ''
   write(unit_,*) ''

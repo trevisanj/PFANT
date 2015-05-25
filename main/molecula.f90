@@ -542,7 +542,7 @@ contains
       call pfant_halt(s)
     end if
 
-    select case (molid)  !> @todo ISSUE Check molecule names and cases
+    select case (molid)
       case (1)  ! MgH
         ppa => sat4_pmg
         pb  => sat4_pph

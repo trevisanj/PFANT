@@ -20,6 +20,9 @@
 !> nouvelle methode de calcul de to . flin_to(1) est calcule et
 !> est different de 0 (On pose flin_TO(0)=0)   -Avril 1988-
 !>
+!> @note in flin_(), MT+JT ipoint was being set to 7 regardless of ptdisk. This has been
+!>       changed and now works as described: kik .true.: ptdisk .true. -> ipoint = 7; else 6
+!>
 !> @author Roger Cayrel
 !>
 !> @note Outputs in module variables: flin::flin_to, flin::flin_f
@@ -31,6 +34,7 @@
 
 module flin
   use read_files
+  use misc_math
   implicit none
   private
 
@@ -89,7 +93,7 @@ contains
   !> 1) adds tauhd vector to flin_TO
   !> 2) ignores PTDISK ISSUE!!!
   !>
-  
+
   subroutine flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
     real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh, tauhd
     real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b
@@ -105,8 +109,6 @@ contains
   !> @todo ISSUE TOP using 7 points in flin1() MODE!!!!!!!!!!!!!!!
 
   subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
-    use read_files
-    use misc_math
     implicit none
     !> ?doc?
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
@@ -156,11 +158,13 @@ contains
         ipoint=7
         tolim=4.0
       else
-        if (mode_ .eqv. mode_flin1) then
-          ipoint = 7  !> @todo ISSUE big !!!!! i kept this behaviour until i get feedback from blb
-        else
-          ipoint = 6
-        end if
+        ipoint = 6
+
+        ! if (mode_ .eqv. mode_flin1) then
+        !   ipoint = 7  !> @todo ISSUE big !!!!! i kept this behaviour until i get feedback from blb
+        ! else
+        !   ipoint = 6
+        ! end if
         tolim=3.89
       end if
 

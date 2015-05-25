@@ -69,14 +69,14 @@ contains
     character*128 lll
 
     !
-    !*****IMPUT A
+    !*****INPUT A
 
     econst = 4.342945e-1
 
     ! Infers other variables from variables dissoc__* (notice the double underscore)
     do i = 1, dissoc_nmetal
       cclogi = dissoc__cclog(i)+main_afstar
-      !> @todo ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think
+      !> @todo ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think. (MT): Get rid of it.
       cclogi = cclogi+main_xxcor(i)
       if(i .eq. 1) cclogi = 0.0
       if(i .eq. 2) cclogi = -1.0
@@ -111,7 +111,7 @@ contains
 
     !*****INPUT E
 
-    ! @todo issue this block has no comments
+    ! @todo issue this block has no comments (MT): nwevas.
     do 1020 ito = 1,modeles_ntot
       theta = modeles_teta(ito)
       tem = 5040.0/theta
@@ -138,7 +138,7 @@ contains
       do 1184 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here???
+        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): p,kp=0 should be avoided.
         plog   = log10(p(nelemi)+1.0e-30)
         kplog  = log10(kp(nelemi)+1.0e-30)
         pionl  = plog + kplog - pelog
@@ -295,7 +295,7 @@ contains
     hkp = kp(Z_H)
     if (t-0.6) 1084, 1072, 1072
 
-    ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES (ISSUE is this potential hidrogenionico??)
+    ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
     1084 continue
     pph = sqrt(hkp *(pg/(1.0+heh)+hkp ))-hkp
     ph  = pph**2/hkp
@@ -368,6 +368,8 @@ contains
     ! CHECK OF INITIALIZATION
     pe = p(Z_ELECTRON)
 
+
+
     if(ph-p(Z_H)) 1402,1402,1401
 
     1401 continue
@@ -377,6 +379,13 @@ contains
       p(nelemi) = fp(nelemi)*exp(-5.0*t/econst)
     1403 continue
     p(Z_H) = ph   !> @todo ISSUE: overwriting P(1)
+
+    !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
+    !> @todo P being divided by 100 is still an issue, needs BLB
+    do m =1,MAX_Z
+      p(m)=1.0e-2*p(m)
+    end do
+
 
     ! RUSSELL EQUATIONS
     1402 continue
@@ -406,8 +415,9 @@ contains
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
 
-        !> @todo ISSUE TOP at each iteration of the J loop, P gets divided by 100, is this correct??? Doesn't look like
-        p(nelemj)=1.0e-2*p(nelemj)
+! MT+JT taken out of loop
+! P was being divided by 100 here, doesn't look right. This is still an issue
+!        p(nelemj)=1.0e-2*p(nelemj)
         pmoljl = pmoljl + float(natomj)*(-2.0)
       1048 continue
 
