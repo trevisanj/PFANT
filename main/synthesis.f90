@@ -1043,7 +1043,6 @@ module synthesis
         top = 10.**(-atomgrade_kiex(k)*modeles_teta(n))
 
 
-        ! NOXIG: issue ?what? ?doc? does it mean?
         !> @todo noxig means number of atoms of oxygen
         !>
         !> @todo atomgrade first element must be oxygen
@@ -1051,6 +1050,10 @@ module synthesis
         !> @todo ISSUE BIG CONSIDERING Oxygen 1 but may have been filtered out!
         !>
         !> @todo ISSUE ask BLB why is Oxygen treated differently
+        !>
+        !> @todo issue ask blb what if we want more than 1 line of Oxygen?
+        !>       My suggestion here is to have a vector flag what is set to true whenever
+        !>       the name of the element is "O1"
 
         if(k .eq. 1) then
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
