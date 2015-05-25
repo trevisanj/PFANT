@@ -619,7 +619,6 @@ module synthesis
        deltam(max_km_mblend,MAX_MODELES_NTOT), &
        phi, t, v, vm, lambi
 
-      real*8 km_mm !__temporary__
 
 
       if (atomgrade_nblend .ne. 0) then
@@ -680,13 +679,11 @@ module synthesis
               kam(l)=0.
             else
 
-              !> @todo ISSUE TOP uses MM, which is read within KAPMOL and potentially has a different value for each molecule!!!!! this is very weird
-              ! Note that km_MM no longer exists but it is the ancient "MM" read within ancient "KAPMOL()"
-              km_mm = 1  !__temporary__ Only to compile, but needs urgent action
-              deltam(l,n)=(1.e-8*km_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_mm)
-              vm=abs(ecarm(l)*1.e-08/deltam(l,n))
-              phi=(exp(-vm**2))/(RPI*deltam(l,n))
-              kam(l)=phi*km_gfm(l)*km_pnvj(l,n)
+              !> @todo ISSUE ask BLB decided to create big vector km_mm of repeated values
+              deltam(l,n) = (1.e-8*km_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_mm(l))
+              vm = abs(ecarm(l)*1.e-08/deltam(l,n))
+              phi = (exp(-vm**2))/(RPI*deltam(l,n))
+              kam(l) = phi*km_gfm(l)*km_pnvj(l,n)
             end if
             kappam(n)=kappam(n)+kam(l)
           end do   !  fin bcle sur l

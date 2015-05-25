@@ -87,7 +87,9 @@ module molecula
     km_sj,     & !< ?doc?
     km_jj,     & !< ?doc?
     km_gfm,    & !< ?doc?
-    km_alargm    !< ?doc?
+    km_alargm, & !< ?doc?
+    km_mm      & !< Replicates km_mm(molid) for all selected lines of molecule molid.
+                 !< Redundant information but simplifies use. Used in synthesis::selekfh()
 
 
   !------
@@ -126,7 +128,7 @@ contains
   !>       There is not much of a point in skipping molecules here, because the space is already
   !>       pre-allocated, and I have to read the whole file anyway, so it is much easier
   !>       programming-wise (and not time-costly either) to filter
-  !>       molecules in FILTER_MOLECULAGRADE() when they are already in memory.
+  !>       molecules in filter_moleculagrade() when they are already in memory.
   !>
 
   subroutine read_moleculagrade(filename)
@@ -369,10 +371,10 @@ contains
 
 
       ! Counters starting with "J_" restart at each molecule
-      J_SET = 1   ! Current "set-of-lines"
-      FLAG_IN = .FALSE.  ! Whether has filtered in at least one line
-      DO J_DUMMY = 1, km__LINES_PER_MOL(MOLID)
-        LAMBDA = km__LMBDAM(I_LINE)
+      j_set = 1   ! Current "set-of-lines"
+      flag_in = .FALSE.  ! Whether has filtered in at least one line
+      do j_dummy = 1, km__lines_per_mol(molid)
+        lambda = km__lmbdam(i_line)
 
         if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
           ! Filters in a new spectral line!
@@ -390,6 +392,8 @@ contains
           km_lmbdam(i_filtered) = lambda
           km_sj(i_filtered) = km__sj(i_line)
           km_jj(i_filtered) = km__jj(i_line)
+
+          km_mm(i_filtered) = km__mm(molid)
 
           flag_in = .true.
 
@@ -499,7 +503,7 @@ contains
                   (2.-cro)*(2.*km_jj(l)+1.)*                                             &
                   exp(H*C/KB*modeles_teta(n)/5040.*(dv*(km_jj(l)*(km_jj(l)+1))**2+2.*bv))
 
-            km_PNVJ(L,N) = CSC*PSI*PPA(N)*PB(N)/sat4_PPH(N)
+            km_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
           end do
 
 
