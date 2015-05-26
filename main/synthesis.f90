@@ -62,7 +62,7 @@
 !     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
 !     atualizadas
 !
-!     c. incluidos c_filetoh_TAUHI(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
+!     c. incluidos filetoh_TAUHI(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
 !
 !     d. todo o codigo que se referia ao calculo das linha de H foram
 !     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -234,13 +234,13 @@ module synthesis
 
 
     ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
-    call read_dissoc(config_fn_dissoc)
-    call read_main(config_fn_main)
-    call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
-    call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-    call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
-    call read_abonds(config_fn_abonds)
-    call read_atomgrade(config_fn_atomgrade)
+    call read_dissoc(fullpath(config_fn_dissoc))
+    call read_main(fullpath(config_fn_main))
+    call read_partit(fullpath(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
+    call read_absoru2(fullpath(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+    call read_modele(fullpath(config_fn_modeles))  ! LECTURE DU MODELE
+    call read_abonds(fullpath(config_fn_abonds))
+    call read_atomgrade(fullpath(config_fn_atomgrade))
     call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
 
 
@@ -337,7 +337,7 @@ module synthesis
       ! Lecture tau raie hydrogene et interpolation de tauh
       ! Type *,' nom des fichiers TAU raies Hydrogene'
       call filetoh_auh(dtot, ttd, ilzero) ! Old "LECTAUH()".
-                                          ! This now calculates c_filetoh_* for all
+                                          ! This now calculates filetoh_* for all
                                           ! filetohy files
       im = 0
       do ih = 1,FILETOH_NUMFILES
@@ -355,11 +355,11 @@ module synthesis
           call log_info(lll)
 
 
-          dhmy(im) = c_filetoh_dhmi(ih)
-          dhpy(im) = c_filetoh_dhpi(ih)
+          dhmy(im) = filetoh_dhmi(ih)
+          dhpy(im) = filetoh_dhpi(ih)
           do n = 1,modeles_ntot
             do d = 1,dtot
-              tauhy(im, d, n) = c_filetoh_tauhi(ih,d,n)
+              tauhy(im, d, n) = filetoh_tauhi(ih,d,n)
             end do
           end do
         end if
@@ -948,6 +948,7 @@ module synthesis
 
         x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modeles_teta(n))
         tki2= partit_ki2(j) * modeles_teta(n)
+        !> @todo issue ask blb why 77???
         if (tki2 .ge. 77.) then
           y = 0.
           popul_p(3,j,n) = 0.
@@ -992,25 +993,8 @@ module synthesis
       15 continue
       ioo = atomgrade_ioni(k)
 
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !*************************************************************************************************
-      !> @todo ISSUE File writing routine, TAKE THIS OUT!!!! (MT) I've never used this file.
-      write (77,*) atomgrade_elem(k),atomgrade_lambda(k)
+      !> @todo ISSUE fort.77 disabled until someone misses it.
+      ! write (77,*) atomgrade_elem(k),atomgrade_lambda(k)
 
       if(atomgrade_ch(k).lt.1.e-37)  then
         kies=(12398.54/atomgrade_lambda(k)) + atomgrade_kiex(k)
@@ -1053,7 +1037,7 @@ module synthesis
         !>
         !> @todo issue ask blb what if we want more than 1 line of Oxygen?
         !>       My suggestion here is to have a vector flag what is set to true whenever
-        !>       the name of the element is "O1"
+        !>       the name of the element is "O1" and test this flag in routine popadelh()
 
         if(k .eq. 1) then
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)

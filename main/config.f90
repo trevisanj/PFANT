@@ -49,6 +49,8 @@ module config
    config_fn_lines         = 'lines.pfant',       & !< ?doc?
    config_fn_log           = 'log.log'              !< ?doc?
 
+  character*256 :: config_inputdir = './'  !< Directory prefix for all files
+
   !=====
   ! Variables related to molecules
   !=====
@@ -81,6 +83,8 @@ module config
   ! Private variables
   !=====
   logical, private :: flag_setup = .false.
+
+  character(len=:), private, allocatable :: inputdir_trim
 contains
 
 
@@ -94,7 +98,7 @@ contains
   !> Must be called at system startup
 
   subroutine config_setup()
-    call log_info('=== Configuring system...')
+    integer i, n
     ! Parses command line
     call parseargs()
 
@@ -102,9 +106,37 @@ contains
     logging_level = config_loglevel  ! sets logging level at logging module based on config variable
 
 
+    ! Configures data directory
+    inputdir_trim = trim(config_inputdir)
+    n = len(inputdir_trim)
+    do i = 1, n  ! Replaces "\" by "/"
+      if (inputdir_trim(i:i) .eq. '\') inputdir_trim(i:i) = '/'
+    end do
+    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
+
+    write(*,*) 'DDDDDDDDEBUG inputdir_trim = ', inputdir_trim
+
+
     call make_molids()
 
     flag_setup = .true.
+  end
+
+
+  !================================================================================================================================
+  !> Concatenates config_inputdir with specific filename
+  !>
+  !>   - sets up configuration defaults,
+  !>   - parses command-line arguments, and
+  !>   - does other necessary operations.
+  !>
+  !> Must be called at system startup
+
+  function fullpath(filename) result(res)
+    character(len=*), intent(in) :: filename  !< File name
+    character(len=:), allocatable :: res ! trimmed inputdir
+
+    res = inputdir_trim // trim(filename)
   end
 
 
@@ -185,6 +217,7 @@ contains
   !>
   !> @todo Documentation: somehow think how to link option descriptions below, their default values, and the documentation for their respective config_* at their declarations.
   !>
+  !>
 
   subroutine parseargs()
     use options2
@@ -194,26 +227,30 @@ contains
     character*500 o_arg
     character*128 lll
     logical err_out
-    type(option) options(11), opt
+    type(option) options(12), opt
 
 
 
 
-    options( 1) = option('loglevel', 'l', .TRUE., 'Logging level (debug/info/'//&
+    options( 1) = option('loglevel', 'l', .TRUE., 'logging level (debug/info/'//&
      'warning/error/critical/halt)', 'level')
-    options( 2) = option('interp', 'i', .TRUE., 'Interpolation type for subroutine '//&
+    options( 2) = option('interp', 'i', .TRUE., 'interpolation type for subroutine '//&
      'TURBUL() (1: linear; 2: parabolic)', 'type')
-    options( 3) = option('kik', 'k', .TRUE., 'Selector for subroutines FLIN1() and '//&
+    options( 3) = option('kik', 'k', .TRUE., 'selector for subroutines FLIN1() and '//&
      'FLINH() (0 (default): integration using 6/7 points depending on main_PTDISK; '//&
      '1: 26-point integration)', 'type')
-    options( 4) = option('fn_dissoc',    ' ', .true., 'file name', 'file name')
-    options( 5) = option('fn_main',      ' ', .true., 'file name', 'file name')
-    options( 6) = option('fn_partit',    ' ', .true., 'file name', 'file name')
-    options( 7) = option('fn_absoru2',   ' ', .true., 'file name', 'file name')
-    options( 8) = option('fn_modeles',   ' ', .true., 'file name', 'file name')
-    options( 9) = option('fn_abonds',    ' ', .true., 'file name', 'file name')
-    options(10) = option('fn_atomgrade', ' ', .true., 'file name', 'file name')
-    options(11) = option('fn_atomgrade', ' ', .true., 'file name', 'file name')
+    !> @todo Find names for each file and update options help
+
+    ! easier to see and edit in single line
+    options( 4) = option('fn_dissoc',        ' ', .true., '(="dissoc.dat") input file - dissociative equilibrium', 'file name')
+    options( 5) = option('fn_main',          ' ', .true., '(="main.dat") main configuration', 'file name')
+    options( 6) = option('fn_partit',        ' ', .true., '(="partit.dat") input file - partit', 'file name')
+    options( 7) = option('fn_absoru2',       ' ', .true., '(="absoru2.dat") input file - absoru2', 'filename')
+    options( 8) = option('fn_modeles',       ' ', .true., '(="modeles.mod") input file - model', 'file name')
+    options( 9) = option('fn_abonds',        ' ', .true., '(="abonds.dat") input file - atomic abundances', 'file name')
+    options(10) = option('fn_atomgrade',     ' ', .true., '(="atomgrade.dat") input file - atomic lines', 'file name')
+    options(11) = option('fn_moleculagrade', ' ', .true., '(="moleculagrade.dat") input file - molecular lines', 'file name')
+    options(12) = option('inputdir',         ' ', .true., '(=".") directory containing input files', 'file name')
 
     err_out = .FALSE.
 
@@ -293,10 +330,14 @@ contains
               call assign_fn(o_arg, config_fn_atomgrade)
             case ('fn_moleculagrade')
               call assign_fn(o_arg, config_fn_moleculagrade)
-            case ('fn_lines')
-              call assign_fn(o_arg, config_fn_lines)
-            case ('fn_log')
-              call assign_fn(o_arg, config_fn_log)
+!            case ('fn_lines')
+!              call assign_fn(o_arg, config_fn_lines)
+!            case ('fn_log')
+!              call assign_fn(o_arg, config_fn_log)
+
+            case ('inputdir')
+              call assign_fn(o_arg, config_inputdir) ! Note: using same routine assign_fn() to assign directory
+
           end select
 
           if (err_out) then

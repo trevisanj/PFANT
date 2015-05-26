@@ -12,16 +12,18 @@
 * ISSUE: Here what happened is that 5777-3488 = 2289 > 1
 * Just reminding that there was a "GO TO 9" instead of a STOP 113
 
-      PROGRAM TEST_READ_PARTIT
+      PROGRAM TEST_READ_MODELES
       USE READ_FILES
 
-      CHARACTER*256 fn_modele, fn_main
+      CHARACTER*256 fn_modele, fn_main, fn_dissoc
 
       fn_modele = 'modeles.mod'
       fn_main = 'main.dat'
+      fn_dissoc = 'dissoc.dat'
 
 
       dissoc_NMETAL = 18  ! READ_MAIN() depends on this
+      CALL READ_DISSOC(fn_dissoc)  ! I gotta fill in a few variables at the moment:
       CALL READ_MAIN(fn_main)  ! I gotta fill in a few variables at the moment:
                                !
                                ! main_TEFF

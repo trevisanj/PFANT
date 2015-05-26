@@ -23,7 +23,8 @@
 !> @todo create a "File reading" page to explain the situation of main.dat, dissoc.dat etc referring to a concept rather than a file of that name.
 
 module read_files
-      use logging
+  use logging
+  use misc
   implicit none
 
       !=====
@@ -44,7 +45,7 @@ module read_files
       !> Maximum number of abundances in abonds.dat
       integer, parameter :: MAX_ABONDS_NABOND=100
       integer, parameter :: &
-       MAX_ATOMGRADE__NBLEND=13000, & !< Half of the maximum the number of rows in atomgrade.dat
+       MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in atomgrade.dat
        MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
       !> Maximum number of "items" in partit.dat:
       !> @li Maximum value for partit_npar
@@ -69,10 +70,10 @@ module read_files
       integer dissoc_nimax  !< maximum number of iterations in Newton-Rapson method
       character*2 dissoc_elems(MAX_DISSOC_NMETAL)    !< Elements table field 1/6: element symbol
       integer     dissoc_nelemx(MAX_DISSOC_NMETAL)   !< Elements table field 2/6: atomic number
-      real*8      dissoc__ip(MAX_DISSOC_NMETAL)      !< Elements table field 3/6: ?
-      integer     dissoc__ig0(MAX_DISSOC_NMETAL),  & !< Elements table field 4/6: ?
-                  dissoc__ig1(MAX_DISSOC_NMETAL)     !< Elements table field 5/6: ?
-      real*8      dissoc__cclog(MAX_DISSOC_NMETAL)   !< Elements table field 6/6: ?
+      real*8      dissoc_ip(MAX_DISSOC_NMETAL)      !< Elements table field 3/6: ?
+      integer     dissoc_ig0(MAX_DISSOC_NMETAL),  & !< Elements table field 4/6: ?
+                  dissoc_ig1(MAX_DISSOC_NMETAL)     !< Elements table field 5/6: ?
+      real*8      dissoc_cclog(MAX_DISSOC_NMETAL)   !< Elements table field 6/6: ?
 
       ! dissoc.dat, molecules part
       character*3 dissoc_mol(MAX_DISSOC_NMOL)     !< Molecules table field 01: molecule name
@@ -133,21 +134,21 @@ module read_files
       ! Variables filled by read_atomgrade() (file atomgrade.dat)
       !=====
       ! atomgrade.dat, file originals
-      integer atomgrade__nblend !< ?doc?
-      character*2 atomgrade__elem(MAX_ATOMGRADE__NBLEND) !< ?doc?
-      integer, dimension(MAX_ATOMGRADE__NBLEND) :: &
-       atomgrade__ioni !< ?doc?
-      real*8, dimension(MAX_ATOMGRADE__NBLEND) :: &
-       atomgrade__lambda,       & !< ?doc?
-       atomgrade__kiex,         & !< ?doc?
-       atomgrade__algf,         & !< ?doc?
-       atomgrade__ch,           & !< ?doc?
-       atomgrade__gr,           & !< ?doc?
-       atomgrade__ge,           & !< ?doc?
-       atomgrade__zinf,         & !< ?doc?
-       atomgrade__abondr_dummy, & !< ?doc?
-       atomgrade__abonds_abo  !< will be filled by "inner join" by searching
-                              !< atomgrade__elem through abonds_ele
+      integer atomgrade_r_nblend !< ?doc?
+      character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND) !< ?doc?
+      integer, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
+       atomgrade_r_ioni !< ?doc?
+      real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
+       atomgrade_r_lambda,       & !< ?doc?
+       atomgrade_r_kiex,         & !< ?doc?
+       atomgrade_r_algf,         & !< ?doc?
+       atomgrade_r_ch,           & !< ?doc?
+       atomgrade_r_gr,           & !< ?doc?
+       atomgrade_r_ge,           & !< ?doc?
+       atomgrade_r_zinf,         & !< ?doc?
+       atomgrade_r_abondr_dummy, & !< ?doc?
+       atomgrade_r_abonds_abo  !< will be filled by "inner join" by searching
+                              !< atomgrade_r_elem through abonds_ele
 
       ! atomgrade.dat, filtered variables
       ! Very similar to above; differences are
@@ -157,7 +158,7 @@ module read_files
       character*2 atomgrade_elem(MAX_ATOMGRADE_NBLEND) !< ?doc?
       integer, dimension(MAX_ATOMGRADE_NBLEND) :: &
        atomgrade_ioni !< ?doc?
-      real*8, dimension(MAX_ATOMGRADE__NBLEND) :: &
+      real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
        atomgrade_lambda,       & !< ?doc?
        atomgrade_kiex,         & !< ?doc?
        atomgrade_algf,         & !< ?doc?
@@ -378,7 +379,7 @@ CONTAINS
     integer i, j, k, m, mmaxj
     parameter(unit_=199)
     character(len=*) :: filename
-    character*192 lll
+    character*128 lll
     character*2 symbol
     logical flag_found
 
@@ -394,19 +395,24 @@ CONTAINS
     ! rows 02 to NMETAL+1: 6-column rows
     do i = 1, dissoc_nmetal
       read (unit_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
-       symbol, dissoc_nelemx(i), dissoc__ip(i), &
-       dissoc__ig0(i), dissoc__ig1(i), dissoc__cclog(i)
+       symbol, dissoc_nelemx(i), dissoc_ip(i), &
+       dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
 
         ! makes sure that elements first and second are h and he, respectively,
         ! because sat4() and die() count on this
         select case (i)
           case (1)
-            if (trim(symbol) .ne. 'H') &
-             write(lll,*) 'First element must be hydrogen ("H "), not "', symbol, '"!'
-             call pfant_halt(lll)
+            if (to_lower(trim(symbol)) .ne. 'h') then
+              write(lll,*) 'First element must be hydrogen ("H"), not "', symbol, '"!'
+              write(*,*) lll
+              call pfant_halt(lll)
+            end if
           case (2)
-            if (symbol .ne. 'HE' .and. symbol .ne. 'He') &
-             call pfant_halt('Second element must be helium ("He")!')
+            if (to_lower(symbol) .ne. 'he') then
+              write(lll,*) 'First element must be helium ("He"), not "', symbol, '"!'
+              write(*,*) lll
+              call pfant_halt(lll)
+            end if
         end select
 
         dissoc_elems(i) = symbol
@@ -420,6 +426,8 @@ CONTAINS
         end if
 
       end do
+
+
 
       ! rows NMETAL+2 till end-of-file
       !   col  1     -- "name" of molecule
@@ -441,7 +449,11 @@ CONTAINS
 
 
       mmaxj = dissoc_mmax(j)
-      if(mmaxj .eq. 0) go to 1014  ! means end-of-file
+      if(mmaxj .eq. 0) then
+        ! note: interesting that Fortran accepts a blank line and reads everything blank or zero
+
+        go to 1014  ! means end-of-file
+      end if
 
       !__consistency check__:
       if (mmaxj .gt. 4) then
@@ -451,7 +463,7 @@ CONTAINS
       end if
 
       !__consistency check__
-      do m = 1, 4
+      do m = 1, mmaxj
         flag_found = .false.
         do i = 1, dissoc_nmetal
           if (nelemm(m) .eq. dissoc_nelemx(i)) then
@@ -475,6 +487,9 @@ CONTAINS
       go to 1010
 
     1014 dissoc_nmol = j-1
+
+    write(lll,*) 'Last molecule considered in dissoc file is ', dissoc_mol(dissoc_nmol)
+    call log_debug(lll)
 
     close(unit=unit_)
     flag_read_dissoc = .true.
@@ -541,12 +556,12 @@ CONTAINS
           end if
         end do
 
-        if (.not. flag_found) then
-          write(lll,*) 'read_abonds() element "', abonds_ele(j), '" is not in dissoc atoms list!'
-          call pfant_halt(lll)
+        if (flag_found) then
+          abonds_abol(j) = abonds_abol(j)+main_xxcor(k)
+        else
+          ! if not found, doesn't bother
         end if
 
-        abonds_abol(j) = abonds_abol(j)+main_xxcor(k)
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
 
@@ -579,18 +594,16 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads file atomgrade.dat to fill variables atomgrade__* (double underscore)
-  !>
-  !> Original UNIT: 14
+  !> Reads file atomgrade.dat to fill variables atomgrade_r_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
   !>
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atomgrade_ELEM(K) ?doc?
-  !>     col 2 -- atomgrade_IONI(K) ?doc?
-  !>     col 3 -- atomgrade_LAMBDA(K) ?doc?
+  !>     col 1 -- 2-letter atomgrade_elem(K) ?doc?
+  !>     col 2 -- atomgrade_ioni(k) ?doc?
+  !>     col 3 -- atomgrade_lambda(K) ?doc?
   !>   even row
   !>     col 1 --
   !>     col 2 --
@@ -602,6 +615,11 @@ CONTAINS
   !>     col 8 -- signals end-of-file. If "1", reading stops
   !> @endverbatim
   !>
+  !>  @note The line that has the end-of-file flag set is also taken into account.
+
+  !>
+  !> @todo issue ask blb is it supposed to consider the last row? considering now
+  !> 
   !> @todo give error if blows MAX!!!!!!!!!!!!!!!!!
   !> @todo ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
   !> (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!
@@ -624,65 +642,70 @@ CONTAINS
     open(unit=unit_,file=filename, status='old')
 
     k = 1
-
-    9 continue
-    read(unit_, '(a2, i1, 1x, f10.3)') atomgrade__elem(k), &
-                                       atomgrade__ioni(k), &
-                                       atomgrade__lambda(k)
-
-    read(unit_, *) atomgrade__kiex(k), &
-     atomgrade__algf(k), &
-     atomgrade__ch(k), &
-     atomgrade__gr(k), &
-     atomgrade__ge(k), &
-     atomgrade__zinf(k), &
-     atomgrade__abondr_dummy(k), finrai
-
-    !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
-    !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
-    !>
-    !> @todo issue ask BLB 2.21e15 stand for? + reference
-    if (atomgrade_gr(k) .lt. 1e-37) atomgrade_gr(k) = 2.21e15 / atomgrade_lambda(k)**2
-
-    if (finrai .eq. 1) go to 10
-    k = k+1
-
-    !__spill check__: checks if exceeds maximum number of elements allowed
-    if (k .gt. MAX_ATOMGRADE__NBLEND) then
-      write(lll,*) 'read_atomgrade(): exceeded maximum of', MAX_ATOMGRADE__NBLEND, ' spectral lines'
-      call pfant_halt(lll)
-    end if
-
-    !> Besides reading the file, this routine searches atomgrade's element within abonds'
-    !> elements and copies corresponding
-    !> abonds_abo value into atomgrade_abonds_abo. Halts program if element not found.
-    !>
-    !> In database terminology, this is sort of a "inner join".
-    !>
-    !> @note Historically, this corresponds to old routine "abondraih". The search was
-    !>   being carried out every time (lzero, lfin) changed and only for the filtered
-    !>   atomgrade rows. I decided to perform this search for all atomgrade rows and
-    !>   then filter atomgrade_abonds_abo together with other variables in
-    !>   filter_atomgrade(), which is probably cheaper.
-    !> @todo issue why name was "abondraih"?? did it mean "abundances of hydrogen lines"? i ask this because if it has really a physical meaning, i shouldn't bury this inside read_files.f
-
-    flag_found = .false.
-    do  j = 1, abonds_nabond
-      if (abonds_ele(j) .eq. atomgrade__elem(k)) then
-        flag_found = .true.
-        exit
+    do while (.true.)
+      !__spill check__: checks if exceeds maximum number of elements allowed
+      if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
+        write(lll,*) 'read_atomgrade(): exceeded maximum of', MAX_ATOMGRADE_R_NBLEND, ' spectral lines'
+        call pfant_halt(lll)
       end if
+
+      read(unit_, '(a2, i1, 1x, f10.3)') atomgrade_r_elem(k), &
+                                         atomgrade_r_ioni(k), &
+                                         atomgrade_r_lambda(k)
+
+      read(unit_, *) atomgrade_r_kiex(k), &
+       atomgrade_r_algf(k), &
+       atomgrade_r_ch(k), &
+       atomgrade_r_gr(k), &
+       atomgrade_r_ge(k), &
+       atomgrade_r_zinf(k), &
+       atomgrade_r_abondr_dummy(k), finrai
+
+      !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
+      !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
+      !>
+      !> @todo issue ask BLB 2.21e15 stand for? + reference
+      if (atomgrade_r_gr(k) .lt. 1e-37) atomgrade_r_gr(k) = 2.21e15 / atomgrade_r_lambda(k)**2
+
+
+      !> Besides reading the file, this routine searches atomgrade's element within abonds'
+      !> elements and copies corresponding
+      !> abonds_abo value into atomgrade_abonds_abo. Halts program if element not found.
+      !>
+      !> In database terminology, this is sort of a "inner join".
+      !>
+      !> @note Historically, this corresponds to old routine "abondraih". The search was
+      !>   being carried out every time (lzero, lfin) changed and only for the filtered
+      !>   atomgrade rows. I decided to perform this search for all atomgrade rows and
+      !>   then filter atomgrade_abonds_abo together with other variables in
+      !>   filter_atomgrade(), which is probably cheaper.
+      !> @todo issue why name was "abondraih"?? did it mean "abundances of hydrogen lines"? i ask this because if it has really a physical meaning, i shouldn't bury this inside read_files.f
+
+      flag_found = .false.
+      do  j = 1, abonds_nabond
+        if (abonds_ele(j) .eq. atomgrade_r_elem(k)) then
+          flag_found = .true.
+          exit
+        end if
+      end do
+      if (.not. flag_found) then
+        write(lll,*)  'read_atomgrade(): element "', atomgrade_r_elem(k), &
+         ' (spectral line number ', k, ') cannot be found in abundance file'
+        call pfant_halt(lll)
+      end if
+      atomgrade_r_abonds_abo(k) = abonds_abo(j)
+
+      if (finrai .eq. 1) exit !__end-of-file__
+
+      k = k+1
     end do
-    if (.not. flag_found) then
-      write(lll,*)  'manque l abondance du ', atomgrade__elem(k)
-      call pfant_halt(lll)
-    end if
-    atomgrade__abonds_abo(k) = abonds_abo(j)
 
-    go to 9
+    atomgrade_r_nblend = k
 
-    10 continue
-    atomgrade__nblend = k
+    !> @todo replace names of variables with double underscore ("__") by some prefix to avoid typos, which are easy to produce in this notation.
+    write(lll,*) 'read_atomgrade(): last line taken: element: ', atomgrade_r_elem(atomgrade_r_nblend), &
+      '; lambda: ', atomgrade_r_lambda(atomgrade_r_nblend)
+
 
 !> @todo ISSUE
 !> MENTION: last atomic line wasn't being used!! (this has been fixed/changed). Original code commented in subroutine
@@ -722,8 +745,8 @@ CONTAINS
     character*192 lll
 
     k = 0
-    do j = 1, atomgrade__nblend
-      if((atomgrade__lambda(j).le.lfin) .and. (atomgrade__lambda(j) .ge. lzero)) then
+    do j = 1, atomgrade_r_nblend
+      if((atomgrade_r_lambda(j).le.lfin) .and. (atomgrade_r_lambda(j) .ge. lzero)) then
         k = k+1
 
 
@@ -735,20 +758,20 @@ CONTAINS
         end if
 
         !Filters in
-        atomgrade_elem(k)   = atomgrade__elem(j)
-        atomgrade_ioni(k)   = atomgrade__ioni(j)
-        atomgrade_lambda(k) = atomgrade__lambda(j)
-        atomgrade_kiex(k)   = atomgrade__kiex(j)
-        atomgrade_algf(k)   = atomgrade__algf(j)
-        atomgrade_gf(k)     = 10.**atomgrade__algf(j)
-        atomgrade_ch(k)     = atomgrade__ch(j)
-        atomgrade_gr(k)     = atomgrade__gr(j)
-        atomgrade_ge(k)     = atomgrade__ge(j)
-        atomgrade_zinf(k)   = atomgrade__zinf(j)
+        atomgrade_elem(k)   = atomgrade_r_elem(j)
+        atomgrade_ioni(k)   = atomgrade_r_ioni(j)
+        atomgrade_lambda(k) = atomgrade_r_lambda(j)
+        atomgrade_kiex(k)   = atomgrade_r_kiex(j)
+        atomgrade_algf(k)   = atomgrade_r_algf(j)
+        atomgrade_gf(k)     = 10.**atomgrade_r_algf(j)
+        atomgrade_ch(k)     = atomgrade_r_ch(j)
+        atomgrade_gr(k)     = atomgrade_r_gr(j)
+        atomgrade_ge(k)     = atomgrade_r_ge(j)
+        atomgrade_zinf(k)   = atomgrade_r_zinf(j)
 
-        atomgrade_abonds_abo(k) = atomgrade__abonds_abo(j)
+        atomgrade_abonds_abo(k) = atomgrade_r_abonds_abo(j)
 
-        atomgrade_abondr_dummy(k) = atomgrade__abondr_dummy(j)
+        atomgrade_abondr_dummy(k) = atomgrade_r_abondr_dummy(j)
 
       end if
     end do
@@ -952,7 +975,7 @@ CONTAINS
     real*8 ddt, ddg, ddab
     integer i, &
             id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
-    character*92 lll
+    character*128 lll
 
 
     ! Variables declared only for reading from binary file, then their values will be copied to modeles_*
@@ -1000,11 +1023,13 @@ CONTAINS
       call pfant_halt(lll)
     end if
 
-    write(lll, *) 'modeles_detef', modeles_detef
+    write(lll, *) 'modeles_ntot', r_modeles_ntot
     call log_debug(lll)
-    write(lll, *) 'modeles_dglog', modeles_dglog
+    write(lll, *) 'modeles_detef', r_modeles_detef
     call log_debug(lll)
-    write(lll, *) 'modeles_dsalog', modeles_dsalog
+    write(lll, *) 'modeles_dglog', r_modeles_dglog
+    call log_debug(lll)
+    write(lll, *) 'modeles_dsalog', r_modeles_dsalog
     call log_debug(lll)
 
     ddt  = abs(main_teff-r_modeles_detef)
@@ -1032,11 +1057,11 @@ CONTAINS
 
     !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
 
-    if (abs(main_nhe-modeles_nhe) .gt. 0.001) then
       !__consistency check__
-      call pfant_halt('modeles nhe must match main nhe')
+    if (abs(main_nhe-r_modeles_nhe) .gt. 0.001) then
+      write(lll, *) 'modeles nhe (', r_modeles_nhe, ') does not match main nhe (', main_nhe, ')'
+      call pfant_halt(lll)
     end if
-
     if(ddt .gt. 1.0) then
       write(lll,*) 'abs(main_teff-modeles_detef) = ', ddt, ' > 1.0'
       call pfant_halt(lll)
@@ -1052,7 +1077,7 @@ CONTAINS
 
 
     read(unit_, rec=id_) bid, &
-         (modeles_nh(i), &
+         (r_modeles_nh(i), &
           r_modeles_teta(i), &
           r_modeles_pe(i), &
           r_modeles_pg(i), &

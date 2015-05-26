@@ -19,8 +19,8 @@
 !> Routines that deal with the FILETOH files: reading and related calculations
 !>
 !> Variables
-!>   f_filetoh_* -- read directly from file
-!>   c_filetoh_* -- calculated
+!>   filetoh_r_* -- read directly from file
+!>   filetoh_* -- calculated
 !> @todo The distinction above may be temporary, it is easier to merge prefixes than to split them
 !>
 !> @todo this part of the program needs implementation of the filtering thing
@@ -35,7 +35,7 @@ module filetoh
    FILETOH_NP=7000, &    !< ?doc? Maximum number of ?
    MAX_FILETOH_JMAX=50,& !< ?doc?
    FILETOH_NUMFILES=10   !< Number of "filetoh" files
-  !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_F_FILETOH_JMAX*2-1 @endcode
+  !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_filetoh_r_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX=MAX_FILETOH_JMAX*2-1
 
   !=====
@@ -43,27 +43,27 @@ module filetoh
   !=====
   ! These are read by read_filetoh() and processed by filetoh_auh()
   !> ?doc?
-  character*80 f_filetoh_titre(FILETOH_NUMFILES)
+  character*80 filetoh_r_titre(FILETOH_NUMFILES)
   !> ?doc?
-  character*11 f_filetoh_ttt(FILETOH_NUMFILES)
+  character*11 filetoh_r_ttt(FILETOH_NUMFILES)
   !> Will be pointer target
   !> ?doc?
   real*8, target, dimension(FILETOH_NUMFILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
-   f_filetoh_th
+   filetoh_r_th
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: f_filetoh_lambdh
+  real*8, target, dimension(FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_r_lambdh
   !> ?doc?
-  integer f_filetoh_jmax(FILETOH_NUMFILES)
+  integer filetoh_r_jmax(FILETOH_NUMFILES)
 
   !=====
   ! Calculated for external use
   !=====
   !> ?doc?
-  real*8 c_filetoh_tauhi(FILETOH_NUMFILES, FILETOH_NP, MAX_MODELES_NTOT)
+  real*8 filetoh_tauhi(FILETOH_NUMFILES, FILETOH_NP, MAX_MODELES_NTOT)
   integer, dimension(FILETOH_NUMFILES) :: &
-   c_filetoh_dhmi, & !< ?doc?
-   c_filetoh_dhpi    !< ?doc?
+   filetoh_dhmi, & !< ?doc?
+   filetoh_dhpi    !< ?doc?
 
   !=====
   ! Private variables, shared between routines
@@ -93,12 +93,12 @@ CONTAINS
 
     do i_file = 1, FILETOH_NUMFILES
       open(unit=unit_,file=main_filetohy(i_file),status='old')
-      read(unit_,'(a80)') f_filetoh_titre(i_file)
-      read(unit_,'(i4)') f_filetoh_ttt(i_file)
-      read(unit_,'(i4)') f_filetoh_jmax(i_file)
-      read(unit_,'(5f14.3)') (f_filetoh_lambdh(i_file,j), j=1,f_filetoh_jmax(i_file))
-      read(unit_,'(5e12.4)') ((f_filetoh_th(i_file,j,n),&
-       j=1,f_filetoh_jmax(i_file)), n=1,modeles_ntot)
+      read(unit_,'(a80)') filetoh_r_titre(i_file)
+      read(unit_,'(i4)') filetoh_r_ttt(i_file)
+      read(unit_,'(i4)') filetoh_r_jmax(i_file)
+      read(unit_,'(5f14.3)') (filetoh_r_lambdh(i_file,j), j=1,filetoh_r_jmax(i_file))
+      read(unit_,'(5e12.4)') ((filetoh_r_th(i_file,j,n),&
+       j=1,filetoh_r_jmax(i_file)), n=1,modeles_ntot)
       close(unit_)
     !> @todo Check jmax spill here
     end do
@@ -106,9 +106,9 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Filters variables f_filetoh_* to fill variables c_filetoh_*
+  !> Filters variables filetoh_r_* to fill variables filetoh_*
   !>
-  !> After this, valid indexes of c_filetoh_* will be from 1 to
+  !> After this, valid indexes of filetoh_* will be from 1 to
   !> @todo ?what? Find better name
   !>
   !> @note this is originally subroutine "LECTAUH" without the file reading part
@@ -127,18 +127,18 @@ CONTAINS
      jjmax, &
      now_jmax ! jmax of file i_file
     real*8 del
-    ! pointers, point to information within f_filetoh_* matrices at the beginning of\
+    ! pointers, point to information within filetoh_r_* matrices at the beginning of\
     ! a specific file.
     ! This simplifies the notation within the loop below and is probably faster than
-    ! accessing the variables f_filetoh_* directly
+    ! accessing the variables filetoh_r_* directly
     real*8, pointer, dimension(:,:) :: now_th
     real*8, pointer, dimension(:)   :: now_lambdh
 
     do i_file = 1, FILETOH_NUMFILES
 
-      now_jmax   = f_filetoh_jmax(i_file)
-      now_th     => f_filetoh_th(i_file, :, :)
-      now_lambdh => f_filetoh_lambdh(i_file, :)
+      now_jmax   = filetoh_r_jmax(i_file)
+      now_th     => filetoh_r_th(i_file, :, :)
+      now_lambdh => filetoh_r_lambdh(i_file, :)
 
       jjmax = 2*now_jmax-1
       jma1 = now_jmax-1
@@ -158,8 +158,8 @@ CONTAINS
         end do
       end do
 
-      !~WRITE(6,'(A80)') f_filetoh_TITRE
-      !~WRITE(6,'(A11)') f_filetoh_TTT
+      !~WRITE(6,'(A80)') filetoh_r_TITRE
+      !~WRITE(6,'(A11)') filetoh_r_TTT
       !~WRITE(6,'('' now_jmax='',I3)') now_jmax
       !~WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
       !~WRITE(6,'(2X,5F14.3)') (mi_LLAMBDH(JJ), JJ=1,JJMAX)
@@ -189,17 +189,17 @@ CONTAINS
         call ftlin3h()
 
         do d = 1,dtot
-          c_filetoh_tauhi(i_file, d, n) = mi_ftth(d)
+          filetoh_tauhi(i_file, d, n) = mi_ftth(d)
         end do
       end do
 
 
       !~ !--debugging--!
       !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
-      !~+ c_filetoh_TAUHI(1,1), c_filetoh_TAUHI(1,modeles_NTOT)
+      !~+ filetoh_TAUHI(1,1), filetoh_TAUHI(1,modeles_NTOT)
       !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
       !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
-      !~+ c_filetoh_TAUHI(DTOT,1), c_filetoh_TAUHI(DTOT,modeles_NTOT)
+      !~+ filetoh_TAUHI(DTOT,1), filetoh_TAUHI(DTOT,modeles_NTOT)
 
     end do
 
@@ -253,18 +253,18 @@ CONTAINS
         if(mi_ftth(k).ne.0.0) go to 20
       end do
 
-      20 c_filetoh_dhmi(i_file) = k
+      20 filetoh_dhmi(i_file) = k
 
-      if (c_filetoh_dhmi(i_file) .eq. dtot) c_filetoh_dhmi(i_file) = 1
-      kk1 = c_filetoh_dhmi(i_file)+1
+      if (filetoh_dhmi(i_file) .eq. dtot) filetoh_dhmi(i_file) = 1
+      kk1 = filetoh_dhmi(i_file)+1
       do k = kk1,dtot
         if (mi_ftth(k) .eq. 0.0) go to 30
       end do
 
-      30 c_filetoh_dhpi(i_file) = k
+      30 filetoh_dhpi(i_file) = k
 
       ! (Paula Coelho 21/11/04) instrucao da Marie Noel
-      if (mi_ftth(dtot) .ne. 0.0) c_filetoh_dhpi(i_file) = dtot
+      if (mi_ftth(dtot) .ne. 0.0) filetoh_dhpi(i_file) = dtot
 
       return
 

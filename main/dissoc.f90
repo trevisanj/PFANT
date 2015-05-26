@@ -51,6 +51,9 @@ module dissoc
   !~EQUIVALENCE (P(Z_ELECTRON), P_ELECTRON)
 
 
+   real*8, private, parameter :: econst = 4.342945e-1
+
+
 contains
 
   !================================================================================================================================
@@ -61,7 +64,7 @@ contains
     use config
     implicit none
     real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
-    real*8  kplog, econst, fplog, &
+    real*8  kplog, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
     integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
@@ -71,27 +74,26 @@ contains
     !
     !*****INPUT A
 
-    econst = 4.342945e-1
 
-    ! Infers other variables from variables dissoc__* (notice the double underscore)
+    ! Infers other variables from variables dissoc_*
     do i = 1, dissoc_nmetal
-      cclogi = dissoc__cclog(i)+main_afstar
-      !> @todo ISSUE This is the thing that Beatriz mentioned that it is not used anymore, I think. (MT): Get rid of it.
+      cclogi = dissoc_cclog(i)+main_afstar
+      !> @todo ISSUE ask blb This is the thing that Beatriz mentioned that it is not used anymore, I think. (MT): Get rid of it.
       cclogi = cclogi+main_xxcor(i)
       if(i .eq. 1) cclogi = 0.0
       if(i .eq. 2) cclogi = -1.0
 
       nelemxi = dissoc_nelemx(i)
-      ig0i = dissoc__ig0(i)
-      ig1i = dissoc__ig1(i)
+      ig0i = dissoc_ig0(i)
+      ig1i = dissoc_ig1(i)
 
-      ip(nelemxi) = dissoc__ip(i)
+      ip(nelemxi) = dissoc_ip(i)
       uiidui(nelemxi) = ig1i * 0.661 / ig0i
       ccomp(nelemxi) = exp(cclogi/econst)
 
       !~     !--debugging--!
       !~     WRITE(LLL, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
-      !~+     dissoc_ELEMS(I), NELEMXI, dissoc__IP(I),
+      !~+     dissoc_ELEMS(I), NELEMXI, dissoc_IP(I),
       !~+     IG0I, IG1I, CCLOGI-main_AFSTAR
       !~     CALL LOG_DEBUG(LLL)
     end do
@@ -258,14 +260,13 @@ contains
     real*8 tem, pg
     real*8, dimension(MAX_Z) :: fx, dfx, z, prev
     real*8, dimension(MAX_DISSOC_NMETAL) :: wa
-    real*8 aplogj, atomj, delta, df, dhh, econst, epsdie, &
+    real*8 aplogj, atomj, delta, df, dhh, epsdie, &
      f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
      spnion, t, tem25, u, x, xr, pph, phh
     integer i, imaxp1, iterat, j, k, km5, m, mmaxj, nelemi, nelemj, &
      natomj, niter
     character*128 lll
 
-    econst = 4.342945e-1
     epsdie = 5.0e-3
     t      = 5040.0/tem
     pglog  = log10(pg)
@@ -381,7 +382,7 @@ contains
     p(Z_H) = ph   !> @todo ISSUE: overwriting P(1)
 
     !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
-    !> @todo P being divided by 100 is still an issue, needs BLB
+    !> @todo issue ask blb being divided by 100 is still an issue
     do m =1,MAX_Z
       p(m)=1.0e-2*p(m)
     end do
