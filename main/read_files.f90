@@ -702,9 +702,9 @@ CONTAINS
 
     atomgrade_r_nblend = k
 
-    !> @todo replace names of variables with double underscore ("__") by some prefix to avoid typos, which are easy to produce in this notation.
-    write(lll,*) 'read_atomgrade(): last line taken: element: ', atomgrade_r_elem(atomgrade_r_nblend), &
-      '; lambda: ', atomgrade_r_lambda(atomgrade_r_nblend)
+    write(lll,*) 'read_atomgrade(): last line taken: element: "', atomgrade_r_elem(atomgrade_r_nblend), &
+      '"; lambda: ', atomgrade_r_lambda(atomgrade_r_nblend)
+    call log_debug(lll)
 
 
 !> @todo ISSUE

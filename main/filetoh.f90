@@ -19,11 +19,11 @@
 !> Routines that deal with the FILETOH files: reading and related calculations
 !>
 !> Variables
-!>   filetoh_r_* -- read directly from file
-!>   filetoh_* -- calculated
-!> @todo The distinction above may be temporary, it is easier to merge prefixes than to split them
+!> @li filetoh_r_* -- read directly from file
+!> @li filetoh_* -- calculated
 !>
-!> @todo this part of the program needs implementation of the filtering thing
+!> @todo issue ask blb why 10? do these files ever change?
+!> 
 
 !>
 
