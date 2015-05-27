@@ -59,10 +59,10 @@
 !     a. linhas de codigo foram comentadas (identificadas com 'cp Nov03':
 !     (comentario da Paula em Nov03).
 !
-!     b. dimensao e data de LLHY e dimensao de main_FILETOHY foram
+!     b. dimensao e data de filetoh_llhy e dimensao de main_FILETOHY foram
 !     atualizadas
 !
-!     c. incluidos filetoh_TAUHI(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
+!     c. incluidos filetoh_c_tauhi(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
 !
 !     d. todo o codigo que se referia ao calculo das linha de H foram
 !     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -166,13 +166,6 @@ module synthesis
   ! Constants available to all subroutines within this module
   !=====
 
-  !> @todo issue ask blb LLHY tied to the filetoh files!!! Why not use lambdas from within the files instead?
-  !>
-  !> @todo suggestion: filetoh_llhy taking the lambdas as the initial lambda from the file
-
-  real*8, parameter, dimension(10) :: &
-   LLHY = (/3750.150, 3770.630, 3797.900, 3835.390, 3889.050, &
-   3970.076, 4101.748, 4340.468, 4861.332, 6562.817/) !< ?doc? ?what? One number for each filetoh, what does it mean?
   real*8, parameter :: & !< ?doc?
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
@@ -338,34 +331,35 @@ module synthesis
       call log_info(lll)
 
 
-      ! Lecture tau raie hydrogene et interpolation de tauh
-      ! Type *,' nom des fichiers TAU raies Hydrogene'
-      call filetoh_auh(dtot, ttd, ilzero) ! Old "LECTAUH()".
-                                          ! This now calculates filetoh_* for all
-                                          ! filetohy files
       im = 0
       do ih = 1,main_filetoh_numfiles
-        allhy = LLHY(ih)-lzero
+        allhy = filetoh_llhy(ih)-lzero
 
         !> @todo issue ask blb why +55 & -35?
 
         if (((allhy .gt. 0) .and. (allhy .le. (main_aint+55.))) .or. &
             ((allhy .lt. 0.) .and. (allhy .ge. (-35.)))) then
+
           im = im+1
           irh = 1
           iht = ih
 
           !__logging__
           712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,a,2x,'ih=',i5)
-          write(lll,712) im, LLHY(ih), filetoh, main_filetohy(iht)
+          write(lll,712) im, filetoh_llhy(ih), main_filetohy(iht), iht
           call log_info(lll)
 
+          ! Lecture tau raie hydrogene et interpolation de tauh
+          ! Type *,' nom des fichiers TAU raies Hydrogene'
+          !
+          ! Old "LECTAUH()". Calculates tauh, dhmi and dhpi for file identified by ih.
+          call filetoh_calc_tauh(ih, dtot, ttd, ilzero)
 
-          dhmy(im) = filetoh_dhmi(ih)
-          dhpy(im) = filetoh_dhpi(ih)
+          dhmy(im) = filetoh_c_dhmi
+          dhpy(im) = filetoh_c_dhpi
           do n = 1,modeles_ntot
             do d = 1,dtot
-              tauhy(im, d, n) = filetoh_tauhi(ih,d,n)
+              tauhy(im, d, n) = filetoh_c_tauhi(d,n)
             end do
           end do
         end if

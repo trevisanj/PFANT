@@ -286,7 +286,7 @@ CONTAINS
     character(len=*), intent(in) :: filename
     integer ih, i
     character*256 lll
-    character(1) fuckle
+    character*256 filetoh_temp
 
     if (.not. flag_read_dissoc) then
       call pfant_halt('read_dissoc() must be called before read_main()')
@@ -349,9 +349,18 @@ CONTAINS
 
     ih = 1
     110 continue
-    read(unit_, '(a)', end=111) main_filetohy(ih)
+    read(unit_, '(a)', end=111) filetoh_temp
 
-    if (len_trim(main_filetohy(ih)) .eq. 0) goto 110  ! skips blank rows
+    if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
+
+    !__spill check__
+    if (ih .gt. MAX_MAIN_FILETOH_NUMFILES) then
+      write(lll,*) 'Too many filetoh files specified (maximum is', &
+       MAX_MAIN_FILETOH_NUMFILES, ')'
+      call pfant_halt(lll)
+    end if
+
+    main_filetohy(ih) = filetoh_temp
 
     write(lll,*) 'filetohy(', ih, ') = "', trim(main_filetohy(ih)), '"'
     call log_debug(lll)
