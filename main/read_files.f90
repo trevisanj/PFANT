@@ -31,6 +31,9 @@ module read_files
       ! Parameters
       !=====
 
+      integer, parameter :: MAX_MAIN_FILETOH_NUMFILES=30   !< Maximum number of "filetoh" files
+
+
       !> Maximum number of metal rows in dissoc.dat
       !> (number of elements actually used is specified by variable
       !> dissoc_nmetal <= MAX_DISSOC_NMETAL)
@@ -111,7 +114,8 @@ module read_files
                               !< = 1 -- "vt" constant
                               !< > 1 -- "vt" variable
                 main_inum !< ?doc?
-      character*64 main_filetohy(10) !< ?doc? Names of ten outputs files that will contain ???
+      character*64 main_filetohy(MAX_MAIN_FILETOH_NUMFILES) !< ?doc? Names of ten outputs files that will contain ???
+      integer   main_filetoh_numfiles !< number of valid elements within filetohy
 
       character*10 main_titrav(20) !< ?doc?
       real*8 :: main_vvt(MAX_MODELES_NTOT), & !< ?doc?
@@ -281,7 +285,8 @@ CONTAINS
     parameter(unit_=4)
     character(len=*), intent(in) :: filename
     integer ih, i
-    character*80 lll
+    character*256 lll
+    character(1) fuckle
 
     if (.not. flag_read_dissoc) then
       call pfant_halt('read_dissoc() must be called before read_main()')
@@ -337,20 +342,28 @@ CONTAINS
     ! row 09
     read(unit_, *) main_llzero, main_llfin, main_aint
 
-    ! rows 10-19: file names, in sync with constant synthesis::llhy. Example:
-    ! thkappa
-    ! thiota
-    ! ththeta
-    ! theta
-    ! thzeta
-    ! thepsilon
-    ! thdelta
-    ! thgamma
-    ! thbeta
-    ! thalpha
-    do ih = 1, 10
-      read(unit_, '(a)') main_filetohy(ih)
-    end do
+    write(*,*) main_llzero, main_llfin, main_aint
+
+    ! row 10 - ....
+    ! Considers the remaining rows as the filetoh file names
+
+    ih = 1
+    110 continue
+    read(unit_, '(a)', end=111) main_filetohy(ih)
+
+    if (len_trim(main_filetohy(ih)) .eq. 0) goto 110  ! skips blank rows
+
+    write(lll,*) 'filetohy(', ih, ') = "', trim(main_filetohy(ih)), '"'
+    call log_debug(lll)
+
+    ih = ih+1
+    goto 110
+
+    111 continue
+    main_filetoh_numfiles = ih-1
+
+    write(lll,*) 'Number of filetoh files: ', main_filetoh_numfiles
+    call log_debug(lll)
 
     close(unit=unit_)
     flag_read_main = .true.
@@ -619,7 +632,7 @@ CONTAINS
 
   !>
   !> @todo issue ask blb is it supposed to consider the last row? considering now
-  !> 
+  !>
   !> @todo give error if blows MAX!!!!!!!!!!!!!!!!!
   !> @todo ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........
   !> (MT) use READ()'s "END=" option IS A GOOD IDEA, and we will do the following: stop reading EITHER when the "1" is found or when the file ends!

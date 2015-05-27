@@ -166,6 +166,10 @@ module synthesis
   ! Constants available to all subroutines within this module
   !=====
 
+  !> @todo issue ask blb LLHY tied to the filetoh files!!! Why not use lambdas from within the files instead?
+  !>
+  !> @todo suggestion: filetoh_llhy taking the lambdas as the initial lambda from the file
+
   real*8, parameter, dimension(10) :: &
    LLHY = (/3750.150, 3770.630, 3797.900, 3835.390, 3889.050, &
    3970.076, 4101.748, 4340.468, 4861.332, 6562.817/) !< ?doc? ?what? One number for each filetoh, what does it mean?
@@ -224,7 +228,7 @@ module synthesis
      ikeytot, & ! total number of main_aint-large calculation intervals
      iht, ilzero, im, imy, irh, itot, k, l, li,&
      n
-    real*8 lambd, l0, lf, lllhy, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
+    real*8 lambd, l0, lf, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
      ahnu2, alph0, alph01, alph02
     character*96 lll  !__logging__
 
@@ -340,9 +344,11 @@ module synthesis
                                           ! This now calculates filetoh_* for all
                                           ! filetohy files
       im = 0
-      do ih = 1,FILETOH_NUMFILES
+      do ih = 1,main_filetoh_numfiles
         allhy = LLHY(ih)-lzero
-        lllhy = LLHY(ih)
+
+        !> @todo issue ask blb why +55 & -35?
+
         if (((allhy .gt. 0) .and. (allhy .le. (main_aint+55.))) .or. &
             ((allhy .lt. 0.) .and. (allhy .ge. (-35.)))) then
           im = im+1
@@ -1061,7 +1067,3 @@ module synthesis
 
 
 end module
-
-
-
-

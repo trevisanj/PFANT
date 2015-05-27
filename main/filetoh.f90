@@ -23,7 +23,7 @@
 !> @li filetoh_* -- calculated
 !>
 !> @todo issue ask blb why 10? do these files ever change?
-!> 
+!>
 
 !>
 
@@ -33,8 +33,7 @@ module filetoh
 
   integer, parameter :: &
    FILETOH_NP=7000, &    !< ?doc? Maximum number of ?
-   MAX_FILETOH_JMAX=50,& !< ?doc?
-   FILETOH_NUMFILES=10   !< Number of "filetoh" files
+   MAX_FILETOH_JMAX=50   !< ?doc?
   !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_filetoh_r_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX=MAX_FILETOH_JMAX*2-1
 
@@ -43,25 +42,25 @@ module filetoh
   !=====
   ! These are read by read_filetoh() and processed by filetoh_auh()
   !> ?doc?
-  character*80 filetoh_r_titre(FILETOH_NUMFILES)
+  character*80 filetoh_r_titre(MAX_MAIN_FILETOH_NUMFILES)
   !> ?doc?
-  character*11 filetoh_r_ttt(FILETOH_NUMFILES)
+  character*11 filetoh_r_ttt(MAX_MAIN_FILETOH_NUMFILES)
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(FILETOH_NUMFILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
+  real*8, target, dimension(MAX_MAIN_FILETOH_NUMFILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
    filetoh_r_th
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_r_lambdh
+  real*8, target, dimension(MAX_MAIN_FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_r_lambdh
   !> ?doc?
-  integer filetoh_r_jmax(FILETOH_NUMFILES)
+  integer filetoh_r_jmax(MAX_MAIN_FILETOH_NUMFILES)
 
   !=====
   ! Calculated for external use
   !=====
   !> ?doc?
-  real*8 filetoh_tauhi(FILETOH_NUMFILES, FILETOH_NP, MAX_MODELES_NTOT)
-  integer, dimension(FILETOH_NUMFILES) :: &
+  real*8 filetoh_tauhi(MAX_MAIN_FILETOH_NUMFILES, FILETOH_NP, MAX_MODELES_NTOT)
+  integer, dimension(MAX_MAIN_FILETOH_NUMFILES) :: &
    filetoh_dhmi, & !< ?doc?
    filetoh_dhpi    !< ?doc?
 
@@ -75,11 +74,8 @@ module filetoh
 
   !  integer :: jjmax
 
-
-  SAVE
-
-CONTAINS
-
+  save
+contains
 
   !================================================================================================================================
   !> Tries to open and read all files listed in variable read_files::main_filetohy
@@ -91,7 +87,7 @@ CONTAINS
     parameter(unit_=199)
     integer j, n, i_file
 
-    do i_file = 1, FILETOH_NUMFILES
+    do i_file = 1, main_filetoh_numfiles
       open(unit=unit_,file=main_filetohy(i_file),status='old')
       read(unit_,'(a80)') filetoh_r_titre(i_file)
       read(unit_,'(i4)') filetoh_r_ttt(i_file)
@@ -134,7 +130,7 @@ CONTAINS
     real*8, pointer, dimension(:,:) :: now_th
     real*8, pointer, dimension(:)   :: now_lambdh
 
-    do i_file = 1, FILETOH_NUMFILES
+    do i_file = 1, main_filetoh_numfiles
 
       now_jmax   = filetoh_r_jmax(i_file)
       now_th     => filetoh_r_th(i_file, :, :)
