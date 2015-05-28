@@ -1,20 +1,11 @@
 /**
-! This is the source for the main page of the Doxygen documentation for PFANT
+@mainpage Welcome
 
+PFANT is spectral synthesis software for astrononic applications written in Fortran.
 
-@mainpage Code & User documentation
+@ref userguide
 
-Introduction
-============
-
-PFANT is spectral synthesis software written in Fortran.
-This page will get you started in the structure of the code.
-
-
-Structure of PFANT code
-=======================
-
-@li @ref gr_config
+@ref developerguide
 
 */
 

@@ -1,6 +1,6 @@
 /**
 
-@page developer Developer's guide
+@page developerguide Developer's guide
 
 @subpage codingStyle
 
