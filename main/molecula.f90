@@ -19,6 +19,9 @@
 !> - READ_MOLECULAGRADE: Reads file
 !> - FILTER_MOLECULAGRADE: Selects spectral lines within LZERO-LFIN lambda interval
 !> - USE_MOLECULAGRADE: performs the calculations using the selected spectral lines
+!>
+!>
+
 
 module molecula
   use read_files
@@ -40,8 +43,6 @@ module molecula
 
 
   ! Specifies how many molecules to read
-  !> @todo ISSUE: According to EC, 16-21 are hydrogen lines which are used somewhere else, gotta check this, it is taking 7 seconds to read the whole file
-  ! (MT) Gonna ask BLB this
   integer km_r_number
 
   integer km_r_lines_total  ! Total number of spectral line, counting all molecules

@@ -59,6 +59,8 @@ module filetoh
   !> /3750.150, 3770.630, 3797.900, 3835.390, 3889.050, 3970.076, 4101.748, 4340.468, 4861.332, 6562.817/
   !> @endcode
   !> @todo ask blb Now it is opening the files and taking the initial lambda for each file instead
+
+  !> @todo line is symmetric; check if left-side is assumed
   real*8, dimension(MAX_MAIN_FILETOH_NUMFILES) :: filetoh_llhy
   !> Number of filetoh files that were actually found in disk
   integer :: filetoh_numfiles = 0
@@ -286,6 +288,9 @@ contains
       20 filetoh_c_dhmi = k
 
       !> @todo issue ask blb why this? Take the opportunity to ask for a line on
+      !>
+      !> @todo ask blb or ask pc marie noel reference on this
+      !>
       !> tauhi(:,:), dhmi and dhpi
       if (filetoh_c_dhmi .eq. dtot) filetoh_c_dhmi = 1
 
