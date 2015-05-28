@@ -25,4 +25,32 @@ contains
           if (ic > 0) string(i:i) = low(ic:ic)
       end do
   end function to_lower
+
+  !> Converts an integer to string
+  !>
+  !> @note @c i is limited to 80 digits
+
+  pure function int2str(i) result (string)
+    implicit none
+    integer, intent(in) :: i
+    character(:), allocatable :: string
+    character(80) :: ch
+
+    write(ch,*) i
+    string = trim(adjustl(ch))
+  end function
+
+
+  !> Converts a float number to string
+
+  pure function float2str(f) result (string)
+    implicit none
+    real*8, intent(in) :: f
+    character(:), allocatable :: string
+    character(80) :: ch
+
+    write(ch,*) f
+    string = trim(adjustl(ch))
+  end function
+
 end module misc

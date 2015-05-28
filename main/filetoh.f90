@@ -29,6 +29,7 @@
 
 module filetoh
   use read_files
+  use config
   implicit none
 
   integer, parameter :: &
@@ -61,6 +62,10 @@ module filetoh
   !> @endcode
   !> @todo ask blb Now it is opening the files and taking the initial lambda for each file instead
   real*8, dimension(MAX_MAIN_FILETOH_NUMFILES) :: filetoh_llhy
+  !> Number of filetoh files that were actually found in disk
+  integer :: filetoh_numfiles = 0
+  !> Names of filetoh files that were actually found in disk
+  character*64 filetoh_filenames(MAX_MAIN_FILETOH_NUMFILES)
 
 
   !=====
@@ -88,28 +93,53 @@ contains
   !================================================================================================================================
   !> Tries to open and read all files listed in variable read_files::main_filetohy
   !>
+  !> If a1 filetoh file listed in infile:main file
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
 
   subroutine read_filetoh()
     integer unit_
     parameter(unit_=199)
-    integer j, n, i_file
+    integer i, j, n, i_file
+    character(len=:), allocatable :: lll, file_now
 
+
+    i = 0
     do i_file = 1, main_filetoh_numfiles
-      open(unit=unit_,file=main_filetohy(i_file),status='old')
-      read(unit_,'(a80)') filetoh_r_titre(i_file)
-      read(unit_,'(i4)') filetoh_r_ttt(i_file)
-      read(unit_,'(i4)') filetoh_r_jmax(i_file)
-      read(unit_,'(5f14.3)') (filetoh_r_lambdh(i_file,j), j=1,filetoh_r_jmax(i_file))
-      read(unit_,'(5e12.4)') ((filetoh_r_th(i_file,j,n),&
-       j=1,filetoh_r_jmax(i_file)), n=1,modeles_ntot)
+      file_now = fullpath(main_filetohy(i_file))
+
+      open(err=111, unit=unit_,file=file_now,status='old')
+
+      i = i+1
+
+      read(unit_,'(a80)') filetoh_r_titre(i)
+      read(unit_,'(a11)') filetoh_r_ttt(i)
+      read(unit_,*) filetoh_r_jmax(i)  ! Note: format was i3
+      read(unit_,'(5f14.3)') (filetoh_r_lambdh(i,j), j=1,filetoh_r_jmax(i))
+      read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
+       j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
 
       ! Takes first lambda of file as a reference
-      filetoh_llhy(i_file) = filetoh_r_lambdh(i_file, 1)
+      filetoh_llhy(i) = filetoh_r_lambdh(i, 1)
+
+      ! Registers filename in list of files that were found
+      filetoh_filenames(i) = main_filetohy(i_file)
 
       close(unit_)
+      goto 112
+
+      111 continue
+      lll = 'Error opening file "' // file_now // '"'
+      call log_warning(lll)
+
+
+      112 continue
+
     !> @todo Check jmax spill here
     end do
+
+    if (i .eq. 0 .and. main_filetoh_numfiles .gt. 0 .and. .not. config_allow_no_filetoh) then
+      call pfant_halt('Expecting '//int2str(main_filetoh_numfiles)//' filetoh files, but ZERO files found')
+    end if
   end
 
 

@@ -32,8 +32,8 @@
 !     Passos realizados (nov/2003):
 !     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
 !
-!     2) troquei nome do arquivo de atomos para 'atomgrade.dat' e o de
-!     moleculas para 'moleculagrade.dat'
+!     2) troquei nome do arquivo de atomos para 'infile:atomgrade' e o de
+!     moleculas para 'infile:moleculagrade'
 !
 !     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e
 !     psatox95t.f e retirei as rotinas que eram obsoletas e nao eram
@@ -96,7 +96,7 @@
 !     - escrevo nos devidos arquivos
 !
 !     Portanto, para diferenciar os arquivos binarios criados,
-!     alem do arquivo normal criado como 'spe.' + nome no main.dat
+!     alem do arquivo normal criado como 'spe.' + nome no infile:main
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
 !===PC2003 END===
 
@@ -181,6 +181,9 @@ module synthesis
   real*8, parameter :: &
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
+
+  character*192, private :: lll  !__logging__
+
   CONTAINS
 
 
@@ -206,8 +209,6 @@ module synthesis
      dhpy(10)
     integer dhm,dhp
 
-    character filetoh*260
-
     real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
      ecartm(MAX_KM_MBLEND)
 !   fonctions de partition TODO figure out what this comment refers to
@@ -223,7 +224,6 @@ module synthesis
      n
     real*8 lambd, l0, lf, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
      ahnu2, alph0, alph01, alph02
-    character*96 lll  !__logging__
 
     !=====
     ! Read/setup
@@ -256,7 +256,7 @@ module synthesis
     open(unit=UNIT_SPEC, file=trim(main_fileflux)//'.spec', status='unknown')  ! spectrum
     open(unit=UNIT_CONT, file=trim(main_fileflux)//'.cont', status='unknown')  ! continuum
     open(unit=UNIT_NORM, file=trim(main_fileflux)//'.norm', status='unknown')  ! normalized
-    open(unit=UNIT_LINES,file=config_fn_lines, status='unknown')               ! lines.pfant
+    open(unit=UNIT_LINES,file=config_fn_lines, status='unknown')               ! outfile:lines
     open(unit=UNIT_LOG,  file=config_fn_log, status='unknown')                 ! log.log
 
 
@@ -451,7 +451,7 @@ module synthesis
       !=====
       ! Writes results for current iteration into open files
       !=====
-      call write_lines_fort91()                        ! lines.pfant and fort.91
+      call write_lines_fort91()                        ! outfile:lines and fort.91
       call write_log()                                ! log.log
       call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
@@ -559,7 +559,7 @@ module synthesis
     end
 
 
-    !> Writes into lines.pfant and fort.91
+    !> Writes into outfile:lines and fort.91
 
     subroutine write_lines_fort91()
       real*8 log_abond
@@ -710,7 +710,7 @@ module synthesis
 
         !__logging__
         if (d .eq. 1 .or. d .eq. dtot) then
-          150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,/,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
+          150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
           152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
           151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
 
@@ -755,7 +755,6 @@ module synthesis
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
       real*8, dimension(2) :: kcn, lambdc, totkap
-      character*80 lll
       real*8 ::  fttc(FILETOH_NP)
       real*8 c3, c31, c32, fc1, fc2, t, tet0
       integer d, j, kkk
@@ -854,7 +853,6 @@ module synthesis
   !> @todo issue ?what? ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
 
   subroutine turbul()
-    character*80 lll
     integer i, nt2, n
 
     call log_debug('entree des turbul')
@@ -897,13 +895,11 @@ module synthesis
 
 
     if(main_ivtot .eq. 1) then
-      131 format(/' v micro constante  =',f6.1,'km/s'/)
+      131 format(' v micro constante  =',f6.1,'km/s')
       write(lll,131) main_vvt(1)
       call log_debug(lll)
     else
-      132 format(/'v micro variable avec profondeur')
-      write(lll,132)
-      call log_debug(lll)
+      call log_debug('v micro variable avec profondeur')
     end if
 
     return
@@ -975,7 +971,6 @@ module synthesis
     character*1 isi, iss
     integer j, k, ioo, iopi, n
     real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel
-    character*80 lll
     data isi/' '/, iss/' '/
 
     do k = 1, atomgrade_nblend

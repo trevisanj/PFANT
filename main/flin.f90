@@ -168,15 +168,17 @@ contains
         tolim=3.89
       end if
 
-      ! On verifie que le modele n'est pas trop court
-      if (flin_to(ntot) .lt. tolim) then
-        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
-
-        write(lll,1504)
-        call log_halt(lll)
-        write(lll,1503) ntot, flin_to(ntot)
-        call pfant_halt(lll)
-      end if
+      ! ! On verifie que le modele n'est pas trop court
+      ! if (flin_to(ntot) .lt. tolim) then
+      !   !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
+      !
+      !
+      !   write(lll,1504)
+      !   call log_halt(lll)
+      !   write(lll,1503) ntot, flin_to(ntot)
+      !   call pfant_halt(lll)
+      ! end if
+      call check_modele_trop_court()
 
       continue
       do l=1,ipoint
@@ -201,7 +203,7 @@ contains
       ! Formule a 26 pts (ne marche que pour le flux!)
       ! (13pts +pts milieu)
 
-      !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_MAIN()
+      !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_main()
       if(ptdisk) then
         1500 format('Le sp flin_ ne peut calculer l intensite en 1 pt ', &
                     'du disque avec la formule a 26pts (utiliser 7pts kik=0)')
@@ -210,14 +212,18 @@ contains
       end if
       tolim=5.487  ! Le modele doit aller au moins a une prof TOLIM
 
-      if(flin_to(ntot) .lt. tolim) then
-        !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
+      ! if(flin_to(ntot) .lt. tolim) then
+      !
+      !   call pfant_halt('Modele too short: ntot=' // int2str(ntot) //'; to(' //&
+      !    int2str(ntot) // ') = ' // float2str(flin_to(ntot)) // ' (must be >= '//&
+      !     float2str(tolim) // ')')
+      !   !write(lll,1504)
+      !   !call log_halt(lll)
+      !   !write(lll,1503) ntot, flin_to(ntot)
+      !   !call pfant_halt(lll)
+      ! end if
+      call check_modele_trop_court()
 
-        write(lll,1504)
-        call log_halt(lll)
-        write(lll,1503) ntot, flin_to(ntot)
-        call pfant_halt(lll)
-      end if
 
       do l=1,26
         t=td2(l)
@@ -244,9 +250,20 @@ contains
     else
       call pfant_halt('Bad kik (must be 0 or 1)')
     end if  !(fin du if kik)
+  contains
+    !> Error verification, called twice
 
+    subroutine check_modele_trop_court()
+      if(flin_to(ntot) .lt. tolim) then
 
-    1503  format(i10,5x,3hto=,f10.4)
-    1504  format(18H Modele trop court)
+        call pfant_halt('Modele too short: ntot=' // int2str(ntot) //'; to(' //&
+         int2str(ntot) // ') = ' // float2str(flin_to(ntot)) // ' (must be >= '//&
+          float2str(tolim) // ')')
+        !write(lll,1504)
+        !call log_halt(lll)
+        !write(lll,1503) ntot, flin_to(ntot)
+        !call pfant_halt(lll)
+      end if
+    end
   end
 end module flin

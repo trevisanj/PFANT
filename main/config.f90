@@ -71,6 +71,9 @@ module config
   !> @li 1: 26-point integration
   integer :: config_kik = 0
 
+  !> Whether to allow PFANT to run if none of the specified filetoh files is found
+  logical :: config_allow_no_filetoh = .false.
+
   !=====
   ! Calculated variables
   !=====

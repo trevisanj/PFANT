@@ -98,7 +98,7 @@ module absoru
 
 
   real*8, dimension(30) :: au_znu
-  character*80 lll
+  character*192 lll
 
 contains
 

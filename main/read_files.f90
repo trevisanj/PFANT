@@ -20,7 +20,7 @@
 !> @todo create REAL*4 temp locals, then transfer to REAL*8 ones
 !>
 !> Note that all reading routines expect a @c filename parameter.
-!> @todo create a "File reading" page to explain the situation of main.dat, dissoc.dat etc referring to a concept rather than a file of that name.
+!> @todo create a "File reading" page to explain the situation of infile:main, dissoc.dat etc referring to a concept rather than a file of that name.
 
 module read_files
   use logging
@@ -48,9 +48,9 @@ module read_files
       !> Maximum number of abundances in abonds.dat
       integer, parameter :: MAX_ABONDS_NABOND=100
       integer, parameter :: &
-       MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in atomgrade.dat
+       MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in infile:atomgrade
        MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
-      !> Maximum number of "items" in partit.dat:
+      !> Maximum number of "items" in infile:partit:
       !> @li Maximum value for partit_npar
       !> @li Second dimension of partit_tabu
       integer, parameter :: MAX_PARTIT_NPAR=85
@@ -92,7 +92,7 @@ module read_files
 
 
       !=====
-      ! Variables filled by read_main() (file main.dat)
+      ! Variables filled by read_main() (file infile:main)
       !=====
       character*64 main_fileflux  !< ?doc?
       logical   main_ecrit_obsolete, & !< obsolete (old verbose flag)
@@ -135,9 +135,9 @@ module read_files
 
 
       !=====
-      ! Variables filled by read_atomgrade() (file atomgrade.dat)
+      ! Variables filled by read_atomgrade() (file infile:atomgrade)
       !=====
-      ! atomgrade.dat, file originals
+      ! infile:atomgrade, file originals
       integer atomgrade_r_nblend !< ?doc?
       character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND) !< ?doc?
       integer, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
@@ -154,7 +154,7 @@ module read_files
        atomgrade_r_abonds_abo  !< will be filled by "inner join" by searching
                               !< atomgrade_r_elem through abonds_ele
 
-      ! atomgrade.dat, filtered variables
+      ! infile:atomgrade, filtered variables
       ! Very similar to above; differences are
       ! - single underscore
       ! - additional variable "gf", which equals 10**algf
@@ -176,7 +176,7 @@ module read_files
 
 
       !=====
-      ! Variables filled by read_partit() (file partit.dat)
+      ! Variables filled by read_partit() (file infile:partit)
       !=====
       character*2, dimension(MAX_PARTIT_NPAR) :: &
        partit_el !< ?doc?
@@ -196,7 +196,7 @@ module read_files
 
 
       !=====
-      ! Variables filled by read_absoru2() (file absoru2.dat)
+      ! Variables filled by read_absoru2() (file infile:absoru2)
       !=====
       integer absoru2_nm,    & !< NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
               absoru2_nmeta, & !< NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
@@ -229,9 +229,9 @@ module read_files
 
 
       !=====
-      ! Variables filled by READ_MODELE() (file modeles.mod)
+      ! Variables filled by READ_MODELE() (file infile:modeles)
       !=====
-      !> @todo (MT) modeles.mod could become an ASCII file
+      !> @todo (MT) infile:modeles could become an ASCII file
 
       ! Attention: one has to specify sizes of all the variables here, because
       ! this may change with compiler
@@ -271,11 +271,11 @@ module read_files
 CONTAINS
 
   !================================================================================================================================
-  !> Reads file main.dat to fill variables main_*
+  !> Reads infile:main to fill variables main_*
   !>
   !> @note Must be called after read_dissoc().
   !> @todo ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
-  !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., main.dat will have MORE LINES
+  !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., infile:main will have MORE LINES
   !> @todo ISSUE Documentation
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
@@ -346,7 +346,7 @@ CONTAINS
 
     ! row 10 - ....
     ! Considers the remaining rows as the filetoh file names
-
+    ! Doesn't know yet the number of files
     ih = 1
     110 continue
     read(unit_, '(a)', end=111) filetoh_temp
@@ -355,8 +355,7 @@ CONTAINS
 
     !__spill check__
     if (ih .gt. MAX_MAIN_FILETOH_NUMFILES) then
-      write(lll,*) 'Too many filetoh files specified (maximum is', &
-       MAX_MAIN_FILETOH_NUMFILES, ')'
+      write(lll,*) 'Too many filetoh files specified (maximum is', MAX_MAIN_FILETOH_NUMFILES, ')'
       call pfant_halt(lll)
     end if
 
@@ -382,7 +381,7 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads file dissoc.dat to fill variables dissoc_*
+  !> Reads dissoc.dat to fill variables dissoc_*
   !>
   !> @attention This file must end with a <b>blank row</b> so that the routine can detect
   !> the end of the file.
@@ -546,7 +545,6 @@ CONTAINS
     integer unit_, finab, k, j
     parameter(unit_=199)
     character(len=*) :: filename
-    character*80 lll
     logical flag_found
     real*8 fstar
 
@@ -616,7 +614,7 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads file atomgrade.dat to fill variables atomgrade_r_* (double underscore)
+  !> Reads file infile:atomgrade to fill variables atomgrade_r_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
   !>
@@ -804,7 +802,7 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads file partit.dat to fill variables partit_*
+  !> Reads file infile:partit to fill variables partit_*
   !>
   !> LECTURE DES FCTS DE PARTITION
   !>
@@ -873,7 +871,7 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads file absoru2.dat to fill variables absoru2_*
+  !> Reads file infile:absoru2 to fill variables absoru2_*
   !>
   !> Attention: variables absoru2_ZP, absoru2_XI, and absoru2_PF
   !>            undergo transformation!
@@ -981,7 +979,7 @@ CONTAINS
 
 
   !================================================================================================================================
-  !> Reads single record from file modeles.mod into variables modeles_*
+  !> Reads single record from file infile:modeles into variables modeles_*
   !>
   !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN INUM LE NUM DU MODELE
   !> SUR LE FICHIER ACCES DIRECT
@@ -996,7 +994,7 @@ CONTAINS
     character(len=*) :: filename
     real*8 ddt, ddg, ddab
     integer i, &
-            id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on main.dat and would become MUCH more flexible
+            id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
     character*128 lll
 
 
@@ -1025,7 +1023,7 @@ CONTAINS
 
     !> @todo better to give error if main_INUM is not set
     !> @todo Check if FORTRAN initializes variables to zero automatically: can I rely on this??
-    !> @todo Maybe implement variable main_FLAG to FLAG that main.dat has been read already
+    !> @todo Maybe implement variable main_FLAG to FLAG that infile:main has been read already
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
 

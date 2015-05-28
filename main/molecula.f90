@@ -33,7 +33,7 @@ module molecula
   !~ integer, parameter ::
   !~+  MAX_KM_R_LINES_TOTAL = max_lines_per_mol*NUM_MOL
   integer, parameter :: &
-   MAX_KM_R_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in moleculagrade.dat
+   MAX_KM_R_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in infile:moleculagrade
                                   !< pertaining all molecules
    MAX_KM_MBLEND=200000 !< Maximum number of spectral lines that can be filtered in at a
                         !< filtering operation performed by filter_moleculagrade()
@@ -46,7 +46,7 @@ module molecula
 
   integer km_r_lines_total  ! Total number of spectral line, counting all molecules
 
-  character*256 km_r_titm, km_r_titulo
+  character*80 km_r_titm, km_r_titulo
 
   dimension km_r_titulo(NUM_MOL)
 
@@ -120,7 +120,7 @@ contains
 
 
   !================================================================================================================================
-  !> Reads file moleculagrade.dat to fill variables km_*
+  !> Reads file infile:moleculagrade to fill variables km_*
   !>
   !> Reads molecular lines
   !>
@@ -263,7 +263,7 @@ contains
         ! BLB: Format: free
         ! BLB:
         ! BLB: LMBDAM -- wavelength in angstron
-        ! BLB: Sj -- Hön-London factor calculated such that sum(S_j/(2*j+1)) = 1 ISSUE: Hön-London?
+        ! BLB: Sj -- Hï¿½n-London factor calculated such that sum(S_j/(2*j+1)) = 1 ISSUE: Hï¿½n-London?
         ! BLB: JJ -- rotational quantum number
         ! BLB: IZ -- branch as table:  ISSUE not used
         ! BLB:       P  -  1
@@ -278,8 +278,8 @@ contains
         ! BLB:       P3 - 10
         ! BLB:       Q3 - 11
         ! BLB:       R3 - 12
-        ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file moleculagrade.dat
-        !> @todo ISSUE (question) Where does moleculagrade.dat come from?
+        ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file infile:moleculagrade
+        !> @todo ISSUE (question) Where does infile:moleculagrade come from?
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of the first (v',v'') set of lines
         ! BLB:           = 2 for the last line of the second (v', v'') set of lines  ISSUE never used
@@ -341,7 +341,7 @@ contains
             i_filtered         ! Counts number of filtered lines (molecule-independent);
                                !  index of km_lmbdam, km_sj, km_jj
     logical flag_in
-    character*100 lll
+    character*256 lll
 
 
     !__logging__
@@ -449,7 +449,7 @@ contains
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
     integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molid
-    character*80 lll
+    character*192 lll
 
     real*8, parameter :: H  = 6.6252E-27,   &
                          C  = 2.997929E+10, &

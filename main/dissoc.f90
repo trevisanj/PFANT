@@ -69,7 +69,6 @@ contains
     real*8 cclogi
     integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
      nelemi, nelemxi, k1, k2, k3, kd, kf
-    character*128 lll
 
     !
     !*****INPUT A
@@ -230,11 +229,10 @@ contains
       1084 continue
     1020 continue
 
-    !--debugging--!
-    do i=1,4
-      write(lll,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
-      call log_debug(lll)
-    end do
+    !!_logging__
+    !do i=1,4
+    !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
+    !end do
 
     do 51 itx=1,modeles_ntot
       sat4_pph(itx)=xp(itx,1)
