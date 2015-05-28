@@ -638,7 +638,7 @@ CONTAINS
   !>  @note The line that has the end-of-file flag set is also taken into account.
 
   !>
-  !> @todo issue ask blb is it supposed to consider the last row? considering now
+  !> @todo issue ask blb is it supposed to consider the last row? considering now. Ask about all files.
   !>
   !> @todo give error if blows MAX!!!!!!!!!!!!!!!!!
   !> @todo ISSUE: Cannot cope with empty file (tested), however there are if's inside the program: IF NBLEND .EQ. 0 .........

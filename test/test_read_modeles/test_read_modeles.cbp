@@ -31,11 +31,23 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../../main/read_files.f">
+		<Unit filename="../../main/config.f90">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="../../main/logging.f90">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="test_read_modeles.f">
+		<Unit filename="../../main/misc.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="../../main/options2.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="../../main/read_files.f90">
 			<Option weight="1" />
+		</Unit>
+		<Unit filename="test_read_modeles.f">
+			<Option weight="2" />
 		</Unit>
 		<Extensions>
 			<code_completion />

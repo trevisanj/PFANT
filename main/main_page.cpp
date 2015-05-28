@@ -2,7 +2,7 @@
 ! This is the source for the main page of the Doxygen documentation for PFANT
 
 
-@mainpage Developers' documentation
+@mainpage Code & User documentation
 
 Introduction
 ============
@@ -52,4 +52,3 @@ SELECT ... WHERE lzero <= &lambda; <= lfin
 @endcode
 
 */
-

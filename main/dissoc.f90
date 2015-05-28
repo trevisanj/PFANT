@@ -379,11 +379,12 @@ contains
     1403 continue
     p(Z_H) = ph   !> @todo ISSUE: overwriting P(1)
 
-    !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
-    !> @todo issue ask blb being divided by 100 is still an issue
-    do m =1,MAX_Z
-      p(m)=1.0e-2*p(m)
-    end do
+    ! Update: kept as-was
+    ! !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
+    ! !> @todo issue ask blb being divided by 100 is still an issue
+    ! do m =1,MAX_Z
+    !   p(m)=1.0e-2*p(m)
+    ! end do
 
 
     ! RUSSELL EQUATIONS
@@ -413,11 +414,16 @@ contains
       do 1048 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
+        pmoljl = pmoljl + float(natomj)*(-2.0)
 
 ! MT+JT taken out of loop
 ! P was being divided by 100 here, doesn't look right. This is still an issue
 !        p(nelemj)=1.0e-2*p(nelemj)
-        pmoljl = pmoljl + float(natomj)*(-2.0)
+
+        ! For each j, divides all used elements in p by 100.
+        ! This is necessary for convergence of the molecular equilibrium.
+        p(nelemj)=1.0e-2*p(nelemj)
+
       1048 continue
 
       1046 pmolj = exp(pmoljl/econst)

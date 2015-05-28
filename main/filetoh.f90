@@ -22,8 +22,6 @@
 !> @li filetoh_r_* -- read directly from file
 !> @li filetoh_* -- calculated
 !>
-!> @todo issue ask blb why 10? do these files ever change?
-!>
 
 !>
 
@@ -118,6 +116,7 @@ contains
       read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
        j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
 
+      !> @todo ask blb not taking lambda from files instead
       ! Takes first lambda of file as a reference
       filetoh_llhy(i) = filetoh_r_lambdh(i, 1)
 
@@ -286,7 +285,8 @@ contains
 
       20 filetoh_c_dhmi = k
 
-      !> @todo issue ask blb why this?
+      !> @todo issue ask blb why this? Take the opportunity to ask for a line on
+      !> tauhi(:,:), dhmi and dhpi
       if (filetoh_c_dhmi .eq. dtot) filetoh_c_dhmi = 1
 
 
