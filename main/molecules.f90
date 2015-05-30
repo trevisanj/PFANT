@@ -13,15 +13,15 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_math
-!> This module corresponds to 2015- subroutine KAPMOL, which was split in three parts.
+!> Molecular lines calculation. This module corresponds to 2015- subroutine KAPMOL, which
+!> was split in three parts.
 !>
-!> - READ_MOLECULAGRADE: Reads file
-!> - FILTER_MOLECULAGRADE: Selects spectral lines within LZERO-LFIN lambda interval
-!> - USE_MOLECULAGRADE: performs the calculations using the selected spectral lines
+!> @li read_moleculagrade: reads file
+!> @li filter_moleculagrade: selects spectral lines within lzero-lfin lambda interval
+!> @li use_moleculagrade: performs the calculations using the selected spectral lines
 
 module molecula
-  use read_files
+  use read_most_files
   use config
   use dissoc
 
@@ -108,6 +108,12 @@ module molecula
 
   !> @todo ISSUE: "Warning: possible change of value in conversion from real(8) to real(4)"
   real*8, dimension(MAX_KM_R_LINES_TOTAL, MAX_MODELES_NTOT) :: km_pnvj
+
+
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   !> @todo test the pointers
   real*8, private, pointer, dimension(:) :: ppa, pb
@@ -200,7 +206,7 @@ contains
       ! BLB: Format: free
       ! BLB: FE -- molecular oscillator strength fel
       ! BLB: DO -- dissociation constant (eV)
-      ! BLB:    | MM -- [mass of A + mass of B] for molecula AB
+      ! BLB:    | MM -- [mass of A + mass of B] for molecule AB
       ! BLB:  +-| AM -- mass of A
       ! BLB:  | | BM -- mass of B
       ! BLB:  |
@@ -287,7 +293,7 @@ contains
         ! BLB:           . (etc)  ISSUE never used
         ! BLB:           .
         ! BLB:
-        ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a certain molecula
+        ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a certain molecule
         read(unit_,*) km_r_lmbdam(i_line), km_r_sj(i_line), km_r_jj(i_line), iz, numlin
 
         !~km_r_NUMLIN(J_LAMBDA, MOLID) = NUMLIN

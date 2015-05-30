@@ -26,7 +26,7 @@
 !>
 
 module filetoh
-  use read_files
+  use read_most_files
   use config
   implicit none
 
@@ -58,7 +58,7 @@ module filetoh
   !> @code
   !> /3750.150, 3770.630, 3797.900, 3835.390, 3889.050, 3970.076, 4101.748, 4340.468, 4861.332, 6562.817/
   !> @endcode
-  !> @todo ask blb Now it is opening the files and taking the initial lambda for each file instead
+  !> Now it is opening the files and taking the initial lambda for each file instead
   real*8, dimension(MAX_MAIN_FILETOH_NUMFILES) :: filetoh_llhy
   !> Number of filetoh files that were actually found in disk
   integer :: filetoh_numfiles = 0
@@ -75,9 +75,10 @@ module filetoh
    filetoh_c_dhmi, & !< ?doc?
    filetoh_c_dhpi    !< ?doc?
 
-  !=====
-  ! Private variables, shared between routines
-  !=====
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   real*8, private, dimension(MAX_FILETOH_JJMAX) :: mi_llambdh, mi_allh, mi_tauhn
   real*8, private :: mi_tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
@@ -89,7 +90,7 @@ module filetoh
 contains
 
   !================================================================================================================================
-  !> Tries to open and read all files listed in variable read_files::main_filetohy
+  !> Tries to open and read all files listed in variable read_most_files::main_filetohy
   !>
   !> If a1 filetoh file listed in infile:main file
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H

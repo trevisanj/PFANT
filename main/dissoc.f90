@@ -13,13 +13,30 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_math
-!> Subroutines SAT4 and DIE
+!> Equilibre dissociatif
 !>
-!> Prefix "sat4_" denotes variables filled by SAT4() (or indirectly, DIE())
+!> Prefix "sat4_" denotes variables filled by sat4() (or indirectly, die())
 module dissoc
-  use read_files
+  use read_most_files
   implicit none
+
+  ! They will be pointer targets at molecules::point_ppa_pb()
+  real*8, target, dimension(MAX_MODELES_NTOT) ::  &
+   sat4_pph,  & !< ?doc?
+   sat4_ppc2, & !< ?doc?
+   sat4_pn,   & !< ?doc?
+   sat4_pc13, & !< ?doc?
+   sat4_pmg,  & !< ?doc?
+   sat4_po,   & !< ?doc?
+   sat4_pti,  & !< ?doc?
+   sat4_pfe     !< ?doc?  
+
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+
+  private :: die ! private subroutine
 
   integer, private, parameter :: &
    Z_ELECTRON = 99,  &  !< Fictitious atomic number of electron
@@ -27,38 +44,25 @@ module dissoc
    Z_H        = 1,   &  !< Atomic number of Hydrogen
    Z_HE       = 2       !< Atomic number of Helium
 
-
-  ! They will be pointer targets at molecula.f:POINT_PPA_PB()
-  real*8, target, dimension(MAX_MODELES_NTOT) :: sat4_pph, sat4_ppc2, &
-   sat4_pn, &
-   sat4_pc13, sat4_pmg, sat4_po, sat4_pti, sat4_pfe
-
   real*8, private, dimension(MAX_Z) :: &
-   ip,     & ! ?
-   ccomp,  & ! ?
-   uiidui, & ! ?
-   fp,     & ! ?
-   kp,     & ! ?
-   p         ! Pressure
+   ip,     & ! ?doc?
+   ccomp,  & ! ?doc?
+   uiidui, & ! ?doc?
+   fp,     & ! ?doc?
+   kp,     & ! ?doc?
+   p         ! ?doc? Pressure
 
   real*8, private, dimension(MAX_DISSOC_NMOL) :: &
-   ppmol, apmlog
+   ppmol, & ! ?doc?
+   apmlog   ! ?doc?
 
-  real*8, private :: pe !< Fictitious pressure of electron?? ISSUE: is it?
+  real*8, private :: pe !< Fictitious pressure of electron ?doc?
 
-  !> @todo ISSUE I won't do it this way until I sort the conflicts in DIE
-  !~REAL PE ! Fictitious pressure of the electron?? is it? ISSUE
-  !~EQUIVALENCE (P(Z_ELECTRON), P_ELECTRON)
-
-
-   real*8, private, parameter :: econst = 4.342945e-1
-
-
+  real*8, private, parameter :: econst = 4.342945e-1 !< ?doc?
 contains
 
   !================================================================================================================================
   !> Subroutine d'equilibre dissociatif
-  !> @todo issue ?what? ?doc?
 
   subroutine sat4()
     use config
@@ -253,7 +257,7 @@ contains
 
   subroutine die(tem, pg)
     use config
-    use read_files
+    use read_most_files
     implicit none
     real*8 tem, pg
     real*8, dimension(MAX_Z) :: fx, dfx, z, prev
@@ -415,10 +419,6 @@ contains
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
         pmoljl = pmoljl + float(natomj)*(-2.0)
-
-! MT+JT taken out of loop
-! P was being divided by 100 here, doesn't look right. This is still an issue
-!        p(nelemj)=1.0e-2*p(nelemj)
 
         ! For each j, divides all used elements in p by 100.
         ! This is necessary for convergence of the molecular equilibrium.

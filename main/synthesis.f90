@@ -117,8 +117,8 @@
 
 module synthesis
   use filetoh
-  use read_files
-  use molecula
+  use read_most_files
+  use molecules
   use logging
   use config
   use flin
@@ -126,6 +126,14 @@ module synthesis
   use absoru
   implicit none
 
+  private  ! This statement makes all symbols private by default
+
+  public :: synthesis_ ! only public symbol
+
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   !=====
   ! Subroutine outputs
@@ -160,8 +168,6 @@ module synthesis
   !> Calculated by subroutine bk
   real*8, dimension(FILETOH_NP) :: bk_fc
 
-
-
   !=====
   ! Constants available to all subroutines within this module
   !=====
@@ -170,7 +176,7 @@ module synthesis
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
    KB = 1.38046E-16,   & !< ?doc?
-   PI = 3.141593,      & !< ?doc?
+   PI = acos(-1),      & !< "pi" constant
    C1 = 4.8298E+15,    & !< ?doc?
    C2 = 8.8525E-13,    & !< ?doc?
    C4 = 2.1179E+8,     & !< ?doc?
@@ -182,7 +188,7 @@ module synthesis
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
 
-  character*192, private :: lll  !__logging__
+  character*192 :: lll  !__logging__
 
   CONTAINS
 

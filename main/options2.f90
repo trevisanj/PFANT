@@ -1,28 +1,26 @@
 ! This file is part of PFANT.
-! 
+!
 ! PFANT is free software: you can redistribute it and/or modify
 ! it under the terms of the GNU General Public License as published by
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
-! 
+!
 ! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
-! 
+!
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_config
 !> Command-line parser.
 !>
-!> I took the original from the Fortran wiki:
-!> http://fortranwiki.org/fortran/show/Command-line+arguments
-!>
-!> T
+!> I took the original from the Fortran wiki @ref FortranWiki
 
 module options2
   implicit none
+
+  integer, parameter :: MAX_LEN_DESCR = 500 !< Maximum length of option description
 
   type option
     !> Long name.
@@ -31,10 +29,15 @@ module options2
     character :: chr
     !> Does the option require an argument?
     logical :: has_arg
-    !> Description.
-    character(len=500) :: descr
     !> Argument name, if required.
     character(len=20) :: argname
+    !> Default value. For the purpose of displaying the help text only (not used to set
+    !> the default values of config_* variables; in fact, string versions of the default values
+    !> of these variables are used to fill this field)
+    character(len=100) :: default_
+    !> Description.
+    !> @note The newline marker "<br>" is recognized.
+    character(len=MAX_LEN_DESCR) :: descr
 !  contains
 !    procedure :: print => print_opt
   end type
@@ -42,6 +45,10 @@ module options2
   !> Configurable unit to output command-line parsing errors
   integer :: error_unit = 6
 
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   private give_error  ! logs and halts
 
@@ -61,7 +68,7 @@ contains
   !>   ! things changed
   !> end do
   !> \endcode
-  
+
   subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
@@ -76,8 +83,8 @@ contains
     integer, intent(out) :: optindex
 
     !> If the parsed option requires an argument, arg contains
-    !> the first len(arg) (but at most 500) characters of that argument.
-    !> Otherwise its value is undefined. If the arguments length exceeds 500
+    !> the first len(arg) (but at most MAX_LEN_DESCR) characters of that argument.
+    !> Otherwise its value is undefined. If the arguments length exceeds MAX_LEN_DESCR
     !> characters and err is .true., a warning is issued.
     character(len=*), intent(out) :: arg
 
@@ -129,7 +136,7 @@ contains
       goto 10
     end if
 
-    call get_command_argument (pos, arg0, length)
+    call get_command_argument(pos, arg0, length)
     flagLong = .false.
 
 
@@ -260,47 +267,111 @@ contains
   !============================================================================
 
   !> Print an option in the style of a man page. I.e.
-  !> \code
-  !> -o arg
-  !> --option arg
+  !> <pre>
+  !> -o <arg>
+  !> --option <arg>
+  !>    [=default_value]
   !>    description.................................................................
   !>    ............................................................................
-  !> \endcode
-  subroutine print_opt (opt, unit)
+  !> </pre>
+  subroutine print_opt(opt, unit)
     !> the option
     type(option), intent(in) :: opt
     !> logical unit number
     integer, intent(in) :: unit
 
-    integer :: l, c1, c2
+    integer :: l0, l, c1, c2, idx, new_start
+    character(:), allocatable :: descr_till_end, s_to_wrap, temp
 
     if (opt%has_arg) then
-      write (unit, '(1x,"-",a,1x,a)') opt%chr, trim(opt%argname)
-      write (unit, '(1x,"--",a,1x,a)') trim(opt%name), trim(opt%argname)
+      if (opt%chr .ne. ' ') then  ! option may or may not have short version
+        write (unit, '(1x,"-",a,1x,1h<,a,4h> or)') opt%chr, trim(opt%argname)
+      end if
+      ! long version is mandatory
+      write (unit, '(1x,"--",a,2h <,a,1h>)') trim(opt%name), trim(opt%argname)
     else
-      write (unit, '(1x,"-",a)') opt%chr
+      if (opt%chr .ne. ' ') then
+        write (unit, '(1x,"-",a, 3h or)') opt%chr
+      end if
       write (unit, '(1x,"--",a)') trim(opt%name)
     end if
-    l = len_trim(opt%descr)
 
-    ! c1 is the first character of the line
-    ! c2 is one past the last character of the line
-    c1 = 1
+    if (len_trim(opt%default_) .gt. 0) then
+        write(unit, ' (4x,2h[=,a,1h])') trim(opt%default_)
+    end if
+
+
+    ! Splits description using "<br>" as separator, and wraps each piece to print
+    ! at 80 columns maximum
+    descr_till_end = trim(opt%descr)
     do
-      if (c1 > l) exit
-      ! print at maximum 4+76 = 80 characters
-      c2 = min(c1 + 76, 500)
-      ! if not at the end of the whole string
-      if (c2 /= 500) then
-        ! find the end of a word
-        do
-          if (opt%descr(c2:c2) == ' ') exit
-          c2 = c2-1
-        end do
+      l0 = len(descr_till_end)
+      if (l0 .eq. 0) exit
+
+      idx = index(descr_till_end, '<br>')
+
+      if (idx .eq. 0) then
+        s_to_wrap = descr_till_end
+      else
+        s_to_wrap = descr_till_end(:idx-1)
       end if
-      write (unit, '(4x,a)') opt%descr(c1:c2-1)
-      c1 = c2+1
+
+
+      ! Wraps string s_to_wrap printing each line
+      ! with 4 characters of indentation at the beginning
+
+      l = len(s_to_wrap)
+      c1 = 1  ! position of first character of the line to print
+      do
+        if (c1 > l) exit
+
+        ! prints at maximum 4+76 = 80 characters
+        c2 = min(c1 + 76, l) ! position of the last character of the line to print
+        ! if not at the end of the whole s_to_wrap
+        if (c2 /= l) then
+          ! find the end of a word
+          do
+            if (descr_till_end(c2:c2) == ' ') exit
+            c2 = c2-1
+          end do
+        end if
+        write (unit, '(4x,a)') descr_till_end(c1:c2)
+        c1 = c2+2
+      end do
+
+      ! Discards part of descr_till_end
+      if (idx .eq. 0) then
+        new_start = l+1
+      else
+        new_start = l+5
+      end if
+      if (new_start .gt. l0) exit
+
+      temp = descr_till_end(new_start:)
+      descr_till_end = temp
     end do
+
+!    do
+!
+!      if (c1 > l) exit
+!
+!      idx = index()
+!
+!
+!      ! print at maximum 4+76 = 80 characters
+!      c2 = min(c1 + 76, MAX_LEN_DESCR)
+!      ! if not at the end of the whole string
+!      if (c2 /= MAX_LEN_DESCR) then
+!        ! find the end of a word
+!        do
+!          if (opt%descr(c2:c2) == ' ') exit
+!          c2 = c2-1
+!        end do
+!      end if
+!      write (unit, '(4x,a)') opt%descr(c1:c2-1)
+!      c1 = c2+1
+!    end do
+
 
   end subroutine
 
@@ -342,6 +413,3 @@ contains
 
 
 end module
-
-
-

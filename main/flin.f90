@@ -33,7 +33,7 @@
 !> I may have deleted sth
 
 module flin
-  use read_files
+  use read_most_files
   use misc_math
   implicit none
   private
@@ -47,7 +47,10 @@ module flin
   !> ?doc?
   real*8, public :: flin_f = 0
 
-
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   real*8 :: td2, td,tp, cd, cp, c1, c2, c3
   dimension td2(26),td(6),tp(7),cd(6),cp(7),c1(13),c2(12),c3(12)
@@ -114,15 +117,15 @@ contains
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
     !> ?doc?
     real*8, intent(in) :: b(0:MAX_MODELES_NTOT)
-    !> Source is probably @ref read_files::modeles_nh
+    !> Source is probably @ref read_most_files::modeles_nh
     real*8, intent(in) :: nh(MAX_MODELES_NTOT)
-    !> Source is probably @ref read_files::modeles_NTOT
+    !> Source is probably @ref read_most_files::modeles_NTOT
     integer, intent(in) :: ntot
-    !> Source is probably @ref read_files::main_PTDISK
+    !> Source is probably @ref read_most_files::main_PTDISK
     !> @li if .TRUE. : 7 points
     !> @li .FALSE.   : 6 points
     logical, intent(in) :: ptdisk
-    !> Source is probably @REF read_files::main_MU
+    !> Source is probably @REF read_most_files::main_MU
     real*8, intent(in) :: mu
     !> (old "IOP") accepts 0 or 1.
     !> @li if 0, uses the 6/7 point formulation

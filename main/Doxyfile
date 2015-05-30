@@ -779,10 +779,10 @@ INPUT_ENCODING         = UTF-8
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.f \
-                         *.f90 \
-                         *.cpp
-#FILE_PATTERNS          = absoru.f90
+#FILE_PATTERNS          = *.f \
+#                         *.f90 \
+#                         *.cpp
+FILE_PATTERNS          = config.f90
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -1905,7 +1905,7 @@ PERLMOD_MAKEVAR_PREFIX =
 # C-preprocessor directives found in the sources and include files.
 # The default value is: YES.
 
-ENABLE_PREPROCESSING   = YES
+ENABLE_PREPROCESSING   = NO
 
 # If the MACRO_EXPANSION tag is set to YES doxygen will expand all macro names
 # in the source code. If set to NO only conditional compilation will be

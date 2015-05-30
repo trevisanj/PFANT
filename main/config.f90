@@ -14,19 +14,27 @@
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> @ingroup gr_config
+!>
 !> Command-line parsing and respective global variable declarations
-!> - Configuration globals with their default values
-!> - Routines to parse command-line arguments
-!> - All globals have prefix "config_"
+!> @li Configuration globals with their default values
+!> @li Routines to parse command-line arguments
+!> @li All globals have prefix "config_"
 !>
 !> @todo config_fn_* documentation is important because it is a good place to "define" what each file is
 
 module config
   use logging
+  use options2
+  use misc
   implicit none
 
-  integer, parameter :: NUM_MOL=21  ! Number of molecules configured in the program.
-                                    ! Conceptually, this should be defined in molecula.f, but there would be cyclic USEs
+  integer, parameter :: NUM_MOL=21  !< Number of molecules configured in the program.
+                                    !< Conceptually, this should be defined in molecules.f, but there would be cyclic USEs
+                                    !< @todo maybe create a module called "dimensions"...not before I check the other modules to incorporate: hydro2 and inewmarcs
+
+  !=====
+  ! "Tasks"
+  !=====
 
   !> Logging level (from @ref logging module).
   !>
@@ -74,144 +82,100 @@ module config
   !> Whether to allow PFANT to run if none of the specified filetoh files is found
   logical :: config_allow_no_filetoh = .false.
 
+
+  !====================================
+
   !=====
   ! Calculated variables
   !=====
+
   !> List of molecule ids that are switched on. Complement of config_molids_off. Calculated by make_molids()
   integer, dimension(NUM_MOL) :: config_molids_on
   !> This is actually <code> = NUM_MOL-config_num_mol_off </code>
   integer config_num_mol_on
 
-  !=====
-  ! Private variables
-  !=====
-  logical, private :: flag_setup = .false.
 
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+
+  !> Whether config_setup() has already been called
+  logical, private :: flag_setup = .false.
+  !> Input directory without trailling spaces and ending with a "/"
   character(len=:), private, allocatable :: inputdir_trim
+  !> Number of possible command-line options
+  integer, parameter, private :: NUM_OPTIONS = 13
+  !> options
+  type(option) options(NUM_OPTIONS), opt
 contains
 
 
   !================================================================================================================================
-  !> Does various setup operations.
+  !> Initializes the options list
+  !> @note It is possible to break description lines using &lt;br&gt;
   !>
-  !>   - sets up configuration defaults,
-  !>   - parses command-line arguments, and
-  !>   - does other necessary operations.
-  !>
-  !> Must be called at system startup
+  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
+  !> &lt;br&gt;
 
-  subroutine config_setup()
-    integer i, n
-    ! Parses command line
-    call parseargs()
+  subroutine init_options()
+    character(3), parameter :: IND = '.. ' ! indentation string
 
-    ! Configures modules
-    logging_level = config_loglevel  ! sets logging level at logging module based on config variable
+    options( 1) = option('help', 'h', .false., '', '', &
+      'Displays this help text.')
+    options( 2) = option('loglevel', 'l', .TRUE., 'level', 'debug', &
+      'logging level (debug/info/warning/error/critical/halt)')
+    options( 3) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
+     'interpolation type for subroutine turbul() (1: linear; 2: parabolic)')
+    options( 4) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
+     'selector for subroutines flin1() and flinh()<br>'//&
+     IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
+     IND//'1: 26-point integration)')
 
+    !> @todo Find names for each file and update options help
 
-    ! Configures data directory
-    inputdir_trim = trim(config_inputdir)
-    n = len(inputdir_trim)
-    do i = 1, n  ! Replaces "\" by "/"
-      if (inputdir_trim(i:i) .eq. '\') inputdir_trim(i:i) = '/'
-    end do
-    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
-
-    write(*,*) 'DDDDDDDDEBUG inputdir_trim = ', inputdir_trim
-
-
-    call make_molids()
-
-    flag_setup = .true.
+    ! easier to see and edit in single line
+    options( 5) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
+     'input file name - dissociative equilibrium')
+    options( 6) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
+      'input file name - main configuration')
+    options( 7) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
+      'input file name - partition functions')
+    options( 8) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+      'input file name - absoru2')
+    options( 9) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+      'input file name - model')
+    options(10) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
+      'input file name - atomic abundances')
+    options(11) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
+      'input file name - atomic lines')
+    options(12) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
+      'input file name - molecular lines')
+    options(13) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
+      'directory containing input files')
   end
 
 
   !================================================================================================================================
-  !> Concatenates config_inputdir with specific filename
-  !>
-  !>   - sets up configuration defaults,
-  !>   - parses command-line arguments, and
-  !>   - does other necessary operations.
-  !>
-  !> Must be called at system startup
+  !> Initializes the options list
 
-  function fullpath(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res ! trimmed inputdir
+  subroutine show_help(unit)
+    !> logical unit number, e.g., 6=screen
+    integer, intent(in) :: unit
 
-    res = inputdir_trim // trim(filename)
-  end
+    integer i
 
+    write(*,*) 'Command-line options'
+    write(*,*) '----------------------'
+    write(*,*) ' Legend:'
+    write(*,*) '  [=xxx]     default value'
+    write(*,*) '  <arg name> argument that must be specified'
 
-
-  !================================================================================================================================
-  !> Returns molecule id given index
-  !>
-  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
-
-  function get_molid(i_mol)
-    integer i_mol, get_molid
-    character*80 lll  !__logging__
-
-    !--assertion--!
-    if (.not. flag_setup) call pfant_halt('get_molid(): forgot to call config_setup()')
-
-    !__spill check__
-    if (i_mol .gt. config_num_mol_on) then
-      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
-       i_mol, ') must be maximum ', config_num_mol_on
-      call pfant_halt(lll)
-    end if
-
-    get_molid = config_molids_on(i_mol)
-    return
-  end
-
-  !================================================================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on" or "off"
-
-  function molecule_is_on(molid)
-    integer molid, j
-    logical molecule_is_on
-
-    !--assertion--!
-    if (.not. flag_setup) &
-     call pfant_halt('molecule_is_on(): forgot to call config_setup()')
-
-    molecule_is_on = .true.
-    do j = 1, config_num_mol_off
-      if (molid .eq. config_molids_off(j)) then
-        molecule_is_on = .false.
-        exit
-      end if
+    do i = 1, NUM_OPTIONS
+      write(unit,*) ''
+      call print_opt(options(i), unit)
     end do
   end
-
-
-  !================================================================================================================================
-  !> Fills config_molids_on and config_num_mol_on
-
-  subroutine make_molids()
-    integer i_mol, j, molid
-    logical is_off
-
-    i_mol = 0
-    do molid = 1, NUM_MOL
-      is_off = .false.  ! Whether molecule I_MOL is off
-      do j = 1, config_num_mol_off
-        if (molid .eq. config_molids_off(j)) then
-          is_off = .true.
-          exit
-        end if
-      end do
-      if (.not. is_off) then
-        i_mol = i_mol+1
-        config_molids_on(i_mol) = molid
-      end if
-    end do
-    config_num_mol_on = i_mol
-  end subroutine
-
 
   !================================================================================================================================
   !> Parses and validates all command-line arguments.
@@ -220,40 +184,15 @@ contains
   !>
   !> @todo Documentation: somehow think how to link option descriptions below, their default values, and the documentation for their respective config_* at their declarations.
   !>
-  !>
+  !> @note If finds "-h" or "--help", will display help text and halt.
 
-  subroutine parseargs()
-    use options2
-    use misc
+  subroutine parse_args()
     integer k  !> @todo for debugging, take it out
     integer o_len, o_stat, o_remain, o_offset, o_index, iTemp
     character*500 o_arg
     character*128 lll
     logical err_out
-    type(option) options(12), opt
-
-
-
-
-    options( 1) = option('loglevel', 'l', .TRUE., 'logging level (debug/info/'//&
-     'warning/error/critical/halt)', 'level')
-    options( 2) = option('interp', 'i', .TRUE., 'interpolation type for subroutine '//&
-     'TURBUL() (1: linear; 2: parabolic)', 'type')
-    options( 3) = option('kik', 'k', .TRUE., 'selector for subroutines FLIN1() and '//&
-     'FLINH() (0 (default): integration using 6/7 points depending on main_PTDISK; '//&
-     '1: 26-point integration)', 'type')
-    !> @todo Find names for each file and update options help
-
-    ! easier to see and edit in single line
-    options( 4) = option('fn_dissoc',        ' ', .true., '(="dissoc.dat") input file - dissociative equilibrium', 'file name')
-    options( 5) = option('fn_main',          ' ', .true., '(="main.dat") main configuration', 'file name')
-    options( 6) = option('fn_partit',        ' ', .true., '(="partit.dat") input file - partit', 'file name')
-    options( 7) = option('fn_absoru2',       ' ', .true., '(="absoru2.dat") input file - absoru2', 'filename')
-    options( 8) = option('fn_modeles',       ' ', .true., '(="modeles.mod") input file - model', 'file name')
-    options( 9) = option('fn_abonds',        ' ', .true., '(="abonds.dat") input file - atomic abundances', 'file name')
-    options(10) = option('fn_atomgrade',     ' ', .true., '(="atomgrade.dat") input file - atomic lines', 'file name')
-    options(11) = option('fn_moleculagrade', ' ', .true., '(="moleculagrade.dat") input file - molecular lines', 'file name')
-    options(12) = option('inputdir',         ' ', .true., '(=".") directory containing input files', 'file name')
+    type(option) opt
 
     err_out = .FALSE.
 
@@ -280,6 +219,9 @@ contains
 
           ! "Uses" config options: validates and assigns to proper config_* variables.
           select case(opt%name)  ! It is more legible select by option name than by index
+            case ('help')
+                call show_help(6)
+                stop('Bye')
             case ('loglevel')
               select case (to_lower(o_arg))
                 case ('debug')
@@ -351,13 +293,13 @@ contains
       end select
 
       k = k+1
-      if (k == 20) then
+      if (k == 50) then
         stop 'sort this shit'
       end if
     end do
 
-
   contains
+
     !----------
     !> Assigns option argument to filename variable
     !>
@@ -392,12 +334,125 @@ contains
 
       30 continue
     end
+  end subroutine parse_args
 
 
-  end subroutine parseargs
+  !================================================================================================================================
+  !> Does various setup operations.
+  !>
+  !>   - sets up configuration defaults,
+  !>   - parses command-line arguments, and
+  !>   - does other necessary operations.
+  !>
+  !> Must be called at system startup
+
+  subroutine config_setup()
+    integer i, n
+
+    call init_options()
+    call parse_args()
+
+    ! Configures modules
+    logging_level = config_loglevel  ! sets logging level at logging module based on config variable
+
+    ! Configures data directory
+    inputdir_trim = trim(config_inputdir)
+    n = len(inputdir_trim)
+    do i = 1, n  ! Replaces backslash by forward slash
+      if (inputdir_trim(i:i) .eq. '\') inputdir_trim(i:i) = '/'
+    end do
+    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
+
+    write(*,*) 'DDDDDDDDEBUG inputdir_trim = ', inputdir_trim
+
+    call make_molids()
+
+    flag_setup = .true.
+  end
+
+  !================================================================================================================================
+  !> Concatenates config_inputdir with specific filename
+  !>
+  !>   - sets up configuration defaults,
+  !>   - parses command-line arguments, and
+  !>   - does other necessary operations.
+  !>
+  !> Must be called at system startup
+
+  function fullpath(filename) result(res)
+    character(len=*), intent(in) :: filename  !< File name
+    character(len=:), allocatable :: res ! trimmed inputdir
+
+    res = inputdir_trim // trim(filename)
+  end
+
+  !================================================================================================================================
+  !> Returns molecule id given index
+  !>
+  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
+
+  function get_molid(i_mol)
+    integer i_mol, get_molid
+    character*80 lll  !__logging__
+
+    !--assertion--!
+    if (.not. flag_setup) call pfant_halt('get_molid(): forgot to call config_setup()')
+
+    !__spill check__
+    if (i_mol .gt. config_num_mol_on) then
+      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
+       i_mol, ') must be maximum ', config_num_mol_on
+      call pfant_halt(lll)
+    end if
+
+    get_molid = config_molids_on(i_mol)
+    return
+  end
+
+  !================================================================================================================================
+  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on" or "off"
+
+  function molecule_is_on(molid)
+    integer molid, j
+    logical molecule_is_on
+
+    !--assertion--!
+    if (.not. flag_setup) &
+     call pfant_halt('molecule_is_on(): forgot to call config_setup()')
+
+    molecule_is_on = .true.
+    do j = 1, config_num_mol_off
+      if (molid .eq. config_molids_off(j)) then
+        molecule_is_on = .false.
+        exit
+      end if
+    end do
+  end
+
+  !================================================================================================================================
+  !> Fills config_molids_on and config_num_mol_on
+
+  subroutine make_molids()
+    integer i_mol, j, molid
+    logical is_off
+
+    i_mol = 0
+    do molid = 1, NUM_MOL
+      is_off = .false.  ! Whether molecule I_MOL is off
+      do j = 1, config_num_mol_off
+        if (molid .eq. config_molids_off(j)) then
+          is_off = .true.
+          exit
+        end if
+      end do
+      if (.not. is_off) then
+        i_mol = i_mol+1
+        config_molids_on(i_mol) = molid
+      end if
+    end do
+    config_num_mol_on = i_mol
+  end subroutine
 
 
 
-
-
-END MODULE
+end module config

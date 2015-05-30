@@ -18,6 +18,8 @@
 
 !> @ingroup gr_math
 !>
+!> Subroutine absoru_() and related sub-subroutines
+!>
 !> Original comment block:
 !> @verbatim
 !> PARTH =NBRE TOTAL DE NOYAUX PAR CM3
@@ -35,46 +37,40 @@
 !> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 !> @endverbatim
 !>
-!> Contains subroutine absoru() and subroutines called by it.
-!>
 !> Public: only subroutine absoru() and variable absoru_znh
 !> @todo Identify outputs and inputs
 !> @todo CHECK ALL TYPES
 !> @todo CHECK ALL SIZES
+!> @todo probably get rid of au_ prefix
 
 module absoru
   use absoru_data
   implicit none
 
-  private ! Almost everythin is private here
+  private  ! This statement makes all symbols private by default
 
   !> Public subroutine
   public absoru_
 
   !=====
-  ! Outputs
+  ! Variables calculated by absoru_()
   !=====
-  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX). Calculated by absoru()
+  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX).
   !> @todo ISSUE Why 12? (MT): It seems that it should be longer.
   real*8, public, dimension(12) :: absoru_znh
+  !> Calculated by absoru_(). ?doc?
+  real*8, dimension(2) :: absoru_totkap
 
-
-  ! Down here all private
-  ! vvvvvvvvvvvvvvvvvvvvv
-
-! I guess this statement is no longer needed, since private is the default deal here
-  ! Subroutines
-  ! private gaunth, tempa, sahath, athyhe, ionipOe
-
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
 
-
   real*8 au_ahe, au_ah, au_ahep, au_uh1, au_zemh, au_uhep1, au_uhe1, au_zeuhe1, &
    au_ul, au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, au_pe
-
-
 
   real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
@@ -115,8 +111,8 @@ contains
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
   !> @todo structure arguments for all routines in this file
 
-  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,kkk,totkap)
-    use read_files
+  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu)
+    use read_most_files
     implicit none
     real*8, intent(in) :: &
      wl,       & !< ?doc?
@@ -128,16 +124,14 @@ contains
      calpe,  & !< ?doc?
      calmet, & !< ?doc?
      calu      !< ?doc?
-    integer, intent(out) :: &
-     kkk       !< ?doc?
     real*8, intent(out) :: &
-     totkap(2) !< ?doc?
+     absoru_totkap(2) !< ?doc?
 
 
     real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &
      scatel, sum1, sum2, unit, wl4, wlh
 
-    integer i, ilt, ith, m, min, mm, mmm, nset
+    integer i, ilt, ith, m, min, mm, mmm, nset, kkk
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
 
@@ -248,14 +242,14 @@ contains
       end do
     end do
 
-    !> @todo investigate whether totkap is actually integer or real!
-    totkap(2)=0.
+    !> @todo investigate whether absoru_totkap is actually integer or real!
+    absoru_totkap(2)=0.
     if (calu.eq.1) unit=au_rho
     If (calu.eq.2) unit=au_toc ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
 
     scatel=scatel/unit
     do i=1,kkk
-      totkap(i)=0.0
+      absoru_totkap(i)=0.0
       scat(1)=scath(1)*absoru_znh(absoru2_nmeta+4)/unit
       scat(2)=scath(2)*absoru_znh(absoru2_nmeta+2)/unit
       do m = min,mmm
@@ -273,13 +267,13 @@ contains
         if (m.eq.(absoru2_nmeta+2)) zzkk(m,i)=zzkk(m,i)*au_pe
 
         4221 continue
-        totkap(i)=totkap(i)+zzkk(m,i)
+        absoru_totkap(i)=absoru_totkap(i)+zzkk(m,i)
       end do
-      totkap(i)=(totkap(i)+scatel+scat(1)+scat(2))
+      absoru_totkap(i)=(absoru_totkap(i)+scatel+scat(1)+scat(2))
 
       !__logging__
       87 format (f9.1,i2,1p12e10.2)
-      write (lll,87) wl,kkk,(zzkk(m,i),m=1,mmm),totkap(i)
+      write (lll,87) wl,kkk,(zzkk(m,i),m=1,mmm),absoru_totkap(i)
       call log_debug(lll)
     end do
 
@@ -511,7 +505,7 @@ contains
   !>     A.M COLLE   13/5/69
 
   SUBROUTINE SAHATH(TH)
-    use read_files
+    use read_most_files
     implicit none
     real*8 th, tempo, tempor
     integer i, j, n, nrr
@@ -570,7 +564,7 @@ contains
   !>
 
   subroutine athyhe (wl,th,callam,zzk)
-    use read_files
+    use read_most_files
     use logging
     implicit none
 
@@ -990,7 +984,7 @@ contains
   !> @todo consider creating module variables to avoid passing parameter to subroutine
 
   subroutine ionipe(th,zlpe,calth)
-    use read_files
+    use read_most_files
     implicit none
     real*8 th, zlpe, any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6

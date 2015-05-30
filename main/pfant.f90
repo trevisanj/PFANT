@@ -1,6 +1,7 @@
+!>
 !> Varying task (default: synthesis)
 !>
-!> @todo incorporate hydro and inewmarcs
+!> @todo incorporate hydro2 and inewmarcs
 !>
 !> @todo Canonic cases: Sun, Arcturus
 
@@ -31,9 +32,7 @@ end program pfant
 
 !> Displays welcome message
 !>
-!> Banner created by patorjk.com Text to ASCII Art Generator (TAAG).
-!>
-!> http://patorjk.com/software/taag/#p=display&f=Ivrit&t=PFANT
+!> Banner created by patorjk.com Text to ASCII Art Generator (TAAG) @ref IvritFont.
 !>
 !> @todo this is just an idea: I could make a bigger sky and select a random rectangle of it. At least 2x visible width and height to get uniform probability of given pixel being in the rectangle
 

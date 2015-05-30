@@ -20,36 +20,34 @@ pfant --help
 @todo ask blb one line for each file
 
 
-@anchor file:main file:main
+@anchor infile:main infile:main
 Main configuration file
 
-@anchor file:dissoc    file:dissoc
+@anchor infile:dissoc    infile:dissoc
 File containing ... dissociative equilibrium
 
-@anchor file:partit    file:partit
+@anchor infile:partit    infile:partit
 ?????
 
 
-@anchor file:absoru2   file:absoru2
+@anchor infile:absoru2   infile:absoru2
 File containing absorbance information
 
 
-@anchor file:modele    file:modele
+@anchor infile:modele    infile:modele
 Binary file containing parameters relative to the model
 
-@anchor file:abonds    file:abonds
+@anchor infile:abonds    infile:abonds
 File containing the atomic abundances
 
-@anchor file:atomgrade file:atomgrade
+@anchor infile:atomgrade infile:atomgrade
 File containing the spectral lines information for atoms
 
-@anchor file:moleculagrade file:moleculagrade
+@anchor infile:moleculagrade infile:moleculagrade
 File containing the lines information for 21 different molecules
 
-@anchor file:filetoh   file:filetoh
+@anchor infile:filetoh   infile:filetoh
 Files containing the hydrogen lines
-
-
 
 
 ...

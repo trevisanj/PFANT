@@ -363,11 +363,11 @@ contains
   !>
   !> @todo Function used in specific context, called by BK only. I don't know if not better there.
   real*8 function fteta0(pg, teta, n)
-    !> Size of vectors pf and teta; example source is read_files::modeles_ntot
+    !> Size of vectors pf and teta; example source is read_most_files::modeles_ntot
     integer, intent(in) :: n
     real*8, intent(in), dimension(n) :: &
-      pg, & !< Example source is read_files::modeles_pg
-      teta  !< Example source is read_files::modeles_teta
+      pg, & !< Example source is read_most_files::modeles_pg
+      teta  !< Example source is read_most_files::modeles_teta
     real*8, dimension(5) :: pp1,tt1,pp2,tt2
     integer i
     real*8 teta3
