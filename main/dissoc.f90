@@ -15,7 +15,9 @@
 
 !> Equilibre dissociatif
 !>
-!> Prefix "sat4_" denotes variables filled by sat4() (or indirectly, die())
+!> Prefix "sat4_" denotes variables filled by SAT4() (or indirectly, DIE())
+!>
+
 module dissoc
   use read_most_files
   implicit none
@@ -422,7 +424,7 @@ contains
 
         ! For each j, divides all used elements in p by 100.
         ! This is necessary for convergence of the molecular equilibrium.
-        p(nelemj)=1.0e-2*p(nelemj)
+        p(nelemj) = 1.0e-2*p(nelemj)
 
       1048 continue
 
