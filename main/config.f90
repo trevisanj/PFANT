@@ -95,9 +95,9 @@ module config
   integer config_num_mol_on
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   !> Whether config_setup() has already been called
@@ -348,6 +348,8 @@ contains
 
   subroutine config_setup()
     integer i, n
+    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
+
 
     call init_options()
     call parse_args()
@@ -359,11 +361,9 @@ contains
     inputdir_trim = trim(config_inputdir)
     n = len(inputdir_trim)
     do i = 1, n  ! Replaces backslash by forward slash
-      if (inputdir_trim(i:i) .eq. '\') inputdir_trim(i:i) = '/'
+      if (inputdir_trim(i:i) .eq. BACKSLASH) inputdir_trim(i:i) = '/'
     end do
     if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
-
-    write(*,*) 'DDDDDDDDEBUG inputdir_trim = ', inputdir_trim
 
     call make_molids()
 
