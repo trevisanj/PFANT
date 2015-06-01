@@ -35,70 +35,6 @@
 
 1432249110 source:/home/j/Documents/projects/pfant/working/github/master/main/logging.f90
 
-1432225804 source:/home/j/Documents/projects/pfant/working/github/master/main/options2.f90
-
-1432251034 source:/home/j/Documents/projects/pfant/working/github/master/main/config.f90
-
-1431466122 source:/home/j/Documents/projects/pfant/working/github/master/main/misc_math.f90
-
-1432251435 source:/home/j/Documents/projects/pfant/working/github/master/main/read_files.f90
-
-1431980833 source:/home/j/Documents/projects/pfant/working/github/master/main/absoru.f90
-
-1431738815 source:/home/j/Documents/projects/pfant/working/github/master/main/dissoc.f90
-
-1431724640 source:/home/j/Documents/projects/pfant/working/github/master/main/filetoh.f90
-
-1431981034 source:/home/j/Documents/projects/pfant/working/github/master/main/flin.f90
-
-1431715436 source:/home/j/Documents/projects/pfant/working/github/master/main/molecula.f90
-
-1431993972 source:/home/j/Documents/projects/pfant/working/github/master/main/synthesis.f90
-
-1432250335 source:/home/j/Documents/projects/pfant/working/github/master/main/pfant.f90
-
-1432226513 source:/home/j/Documents/projects/pfant/working/github/master/main/misc.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\absoru_data.f
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\logging.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\options2.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\misc.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\config.f90
-
-1432347556 source:c:\users\j\documents\projects\pfant\pfant\main\misc_math.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\read_files.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\absoru.f90
-
-1432325183 source:c:\users\j\documents\projects\pfant\pfant\main\dissoc.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\filetoh.f90
-
-1432348186 source:c:\users\j\documents\projects\pfant\pfant\main\flin.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\molecula.f90
-
-1432348043 source:c:\users\j\documents\projects\pfant\pfant\main\synthesis.f90
-
-1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\pfant.f90
-
-1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/absoru_data.f
-
-1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/logging.f90
-
-1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/options2.f90
-
-1431740803 source:/home/j/Documents/projects/pfant/working/github/master/main/absoru_data.f
-
-1432249110 source:/home/j/Documents/projects/pfant/working/github/master/main/logging.f90
-
-1432822696 source:/home/j/Documents/projects/pfant/working/github/master/main/misc.f90
-
 1432852472 source:/home/j/Documents/projects/pfant/working/github/master/main/options2.f90
 
 1432849857 source:/home/j/Documents/projects/pfant/working/github/master/main/config.f90
@@ -120,4 +56,46 @@
 1432827392 source:/home/j/Documents/projects/pfant/working/github/master/main/synthesis.f90
 
 1432578299 source:/home/j/Documents/projects/pfant/working/github/master/main/pfant.f90
+
+1432822696 source:/home/j/Documents/projects/pfant/working/github/master/main/misc.f90
+
+1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\absoru_data.f
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\logging.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\options2.f90
+
+1432828077 source:c:\users\j\documents\projects\pfant\pfant\main\misc.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\config.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\misc_math.f90
+
+1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\read_files.f90
+
+1433117076 source:c:\users\j\documents\projects\pfant\pfant\main\absoru.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\dissoc.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\filetoh.f90
+
+1433116788 source:c:\users\j\documents\projects\pfant\pfant\main\flin.f90
+
+1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\molecula.f90
+
+1432348043 source:c:\users\j\documents\projects\pfant\pfant\main\synthesis.f90
+
+1432317524 source:c:\users\j\documents\projects\pfant\pfant\main\pfant.f90
+
+1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/absoru_data.f
+
+1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/logging.f90
+
+1432317959 source:/home/trevisan/PosDoc_INPE/PFANT/pfant/main/options2.f90
+
+1433117613 source:c:\users\j\documents\projects\pfant\pfant\main\read_most_files.f90
+
+1433117204 source:c:\users\j\documents\projects\pfant\pfant\main\molecules.f90
+
+1433117519 source:c:\users\j\documents\projects\pfant\pfant\main\atomgrade.f90
 

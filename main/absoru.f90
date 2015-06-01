@@ -59,11 +59,11 @@ module absoru
   !> @todo ISSUE Why 12? (MT): It seems that it should be longer.
   real*8, public, dimension(12) :: absoru_znh
   !> Calculated by absoru_(). ?doc?
-  real*8, dimension(2) :: absoru_totkap
+  real*8, public, dimension(2) :: absoru_totkap
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   integer, dimension(2) :: au_jshyd
@@ -124,8 +124,6 @@ contains
      calpe,  & !< ?doc?
      calmet, & !< ?doc?
      calu      !< ?doc?
-    real*8, intent(out) :: &
-     absoru_totkap(2) !< ?doc?
 
 
     real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &

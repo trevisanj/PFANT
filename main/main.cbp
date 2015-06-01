@@ -37,6 +37,9 @@
 		<Unit filename="absoru_data.f">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="atomgrade.f90">
+			<Option weight="2" />
+		</Unit>
 		<Unit filename="config.f90">
 			<Option weight="1" />
 		</Unit>
@@ -52,13 +55,14 @@
 		<Unit filename="logging.f90">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="main.cbp" />
 		<Unit filename="misc.f90">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="misc_math.f90">
 			<Option weight="1" />
 		</Unit>
-		<Unit filename="molecula.f90">
+		<Unit filename="molecules.f90">
 			<Option weight="3" />
 		</Unit>
 		<Unit filename="options2.f90">
@@ -67,7 +71,7 @@
 		<Unit filename="pfant.f90">
 			<Option weight="5" />
 		</Unit>
-		<Unit filename="read_files.f90">
+		<Unit filename="read_most_files.f90">
 			<Option weight="1" />
 		</Unit>
 		<Unit filename="synthesis.f90">

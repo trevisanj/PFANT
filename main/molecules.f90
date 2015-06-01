@@ -22,9 +22,7 @@
 !>
 !>
 
->>>>>>> 1e17c5c6263196d1a45344c59656f54146e6e85f:main/molecula.f90
-
-module molecula
+module molecules
   use read_most_files
   use config
   use dissoc
@@ -112,9 +110,9 @@ module molecula
   real*8, dimension(MAX_KM_R_LINES_TOTAL, MAX_MODELES_NTOT) :: km_pnvj
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   !> @todo test the pointers
@@ -442,10 +440,6 @@ contains
 
 
 
-
-
-
-
 !================================================================================================================================
 !> Calculates the molecular absorption coefficient.
 !>
@@ -640,4 +634,4 @@ contains
     !~END SELECT
   end
 
-end module molecula
+end

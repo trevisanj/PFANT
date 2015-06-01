@@ -18,6 +18,7 @@
 !> Prefix "sat4_" denotes variables filled by SAT4() (or indirectly, DIE())
 !>
 
+
 module dissoc
   use read_most_files
   implicit none
@@ -31,11 +32,11 @@ module dissoc
    sat4_pmg,  & !< ?doc?
    sat4_po,   & !< ?doc?
    sat4_pti,  & !< ?doc?
-   sat4_pfe     !< ?doc?  
+   sat4_pfe     !< ?doc?
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   private :: die ! private subroutine

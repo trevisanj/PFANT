@@ -5,7 +5,7 @@
 ! the Free Software Foundation, either version 3 of the License, or
 ! (at your option) any later version.
 !
-! Foobar is distributed in the hope that it will be useful,
+! PFANT is distributed in the hope that it will be useful,
 ! but WITHOUT ANY WARRANTY; without even the implied warranty of
 ! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ! GNU General Public License for more details.
@@ -47,9 +47,6 @@ module read_most_files
   integer, parameter :: MAX_MODELES_NTOT=50
   !> Maximum number of abundances in abonds.dat
   integer, parameter :: MAX_ABONDS_NABOND=100
-  integer, parameter :: &
-   MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in infile:atomgrade
-   MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
   !> Maximum number of "items" in infile:partit:
   !> @li Maximum value for partit_npar
   !> @li Second dimension of partit_tabu
@@ -59,8 +56,7 @@ module read_most_files
   !> Maximum value for absoru2_NM
   integer, parameter :: MAX_ABSORU2_NM=30
   !> Maximum value for absoru2_NR(J)
-  integer, parameter :: MAX_ABSORU2_NRR=
-9  !> Maximum value for each element of absoru2_NUMSET
+  integer, parameter :: MAX_ABSORU2_NRR=9  !> Maximum value for each element of absoru2_NUMSET
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
 
@@ -212,17 +208,12 @@ module read_most_files
    modeles_t5l     !< ?doc?
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
-
   ! Flags indicating whether corresponding routine has already been called.
   ! There is a strict order in which files must be read, because there are
   ! consistency checks and inner joins being percormed while reading files.
   ! At the moment, this order is reinforced:
   ! read_dissoc -> read_main -> read_abonds -> read_atomgrade
-  logical, private :: &
+  logical :: &
    flag_read_abonds = .false., & !< Whether read_abonds() has already been called
    flag_read_main   = .false., & !< Whether read_main() has already been called
    flag_read_dissoc = .false.    !< Whether read_dissoc() has already been called
@@ -375,6 +366,9 @@ contains
     read(unit_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
     ! rows 02 to NMETAL+1: 6-column rows
+    !
+    !
+    !
     do i = 1, dissoc_nmetal
       read (unit_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
        symbol, dissoc_nelemx(i), dissoc_ip(i), &
@@ -386,13 +380,11 @@ contains
           case (1)
             if (to_lower(trim(symbol)) .ne. 'h') then
               write(lll,*) 'First element must be hydrogen ("H"), not "', symbol, '"!'
-              write(*,*) lll
               call pfant_halt(lll)
             end if
           case (2)
             if (to_lower(symbol) .ne. 'he') then
               write(lll,*) 'First element must be helium ("He"), not "', symbol, '"!'
-              write(*,*) lll
               call pfant_halt(lll)
             end if
         end select
@@ -422,13 +414,11 @@ contains
       1010 continue
       j = j+1
 
-
       read(unit_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
                    dissoc_mol(j), &
                    (dissoc_c(j, k), k=1,5), &
                    dissoc_mmax(j), &
                    (nelemm(m), natomm(m), m=1,4)
-
 
       mmaxj = dissoc_mmax(j)
       if(mmaxj .eq. 0) then

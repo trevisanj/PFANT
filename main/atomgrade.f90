@@ -16,6 +16,12 @@
 !> Reads and filters infile:atomgrade
 
 module atomgrade
+  use read_most_files
+  implicit none
+
+  integer, parameter :: &
+   MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in infile:atomgrade
+   MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
   ! Variables filled by read_atomgrade() (file infile:atomgrade)

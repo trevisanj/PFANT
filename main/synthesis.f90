@@ -124,15 +124,16 @@ module synthesis
   use flin
   use misc_math
   use absoru
+  use atomgrade
   implicit none
 
   private  ! This statement makes all symbols private by default
 
   public :: synthesis_ ! only public symbol
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   !=====
@@ -176,7 +177,7 @@ module synthesis
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
    KB = 1.38046E-16,   & !< ?doc?
-   PI = acos(-1),      & !< "pi" constant
+   PI = acos(-1.),      & !< "pi" constant
    C1 = 4.8298E+15,    & !< ?doc?
    C2 = 8.8525E-13,    & !< ?doc?
    C4 = 2.1179E+8,     & !< ?doc?
@@ -749,8 +750,6 @@ module synthesis
     !======================================================================================================================
     !> Calculates the flux in the continuum.
     !> @todo Issue there is a lot of calculation here that is independent from lzero and lfin
-    !> @todo issue Variable totkap(2) was declared as INTEGER but its use suggested that it was real. Changed to real (please confirm).
-    !> @note Variable totkap(2) was declared as INTEGER but its usage suggested that it was real; furthermore, the compiler
     !> @todo log_pe not used yet
     !>       was telling me
 
@@ -760,10 +759,10 @@ module synthesis
        alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
-      real*8, dimension(2) :: kcn, lambdc, totkap
+      real*8, dimension(2) :: kcn, lambdc
       real*8 ::  fttc(FILETOH_NP)
       real*8 c3, c31, c32, fc1, fc2, t, tet0
-      integer d, j, kkk
+      integer d, j
 
       llzero = lzero
       llfin  = lfin
@@ -775,8 +774,8 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu1/(KB*t))
         bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
-        bk_kc1(n) = totkap(1)
+        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
+        bk_kc1(n) = absoru_totkap(1)
       end do
 
       nu2 = C* 1.e+8 /lfin
@@ -787,8 +786,8 @@ module synthesis
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu2/(KB*t))
         bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
-        bk_kc2(n) = totkap(1)
+        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
+        bk_kc2(n) = absoru_totkap(1)
       end do
 
       nu = C* 1.e+8 /lambd
@@ -798,10 +797,10 @@ module synthesis
         t=5040./modeles_teta(n)
         alph_n = exp(-ahnu/(KB*t))
         bk_b(n) = c3 * (alph_n/(1.-alph_n))
-        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2,kkk,totkap)
+        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
         bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
         bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
-        bk_kc(n) = totkap(1)
+        bk_kc(n) = absoru_totkap(1)
       end do
 
       tet0 = fteta0(modeles_pg, modeles_teta, modeles_ntot)     !on extrapole modeles_teta pour modeles_nh=0
