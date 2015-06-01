@@ -136,6 +136,7 @@ contains
   !>       programming-wise (and not time-costly either) to filter
   !>       molecules in filter_moleculagrade() when they are already in memory.
   !>
+  !> @todo TOP PRIORITY Number of molecules ON: consider km_r_number; search for km_r_number; also wrong references to NUM_MOL, search for NUM_MOL
 
   subroutine read_moleculagrade(filename)
     character(len=*) :: filename
@@ -148,7 +149,7 @@ contains
      j_set,   &
      j_line
     parameter(unit_=199)
-    character*128 lll
+    character*192 lll
 
     open(unit=unit_,file=filename, status='old')
 
@@ -163,6 +164,12 @@ contains
 
     read(unit_,*) km_r_number
 
+    !__spill check__
+    if (km_r_number .gt. NUM_MOL) then
+      call pfant_halt("Number of molecules ("//int2str(km_r_number)// &
+       ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
+    end if
+
     read(unit_,'(a)') km_r_titm
     !~READ(UNIT_,'(20A4)') km_r_TITM
 
@@ -175,10 +182,10 @@ contains
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(unit_,*) (km_r_nv(molid), molid=1,NUM_MOL)
+    read(unit_,*) (km_r_nv(molid), molid=1,km_r_number)
 
     !__spill check__
-    do molid = 1, NUM_MOL
+    do molid = 1, km_r_number
       if (km_r_nv(molid) .gt. MAX_SOL_PER_MOL) then
           write(lll,*) 'read_moleculagrade(): molecule id ', molid, &
            ' has nv = ', km_r_nv(molid), ' (maximum is ', MAX_SOL_PER_MOL, ')'
@@ -310,9 +317,9 @@ contains
 
       !__consistency check__: J_SET must match NNV
       if(j_set .ne. nnv) then
-        write(lll,*) 'read_moleculagrade():  incorrect number of set-of-lines: ', j_set, &
-         '(should be ', nnv, ')  (in molecule number ', molid, ')'
-        call pfant_halt(lll)
+        call pfant_halt('read_moleculagrade():  incorrect number of set-of-lines: '//&
+         int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&
+         int2str(molid)//')')
       end if
 
       km_r_lines_per_mol(molid) = j_line
@@ -364,7 +371,7 @@ contains
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     i_line = 1
     i_mol = 0
-    do molid = 1, num_mol
+    do molid = 1, km_r_number
       if (.not. molecule_is_on(molid)) cycle
 
       i_mol = i_mol+1

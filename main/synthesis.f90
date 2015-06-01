@@ -125,6 +125,7 @@ module synthesis
   use misc_math
   use absoru
   use atomgrade
+  use molecules
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -144,10 +145,8 @@ module synthesis
   !> Calculated by subroutine popul
   real*8, dimension(3,MAX_PARTIT_NPAR, MAX_MODELES_NTOT) :: popul_p
 
-
   !> Calculated by subroutine turbul
   real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
-
 
   !> calculated by subroutine popadelh
   real*8, dimension(MAX_ATOMGRADE_NBLEND) :: popadelh_corch, popadelh_cvdw
@@ -155,10 +154,8 @@ module synthesis
   real*8, dimension(MAX_ATOMGRADE_NBLEND,MAX_MODELES_NTOT) :: &
    popadelh_pop, popadelh_a, popadelh_delta
 
-
   !> Calculated by subroutine selekfh
   real*8, dimension(FILETOH_NP) :: selekfh_fl, selekfh_fcont
-
 
   !> Calculated by subroutine bk
   real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b, bk_b1, bk_b2
@@ -188,12 +185,9 @@ module synthesis
   real*8, parameter :: &
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
-
   character*192 :: lll  !__logging__
 
-  CONTAINS
-
-
+contains
 
   !======================================================================================================================
   subroutine synthesis_()
@@ -246,6 +240,7 @@ module synthesis
     call read_abonds(fullpath(config_fn_abonds))
     call read_atomgrade(fullpath(config_fn_atomgrade))
     call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
+    call read_moleculagrade(fullpath(config_fn_moleculagrade))
 
 
     tetaef = 5040/main_teff
@@ -1057,7 +1052,4 @@ module synthesis
       end do
     end do
   end
-
-
-
 end module
