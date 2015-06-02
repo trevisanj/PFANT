@@ -4,7 +4,6 @@ Release
 obj
 bin
 *.o
-*.mod
 *.exe
 
 

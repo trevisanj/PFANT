@@ -11,6 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
+				<Option parameters='--inputdir &quot;../inputfiles/bwf1&quot; --loglevel debug \   --fn_atomgrade     atom4070g.dat \   --fn_moleculagrade mghc2cnr_cn3ch13chtiog3tio.dat \   --fn_absoru2       absoru.dat' />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>

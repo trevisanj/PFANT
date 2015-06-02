@@ -31,7 +31,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.f95" />
+		<Unit filename="flin1.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="flinh.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="main_pkapgeralgrade.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="old_flin1.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="old_flinh.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="original_merged_reference.f">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

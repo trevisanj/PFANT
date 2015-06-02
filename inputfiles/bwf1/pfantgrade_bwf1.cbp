@@ -19,7 +19,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.f90" />
+		<Unit filename="pfantgrade_bwf1.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="pkapgeralgrade_bwf1.f">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />
