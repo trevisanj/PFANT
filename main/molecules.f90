@@ -125,7 +125,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads file infile:moleculagrade to fill variables km_*
   !>
   !> Reads molecular lines
@@ -159,6 +159,7 @@ contains
     call log_debug(lll)
 
 
+    ! row 01:
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured
 
@@ -170,6 +171,13 @@ contains
        ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
     end if
 
+    ! Deactivates molecules not wanted or not present in the file
+    do molid = km_r_number+1, NUM_MOL
+      call add_molid_off(molid)
+    end do
+
+
+    ! row 02: string containing list of names of all molecules
     read(unit_,'(a)') km_r_titm
     !~READ(UNIT_,'(20A4)') km_r_TITM
 
@@ -187,9 +195,9 @@ contains
     !__spill check__
     do molid = 1, km_r_number
       if (km_r_nv(molid) .gt. MAX_SOL_PER_MOL) then
-          write(lll,*) 'read_moleculagrade(): molecule id ', molid, &
-           ' has nv = ', km_r_nv(molid), ' (maximum is ', MAX_SOL_PER_MOL, ')'
-          call pfant_halt(lll)
+          call pfant_halt('read_moleculagrade(): molecule id '//int2str(molid)//&
+           ' has nv = '//int2str(km_r_nv(molid))//' (maximum is MAX_SOL_PER_MOL='//&
+           int2str(MAX_SOL_PER_MOL)//')')
         end if
     end do
 
@@ -265,11 +273,10 @@ contains
         i_line = i_line+1
 
         !__spill check__: checks if exceeds maximum number of elements allowed
-        !> @todo ISSUE This wasn't being checked and I got an error when I tried to include all the 21 molecules
         if (i_line .gt. MAX_KM_R_LINES_TOTAL) then
-          write(lll,*) 'read_moleculagrade(): exceeded maximum number of spectral lines total = ', &
-           MAX_KM_R_LINES_TOTAL, ' (at molecule id ', molid, ')'
-          call pfant_halt(lll)
+          call pfant_halt('read_moleculagrade(): exceeded maximum number of total '//&
+            'spectral lines  MAX_KM_R_LINES_TOTAL= '//int2str(MAX_KM_R_LINES_TOTAL)//&
+            ' (at molecule id '//int2str(molid)//')')
         end if
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
@@ -336,7 +343,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> @ingroup gr_filter
   !> Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN
 
@@ -394,10 +401,9 @@ contains
           i_filtered = i_filtered+1
 
           !__spill check__
-          if (i_filtered .gt. max_km_mblend) then
-            write(lll, *) 'filter_moleculagrade(): number of filtered lines '//&
-             'exceeded maximum of ', max_km_mblend
-            call pfant_halt(lll, .true.)
+          if (i_filtered .gt. MAX_KM_MBLEND) then
+            call pfant_halt('filter_moleculagrade(): number of filtered lines '//&
+             'exceeded maximum of MAX_KM_MBLEND='//int2str(MAX_KM_MBLEND), .true.)
           end if
 
 
@@ -447,7 +453,7 @@ contains
 
 
 
-!================================================================================================================================
+!=======================================================================================
 !> Calculates the molecular absorption coefficient.
 !>
 !> Uses km_* filled by FILTER_MOLECULAGRADE()
@@ -458,7 +464,6 @@ contains
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
     integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molid
-    character*192 lll
 
     real*8, parameter :: H  = 6.6252E-27,   &
                          C  = 2.997929E+10, &
@@ -467,10 +472,6 @@ contains
 
     do i_mol = 1, config_num_mol_on
       molid = get_molid(i_mol)
-
-      !__logging__
-      write(lll, *) 'molecule id ', molid, ': ', km_r_titulo(molid)
-      call log_debug(lll)
 
       call point_ppa_pb(molid)
 
@@ -534,7 +535,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
 
   !> Private subroutine; pointer operation; assigns address of variable PPA and PB depending on the molecule ID.
   !>

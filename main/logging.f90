@@ -25,7 +25,7 @@
 module logging
   implicit none
 
-  !> Logging levels copied from Python
+  ! Logging levels copied from Python (except LOGGING_HALT)
   integer, parameter ::   &
    LOGGING_HALT     = 60, &  !< Maximum logging level; logging just before system halts
    LOGGING_CRITICAL = 50, &
@@ -35,9 +35,18 @@ module logging
    LOGGING_DEBUG    = 10
 
 
+  ! Signs to be used as you wish
+  character(:), parameter :: &
+   ENTERING = '>>>>>>>>>> ENTERING ', &
+   LEAVING  = '<<<<<<<<<< LEAVING '
+
+
+
   !=====
   !> Configurable variable
   !=====
+  !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
+  !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
   integer :: logging_level = LOGGING_DEBUG
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888 

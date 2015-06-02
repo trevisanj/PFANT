@@ -222,7 +222,7 @@ module read_most_files
   save
 contains
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads infile:main to fill variables main_*
   !>
   !> @note Must be called after read_dissoc().
@@ -238,7 +238,7 @@ contains
     character(len=*), intent(in) :: filename
     integer ih, i
     character*256 lll
-    character*256 filetoh_temp
+    character*64 filetoh_temp
 
     if (.not. flag_read_dissoc) then
       call pfant_halt('read_dissoc() must be called before read_main()')
@@ -307,8 +307,8 @@ contains
 
     !__spill check__
     if (ih .gt. MAX_MAIN_FILETOH_NUMFILES) then
-      write(lll,*) 'Too many filetoh files specified (maximum is', MAX_MAIN_FILETOH_NUMFILES, ')'
-      call pfant_halt(lll)
+      call pfant_halt('Too many filetoh files specified (maximum is '//&
+       'MAX_MAIN_FILETOH_NUMFILES='//int2str(MAX_MAIN_FILETOH_NUMFILES)//')')
     end if
 
     main_filetohy(ih) = filetoh_temp
@@ -332,7 +332,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads dissoc.dat to fill variables dissoc_*
   !>
   !> @attention This file must end with a <b>blank row</b> so that the routine can detect
@@ -393,10 +393,8 @@ contains
 
         !__spill check__
         if (dissoc_nelemx(i) .gt. MAX_Z) then
-          write(lll,*) 'read_dissoc(): metal # ', i, ': nelemxi = ', &
-           dissoc_nelemx(i), ' over maximum allowed (', &
-           MAX_Z, ')'
-          call pfant_halt(lll)
+          call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
+           int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_Z='//int2str(MAX_Z)//')')
         end if
 
       end do
@@ -470,7 +468,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads file abonds.dat to fill variables abonds_*
   !>
   !> In addition, searches elements in dissoc atoms table to take XXCOR values.
@@ -560,7 +558,7 @@ contains
 
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads file infile:partit to fill variables partit_*
   !>
   !> LECTURE DES FCTS DE PARTITION
@@ -579,7 +577,6 @@ contains
     integer unit_
     parameter(unit_=199)
     character(len=*) :: filename
-    character*192 lll
 
     integer finpar, j, kmax, l, k
 
@@ -602,8 +599,8 @@ contains
 
         !__spill check__: checks if exceeds maximum number of elements allowed
         if (j .gt. MAX_PARTIT_NPAR) then
-          write(lll,*) 'read_partit(): par exceeded maximum of ', MAX_PARTIT_NPAR
-          call pfant_halt(lll)
+          call pfant_halt('read_partit(): par exceeded maximum of MAX_PARTIT_NPAR='//&
+           int2str(MAX_PARTIT_NPAR))
         end if
 
 
@@ -611,9 +608,8 @@ contains
 
         !__spill check__: checks if exceeds maximum number of elements allowed
         if (kmax .gt. MAX_PARTIT_KMAX) then
-          write(lll,*) 'read_partit(): par number', j, 'kmax=', kmax, &
-           ' exceeded maximum of', MAX_PARTIT_KMAX
-          call pfant_halt(lll)
+          call pfant_halt('read_partit(): par number '//int2str(j)//'; kmax='//&
+           int2str(kmax)//' exceeded maximum of MAX_PARTIT_KMAX='//int2str(MAX_PARTIT_KMAX))
         end if
 
 
@@ -629,7 +625,7 @@ contains
   end
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads file infile:absoru2 to fill variables absoru2_*
   !>
   !> Attention: variables absoru2_ZP, absoru2_XI, and absoru2_PF
@@ -657,7 +653,7 @@ contains
     read (unit_,'(2e15.7)') absoru2_abmet, absoru2_abhel
 
 
-    ! NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISA
+    ! NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
     ! NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
     ! IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
@@ -666,8 +662,8 @@ contains
 
     !__spill check__: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. MAX_ABSORU2_NM) then
-      write(lll,*) 'read_absoru2(): nm=', absoru2_nm, ' exceeded maximum of', MAX_ABSORU2_NM
-      call pfant_halt(lll)
+      call pfant_halt('read_absoru2(): nm='//int2str(absoru2_nm)//&
+         ' exceeded maximum of MAX_ABSORU2_NM='//int2str(MAX_ABSORU2_NM))
     end if
 
 
@@ -714,15 +710,13 @@ contains
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
-      write(lll,*) 'read_absoru2(): numset(1) = ', absoru2_numset(1), &
-       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
-      call pfant_halt(lll)
+      call pfant_halt('read_absoru2(): numset(1) = '//int2str(absoru2_numset(1))//&
+       ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
     !__spill check__: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(2) .gt. MAX_ABSORU2_NUMSET_I) then
-      write(lll,*) 'read_absoru2(): numset(2) = ', absoru2_numset(2), &
-       ' exceeded maximum of', MAX_ABSORU2_NUMSET_I
-      call pfant_halt(lll)
+      call pfant_halt('read_absoru2(): numset(2) = '//int2str(absoru2_numset(2))//&
+       ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
 
 
@@ -737,7 +731,7 @@ contains
   end
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads single record from file infile:modeles into variables modeles_*
   !>
   !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN INUM LE NUM DU MODELE
@@ -797,9 +791,8 @@ contains
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
     if (r_modeles_ntot .gt. MAX_MODELES_NTOT) then
-      write(lll,*) 'read_modele(): modeles_ntot = ',r_modeles_ntot, &
-       ' exceeded maximum of', MAX_MODELES_NTOT
-      call pfant_halt(lll)
+      call pfant_halt('read_modele(): modeles_ntot = '//int2str(r_modeles_ntot)//&
+       ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
     write(lll, *) 'modeles_ntot', r_modeles_ntot

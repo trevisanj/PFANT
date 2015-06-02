@@ -90,7 +90,7 @@ module filetoh
   save
 contains
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Tries to open and read all files listed in variable read_most_files::main_filetohy
   !>
   !> If a1 filetoh file listed in infile:main file
@@ -144,7 +144,7 @@ contains
   end
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Calculates tauhi, dhmi and dhpi for file specified
   !>
   !> @note this is originally subroutine "LECTAUH" without the file reading part

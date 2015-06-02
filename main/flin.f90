@@ -47,9 +47,9 @@ module flin
   !> ?doc?
   real*8, public :: flin_f = 0
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   real*8 :: td2, td,tp, cd, cp, c1, c2, c3
@@ -141,7 +141,6 @@ contains
 
     real*8 epsi, t, tolim
     integer ipoint, l, m, n
-    character*80 lll
 
     ! Calcul de flin_to
     epsi=0.05
@@ -171,17 +170,7 @@ contains
         tolim=3.89
       end if
 
-      ! ! On verifie que le modele n'est pas trop court
-      ! if (flin_to(ntot) .lt. tolim) then
-      !   !> @todo MAKE IT FALL HERE!!!!! (TEST THIS)
-      !
-      !
-      !   write(lll,1504)
-      !   call log_halt(lll)
-      !   write(lll,1503) ntot, flin_to(ntot)
-      !   call pfant_halt(lll)
-      ! end if
-      call check_modele_trop_court()
+      call check_modele_trop_court(1)
 
       continue
       do l=1,ipoint
@@ -215,17 +204,7 @@ contains
       end if
       tolim=5.487  ! Le modele doit aller au moins a une prof TOLIM
 
-      ! if(flin_to(ntot) .lt. tolim) then
-      !
-      !   call pfant_halt('Modele too short: ntot=' // int2str(ntot) //'; to(' //&
-      !    int2str(ntot) // ') = ' // float2str(flin_to(ntot)) // ' (must be >= '//&
-      !     float2str(tolim) // ')')
-      !   !write(lll,1504)
-      !   !call log_halt(lll)
-      !   !write(lll,1503) ntot, flin_to(ntot)
-      !   !call pfant_halt(lll)
-      ! end if
-      call check_modele_trop_court()
+      call check_modele_trop_court(2)
 
 
       do l=1,26
@@ -256,10 +235,13 @@ contains
   contains
     !> Error verification, called twice
 
-    subroutine check_modele_trop_court()
+    subroutine check_modele_trop_court(i_call)
+      !> Indicates where it was called from, used in error message: facilitates debugging
+      integer, intent(in) :: i_call
       if(flin_to(ntot) .lt. tolim) then
 
-        call pfant_halt('Modele too short: ntot=' // int2str(ntot) //'; to(' //&
+        call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
+         int2str(ntot) //'; to(' //&
          int2str(ntot) // ') = ' // float2str(flin_to(ntot)) // ' (must be >= '//&
           float2str(tolim) // ')')
         !write(lll,1504)

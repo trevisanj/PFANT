@@ -159,6 +159,9 @@ ask BLB
 ask PC
 ask MT                 Suggests the person who probably knows to solve the issue
 
+__assertion__          Marks bit of code that is an assertion. Assertions serve both as
+                       documentation and error protection.
+
 __logging__            Marks bit of code whose purpose is to output log messages.
                        *deprecated*, I don't think it pays off
 
@@ -166,6 +169,11 @@ __spill check__        Marks bit of code destinated to verify whether we are try
                        an element beyond the size of a vector/matrix, commonly performed while
                        reading files
 
+                       *Note*: it is recommended that the error message that accompanies this tag
+                               includes the name of the constant that has been violated (one will
+                               probably want to increase the size of this constant and recompile
+                               the program)
+                               
 __consistency check__  Marks bit of code destinated to verify whether we are trying to assign
                        an element beyond the size of a vector/matrix, commonly performed while
                        reading files

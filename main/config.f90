@@ -36,11 +36,6 @@ module config
   ! "Tasks"
   !=====
 
-  !> Logging level (from @ref logging module).
-  !>
-  !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
-  !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
-  integer :: config_loglevel = LOGGING_INFO
 
   !=====
   ! File names
@@ -89,7 +84,7 @@ module config
   ! Calculated variables
   !=====
 
-  !> List of molecule ids that are switched on. Complement of config_molids_off. Calculated by make_molids()
+  !> List of molecule ids that are switched on. Complement of config_molids_off. Calculated by make_molids_on()
   integer, dimension(NUM_MOL) :: config_molids_on
   !> This is actually <code> = NUM_MOL-config_num_mol_off </code>
   integer config_num_mol_on
@@ -100,18 +95,20 @@ module config
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
-  !> Whether config_setup() has already been called
-  logical, private :: flag_setup = .false.
+  ! There is a calling order to be observed. These flags + assertions inforce that
+  logical, private :: &
+   flag_setup = .false.,         & !< config_setup() has been called?
+   flag_make_molids_on = .false.   !< make_molids_on() has been called?
   !> Input directory without trailling spaces and ending with a "/"
   character(len=:), private, allocatable :: inputdir_trim
   !> Number of possible command-line options
-  integer, parameter, private :: NUM_OPTIONS = 13
+  integer, parameter, private :: NUM_OPTIONS = 14
   !> options
-  type(option) options(NUM_OPTIONS), opt
+  type(option), private :: options(NUM_OPTIONS), opt
+
+  private make_molids_on
 contains
-
-
-  !================================================================================================================================
+  !=======================================================================================
   !> Initializes the options list
   !> @note It is possible to break description lines using &lt;br&gt;
   !>
@@ -153,10 +150,44 @@ contains
       'input file name - molecular lines')
     options(13) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
       'directory containing input files')
+    options(14) = option('molid_off',        ' ', .true., 'molecule id', '', &
+      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
+      'Note: This option can be repeated.')
+
   end
 
 
-  !================================================================================================================================
+  !=======================================================================================
+  !> Does various setup operations.
+  !>
+  !>   - sets up configuration defaults,
+  !>   - parses command-line arguments, and
+  !>   - does other necessary operations.
+  !>
+  !> Must be called at system startup
+
+  subroutine config_setup()
+    integer i, n
+    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
+
+
+    call init_options()
+    call parse_args()
+
+    ! Configures data directory
+    inputdir_trim = trim(config_inputdir)
+    n = len(inputdir_trim)
+    do i = 1, n  ! Replaces backslash by forward slash
+      if (inputdir_trim(i:i) .eq. BACKSLASH) inputdir_trim(i:i) = '/'
+    end do
+    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
+
+    call make_molids_on()
+
+    flag_setup = .true.
+  end
+
+  !=======================================================================================
   !> Initializes the options list
 
   subroutine show_help(unit)
@@ -177,7 +208,7 @@ contains
     end do
   end
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Parses and validates all command-line arguments.
   !>
   !> @todo will inform ' ' for options with no short equivalent, but I don't know if options2.f90 is prepared for this
@@ -223,29 +254,32 @@ contains
                 call show_help(6)
                 stop('Bye')
             case ('loglevel')
+              ! Note that logging level change takes effect immediately
               select case (to_lower(o_arg))
                 case ('debug')
-                  config_loglevel = LOGGING_DEBUG
+                  logging_level = LOGGING_DEBUG
                 case ('info')
-                  config_loglevel = LOGGING_INFO
+                  logging_level = LOGGING_INFO
                 case ('warning')
-                  config_loglevel = LOGGING_WARNING
+                  logging_level = LOGGING_WARNING
                 case ('critical')
-                  config_loglevel = LOGGING_CRITICAL
+                  logging_level = LOGGING_CRITICAL
                 case ('error')
-                  config_loglevel = LOGGING_ERROR
+                  logging_level = LOGGING_ERROR
                 case ('halt')
-                  config_loglevel = LOGGING_HALT
+                  logging_level = LOGGING_HALT
                 case default
                   err_out = .TRUE.
               end select
-              if (.NOT. err_out) write(*,*) 'setting logging level to ', to_lower(o_arg)
+              if (.NOT. err_out) then
+                call log_assignment('logging level', to_lower(o_arg))
+              end if
             case ('interp')
               iTemp = parseint(opt, o_arg)
               select case (iTemp)
                 case (1, 2)
                   config_INTERP = iTemp
-                  write(*,*) 'setting config_interp to ', config_interp
+                  call log_assignment('config_interp', int2str(config_interp))
                 case default
                   err_out = .TRUE.
               end select
@@ -254,35 +288,40 @@ contains
               iTemp = parseint(opt, o_arg)
               select case(iTemp)
                 case (0, 1)
-                  config_KIK = iTemp
+                  config_kik = iTemp
+                  call log_assignment('config_kik', int2str(config_kik))
                 case default
                   err_out = .TRUE.
               end select
 
             case ('fn_dissoc')
-              call assign_fn(o_arg, config_fn_dissoc)
+              call assign_fn(o_arg, config_fn_dissoc, 'config_fn_dissoc')
             case ('fn_main')
-              call assign_fn(o_arg, config_fn_main)
+              call assign_fn(o_arg, config_fn_main, 'config_fn_main')
             case ('fn_partit')
-              call assign_fn(o_arg, config_fn_partit)
+              call assign_fn(o_arg, config_fn_partit, 'config_fn_partit')
             case ('fn_absoru2')
-              call assign_fn(o_arg, config_fn_absoru2)
+              call assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
             case ('fn_modeles')
-              call assign_fn(o_arg, config_fn_modeles)
+              call assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
             case ('fn_abonds')
-              call assign_fn(o_arg, config_fn_abonds)
+              call assign_fn(o_arg, config_fn_abonds, 'config_fn_abonds')
             case ('fn_atomgrade')
-              call assign_fn(o_arg, config_fn_atomgrade)
+              call assign_fn(o_arg, config_fn_atomgrade, 'config_fn_atomgrade')
             case ('fn_moleculagrade')
-              call assign_fn(o_arg, config_fn_moleculagrade)
+              call assign_fn(o_arg, config_fn_moleculagrade, 'config_fn_moleculagrade')
 !            case ('fn_lines')
 !              call assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
 !              call assign_fn(o_arg, config_fn_log)
 
             case ('inputdir')
-              call assign_fn(o_arg, config_inputdir) ! Note: using same routine assign_fn() to assign directory
+              ! Note: using same routine assign_fn() to assign directory
+              call assign_fn(o_arg, config_inputdir, 'config_inputdir')
 
+            case ('molid_off')
+              iTemp = parseint(opt, o_arg)
+              call add_molid_off(iTemp)
           end select
 
           if (err_out) then
@@ -293,26 +332,36 @@ contains
       end select
 
       k = k+1
-      if (k == 50) then
-        stop 'sort this shit'
+      if (k == 500) then
+        stop 'sort this: parse_args looping forever'
       end if
     end do
 
   contains
 
-    !----------
+    !> logging routine: prints variable and assigned value
+
+    subroutine log_assignment(varname, value)
+      character(*), intent(in) :: varname, value
+      call log_info('set '//varname//' = '//trim(adjustl(value)))
+    end
+
+    !-------------------------------------------------------------------------------------
     !> Assigns option argument to filename variable
     !>
     !> @todo This subroutine is currently not doing much but in the future some filename
     !> validation could be added.
 
-    subroutine assign_fn(arg, dest)
+    subroutine assign_fn(arg, dest, varname)
       character(len=*), intent(in)  :: arg !< command-line option argument
       character(len=*), intent(out) :: dest!< One of config_fn_* variables
+      !> name of vairable being assigned, for logging purpose
+      character(len=*), intent(in) :: varname
       dest = arg
+      call log_assignment(varname, arg)
     end
 
-    !----------
+    !-------------------------------------------------------------------------------------
     !> Converts string to integer with error logging
 
     integer function parseint(opt, s)
@@ -334,43 +383,10 @@ contains
 
       30 continue
     end
+
   end subroutine parse_args
 
-
-  !================================================================================================================================
-  !> Does various setup operations.
-  !>
-  !>   - sets up configuration defaults,
-  !>   - parses command-line arguments, and
-  !>   - does other necessary operations.
-  !>
-  !> Must be called at system startup
-
-  subroutine config_setup()
-    integer i, n
-    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
-
-
-    call init_options()
-    call parse_args()
-
-    ! Configures modules
-    logging_level = config_loglevel  ! sets logging level at logging module based on config variable
-
-    ! Configures data directory
-    inputdir_trim = trim(config_inputdir)
-    n = len(inputdir_trim)
-    do i = 1, n  ! Replaces backslash by forward slash
-      if (inputdir_trim(i:i) .eq. BACKSLASH) inputdir_trim(i:i) = '/'
-    end do
-    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
-
-    call make_molids()
-
-    flag_setup = .true.
-  end
-
-  !================================================================================================================================
+  !=======================================================================================
   !> Concatenates config_inputdir with specific filename
   !>
   !>   - sets up configuration defaults,
@@ -386,7 +402,7 @@ contains
     res = inputdir_trim // trim(filename)
   end
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Returns molecule id given index
   !>
   !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
@@ -395,8 +411,8 @@ contains
     integer i_mol, get_molid
     character*80 lll  !__logging__
 
-    !--assertion--!
-    if (.not. flag_setup) call pfant_halt('get_molid(): forgot to call config_setup()')
+    !__assertion__
+    if (.not. flag_make_molids_on) call pfant_halt('get_molid(): forgot to call make_molids_on()')
 
     !__spill check__
     if (i_mol .gt. config_num_mol_on) then
@@ -406,19 +422,17 @@ contains
     end if
 
     get_molid = config_molids_on(i_mol)
-    return
   end
 
-  !================================================================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on" or "off"
+  !=======================================================================================
+  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on"
+  !> or "off"
+  !>
+  !> Can be called anytime
 
   function molecule_is_on(molid)
     integer molid, j
     logical molecule_is_on
-
-    !--assertion--!
-    if (.not. flag_setup) &
-     call pfant_halt('molecule_is_on(): forgot to call config_setup()')
 
     molecule_is_on = .true.
     do j = 1, config_num_mol_off
@@ -429,10 +443,38 @@ contains
     end do
   end
 
-  !================================================================================================================================
-  !> Fills config_molids_on and config_num_mol_on
+  !-------------------------------------------------------------------------------------
+  !> Adds molecule id to list of "off" molecules
+  !>
+  !> Can be called anytime
 
-  subroutine make_molids()
+  subroutine add_molid_off(molid)
+    integer, intent(in) :: molid !< molecule id
+
+    !__spill check__
+    if (molid .gt. NUM_MOL .or. molid .lt. 1) then
+      call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
+       int2str(NUM_MOL)//')')
+    end if
+
+    if (molecule_is_on(molid)) then
+      ! The condition we-re in prevents duplication
+      config_num_mol_off = config_num_mol_off+1
+      config_molids_off(config_num_mol_off) = molid
+      call log_info('molecule id '//int2str(molid)//' added to config_molids_off')
+    else
+      call log_warning('molecule id '//int2str(molid)//' *already turned off*')
+    end if
+
+    call make_molids_on()
+  end
+
+  !=======================================================================================
+  !> Fills config_molids_on and config_num_mol_on based on their complements.
+  !>
+  !> @todo see what is public and what is private in this module
+
+  subroutine make_molids_on()
     integer i_mol, j, molid
     logical is_off
 
@@ -451,8 +493,7 @@ contains
       end if
     end do
     config_num_mol_on = i_mol
-  end subroutine
 
-
-
+    flag_make_molids_on = .true.
+  end
 end module config

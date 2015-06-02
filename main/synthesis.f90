@@ -303,13 +303,16 @@ contains
     ! Main loop
     !=====
     do while (.true.)
+      call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
+        ' /\/\/\')
+
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = int((lfin-lzero)/main_pas + 1.0005)
 
       !__spill check__
       if(dtot .gt. FILETOH_NP) then
-        write(lll,*) 'dtot = ', dtot, ' Exceeds maximum of ', FILETOH_NP
-        call pfant_halt(lll)
+        call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of FILETOH_NP='//&
+         int2str(FILETOH_NP))
       end if
 
       !__logging__
@@ -371,9 +374,9 @@ contains
       if(imy .ne. 0) then
         !__logging__
         write(lll,*) (dhmy(im), im=1,imy)
-        call log_debug(lll)
+        call log_debug('DHMY ==> '//lll)
         write(lll,*) (dhpy(im), im=1,imy)
-        call log_debug(lll)
+        call log_debug('DHPY ==> '//lll)
 
         dhp = maxi(dhpy, imy, 1, imy)
         dhm = mini(dhmy, imy, 1, imy)
@@ -759,6 +762,8 @@ contains
       real*8 c3, c31, c32, fc1, fc2, t, tet0
       integer d, j
 
+      call log_debug(ENTERING//'bk()')
+
       llzero = lzero
       llfin  = lfin
       nu1 = C* 1.e+8 /lzero
@@ -842,7 +847,7 @@ contains
       write(lll,154) bk_kcd(dtot,1),bk_kcd(dtot,modeles_ntot)
       call log_debug(lll)
 
-      continue
+      call log_debug(LEAVING//'bk()')
     end
 
   end subroutine synthesis_

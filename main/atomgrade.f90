@@ -20,7 +20,7 @@ module atomgrade
   implicit none
 
   integer, parameter :: &
-   MAX_ATOMGRADE_R_NBLEND=13000, & !< Half of the maximum the number of rows in infile:atomgrade
+   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in infile:atomgrade
    MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
@@ -64,7 +64,7 @@ module atomgrade
    atomgrade_abonds_abo      !< ?doc?
 
 contains
-  !================================================================================================================================
+  !=======================================================================================
   !> Reads file infile:atomgrade to fill variables atomgrade_r_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
@@ -116,8 +116,8 @@ contains
     do while (.true.)
       !__spill check__: checks if exceeds maximum number of elements allowed
       if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
-        write(lll,*) 'read_atomgrade(): exceeded maximum of', MAX_ATOMGRADE_R_NBLEND, ' spectral lines'
-        call pfant_halt(lll)
+        call pfant_halt('read_atomgrade(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
+         int2str(MAX_ATOMGRADE_R_NBLEND)//' spectral lines')
       end if
 
       read(unit_, '(a2, i1, 1x, f10.3)') atomgrade_r_elem(k), &
@@ -202,7 +202,7 @@ contains
   end
 
 
-  !================================================================================================================================
+  !=======================================================================================
   !> Selects only spectral lines within range lzero, lfin + performs "inner join".
   !>
   !> Populates variables atomgrade_* (single underscore)
@@ -213,7 +213,6 @@ contains
     !> Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     integer j, k
-    character*192 lll
 
     k = 0
     do j = 1, atomgrade_r_nblend
@@ -223,9 +222,8 @@ contains
 
         !__spill check__: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMGRADE_NBLEND) then
-          write(lll,*) 'filter_atomgrade(): exceeded maximum of', &
-           MAX_ATOMGRADE_NBLEND, ' spectral lines'
-          call pfant_halt(lll)
+          call pfant_halt('filter_atomgrade(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
+           int2str(MAX_ATOMGRADE_NBLEND)//' spectral lines')
         end if
 
         !Filters in
