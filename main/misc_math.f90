@@ -491,16 +491,16 @@ contains
       dy= u0*t2
       ft= y(j-1) + dy
 
-      4 continue
       ftt(k)=ft
-      return
+    4 continue
+    return
 
-      !> @todo test this label "10", somehow make it fall here
-      10 continue
-      100 format('On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
-      write(lll,100) t, (x(i),i=1,n)
-      call pfant_halt(lll)
-    end
+    !> @todo test this label "10", somehow make it fall here
+    10 continue
+    100 format('On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
+    write(lll,100) t, (x(i),i=1,n)
+    call pfant_halt(lll)
+  end
 
 
 
@@ -560,44 +560,44 @@ contains
     inv = -1
     if (x(n).lt.x(1)) inv = 1
     do 4 k = 1,itot
-    t = tt(k)
-    if (inv) 5, 6, 6
-    5 continue
-    do 1 j = 1,n
-      i = j
-      if (t-x(j)) 3, 2, 1
-    1 continue
-    go to 10
+      t = tt(k)
+      if (inv) 5, 6, 6
+      5 continue
+      do 1 j = 1,n
+        i = j
+        if (t-x(j)) 3, 2, 1
+      1 continue
+      go to 10
 
-    6 continue
-    do 7 j = 1, n
-      i = j
-      if(t-x(j)) 7, 2, 3
-    7 continue
-    go to 10
+      6 continue
+      do 7 j = 1, n
+        i = j
+        if(t-x(j)) 7, 2, 3
+      7 continue
+      go to 10
 
-    2 continue
-    ft = y(j)
-    go to 4
+      2 continue
+      ft = y(j)
+      go to 4
 
-    3 continue
-    if (i .eq. 1) i = 2
-    if (i .ge. n) i = n-1
-    t0 = t-x(i-1)
-    t1 = t-x(i)
-    t2 = t-x(i+1)
-    u0 = x(i+1)-x(i-1)
-    u1 = x(i+1)-x(i)
-    u2 = x(i)-x(i-1)
-    a  = t0/u0
-    b  = t1/u1
-    c  = t2/u2
-    d  = t0/u1
-    e  = t1/u0
-    ft = y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
+      3 continue
+      if (i .eq. 1) i = 2
+      if (i .ge. n) i = n-1
+      t0 = t-x(i-1)
+      t1 = t-x(i)
+      t2 = t-x(i+1)
+      u0 = x(i+1)-x(i-1)
+      u1 = x(i+1)-x(i)
+      u2 = x(i)-x(i-1)
+      a  = t0/u0
+      b  = t1/u1
+      c  = t2/u2
+      d  = t0/u1
+      e  = t1/u0
+      ft = y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
 
+      ftt(k) = ft
     4 continue
-    ftt(k) = ft
     return
 
     !> @todo Document this error situation

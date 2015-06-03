@@ -45,6 +45,7 @@
 
 module absoru
   use absoru_data
+  use read_most_files
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -986,7 +987,6 @@ contains
   !> @todo consider creating module variables to avoid passing parameter to subroutine
 
   subroutine ionipe(th,zlpe,calth)
-    use read_most_files
     implicit none
     real*8 th, zlpe, any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
@@ -1000,6 +1000,8 @@ contains
     kth = 6.956948e-13/th  ! 6.956948E-13 = 1.38024E-16*5040.39
     au_pe=exp(zlpe*2.302585)
     sigm3=0.0
+
+    call log_debug("absoru2_nm is = "//int2str(absoru2_nm))
 
     do j=1,absoru2_nm
       nrr=absoru2_nr(j)
