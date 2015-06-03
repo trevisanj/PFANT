@@ -126,6 +126,7 @@ module synthesis
   use absoru
   use atomgrade
   use molecules
+  use dissoc
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -245,6 +246,8 @@ contains
 
     tetaef = 5040/main_teff
 
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+
 
     !-----
     ! Output files opened here and left open until the end
@@ -305,6 +308,9 @@ contains
     do while (.true.)
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
+
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+
 
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = int((lfin-lzero)/main_pas + 1.0005)
@@ -370,6 +376,17 @@ contains
         end if
       end do
 
+
+
+
+
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+
+
+
+
+
+
       imy = im
       if(imy .ne. 0) then
         !__logging__
@@ -430,6 +447,14 @@ contains
       do l = 1, km_mblend
         ecartm(l) = km_lmbdam(l)-lzero + main_pas
       end do
+
+
+
+
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+
+
+
 
       call selekfh()
 
@@ -635,6 +660,8 @@ contains
        deltam(max_km_mblend,MAX_MODELES_NTOT), &
        phi, t, v, vm, lambi
 
+
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
 
 
       if (atomgrade_nblend .ne. 0) then
