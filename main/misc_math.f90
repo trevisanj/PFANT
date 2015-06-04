@@ -61,15 +61,17 @@ contains
     ! REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
     tru=.true.
 
-    do 101 i=1,15
-    101 ri(i)=-i/2.
+    do i=1,15
+      ri(i)=-i/2.
+    end do
 
-    do 103 i=1,25
+    do i=1,25
       hn(i)=h*(i-.5)
       c0=4.*hn(i)*hn(i)/25.-2.
 
-      do 102 j=2,21
-      102 b(j+1)=c0*b(j)-b(j-1)+c(j)
+      do j = 2,21
+        b(j+1)=c0*b(j)-b(j-1)+c(j)
+      end do
 
       d0(i)=hn(i)*(b(22)-b(21))/5.
       d1(i)=1.-2.*hn(i)*d0(i)
@@ -78,7 +80,7 @@ contains
       d4(i)=(hn(i)*d3(i)+d2(i))/ri(4)
 
       ! write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
-    103 continue
+    end do
 
     104 if (x-5.) 105,112,112
     105 if (y-1.) 110,110,106
@@ -319,15 +321,14 @@ contains
     go to 10
 
     1 continue
-    do 2 i=1,4
-      if(is1 .eq. is(i)) go to 3
-    2 continue
+    do i=1,4
+      if(is1 .eq. is(i)) exit
+    end do
 
-    3 continue
     il1=il(i)
-    do 4 i=1,4
-      if(is2 .eq. is(i)) go to 5
-    4 continue
+    do i=1,4
+      if(is2 .eq. is(i)) exit
+    end do
 
     5 continue
     il2 = il(i)
@@ -453,7 +454,7 @@ contains
 
     real*8 ft, dy, t0, t1, t2, u0, t
     integer i, j, jj, k
-    character*80 lll  !__logging__
+    character*192 lll  !__logging__
 
 !     write(6,*) n
 !     105 format(7f10.3)
@@ -462,7 +463,7 @@ contains
 !
 
     j=2
-    do 4 k=1,itot
+    do k=1,itot
       t=tt(k)
       ! 103 format(5x,f10.3)
       ! write(6,103)t
@@ -475,12 +476,12 @@ contains
 
       2 continue
       ft=y(j)
-      if(j.eq.1) j=j+1
+      if(j .eq. 1) j=j+1
       go to 4
       ! 3   write(6,*) '   j=',j
 
       3 continue
-      if(j.eq.1) go to 10
+      if(j .eq. 1) go to 10
 
       u0= y(j)-y(j-1)
       t0= x(j)-x(j-1)
@@ -491,8 +492,10 @@ contains
       dy= u0*t2
       ft= y(j-1) + dy
 
+      4 continue
       ftt(k)=ft
-    4 continue
+    end do
+
     return
 
     !> @todo test this label "10", somehow make it fall here
@@ -559,7 +562,7 @@ contains
 
     inv = -1
     if (x(n).lt.x(1)) inv = 1
-    do 4 k = 1,itot
+    do k = 1,itot
       t = tt(k)
       if (inv) 5, 6, 6
       5 continue
@@ -596,8 +599,9 @@ contains
       e  = t1/u0
       ft = y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
 
+      4 continue
       ftt(k) = ft
-    4 continue
+    end do
     return
 
     !> @todo Document this error situation

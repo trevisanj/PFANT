@@ -16,7 +16,7 @@ program pfant
   write(*,*) 'PFANT version: 15.5.21-alpha'
   write(*,*) ''
   call config_setup()
-  if (config_loglevel .le. LOGGING_INFO) then
+  if (logging_level .le. LOGGING_INFO) then
     call print_welcome(6)
   end if
   call log_info('Begin calculus')

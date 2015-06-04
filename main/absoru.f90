@@ -143,8 +143,8 @@ contains
     sum2 = 0.0
     do i = 1,absoru2_nm
       sum1 = sum1+absoru2_zp(i)
+      sum2 = sum2+absoru2_zp(i)*absoru2_zm(i)
     end do
-    sum2 = sum2+absoru2_zp(i)*absoru2_zm(i)
     au_avm = sum2/sum1
 
     ! au_ZNU1,au_ZNU2,au_ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
@@ -507,13 +507,13 @@ contains
   !>
   !>     A.M COLLE   13/5/69
 
-  SUBROUTINE SAHATH(TH)
+  subroutine sahath(th)
     use read_most_files
     implicit none
     real*8 th, tempo, tempor
     integer i, j, n, nrr
-    real*8, PARAMETER :: &
-     POTION(6) = (/2-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/), &
+    real*8, parameter :: &
+     POTION(6) = (/-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/), &
      C1(3) = (/0.0,-7.526612E-3,5.708280E-2/), &
      C2(3) = (/0.0,1.293852E-1,-1.823574E-1/), &
      C3(3) = (/0.0,-11.34061,-6.434060/), &
@@ -985,6 +985,8 @@ contains
   !> @author A.M COLLE  18/01/1971
   !>
   !> @todo consider creating module variables to avoid passing parameter to subroutine
+  !>
+  !> @todo top variable pa declared with 10 elements but should have absoru2_nr(j)+1
 
   subroutine ionipe(th,zlpe,calth)
     implicit none
@@ -1001,21 +1003,27 @@ contains
     au_pe=exp(zlpe*2.302585)
     sigm3=0.0
 
-    call log_debug("absoru2_nm is = "//int2str(absoru2_nm))
+    ! call log_debug("absoru2_nm is = "//int2str(absoru2_nm))
 
     do j=1,absoru2_nm
       nrr=absoru2_nr(j)
       sigm1=0.0
       sigm2=0.0
       pa(1)=1.0
+
+      !> @todo issue check this, I think the programmer was considering PA initialized to zero when this is not necessarily true. I am initializing it
+      do i = 2, nrr
+        pa(i) = 0
+      end do
+
       do i = 1,nrr
-        if ((pa(i).le.0.0).or.(au_zkm(j,i).le.0.0)) go to 2375
+        if ((pa(i) .le. 0.0) .or. (au_zkm(j,i) .le. 0.0)) exit
+
         pa(i+1)=pa(i)*(au_zkm(j,i)/au_pe)
         sigm1=i*pa(i+1)+sigm1
         sigm2=sigm2+pa(i+1)
       end do
 
-      2375 continue
       den=1.0+sigm2
       phi(j)=sigm1/den
       do i=1,nrr

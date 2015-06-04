@@ -750,7 +750,6 @@ contains
             id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
     character*128 lll
 
-
     ! Variables declared only for reading from binary file, then their values will be copied to modeles_*
     ! Same names as modeles_* but have the "r_" prefix.
     integer*4 r_modeles_ntot

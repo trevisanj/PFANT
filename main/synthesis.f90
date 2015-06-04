@@ -244,6 +244,10 @@ contains
     call read_moleculagrade(fullpath(config_fn_moleculagrade))
 
 
+    !> @todo issue ask blb overwriting variables read from infile:absoru2
+    absoru2_abhel = modeles_nhe
+    absoru2_abmet = absoru2_abmet*10.**main_asalog
+
     tetaef = 5040/main_teff
 
     call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
@@ -862,7 +866,7 @@ contains
         end do
         call ftlin3(2,lambdc,kcn,dtot,ttd,fttc)
         do d=1,dtot
-          bk_kcd(d,n)=fttc(d)
+          bk_kcd(d,n)=fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here
         end do
       end do
 
