@@ -1,15 +1,28 @@
+! Plan for nulbadgrade
+!
+! 1) convert to .f90
+! 2) format
+! 3) make it run with new libraries (I may want PFANT in NULBADGRADE mode)
+! 4) separate the calculation from file reading
+! 5) prepare to inject PFANT output vectors (I think I will need to update
+!    PFANT because it currently doesn't store the whole output in the memory).
+! 6) See the dimensions
+! 7) Implement command-line options
+! 8) Incorporate into PFANT
+
+
 c	programme NULBT=NULBAD_SQ
 c      	lecture et convol sortie fant93
-C 	Programme de lecture des flux en binaire, sortant de 
+C 	Programme de lecture des flux en binaire, sortant de
 C       Fantomol93 , calculs de 100A en 100A (ou inferieur a 100A)
-c	
-c	Paula, julho de 2003: 
+c
+c	Paula, julho de 2003:
 c	- modifiquei para nao normalizar o espectro
 c	- a opcao CONVOL=F nao estava imprimindo o lambda, corrigi
 c	P.Coelho, dez 2003
 c	- se NORM = .TRUE. (saida do pfant ja eh normalizada), nao
 c	altera o valor do fluxo
-C  
+C
         PARAMETER (NP=2000000,NI=2000000)
 	CHARACTER FILEFLUX*20,flcv*30
 	CHARACTER TITC*20
@@ -23,7 +36,7 @@ C
         DIMENSION ALFL(NP),AFL(NP),FL(NP),TL(NP)
 
 	NORM = .FALSE.
-	
+
 	PRINT *,'Binary file name:'
 	READ(5,200) FILEFLUX
 	IK=1
@@ -53,7 +66,7 @@ C	AINT =intervalle de calcul
         NPT=K
 
 	PRINT *,'Is spectra normalized? (T/F)'
-	READ(5,*) NORM 
+	READ(5,*) NORM
 
 c        imax=isup(ffnu,ktot,1,ktot)
 c        fmax=ffnu(imax)
@@ -67,7 +80,7 @@ c        end do
         lambd(1)=L0
         do k=1,ktot
         lambd(k)=L0 + (k-1)*dpas
-        end do	
+        end do
 C  transformation de Fnu en Flambda
 	PRINT *,'Fnu to FLambda transformation? (T or F)'
 	read(5,*) FLAM
@@ -79,7 +92,7 @@ c  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
         CB=CA*C
         IF (.NOT.NORM) THEN
 		FFL(K)=FFNU(K)*CB
-	ELSE 
+	ELSE
 		FFL(K)=FFNU(K)
 	END IF
         END DO
@@ -96,8 +109,8 @@ c        ffl(K)=FFl(K)/ffmax
 c        ffl(K)=FFl(K)
 c        end do
    60     CONTINUE
-          
-  
+
+
 	PRINT *,'ASC file name to create:'
 	read(5,200) flcv
 	open(unit=8,status='new',file=flcv)
@@ -215,7 +228,7 @@ C	LOGICAL GAUSS
 	DIMENSION TT(1501),FI(1501),AT(-750:+750)
 C	DIMENSION XFI(1501),YFI(1501)
 	IPPTOT=750
-	C7=1.772453 
+	C7=1.772453
 C
 C	GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
 	SIGMA=FWHM/2.35482
@@ -270,7 +283,7 @@ C		WRITE(6,115)
 	4/'   ELARGISSEZ LE PAS DU CALCUL')
 134	FORMAT(' Gaussienne calculee jusqu a une distance du centre:',
 	3 /,' 3(SIGMA*1.414)=',F7.3,' (A)')
-137	FORMAT(5X,'LA FCTION PAR LAQUELLE VOUS VOULEZ CONVOLER A ',   
+137	FORMAT(5X,'LA FCTION PAR LAQUELLE VOUS VOULEZ CONVOLER A ',
 	1 /' PLUS DE 500 PTS -CHANGEZ LE PAS-. (LE NBRE DE PTS TOTAL '
 	2 /' SUR LA FCTION S OBTIENT EN MULTIPLIANT PAR 6 LE NBRE '
 	3 /' DE PTS SUR LA DEMI LARGEUR')
