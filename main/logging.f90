@@ -65,19 +65,32 @@ contains
   !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
   !> due to an error situation (normal program execution ends with error code 0).
 
-  subroutine pfant_halt(s, is_bug)
+  subroutine pfant_halt(s, is_bug, is_assertion)
     !> Log message
     character(len=*), intent(in) :: s
     !> (default=.false.) Whether halting program because of a bug.
     logical, optional, intent(in) :: is_bug
-    logical is_bug_ ! Argument is_bug, or default value if not passed.
+    !> (default=.false.) Whether halting program because of assertion error.
+    !> If .true., will print "assertion error" before the message
+    logical, optional, intent(in) :: is_assertion
+    logical is_bug_, is_assertion_
     if (.not. present(is_bug)) then
       is_bug_ = .False.
     else
       is_bug_ = is_bug
     end if
+    if (.not. present(is_assertion)) then
+      is_assertion_ = .False.
+    else
+      is_assertion_ = is_assertion
+    end if
 
-    call do_logging(s, LOGGING_HALT)
+    if (.not. is_assertion_) then
+      call do_logging(s, LOGGING_HALT)
+    else
+      call do_logging('(*assertion error*) '//s, LOGGING_HALT)
+    end if
+
     !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
     !> @todo actually, as a third thought, I may use this not necessarily meaning bug, but ask kindly for the used to tell us what happened to help us improve the software.
     !> @todo the time to solve this is when I tackle all the error situations systematically

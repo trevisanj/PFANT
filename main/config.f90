@@ -21,6 +21,13 @@
 !> @li All globals have prefix "config_"
 !>
 !> @todo config_fn_* documentation is important because it is a good place to "define" what each file is
+!>
+!> @note There are many variables in this module that have a unique relation with a
+!>       command-line option. These variables will not be documented in comments, but
+!>       in the help text associated with their command-line options (the reason is to
+!>       avoid text duplication). There are two ways to access this documentation:
+!>       @li a) view the source code for subroutine config::init_options()
+!>       @li b) execute the program with the --help option
 
 module config
   use logging
@@ -33,26 +40,27 @@ module config
                                     !< @todo maybe create a module called "dimensions"...not before I check the other modules to incorporate: hydro2 and inewmarcs
 
   !=====
-  ! "Tasks"
+  ! Mode of operation
   !=====
+  character*10 :: config_mode = 'pfant' !< option: --mode
 
 
   !=====
   ! File names
   !=====
   character*256 :: &
-   config_fn_dissoc        = 'dissoc.dat',        & !< ?doc?
-   config_fn_main          = 'main.dat',          & !< ?doc?
-   config_fn_partit        = 'partit.dat',        & !< ?doc?
-   config_fn_absoru2       = 'absoru2.dat',       & !< ?doc?
-   config_fn_modeles       = 'modeles.mod',       & !< ?doc?
-   config_fn_abonds        = 'abonds.dat',        & !< ?doc?
-   config_fn_atomgrade     = 'atomgrade.dat',     & !< ?doc?
-   config_fn_moleculagrade = 'moleculagrade.dat', & !< ?doc?
-   config_fn_lines         = 'lines.pfant',       & !< ?doc?
-   config_fn_log           = 'log.log'              !< ?doc?
+   config_fn_dissoc        = 'dissoc.dat',        & !< option --fn_dissoc
+   config_fn_main          = 'main.dat',          & !< option --fn_main
+   config_fn_partit        = 'partit.dat',        & !< option --fn_partit
+   config_fn_absoru2       = 'absoru2.dat',       & !< option --fn_absoru2
+   config_fn_modeles       = 'modeles.mod',       & !< option --fn_modeles
+   config_fn_abonds        = 'abonds.dat',        & !< option --fn_abonds
+   config_fn_atomgrade     = 'atomgrade.dat',     & !< option --fn_atomgrade
+   config_fn_moleculagrade = 'moleculagrade.dat', & !< option --fn_moleculagrade
+   config_fn_lines         = 'lines.pfant',       & !< option --fn_lines
+   config_fn_log           = 'log.log'              !< option --fn_log
 
-  character*256 :: config_inputdir = './'  !< Directory prefix for all files
+  character*256 :: config_inputdir = './'  !< command-line option --inputdir
 
   !=====
   ! Variables related to molecules
@@ -62,20 +70,34 @@ module config
   !> List of molecule ids that are be switched off. Complement of config_molids_on.
   integer :: config_molids_off (NUM_MOL)
 
+
   !=====
   ! Misc
   !=====
-  !> Interpolation type of turbul_VT
-  !> @li 1: (default) linear
-  !> @li 2: parabolic
-  integer :: config_interp = 1
-  !> Selector for subroutines FLIN1() and FLINH():
-  !> @li 0: (default) integration using 6/7 points depending on main_PTDISK;
-  !> @li 1: 26-point integration
-  integer :: config_kik = 0
+  integer :: config_interp = 1  !< option: --interp
+  integer :: config_kik = 0     !< option: --kik
 
   !> Whether to allow PFANT to run if none of the specified filetoh files is found
   logical :: config_allow_no_filetoh = .false.
+
+
+  !=====
+  ! nulbad configuration
+  !=====
+  ! note: maintained variable names found in original nulbadgrade.f
+  !       (however with "config_nulbad_") prefix
+  logical :: &
+   config_nulbad_norm = .true., &
+   config_nulbad_flam = .true., &
+   config_nulbad_convol = .true.
+  real*8 config_nulbad_fwhm = 0.13
+  character*64 :: &
+    config_nulbad_fileflux = 'norm.fileflux', &
+    config_nulbad_flcv = '' & !< option --nulbad_flcv; 
+
+
+
+
 
 
   !====================================
@@ -102,7 +124,7 @@ module config
   !> Input directory without trailling spaces and ending with a "/"
   character(len=:), private, allocatable :: inputdir_trim
   !> Number of possible command-line options
-  integer, parameter, private :: NUM_OPTIONS = 14
+  integer, parameter, private :: NUM_OPTIONS = 15
   !> options
   type(option), private :: options(NUM_OPTIONS), opt
 
@@ -116,14 +138,28 @@ contains
   !> &lt;br&gt;
 
   subroutine init_options()
+    integer i, j
+    character(:), allocatable :: name
+    character(1) :: chr
     character(3), parameter :: IND = '.. ' ! indentation string
 
     options( 1) = option('help', 'h', .false., '', '', &
       'Displays this help text.')
+
     options( 2) = option('loglevel', 'l', .TRUE., 'level', 'debug', &
-      'logging level (debug/info/warning/error/critical/halt)')
+     'logging level<br>'//&
+     IND//'debug<br>'//&
+     IND//'info<br>'//&
+     IND//'warning<br>'//&
+     IND//'error<br>'//&
+     IND//'critical<br>'//&
+     IND//'halt')
+
     options( 3) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
-     'interpolation type for subroutine turbul() (1: linear; 2: parabolic)')
+     'interpolation type for subroutine turbul()<br>'//&
+     IND//'1: linear;<br>'//&
+     IND//'2: parabolic)')
+
     options( 4) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
      'selector for subroutines flin1() and flinh()<br>'//&
      IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
@@ -134,26 +170,57 @@ contains
     ! easier to see and edit in single line
     options( 5) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
+
     options( 6) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
-      'input file name - main configuration')
+     'input file name - main configuration')
+
     options( 7) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
-      'input file name - partition functions')
+     'input file name - partition functions')
+
     options( 8) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-      'input file name - absoru2')
+     'input file name - absoru2')
+
     options( 9) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
-      'input file name - model')
+     'input file name - model')
+
     options(10) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
-      'input file name - atomic abundances')
+     'input file name - atomic abundances')
+
     options(11) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
-      'input file name - atomic lines')
+     'input file name - atomic lines')
+
     options(12) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
-      'input file name - molecular lines')
+     'input file name - molecular lines')
+
     options(13) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
       'directory containing input files')
     options(14) = option('molid_off',        ' ', .true., 'molecule id', '', &
-      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
-      'Note: This option can be repeated.')
+     'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
+     'Note: This option can be repeated.')
 
+    ! Program "modes" of operation
+    options(15) = option('mode', 'm', .false., '', '', &  ! is mode, "m" but I want to test the assertion below
+     'Program operational mode<br>'//&
+     IND//'pfant: spectral synthesis mode<br>'//&
+     IND//'nulbad: reads output from pfant mode and saves convolved spectrum<br>'//&
+     IND//'pfant-nulbad: cascade pfant and nulbad operations')
+
+
+defaults to &lt;config::config_nulbad_fileflux&gt;.nulbad
+
+    !__assertion__: make sure that there are no repeated options. Checks all against all
+    do i = 1, NUM_OPTIONS
+      name = options(i)%name
+      chr = options(i)%chr
+      do j = i+1, NUM_OPTIONS
+        if (name .eq. options(j)%name) then
+          call pfant_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
+        end if
+        if (chr .ne. ' ' .and. chr .eq. options(j)%chr) then
+          call pfant_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
+        end if
+      end do
+    end do
   end
 
 
@@ -275,7 +342,7 @@ contains
                 call log_assignment('logging level', to_lower(o_arg))
               end if
             case ('interp')
-              iTemp = parseint(opt, o_arg)
+              iTemp = str2int(opt, o_arg)
               select case (iTemp)
                 case (1, 2)
                   config_INTERP = iTemp
@@ -285,7 +352,7 @@ contains
               end select
 
             case ('kik')
-              iTemp = parseint(opt, o_arg)
+              iTemp = str2int(opt, o_arg)
               select case(iTemp)
                 case (0, 1)
                   config_kik = iTemp
@@ -320,15 +387,25 @@ contains
               call assign_fn(o_arg, config_inputdir, 'config_inputdir')
 
             case ('molid_off')
-              iTemp = parseint(opt, o_arg)
+              iTemp = str2int(opt, o_arg)
               call add_molid_off(iTemp)
+
+            case ('mode')
+              select case (to_lower(o_arg))
+                case ('pfant', 'nulbad', 'pfant-nulbad')
+                case default
+                  err_out = .true.
+              end select
+              if (.not. err_out) then
+                config_mode = to_lower(o_arg)
+                call log_assignment('operation mode', to_lower(o_arg))
+              end if
           end select
 
           if (err_out) then
-            write (lll, *) 'Argument out of range for option ', get_option_name(opt)
+            write (lll, *) 'Invalid argument for option ', get_option_name(opt)
             call pfant_halt(lll)
           end if
-
       end select
 
       k = k+1
@@ -362,26 +439,60 @@ contains
     end
 
     !-------------------------------------------------------------------------------------
-    !> Converts string to integer with error logging
+    !> Converts string to integer, halting the program if conversion fails.
+    !>
+    !> This function takes an option as argument in order to form a comprehensible
+    !> error message if the conversion to integer fails.
 
-    integer function parseint(opt, s)
+    integer function str2int(opt, s)
       !> Option, will be used only in case of error
       type(option), intent(in) :: opt
-      !> If the parsed option requires an argument, arg contains
-      !> the first len(arg) (but at most 500) characters of that argument.
-      !> Otherwise its value is undefined. If the arguments length exceeds 500
-      !> characters and err is .true., a warning is issued.
+      !> String to be converted to integer
       character(len=*), intent(in) :: s
-      character*128 lll
 
-      read(s, *, err=20) parseint
+      read(s, *, err=20) str2int
       go to 30
 
-      20 write(lll, *) 'Error parsing option ', get_option_name(opt), &
-       ': invalid integer argument: ''', trim(s), ''''
-      call pfant_halt(lll)
+      20 continue
+      call pfant_halt('Error parsing option '//get_option_name(opt)//&
+       ': invalid integer argument: '''//trim(s)//'''')
 
       30 continue
+    end
+
+  end subroutine parse_args
+
+
+    !-------------------------------------------------------------------------------------
+    !> Converts string to logical, halting the program if conversion fails.
+    !>
+    !> This function takes an option as argument in order to form a comprehensible
+    !> error message if the conversion to logical  fails.
+    !>
+    !> Please check the source code for recognized representations of a logical value.
+    !>
+    !> @note Conversion is case insensitive.
+
+    logical function str2logical(opt, s)
+      !> Option, will be used only in case of error
+      type(option), intent(in) :: opt
+      !> String to be converted to logical
+      character(len=*), intent(in) :: s
+
+      select case (to_lower(s))
+        case ('.true.', 'true', 't', 'on', '1')
+          str2logical = .true.
+          return
+      end select
+
+      select case (to_lower(s))
+        case ('.false.', 'false', 'f', 'off', '0')
+          str2logical = .false.
+          return
+      end select
+
+      call pfant_halt('Error parsing option '//get_option_name(opt)//&
+       ': invalid logical argument: '''//trim(s)//'''')
     end
 
   end subroutine parse_args
@@ -412,7 +523,9 @@ contains
     character*80 lll  !__logging__
 
     !__assertion__
-    if (.not. flag_make_molids_on) call pfant_halt('get_molid(): forgot to call make_molids_on()')
+    if (.not. flag_make_molids_on) then
+      call pfant_halt('get_molid(): forgot to call make_molids_on()', is_assertion=.true.)
+    end if
 
     !__spill check__
     if (i_mol .gt. config_num_mol_on) then

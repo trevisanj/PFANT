@@ -24,7 +24,19 @@ program pfant
   !=====
   ! Task(s)
   !=====
-  call synthesis_()
+  select case (config_mode)
+    case ('pfant')
+      call synthesis_()
+    case ('nulbad')
+      call nulbad_()
+    case ('pfant-nulbad')
+      call synthesis_()
+      call nulbad_()
+    case default
+      err_out = .TRUE.
+  end select
+
+
 
   call log_info('End calculus')
 end program pfant
