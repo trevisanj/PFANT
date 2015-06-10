@@ -9,6 +9,7 @@ program pfant
   use config
   use logging
   use synthesis
+  implicit none
 
   !=====
   ! Startup section
@@ -28,10 +29,11 @@ program pfant
     case ('pfant')
       call synthesis_()
     case ('nulbad')
-      call nulbad_()
+      call nulbad_complete()
     case ('pfant-nulbad')
+      synthesis_flag_fnu = .true.
       call synthesis_()
-      call nulbad_()
+      call nulbad_calc(synthesis_fnu, synthesis_ktot)
     case default
       err_out = .TRUE.
   end select

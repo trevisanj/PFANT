@@ -11,46 +11,69 @@ contains
   !>
   !> Source: http://stackoverflow.com/questions/10759375/how-can-i-write-a-to-upper-or-to-lower-function-in-f90
 
-  pure function to_lower(str) result (string)
+  pure function to_lower(x) result (string)
       implicit none
-      character(*), intent(in) :: str
-      character(len(str))      :: string
+      character(*), intent(in) :: x
+      character(len(x))      :: string
       integer :: ic, i
       character(26), parameter :: cap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       character(26), parameter :: low = 'abcdefghijklmnopqrstuvwxyz'
 
-      string = str
-      do i = 1, len_trim(str)
-          ic = index(cap, str(i:i))
+      string = x
+      do i = 1, len_trim(x)
+          ic = index(cap, x(i:i))
           if (ic > 0) string(i:i) = low(ic:ic)
       end do
   end function to_lower
 
   !> Converts an integer to string
   !>
-  !> @note @c i is limited to 80 digits
+  !> @note @c x is limited to 80 digits
 
-  pure function int2str(i) result (string)
+  pure function int2str(x) result (string)
     implicit none
-    integer, intent(in) :: i
+    integer, intent(in) :: x
     character(:), allocatable :: string
     character(80) :: ch
 
-    write(ch,*) i
+    write(ch,*) x
     string = trim(adjustl(ch))
   end function
 
 
   !> Converts a float number to string
+  !>
+  !> @todo improve representation
 
-  pure function float2str(f) result (string)
+  pure function float2str(x) result (string)
     implicit none
-    real*8, intent(in) :: f
+    real*8, intent(in) :: x
     character(:), allocatable :: string
     character(80) :: ch
 
-    write(ch,*) f
+    write(ch,*) x
     string = trim(adjustl(ch))
   end function
+
+
+  !> Converts a logical value to string
+  !>
+  !> @li .true. is converted to "T"
+  !> @li .false. is converted to "F" 
+
+  pure function logical2str(x) result (string)
+    implicit none
+    logical, intent(in) :: x
+    character(:), allocatable :: string
+    character(80) :: ch
+
+    if (x) then
+      string = 'T'
+    else
+      string = 'F'
+    end if
+  end function
+
+
 
 end module misc

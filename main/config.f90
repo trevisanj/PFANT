@@ -49,16 +49,16 @@ module config
   ! File names
   !=====
   character*256 :: &
-   config_fn_dissoc        = 'dissoc.dat',        & !< option --fn_dissoc
-   config_fn_main          = 'main.dat',          & !< option --fn_main
-   config_fn_partit        = 'partit.dat',        & !< option --fn_partit
-   config_fn_absoru2       = 'absoru2.dat',       & !< option --fn_absoru2
-   config_fn_modeles       = 'modeles.mod',       & !< option --fn_modeles
-   config_fn_abonds        = 'abonds.dat',        & !< option --fn_abonds
-   config_fn_atomgrade     = 'atomgrade.dat',     & !< option --fn_atomgrade
-   config_fn_moleculagrade = 'moleculagrade.dat', & !< option --fn_moleculagrade
-   config_fn_lines         = 'lines.pfant',       & !< option --fn_lines
-   config_fn_log           = 'log.log'              !< option --fn_log
+   config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
+   config_fn_main          = 'main.dat',          & !< option: --fn_main
+   config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
+   config_fn_absoru2       = 'absoru2.dat',       & !< option: --fn_absoru2
+   config_fn_modeles       = 'modeles.mod',       & !< option: --fn_modeles
+   config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
+   config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
+   config_fn_moleculagrade = 'moleculagrade.dat', & !< option: --fn_moleculagrade
+   config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
+   config_fn_log           = 'log.log'              !< option: --fn_log
 
   character*256 :: config_inputdir = './'  !< command-line option --inputdir
 
@@ -87,13 +87,15 @@ module config
   ! note: maintained variable names found in original nulbadgrade.f
   !       (however with "config_nulbad_") prefix
   logical :: &
-   config_nulbad_norm = .true., &
-   config_nulbad_flam = .true., &
-   config_nulbad_convol = .true.
-  real*8 config_nulbad_fwhm = 0.13
+   config_nulbad_norm = .true., &                       !< option: --nulbad_norm
+   config_nulbad_flam = .true., &                       !< option: --nulbad_flam
+   config_nulbad_convol = .true.                        !< option: --nulbad_convol
+  real*8 :: &
+   config_nulbad_fwhm = 0.13, &                         !< option: --nulbad_fwhm
+   config_nulbad_pat = 0.02                             !< option: --nulbad_pat
   character*64 :: &
-    config_nulbad_fileflux = 'norm.fileflux', &
-    config_nulbad_flcv = '' & !< option --nulbad_flcv; 
+    config_nulbad_fileflux = 'norm.fileflux', &         !< option: --nulbad_fileflux
+    config_nulbad_flcv = ''                             !< option: --nulbad_flcv
 
 
 
@@ -123,10 +125,13 @@ module config
    flag_make_molids_on = .false.   !< make_molids_on() has been called?
   !> Input directory without trailling spaces and ending with a "/"
   character(len=:), private, allocatable :: inputdir_trim
-  !> Number of possible command-line options
-  integer, parameter, private :: NUM_OPTIONS = 15
-  !> options
-  type(option), private :: options(NUM_OPTIONS), opt
+
+
+  ! ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
+  ! ║ ║├─┘ │ ││ ││││└─┐
+  ! ╚═╝┴   ┴ ┴└─┘┘└┘└─┘ command-line options
+  integer, parameter, private :: NUM_OPTIONS = 22       !< Number of command-line options
+  type(option), private :: options(NUM_OPTIONS), opt    !< Options
 
   private make_molids_on
 contains
@@ -205,8 +210,27 @@ contains
      IND//'nulbad: reads output from pfant mode and saves convolved spectrum<br>'//&
      IND//'pfant-nulbad: cascade pfant and nulbad operations')
 
+    ! nulbad options
+    options(16) = option('nulbad_fileflux', ' ', .true., 'file name', config_nulbad_fileflux, &
+      'NULBAD Flux file name')
 
-defaults to &lt;config::config_nulbad_fileflux&gt;.nulbad
+    options(17) = option('nulbad_norm',     ' ', .true., 'T/F', logical2str(config_nulbad_norm), &
+      'NULBAD Is spectrum normalized?')
+
+    options(18) = option('nulbad_flam',     ' ', .true., 'T/F', logical2str(config_nulbad_flam), &
+      'NULBAD Fnu to FLambda transformation?')
+
+    options(19) = option('nulbad_flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+      'NULBAD output file name')
+
+    options(20) = option('nulbad_pat',      ' ', .true., 'real value', float2str(config_nulbad_pat), &
+      'NULBAD step ?doc?')
+
+    options(21) = option('nulbad_convol',   ' ', .true., 'T/F', logical2str(config_nulbad_convol), &
+      'NULBAD Apply convolution?')
+
+    options(22) = option('nulbad_fwhm',     ' ', .true., 'real value', float2str(config_nulbad_fwhm), &
+      'NULBAD FWHM ?doc? full-width-half-???')
 
     !__assertion__: make sure that there are no repeated options. Checks all against all
     do i = 1, NUM_OPTIONS
@@ -459,9 +483,6 @@ defaults to &lt;config::config_nulbad_fileflux&gt;.nulbad
 
       30 continue
     end
-
-  end subroutine parse_args
-
 
     !-------------------------------------------------------------------------------------
     !> Converts string to logical, halting the program if conversion fails.

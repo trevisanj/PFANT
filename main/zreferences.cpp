@@ -15,5 +15,8 @@
 
 @anchor IvritFont [IvritFont] http://patorjk.com/software/taag/#p=display&f=Ivrit&t=PFANT
 
+@anchor CalvinSFont [CalvinSFont] http://patorjk.com/software/taag/#p=display&f=Calvin%20S&t=Options
+
 @anchor FortranWiki [FortranWiki] http://fortranwiki.org/fortran/show/Command-line+arguments
+
 */

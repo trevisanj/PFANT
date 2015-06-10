@@ -131,7 +131,13 @@ module synthesis
 
   private  ! This statement makes all symbols private by default
 
-  public :: synthesis_ ! only public symbol
+  public :: synthesis_ ! subroutine
+
+  !=====
+  ! Spectrum stored in memory for nulbad
+  !=====
+  real*8, public, allocatable :: synthesis_fnu(:)  !< "Fnu"
+  integer, public :: synthesis_ktot                !< last valid index within synthesis::synthesis_fnu
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
@@ -175,7 +181,7 @@ module synthesis
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
    KB = 1.38046E-16,   & !< ?doc?
-   PI = acos(-1.),      & !< "pi" constant
+   PI = acos(-1.),     & !< "pi" constant
    C1 = 4.8298E+15,    & !< ?doc?
    C2 = 8.8525E-13,    & !< ?doc?
    C4 = 2.1179E+8,     & !< ?doc?
@@ -191,7 +197,9 @@ module synthesis
 contains
 
   !======================================================================================================================
-  subroutine synthesis_()
+  subroutine synthesis_(flag_fnu)
+    !> Whether to store the whole Fnu in vector synthesis::synthesis__fnu
+    logical, intent(in) :: flag_fnu
     ! Units for output files
     integer, parameter :: &
      UNIT_SPEC  = 17, &
@@ -452,17 +460,10 @@ contains
         ecartm(l) = km_lmbdam(l)-lzero + main_pas
       end do
 
-
-
-
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
-
-
-
-
       call selekfh()
 
-      !> @todo check if any of these variables is written, otherwise I could move this block further down
+
+
       li = int(10./main_pas)
       i1 = li+1
       i2 = dtot - li
