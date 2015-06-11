@@ -133,11 +133,23 @@ module synthesis
 
   public :: synthesis_ ! subroutine
 
+
   !=====
-  ! Spectrum stored in memory for nulbad
+  ! Module configuration
   !=====
-  real*8, public, allocatable :: synthesis_fnu(:)  !< "Fnu"
-  integer, public :: synthesis_ktot                !< last valid index within synthesis::synthesis_fnu
+  !> Whether to store the whole Fnu in vector synthesis::synthesis_ffnu
+  logical, public :: synthesis_flag_ffnu = .false.
+
+
+  !=====
+  ! Spectrum stored in memory to be exported for nulbad
+  !=====
+  !> "Fnu". Only calculated if synthesis::synthesis_flag_ffnu is true
+  real*8, public, allocatable :: synthesis_ffnu(:)
+  !> last valid index within synthesis::synthesis_ffnu
+  integer, public :: synthesis_ktot
+
+
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
@@ -197,9 +209,8 @@ module synthesis
 contains
 
   !======================================================================================================================
-  subroutine synthesis_(flag_fnu)
-    !> Whether to store the whole Fnu in vector synthesis::synthesis__fnu
-    logical, intent(in) :: flag_fnu
+
+  subroutine synthesis_()
     ! Units for output files
     integer, parameter :: &
      UNIT_SPEC  = 17, &
@@ -218,6 +229,8 @@ contains
      dhmy(10), &
      dhpy(10)
     integer dhm,dhp
+
+    !> @todo still dimensions declared with numbers (absoru.f90 too)
 
     real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
      ecartm(MAX_KM_MBLEND)
@@ -241,15 +254,15 @@ contains
 
 
     ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
-    call read_dissoc(fullpath(config_fn_dissoc))
-    call read_main(fullpath(config_fn_main))
-    call read_partit(fullpath(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
-    call read_absoru2(fullpath(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-    call read_modele(fullpath(config_fn_modeles))  ! LECTURE DU MODELE
-    call read_abonds(fullpath(config_fn_abonds))
-    call read_atomgrade(fullpath(config_fn_atomgrade))
+    call read_dissoc(fullpath_i(config_fn_dissoc))
+    call read_main(fullpath_i(config_fn_main))
+    call read_partit(fullpath_i(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
+    call read_absoru2(fullpath_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+    call read_modele(fullpath_i(config_fn_modeles))  ! LECTURE DU MODELE
+    call read_abonds(fullpath_i(config_fn_abonds))
+    call read_atomgrade(fullpath_i(config_fn_atomgrade))
     call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
-    call read_moleculagrade(fullpath(config_fn_moleculagrade))
+    call read_moleculagrade(fullpath_i(config_fn_moleculagrade))
 
 
     !> @todo issue ask blb overwriting variables read from infile:absoru2
@@ -258,24 +271,17 @@ contains
 
     tetaef = 5040/main_teff
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
 
 
     !-----
     ! Output files opened here and left open until the end
     !-----
-    !fileflux1 = trim(main_fileflux)//'.spec'
-    !fileflux2 = trim(main_fileflux)//'.cont'
-    !fileflux3 = trim(main_fileflux)//'.norm'
-    !open(unit=UNIT_SPEC,file=fileflux1,status='unknown')
-    !open(unit=UNIT_CONT,file=fileflux2,status='unknown')
-    !open(unit=UNIT_NORM,file=fileflux3,status='unknown')
-    open(unit=UNIT_SPEC, file=trim(main_fileflux)//'.spec', status='unknown')  ! spectrum
-    open(unit=UNIT_CONT, file=trim(main_fileflux)//'.cont', status='unknown')  ! continuum
-    open(unit=UNIT_NORM, file=trim(main_fileflux)//'.norm', status='unknown')  ! normalized
-    open(unit=UNIT_LINES,file=config_fn_lines, status='unknown')               ! outfile:lines
-    open(unit=UNIT_LOG,  file=config_fn_log, status='unknown')                 ! log.log
-
+    open(unit=UNIT_SPEC, file=fullpath_o(trim(main_fileflux)//'.spec'), status='unknown')  ! spectrum
+    open(unit=UNIT_CONT, file=fullpath_o(trim(main_fileflux)//'.cont'), status='unknown')  ! continuum
+    open(unit=UNIT_NORM, file=fullpath_o(trim(main_fileflux)//'.norm'), status='unknown')  ! normalized
+    open(unit=UNIT_LINES,file=fullpath_o(config_fn_lines), status='unknown')               ! outfile:lines
+    open(unit=UNIT_LOG,  file=fullpath_o(config_fn_log), status='unknown')                 ! log.log
 
 
     !=====
@@ -321,7 +327,7 @@ contains
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
 
 
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
@@ -332,6 +338,16 @@ contains
         call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of FILETOH_NP='//&
          int2str(FILETOH_NP))
       end if
+
+      ! Allocates Fnu at first iteration
+      if (synthesis_flag_ffnu .and. ikey .eq. 1) then
+        ! This is a slight overallocation because dtot may be smaller in the last iteration.
+        allocate(synthesis_ffnu(ikeytot*dtot))
+        synthesis_ktot = 0
+      end if
+
+
+
 
       !__logging__
       117 format(5x,'lzero=',f10.3,10x,'lfin=',f10.3,5x,'dtot=',i7)
@@ -387,17 +403,6 @@ contains
           end do
         end if
       end do
-
-
-
-
-
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
-
-
-
-
-
 
       imy = im
       if(imy .ne. 0) then
@@ -480,7 +485,13 @@ contains
       lf = main_llfin+10.
 
 
-
+      ! Copies normalized spectrum to Fnu vector
+      if (synthesis_flag_ffnu) then
+        do d = i1,i2
+          synthesis_ktot = synthesis_ktot+1
+          synthesis_ffnu(synthesis_ktot) = fn(d)
+        end do
+      end if
 
 
       !=====
@@ -666,7 +677,7 @@ contains
        phi, t, v, vm, lambi
 
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//float2str(tetaef))
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
 
 
       if (atomgrade_nblend .ne. 0) then

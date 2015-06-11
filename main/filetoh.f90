@@ -31,7 +31,8 @@ module filetoh
   implicit none
 
   integer, parameter :: &
-   FILETOH_NP=7000, &    !< ?doc? Maximum number of ?
+   FILETOH_NP=7000, &    !< dtot maximum: maximum number of points in each calculation interval.
+                         !! @todo The name of this variable is purely incidental, should change in the future to perhaps MAX_DTOT
    MAX_FILETOH_JMAX=50   !< ?doc?
   !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_filetoh_r_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX=MAX_FILETOH_JMAX*2-1
@@ -76,9 +77,9 @@ module filetoh
    filetoh_c_dhmi, & !< ?doc?
    filetoh_c_dhpi    !< ?doc?
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   real*8, private, dimension(MAX_FILETOH_JJMAX) :: mi_llambdh, mi_allh, mi_tauhn
@@ -105,7 +106,7 @@ contains
 
     i = 0
     do i_file = 1, main_filetoh_numfiles
-      file_now = fullpath(main_filetohy(i_file))
+      file_now = fullpath_i(main_filetohy(i_file))
 
       open(err=111, unit=unit_,file=file_now,status='old')
 

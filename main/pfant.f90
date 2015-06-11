@@ -9,6 +9,7 @@ program pfant
   use config
   use logging
   use synthesis
+  use nulbad
   implicit none
 
   !=====
@@ -31,11 +32,14 @@ program pfant
     case ('nulbad')
       call nulbad_complete()
     case ('pfant-nulbad')
-      synthesis_flag_fnu = .true.
+      synthesis_flag_ffnu = .true.
+      ! This overrides possible setting from command-line because synthesis_ffnu
+      ! is the normalized spectrum.
+      config_nulbad_norm = .true.
       call synthesis_()
-      call nulbad_calc(synthesis_fnu, synthesis_ktot)
+      call nulbad_calc(synthesis_ffnu, synthesis_ktot)
     case default
-      err_out = .TRUE.
+      call pfant_halt('Unknown mode: "'//config_mode//'"', is_assertion=.true.)
   end select
 
 

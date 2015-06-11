@@ -45,7 +45,7 @@ contains
   !>
   !> @todo improve representation
 
-  pure function float2str(x) result (string)
+  pure function real2str(x) result (string)
     implicit none
     real*8, intent(in) :: x
     character(:), allocatable :: string
@@ -59,13 +59,12 @@ contains
   !> Converts a logical value to string
   !>
   !> @li .true. is converted to "T"
-  !> @li .false. is converted to "F" 
+  !> @li .false. is converted to "F"
 
   pure function logical2str(x) result (string)
     implicit none
     logical, intent(in) :: x
     character(:), allocatable :: string
-    character(80) :: ch
 
     if (x) then
       string = 'T'

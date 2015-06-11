@@ -60,7 +60,8 @@ module config
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log'              !< option: --fn_log
 
-  character*256 :: config_inputdir = './'  !< command-line option --inputdir
+  character*256 :: config_inputdir = './'   !< command-line option --inputdir
+  character*256 :: config_outputdir = './'  !< command-line option --outputdir
 
   !=====
   ! Variables related to molecules
@@ -123,17 +124,23 @@ module config
   logical, private :: &
    flag_setup = .false.,         & !< config_setup() has been called?
    flag_make_molids_on = .false.   !< make_molids_on() has been called?
-  !> Input directory without trailling spaces and ending with a "/"
-  character(len=:), private, allocatable :: inputdir_trim
-
 
   ! ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
   ! ║ ║├─┘ │ ││ ││││└─┐
   ! ╚═╝┴   ┴ ┴└─┘┘└┘└─┘ command-line options
-  integer, parameter, private :: NUM_OPTIONS = 22       !< Number of command-line options
+
+  integer, parameter, private :: NUM_OPTIONS = 23       !< Number of command-line options
   type(option), private :: options(NUM_OPTIONS), opt    !< Options
 
   private make_molids_on
+
+  character(len=:), private, allocatable :: &
+   inputdir_trim  !< Input directory without trailling spaces and ending with a "/"
+  character(len=:), private, allocatable :: &
+   outputdir_trim   !< Output directory without trailling spaces and ending with a "/"
+
+
+  save
 contains
   !=======================================================================================
   !> Initializes the options list
@@ -143,15 +150,16 @@ contains
   !> &lt;br&gt;
 
   subroutine init_options()
-    integer i, j
+    integer i, j, k
     character(:), allocatable :: name
     character(1) :: chr
     character(3), parameter :: IND = '.. ' ! indentation string
 
-    options( 1) = option('help', 'h', .false., '', '', &
+    k = 1
+    options(k) = option('help', 'h', .false., '', '', &
       'Displays this help text.')
-
-    options( 2) = option('loglevel', 'l', .TRUE., 'level', 'debug', &
+    k = k+1
+    options(k) = option('loglevel', 'l', .TRUE., 'level', 'debug', &
      'logging level<br>'//&
      IND//'debug<br>'//&
      IND//'info<br>'//&
@@ -159,82 +167,98 @@ contains
      IND//'error<br>'//&
      IND//'critical<br>'//&
      IND//'halt')
-
-    options( 3) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
+    k = k+1
+    options(k) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
      IND//'2: parabolic)')
-
-    options( 4) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
+    k = k+1
+    options(k) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
      'selector for subroutines flin1() and flinh()<br>'//&
      IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
      IND//'1: 26-point integration)')
+    k = k+1
 
     !> @todo Find names for each file and update options help
 
-    ! easier to see and edit in single line
-    options( 5) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
+    options(k) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
-
-    options( 6) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
+    k = k+1
+    options(k) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
      'input file name - main configuration')
-
-    options( 7) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
+    k = k+1
+    options(k) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
      'input file name - partition functions')
-
-    options( 8) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+    k = k+1
+    options(k) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
      'input file name - absoru2')
-
-    options( 9) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+    k = k+1
+    options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
-
-    options(10) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
+    k = k+1
+    options(k) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
      'input file name - atomic abundances')
-
-    options(11) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
+    k = k+1
+    options(k) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
      'input file name - atomic lines')
-
-    options(12) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
+    k = k+1
+    options(k) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
      'input file name - molecular lines')
-
-    options(13) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
+    k = k+1
+    options(k) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
       'directory containing input files')
-    options(14) = option('molid_off',        ' ', .true., 'molecule id', '', &
+    k = k+1
+    options(k) = option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
+      'directory for output files')
+    k = k+1
+    options(k) = option('molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
-     'Note: This option can be repeated.')
-
+     '*Note*: This option can be repeated.')
+    k = k+1
     ! Program "modes" of operation
-    options(15) = option('mode', 'm', .false., '', '', &  ! is mode, "m" but I want to test the assertion below
+    options(k) = option('mode', 'm', .true., '', '', &  ! is mode, "m" but I want to test the assertion below
      'Program operational mode<br>'//&
      IND//'pfant: spectral synthesis mode<br>'//&
      IND//'nulbad: reads output from pfant mode and saves convolved spectrum<br>'//&
      IND//'pfant-nulbad: cascade pfant and nulbad operations')
-
+    k = k+1
     ! nulbad options
-    options(16) = option('nulbad_fileflux', ' ', .true., 'file name', config_nulbad_fileflux, &
-      'NULBAD Flux file name')
-
-    options(17) = option('nulbad_norm',     ' ', .true., 'T/F', logical2str(config_nulbad_norm), &
-      'NULBAD Is spectrum normalized?')
-
-    options(18) = option('nulbad_flam',     ' ', .true., 'T/F', logical2str(config_nulbad_flam), &
+    options(k) = option('nulbad_fileflux', ' ', .true., 'file name', config_nulbad_fileflux, &
+      'NULBAD Flux file name<br>'//&
+      '*Note*: looks for file in *output* directory, because the flux'//&
+      '        file is a PFANT output.')
+    k = k+1
+    options(k) = option('nulbad_norm',     ' ', .true., 'T/F', logical2str(config_nulbad_norm), &
+      'NULBAD Is spectrum normalized?<br>'//&
+      '*Note*: this setting is ignored in ''pfant-nulbad'' mode.')
+    k = k+1
+    options(k) = option('nulbad_flam',     ' ', .true., 'T/F', logical2str(config_nulbad_flam), &
       'NULBAD Fnu to FLambda transformation?')
-
-    options(19) = option('nulbad_flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+    k = k+1
+    options(k) = option('nulbad_flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
       'NULBAD output file name')
-
-    options(20) = option('nulbad_pat',      ' ', .true., 'real value', float2str(config_nulbad_pat), &
+    k = k+1
+    options(k) = option('nulbad_pat',      ' ', .true., 'real value', real2str(config_nulbad_pat), &
       'NULBAD step ?doc?')
-
-    options(21) = option('nulbad_convol',   ' ', .true., 'T/F', logical2str(config_nulbad_convol), &
+    k = k+1
+    options(k) = option('nulbad_convol',   ' ', .true., 'T/F', logical2str(config_nulbad_convol), &
       'NULBAD Apply convolution?')
-
-    options(22) = option('nulbad_fwhm',     ' ', .true., 'real value', float2str(config_nulbad_fwhm), &
+    k = k+1
+    options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real2str(config_nulbad_fwhm), &
       'NULBAD FWHM ?doc? full-width-half-???')
+
+    !__assertion__
+    ! Fortran will give no error trying to assign options(k), k > NUM_OPTIONS,
+    ! so I put this protection here
+    if (k .gt. NUM_OPTIONS) then
+      call pfant_halt('Assigned options('//int2str(k)//' > NUM_OPTIONS='//&
+       int2str(NUM_OPTIONS)//')', is_assertion=.true.)
+    end if
 
     !__assertion__: make sure that there are no repeated options. Checks all against all
     do i = 1, NUM_OPTIONS
       name = options(i)%name
+      ! write(*,*) i, name
       chr = options(i)%chr
       do j = i+1, NUM_OPTIONS
         if (name .eq. options(j)%name) then
@@ -258,24 +282,30 @@ contains
   !> Must be called at system startup
 
   subroutine config_setup()
-    integer i, n
-    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
-
-
     call init_options()
     call parse_args()
 
-    ! Configures data directory
-    inputdir_trim = trim(config_inputdir)
-    n = len(inputdir_trim)
-    do i = 1, n  ! Replaces backslash by forward slash
-      if (inputdir_trim(i:i) .eq. BACKSLASH) inputdir_trim(i:i) = '/'
-    end do
-    if (inputdir_trim(n:n) .ne. '/') inputdir_trim = inputdir_trim // '/'
+
+    ! Configures data directories
+    inputdir_trim = trim_slash(config_inputdir)
+    outputdir_trim = trim_slash(config_outputdir)
 
     call make_molids_on()
 
     flag_setup = .true.
+  contains
+    function trim_slash(x) result(y)
+      character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
+      character(*), intent(in) :: x
+      character(:), allocatable :: y
+      integer i, n
+      y = trim(x)
+      n = len(y)
+      do i = 1, n  ! Replaces backslash by forward slash
+        if (y(i:i) .eq. BACKSLASH) y(i:i) = '/'
+      end do
+      if (y(n:n) .ne. '/') y = y // '/'
+    end
   end
 
   !=======================================================================================
@@ -312,7 +342,6 @@ contains
     integer k  !> @todo for debugging, take it out
     integer o_len, o_stat, o_remain, o_offset, o_index, iTemp
     character*500 o_arg
-    character*128 lll
     logical err_out
     type(option) opt
 
@@ -410,6 +439,10 @@ contains
               ! Note: using same routine assign_fn() to assign directory
               call assign_fn(o_arg, config_inputdir, 'config_inputdir')
 
+            case ('outputdir')
+              ! Note: using same routine assign_fn() to assign directory
+              call assign_fn(o_arg, config_outputdir, 'config_outputdir')
+
             case ('molid_off')
               iTemp = str2int(opt, o_arg)
               call add_molid_off(iTemp)
@@ -424,11 +457,32 @@ contains
                 config_mode = to_lower(o_arg)
                 call log_assignment('operation mode', to_lower(o_arg))
               end if
+
+            case ('nulbad_fwhm')
+              config_nulbad_fwhm = str2real(opt, o_arg)
+              call log_assignment('config_nulbad_fwhm', real2str(config_nulbad_fwhm))
+            case ('nulbad_convol')
+              config_nulbad_convol = str2logical(opt, o_arg)
+              call log_assignment('config_nulbad_convol', logical2str(config_nulbad_convol))
+            case ('nulbad_pat')
+              config_nulbad_pat = str2real(opt, o_arg)
+              call log_assignment('config_nulbad_pat', real2str(config_nulbad_pat))
+            case ('nulbad_flcv')
+              call assign_fn(o_arg, config_nulbad_flcv, 'config_nulbad_flcv')
+            case ('nulbad_flam')
+              config_nulbad_flam = str2logical(opt, o_arg)
+              call log_assignment('config_nulbad_flam', logical2str(config_nulbad_flam))
+            case ('nulbad_fileflux')
+              call assign_fn(o_arg, config_nulbad_fileflux, 'config_nulbad_fileflux')
+            case ('nulbad_norm')
+              config_nulbad_norm = str2logical(opt, o_arg)
+              call log_assignment('config_nulbad_norm', logical2str(config_nulbad_norm))
+            case default
+              call pfant_halt('Forgot to treat option '//get_option_name(opt), is_assertion=.true.)
           end select
 
           if (err_out) then
-            write (lll, *) 'Invalid argument for option ', get_option_name(opt)
-            call pfant_halt(lll)
+            call pfant_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
           end if
       end select
 
@@ -485,6 +539,28 @@ contains
     end
 
     !-------------------------------------------------------------------------------------
+    !> Converts string to real, halting the program if conversion fails.
+    !>
+    !> This function takes an option as argument in order to form a comprehensible
+    !> error message if the conversion to real fails.
+
+    real*8 function str2real(opt, s)
+      !> Option, will be used only in case of error
+      type(option), intent(in) :: opt
+      !> String to be converted to integer
+      character(len=*), intent(in) :: s
+
+      read(s, *, err=20) str2real
+      go to 30
+
+      20 continue
+      call pfant_halt('Error parsing option '//get_option_name(opt)//&
+       ': invalid real argument: '''//trim(s)//'''')
+
+      30 continue
+    end
+
+    !-------------------------------------------------------------------------------------
     !> Converts string to logical, halting the program if conversion fails.
     !>
     !> This function takes an option as argument in order to form a comprehensible
@@ -520,18 +596,22 @@ contains
 
   !=======================================================================================
   !> Concatenates config_inputdir with specific filename
-  !>
-  !>   - sets up configuration defaults,
-  !>   - parses command-line arguments, and
-  !>   - does other necessary operations.
-  !>
-  !> Must be called at system startup
 
-  function fullpath(filename) result(res)
+  function fullpath_i(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res ! trimmed inputdir
+    character(len=:), allocatable :: res
 
     res = inputdir_trim // trim(filename)
+  end
+
+  !=======================================================================================
+  !> Concatenates config_outputdir with specific filename
+
+  function fullpath_o(filename) result(res)
+    character(len=*), intent(in) :: filename  !< File name
+    character(len=:), allocatable :: res
+
+    res = outputdir_trim // trim(filename)
   end
 
   !=======================================================================================
