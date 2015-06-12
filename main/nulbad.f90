@@ -1,4 +1,5 @@
 ! Plan for nulbadgrade
+! Plan for nulbadgrade
 !
 ! 3) make it run with new libraries (I may want PFANT in NULBADGRADE mode)
 ! 4) separate the calculation from file reading
@@ -150,7 +151,7 @@ contains
     real*8, intent(in) :: ffnu(ktot)  !< Flux Fnu of ktot valid elements
     integer, intent(in) :: ktot       !< Number of valid elements in ffnu(:)
     real*8, parameter :: C = 2.997929E+10
-    integer d, dmj, dtotc, k, i, ift, ip, j, jp1, kktot, m
+    integer d, dmj, dtotc, k, i, ip, j, jp1, kktot, m
     real*8, dimension(ktot) :: ffl, lambd, alfl, afl, fl, tl
     real*8 alf, alz, ca, cb
     character*92 lll
@@ -193,9 +194,9 @@ contains
     !
     if(config_nulbad_convol) then
       call cafconvh()
-      call log_debug('ift='//int2str(ift))
+      call log_debug('p_ift='//int2str(p_ift))
 
-      j = (ift-1)/2
+      j = (p_ift-1)/2
       jp1 = j+1
       dmj = ktot-j
       dtotc = dmj-jp1+1
@@ -329,7 +330,7 @@ contains
     real*8 :: at(-IPPTOT:+IPPTOT)
     real*8, parameter :: C7 = 1.772453
     real*8 :: sigma, aa, totlarg, bb, z
-    integer i, ifd, ift
+    integer i, ifd
     character*392 lll
 
     ! GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
@@ -368,9 +369,9 @@ contains
 
     40 continue
     ifd = i-1
-    ift = 1 + 2*ifd
+    p_ift = 1 + 2*ifd
 
-    if(ift .gt. MAX_P_IFT)  then
+    if(p_ift .gt. MAX_P_IFT)  then
       write(lll,137)
       !> @todo numbers in message probably wrong
       137  FORMAT(5X,'LA FCTION PAR LAQUELLE VOUS VOULEZ CONVOLER A ', &
@@ -380,17 +381,17 @@ contains
       call pfant_halt(lll)
     end if
 
-    do i = 1,ift
+    do i = 1,p_ift
       p_tfi(i) = at(i-ifd-1)
     end do
 
     z = c7*aa
 
-    do i = 1,ift
+    do i = 1,p_ift
       p_fi(i) = exp( -(p_tfi(i)/aa)**2)  ! here's gaussian exponential
     end do
 
-    do i = 1,ift
+    do i = 1,p_ift
       p_fi(i) = p_fi(i) / z
     end do
   end

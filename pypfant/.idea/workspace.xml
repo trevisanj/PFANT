@@ -69,8 +69,8 @@
       <file leaf-file-name="fl.norm.nulbadgrade_original" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testing/read_spectrum_01/fl.norm.nulbadgrade_original">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1817766">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.9076923" vertical-offset="1816596" max-vertical-offset="1817766">
+              <caret line="100981" column="0" selection-start-line="100981" selection-start-column="0" selection-end-line="100981" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -544,8 +544,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/testing/read_spectrum_01/fl.norm.nulbadgrade_original">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1817766">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.9076923" vertical-offset="1816596" max-vertical-offset="1817766">
+          <caret line="100981" column="0" selection-start-line="100981" selection-start-column="0" selection-end-line="100981" selection-end-column="0" />
           <folding />
         </state>
       </provider>
