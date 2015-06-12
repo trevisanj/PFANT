@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
-				<Option parameters='--inputdir &quot;../inputfiles/bwf1&quot; --loglevel debug \   --fn_atomgrade     atom4070g.dat \   --fn_moleculagrade mghc2cnr_cn3ch13chtiog3tio.dat \   --fn_absoru2       absoru.dat' />
+				<Option parameters='--inputdir &quot;../inputfiles/bwf1&quot; --loglevel debug --fn_atomgrade atom4070g.dat --fn_moleculagrade mghc2cnr_cn3ch13chtiog3tio.dat --fn_absoru2 absoru.dat' />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -64,6 +64,9 @@
 			<Option weight="1" />
 		</Unit>
 		<Unit filename="molecules.f90">
+			<Option weight="3" />
+		</Unit>
+		<Unit filename="nulbad.f90">
 			<Option weight="3" />
 		</Unit>
 		<Unit filename="options2.f90">

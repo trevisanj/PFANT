@@ -271,9 +271,6 @@ contains
 
     tetaef = 5040/main_teff
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
-
-
     !-----
     ! Output files opened here and left open until the end
     !-----
@@ -319,6 +316,11 @@ contains
     lfin = lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
 
+    !> @todo check if 10 is LAMBDA_STRETCH/2
+    l0 = main_llzero-10.
+    lf = main_llfin+10.
+
+
 
     !=====
     ! Main loop
@@ -326,9 +328,6 @@ contains
     do while (.true.)
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
-
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
-
 
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = int((lfin-lzero)/main_pas + 1.0005)
@@ -481,8 +480,6 @@ contains
         selekfh_fcont(d) = selekfh_fcont(d)*(10.**5)
         fn(d) = selekfh_fl(d) / selekfh_fcont(d)  ! normalized spectrum
       end do
-      l0 = main_llzero-10.
-      lf = main_llfin+10.
 
 
       ! Copies normalized spectrum to Fnu vector
@@ -551,25 +548,24 @@ contains
 
       1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
-       ikeytot,                &
-       (modeles_tit(i),i=1,5), &
-       tetaef,                 &
-       main_glog,              &
-       main_asalog,            &
-       modeles_nhe,            &
-       amg,                    &
-       l0,                     &
-       lf,                     &
-       lzero,                  &
-       lfin,                   &
-       itot,                   &
-       main_pas,               &
-       main_echx,              &
-       main_echy,              &
-       main_fwhm
+       ikeytot,                &  ! fixed (same value for all iterations)
+       (modeles_tit(i),i=1,5), &  ! fixed
+       tetaef,                 &  ! fixed
+       main_glog,              &  ! fixed
+       main_asalog,            &  ! fixed
+       modeles_nhe,            &  ! fixed
+       amg,                    &  ! fixed
+       l0,                     &  ! fixed
+       lf,                     &  ! fixed
+       lzero,                  &  ! changes (value changes with each iteration)
+       lfin,                   &  ! changes
+       itot,                   &  ! changes
+       main_pas,               &  ! fixed
+       main_echx,              &  ! fixed
+       main_echy,              &  ! fixed
+       main_fwhm                  ! fixed
 
-      1132 format(40000f15.5)
-      WRITE(unit_,1132) (item(d), d=i1,i2)
+      write(unit_,'(40000f15.5)') (item(d), d=i1,i2)
     end
 
     !> Writes into file log.log

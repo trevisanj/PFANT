@@ -285,10 +285,14 @@ contains
     call init_options()
     call parse_args()
 
-
     ! Configures data directories
     inputdir_trim = trim_slash(config_inputdir)
     outputdir_trim = trim_slash(config_outputdir)
+
+    ! Default value for config_nulbad_flcv
+    if (config_nulbad_flcv .eq. '') then
+      config_nulbad_flcv = trim(config_nulbad_fileflux)//'.nulbad'
+    end if
 
     call make_molids_on()
 

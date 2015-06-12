@@ -155,7 +155,8 @@ contains
     real*8 alf, alz, ca, cb
     character*92 lll
 
-    open(unit=UNIT_,status='new',file=fullpath_o(config_nulbad_flcv))
+    ! Note: will now replace output file if already existent
+    open(unit=UNIT_,status='replace',file=fullpath_o(config_nulbad_flcv))
 
     do k = 1, ktot
       lambd(k) = nulbad_l0+(k-1)*nulbad_dpas
@@ -180,6 +181,12 @@ contains
     end if
 
     ip = int(config_nulbad_pat/nulbad_dpas)
+
+    if (ip .lt. 1) then
+      call log_warning('New step ('//real2str(config_nulbad_pat)//&
+       ') lower than old step ('//real2str(nulbad_dpas)//'), ip forced to 1')
+      ip = 1
+    end if
 
     !
     !  Convolution sp synthetique avec profil instrumental
@@ -249,6 +256,8 @@ contains
     write(UNIT_,202) kktot,nulbad_l0,nulbad_lf,config_nulbad_pat,config_nulbad_fwhm
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
+
+    write(*,*) 'ppppppppppppp', afl(1), alfl(1)
 
     do k=1,kktot
       write(UNIT_,*) tl(k), afl(k)
@@ -336,7 +345,7 @@ contains
     call log_debug(lll)
     write(lll,134) totlarg
     134 format(' Gaussienne calculee jusqu a une distance du centre:', &
-     ' 3(SIGMA*1.414)=',F7.3,' (A)')
+     ' 3(SIGMA*1.414)=',F7.3,' Ŝ(A)')
     call log_debug(lll)
 
     at(0)=0

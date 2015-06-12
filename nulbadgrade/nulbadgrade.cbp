@@ -19,6 +19,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="nulbadgrade.f90">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />
