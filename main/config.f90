@@ -245,7 +245,7 @@ contains
       'NULBAD Apply convolution?')
     k = k+1
     options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real2str(config_nulbad_fwhm), &
-      'NULBAD FWHM ?doc? full-width-half-???')
+      'NULBAD full-width-half-maximum of gaussian')
 
     !__assertion__
     ! Fortran will give no error trying to assign options(k), k > NUM_OPTIONS,
