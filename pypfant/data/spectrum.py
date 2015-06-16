@@ -3,9 +3,9 @@ __all__ = ["spectrum"]
 import fortranformat as ff
 import struct
 import re
-
-class ParseError(Exception):
-    pass
+import logging
+import numpy as np
+from pypfant.errors import *
 
 class spectrum(object):
     def __init__(self):
@@ -48,7 +48,7 @@ class spectrum(object):
             f_header = ff.FortranRecordReader(
                 "(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)")
             i = 0
-            self.y = []
+            y = []
 
             while True:
                 s = h.readline()
@@ -93,19 +93,23 @@ class spectrum(object):
 
                 if i < self.ikeytot-1:
                     # for some reason the last point is not used...
-                    self.y = self.y+v[:-1]
+                    y = y+v[:-1]
                 else:
                     # ...except for in the last calculation interval
                     # (then the last point is used).
                     # This is an imitation of NULBADGRADE fileflux reading
-                    self.y = self.y+v
+                    y = y+v
                     break
 
                 i += 1
                 last_itot = itot
 
         # Lambdas
-        self.x = [self.l0+k*self.pas for k in range(0, len(self.y))]
+        self.x = np.array([self.l0+k*self.pas for k in range(0, len(y))])
+        self.y = np.array(y)
+
+        logging.debug("Just read PFANT spectrum '%s'" % filename)
+
 
     def read_nulbad(self, filename):
         """
@@ -118,8 +122,8 @@ class spectrum(object):
         :return:
         """
 
-        self.x = []
-        self.y = []
+        x = []
+        y = []
 
         with open(filename, 'r') as h:
             # -- row 01 --
@@ -157,7 +161,10 @@ class spectrum(object):
                     raise ParseError('Row %d of file %s is invalid' % (i+3, filename))
                 a, b = map(float, match.groups())
 
-                self.x.append(a)
-                self.y.append(b)
+                x.append(a)
+                y.append(b)
 
+        self.x = np.array(x)
+        self.y = np.array(y)
+        logging.debug("Just read NULBAD spectrum '%s'" % filename)
 

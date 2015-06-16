@@ -111,6 +111,9 @@
 !>
 !> @note Flux absolu sortant a ete multiplie par 10**5
 !>
+!> @note Existing files are replaced
+!>
+!> @todo make file replacing clear somewhere because it was not the original behaviour
 
 !>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
@@ -274,11 +277,12 @@ contains
     !-----
     ! Output files opened here and left open until the end
     !-----
-    open(unit=UNIT_SPEC, file=fullpath_o(trim(main_fileflux)//'.spec'), status='unknown')  ! spectrum
-    open(unit=UNIT_CONT, file=fullpath_o(trim(main_fileflux)//'.cont'), status='unknown')  ! continuum
-    open(unit=UNIT_NORM, file=fullpath_o(trim(main_fileflux)//'.norm'), status='unknown')  ! normalized
-    open(unit=UNIT_LINES,file=fullpath_o(config_fn_lines), status='unknown')               ! outfile:lines
-    open(unit=UNIT_LOG,  file=fullpath_o(config_fn_log), status='unknown')                 ! log.log
+    ! Note that existing files are replaced
+    open(unit=UNIT_SPEC, file=fullpath_o(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=fullpath_o(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=fullpath_o(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
+    open(unit=UNIT_LINES,file=fullpath_o(config_fn_lines), status='replace')               ! outfile:lines
+    open(unit=UNIT_LOG,  file=fullpath_o(config_fn_log), status='replace')                 ! log.log
 
 
     !=====
