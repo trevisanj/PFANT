@@ -1,5 +1,5 @@
-better to run with subprocess POpen, will be able to terminate
-tired
+# better to run with subprocess POpen, will be able to terminate
+# tired
 
 """
 Wraps over the PFANT executable
@@ -9,10 +9,13 @@ __all__ = ["Pfant"]
 
 from .data import *
 from .misc import *
-import os.path
+import subprocess
 import os
+import os.path
 import threading
+import logging
 
+logger = logging.getLogger("pfant")
 
 class PfantRunner(threading.Thread):
     """Thread that runs PFANT."""
@@ -27,20 +30,13 @@ class PfantRunner(threading.Thread):
 
 
 class PfantProgress(threading.Thread):
-
+    pass
 
 
 
 
 
 class Pfant(object):
-
-    @property
-    def is_running(self):
-        with self._L_running:
-            return self._is_running
-
-
     def __init__(self):
         self.exec_path = "./pfant"  # Path to PFANT executable (including executable name)
 
@@ -66,15 +62,24 @@ class Pfant(object):
         self.inputdir = None
         self.outputdir = None
 
-        self._is_running = False
-        self._L_running = threading.Lock()
+        self.stdout = None
+
+        self.popen = None
+        self.ikey = None  # Current iteration (Fortran: ikey)
+        self.ikeytot = None  # Current iteration (Fortran: ikeytot)
+
+        self._fn_progress = "progress.txt"
+
+    def is_running(self):
+        if self.popen is None:
+            return False
+        self.popen.poll()
+        return self.popen.returncode is None
 
     def run(self):
+        """Blocking routine. Overwrites self.popen."""
 
-        if self._is_running:
-            raise RuntimeError('PFANT already running')
-
-        self._is_running = True
+        assert not self.is_running(), "Already running"
 
         map0 = [(self.main, 'fn_main'),
                 (self.abonds, 'fn_abonds'),
@@ -94,12 +99,30 @@ class Pfant(object):
                 # Overwrites config option
                 self.__setattr__(attr_name, new_fn)
 
-        s = self._get_command_line()
+        l = self._get_command_line()
 
-        os.system(s)
+        logger.debug("PFANT Command-line:")
+        logger.debug(" ".join(l))
 
-        self._is_running = False
+        self.popen = subprocess.Popen(l, stdout=self.stdout)
+        self.popen.wait()  # Blocks execution until finished
+        logger.debug("PFANT returned")
 
+    def kill(self):
+        assert self.is_running(), "Not running"
+        self.popen.kill()
+
+    def poll(self):
+        """Calls popen poll() and tries to read progress file."""
+        if self.popen is not None:
+            self.popen.poll()
+
+        p = self._get_fullpath_o(self._fn_progress)
+        if os.path.isfile(p):
+            with open(p) as h:
+                self.ikey, self.ikeytot = map(int, h.readline().split("/"))
+        else:
+            self.ikey, self.ikeytot = None, None
 
     def _get_fullpath_i(self, fn):
         """Joins self.inputdir with specified filename."""
@@ -108,11 +131,19 @@ class Pfant(object):
         else:
             return fn
 
+    def _get_fullpath_o(self, fn):
+        """Joins self.inputdir with specified filename."""
+        if self.inputdir is not None:
+            return os.path.join(self.inputdir, fn)
+        else:
+            return fn
+
     def _get_command_line(self):
+        """Returns list [program, arg0, arg1, ...]."""
         if self.exec_path is None:
             raise RuntimeError("Must set path to executable (exec_path)")
 
-        options = []
+        cmd_line = [self.exec_path, "--fn_progress", self._fn_progress]
 
         # Input/output file names
         # Actually, options with argument
@@ -129,11 +160,7 @@ class Pfant(object):
                     # Checks if string has space in order to add quotes
                     if " " in arg:
                         arg = '"'+arg+'"'
-                options.append("--%s %s" % (option_name, arg))
-
-
-        cmd_line = self.exec_path
-        if len(options) > 0:
-            cmd_line += " "+(" ".join(options))
+                cmd_line.append("--%s" % option_name)
+                cmd_line.append(str(arg))
 
         return cmd_line
