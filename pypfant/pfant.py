@@ -1,17 +1,55 @@
+better to run with subprocess POpen, will be able to terminate
+tired
+
 """
 Wraps over the PFANT executable
 """
+
+__all__ = ["Pfant"]
 
 from .data import *
 from .misc import *
 import os.path
 import os
+import threading
 
-class pfant(object):
+
+class PfantRunner(threading.Thread):
+    """Thread that runs PFANT."""
+
+    def __init__(self, pfant, *args, **kwargs):
+        threading.Thread.__init__(self, *args, **kwargs)
+        assert isinstance(pfant, Pfant)
+        self._pfant = pfant
+
+    def run(self):
+        self._pfant.run()
+
+
+class PfantProgress(threading.Thread):
+
+
+
+
+
+
+class Pfant(object):
+
+    @property
+    def is_running(self):
+        with self._L_running:
+            return self._is_running
+
+
     def __init__(self):
-        self.exec_path = None  # Path to PFANT executable (including executable name)
+        self.exec_path = "./pfant"  # Path to PFANT executable (including executable name)
 
+        # -----
+        # Note: If any of these attributes are set, their corresponding fn_* variable
+        #       will be overwritten
+        # FileAbonds instance
         self.abonds = None
+        # FileMain instance
         self.main = None
 
         self.fn_dissoc        = None
@@ -28,12 +66,23 @@ class pfant(object):
         self.inputdir = None
         self.outputdir = None
 
+        self._is_running = False
+        self._L_running = threading.Lock()
+
     def run(self):
-        map0 = [(self.abonds, 'fn_abonds')]
+
+        if self._is_running:
+            raise RuntimeError('PFANT already running')
+
+        self._is_running = True
+
+        map0 = [(self.main, 'fn_main'),
+                (self.abonds, 'fn_abonds'),
+                ]
 
         for obj, attr_name in map0:
             if obj is not None:
-                assert isinstance(obj, input_structure)
+                assert isinstance(obj, InputFile)
                 # Makes filename, e.g., abonds32732.dat
                 # -----
                 # Uses default name as a base for name of file that doesn't exist
@@ -48,6 +97,8 @@ class pfant(object):
         s = self._get_command_line()
 
         os.system(s)
+
+        self._is_running = False
 
 
     def _get_fullpath_i(self, fn):
@@ -85,3 +136,4 @@ class pfant(object):
         if len(options) > 0:
             cmd_line += " "+(" ".join(options))
 
+        return cmd_line

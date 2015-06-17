@@ -329,6 +329,7 @@ contains
     !=====
     ! Main loop
     !=====
+    call log_progress(0, ikeytot)
     do while (.true.)
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
@@ -508,6 +509,8 @@ contains
       707 format(1x,'ikey=',i10,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'i1=',i7,2x,'i2=',i7)
       write(lll,707) ikey, lzero, lfin, i1, i2
       call log_info(lll)
+
+      call log_progress(ikey, ikeytot)
 
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit !main loop exit door!> @todo issue ?what? ?doc? does this condition mean?

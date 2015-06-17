@@ -2,5 +2,6 @@
 Data representations.
 """
 from .spectrum import *
-from .abonds import *
-from .input_structure import *
+from .fileabonds import *
+from .filemain import *
+from .inputfile import *

@@ -1,12 +1,12 @@
-__all__ = ["abonds"]
+__all__ = ["FileAbonds"]
 
 import struct
-from .input_structure import *
+from .inputfile import *
 
-from misc import *
+from ..misc import *
 
 
-class abonds(input_structure):
+class FileAbonds(InputFile):
     default_filename = "abonds.dat"
 
     def __init__(self):

@@ -96,7 +96,7 @@ module read_most_files
   real*8    main_pas,    & !< ?doc?
             main_echx,   & !< ?doc?
             main_echy,   & !< ?doc?
-            main_fwhm,   & !< ?doc?
+            main_fwhm,   & !< not used
             main_mu,     & !< ?doc?
             main_afstar, & !< ?doc?
             main_llzero, & !< ?doc?
@@ -270,8 +270,10 @@ contains
       read(unit_,*) (main_vvt(i) ,i=1, main_ivtot)
     end if
 
+    !> @todo issue Carlos Silveira about relation between main_asalog and main_afstar: they are both the metallicity
+
     ! row 04
-    read(unit_, *) main_teff, main_glog, main_asalog, main_nhe,main_inum
+    read(unit_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
 
     ! row 05
     read(unit_, *) main_ptdisk, main_mu

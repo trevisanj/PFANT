@@ -43,15 +43,16 @@ module logging
 
 
   !=====
-  !> Configurable variable
+  ! Configurable variables
   !=====
   !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
   !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
   integer :: logging_level = LOGGING_DEBUG
-
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  !> File to record progress indication
+  character*256 :: logging_path_progress = 'progress.txt'
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   private :: do_logging
@@ -59,7 +60,7 @@ module logging
   save
 contains
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message at HALT level and halts program execution with error code -1.
   !>
   !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
@@ -104,7 +105,7 @@ contains
     stop -1
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as HALT. Logs unconditionally (independent of logging level).
   !>
   !> This allows the calling routine to log halt-level messages before calling
@@ -116,7 +117,7 @@ contains
     call do_logging(s, LOGGING_HALT)
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as CRITICAL
 
   subroutine log_critical(s)
@@ -126,7 +127,7 @@ contains
     end if
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as ERROR
 
   subroutine log_error(s)
@@ -136,7 +137,7 @@ contains
     end if
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as WARNING
 
   subroutine log_warning(s)
@@ -146,7 +147,7 @@ contains
     end if
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as INFO
 
   subroutine log_info(s)
@@ -156,7 +157,7 @@ contains
     end if
   end
 
-  !-------------------------------------------------------------------------------
+  !---------------------------------------------------------------------------------------
   !> Logs message as DEBUG
 
   subroutine log_debug(s)
@@ -166,9 +167,46 @@ contains
     end if
   end
 
-  !===============================================================================
+  !---------------------------------------------------------------------------------------
+  !> Logs progress
+  !>
+  !> uses log_info() to write to screen + writes information into
+  !> logging::logging_path_progress
+  !>
+  !> If cannot create file, does not bother (warns)
 
-  !-------------------------------------------------------------------------------
+  subroutine log_progress(i, n)
+    integer, intent(in) :: i, & !< current iteration
+                           n    !< number of iterations
+    real*8 perc
+    character*50 lll
+    integer, parameter :: UNIT_ = 199
+    perc = 100.*i/n
+
+    !__assertion__
+    if (n .gt. 9999) then
+      call pfant_halt('Cannot log progress for number of iterations > 9999', &
+       is_assertion=.true.)
+    end if
+
+    write (lll,'(''$-$-$ progress: '', f5.1, ''% ('', i4, ''/'', i4, '') $-$-$'')') &
+     perc, i, n
+    call log_info(lll)
+    open(unit=UNIT_, file=logging_path_progress, status='replace', err=10)
+
+    write(UNIT_, '(i4, ''/'', i4)') i, n
+    close(UNIT_)
+    goto 11
+
+    10 continue
+    call log_warning('Could not create progress indicator file')
+
+    11 continue
+  end
+
+  !=======================================================================================
+
+  !---------------------------------------------------------------------------------------
   !> Internal routine, MUST NOT be called from outside
 
   subroutine do_logging(s, level)

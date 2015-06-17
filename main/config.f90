@@ -58,7 +58,8 @@ module config
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
    config_fn_moleculagrade = 'moleculagrade.dat', & !< option: --fn_moleculagrade
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log'              !< option: --fn_log
+   config_fn_log           = 'log.log',           & !< option: --fn_log
+   config_fn_progress      = 'progress.txt'
 
   character*256 :: config_inputdir = './'   !< command-line option --inputdir
   character*256 :: config_outputdir = './'  !< command-line option --outputdir
@@ -101,8 +102,6 @@ module config
 
 
 
-
-
   !====================================
 
   !=====
@@ -129,7 +128,7 @@ module config
   ! ║ ║├─┘ │ ││ ││││└─┐
   ! ╚═╝┴   ┴ ┴└─┘┘└┘└─┘ command-line options
 
-  integer, parameter, private :: NUM_OPTIONS = 23       !< Number of command-line options
+  integer, parameter, private :: NUM_OPTIONS = 24       !< Number of command-line options
   type(option), private :: options(NUM_OPTIONS), opt    !< Options
 
   private make_molids_on
@@ -204,6 +203,9 @@ contains
     k = k+1
     options(k) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
      'input file name - molecular lines')
+    k = k+1
+    options(k) = option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
+     'output file name - progress indicator')
     k = k+1
     options(k) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
       'directory containing input files')
@@ -288,6 +290,9 @@ contains
     ! Configures data directories
     inputdir_trim = trim_slash(config_inputdir)
     outputdir_trim = trim_slash(config_outputdir)
+
+    ! Configures other modules
+    logging_path_progress = fullpath_o(config_fn_progress)
 
     ! Default value for config_nulbad_flcv
     if (config_nulbad_flcv .eq. '') then
@@ -434,6 +439,8 @@ contains
               call assign_fn(o_arg, config_fn_atomgrade, 'config_fn_atomgrade')
             case ('fn_moleculagrade')
               call assign_fn(o_arg, config_fn_moleculagrade, 'config_fn_moleculagrade')
+            case ('fn_progress')
+              call assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
 !            case ('fn_lines')
 !              call assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')

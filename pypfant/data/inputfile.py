@@ -2,9 +2,9 @@
 Ancestor class for all classes that represent an input file.
 """
 
-__all__ = ["input_structure"]
+__all__ = ["InputFile"]
 
-class input_structure(object):
+class InputFile(object):
     default_filename = None  ## Descendants shoulds set this
 
     def save(self, filename):
