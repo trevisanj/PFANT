@@ -61,8 +61,10 @@ module config
    config_fn_log           = 'log.log',           & !< option: --fn_log
    config_fn_progress      = 'progress.txt'
 
-  character*256 :: config_inputdir = './'   !< command-line option --inputdir
-  character*256 :: config_outputdir = './'  !< command-line option --outputdir
+  character*256 :: &
+   config_inputdir    = './', &  !< command-line option --inputdir
+   config_outputdir   = './', &  !< command-line option --outputdir
+   config_inewmarcs_refdir = './'     !< command-line option --newmarcsdir
 
   !=====
   ! Variables related to molecules
@@ -224,6 +226,7 @@ contains
      IND//'nulbad: reads output from pfant mode and saves convolved spectrum<br>'//&
      IND//'pfant-nulbad: cascade pfant and nulbad operations')
     k = k+1
+
     ! nulbad options
     options(k) = option('nulbad_fileflux', ' ', .true., 'file name', config_nulbad_fileflux, &
       'NULBAD Flux file name<br>'//&
@@ -248,6 +251,13 @@ contains
     k = k+1
     options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real2str(config_nulbad_fwhm), &
       'NULBAD full-width-half-maximum of gaussian')
+
+    k = k+1
+    options(k) = option('inewmarcs_refdir',' ', .true., 'directory name', config_inewmarcs_refdir, &
+     'INEWMARCS Directory containing reference atmospheric models.<br>'//
+     'This directory must contain a file named "modelmap.dat" and<br>'//
+     'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
+
 
     !__assertion__
     ! Fortran will give no error trying to assign options(k), k > NUM_OPTIONS,
