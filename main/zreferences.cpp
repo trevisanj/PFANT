@@ -17,6 +17,8 @@
 
 @anchor CalvinSFont [CalvinSFont] http://patorjk.com/software/taag/#p=display&f=Calvin%20S&t=Options
 
+@anchor ThickFont [ThickFont] http://patorjk.com/software/taag/#p=display&f=Thick&t=PRIVATE
+
 @anchor FortranWiki [FortranWiki] http://fortranwiki.org/fortran/show/Command-line+arguments
 
 */

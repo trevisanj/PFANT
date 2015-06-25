@@ -74,5 +74,29 @@ contains
   end function
 
 
+  !> Trims spaces at the right and adds a final slash, if the latter is not present.
+  !>
+  !> Examples:
+  !> @verbatim
+  !> input             --> result
+  !> --------------------------------
+  !> "qwe/asd        " --> "qwe/asd/"
+  !> "qwe/asd/       " --> "qwe/asd/"
+  !> "qwe/asd/"        --> "qwe/asd/"
+  !> @endverbatim
+
+  function trim_and_add_slash(x) result(y)
+    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
+    character(*), intent(in) :: x
+    character(:), allocatable :: y
+    integer i, n
+    y = trim(x)
+    n = len(y)
+    do i = 1, n  ! Replaces backslash by forward slash
+      if (y(i:i) .eq. BACKSLASH) y(i:i) = '/'
+    end do
+    if (y(n:n) .ne. '/') y = y // '/'
+  end
+
 
 end module misc

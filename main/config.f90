@@ -298,8 +298,8 @@ contains
     call parse_args()
 
     ! Configures data directories
-    inputdir_trim = trim_slash(config_inputdir)
-    outputdir_trim = trim_slash(config_outputdir)
+    inputdir_trim = trim_and_add_slash(config_inputdir)
+    outputdir_trim = trim_and_add_slash(config_outputdir)
 
     ! Configures other modules
     logging_path_progress = fullpath_o(config_fn_progress)
@@ -312,19 +312,6 @@ contains
     call make_molids_on()
 
     flag_setup = .true.
-  contains
-    function trim_slash(x) result(y)
-      character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
-      character(*), intent(in) :: x
-      character(:), allocatable :: y
-      integer i, n
-      y = trim(x)
-      n = len(y)
-      do i = 1, n  ! Replaces backslash by forward slash
-        if (y(i:i) .eq. BACKSLASH) y(i:i) = '/'
-      end do
-      if (y(n:n) .ne. '/') y = y // '/'
-    end
   end
 
   !=======================================================================================
