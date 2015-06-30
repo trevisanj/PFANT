@@ -190,6 +190,24 @@ module read_most_files
 
   ! Attention: one has to specify sizes of all the variables here, because
   ! this may change with compiler
+
+  !> Structure to store atmospheric model read from binary file.
+  !> Binary file follows "NewMarcs" structure containing real numbers stored as real*4.
+  !> Hence the real*4 declarations.
+
+  type modele_record
+    integer*4 :: ntot
+
+    real*4 :: detef, dglog, dsalog, asalalf, nhe
+
+    real*4, dimension(MAX_MODELES_NTOT) :: &
+     nh, teta, pe, pg, t5l
+
+    character*20 :: tit, tiabs
+  end type
+
+
+
   integer modeles_ntot !< ?doc?
   character*20 modeles_tit   !< titre du modele interpolé
   character*20 modeles_tiabs !< ?doc? I just want to see this string at testing
@@ -737,25 +755,13 @@ contains
   !>
   !> This routine is constructed in a way that it can be used by read_modele() and 
   !> also within the inewmarcs module.
-
-  subroutine read_mod_record(path_to_file, rec_id,
-     r_ntot,    &
-     r_detef,   &
-     r_dglog,   &
-     r_dsalog,  &
-     r_asalalf, &
-     r_nhe,     &
-     r_tit,     &
-     r_tiabs,   &
-     r_nh,      &
-     r_teta,    &
-     r_pe,      &
-     r_pg,      &
-     r_t5l,
-     flag_open,
-     flag_close)
-
-    implicit none
+  !>
+  !> @note Output goes within "record". This could be made as a function and return the
+  !>       record, but then it wouldn't be so clear how the compiler would work out the
+  !>       memory, i.e., would the whole structure be copied into the variable declared at
+  !>       the caller?? Better to avoid doubts: we know that args are passed by reference.
+  
+  subroutine read_mod_record(path_to_file, rec_id, flag_open, flag_close, record)
     integer unit_
     parameter(unit_=199)
     character(len=*), intent(in) :: path_to_file
@@ -763,37 +769,23 @@ contains
     logical, intent(in) :: &
      flag_open, & !< whether to open the file
      flag_close & !< whether to close the file
+    type(modele_record), intent(out) :: record
     character*128 lll
 
-    integer*4, intent(out) :: &
-     r_ntot
-    real*4, intent(out) :: &
-     r_detef,   &
-     r_dglog,   &
-     r_dsalog,  &
-     r_asalalf, &
-     r_nhe
-    real*4, intent(out), dimension(MAX_MODELES_NTOT) :: &
-     r_nh,   &
-     r_teta, &
-     r_pe,   &
-     r_pg,   &
-     r_t5l
-    character*20, intent(out) :: r_tit, r_tiabs
     ! Record is read twice; second time bid "grabs" everything that was read before
     real*4 bid(16) 
 
     open(unit=unit_, access='direct',status='old', file=path_to_file, recl=1200)
 
     read(unit_, rec=rec_id) &
-     r_ntot,    &
-     r_detef,   &
-     r_dglog,   &
-     r_dsalog,  &
-     r_asalalf, &
-     r_nhe,     &
-     r_tit,     &
-     r_tiabs
+     record%ntot,    &
+     record%detef,   &
+     record%dglog,   &
+     record%dsalog,  &
+     record%asalalf, &
+     record%nhe,     &
+     record%tit,     &
+     record%tiabs
 
     if (r_ntot .eq. 9999) then
       !> @todo ISSUE perhaps I should check the condition that leads to this error
@@ -807,23 +799,22 @@ contains
     end if
 
     read(unit_, rec=rec_id) bid, &
-         (r_nh(i), &
-          r_teta(i), &
-          r_pe(i), &
-          r_pg(i), &
-          r_t5l(i), i=1,r_ntot)
+         (record%nh(i),   &
+          record%teta(i), &
+          record%pe(i),   &
+          record%pg(i),   &
+          record%t5l(i), i=1,r_ntot)
 
-    write(lll, *) 'read_mod_record(): ntot=', r_ntot
+    write(lll, *) 'read_mod_record(): ntot=', record%ntot
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): detef=', r_detef
+    write(lll, *) 'read_mod_record(): detef=', record%detef
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): dglog=', r_dglog
+    write(lll, *) 'read_mod_record(): dglog=', record%dglog
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): dsalog=', r_dsalog
+    write(lll, *) 'read_mod_record(): dsalog=', record%dsalog
     call log_debug(lll)
 
     close(unit_)
-
   end
 
 
@@ -843,13 +834,7 @@ contains
             id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
     character*128 lll
 
-    ! real*4 variables are declared only for reading from binary file.
-    ! Once read, their values will be copied to modeles_*
-    ! Same names as modeles_* but have the "r_" prefix.
-    integer*4 :: r_ntot
-    real*4, :: r_detef, r_dglog, r_dsalog, r_asalalf, r_nhe
-    real*4, dimension(MAX_MODELES_NTOT) :: r_nh, r_teta, r_pe, r_pg, r_t5l
-    character*20, intent(out) :: r_tit, r_tiabs
+    type(modele_record) :: r
 
     !> @todo better to give error if main_inum is not set
     !> @todo Check if FORTRAN initializes variables to zero automatically: can I rely on this??
@@ -857,8 +842,7 @@ contains
     id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
-    call read_mod_record(path_to_file, id_, r_ntot, r_detef, r_dglog, r_dsalog, &
-     r_asalalf, r_nhe, r_tit, r_tiabs, r_nh, r_teta, r_pe, r_pg, r_t5l, .true., .true.)
+    call read_mod_record(path_to_file, id_, .true., .true., r)
 
 
     !> @todo there is an intention here to *look for a model* that matches parameters in main.dat, but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
@@ -881,11 +865,11 @@ contains
 
     !__consistency check__
     ! series of consistency checks which were already present in the 2015- code
-    ddt  = abs(main_teff-r_modeles_detef)
-    ddg = abs(main_glog-r_modeles_dglog)
-    ddab = abs(main_asalog-r_modeles_dsalog)
-    if (abs(main_nhe-r_modeles_nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
-      write(lll, *) 'modeles nhe (', r_modeles_nhe, ') does not match main nhe (', main_nhe, ')'
+    ddt  = abs(main_teff-r%modeles_detef)
+    ddg = abs(main_glog-r%modeles_dglog)
+    ddab = abs(main_asalog-r%modeles_dsalog)
+    if (abs(main_nhe-r%modeles_nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
+      write(lll, *) 'modeles nhe (', r%modeles_nhe, ') does not match main nhe (', main_nhe, ')'
       call pfant_halt(lll)
     end if
     if(ddt .gt. 1.0) then
@@ -902,20 +886,20 @@ contains
     end if
 
     ! ready to copy (& convert) variables to their counterparts
-    modeles_ntot    = r_ntot     ! integer(4)-to-integer(?)
-    modeles_detef   = r_detef    ! real(4) to real(8)
-    modeles_dglog   = r_dglog    ! "
-    modeles_dsalog  = r_dsalog   ! "
-    modeles_asalalf = r_asalalf  ! "
-    modeles_nhe     = r_nhe      ! "
+    modeles_ntot    = r%ntot     ! integer(4)-to-integer(?)
+    modeles_detef   = r%detef    ! real(4) to real(8)
+    modeles_dglog   = r%dglog    ! "
+    modeles_dsalog  = r%dsalog   ! "
+    modeles_asalalf = r%asalalf  ! "
+    modeles_nhe     = r%nhe      ! "
     do i = 1, modeles_ntot
-      modeles_nh(i)   = r_nh(i)   ! real(4) to real(8)
-      modeles_teta(i) = r_teta(i) ! "
-      modeles_pe(i)   = r_pe(i)   ! "
-      modeles_pg(i)   = r_pg(i)   ! "
-      modeles_t5l(i)  = r_t5l(i)  ! "
+      modeles_nh(i)   = r%nh(i)   ! real(4) to real(8)
+      modeles_teta(i) = r%teta(i) ! "
+      modeles_pe(i)   = r%pe(i)   ! "
+      modeles_pg(i)   = r%pg(i)   ! "
+      modeles_t5l(i)  = r%t5l(i)  ! "
     end do
-    modeles_tit = r_tit
-    modeles_tiabs = r_tiabs
+    modeles_tit = r%tit
+    modeles_tiabs = r%tiabs
   end
 end module read_most_files
