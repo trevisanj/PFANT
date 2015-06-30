@@ -19,7 +19,6 @@
 !> @sa filetoh, molecules
 !> @todo create REAL*4 temp locals, then transfer to REAL*8 ones
 !>
-!> Note that all reading routines expect a @c filename parameter.
 !> @todo create a "File reading" page to explain the situation of infile:main, dissoc.dat etc referring to a concept rather than a file of that name.
 
 module read_most_files
@@ -32,7 +31,6 @@ module read_most_files
   !=====
 
   integer, parameter :: MAX_MAIN_FILETOH_NUMFILES=30   !< Maximum number of "filetoh" files
-
 
   !> Maximum number of metal rows in dissoc.dat
   !> (number of elements actually used is specified by variable
@@ -193,7 +191,7 @@ module read_most_files
   ! Attention: one has to specify sizes of all the variables here, because
   ! this may change with compiler
   integer modeles_ntot !< ?doc?
-  character*4 modeles_tit(5) !< ?doc?
+  character*20 modeles_tit   !< titre du modele interpolé
   character*20 modeles_tiabs !< ?doc? I just want to see this string at testing
   real*8 modeles_detef,   & !< ?doc?
          modeles_dglog,   & !< ?doc?
@@ -231,11 +229,11 @@ contains
   !> @todo ISSUE Documentation
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
-  subroutine read_main(filename)
+  subroutine read_main(path_to_file)
     implicit none
     integer unit_
     parameter(unit_=4)
-    character(len=*), intent(in) :: filename
+    character(len=*), intent(in) :: path_to_file
     integer ih, i
     character*256 lll
     character*64 filetoh_temp
@@ -244,7 +242,7 @@ contains
       call pfant_halt('read_dissoc() must be called before read_main()')
     end if
 
-    open(unit=unit_,file=filename, status='old')
+    open(unit=unit_,file=path_to_file, status='old')
 
     ! row 01: object name, e.g. "sun"
     read(unit_, '(20a)') main_titrav
@@ -286,7 +284,7 @@ contains
     ! (MT) I agree
     read(unit_, *)(main_xxcor(i), i=1, dissoc_nmetal)
 
-    ! row 08 -- part of a filename
+    ! row 08 -- part of a file name
     ! This line will define the names of three output files:
     !   FILEFLUX.cont
     !   FILEFLUX.norm
@@ -349,11 +347,11 @@ contains
   !<      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
   !> @todo PROPOSE: use READ()'s "END=" option
 
-  subroutine read_dissoc(filename)
+  subroutine read_dissoc(path_to_file)
     integer unit_
     integer i, j, k, m, mmaxj
     parameter(unit_=199)
-    character(len=*) :: filename
+    character(len=*) :: path_to_file
     character*128 lll
     character*2 symbol
     logical flag_found
@@ -362,7 +360,7 @@ contains
     integer*4 natomm, nelemm
     dimension natomm(5), nelemm(5)
 
-    open(unit=unit_,file=filename, status='old')
+    open(unit=unit_,file=path_to_file, status='old')
 
     ! row 01
     read(unit_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
@@ -491,11 +489,11 @@ contains
   !> @todo Test one row!!!
   !> @todo use READ()'s "END=" option
 
-  subroutine read_abonds(filename)
+  subroutine read_abonds(path_to_file)
     implicit none
     integer unit_, finab, k, j
     parameter(unit_=199)
-    character(len=*) :: filename
+    character(len=*) :: path_to_file
     logical flag_found
     real*8 fstar
 
@@ -503,7 +501,7 @@ contains
       call pfant_halt('read_main() must be called before read_abonds()')
     end if
 
-    open(unit=unit_,file=filename, status='old')
+    open(unit=unit_,file=path_to_file, status='old')
 
     fstar = 10**main_afstar
 
@@ -574,15 +572,15 @@ contains
   !> 2) Series of rows to fill in partit_TABU(J, :, :)
   !> @endverbatim
 
-  subroutine read_partit(filename)
+  subroutine read_partit(path_to_file)
     implicit none
     integer unit_
     parameter(unit_=199)
-    character(len=*) :: filename
+    character(len=*) :: path_to_file
 
     integer finpar, j, kmax, l, k
 
-    open(unit=unit_,file=filename, status='old')
+    open(unit=unit_,file=path_to_file, status='old')
 
 
     j = 1
@@ -639,16 +637,16 @@ contains
   !> PUIS LES DONNEES CORRESPONDANTS AUX ABSORBANTS METALLIQUES SI NECE
   !>
 
-  subroutine read_absoru2(filename)
+  subroutine read_absoru2(path_to_file)
     implicit none
     integer unit_
     parameter(unit_=199)
-    character(len=*) :: filename
+    character(len=*) :: path_to_file
     character*80 lll
     character*3 neant
     integer nion, i, ith, j, nrr, nset
 
-    open(unit=unit_,file=filename, status='old')
+    open(unit=unit_,file=path_to_file, status='old')
 
     ! ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
     ! ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
@@ -733,105 +731,160 @@ contains
   end
 
 
-  !=======================================================================================
-  !> Reads single record from file infile:modeles into variables modeles_*
-  !>
-  !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN INUM LE NUM DU MODELE
-  !> SUR LE FICHIER ACCES DIRECT
-  !>
-  !> Depends on main_INUM
-  !> @todo ISSUE: depends on other main_* but I think not for long
 
-  subroutine read_modele(filename)
+  !=======================================================================================
+  !> Reads single record from .mod file
+  !>
+  !> This routine is constructed in a way that it can be used by read_modele() and 
+  !> also within the inewmarcs module.
+
+  subroutine read_mod_record(path_to_file, rec_id,
+     r_ntot,    &
+     r_detef,   &
+     r_dglog,   &
+     r_dsalog,  &
+     r_asalalf, &
+     r_nhe,     &
+     r_tit,     &
+     r_tiabs,   &
+     r_nh,      &
+     r_teta,    &
+     r_pe,      &
+     r_pg,      &
+     r_t5l,
+     flag_open,
+     flag_close)
+
     implicit none
     integer unit_
     parameter(unit_=199)
-    character(len=*) :: filename
+    character(len=*), intent(in) :: path_to_file
+    integer, intent(in) :: rec_id !< record identifier (>= 1)
+    logical, intent(in) :: &
+     flag_open, & !< whether to open the file
+     flag_close & !< whether to close the file
+    character*128 lll
+
+    integer*4, intent(out) :: &
+     r_ntot
+    real*4, intent(out) :: &
+     r_detef,   &
+     r_dglog,   &
+     r_dsalog,  &
+     r_asalalf, &
+     r_nhe
+    real*4, intent(out), dimension(MAX_MODELES_NTOT) :: &
+     r_nh,   &
+     r_teta, &
+     r_pe,   &
+     r_pg,   &
+     r_t5l
+    character*20, intent(out) :: r_tit, r_tiabs
+    ! Record is read twice; second time bid "grabs" everything that was read before
+    real*4 bid(16) 
+
+    open(unit=unit_, access='direct',status='old', file=path_to_file, recl=1200)
+
+    read(unit_, rec=rec_id) &
+     r_ntot,    &
+     r_detef,   &
+     r_dglog,   &
+     r_dsalog,  &
+     r_asalalf, &
+     r_nhe,     &
+     r_tit,     &
+     r_tiabs
+
+    if (r_ntot .eq. 9999) then
+      !> @todo ISSUE perhaps I should check the condition that leads to this error
+      call pfant_halt('Le modele desire ne est pas sur le fichier')
+    end if
+
+    !__spill check__: Checks if exceeds maximum number of elements allowed
+    if (r_ntot .gt. MAX_MODELES_NTOT) then
+      call pfant_halt('read_mod_record(): ntot = '//int2str(r_ntot)//&
+       ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
+    end if
+
+    read(unit_, rec=rec_id) bid, &
+         (r_nh(i), &
+          r_teta(i), &
+          r_pe(i), &
+          r_pg(i), &
+          r_t5l(i), i=1,r_ntot)
+
+    write(lll, *) 'read_mod_record(): ntot=', r_ntot
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): detef=', r_detef
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): dglog=', r_dglog
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): dsalog=', r_dsalog
+    call log_debug(lll)
+
+    close(unit_)
+
+  end
+
+
+  !=======================================================================================
+  !> Reads single record from file infile:modeles into variables modeles_*
+  !>
+  !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN main_inum LE NUM DU MODELE
+  !> SUR LE FICHIER ACCES DIRECT
+
+  subroutine read_modele(path_to_file)
+    implicit none
+    integer unit_
+    parameter(unit_=199)
+    character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
             id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
     character*128 lll
 
-    ! Variables declared only for reading from binary file, then their values will be copied to modeles_*
+    ! real*4 variables are declared only for reading from binary file.
+    ! Once read, their values will be copied to modeles_*
     ! Same names as modeles_* but have the "r_" prefix.
-    integer*4 r_modeles_ntot
-    real*4 r_modeles_detef,   &
-           r_modeles_dglog,   &
-           r_modeles_dsalog,  &
-           r_modeles_asalalf, &
-           r_modeles_nhe,     &
-           bid(16)
-    real*4, dimension(MAX_MODELES_NTOT) :: &
-     r_modeles_nh,   &
-     r_modeles_teta, &
-     r_modeles_pe,   &
-     r_modeles_pg,   &
-     r_modeles_t5l
+    integer*4 :: r_ntot
+    real*4, :: r_detef, r_dglog, r_dsalog, r_asalalf, r_nhe
+    real*4, dimension(MAX_MODELES_NTOT) :: r_nh, r_teta, r_pe, r_pg, r_t5l
+    character*20, intent(out) :: r_tit, r_tiabs
 
-
-
-
-    open(unit=unit_, access='direct',status='old', file=filename, recl=1200)
-
-    id_ = 1
-
-    !> @todo better to give error if main_INUM is not set
+    !> @todo better to give error if main_inum is not set
     !> @todo Check if FORTRAN initializes variables to zero automatically: can I rely on this??
     !> @todo Maybe implement variable main_FLAG to FLAG that infile:main has been read already
+    id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
-
-    read(unit_, rec=id_) r_modeles_ntot, r_modeles_detef, r_modeles_dglog, &
-     r_modeles_dsalog, r_modeles_asalalf, r_modeles_nhe, modeles_tit, &
-     modeles_tiabs  ! Note that modeles_tit and modeles_titabs are read directly because they are chars
-    if (r_modeles_ntot .eq. 9999) then
-      !> @todo ISSUE perhaps I should check the condition that leads to this error
-      call pfant_halt('Le modele desire ne est pas sur le fichier')
-    end if
+    call read_mod_record(path_to_file, id_, r_ntot, r_detef, r_dglog, r_dsalog, &
+     r_asalalf, r_nhe, r_tit, r_tiabs, r_nh, r_teta, r_pe, r_pg, r_t5l, .true., .true.)
 
 
-    !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (r_modeles_ntot .gt. MAX_MODELES_NTOT) then
-      call pfant_halt('read_modele(): modeles_ntot = '//int2str(r_modeles_ntot)//&
-       ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
-    end if
-
-    write(lll, *) 'modeles_ntot', r_modeles_ntot
-    call log_debug(lll)
-    write(lll, *) 'modeles_detef', r_modeles_detef
-    call log_debug(lll)
-    write(lll, *) 'modeles_dglog', r_modeles_dglog
-    call log_debug(lll)
-    write(lll, *) 'modeles_dsalog', r_modeles_dsalog
-    call log_debug(lll)
-
-    ddt  = abs(main_teff-r_modeles_detef)
-    ddg = abs(main_glog-r_modeles_dglog)
-    ddab = abs(main_asalog-r_modeles_dsalog)
-
+    !> @todo there is an intention here to *look for a model* that matches parameters in main.dat, but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
 
     !> @todo ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
     !> @todo ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks  (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
+    !~9 READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
+    !~  WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
+    !~        write(6,108) TIABS
+    !~  IF(NTOT.EQ.9999)   GO TO 6
+    !~  DDT  = ABS(TEFF-DETEF)
+    !~C DDTA  = ABS(TETAEF-DETAEF)
+    !~  DDG = ABS(GLOG-DGLOG)
+    !~  DDAB = ABS(ASALOG-DSALOG)
+    !~  DDHE= ABS(NHE-DNHE)
+    !~C DDIF = DDTA+DDG+DDAB+DDHE
+    !~5 IF(DDT.GT.1.0)   GO TO 9
+    !~  IF(DDG.GT.0.01)   GO TO 9
+    !~  IF(DDAB.GT.0.01)   GO TO 9
 
-
-!~9 READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
-!~  WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
-!~        write(6,108) TIABS
-!~  IF(NTOT.EQ.9999)   GO TO 6
-!~  DDT  = ABS(TEFF-DETEF)
-!~C DDTA  = ABS(TETAEF-DETAEF)
-!~  DDG = ABS(GLOG-DGLOG)
-!~  DDAB = ABS(ASALOG-DSALOG)
-!~  DDHE= ABS(NHE-DNHE)
-!~C DDIF = DDTA+DDG+DDAB+DDHE
-!~5 IF(DDT.GT.1.0)   GO TO 9
-!~  IF(DDG.GT.0.01)   GO TO 9
-!~  IF(DDAB.GT.0.01)   GO TO 9
-
-    !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
-
-      !__consistency check__
-    if (abs(main_nhe-r_modeles_nhe) .gt. 0.001) then
+    !__consistency check__
+    ! series of consistency checks which were already present in the 2015- code
+    ddt  = abs(main_teff-r_modeles_detef)
+    ddg = abs(main_glog-r_modeles_dglog)
+    ddab = abs(main_asalog-r_modeles_dsalog)
+    if (abs(main_nhe-r_modeles_nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
       write(lll, *) 'modeles nhe (', r_modeles_nhe, ') does not match main nhe (', main_nhe, ')'
       call pfant_halt(lll)
     end if
@@ -848,28 +901,21 @@ contains
       call pfant_halt(lll)
     end if
 
-
-    read(unit_, rec=id_) bid, &
-         (r_modeles_nh(i), &
-          r_modeles_teta(i), &
-          r_modeles_pe(i), &
-          r_modeles_pg(i), &
-          r_modeles_t5l(i), i=1,r_modeles_ntot)
-    close(unit_)
-
     ! ready to copy (& convert) variables to their counterparts
-    modeles_ntot    = r_modeles_ntot     ! integer(4)-to-integer(?)
-    modeles_detef   = r_modeles_detef    ! real(4) to real(8)
-    modeles_dglog   = r_modeles_dglog    ! "
-    modeles_dsalog  = r_modeles_dsalog   ! "
-    modeles_asalalf = r_modeles_asalalf  ! "
-    modeles_nhe     = r_modeles_nhe      ! "
+    modeles_ntot    = r_ntot     ! integer(4)-to-integer(?)
+    modeles_detef   = r_detef    ! real(4) to real(8)
+    modeles_dglog   = r_dglog    ! "
+    modeles_dsalog  = r_dsalog   ! "
+    modeles_asalalf = r_asalalf  ! "
+    modeles_nhe     = r_nhe      ! "
     do i = 1, modeles_ntot
-      modeles_nh(i)   = r_modeles_nh(i)   ! real(4) to real(8)
-      modeles_teta(i) = r_modeles_teta(i) ! "
-      modeles_pe(i)   = r_modeles_pe(i)   ! "
-      modeles_pg(i)   = r_modeles_pg(i)   ! "
-      modeles_t5l(i)  = r_modeles_t5l(i)  ! "
+      modeles_nh(i)   = r_nh(i)   ! real(4) to real(8)
+      modeles_teta(i) = r_teta(i) ! "
+      modeles_pe(i)   = r_pe(i)   ! "
+      modeles_pg(i)   = r_pg(i)   ! "
+      modeles_t5l(i)  = r_t5l(i)  ! "
     end do
+    modeles_tit = r_tit
+    modeles_tiabs = r_tiabs
   end
 end module read_most_files

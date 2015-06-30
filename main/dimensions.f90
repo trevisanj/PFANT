@@ -15,6 +15,8 @@
 
 !> Constants defining the dimensions of matrices used throughout...not yet
 
+! I never manage to write this file because most of the MAX_* are local
+
 module dimensions
 end
   
