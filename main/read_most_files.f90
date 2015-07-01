@@ -198,7 +198,7 @@ module read_most_files
   type modele_record
     integer*4 :: ntot
 
-    real*4 :: detef, dglog, dsalog, asalalf, nhe
+    real*4 :: teff, glog, asalog, asalalf, nhe
 
     real*4, dimension(MAX_MODELES_NTOT) :: &
      nh, teta, pe, pg, t5l
@@ -211,9 +211,9 @@ module read_most_files
   integer modeles_ntot !< ?doc?
   character*20 modeles_tit   !< titre du modele interpolé
   character*20 modeles_tiabs !< ?doc? I just want to see this string at testing
-  real*8 modeles_detef,   & !< ?doc?
-         modeles_dglog,   & !< ?doc?
-         modeles_dsalog,  & !< ?doc?
+  real*8 modeles_teff,   & !< ?doc?
+         modeles_glog,   & !< ?doc?
+         modeles_asalog,  & !< ?doc?
          modeles_asalalf, & !< ?doc?
          modeles_nhe        !< ?doc?
   real*8, dimension(MAX_MODELES_NTOT) :: &
@@ -753,48 +753,49 @@ contains
   !=======================================================================================
   !> Reads single record from .mod file
   !>
-  !> This routine is constructed in a way that it can be used by read_modele() and 
+  !> This routine is constructed in a way that it can be used by read_modele() and
   !> also within the inewmarcs module.
   !>
   !> @note Output goes within "record". This could be made as a function and return the
   !>       record, but then it wouldn't be so clear how the compiler would work out the
   !>       memory, i.e., would the whole structure be copied into the variable declared at
   !>       the caller?? Better to avoid doubts: we know that args are passed by reference.
-  
+
   subroutine read_mod_record(path_to_file, rec_id, flag_open, flag_close, record)
-    integer unit_
-    parameter(unit_=199)
+    integer, parameter :: UNIT_=198
     character(len=*), intent(in) :: path_to_file
-    integer, intent(in) :: rec_id !< record identifier (>= 1)
-    logical, intent(in) :: &
-     flag_open, & !< whether to open the file
-     flag_close & !< whether to close the file
+    integer, intent(in) :: rec_id       !< record identifier (>= 1)
+    logical, intent(in) :: flag_open, & !< whether to open the file
+                           flag_close   !< whether to close the file
     type(modele_record), intent(out) :: record
+    integer i
     character*128 lll
 
     ! Record is read twice; second time bid "grabs" everything that was read before
-    real*4 bid(16) 
+    real*4 bid(16)
 
-    open(unit=unit_, access='direct',status='old', file=path_to_file, recl=1200)
+    if (flag_open) then
+      open(unit=unit_, access='direct',status='old', file=path_to_file, recl=1200)
+    end if
 
     read(unit_, rec=rec_id) &
      record%ntot,    &
-     record%detef,   &
-     record%dglog,   &
-     record%dsalog,  &
+     record%teff,   &
+     record%glog,   &
+     record%asalog,  &
      record%asalalf, &
      record%nhe,     &
      record%tit,     &
      record%tiabs
 
-    if (r_ntot .eq. 9999) then
+    if (record%ntot .eq. 9999) then
       !> @todo ISSUE perhaps I should check the condition that leads to this error
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
 
     !__spill check__: Checks if exceeds maximum number of elements allowed
-    if (r_ntot .gt. MAX_MODELES_NTOT) then
-      call pfant_halt('read_mod_record(): ntot = '//int2str(r_ntot)//&
+    if (record%ntot .gt. MAX_MODELES_NTOT) then
+      call pfant_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
@@ -803,18 +804,20 @@ contains
           record%teta(i), &
           record%pe(i),   &
           record%pg(i),   &
-          record%t5l(i), i=1,r_ntot)
+          record%t5l(i), i=1,record%ntot)
 
     write(lll, *) 'read_mod_record(): ntot=', record%ntot
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): detef=', record%detef
+    write(lll, *) 'read_mod_record(): teff=', record%teff
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): dglog=', record%dglog
+    write(lll, *) 'read_mod_record(): glog=', record%glog
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): dsalog=', record%dsalog
+    write(lll, *) 'read_mod_record(): asalog=', record%asalog
     call log_debug(lll)
 
-    close(unit_)
+    if (flag_close) then
+      close(unit_)
+    end if
   end
 
 
@@ -849,14 +852,14 @@ contains
 
     !> @todo ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
     !> @todo ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks  (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
-    !~9 READ(18, REC=ID) NTOT,DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT,TITABS
-    !~  WRITE(6,105)DETEF,DGLOG,DSALOG,ASALALF,NHE,TIT
+    !~9 READ(18, REC=ID) NTOT,DETEF,glog,asalog,ASALALF,NHE,TIT,TITABS
+    !~  WRITE(6,105)DETEF,glog,asalog,ASALALF,NHE,TIT
     !~        write(6,108) TIABS
     !~  IF(NTOT.EQ.9999)   GO TO 6
     !~  DDT  = ABS(TEFF-DETEF)
     !~C DDTA  = ABS(TETAEF-DETAEF)
-    !~  DDG = ABS(GLOG-DGLOG)
-    !~  DDAB = ABS(ASALOG-DSALOG)
+    !~  DDG = ABS(GLOG-glog)
+    !~  DDAB = ABS(ASALOG-asalog)
     !~  DDHE= ABS(NHE-DNHE)
     !~C DDIF = DDTA+DDG+DDAB+DDHE
     !~5 IF(DDT.GT.1.0)   GO TO 9
@@ -865,31 +868,31 @@ contains
 
     !__consistency check__
     ! series of consistency checks which were already present in the 2015- code
-    ddt  = abs(main_teff-r%modeles_detef)
-    ddg = abs(main_glog-r%modeles_dglog)
-    ddab = abs(main_asalog-r%modeles_dsalog)
-    if (abs(main_nhe-r%modeles_nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
-      write(lll, *) 'modeles nhe (', r%modeles_nhe, ') does not match main nhe (', main_nhe, ')'
+    ddt  = abs(main_teff-r%teff)
+    ddg = abs(main_glog-r%glog)
+    ddab = abs(main_asalog-r%asalog)
+    if (abs(main_nhe-r%nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
+      write(lll, *) 'modele nhe (', r%nhe, ') does not match main nhe (', main_nhe, ')'
       call pfant_halt(lll)
     end if
     if(ddt .gt. 1.0) then
-      write(lll,*) 'abs(main_teff-modeles_detef) = ', ddt, ' > 1.0'
+      write(lll,*) 'abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
       call pfant_halt(lll)
     end if
     if(ddg .gt. 0.01) then
-      write(lll,*) 'abs(main_glog-modeles_dglog) = ', ddg, ' > 0.01'
+      write(lll,*) 'abs(main_glog-(model glog)) = ', ddg, ' > 0.01'
       call pfant_halt(lll)
     end if
     if(ddab .gt. 0.01) then
-      write(lll,*) 'abs(main_asalog-modeles_dsalog) = ', ddab, ' > 0.01'
+      write(lll,*) 'abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
       call pfant_halt(lll)
     end if
 
     ! ready to copy (& convert) variables to their counterparts
     modeles_ntot    = r%ntot     ! integer(4)-to-integer(?)
-    modeles_detef   = r%detef    ! real(4) to real(8)
-    modeles_dglog   = r%dglog    ! "
-    modeles_dsalog  = r%dsalog   ! "
+    modeles_teff   = r%teff    ! real(4) to real(8)
+    modeles_glog   = r%glog    ! "
+    modeles_asalog  = r%asalog   ! "
     modeles_asalalf = r%asalalf  ! "
     modeles_nhe     = r%nhe      ! "
     do i = 1, modeles_ntot

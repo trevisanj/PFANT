@@ -242,8 +242,8 @@ contains
 
         call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
          int2str(ntot) //'; to(' //&
-         int2str(ntot) // ') = ' // real2str(flin_to(ntot)) // ' (must be >= '//&
-          real2str(tolim) // ')')
+         int2str(ntot) // ') = ' // real82str(flin_to(ntot)) // ' (must be >= '//&
+          real82str(tolim) // ')')
         !write(lll,1504)
         !call log_halt(lll)
         !write(lll,1503) ntot, flin_to(ntot)

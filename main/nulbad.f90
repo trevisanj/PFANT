@@ -184,8 +184,8 @@ contains
     ip = int(config_nulbad_pat/nulbad_dpas)
 
     if (ip .lt. 1) then
-      call log_warning('New step ('//real2str(config_nulbad_pat)//&
-       ') lower than old step ('//real2str(nulbad_dpas)//'), ip forced to 1')
+      call log_warning('New step ('//real82str(config_nulbad_pat)//&
+       ') lower than old step ('//real82str(nulbad_dpas)//'), ip forced to 1')
       ip = 1
     end if
 

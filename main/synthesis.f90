@@ -556,7 +556,7 @@ contains
       1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
-       (modeles_tit(i),i=1,5), &  ! fixed
+       modeles_tit,            &  ! fixed
        tetaef,                 &  ! fixed
        main_glog,              &  ! fixed
        main_asalog,            &  ! fixed
@@ -586,7 +586,7 @@ contains
       1130  format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
       write(UNIT_LOG, 1130) &
        ikeytot, &
-       (modeles_tit(i),i=1,5), &
+       modeles_tit, &
        tetaef, &
        main_glog, &
        main_asalog, &
@@ -680,7 +680,7 @@ contains
        phi, t, v, vm, lambi
 
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real2str(tetaef))
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real82str(tetaef))
 
 
       if (atomgrade_nblend .ne. 0) then

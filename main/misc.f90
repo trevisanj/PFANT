@@ -41,13 +41,27 @@ contains
   end function
 
 
+  !> Converts a real*8 number to string
+  !>
+  !> @todo improve representation
+
+  pure function real82str(x) result (string)
+    implicit none
+    real*8, intent(in) :: x
+    character(:), allocatable :: string
+    character(80) :: ch
+
+    write(ch,*) x
+    string = trim(adjustl(ch))
+  end function
+
   !> Converts a float number to string
   !>
   !> @todo improve representation
 
-  pure function real2str(x) result (string)
+  pure function real42str(x) result (string)
     implicit none
-    real*8, intent(in) :: x
+    real*4, intent(in) :: x
     character(:), allocatable :: string
     character(80) :: ch
 

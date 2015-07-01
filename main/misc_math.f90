@@ -330,7 +330,6 @@ contains
       if(is2 .eq. is(i)) exit
     end do
 
-    5 continue
     il2 = il(i)
     izc = iz**2
     net1c = 13.5 * izc / (kii-kiex1)

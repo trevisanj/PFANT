@@ -102,6 +102,35 @@ module config
     config_nulbad_flcv = ''                             !< option: --nulbad_flcv
 
 
+  !=====
+  ! nulbad configuration
+  !=====
+  ! note: maintained variable names found in original inewmarcs.f
+  !       (however with "config_inewmarcs_") prefix
+
+  character*64 :: &
+     config_inewmarcs_nomfimod = 'modeles.mod', & !< option: --inewmarcs_nomfimod
+     config_inewmarcs_nomfidat = 'modeles.dat'    !< option: --inewmarcs_nomfidat
+  character*25 :: config_inewmarcs_modcode = 'NoName' !< option: --inewmarcs_modcode
+  character*15 :: config_inewmarcs_tirb = 'NoTitle'   !< option: --inewmarcs_tirb
+
+
+  what about this inum????? it is the f*** record number
+
+    read(unit_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
+
+    
+  ! Note1: these variables are used within the inewmarcs module,
+  !        where all reals are real*4
+  ! Note2: Sun default values
+  real*4 :: config_inewmarcs_teff = 5777, & !< option: inewmarcs_teff
+            config_inewmarcs_glog = 4.44, & !< option: inewmarcs_glog
+            config_inewmarcs_amet = 0     & !< option: inewmarcs_amet
+    
+    k = k+1
+    options(k) = option('inewmarcs_id',' ', .true., 'real value', config_inewmarcs_id, &
+     'INEWMARCS Record id within binary file')
+
 
 
   !====================================
@@ -243,20 +272,65 @@ contains
     options(k) = option('nulbad_flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
       'NULBAD output file name')
     k = k+1
-    options(k) = option('nulbad_pat',      ' ', .true., 'real value', real2str(config_nulbad_pat), &
+    options(k) = option('nulbad_pat',      ' ', .true., 'real value', real82str(config_nulbad_pat), &
       'NULBAD step ?doc?')
     k = k+1
     options(k) = option('nulbad_convol',   ' ', .true., 'T/F', logical2str(config_nulbad_convol), &
       'NULBAD Apply convolution?')
     k = k+1
-    options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real2str(config_nulbad_fwhm), &
+    options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real82str(config_nulbad_fwhm), &
       'NULBAD full-width-half-maximum of gaussian')
 
     k = k+1
     options(k) = option('inewmarcs_refdir',' ', .true., 'directory name', config_inewmarcs_refdir, &
-     'INEWMARCS Directory containing reference atmospheric models.<br>'//
-     'This directory must contain a file named "modelmap.dat" and<br>'//
+     'INEWMARCS Directory containing reference atmospheric models.<br>'//&
+     'This directory must contain a file named "modelmap.dat" and<br>'//&
      'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
+
+    k = k+1
+    options(k) = option('inewmarcs_open_status',' ', .true., 'string', config_inewmarcs_open_status, &
+     'INEWMARCS File open mode for binary file<br>'//&
+     IND//'new: file must not exist<br>'//&
+     IND//'old: file must exist<br>'//&
+     IND//'replace: replaces file if exists, otherwise creates new')
+
+    k = k+1
+    options(k) = option('inewmarcs_nomfimod',' ', .true., 'file name', config_inewmarcs_nomfimod, &
+     'INEWMARCS Name of binary file<br>'//&
+     '*Note*: file is opened in directory specified in --inputdir')
+
+    k = k+1
+    options(k) = option('inewmarcs_nomfidat',' ', .true., 'file name', config_inewmarcs_nomfidat, &
+     'INEWMARCS Name of ASCII file<br>'//&
+     '*Note*: file is opened in directory specified in --inputdir')
+
+    k = k+1
+    options(k) = option('inewmarcs_modcode',' ', .true., 'string up to 25 characters', config_inewmarcs_modcode, &
+     'INEWMARCS "Model name"')
+
+    k = k+1
+    options(k) = option('inewmarcs_tirb',' ', .true., 'string up to 15 characters', config_inewmarcs_tirb, &
+     'INEWMARCS "Titre"')
+    
+    k = k+1
+    options(k) = option('inewmarcs_teff',' ', .true., 'real value', config_inewmarcs_teff, &
+     'INEWMARCS "Teff"')
+    
+    k = k+1
+    options(k) = option('inewmarcs_glog',' ', .true., 'real value', config_inewmarcs_glog, &
+     'INEWMARCS "log g"')
+
+    k = k+1
+    options(k) = option('inewmarcs_amet',' ', .true., 'real value', config_inewmarcs_amet, &
+     'INEWMARCS "[M/H]"')
+    
+    k = k+1
+    options(k) = option('inewmarcs_id',' ', .true., 'real value', '"inum" value in main configuration file', &
+     'INEWMARCS Record id within binary file. If not specified, takes value of '//
+     'main_inum variable (last value of 4th row of main configuration file)')
+
+implement the transfer, including making up the paths to mod and ASCII file
+
 
 
     !__assertion__
@@ -468,13 +542,13 @@ contains
 
             case ('nulbad_fwhm')
               config_nulbad_fwhm = str2real(opt, o_arg)
-              call log_assignment('config_nulbad_fwhm', real2str(config_nulbad_fwhm))
+              call log_assignment('config_nulbad_fwhm', real82str(config_nulbad_fwhm))
             case ('nulbad_convol')
               config_nulbad_convol = str2logical(opt, o_arg)
               call log_assignment('config_nulbad_convol', logical2str(config_nulbad_convol))
             case ('nulbad_pat')
               config_nulbad_pat = str2real(opt, o_arg)
-              call log_assignment('config_nulbad_pat', real2str(config_nulbad_pat))
+              call log_assignment('config_nulbad_pat', real82str(config_nulbad_pat))
             case ('nulbad_flcv')
               call assign_fn(o_arg, config_nulbad_flcv, 'config_nulbad_flcv')
             case ('nulbad_flam')
