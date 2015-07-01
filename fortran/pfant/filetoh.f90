@@ -106,7 +106,7 @@ contains
 
     i = 0
     do i_file = 1, main_filetoh_numfiles
-      file_now = fullpath_i(main_filetohy(i_file))
+      file_now = full_path_i(main_filetohy(i_file))
 
       open(err=111, unit=unit_,file=file_now,status='old')
 

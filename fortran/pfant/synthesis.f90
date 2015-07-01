@@ -257,15 +257,15 @@ contains
 
 
     ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
-    call read_dissoc(fullpath_i(config_fn_dissoc))
-    call read_main(fullpath_i(config_fn_main))
-    call read_partit(fullpath_i(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
-    call read_absoru2(fullpath_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-    call read_modele(fullpath_i(config_fn_modeles))  ! LECTURE DU MODELE
-    call read_abonds(fullpath_i(config_fn_abonds))
-    call read_atomgrade(fullpath_i(config_fn_atomgrade))
+    call read_dissoc(full_path_i(config_fn_dissoc))
+    call read_main(full_path_i(config_fn_main))
+    call read_partit(full_path_i(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
+    call read_absoru2(full_path_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+    call read_modele(full_path_i(config_fn_modeles))  ! LECTURE DU MODELE
+    call read_abonds(full_path_i(config_fn_abonds))
+    call read_atomgrade(full_path_i(config_fn_atomgrade))
     call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
-    call read_moleculagrade(fullpath_i(config_fn_moleculagrade))
+    call read_moleculagrade(full_path_i(config_fn_moleculagrade))
 
 
     !> @todo issue ask blb overwriting variables read from infile:absoru2
@@ -278,11 +278,11 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    open(unit=UNIT_SPEC, file=fullpath_o(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=fullpath_o(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=fullpath_o(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
-    open(unit=UNIT_LINES,file=fullpath_o(config_fn_lines), status='replace')               ! outfile:lines
-    open(unit=UNIT_LOG,  file=fullpath_o(config_fn_log), status='replace')                 ! log.log
+    open(unit=UNIT_SPEC, file=full_path_o(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=full_path_o(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=full_path_o(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
+    open(unit=UNIT_LINES,file=full_path_o(config_fn_lines), status='replace')               ! outfile:lines
+    open(unit=UNIT_LOG,  file=full_path_o(config_fn_log), status='replace')                 ! log.log
 
 
     !=====

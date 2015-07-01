@@ -48,7 +48,7 @@ module config
   !=====
   ! File names
   !=====
-  character*256 :: &
+  character*64 :: &
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
    config_fn_main          = 'main.dat',          & !< option: --fn_main
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
@@ -61,10 +61,9 @@ module config
    config_fn_log           = 'log.log',           & !< option: --fn_log
    config_fn_progress      = 'progress.txt'
 
-  character*256 :: &
+  character*192 :: &
    config_inputdir    = './', &  !< command-line option --inputdir
-   config_outputdir   = './', &  !< command-line option --outputdir
-   config_inewmarcs_refdir = './'     !< command-line option --newmarcsdir
+   config_outputdir   = './'     !< command-line option --outputdir
 
   !=====
   ! Variables related to molecules
@@ -103,35 +102,28 @@ module config
 
 
   !=====
-  ! nulbad configuration
+  ! inewmarcs configuration
   !=====
   ! note: maintained variable names found in original inewmarcs.f
   !       (however with "config_inewmarcs_") prefix
 
+  character*192 :: config_inewmarcs_refdir = './' !< command-line option --newmarcsdir
+  character*20 :: &
+   config_inewmarcs_open_status = 'unknown'  !< option: --inewmarcs_open_status
   character*64 :: &
-     config_inewmarcs_nomfimod = 'modeles.mod', & !< option: --inewmarcs_nomfimod
-     config_inewmarcs_nomfidat = 'modeles.dat'    !< option: --inewmarcs_nomfidat
+   config_inewmarcs_nomfimod = 'modeles.mod', & !< option: --inewmarcs_nomfimod
+   config_inewmarcs_nomfidat = 'modeles.dat'    !< option: --inewmarcs_nomfidat
   character*25 :: config_inewmarcs_modcode = 'NoName' !< option: --inewmarcs_modcode
   character*15 :: config_inewmarcs_tirb = 'NoTitle'   !< option: --inewmarcs_tirb
-
-
-  what about this inum????? it is the f*** record number
-
-    read(unit_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
-
-    
-  ! Note1: these variables are used within the inewmarcs module,
+  ! Note1: the following variables are used within the inewmarcs module,
   !        where all reals are real*4
-  ! Note2: Sun default values
-  real*4 :: config_inewmarcs_teff = 5777, & !< option: inewmarcs_teff
-            config_inewmarcs_glog = 4.44, & !< option: inewmarcs_glog
-            config_inewmarcs_amet = 0     & !< option: inewmarcs_amet
-    
-    k = k+1
-    options(k) = option('inewmarcs_id',' ', .true., 'real value', config_inewmarcs_id, &
-     'INEWMARCS Record id within binary file')
-
-
+  ! Note2: -1 means that they use values found in main configuration file
+  real*4 :: config_inewmarcs_teff = -1, & !< option: --inewmarcs_teff
+            config_inewmarcs_glog = -1, & !< option: --inewmarcs_glog
+            config_inewmarcs_amet = -1    !< option: --inewmarcs_amet
+  !> option: --inewmarcs_id.
+  !> @note: if config_setup() finds a -1 here, it will use the value in main_inum
+  integer :: config_inewmarcs_id = -1      
 
   !====================================
 
@@ -159,7 +151,7 @@ module config
   ! ║ ║├─┘ │ ││ ││││└─┐
   ! ╚═╝┴   ┴ ┴└─┘┘└┘└─┘ command-line options
 
-  integer, parameter, private :: NUM_OPTIONS = 24       !< Number of command-line options
+  integer, parameter, private :: NUM_OPTIONS = 34       !< Number of command-line options
   type(option), private :: options(NUM_OPTIONS), opt    !< Options
 
   private make_molids_on
@@ -311,25 +303,25 @@ contains
     k = k+1
     options(k) = option('inewmarcs_tirb',' ', .true., 'string up to 15 characters', config_inewmarcs_tirb, &
      'INEWMARCS "Titre"')
-    
+
     k = k+1
-    options(k) = option('inewmarcs_teff',' ', .true., 'real value', config_inewmarcs_teff, &
+    options(k) = option('inewmarcs_teff',' ', .true., 'real value', real42str(config_inewmarcs_teff), &
      'INEWMARCS "Teff"')
-    
+
     k = k+1
-    options(k) = option('inewmarcs_glog',' ', .true., 'real value', config_inewmarcs_glog, &
+    options(k) = option('inewmarcs_glog',' ', .true., 'real value', real42str(config_inewmarcs_glog), &
      'INEWMARCS "log g"')
 
     k = k+1
-    options(k) = option('inewmarcs_amet',' ', .true., 'real value', config_inewmarcs_amet, &
+    options(k) = option('inewmarcs_amet',' ', .true., 'real value', real42str(config_inewmarcs_amet), &
      'INEWMARCS "[M/H]"')
-    
+
     k = k+1
-    options(k) = option('inewmarcs_id',' ', .true., 'real value', '"inum" value in main configuration file', &
-     'INEWMARCS Record id within binary file. If not specified, takes value of '//
+    options(k) = option('inewmarcs_id',' ', .true., 'real value', '<"inum" value in main configuration file>', &
+     'INEWMARCS Record id within binary file. If not specified, takes value of '//&
      'main_inum variable (last value of 4th row of main configuration file)')
 
-implement the transfer, including making up the paths to mod and ASCII file
+!implement the transfer, including making up the paths to mod and ASCII file
 
 
 
@@ -371,12 +363,30 @@ implement the transfer, including making up the paths to mod and ASCII file
     call init_options()
     call parse_args()
 
+    !=====
     ! Configures data directories
+    !=====
     inputdir_trim = trim_and_add_slash(config_inputdir)
     outputdir_trim = trim_and_add_slash(config_outputdir)
 
+    !=====
     ! Configures other modules
-    logging_path_progress = fullpath_o(config_fn_progress)
+    !=====
+
+    ! logging module ...
+    logging_path_progress = full_path_o(config_fn_progress)
+
+    ! inewmarcs module ...
+    inewmarcs_refdir = config_inewmarcs_refdir
+    inewmarcs_open_status = config_inewmarcs_open_status
+    inewmarcs_nomfimod = full_path_i(config_inewmarcs_nomfimod)
+    inewmarcs_nomfidat = full_path_i(config_inewmarcs_nomfidat)
+    inewmarcs_modcode = config_inewmarcs_modcode
+    inewmarcs_tirb = config_inewmarcs_tirb
+    inewmarcs_teff = config_inewmarcs_teff
+    inewmarcs_glog = config_inewmarcs_glog
+    inewmarcs_amet = config_inewmarcs_amet
+    inewmarcs_id = config_inewmarcs_id
 
     ! Default value for config_nulbad_flcv
     if (config_nulbad_flcv .eq. '') then
@@ -679,7 +689,7 @@ implement the transfer, including making up the paths to mod and ASCII file
   !=======================================================================================
   !> Concatenates config_inputdir with specific filename
 
-  function fullpath_i(filename) result(res)
+  function full_path_i(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 
@@ -689,7 +699,7 @@ implement the transfer, including making up the paths to mod and ASCII file
   !=======================================================================================
   !> Concatenates config_outputdir with specific filename
 
-  function fullpath_o(filename) result(res)
+  function full_path_o(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 

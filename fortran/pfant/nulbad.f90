@@ -94,7 +94,7 @@ contains
     real*8 fnu(FILETOH_NP)
     ! character*92  lll
 
-    open(unit=UNIT_,file=fullpath_o(config_nulbad_fileflux), status='unknown')
+    open(unit=UNIT_,file=full_path_o(config_nulbad_fileflux), status='unknown')
 
     icle = 1
     p_ktot = 0
@@ -157,7 +157,7 @@ contains
     character*92 lll
 
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=fullpath_o(config_nulbad_flcv))
+    open(unit=UNIT_,status='replace',file=full_path_o(config_nulbad_flcv))
 
     do k = 1, ktot
       lambd(k) = nulbad_l0+(k-1)*nulbad_dpas

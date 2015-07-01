@@ -7,7 +7,7 @@
 		<Option compiler="gfortran" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/main" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/pfant" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
@@ -17,10 +17,11 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/main" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/pfant" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
+				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>

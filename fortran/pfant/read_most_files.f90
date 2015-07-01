@@ -107,11 +107,11 @@ module read_most_files
   integer   main_ivtot, & !< affects turbul() issue ?what? ?doc?
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
-            main_inum !< ?doc?
+            main_inum     !< record id within modeles.mod
   character*64 main_filetohy(MAX_MAIN_FILETOH_NUMFILES) !< ?doc? Names of ten outputs files that will contain ???
   integer   main_filetoh_numfiles !< number of valid elements within filetohy
 
-  character*10 main_titrav(20) !< ?doc?
+  character*10 main_titrav(20) !< Title, e.g. "Sun"
   real*8 :: main_vvt(MAX_MODELES_NTOT), & !< ?doc?
             main_tolv(MAX_MODELES_NTOT)   !< ?doc?
   !> This vector goes along with dissoc_ELEMS and dissoc_NELEMX

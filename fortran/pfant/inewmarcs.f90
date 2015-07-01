@@ -25,35 +25,6 @@ module innewmarcs
   implicit none
   private
 
-  ! .d88b .d88b. 8b  8 8888 888 .d88b
-  ! 8P    8P  Y8 8Ybm8 8www  8  8P www
-  ! 8b    8b  d8 8  "8 8     8  8b  d8
-  ! `Y88P `Y88P' 8   8 8    888 `Y88P'  module configuration
-  !
-  ! Note: This module has kept the independence of the original INWEMARCS executable.
-  !       The main difference is that it does not ask for user input
-
-  !> Value Fortran OPEN(..., status=)
-  !> E.g.: 'unknown', 'old', 'new', 'replace'
-  character*20, public :: inewmarcs_open_status
-
-  character*64, public :: &
-   inewmarcs_nomfimod, & !< Full path to output binary file, e.g. "./modeles.mod"
-   inewmarcs_nomfidat   !< Full path to output ascii file, e.g., "./modeles.da%teta"
-  !> Name of directory containing file modelmap.dat and ".mod" files
-  !> referenced within modelmap.dat.
-  character*192, public :: inewmarcs_refdir = "."
-  !> Name of model to be recorded inside output files, e.g., "BWF1 star"
-  character*25, public :: inewmarcs_modcode !< nom du modele
-  ! These variables must be real*4, as they are going to be written to .mod file
-  real*4 :: &
-   inewmarcs_teff, & !< Teff
-   inewmarcs_glog, & !< log g
-   inewmarcs_amet    !< [M/H]
-  integer, public :: inewmarcs_jd !< ligne du modele en sortie
-  character*15, public :: inewmarcs_tirb !< Titre
-
-
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
@@ -69,11 +40,11 @@ module innewmarcs
   ! "Dans cette table les modeles entre lesquels on va interpoler ont les numeros:"
   integer id11, id12, id21, id22
 
-  ! Variables calculated by find_refmodels()
+  ! Variables calculated by find_ref_models()
   character*64 :: nomfipl(2)
   real*4 amet1, amet2
 
-  private model_path, read_modelmap, find_refmodels, rangmod, interpol, locatab, readerbn
+  private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
   character*192 :: lll  ! __logging__
 contains
 
@@ -88,7 +59,7 @@ contains
      aa, bb, cc, dd, &   ! input records
      ee, ff, z1, z2, zz  ! records that are calculated by interpol()
 
-    character*5 :: tira = ' Ple '
+    character*5 :: tira = ' Ple '  !> @todo what does "Ple" mean?
     character*20 tir    ! titre du modele interpole
     character*65 nomfiple
     real*4 bid0, vvt, tostand, t0, t1, tau, to0, tttt
@@ -101,21 +72,21 @@ contains
 
 
     !> @todo implement flag_initialized to call this only once if I call inewmarcs_calc() more than once
-    call read_modelmap()
+    call read_ref_models_map()
 
 
-    write(lll,*) 'Creating ASCII file ', inewmarcs_nomfidat
+    write(lll,*) 'Creating ASCII file ', full_path_i(config_inewmarcs_nomfidat)
     call log_debug(lll)
 
-    open(unit=UNIT_DAT,file=inewmarcs_nomfidat,status='unknown')
+    open(unit=UNIT_DAT,file=full_path_i(config_inewmarcs_nomfidat),status='unknown')
 
-    call log_debug('Opening binary file '//trim(inewmarcs_nomfimod)//' in status='//&
-     trim(inewmarcs_open_status))
+    call log_debug('Opening binary file '//full_path_i(config_inewmarcs_nomfimod)//&
+     ' in status='//trim(config_inewmarcs_open_status))
 
-    open(unit=UNIT_MOD,access='direct',status=inewmarcs_open_status, &
-     file=inewmarcs_nomfimod, recl=1200)
+    open(unit=UNIT_MOD,access='direct',status=config_inewmarcs_open_status, &
+     file=full_path_i(config_inewmarcs_nomfimod), recl=1200)
 
-    call find_refmodels()  ! calculates nomfipl, amet1, amet2
+    call find_ref_models()  ! calculates nomfipl, amet1, amet2
 
     !-------------------------------------------------------------
     ! On cherche ou se trouvent (teff, glog)  par rapport a la table
@@ -191,10 +162,10 @@ contains
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
-      t1 = inewmarcs_glog-rglog(1,1)
+      t1 = config_inewmarcs_glog-rglog(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102)  rteff(1,1), inewmarcs_glog
+      ! write(6,102)  rteff(1,1), config_inewmarcs_glog
       ! 102 format('  modele interpole avec   Teff=',f9.3,' log g=', f9.3)
 
       call interpol(t0, t1, aa, bb, ee, ntot(iabon))
@@ -202,10 +173,10 @@ contains
 
       ! interpolation sur t
       t0 = rteff(2,1)-rteff(1,1)
-      t1 = inewmarcs_teff-rteff(1,1)
+      t1 = config_inewmarcs_teff-rteff(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102) inewmarcs_teff, inewmarcs_glog
+      ! write(6,102) config_inewmarcs_teff, config_inewmarcs_glog
 
       if (iabon .eq. 1) then
         call interpol(t0, t1, ee, ff, z1, ntot(iabon))
@@ -245,7 +216,7 @@ contains
     call log_debug(lll)
 
     t0 = amet2-amet1
-    t1 = inewmarcs_amet-amet1
+    t1 = config_inewmarcs_amet-amet1
 
     call log_debug(' interpolation sur l''abondance avec')
     write(lll,*) ' amet2=',amet2,'       amet1=',amet1
@@ -259,11 +230,11 @@ contains
     asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
 
     !__logging__
-    write(lll,*) 'model 1 inewmarcs_amet, alpha=',amet1,ralfa(1)
+    write(lll,*) 'model 1 amet, alpha=',amet1,ralfa(1)
     call log_debug(lll)
-    write(lll,*) 'model 2 inewmarcs_amet, alpha=',amet2,ralfa(2)
+    write(lll,*) 'model 2 amet, alpha=',amet2,ralfa(2)
     call log_debug(lll)
-    write(lll,*) 'result: inewmarcs_amet, alpha=',inewmarcs_amet,asalalf
+    write(lll,*) 'result: amet, alpha=',config_inewmarcs_amet,asalalf
     call log_debug(lll)
 
 
@@ -276,7 +247,7 @@ contains
       zz%pg(n) = 10**zz%pg(n)
     end do
 
-    tir=tira//inewmarcs_tirb
+    tir=tira//config_inewmarcs_tirb
     in = 0
 
     do n = 1,nntot
@@ -290,27 +261,27 @@ contains
     end do
 
     ! Writes binary file
-    write(UNIT_MOD, rec=inewmarcs_jd) &
+    write(UNIT_MOD, rec=get_record_id()) &
      nntot,          &
-     inewmarcs_teff, &
-     inewmarcs_glog, &
-     inewmarcs_amet, &
+     config_inewmarcs_teff, &
+     config_inewmarcs_glog, &
+     config_inewmarcs_amet, &
      asalalf,        &
      dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
      tir,            &
      dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
-    write(UNIT_MOD,rec=inewmarcs_jd+1) 9999  ! 4 bytes, i guess
+    write(UNIT_MOD,rec=get_record_id()+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
     bid0 = 0.0
     vvt = 2.0E+5 ! on prend vt constant
     tostand = 5000 ! ?
     write(UNIT_DAT,'(a30,i8,f10.0,f8.2,2f5.0)') &
-     inewmarcs_modcode, &
+     config_inewmarcs_modcode, &
      nntot,             &
      tostand,           &
-     inewmarcs_glog,    &
+     config_inewmarcs_glog,    &
      bid0,              &
      bid0
     do n = 1,nntot
@@ -324,14 +295,51 @@ contains
   end
 
 
+
+
+
+  !=======================================================================================
+  !> Returns record id.
+  !>
+  !> config_inewmarcs_id has preference, but if it is not specified, then takes main_inum
+
+  integer function get_record_id()
+    if (config_inewmarcs_id .lt. 1) then
+      get_record_id = main_inum
+      if (main_inum .lt. 1) then
+        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
+      end if
+    else
+      get+record_id = config_inewmarcs_id
+    end if
+  end
+
+  !=======================================================================================
+  !> Returns title. It may be either config_inewmarcs_id or main_inum
+  !>
+  !> config_inewmarcs_id has preference, but if it is not specified, then takes main_inum
+
+  integer function get_record_id()
+    if (config_inewmarcs_id .lt. 1) then
+      get_record_id = main_inum
+      if (main_inum .lt. 1) then
+        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
+      end if
+    else
+      get+record_id = config_inewmarcs_id
+    end if
+  end
+
+
+
   !=======================================================================================
   !> Returns full path to file within models directory
 
-  function model_path(filename) result(res)
+  function ref_models_path(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 
-    res = trim_and_add_slash(inewmarcs_refdir) // trim(filename)
+    res = trim_and_add_slash(config_inewmarcs_refdir) // trim(filename)
   end
 
 
@@ -342,18 +350,24 @@ contains
   !> a list of metalicity ranges and corresponding reference models to be used.
   !>
 
-  subroutine read_modelmap()
+  subroutine read_ref_models_map()
     character*64 :: t_fn
     real*4 t_met
     character(len=:), allocatable :: path_to_file
     integer, parameter :: UNIT_ = 199
 
-    path_to_file = model_path('modelmap.dat')
+    path_to_file = ref_models_path('index.dat')
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
+    ! row 01: (skipped) general information
+    read(UNIT,*)
+    ! row 02: (skipped) table header
+    read(UNIT,*)
+
     num_refmodels = 0
     do while (.true.)
+      ! rows 03..end: metallicity, filename
       read(UNIT_, *, end=10) t_met, t_fn
 
       num_refmodels = num_refmodels+1
@@ -367,7 +381,7 @@ contains
   end
 
 
-  !> Fill variables nomfipl, amet1, amet2 based on inewmarcs_amet
+  !> Fill variables nomfipl, amet1, amet2 based on config_inewmarcs_amet
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
@@ -376,13 +390,13 @@ contains
   !> (1 <= i < num_refmodels)
   !> @endverbatim
 
-  subroutine find_refmodels()
+  subroutine find_ref_models()
     integer i
     logical :: flag_found = .false.
 
     do i = 1, num_refmodels-1
-      if (inewmarcs_amet .ge. modelmap_met(i) .and. &
-          inewmarcs_amet .lt. modelmap_met(i+1)) then
+      if (config_inewmarcs_amet .ge. modelmap_met(i) .and. &
+          config_inewmarcs_amet .lt. modelmap_met(i+1)) then
         nomfipl(1) = modelmap_fn(i)
         nomfipl(2) = modelmap_fn(i+1)
         amet1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
@@ -393,7 +407,7 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(inewmarcs_amet)//' is out of interval ['//&
+      call pfant_halt('Metallicity '//real42str(config_inewmarcs_amet)//' is out of interval ['//&
        real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
     end if
   end
@@ -524,7 +538,7 @@ contains
 
     do i=1,nt
       jt2 = i
-      if(inewmarcs_teff .lt. rteff(i)) go to 11
+      if(config_inewmarcs_teff .lt. rteff(i)) go to 11
     end do
 
     11 continue
@@ -553,7 +567,7 @@ contains
 
       do i = 1,ngg
         jg2(jjt)=i
-        if(inewmarcs_glog.lt.rglog(i)) go to 12
+        if(config_inewmarcs_glog.lt.rglog(i)) go to 12
       end do
 
       12 continue
