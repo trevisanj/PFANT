@@ -27,7 +27,7 @@
 
 module filetoh
   use read_most_files
-  use config
+  use config_pfant
   implicit none
 
   integer, parameter :: &

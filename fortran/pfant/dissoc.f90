@@ -20,6 +20,7 @@
 
 
 module dissoc
+  use config_pfant
   use read_most_files
   implicit none
 
@@ -68,7 +69,7 @@ contains
   !> Subroutine d'equilibre dissociatif
 
   subroutine sat4()
-    use config
+    use config_pfant
     implicit none
     real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
     real*8  kplog, fplog, &
@@ -259,9 +260,6 @@ contains
   !> @todo issue ?what? ?doc?
 
   subroutine die(tem, pg)
-    use config
-    use read_most_files
-    implicit none
     real*8 tem, pg
     real*8, dimension(MAX_Z) :: fx, dfx, z, prev
     real*8, dimension(MAX_DISSOC_NMETAL) :: wa

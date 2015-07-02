@@ -123,7 +123,7 @@ module synthesis
   use read_most_files
   use molecules
   use logging
-  use config
+  use config_pfant
   use flin
   use misc_math
   use absoru
@@ -250,6 +250,9 @@ contains
      n
     real*8 lambd, l0, lf, allhy, alzero, tetaef, xlfin, xlzero, ahnu, ahnu1, &
      ahnu2, alph0, alph01, alph02
+
+
+    call log_debug(ENTERING//'synthesis_()')
 
     !=====
     ! Read/setup
@@ -535,6 +538,10 @@ contains
     !__logging__
     call log_info('Flux sortant est en nu: Fnu x lambda')
     call log_info('Flux absolu sortant a ete multiplie par 10**5')
+
+
+    call log_debug(LEAVING//'synthesis_()')
+
 
   contains  !--still pfant_calculate()
 

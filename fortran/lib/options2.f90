@@ -42,12 +42,13 @@ module options2
 !    procedure :: print => print_opt
   end type
 
+
   !> Configurable unit to output command-line parsing errors
   integer :: error_unit = 6
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888 
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www 
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8    
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   private give_error  ! logs and halts

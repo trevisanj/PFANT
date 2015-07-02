@@ -29,9 +29,8 @@
 !>       @li a) view the source code for subroutine config::init_options()
 !>       @li b) execute the program with the --help option
 
-module config
-  use logging
-  use options2
+module config_innewmarcs
+  use config_base
   use misc
   implicit none
 
@@ -43,7 +42,6 @@ module config
   ! Mode of operation
   !=====
   character*10 :: config_mode = 'pfant' !< option: --mode
-
 
   !=====
   ! File names
@@ -58,12 +56,7 @@ module config
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
    config_fn_moleculagrade = 'moleculagrade.dat', & !< option: --fn_moleculagrade
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log',           & !< option: --fn_log
-   config_fn_progress      = 'progress.txt'
-
-  character*192 :: &
-   config_inputdir    = './', &  !< command-line option --inputdir
-   config_outputdir   = './'     !< command-line option --outputdir
+   config_fn_log           = 'log.log'              !< option: --fn_log
 
   !=====
   ! Variables related to molecules
@@ -72,7 +65,6 @@ module config
   integer :: config_num_mol_off = 0
   !> List of molecule ids that are be switched off. Complement of config_molids_on.
   integer :: config_molids_off (NUM_MOL)
-
 
   !=====
   ! Misc
@@ -83,50 +75,6 @@ module config
   !> Whether to allow PFANT to run if none of the specified filetoh files is found
   logical :: config_allow_no_filetoh = .false.
 
-
-  !=====
-  ! nulbad configuration
-  !=====
-  ! note: maintained variable names found in original nulbadgrade.f
-  !       (however with "config_nulbad_") prefix
-  logical :: &
-   config_nulbad_norm = .true., &                       !< option: --nulbad_norm
-   config_nulbad_flam = .true., &                       !< option: --nulbad_flam
-   config_nulbad_convol = .true.                        !< option: --nulbad_convol
-  real*8 :: &
-   config_nulbad_fwhm = 0.13, &                         !< option: --nulbad_fwhm
-   config_nulbad_pat = 0.02                             !< option: --nulbad_pat
-  character*64 :: &
-    config_nulbad_fileflux = 'norm.fileflux', &         !< option: --nulbad_fileflux
-    config_nulbad_flcv = ''                             !< option: --nulbad_flcv
-
-
-  !=====
-  ! inewmarcs configuration
-  !=====
-  ! note: maintained variable names found in original inewmarcs.f
-  !       (however with "config_inewmarcs_") prefix
-
-  character*192 :: config_inewmarcs_refdir = './' !< command-line option --newmarcsdir
-  character*20 :: &
-   config_inewmarcs_open_status = 'unknown'  !< option: --inewmarcs_open_status
-  character*64 :: &
-   config_inewmarcs_nomfimod = 'modeles.mod', & !< option: --inewmarcs_nomfimod
-   config_inewmarcs_nomfidat = 'modeles.dat'    !< option: --inewmarcs_nomfidat
-  character*25 :: config_inewmarcs_modcode = 'NoName' !< option: --inewmarcs_modcode
-  character*15 :: config_inewmarcs_tirb = 'NoTitle'   !< option: --inewmarcs_tirb
-  ! Note1: the following variables are used within the inewmarcs module,
-  !        where all reals are real*4
-  ! Note2: -1 means that they use values found in main configuration file
-  real*4 :: config_inewmarcs_teff = -1, & !< option: --inewmarcs_teff
-            config_inewmarcs_glog = -1, & !< option: --inewmarcs_glog
-            config_inewmarcs_amet = -1    !< option: --inewmarcs_amet
-  !> option: --inewmarcs_id.
-  !> @note: if config_setup() finds a -1 here, it will use the value in main_inum
-  integer :: config_inewmarcs_id = -1      
-
-  !====================================
-
   !=====
   ! Calculated variables
   !=====
@@ -134,7 +82,7 @@ module config
   !> List of molecule ids that are switched on. Complement of config_molids_off. Calculated by make_molids_on()
   integer, dimension(NUM_MOL) :: config_molids_on
   !> This is actually <code> = NUM_MOL-config_num_mol_off </code>
-  integer config_num_mol_on
+  integer molids%n_on
 
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
@@ -144,23 +92,9 @@ module config
 
   ! There is a calling order to be observed. These flags + assertions inforce that
   logical, private :: &
-   flag_setup = .false.,         & !< config_setup() has been called?
    flag_make_molids_on = .false.   !< make_molids_on() has been called?
 
-  ! ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
-  ! ║ ║├─┘ │ ││ ││││└─┐
-  ! ╚═╝┴   ┴ ┴└─┘┘└┘└─┘ command-line options
-
-  integer, parameter, private :: NUM_OPTIONS = 34       !< Number of command-line options
-  type(option), private :: options(NUM_OPTIONS), opt    !< Options
-
   private make_molids_on
-
-  character(len=:), private, allocatable :: &
-   inputdir_trim  !< Input directory without trailling spaces and ending with a "/"
-  character(len=:), private, allocatable :: &
-   outputdir_trim   !< Output directory without trailling spaces and ending with a "/"
-
 
   save
 contains
@@ -175,7 +109,6 @@ contains
     integer i, j, k
     character(:), allocatable :: name
     character(1) :: chr
-    character(3), parameter :: IND = '.. ' ! indentation string
 
     k = 1
     options(k) = option('help', 'h', .false., '', '', &
@@ -321,32 +254,6 @@ contains
      'INEWMARCS Record id within binary file. If not specified, takes value of '//&
      'main_inum variable (last value of 4th row of main configuration file)')
 
-!implement the transfer, including making up the paths to mod and ASCII file
-
-
-
-    !__assertion__
-    ! Fortran will give no error trying to assign options(k), k > NUM_OPTIONS,
-    ! so I put this protection here
-    if (k .gt. NUM_OPTIONS) then
-      call pfant_halt('Assigned options('//int2str(k)//' > NUM_OPTIONS='//&
-       int2str(NUM_OPTIONS)//')', is_assertion=.true.)
-    end if
-
-    !__assertion__: make sure that there are no repeated options. Checks all against all
-    do i = 1, NUM_OPTIONS
-      name = options(i)%name
-      ! write(*,*) i, name
-      chr = options(i)%chr
-      do j = i+1, NUM_OPTIONS
-        if (name .eq. options(j)%name) then
-          call pfant_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
-        end if
-        if (chr .ne. ' ' .and. chr .eq. options(j)%chr) then
-          call pfant_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
-        end if
-      end do
-    end do
   end
 
 
@@ -439,18 +346,6 @@ contains
 
     do while (.TRUE.)
       call getopt(options, o_index, o_arg, o_len, o_stat, o_offset, o_remain)
-
-      ! Debugging. Note that log_debug() cannot be used we don't know yet the logging level
-      ! that the user wants.
-      if (.false.) then
-        write(*,*) 'o_index = ', o_index
-        write(*,*) 'o_arg = ', o_arg
-        write(*,*) 'o_len = ', o_len
-        write(*,*) 'o_stat = ', o_stat
-        write(*,*) 'o_offset = ', o_offset
-        write(*,*) 'o_remain = ', o_remain
-        write(*,*) '---------------------------'
-      end if
 
       select case(o_stat)
         case (1,2,3)  ! parsing stopped (no error)
@@ -721,9 +616,9 @@ contains
     end if
 
     !__spill check__
-    if (i_mol .gt. config_num_mol_on) then
+    if (i_mol .gt. molids%n_on) then
       write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
-       i_mol, ') must be maximum ', config_num_mol_on
+       i_mol, ') must be maximum ', molids%n_on
       call pfant_halt(lll)
     end if
 
@@ -776,7 +671,7 @@ contains
   end
 
   !=======================================================================================
-  !> Fills config_molids_on and config_num_mol_on based on their complements.
+  !> Fills config_molids_on and molids%n_on based on their complements.
   !>
   !> @todo see what is public and what is private in this module
 
@@ -798,7 +693,7 @@ contains
         config_molids_on(i_mol) = molid
       end if
     end do
-    config_num_mol_on = i_mol
+    molids%n_on = i_mol
 
     flag_make_molids_on = .true.
   end

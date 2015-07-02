@@ -24,8 +24,9 @@
 
 module molecules
   use read_most_files
-  use config
+  use molecules_ids
   use dissoc
+
 
   !~integer, parameter :: max_lines_per_mol=300000
   ! Old "NTR"; Maximum number of transitions ("Set-Of-Lines") for each molecule
@@ -365,7 +366,7 @@ contains
 
 
     !__logging__
-    write(lll, *) 'config_num_mol_on = ', config_num_mol_on
+    write(lll, *) 'molids%n_on = ', molids%n_on
     call log_debug(lll)
 
 
@@ -470,7 +471,7 @@ contains
                          KB = 1.38046E-16,  &
                          C2 = 8.8525E-13
 
-    do i_mol = 1, config_num_mol_on
+    do i_mol = 1, molids%n_on
       molid = get_molid(i_mol)
 
       call point_ppa_pb(molid)

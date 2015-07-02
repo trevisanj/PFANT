@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="main" />
+		<Option title="pfant" />
 		<Option pch_mode="2" />
 		<Option compiler="gfortran" />
 		<Build>
@@ -34,25 +34,28 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="absoru.f90">
-			<Option weight="2" />
+			<Option weight="1" />
 		</Unit>
 		<Unit filename="absoru_data.f">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="atomgrade.f90">
-			<Option weight="2" />
+			<Option weight="0" />
 		</Unit>
-		<Unit filename="config.f90">
-			<Option weight="1" />
+		<Unit filename="config_pfant.f90">
+			<Option weight="0" />
 		</Unit>
 		<Unit filename="dissoc.f90">
-			<Option weight="2" />
+			<Option weight="1" />
 		</Unit>
 		<Unit filename="filetoh.f90">
-			<Option weight="2" />
+			<Option weight="1" />
 		</Unit>
 		<Unit filename="flin.f90">
-			<Option weight="2" />
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="inewmarcs.f90">
+			<Option weight="0" />
 		</Unit>
 		<Unit filename="logging.f90">
 			<Option weight="0" />
@@ -62,25 +65,28 @@
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="misc_math.f90">
-			<Option weight="1" />
+			<Option weight="0" />
 		</Unit>
-		<Unit filename="molecules.f90">
-			<Option weight="3" />
+		<Unit filename="molecules_calc.f90">
+			<Option weight="2" />
 		</Unit>
 		<Unit filename="nulbad.f90">
-			<Option weight="3" />
+			<Option weight="2" />
 		</Unit>
 		<Unit filename="options2.f90">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="pfant.f90">
-			<Option weight="5" />
+			<Option weight="4" />
 		</Unit>
 		<Unit filename="read_most_files.f90">
-			<Option weight="1" />
+			<Option weight="0" />
 		</Unit>
 		<Unit filename="synthesis.f90">
-			<Option weight="4" />
+			<Option weight="3" />
+		</Unit>
+		<Unit filename="welcome.f90">
+			<Option weight="0" />
 		</Unit>
 		<Extensions>
 			<envvars />
