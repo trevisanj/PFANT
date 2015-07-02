@@ -187,9 +187,9 @@ contains
 
 
 
-  ! .d88b. Yb    dP 8888 888b. 888b. 888 888b. 8888 
-  ! 8P  Y8  Yb  dP  8www 8  .8 8  .8  8  8   8 8www 
-  ! 8b  d8   YbdP   8    8wwK' 8wwK'  8  8   8 8    
+  ! .d88b. Yb    dP 8888 888b. 888b. 888 888b. 8888
+  ! 8P  Y8  Yb  dP  8www 8  .8 8  .8  8  8   8 8www
+  ! 8b  d8   YbdP   8    8wwK' 8wwK'  8  8   8 8
   ! `Y88P'    YP    8888 8  Yb 8  Yb 888 888P' 8888
   !
   ! Routines requiring "override" (OOP terminology)
@@ -316,10 +316,10 @@ contains
 
 
 
-  ! 888b.    db    888b. .d88b. 888 8b  8 .d88b  
-  ! 8  .8   dPYb   8  .8 YPwww.  8  8Ybm8 8P www 
-  ! 8wwP'  dPwwYb  8wwK'     d8  8  8  "8 8b  d8 
-  ! 8     dP    Yb 8  Yb `Y88P' 888 8   8 `Y88P' 
+  ! 888b.    db    888b. .d88b. 888 8b  8 .d88b
+  ! 8  .8   dPYb   8  .8 YPwww.  8  8Ybm8 8P www
+  ! 8wwP'  dPwwYb  8wwK'     d8  8  8  "8 8b  d8
+  ! 8     dP    Yb 8  Yb `Y88P' 888 8   8 `Y88P'
   !
   ! The following routines aid with parsing of command-line options.
 
@@ -369,18 +369,40 @@ contains
   end
 
   !=======================================================================================
-  !> Converts string to real, halting the program if conversion fails.
+  !> Converts string to real*8, halting the program if conversion fails.
   !>
   !> This function takes an option as argument in order to form a comprehensible
   !> error message if the conversion to real fails.
 
-  real*8 function parse_aux_str2real(opt, s)
+  real*8 function parse_aux_str2real8(opt, s)
     !> Option, will be used only in case of error
     type(option), intent(in) :: opt
     !> String to be converted to integer
     character(len=*), intent(in) :: s
 
-    read(s, *, err=20) parse_aux_str2real
+    read(s, *, err=20) parse_aux_str2real8
+    go to 30
+
+    20 continue
+    call pfant_halt('Error parsing option '//get_option_name(opt)//&
+     ': invalid real argument: '''//trim(s)//'''')
+
+    30 continue
+  end
+
+  !=======================================================================================
+  !> Converts string to real*4, halting the program if conversion fails.
+  !>
+  !> This function takes an option as argument in order to form a comprehensible
+  !> error message if the conversion to real fails.
+
+  real*4 function parse_aux_str2real4(opt, s)
+    !> Option, will be used only in case of error
+    type(option), intent(in) :: opt
+    !> String to be converted to integer
+    character(len=*), intent(in) :: s
+
+    read(s, *, err=20) parse_aux_str2real4
     go to 30
 
     20 continue
@@ -461,5 +483,5 @@ contains
     character(len=*), intent(in) :: o_arg
     integer :: res
     call pfant_halt('Forgot to set function pointer "ex_config_option_handler"', is_assertion=.true.)
-  end 
+  end
 end

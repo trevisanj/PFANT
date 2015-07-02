@@ -110,7 +110,7 @@ module read_most_files
   character*64 main_filetohy(MAX_MAIN_FILETOH_NUMFILES) !< ?doc? Names of ten outputs files that will contain ???
   integer   main_filetoh_numfiles !< number of valid elements within filetohy
 
-  character*10 main_titrav(20) !< Title, e.g. "Sun"
+  character*15 main_titrav                !< Title, e.g. "Sun"
   real*8 :: main_vvt(MAX_MODELES_NTOT), & !< ?doc?
             main_tolv(MAX_MODELES_NTOT)   !< ?doc?
   !> This vector goes along with dissoc_ELEMS and dissoc_NELEMX
@@ -268,7 +268,7 @@ contains
     open(unit=UNIT_,file=path_to_file, status='old')
 
     ! row 01: object name, e.g. "sun"
-    read(UNIT_, '(20a)') main_titrav
+    read(UNIT_, '(a15)') main_titrav
 
     ! row 02
     ! bid is old "ecrit" (obsolete)

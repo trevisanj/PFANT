@@ -18,11 +18,16 @@
 module config_innewmarcs
   use config_base
   use misc
+  use read_most_files
   implicit none
 
   integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
 
   ! note: maintained variable names found in original innewmarcs.f
+
+  character*20 :: config_open_status = 'unknown' !< option: --open_status
+
+  character*192 :: config_refdir = '.' !< option: --refdir
 
   character*64 :: &
    config_nomfimod = 'modeles.mod', & !< option: --nomfimod
@@ -39,10 +44,10 @@ module config_innewmarcs
   real*4 :: config_glog = -1
   !> option: --amet
   !> @sa get_amet()
-  real*4 :: config_amet = -1 
+  real*4 :: config_amet = -1
   !> option: --id
   !> @sa get_id()
-  integer :: config_newmarcs_id = 0
+  integer :: config_id = 0
 
 
   private assure_read_main
@@ -144,16 +149,16 @@ contains
       case ('tirb')
         call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
       case ('teff')
-        config_teff = str2real4(opt, o_arg)
+        config_teff = parse_aux_str2real4(opt, o_arg)
         call log_assignment('config_teff', real42str(config_teff))
       case ('glog')
-        config_glog = str2real4(opt, o_arg)
+        config_glog = parse_aux_str2real4(opt, o_arg)
         call log_assignment('config_glog', real42str(config_glog))
       case ('amet')
-        config_amet = str2real4(opt, o_arg)
+        config_amet = parse_aux_str2real4(opt, o_arg)
         call log_assignment('config_amet', real42str(config_amet))
       case ('id')
-        config_id = str2int(opt, o_arg)
+        config_id = parse_aux_str2int(opt, o_arg)
         if (config_id .lt. 1) then !#validation
           res = HANDLER_ERROR
         else
@@ -164,6 +169,19 @@ contains
         res = config_base_handle_option(opt, o_arg)
     end select
   end
+
+
+
+
+
+
+
+
+
+
+move logic to inewmarcs in sequential manner, no need for subroutines n shit
+call read_main, yes, then do subsequent shit
+but I may put everything inside a initialization subroutine
 
   !=======================================================================================
   !> Returns record id.
@@ -209,7 +227,7 @@ contains
   real*4 function get_teff() result(res)
     if (config_teff .eq. -1) then
       call assure_read_main()
-      res = main_teff
+      res = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
     else
       res = config_teff
     end if
@@ -224,7 +242,7 @@ contains
   real*4 function get_glog() result(res)
     if (config_glog .eq. -1) then
       call assure_read_main()
-      res = main_glog
+      res = real(main_glog) ! explicit real(8)-to-real(4) conversion to shut up warning
     else
       res = config_glog
     end if
@@ -239,7 +257,7 @@ contains
   real*4 function get_amet() result(res)
     if (config_amet .eq. -1) then
       call assure_read_main()
-      res = main_asalog
+      res = real(main_asalog) ! explicit real(8)-to-real(4) conversion to shut up warning
     else
       res = config_amet
     end if

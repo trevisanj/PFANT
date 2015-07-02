@@ -1,5 +1,6 @@
 module innewmarcs_calc
   use read_most_files
+  use config_innewmarcs
   implicit none
   private
 
@@ -24,6 +25,11 @@ module innewmarcs_calc
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
   character*192 :: lll  ! #logging
+
+  ! x_* values may come either from command line or infile:main
+  real*4 :: x_teff, x_glog, x_amet
+  character*LEN_TIRB :: x_tirb
+  integer :: x_id
 contains
 
   !=======================================================================================
@@ -31,7 +37,7 @@ contains
   !>
   !> @note ASCII file is always opened in status "unknown"
 
-  subroutine inewmarcs_calc()
+  subroutine innewmarcs_calc_()
     integer, parameter :: UNIT_MOD = 20, UNIT_DAT = 21  ! file units
     type(modele_record) :: &
      aa, bb, cc, dd, &   ! input records
@@ -49,9 +55,28 @@ contains
     real*4 :: rteff(2,2), rglog(2,2), ralfa(2)
 
 
+    !=====
+    ! Initialization
+    !=====
+
+    x_teff = get_teff()
+    x_glog = get_glog()
+    x_amet = get_amet()
+    x_tirb = get_tirb()
+    x_id = get_id()
     !> @todo implement flag_initialized to call this only once if I call inewmarcs_calc() more than once
     call read_ref_models_map()
 
+    call find_ref_models()  ! calculates nomfipl, amet1, amet2
+
+    !-------------------------------------------------------------
+    ! On cherche ou se trouvent (teff, glog)  par rapport a la table
+    call locatab() ! calculates id11, id12, id21, id22
+
+
+    !=====
+    ! Calculation
+    !=====
 
     write(lll,*) 'Creating ASCII file ', full_path_i(config_nomfidat)
     call log_debug(lll)
@@ -63,13 +88,6 @@ contains
 
     open(unit=UNIT_MOD,access='direct',status=config_open_status, &
      file=full_path_i(config_nomfimod), recl=1200)
-
-    call find_ref_models()  ! calculates nomfipl, amet1, amet2
-
-    !-------------------------------------------------------------
-    ! On cherche ou se trouvent (teff, glog)  par rapport a la table
-    call locatab() ! calculates id11, id12, id21, id22
-
 
     ! **********************Boucle sur l'abondance*******************
     do iabon = 1,2 ! on interpole dans 2 grilles d'abondance
@@ -239,7 +257,7 @@ contains
     end do
 
     ! Writes binary file
-    write(UNIT_MOD, rec=get_record_id()) &
+    write(UNIT_MOD, rec=get_id()) &
      nntot,          &
      config_teff, &
      config_glog, &
@@ -249,7 +267,7 @@ contains
      tir,            &
      dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
-    write(UNIT_MOD,rec=get_record_id()+1) 9999  ! 4 bytes, i guess
+    write(UNIT_MOD,rec=get_id()+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
     bid0 = 0.0
@@ -302,9 +320,9 @@ contains
     open(unit=UNIT_,file=path_to_file, status='old')
 
     ! row 01: (skipped) general information
-    read(UNIT,*)
+    read(UNIT_,*)
     ! row 02: (skipped) table header
-    read(UNIT,*)
+    read(UNIT_,*)
 
     num_refmodels = 0
     do while (.true.)
@@ -334,10 +352,13 @@ contains
   subroutine find_ref_models()
     integer i
     logical :: flag_found = .false.
+    real*4 amet
+
+    amet = get_amet()
 
     do i = 1, num_refmodels-1
-      if (config_amet .ge. modelmap_met(i) .and. &
-          config_amet .lt. modelmap_met(i+1)) then
+      if (amet .ge. modelmap_met(i) .and. &
+          amet .lt. modelmap_met(i+1)) then
         nomfipl(1) = modelmap_fn(i)
         nomfipl(2) = modelmap_fn(i+1)
         amet1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
@@ -348,7 +369,7 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(config_amet)//' is out of interval ['//&
+      call pfant_halt('Metallicity '//real42str(amet)//' is out of interval ['//&
        real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
     end if
   end
@@ -508,7 +529,7 @@ contains
 
       do i = 1,ngg
         jg2(jjt)=i
-        if(config_glog.lt.rglog(i)) go to 12
+        if(config_glog .lt. rglog(i)) go to 12
       end do
 
       12 continue

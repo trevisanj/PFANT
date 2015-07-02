@@ -1,7 +1,7 @@
 !> INNEWMARCS
 !>
 !> Interpolation d'un modele dans les grilles de modeles de
-!> NEWMARCS (2005) en fonction de Teff  log g et Fe/H
+!> NEWMARCS (2005) en fonction de Teff, log g et [Fe/H]
 !> (lit newmarcsm200.mod  newmarcsm150.mod newmarcsm100.mod
 !> newmarcsm075.mod newmarcsm050.mod  newmarcsm025.mod
 !> newmarcsp000.mod newmarcsp025.mod  newmarcsp050.mod
@@ -16,56 +16,20 @@
 !> Le point critique de ce programme est le SP locatab qui
 !> determine entre quels modeles on doit interpoler
 !> ce SP peut se tester avec le programme locat.f
-!> INPLEZ peut marcher en manuel (Manuel=.true.) on dit
-!> alors entre quels modeles on veut interpoler.
-!>
 
 program innewmarcs
-  use config
+  use config_innewmarcs
   use logging
-  use synthesis
-  use nulbad
+  use welcome
+  use innewmarcs_calc
   implicit none
 
-  !=====
-  ! Startup section
-  !=====
-  write(*,*) 'PFANT version: 15.5.21-alpha'
+  ! startup
+  write(*,*) pfant_version('INNEWMARCS')
   write(*,*) ''
-  call config_setup()
-  if (logging_level .le. LOGGING_INFO) then
-    call print_welcome(6)
-  end if
-  call log_info('Begin calculus')
+  call config_init()
+  call print_welcome(6)
 
-  !=====
-  ! Task(s)
-  !=====
-  select case (config_mode)
-    case ('pfant')
-      call synthesis_()
-    case ('nulbad')
-      call nulbad_complete()
-    case ('pfant-nulbad')
-      synthesis_flag_ffnu = .true.
-      ! This overrides possible setting from command-line because synthesis_ffnu
-      ! is the normalized spectrum.
-      config_nulbad_norm = .true.
-      call synthesis_()
-      call nulbad_calc(synthesis_ffnu, synthesis_ktot)
-    case default
-      call pfant_halt('Unknown mode: "'//config_mode//'"', is_assertion=.true.)
-  end select
-
-
-
-  call log_info('End calculus')
-end program pfant
-
-
-!> Displays welcome message
-
-subroutine print_welcome(unit_)
-  integer, intent(in) :: unit_
-  write(unit_,*) 'Welcome to PFANT - INEWMARCS module'
+  ! calculation
+  call innewmarcs_calc_()
 end

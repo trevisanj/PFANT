@@ -3,9 +3,10 @@ module welcome
 contains
   !> Returns string representing current PFANT version
 
-  function pfant_version() result(v)
+  function pfant_version(exec_name) result(v)
+    character(*), intent(in) :: exec_name !< name of executable
     character(:), allocatable :: v
-    v = 'v15.5.21-alpha'
+    v = exec_name//' v15.7.9-alpha'
   end
 
   !> Displays welcome message
