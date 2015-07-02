@@ -453,7 +453,7 @@ contains
 
     real*8 ft, dy, t0, t1, t2, u0, t
     integer i, j, jj, k
-    character*192 lll  !__logging__
+    character*192 lll  !#logging
 
 !     write(6,*) n
 !     105 format(7f10.3)

@@ -89,8 +89,7 @@ module read_most_files
   ! Variables filled by read_main() (file infile:main)
   !=====
   character*64 main_fileflux  !< ?doc?
-  logical   main_ecrit_obsolete, & !< obsolete (old verbose flag)
-            main_ptdisk    !< ?doc?
+  logical   main_ptdisk    !< ?doc?
   real*8    main_pas,    & !< ?doc?
             main_echx,   & !< ?doc?
             main_echy,   & !< ?doc?
@@ -235,6 +234,7 @@ module read_most_files
    flag_read_dissoc = .false.    !< Whether read_dissoc() has already been called
 
 
+   character*256, private :: lll
   save
 contains
 
@@ -247,34 +247,40 @@ contains
   !> @todo ISSUE Documentation
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
-  subroutine read_main(path_to_file)
-    implicit none
-    integer unit_
-    parameter(unit_=4)
+  subroutine read_main(path_to_file, flag_care_about_dissoc)
     character(len=*), intent(in) :: path_to_file
+    !> Defaults to .true. If .false., won't bother about reading infile:dissoc first and
+    !> will skip the xxcor line. Only pfant bother about the xxcor line; other executables
+    !> want to use infile:main without having to read infile:dissoc first.
+    logical, intent(in), optional :: flag_care_about_dissoc
+    integer, parameter :: UNIT_ = 4
     integer ih, i
-    character*256 lll
     character*64 filetoh_temp
+    logical :: fcad = .true.
+    logical bid
 
-    if (.not. flag_read_dissoc) then
+    if (present(flag_care_about_dissoc)) fcad = flag_care_about_dissoc
+
+    if (fcad .and. .not. flag_read_dissoc) then
       call pfant_halt('read_dissoc() must be called before read_main()')
     end if
 
-    open(unit=unit_,file=path_to_file, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
     ! row 01: object name, e.g. "sun"
-    read(unit_, '(20a)') main_titrav
+    read(UNIT_, '(20a)') main_titrav
 
     ! row 02
-    read(unit_, *) main_ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
+    ! bid is old "ecrit" (obsolete)
+    read(UNIT_, *) bid, main_pas, main_echx, main_echy, main_fwhm
 
     ! row 03
-    read(unit_, *) main_vvt(1)
+    read(UNIT_, *) main_vvt(1)
     main_ivtot = 1
 
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
-      read(unit_, *) main_ivtot
+      read(UNIT_, *) main_ivtot
       ! ivtot, affects subroutine turbul() issue ?what? ?doc?
       if (main_ivtot .gt. MAX_MODELES_NTOT) then
         write (lll, *) 'main_ivtot .gt. MAX_MODELES_NTOT (', &
@@ -282,35 +288,39 @@ contains
          call pfant_halt(lll)
       end if
 
-      read(unit_,*) (main_tolv(i), i=1, main_ivtot)
-      read(unit_,*) (main_vvt(i) ,i=1, main_ivtot)
+      read(UNIT_,*) (main_tolv(i), i=1, main_ivtot)
+      read(UNIT_,*) (main_vvt(i) ,i=1, main_ivtot)
     end if
 
     !> @todo issue Carlos Silveira about relation between main_asalog and main_afstar: they are both the metallicity
 
     ! row 04
-    read(unit_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
+    read(UNIT_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
 
     ! row 05
-    read(unit_, *) main_ptdisk, main_mu
+    read(UNIT_, *) main_ptdisk, main_mu
 
     ! row 06
-    read(unit_, *) main_afstar  ! metallicity of the star (in log scale)
+    read(UNIT_, *) main_afstar  ! metallicity of the star (in log scale)
 
     ! row 07: XXCOR(i)
     ! @todo ISSUE: Should be a column in dissoc.dat !!!!!
     ! (MT) I agree
-    read(unit_, *)(main_xxcor(i), i=1, dissoc_nmetal)
+    if (fcad) then
+      read(UNIT_, *) (main_xxcor(i), i=1, dissoc_nmetal)
+    else
+      read(UNIT_, *) ! skips the line
+    end if
 
     ! row 08 -- part of a file name
     ! This line will define the names of three output files:
-    !   FILEFLUX.cont
-    !   FILEFLUX.norm
-    !   FILEFLUX.spec
-    read(unit_, '(a)') main_fileflux
+    !   fileflux.cont
+    !   fileflux.norm
+    !   fileflux.spec
+    read(UNIT_, '(a)') main_fileflux
 
     ! row 09
-    read(unit_, *) main_llzero, main_llfin, main_aint
+    read(UNIT_, *) main_llzero, main_llfin, main_aint
 
     write(*,*) main_llzero, main_llfin, main_aint
 
@@ -319,11 +329,11 @@ contains
     ! Doesn't know yet the number of files
     ih = 1
     110 continue
-    read(unit_, '(a)', end=111) filetoh_temp
+    read(UNIT_, '(a)', end=111) filetoh_temp
 
     if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
 
-    !__spill check__
+    !#spill_check
     if (ih .gt. MAX_MAIN_FILETOH_NUMFILES) then
       call pfant_halt('Too many filetoh files specified (maximum is '//&
        'MAX_MAIN_FILETOH_NUMFILES='//int2str(MAX_MAIN_FILETOH_NUMFILES)//')')
@@ -343,12 +353,9 @@ contains
     write(lll,*) 'Number of filetoh files: ', main_filetoh_numfiles
     call log_debug(lll)
 
-    close(unit=unit_)
+    close(unit=UNIT_)
     flag_read_main = .true.
   end
-
-
-
 
   !=======================================================================================
   !> Reads dissoc.dat to fill variables dissoc_*
@@ -366,11 +373,9 @@ contains
   !> @todo PROPOSE: use READ()'s "END=" option
 
   subroutine read_dissoc(path_to_file)
-    integer unit_
+    integer, parameter :: UNIT_=199
     integer i, j, k, m, mmaxj
-    parameter(unit_=199)
     character(len=*) :: path_to_file
-    character*128 lll
     character*2 symbol
     logical flag_found
 
@@ -378,17 +383,17 @@ contains
     integer*4 natomm, nelemm
     dimension natomm(5), nelemm(5)
 
-    open(unit=unit_,file=path_to_file, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
     ! row 01
-    read(unit_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
+    read(UNIT_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
     ! rows 02 to NMETAL+1: 6-column rows
     !
     !
     !
     do i = 1, dissoc_nmetal
-      read (unit_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
+      read (UNIT_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
        symbol, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
 
@@ -409,7 +414,7 @@ contains
 
         dissoc_elems(i) = symbol
 
-        !__spill check__
+        !#spill_check
         if (dissoc_nelemx(i) .gt. MAX_Z) then
           call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
            int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_Z='//int2str(MAX_Z)//')')
@@ -430,7 +435,7 @@ contains
       1010 continue
       j = j+1
 
-      read(unit_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
+      read(UNIT_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
                    dissoc_mol(j), &
                    (dissoc_c(j, k), k=1,5), &
                    dissoc_mmax(j), &
@@ -479,7 +484,7 @@ contains
     write(lll,*) 'Last molecule considered in dissoc file is ', dissoc_mol(dissoc_nmol)
     call log_debug(lll)
 
-    close(unit=unit_)
+    close(unit=UNIT_)
     flag_read_dissoc = .true.
   end
 
@@ -509,8 +514,8 @@ contains
 
   subroutine read_abonds(path_to_file)
     implicit none
-    integer unit_, finab, k, j
-    parameter(unit_=199)
+    integer UNIT_, finab, k, j
+    parameter(UNIT_=199)
     character(len=*) :: path_to_file
     logical flag_found
     real*8 fstar
@@ -519,14 +524,14 @@ contains
       call pfant_halt('read_main() must be called before read_abonds()')
     end if
 
-    open(unit=unit_,file=path_to_file, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
     fstar = 10**main_afstar
 
     j = 1
     finab = 0
     do while (finab .lt. 1)
-      read(unit_, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
+      read(UNIT_, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
 
       if (finab .lt. 1) then
         ! Extra tasks (i.e., apart from reading file) [1], [2]:
@@ -569,7 +574,7 @@ contains
     end do
     abonds_nabond = j-2
 
-    close(unit=unit_)
+    close(unit=UNIT_)
     flag_read_abonds = .true.
   end
 
@@ -592,19 +597,19 @@ contains
 
   subroutine read_partit(path_to_file)
     implicit none
-    integer unit_
-    parameter(unit_=199)
+    integer UNIT_
+    parameter(UNIT_=199)
     character(len=*) :: path_to_file
 
     integer finpar, j, kmax, l, k
 
-    open(unit=unit_,file=path_to_file, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
 
     j = 1
     finpar = 0
     do while (finpar .lt. 1)
-      read (unit_, '(a2, 2f5.2, i3, 3f10.2, 34x, i1)') &
+      read (UNIT_, '(a2, 2f5.2, i3, 3f10.2, 34x, i1)') &
        partit_el(j), &
        partit_tini(j), &
        partit_pa(j), &
@@ -615,7 +620,7 @@ contains
 
       if (finpar .ne. 1) then
 
-        !__spill check__: checks if exceeds maximum number of elements allowed
+        !#spill_check: checks if exceeds maximum number of elements allowed
         if (j .gt. MAX_PARTIT_NPAR) then
           call pfant_halt('read_partit(): par exceeded maximum of MAX_PARTIT_NPAR='//&
            int2str(MAX_PARTIT_NPAR))
@@ -624,14 +629,14 @@ contains
 
         kmax = partit_jkmax(j)
 
-        !__spill check__: checks if exceeds maximum number of elements allowed
+        !#spill_check: checks if exceeds maximum number of elements allowed
         if (kmax .gt. MAX_PARTIT_KMAX) then
           call pfant_halt('read_partit(): par number '//int2str(j)//'; kmax='//&
            int2str(kmax)//' exceeded maximum of MAX_PARTIT_KMAX='//int2str(MAX_PARTIT_KMAX))
         end if
 
 
-        read(unit_, '(13f6.4)') ((partit_tabu(j, l, k), l=1, 3), k=1, kmax)
+        read(UNIT_, '(13f6.4)') ((partit_tabu(j, l, k), l=1, 3), k=1, kmax)
 
         j = j+1
       end if
@@ -657,28 +662,27 @@ contains
 
   subroutine read_absoru2(path_to_file)
     implicit none
-    integer unit_
-    parameter(unit_=199)
+    integer UNIT_
+    parameter(UNIT_=199)
     character(len=*) :: path_to_file
-    character*80 lll
     character*3 neant
     integer nion, i, ith, j, nrr, nset
 
-    open(unit=unit_,file=path_to_file, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
     ! ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
     ! ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
-    read (unit_,'(2e15.7)') absoru2_abmet, absoru2_abhel
+    read (UNIT_,'(2e15.7)') absoru2_abmet, absoru2_abhel
 
 
     ! NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
     ! NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
     ! IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
-    read (unit_,'(2i2, 19a4)') absoru2_nm, absoru2_nmeta, &
+    read (UNIT_,'(2i2, 19a4)') absoru2_nm, absoru2_nmeta, &
           (absoru2_iunite(i),i=1,2), (absoru2_titre(i),i=1,17)
 
-    !__spill check__: checks if exceeds maximum number of elements allowed
+    !#spill_check: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. MAX_ABSORU2_NM) then
       call pfant_halt('read_absoru2(): nm='//int2str(absoru2_nm)//&
          ' exceeded maximum of MAX_ABSORU2_NM='//int2str(MAX_ABSORU2_NM))
@@ -687,7 +691,7 @@ contains
 
     ! LECTURE DE LA TABLE D'IONISATION CHOISIE
     do j = 1, absoru2_nm
-      read (unit_, '(3x,i3,2e16.5)') absoru2_nr(j), absoru2_zp(j), absoru2_zm(j)
+      read (UNIT_, '(3x,i3,2e16.5)') absoru2_nr(j), absoru2_zp(j), absoru2_zm(j)
       absoru2_zp(j) = 10**absoru2_zp(j)
 
       ! NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
@@ -704,7 +708,7 @@ contains
       do i = 1, nrr
         ! neant="nothing"
         ! NION is also not used
-        read (unit_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
+        read (UNIT_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
          nion, absoru2_xi(j,i), absoru2_pf(j,i)
 
         ! ON LIT NR CARTES CONTENANT CHACUNE LE POTENTIEL D'IONISATION ET LA
@@ -721,17 +725,17 @@ contains
     END DO
 
 
-    read (unit_, '(2i2)') (absoru2_numset(ith), ith=1,2)
+    read (UNIT_, '(2i2)') (absoru2_numset(ith), ith=1,2)
 
   !> @todo ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
 
 
-    !__spill check__: Checks if exceeds maximum number of elements allowed
+    !#spill_check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
       call pfant_halt('read_absoru2(): numset(1) = '//int2str(absoru2_numset(1))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
-    !__spill check__: Checks if exceeds maximum number of elements allowed
+    !#spill_check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(2) .gt. MAX_ABSORU2_NUMSET_I) then
       call pfant_halt('read_absoru2(): numset(2) = '//int2str(absoru2_numset(2))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
@@ -743,7 +747,7 @@ contains
     ! PREMIERE LISTE POUR TH.LE.0.8 ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
     do ith = 1,2
       nset = absoru2_numset(ith)
-      read (unit_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
+      read (UNIT_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
     end do
 
   end
@@ -769,16 +773,15 @@ contains
                            flag_close   !< whether to close the file
     type(modele_record), intent(out) :: record
     integer i
-    character*128 lll
 
     ! Record is read twice; second time bid "grabs" everything that was read before
     real*4 bid(16)
 
     if (flag_open) then
-      open(unit=unit_, access='direct',status='old', file=path_to_file, recl=1200)
+      open(unit=UNIT_, access='direct',status='old', file=path_to_file, recl=1200)
     end if
 
-    read(unit_, rec=rec_id) &
+    read(UNIT_, rec=rec_id) &
      record%ntot,    &
      record%teff,   &
      record%glog,   &
@@ -793,13 +796,13 @@ contains
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
 
-    !__spill check__: Checks if exceeds maximum number of elements allowed
+    !#spill_check: Checks if exceeds maximum number of elements allowed
     if (record%ntot .gt. MAX_MODELES_NTOT) then
       call pfant_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
-    read(unit_, rec=rec_id) bid, &
+    read(UNIT_, rec=rec_id) bid, &
          (record%nh(i),   &
           record%teta(i), &
           record%pe(i),   &
@@ -816,7 +819,7 @@ contains
     call log_debug(lll)
 
     if (flag_close) then
-      close(unit_)
+      close(UNIT_)
     end if
   end
 
@@ -829,14 +832,12 @@ contains
 
   subroutine read_modele(path_to_file)
     implicit none
-    integer unit_
-    parameter(unit_=199)
+    integer UNIT_
+    parameter(UNIT_=199)
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
             id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
-    character*128 lll
-
     type(modele_record) :: r
 
     !> @todo better to give error if main_inum is not set

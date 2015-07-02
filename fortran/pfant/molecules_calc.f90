@@ -155,7 +155,7 @@ contains
     open(unit=unit_,file=filename, status='old')
 
 
-    !__logging__
+    !#logging
     write (lll,*) 'MAX_KM_R_LINES_TOTAL = ', MAX_KM_R_LINES_TOTAL
     call log_debug(lll)
 
@@ -166,7 +166,7 @@ contains
 
     read(unit_,*) km_r_number
 
-    !__spill check__
+    !#spill_check
     if (km_r_number .gt. NUM_MOL) then
       call pfant_halt("Number of molecules ("//int2str(km_r_number)// &
        ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
@@ -182,7 +182,7 @@ contains
     read(unit_,'(a)') km_r_titm
     !~READ(UNIT_,'(20A4)') km_r_TITM
 
-    !__logging__
+    !#logging
     write(lll, *) 'titm--------------', km_r_titm
     call log_debug(lll)
 
@@ -193,7 +193,7 @@ contains
     ! BLB:             NV(J) = 3 2
     read(unit_,*) (km_r_nv(molid), molid=1,km_r_number)
 
-    !__spill check__
+    !#spill_check
     do molid = 1, km_r_number
       if (km_r_nv(molid) .gt. MAX_SOL_PER_MOL) then
           call pfant_halt('read_moleculagrade(): molecule id '//int2str(molid)//&
@@ -212,7 +212,7 @@ contains
       ! BLB:          format: 20A4
       read(unit_,'(a)') km_r_titulo(molid)
 
-      !__logging__
+      !#logging
       write(lll,*) 'molecule id ', molid
       call log_debug(lll)
       write(lll,*) 'titulo:  ', km_r_titulo(molid)
@@ -251,7 +251,7 @@ contains
 
       nnv = km_r_nv(molid)
 
-      !__logging__
+      !#logging
       write(lll,*) 'nv=', nnv
       call log_debug(lll)
 
@@ -273,7 +273,7 @@ contains
       do while (.true.)
         i_line = i_line+1
 
-        !__spill check__: checks if exceeds maximum number of elements allowed
+        !#spill_check: checks if exceeds maximum number of elements allowed
         if (i_line .gt. MAX_KM_R_LINES_TOTAL) then
           call pfant_halt('read_moleculagrade(): exceeded maximum number of total '//&
             'spectral lines  MAX_KM_R_LINES_TOTAL= '//int2str(MAX_KM_R_LINES_TOTAL)//&
@@ -332,7 +332,7 @@ contains
 
       km_r_lines_per_mol(molid) = j_line
 
-      !__logging__
+      !#logging
       write(lll,*) 'This molecule has ', j_line, ' lines'
       call log_debug(lll)
     end do
@@ -365,7 +365,7 @@ contains
     character*256 lll
 
 
-    !__logging__
+    !#logging
     write(lll, *) 'molids%n_on = ', molids%n_on
     call log_debug(lll)
 
@@ -384,7 +384,7 @@ contains
 
       i_mol = i_mol+1
 
-      !__logging__
+      !#logging
       write(lll, *) 'molecule id', molid, ': ',  km_r_titulo(molid)
       call log_debug(lll)
       write(lll, *) 'number of prospective lambdas ------>', km_r_lines_per_mol(molid)
@@ -401,7 +401,7 @@ contains
           ! Filters in a new spectral line!
           i_filtered = i_filtered+1
 
-          !__spill check__
+          !#spill_check
           if (i_filtered .gt. MAX_KM_MBLEND) then
             call pfant_halt('filter_moleculagrade(): number of filtered lines '//&
              'exceeded maximum of MAX_KM_MBLEND='//int2str(MAX_KM_MBLEND), .true.)

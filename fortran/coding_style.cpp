@@ -3,6 +3,8 @@
 
 Sketch of a coding style manual
 
+@todo steps to create a new executable
+
 Format
 ======
 
@@ -162,10 +164,10 @@ ask MT                 Suggests the person who probably knows to solve the issue
 __assertion__          Marks bit of code that is an assertion. Assertions serve both as
                        documentation and error protection.
 
-__logging__            Marks bit of code whose purpose is to output log messages.
+#logging            Marks bit of code whose purpose is to output log messages.
                        *deprecated*, I don't think it pays off
 
-__spill check__        Marks bit of code destinated to verify whether we are trying to assign
+#spill_check        Marks bit of code destinated to verify whether we are trying to assign
                        an element beyond the size of a vector/matrix, commonly performed while
                        reading files
 

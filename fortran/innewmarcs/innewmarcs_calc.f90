@@ -1,4 +1,4 @@
-module calc
+module innewmarcs_calc
   use read_most_files
   implicit none
   private
@@ -23,7 +23,7 @@ module calc
   real*4 amet1, amet2
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
-  character*192 :: lll  ! __logging__
+  character*192 :: lll  ! #logging
 contains
 
   !=======================================================================================
@@ -53,16 +53,16 @@ contains
     call read_ref_models_map()
 
 
-    write(lll,*) 'Creating ASCII file ', full_path_i(config_inewmarcs_nomfidat)
+    write(lll,*) 'Creating ASCII file ', full_path_i(config_nomfidat)
     call log_debug(lll)
 
-    open(unit=UNIT_DAT,file=full_path_i(config_inewmarcs_nomfidat),status='unknown')
+    open(unit=UNIT_DAT,file=full_path_i(config_nomfidat),status='unknown')
 
-    call log_debug('Opening binary file '//full_path_i(config_inewmarcs_nomfimod)//&
-     ' in status='//trim(config_inewmarcs_open_status))
+    call log_debug('Opening binary file '//full_path_i(config_nomfimod)//&
+     ' in status='//trim(config_open_status))
 
-    open(unit=UNIT_MOD,access='direct',status=config_inewmarcs_open_status, &
-     file=full_path_i(config_inewmarcs_nomfimod), recl=1200)
+    open(unit=UNIT_MOD,access='direct',status=config_open_status, &
+     file=full_path_i(config_nomfimod), recl=1200)
 
     call find_ref_models()  ! calculates nomfipl, amet1, amet2
 
@@ -140,10 +140,10 @@ contains
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
-      t1 = config_inewmarcs_glog-rglog(1,1)
+      t1 = config_glog-rglog(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102)  rteff(1,1), config_inewmarcs_glog
+      ! write(6,102)  rteff(1,1), config_glog
       ! 102 format('  modele interpole avec   Teff=',f9.3,' log g=', f9.3)
 
       call interpol(t0, t1, aa, bb, ee, ntot(iabon))
@@ -151,10 +151,10 @@ contains
 
       ! interpolation sur t
       t0 = rteff(2,1)-rteff(1,1)
-      t1 = config_inewmarcs_teff-rteff(1,1)
+      t1 = config_teff-rteff(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102) config_inewmarcs_teff, config_inewmarcs_glog
+      ! write(6,102) config_teff, config_glog
 
       if (iabon .eq. 1) then
         call interpol(t0, t1, ee, ff, z1, ntot(iabon))
@@ -194,7 +194,7 @@ contains
     call log_debug(lll)
 
     t0 = amet2-amet1
-    t1 = config_inewmarcs_amet-amet1
+    t1 = config_amet-amet1
 
     call log_debug(' interpolation sur l''abondance avec')
     write(lll,*) ' amet2=',amet2,'       amet1=',amet1
@@ -207,12 +207,12 @@ contains
     ! calcule les elements alpha resultants
     asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
 
-    !__logging__
+    !#logging
     write(lll,*) 'model 1 amet, alpha=',amet1,ralfa(1)
     call log_debug(lll)
     write(lll,*) 'model 2 amet, alpha=',amet2,ralfa(2)
     call log_debug(lll)
-    write(lll,*) 'result: amet, alpha=',config_inewmarcs_amet,asalalf
+    write(lll,*) 'result: amet, alpha=',config_amet,asalalf
     call log_debug(lll)
 
 
@@ -225,7 +225,7 @@ contains
       zz%pg(n) = 10**zz%pg(n)
     end do
 
-    tir=tira//config_inewmarcs_tirb
+    tir=tira//config_tirb
     in = 0
 
     do n = 1,nntot
@@ -241,9 +241,9 @@ contains
     ! Writes binary file
     write(UNIT_MOD, rec=get_record_id()) &
      nntot,          &
-     config_inewmarcs_teff, &
-     config_inewmarcs_glog, &
-     config_inewmarcs_amet, &
+     config_teff, &
+     config_glog, &
+     config_amet, &
      asalalf,        &
      dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
      tir,            &
@@ -256,10 +256,10 @@ contains
     vvt = 2.0E+5 ! on prend vt constant
     tostand = 5000 ! ?
     write(UNIT_DAT,'(a30,i8,f10.0,f8.2,2f5.0)') &
-     config_inewmarcs_modcode, &
+     config_modcode, &
      nntot,             &
      tostand,           &
-     config_inewmarcs_glog,    &
+     config_glog,    &
      bid0,              &
      bid0
     do n = 1,nntot
@@ -273,43 +273,6 @@ contains
   end
 
 
-
-
-
-  !=======================================================================================
-  !> Returns record id.
-  !>
-  !> config_inewmarcs_id has preference, but if it is not specified, then takes main_inum
-
-  integer function get_record_id()
-    if (config_inewmarcs_id .lt. 1) then
-      get_record_id = main_inum
-      if (main_inum .lt. 1) then
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-    else
-      get+record_id = config_inewmarcs_id
-    end if
-  end
-
-  !=======================================================================================
-  !> Returns title. It may be either config_inewmarcs_id or main_inum
-  !>
-  !> config_inewmarcs_id has preference, but if it is not specified, then takes main_inum
-
-  integer function get_record_id()
-    if (config_inewmarcs_id .lt. 1) then
-      get_record_id = main_inum
-      if (main_inum .lt. 1) then
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-    else
-      get+record_id = config_inewmarcs_id
-    end if
-  end
-
-
-
   !=======================================================================================
   !> Returns full path to file within models directory
 
@@ -317,7 +280,7 @@ contains
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 
-    res = trim_and_add_slash(config_inewmarcs_refdir) // trim(filename)
+    res = trim_and_add_slash(config_refdir) // trim(filename)
   end
 
 
@@ -359,7 +322,7 @@ contains
   end
 
 
-  !> Fill variables nomfipl, amet1, amet2 based on config_inewmarcs_amet
+  !> Fill variables nomfipl, amet1, amet2 based on config_amet
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
@@ -373,8 +336,8 @@ contains
     logical :: flag_found = .false.
 
     do i = 1, num_refmodels-1
-      if (config_inewmarcs_amet .ge. modelmap_met(i) .and. &
-          config_inewmarcs_amet .lt. modelmap_met(i+1)) then
+      if (config_amet .ge. modelmap_met(i) .and. &
+          config_amet .lt. modelmap_met(i+1)) then
         nomfipl(1) = modelmap_fn(i)
         nomfipl(2) = modelmap_fn(i+1)
         amet1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
@@ -385,7 +348,7 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(config_inewmarcs_amet)//' is out of interval ['//&
+      call pfant_halt('Metallicity '//real42str(config_amet)//' is out of interval ['//&
        real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
     end if
   end
@@ -516,7 +479,7 @@ contains
 
     do i=1,nt
       jt2 = i
-      if(config_inewmarcs_teff .lt. rteff(i)) go to 11
+      if(config_teff .lt. rteff(i)) go to 11
     end do
 
     11 continue
@@ -545,7 +508,7 @@ contains
 
       do i = 1,ngg
         jg2(jjt)=i
-        if(config_inewmarcs_glog.lt.rglog(i)) go to 12
+        if(config_glog.lt.rglog(i)) go to 12
       end do
 
       12 continue

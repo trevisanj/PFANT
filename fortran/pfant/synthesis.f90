@@ -207,7 +207,7 @@ module synthesis
   real*8, parameter :: &
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
-  character*192 :: lll  !__logging__
+  character*192 :: lll  !#logging
 
 contains
 
@@ -340,7 +340,7 @@ contains
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = int((lfin-lzero)/main_pas + 1.0005)
 
-      !__spill check__
+      !#spill_check
       if(dtot .gt. FILETOH_NP) then
         call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of FILETOH_NP='//&
          int2str(FILETOH_NP))
@@ -356,7 +356,7 @@ contains
 
 
 
-      !__logging__
+      !#logging
       117 format(5x,'lzero=',f10.3,10x,'lfin=',f10.3,5x,'dtot=',i7)
       write(lll, 117) lzero, lfin, dtot
       call log_info(lll)
@@ -371,7 +371,7 @@ contains
 
       call bk()
 
-      !__logging__
+      !#logging
       501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3,  2x,'lzero=',f10.3,2x,'lfin=',f10.3,2x,'lambd 1/2=',f10.3)
       write(lll,501) main_llzero,main_llfin,lzero,lfin,lambd
       call log_info(lll)
@@ -390,7 +390,7 @@ contains
           irh = 1
           iht = ih
 
-          !__logging__
+          !#logging
           712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,a,2x,'ih=',i5)
           write(lll,712) im, filetoh_llhy(ih), main_filetohy(iht), iht
           call log_info(lll)
@@ -413,7 +413,7 @@ contains
 
       imy = im
       if(imy .ne. 0) then
-        !__logging__
+        !#logging
         write(lll,*) (dhmy(im), im=1,imy)
         call log_debug('DHMY ==> '//lll)
         write(lll,*) (dhpy(im), im=1,imy)
@@ -508,7 +508,7 @@ contains
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
       call write_spec_item(UNIT_NORM, fn)             ! normalized
 
-      !__logging__
+      !#logging
       707 format(1x,'ikey=',i10,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'i1=',i7,2x,'i2=',i7)
       write(lll,707) ikey, lzero, lfin, i1, i2
       call log_info(lll)
@@ -518,7 +518,7 @@ contains
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit !main loop exit door!> @todo issue ?what? ?doc? does this condition mean?
 
-      !__logging__
+      !#logging
       708 format(1x,'ikey=',i10,2x,'irh=',i6)
       write(lll, 708) ikey, irh
       call log_info(lll)
@@ -535,7 +535,7 @@ contains
     close(UNIT_LOG)
     close(UNIT_LINES)
 
-    !__logging__
+    !#logging
     call log_info('Flux sortant est en nu: Fnu x lambda')
     call log_info('Flux absolu sortant a ete multiplie par 10**5')
 
@@ -560,7 +560,7 @@ contains
       real*8 amg
       amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium? (MT) I think that they did this because the alpha-enhanced is specified nowhere.
 
-      1130 format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
+      1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
        modeles_tit,            &  ! fixed
@@ -590,7 +590,7 @@ contains
       real*8 amg
       amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
 
-      1130  format(i5, 5a4, 5f15.5, 4f10.1, i10, 4f15.5)
+      1130  format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
       write(UNIT_LOG, 1130) &
        ikeytot, &
        modeles_tit, &
@@ -766,7 +766,7 @@ contains
 
         bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(dtot-1)) + bk_b1(0)
 
-        !__logging__
+        !#logging
         if (d .eq. 1 .or. d .eq. dtot) then
           150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
           152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
@@ -892,7 +892,7 @@ contains
         end do
       end do
 
-      !__logging__
+      !#logging
       153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
       154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
       write(lll,153) bk_kcd(1,1),bk_kcd(1,modeles_ntot)

@@ -22,16 +22,10 @@ module config_pfant
   implicit none
 
   !=====
-  ! Mode of operation
-  !=====
-  character*10 :: config_mode = 'pfant' !< option: --mode
-
-  !=====
   ! File names
   !=====
   character*64 :: &
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
-   config_fn_main          = 'main.dat',          & !< option: --fn_main
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
    config_fn_absoru2       = 'absoru2.dat',       & !< option: --fn_absoru2
    config_fn_modeles       = 'modeles.mod',       & !< option: --fn_modeles
@@ -84,9 +78,6 @@ contains
     options(k) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
     k = k+1
-    options(k) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
-     'input file name - main configuration')
-    k = k+1
     options(k) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
      'input file name - partition functions')
     k = k+1
@@ -112,15 +103,12 @@ contains
   end
 
   !=======================================================================================
-  !> Module configuration and argument parsing,
-  !>
-  !> Must be called at system startup
+  !> Executable-specific initialization + calls config_base_init()
 
   subroutine config_init()
     ex_config_option_handler => config_handle_option
     ex_config_num_options = ex_config_num_options+11
     call config_init_options()
-
     call config_base_init()
   end
 
@@ -157,8 +145,6 @@ contains
 
       case ('fn_dissoc')
         call parse_aux_assign_fn(o_arg, config_fn_dissoc, 'config_fn_dissoc')
-      case ('fn_main')
-        call parse_aux_assign_fn(o_arg, config_fn_main, 'config_fn_main')
       case ('fn_partit')
         call parse_aux_assign_fn(o_arg, config_fn_partit, 'config_fn_partit')
       case ('fn_absoru2')

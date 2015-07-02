@@ -49,13 +49,13 @@ contains
 
   function get_molid(i_mol)
     integer i_mol, get_molid
-    character*80 lll  !__logging__
+    character*80 lll  !#logging
 
     if (.not. flag_molecules_ids_init) then
       call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
     end if
 
-    !__spill check__
+    !#spill_check
     if (i_mol .gt. molids%n_on) then
       write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
        i_mol, ') must be maximum ', molids%n_on
@@ -98,7 +98,7 @@ contains
       call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
     end if
 
-    !__spill check__
+    !#spill_check
     if (molid .gt. NUM_MOL .or. molid .lt. 1) then
       call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
        int2str(NUM_MOL)//')')

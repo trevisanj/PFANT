@@ -266,7 +266,7 @@ contains
 
     close(unit=UNIT_)
 
-    !__logging__x4
+    !#loggingx4
     write(lll,110) nulbad_tetaeff,nulbad_glog,nulbad_asalog,nulbad_nhe_bid,nulbad_amg
     110 format(2X,'tetaeff=',F8.3,2X,'log g=',F6.2,2X,'[M/H]=',F6.2, &
                2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
@@ -338,7 +338,7 @@ contains
     aa = 1.414214*sigma
     totlarg=3.0 * aa
 
-    !__logging__ x2
+    !#logging x2
     write(lll,119) config_nulbad_fwhm,sigma,aa
     119  format(1X,'Profil instrumental gaussien; ', &
      'FWHM =',F7.3,' (A); Sigma=',F7.3,' (A); ', &

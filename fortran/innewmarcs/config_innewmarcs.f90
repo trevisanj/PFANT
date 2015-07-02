@@ -13,90 +13,39 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_config
-!>
-!> Command-line parsing and respective global variable declarations
-!> @li Configuration globals with their default values
-!> @li Routines to parse command-line arguments
-!> @li All globals have prefix "config_"
-!>
-!> @todo config_fn_* documentation is important because it is a good place to "define" what each file is
-!>
-!> @note There are many variables in this module that have a unique relation with a
-!>       command-line option. These variables will not be documented in comments, but
-!>       in the help text associated with their command-line options (the reason is to
-!>       avoid text duplication). There are two ways to access this documentation:
-!>       @li a) view the source code for subroutine config::init_options()
-!>       @li b) execute the program with the --help option
+!> innewmarcs-specific configuration
 
 module config_innewmarcs
   use config_base
   use misc
   implicit none
 
-  integer, parameter :: NUM_MOL=21  !< Number of molecules configured in the program.
-                                    !< Conceptually, this should be defined in molecules.f, but there would be cyclic USEs
-                                    !< @todo maybe create a module called "dimensions"...not before I check the other modules to incorporate: hydro2 and inewmarcs
+  integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
 
-  !=====
-  ! Mode of operation
-  !=====
-  character*10 :: config_mode = 'pfant' !< option: --mode
+  ! note: maintained variable names found in original innewmarcs.f
 
-  !=====
-  ! File names
-  !=====
   character*64 :: &
-   config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
-   config_fn_main          = 'main.dat',          & !< option: --fn_main
-   config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
-   config_fn_absoru2       = 'absoru2.dat',       & !< option: --fn_absoru2
-   config_fn_modeles       = 'modeles.mod',       & !< option: --fn_modeles
-   config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
-   config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
-   config_fn_moleculagrade = 'moleculagrade.dat', & !< option: --fn_moleculagrade
-   config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log'              !< option: --fn_log
-
-  !=====
-  ! Variables related to molecules
-  !=====
-  !> Number of molecules switched off (excluded from calculations)
-  integer :: config_num_mol_off = 0
-  !> List of molecule ids that are be switched off. Complement of config_molids_on.
-  integer :: config_molids_off (NUM_MOL)
-
-  !=====
-  ! Misc
-  !=====
-  integer :: config_interp = 1  !< option: --interp
-  integer :: config_kik = 0     !< option: --kik
-
-  !> Whether to allow PFANT to run if none of the specified filetoh files is found
-  logical :: config_allow_no_filetoh = .false.
-
-  !=====
-  ! Calculated variables
-  !=====
-
-  !> List of molecule ids that are switched on. Complement of config_molids_off. Calculated by make_molids_on()
-  integer, dimension(NUM_MOL) :: config_molids_on
-  !> This is actually <code> = NUM_MOL-config_num_mol_off </code>
-  integer molids%n_on
+   config_nomfimod = 'modeles.mod', & !< option: --nomfimod
+   config_nomfidat = 'modeles.dat'    !< option: --nomfidat
+  character*25 :: config_modcode = 'NoName' !< option: --modcode
+  !> option: --tirb
+  !> @sa get_tirb()
+  character(LEN_TIRB) :: config_tirb = '?'
+  !> option: --teff
+  !> @sa get_teff()
+  real*4 :: config_teff = -1
+  !> option: --glog
+  !> @sa get_teff()
+  real*4 :: config_glog = -1
+  !> option: --amet
+  !> @sa get_amet()
+  real*4 :: config_amet = -1 
+  !> option: --id
+  !> @sa get_id()
+  integer :: config_newmarcs_id = 0
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
-
-  ! There is a calling order to be observed. These flags + assertions inforce that
-  logical, private :: &
-   flag_make_molids_on = .false.   !< make_molids_on() has been called?
-
-  private make_molids_on
-
-  save
+  private assure_read_main
 contains
   !=======================================================================================
   !> Initializes the options list
@@ -110,591 +59,199 @@ contains
     character(:), allocatable :: name
     character(1) :: chr
 
-    k = 1
-    options(k) = option('help', 'h', .false., '', '', &
-      'Displays this help text.')
-    k = k+1
-    options(k) = option('loglevel', 'l', .TRUE., 'level', 'debug', &
-     'logging level<br>'//&
-     IND//'debug<br>'//&
-     IND//'info<br>'//&
-     IND//'warning<br>'//&
-     IND//'error<br>'//&
-     IND//'critical<br>'//&
-     IND//'halt')
-    k = k+1
-    options(k) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
-     'interpolation type for subroutine turbul()<br>'//&
-     IND//'1: linear;<br>'//&
-     IND//'2: parabolic)')
-    k = k+1
-    options(k) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
-     'selector for subroutines flin1() and flinh()<br>'//&
-     IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
-     IND//'1: 26-point integration)')
-    k = k+1
-
-    !> @todo Find names for each file and update options help
-
-    options(k) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
-     'input file name - dissociative equilibrium')
-    k = k+1
-    options(k) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
-     'input file name - main configuration')
-    k = k+1
-    options(k) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
-     'input file name - partition functions')
-    k = k+1
-    options(k) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-     'input file name - absoru2')
-    k = k+1
-    options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
-     'input file name - model')
-    k = k+1
-    options(k) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
-     'input file name - atomic abundances')
-    k = k+1
-    options(k) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
-     'input file name - atomic lines')
-    k = k+1
-    options(k) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
-     'input file name - molecular lines')
-    k = k+1
-    options(k) = option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
-     'output file name - progress indicator')
-    k = k+1
-    options(k) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
-      'directory containing input files')
-    k = k+1
-    options(k) = option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
-      'directory for output files')
-    k = k+1
-    options(k) = option('molid_off',        ' ', .true., 'molecule id', '', &
-     'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
-     '*Note*: This option can be repeated.')
-    k = k+1
-    ! Program "modes" of operation
-    options(k) = option('mode', 'm', .true., '', '', &  ! is mode, "m" but I want to test the assertion below
-     'Program operational mode<br>'//&
-     IND//'pfant: spectral synthesis mode<br>'//&
-     IND//'nulbad: reads output from pfant mode and saves convolved spectrum<br>'//&
-     IND//'pfant-nulbad: cascade pfant and nulbad operations')
-    k = k+1
-
-    ! nulbad options
-    options(k) = option('nulbad_fileflux', ' ', .true., 'file name', config_nulbad_fileflux, &
-      'NULBAD Flux file name<br>'//&
-      '*Note*: looks for file in *output* directory, because the flux'//&
-      '        file is a PFANT output.')
-    k = k+1
-    options(k) = option('nulbad_norm',     ' ', .true., 'T/F', logical2str(config_nulbad_norm), &
-      'NULBAD Is spectrum normalized?<br>'//&
-      '*Note*: this setting is ignored in ''pfant-nulbad'' mode.')
-    k = k+1
-    options(k) = option('nulbad_flam',     ' ', .true., 'T/F', logical2str(config_nulbad_flam), &
-      'NULBAD Fnu to FLambda transformation?')
-    k = k+1
-    options(k) = option('nulbad_flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
-      'NULBAD output file name')
-    k = k+1
-    options(k) = option('nulbad_pat',      ' ', .true., 'real value', real82str(config_nulbad_pat), &
-      'NULBAD step ?doc?')
-    k = k+1
-    options(k) = option('nulbad_convol',   ' ', .true., 'T/F', logical2str(config_nulbad_convol), &
-      'NULBAD Apply convolution?')
-    k = k+1
-    options(k) = option('nulbad_fwhm',     ' ', .true., 'real value', real82str(config_nulbad_fwhm), &
-      'NULBAD full-width-half-maximum of gaussian')
 
     k = k+1
-    options(k) = option('inewmarcs_refdir',' ', .true., 'directory name', config_inewmarcs_refdir, &
-     'INEWMARCS Directory containing reference atmospheric models.<br>'//&
+    options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
+     'Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
      'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
 
     k = k+1
-    options(k) = option('inewmarcs_open_status',' ', .true., 'string', config_inewmarcs_open_status, &
-     'INEWMARCS File open mode for binary file<br>'//&
+    options(k) = option('open_status',' ', .true., 'string', config_open_status, &
+     'File open mode for binary file<br>'//&
      IND//'new: file must not exist<br>'//&
      IND//'old: file must exist<br>'//&
      IND//'replace: replaces file if exists, otherwise creates new')
 
     k = k+1
-    options(k) = option('inewmarcs_nomfimod',' ', .true., 'file name', config_inewmarcs_nomfimod, &
-     'INEWMARCS Name of binary file<br>'//&
+    options(k) = option('nomfimod',' ', .true., 'file name', config_nomfimod, &
+     'Name of binary file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
     k = k+1
-    options(k) = option('inewmarcs_nomfidat',' ', .true., 'file name', config_inewmarcs_nomfidat, &
-     'INEWMARCS Name of ASCII file<br>'//&
+    options(k) = option('nomfidat',' ', .true., 'file name', config_nomfidat, &
+     'Name of ASCII file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
     k = k+1
-    options(k) = option('inewmarcs_modcode',' ', .true., 'string up to 25 characters', config_inewmarcs_modcode, &
-     'INEWMARCS "Model name"')
+    options(k) = option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
+     '"Model name"')
 
     k = k+1
-    options(k) = option('inewmarcs_tirb',' ', .true., 'string up to 15 characters', config_inewmarcs_tirb, &
-     'INEWMARCS "Titre"')
+    options(k) = option('tirb',' ', .true., 'string up to 15 characters', config_tirb, &
+     '"Titre"')
 
     k = k+1
-    options(k) = option('inewmarcs_teff',' ', .true., 'real value', real42str(config_inewmarcs_teff), &
-     'INEWMARCS "Teff"')
+    options(k) = option('teff',' ', .true., 'real value', real42str(config_teff), &
+     '"Teff"')
 
     k = k+1
-    options(k) = option('inewmarcs_glog',' ', .true., 'real value', real42str(config_inewmarcs_glog), &
-     'INEWMARCS "log g"')
+    options(k) = option('glog',' ', .true., 'real value', real42str(config_glog), &
+     '"log g"')
 
     k = k+1
-    options(k) = option('inewmarcs_amet',' ', .true., 'real value', real42str(config_inewmarcs_amet), &
-     'INEWMARCS "[M/H]"')
+    options(k) = option('amet',' ', .true., 'real value', real42str(config_amet), &
+     '"[M/H]"')
 
     k = k+1
-    options(k) = option('inewmarcs_id',' ', .true., 'real value', '<"inum" value in main configuration file>', &
-     'INEWMARCS Record id within binary file. If not specified, takes value of '//&
+    options(k) = option('id',' ', .true., 'real value', '<"inum" value in main configuration file>', &
+     'Record id within binary file. If not specified, takes value of '//&
      'main_inum variable (last value of 4th row of main configuration file)')
-
   end
 
 
   !=======================================================================================
-  !> Does various setup operations.
-  !>
-  !>   - sets up configuration defaults,
-  !>   - parses command-line arguments, and
-  !>   - does other necessary operations.
-  !>
-  !> Must be called at system startup
+  !> Executable-specific initialization + calls config_base_init()
 
-  subroutine config_setup()
-    call init_options()
-    call parse_args()
-
-    !=====
-    ! Configures data directories
-    !=====
-    inputdir_trim = trim_and_add_slash(config_inputdir)
-    outputdir_trim = trim_and_add_slash(config_outputdir)
-
-    !=====
-    ! Configures other modules
-    !=====
-
-    ! logging module ...
-    logging_path_progress = full_path_o(config_fn_progress)
-
-    ! inewmarcs module ...
-    inewmarcs_refdir = config_inewmarcs_refdir
-    inewmarcs_open_status = config_inewmarcs_open_status
-    inewmarcs_nomfimod = full_path_i(config_inewmarcs_nomfimod)
-    inewmarcs_nomfidat = full_path_i(config_inewmarcs_nomfidat)
-    inewmarcs_modcode = config_inewmarcs_modcode
-    inewmarcs_tirb = config_inewmarcs_tirb
-    inewmarcs_teff = config_inewmarcs_teff
-    inewmarcs_glog = config_inewmarcs_glog
-    inewmarcs_amet = config_inewmarcs_amet
-    inewmarcs_id = config_inewmarcs_id
-
-    ! Default value for config_nulbad_flcv
-    if (config_nulbad_flcv .eq. '') then
-      config_nulbad_flcv = trim(config_nulbad_fileflux)//'.nulbad'
-    end if
-
-    call make_molids_on()
-
-    flag_setup = .true.
+  subroutine config_init()
+    ex_config_option_handler => config_handle_option
+    ex_config_num_options = ex_config_num_options+10
+    call config_init_options()
+    call config_base_init()
   end
 
   !=======================================================================================
-  !> Initializes the options list
+  !> Handles options for innewmarcs executable
 
-  subroutine show_help(unit)
-    !> logical unit number, e.g., 6=screen
-    integer, intent(in) :: unit
+  function config_handle_option(opt, o_arg) result(res)
+    type(option), intent(in) :: opt
+    character(len=*), intent(in) :: o_arg
+    integer :: res, iTemp
 
-    integer i
+    res = HANDLER_OK
 
-    write(*,*) 'Command-line options'
-    write(*,*) '----------------------'
-    write(*,*) ' Legend:'
-    write(*,*) '  [=xxx]     default value'
-    write(*,*) '  <arg name> argument that must be specified'
-
-    do i = 1, NUM_OPTIONS
-      write(unit,*) ''
-      call print_opt(options(i), unit)
-    end do
-  end
-
-  !=======================================================================================
-  !> Parses and validates all command-line arguments.
-  !>
-  !> @todo will inform ' ' for options with no short equivalent, but I don't know if options2.f90 is prepared for this
-  !>
-  !> @todo Documentation: somehow think how to link option descriptions below, their default values, and the documentation for their respective config_* at their declarations.
-  !>
-  !> @note If finds "-h" or "--help", will display help text and halt.
-
-  subroutine parse_args()
-    integer k  !> @todo for debugging, take it out
-    integer o_len, o_stat, o_remain, o_offset, o_index, iTemp
-    character*500 o_arg
-    logical err_out
-    type(option) opt
-
-    err_out = .FALSE.
-
-    do while (.TRUE.)
-      call getopt(options, o_index, o_arg, o_len, o_stat, o_offset, o_remain)
-
-      select case(o_stat)
-        case (1,2,3)  ! parsing stopped (no error)
-           exit
-        case (0)  ! option successfully parsed
-          opt = options(o_index)
-
-          ! "Uses" config options: validates and assigns to proper config_* variables.
-          select case(opt%name)  ! It is more legible select by option name than by index
-            case ('help')
-                call show_help(6)
-                stop('Bye')
-            case ('loglevel')
-              ! Note that logging level change takes effect immediately
-              select case (to_lower(o_arg))
-                case ('debug')
-                  logging_level = LOGGING_DEBUG
-                case ('info')
-                  logging_level = LOGGING_INFO
-                case ('warning')
-                  logging_level = LOGGING_WARNING
-                case ('critical')
-                  logging_level = LOGGING_CRITICAL
-                case ('error')
-                  logging_level = LOGGING_ERROR
-                case ('halt')
-                  logging_level = LOGGING_HALT
-                case default
-                  err_out = .TRUE.
-              end select
-              if (.NOT. err_out) then
-                call log_assignment('logging level', to_lower(o_arg))
-              end if
-            case ('interp')
-              iTemp = str2int(opt, o_arg)
-              select case (iTemp)
-                case (1, 2)
-                  config_INTERP = iTemp
-                  call log_assignment('config_interp', int2str(config_interp))
-                case default
-                  err_out = .TRUE.
-              end select
-
-            case ('kik')
-              iTemp = str2int(opt, o_arg)
-              select case(iTemp)
-                case (0, 1)
-                  config_kik = iTemp
-                  call log_assignment('config_kik', int2str(config_kik))
-                case default
-                  err_out = .TRUE.
-              end select
-
-            case ('fn_dissoc')
-              call assign_fn(o_arg, config_fn_dissoc, 'config_fn_dissoc')
-            case ('fn_main')
-              call assign_fn(o_arg, config_fn_main, 'config_fn_main')
-            case ('fn_partit')
-              call assign_fn(o_arg, config_fn_partit, 'config_fn_partit')
-            case ('fn_absoru2')
-              call assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
-            case ('fn_modeles')
-              call assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
-            case ('fn_abonds')
-              call assign_fn(o_arg, config_fn_abonds, 'config_fn_abonds')
-            case ('fn_atomgrade')
-              call assign_fn(o_arg, config_fn_atomgrade, 'config_fn_atomgrade')
-            case ('fn_moleculagrade')
-              call assign_fn(o_arg, config_fn_moleculagrade, 'config_fn_moleculagrade')
-            case ('fn_progress')
-              call assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
-!            case ('fn_lines')
-!              call assign_fn(o_arg, config_fn_lines)
-!            case ('fn_log')
-!              call assign_fn(o_arg, config_fn_log)
-
-            case ('inputdir')
-              ! Note: using same routine assign_fn() to assign directory
-              call assign_fn(o_arg, config_inputdir, 'config_inputdir')
-
-            case ('outputdir')
-              ! Note: using same routine assign_fn() to assign directory
-              call assign_fn(o_arg, config_outputdir, 'config_outputdir')
-
-            case ('molid_off')
-              iTemp = str2int(opt, o_arg)
-              call add_molid_off(iTemp)
-
-            case ('mode')
-              select case (to_lower(o_arg))
-                case ('pfant', 'nulbad', 'pfant-nulbad')
-                case default
-                  err_out = .true.
-              end select
-              if (.not. err_out) then
-                config_mode = to_lower(o_arg)
-                call log_assignment('operation mode', to_lower(o_arg))
-              end if
-
-            case ('nulbad_fwhm')
-              config_nulbad_fwhm = str2real(opt, o_arg)
-              call log_assignment('config_nulbad_fwhm', real82str(config_nulbad_fwhm))
-            case ('nulbad_convol')
-              config_nulbad_convol = str2logical(opt, o_arg)
-              call log_assignment('config_nulbad_convol', logical2str(config_nulbad_convol))
-            case ('nulbad_pat')
-              config_nulbad_pat = str2real(opt, o_arg)
-              call log_assignment('config_nulbad_pat', real82str(config_nulbad_pat))
-            case ('nulbad_flcv')
-              call assign_fn(o_arg, config_nulbad_flcv, 'config_nulbad_flcv')
-            case ('nulbad_flam')
-              config_nulbad_flam = str2logical(opt, o_arg)
-              call log_assignment('config_nulbad_flam', logical2str(config_nulbad_flam))
-            case ('nulbad_fileflux')
-              call assign_fn(o_arg, config_nulbad_fileflux, 'config_nulbad_fileflux')
-            case ('nulbad_norm')
-              config_nulbad_norm = str2logical(opt, o_arg)
-              call log_assignment('config_nulbad_norm', logical2str(config_nulbad_norm))
-            case default
-              call pfant_halt('Forgot to treat option '//get_option_name(opt), is_assertion=.true.)
-          end select
-
-          if (err_out) then
-            call pfant_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
-          end if
-      end select
-
-      k = k+1
-      if (k == 500) then
-        stop 'sort this: parse_args looping forever'
-      end if
-    end do
-
-  contains
-
-    !> logging routine: prints variable and assigned value
-
-    subroutine log_assignment(varname, value)
-      character(*), intent(in) :: varname, value
-      call log_info('set '//varname//' = '//trim(adjustl(value)))
-    end
-
-    !-------------------------------------------------------------------------------------
-    !> Assigns option argument to filename variable
-    !>
-    !> @todo This subroutine is currently not doing much but in the future some filename
-    !> validation could be added.
-
-    subroutine assign_fn(arg, dest, varname)
-      character(len=*), intent(in)  :: arg !< command-line option argument
-      character(len=*), intent(out) :: dest!< One of config_fn_* variables
-      !> name of vairable being assigned, for logging purpose
-      character(len=*), intent(in) :: varname
-      dest = arg
-      call log_assignment(varname, arg)
-    end
-
-    !-------------------------------------------------------------------------------------
-    !> Converts string to integer, halting the program if conversion fails.
-    !>
-    !> This function takes an option as argument in order to form a comprehensible
-    !> error message if the conversion to integer fails.
-
-    integer function str2int(opt, s)
-      !> Option, will be used only in case of error
-      type(option), intent(in) :: opt
-      !> String to be converted to integer
-      character(len=*), intent(in) :: s
-
-      read(s, *, err=20) str2int
-      go to 30
-
-      20 continue
-      call pfant_halt('Error parsing option '//get_option_name(opt)//&
-       ': invalid integer argument: '''//trim(s)//'''')
-
-      30 continue
-    end
-
-    !-------------------------------------------------------------------------------------
-    !> Converts string to real, halting the program if conversion fails.
-    !>
-    !> This function takes an option as argument in order to form a comprehensible
-    !> error message if the conversion to real fails.
-
-    real*8 function str2real(opt, s)
-      !> Option, will be used only in case of error
-      type(option), intent(in) :: opt
-      !> String to be converted to integer
-      character(len=*), intent(in) :: s
-
-      read(s, *, err=20) str2real
-      go to 30
-
-      20 continue
-      call pfant_halt('Error parsing option '//get_option_name(opt)//&
-       ': invalid real argument: '''//trim(s)//'''')
-
-      30 continue
-    end
-
-    !-------------------------------------------------------------------------------------
-    !> Converts string to logical, halting the program if conversion fails.
-    !>
-    !> This function takes an option as argument in order to form a comprehensible
-    !> error message if the conversion to logical  fails.
-    !>
-    !> Please check the source code for recognized representations of a logical value.
-    !>
-    !> @note Conversion is case insensitive.
-
-    logical function str2logical(opt, s)
-      !> Option, will be used only in case of error
-      type(option), intent(in) :: opt
-      !> String to be converted to logical
-      character(len=*), intent(in) :: s
-
-      select case (to_lower(s))
-        case ('.true.', 'true', 't', 'on', '1')
-          str2logical = .true.
-          return
-      end select
-
-      select case (to_lower(s))
-        case ('.false.', 'false', 'f', 'off', '0')
-          str2logical = .false.
-          return
-      end select
-
-      call pfant_halt('Error parsing option '//get_option_name(opt)//&
-       ': invalid logical argument: '''//trim(s)//'''')
-    end
-
-  end subroutine parse_args
-
-  !=======================================================================================
-  !> Concatenates config_inputdir with specific filename
-
-  function full_path_i(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = inputdir_trim // trim(filename)
-  end
-
-  !=======================================================================================
-  !> Concatenates config_outputdir with specific filename
-
-  function full_path_o(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = outputdir_trim // trim(filename)
-  end
-
-  !=======================================================================================
-  !> Returns molecule id given index
-  !>
-  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
-
-  function get_molid(i_mol)
-    integer i_mol, get_molid
-    character*80 lll  !__logging__
-
-    !__assertion__
-    if (.not. flag_make_molids_on) then
-      call pfant_halt('get_molid(): forgot to call make_molids_on()', is_assertion=.true.)
-    end if
-
-    !__spill check__
-    if (i_mol .gt. molids%n_on) then
-      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
-       i_mol, ') must be maximum ', molids%n_on
-      call pfant_halt(lll)
-    end if
-
-    get_molid = config_molids_on(i_mol)
-  end
-
-  !=======================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on"
-  !> or "off"
-  !>
-  !> Can be called anytime
-
-  function molecule_is_on(molid)
-    integer molid, j
-    logical molecule_is_on
-
-    molecule_is_on = .true.
-    do j = 1, config_num_mol_off
-      if (molid .eq. config_molids_off(j)) then
-        molecule_is_on = .false.
-        exit
-      end if
-    end do
-  end
-
-  !-------------------------------------------------------------------------------------
-  !> Adds molecule id to list of "off" molecules
-  !>
-  !> Can be called anytime
-
-  subroutine add_molid_off(molid)
-    integer, intent(in) :: molid !< molecule id
-
-    !__spill check__
-    if (molid .gt. NUM_MOL .or. molid .lt. 1) then
-      call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
-       int2str(NUM_MOL)//')')
-    end if
-
-    if (molecule_is_on(molid)) then
-      ! The condition we-re in prevents duplication
-      config_num_mol_off = config_num_mol_off+1
-      config_molids_off(config_num_mol_off) = molid
-      call log_info('molecule id '//int2str(molid)//' added to config_molids_off')
-    else
-      call log_warning('molecule id '//int2str(molid)//' *already turned off*')
-    end if
-
-    call make_molids_on()
-  end
-
-  !=======================================================================================
-  !> Fills config_molids_on and molids%n_on based on their complements.
-  !>
-  !> @todo see what is public and what is private in this module
-
-  subroutine make_molids_on()
-    integer i_mol, j, molid
-    logical is_off
-
-    i_mol = 0
-    do molid = 1, NUM_MOL
-      is_off = .false.  ! Whether molecule I_MOL is off
-      do j = 1, config_num_mol_off
-        if (molid .eq. config_molids_off(j)) then
-          is_off = .true.
-          exit
+    select case(opt%name)
+      case ('refdir')
+        call parse_aux_assign_fn(o_arg, config_refdir, 'refdir')
+      case ('open_status')
+        call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
+      case ('nomfimod')
+        call parse_aux_assign_fn(o_arg, config_nomfimod, 'nomfimod')
+      case ('nomfidat')
+        call parse_aux_assign_fn(o_arg, config_nomfidat, 'nomfidat')
+      case ('modcode')
+        call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
+      case ('tirb')
+        call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
+      case ('teff')
+        config_teff = str2real4(opt, o_arg)
+        call log_assignment('config_teff', real42str(config_teff))
+      case ('glog')
+        config_glog = str2real4(opt, o_arg)
+        call log_assignment('config_glog', real42str(config_glog))
+      case ('amet')
+        config_amet = str2real4(opt, o_arg)
+        call log_assignment('config_amet', real42str(config_amet))
+      case ('id')
+        config_id = str2int(opt, o_arg)
+        if (config_id .lt. 1) then !#validation
+          res = HANDLER_ERROR
+        else
+          call log_assignment('config_id', int2str(config_id))
         end if
-      end do
-      if (.not. is_off) then
-        i_mol = i_mol+1
-        config_molids_on(i_mol) = molid
-      end if
-    end do
-    molids%n_on = i_mol
-
-    flag_make_molids_on = .true.
+      case default
+        ! if does not handle here, passes on to base handler
+        res = config_base_handle_option(opt, o_arg)
+    end select
   end
-end module config
+
+  !=======================================================================================
+  !> Returns record id.
+  !>
+  !> config_id has preference, but if 0 (i.e., not set by command-line),
+  !> then returns read_most_files::main_inum
+
+  integer function get_id() result(res)
+    if (config_id .lt. 1) then
+      call assure_read_main()
+      if (main_inum .lt. 1) then
+        ! note: here this consistency check is considered an assertion, because it should
+        ! be validated upon file reading.
+        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
+      end if
+      res = main_inum
+    else
+      res = config_id
+    end if
+  end
+
+  !=======================================================================================
+  !> Returns title "tirb".
+  !>
+  !> config_tirb has preference, but if '?' (i.e., not set by command-line),
+  !> then returns read_most_files::main_titrav
+
+  character(LEN_TIRB) function get_tirb() result(res)
+    if (config_tirb .eq. '?') then
+      call assure_read_main()
+      res = main_titrav
+    else
+      res = config_tirb
+    end if
+  end
+
+  !=======================================================================================
+  !> Returns teff.
+  !>
+  !> config_teff has preference, but if -1 (i.e., not set by command-line),
+  !> then returns read_most_files::main_teff
+
+  real*4 function get_teff() result(res)
+    if (config_teff .eq. -1) then
+      call assure_read_main()
+      res = main_teff
+    else
+      res = config_teff
+    end if
+  end
+
+  !=======================================================================================
+  !> Returns log g
+  !>
+  !> config_glog has preference, but if -1 (i.e., not set by command-line),
+  !> then returns main_glog
+
+  real*4 function get_glog() result(res)
+    if (config_glog .eq. -1) then
+      call assure_read_main()
+      res = main_glog
+    else
+      res = config_glog
+    end if
+  end
+
+  !=======================================================================================
+  !> Returns metallicity
+  !>
+  !> config_amet has preference, but if -1 (i.e., not set by command-line),
+  !> then returns main_asalog
+
+  real*4 function get_amet() result(res)
+    if (config_amet .eq. -1) then
+      call assure_read_main()
+      res = main_asalog
+    else
+      res = config_amet
+    end if
+  end
+
+
+  !=======================================================================================
+  !> Makes sure that read_main() has been called
+
+  subroutine assure_read_main()
+    if (.not. flag_read_main) then
+      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+    end if
+  end
+end module config_innewmarcs

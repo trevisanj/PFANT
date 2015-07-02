@@ -114,7 +114,7 @@ contains
 
     k = 1
     do while (.true.)
-      !__spill check__: checks if exceeds maximum number of elements allowed
+      !#spill_check: checks if exceeds maximum number of elements allowed
       if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
         call pfant_halt('read_atomgrade(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
          int2str(MAX_ATOMGRADE_R_NBLEND)//' spectral lines')
@@ -220,7 +220,7 @@ contains
         k = k+1
 
 
-        !__spill check__: checks if exceeds maximum number of elements allowed
+        !#spill_check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMGRADE_NBLEND) then
           call pfant_halt('filter_atomgrade(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
            int2str(MAX_ATOMGRADE_NBLEND)//' spectral lines')

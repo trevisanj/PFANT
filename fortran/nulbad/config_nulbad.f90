@@ -207,46 +207,46 @@ contains
       'NULBAD full-width-half-maximum of gaussian')
 
     k = k+1
-    options(k) = option('inewmarcs_refdir',' ', .true., 'directory name', config_inewmarcs_refdir, &
+    options(k) = option('inewmarcs_refdir',' ', .true., 'directory name', config_refdir, &
      'INEWMARCS Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
      'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
 
     k = k+1
-    options(k) = option('inewmarcs_open_status',' ', .true., 'string', config_inewmarcs_open_status, &
+    options(k) = option('inewmarcs_open_status',' ', .true., 'string', config_open_status, &
      'INEWMARCS File open mode for binary file<br>'//&
      IND//'new: file must not exist<br>'//&
      IND//'old: file must exist<br>'//&
      IND//'replace: replaces file if exists, otherwise creates new')
 
     k = k+1
-    options(k) = option('inewmarcs_nomfimod',' ', .true., 'file name', config_inewmarcs_nomfimod, &
+    options(k) = option('inewmarcs_nomfimod',' ', .true., 'file name', config_nomfimod, &
      'INEWMARCS Name of binary file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
     k = k+1
-    options(k) = option('inewmarcs_nomfidat',' ', .true., 'file name', config_inewmarcs_nomfidat, &
+    options(k) = option('inewmarcs_nomfidat',' ', .true., 'file name', config_nomfidat, &
      'INEWMARCS Name of ASCII file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
     k = k+1
-    options(k) = option('inewmarcs_modcode',' ', .true., 'string up to 25 characters', config_inewmarcs_modcode, &
+    options(k) = option('inewmarcs_modcode',' ', .true., 'string up to 25 characters', config_modcode, &
      'INEWMARCS "Model name"')
 
     k = k+1
-    options(k) = option('inewmarcs_tirb',' ', .true., 'string up to 15 characters', config_inewmarcs_tirb, &
+    options(k) = option('inewmarcs_tirb',' ', .true., 'string up to 15 characters', config_tirb, &
      'INEWMARCS "Titre"')
 
     k = k+1
-    options(k) = option('inewmarcs_teff',' ', .true., 'real value', real42str(config_inewmarcs_teff), &
+    options(k) = option('inewmarcs_teff',' ', .true., 'real value', real42str(config_teff), &
      'INEWMARCS "Teff"')
 
     k = k+1
-    options(k) = option('inewmarcs_glog',' ', .true., 'real value', real42str(config_inewmarcs_glog), &
+    options(k) = option('inewmarcs_glog',' ', .true., 'real value', real42str(config_glog), &
      'INEWMARCS "log g"')
 
     k = k+1
-    options(k) = option('inewmarcs_amet',' ', .true., 'real value', real42str(config_inewmarcs_amet), &
+    options(k) = option('inewmarcs_amet',' ', .true., 'real value', real42str(config_amet), &
      'INEWMARCS "[M/H]"')
 
     k = k+1
@@ -284,16 +284,16 @@ contains
     logging_path_progress = full_path_o(config_fn_progress)
 
     ! inewmarcs module ...
-    inewmarcs_refdir = config_inewmarcs_refdir
-    inewmarcs_open_status = config_inewmarcs_open_status
-    inewmarcs_nomfimod = full_path_i(config_inewmarcs_nomfimod)
-    inewmarcs_nomfidat = full_path_i(config_inewmarcs_nomfidat)
-    inewmarcs_modcode = config_inewmarcs_modcode
-    inewmarcs_tirb = config_inewmarcs_tirb
-    inewmarcs_teff = config_inewmarcs_teff
-    inewmarcs_glog = config_inewmarcs_glog
-    inewmarcs_amet = config_inewmarcs_amet
-    inewmarcs_id = config_inewmarcs_id
+    inewmarcs_refdir = config_refdir
+    inewmarcs_open_status = config_open_status
+    inewmarcs_nomfimod = full_path_i(config_nomfimod)
+    inewmarcs_nomfidat = full_path_i(config_nomfidat)
+    inewmarcs_modcode = config_modcode
+    inewmarcs_tirb = config_tirb
+    inewmarcs_teff = config_teff
+    inewmarcs_glog = config_glog
+    inewmarcs_amet = config_amet
+    inewmarcs_id = config_id
 
     ! Default value for config_nulbad_flcv
     if (config_nulbad_flcv .eq. '') then
@@ -608,14 +608,14 @@ contains
 
   function get_molid(i_mol)
     integer i_mol, get_molid
-    character*80 lll  !__logging__
+    character*80 lll  !#logging
 
     !__assertion__
     if (.not. flag_make_molids_on) then
       call pfant_halt('get_molid(): forgot to call make_molids_on()', is_assertion=.true.)
     end if
 
-    !__spill check__
+    !#spill_check
     if (i_mol .gt. molids%n_on) then
       write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
        i_mol, ') must be maximum ', molids%n_on
@@ -652,7 +652,7 @@ contains
   subroutine add_molid_off(molid)
     integer, intent(in) :: molid !< molecule id
 
-    !__spill check__
+    !#spill_check
     if (molid .gt. NUM_MOL .or. molid .lt. 1) then
       call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
        int2str(NUM_MOL)//')')

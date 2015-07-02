@@ -54,7 +54,8 @@ module config_base
    config_inputdir    = './', &  !< command-line option --inputdir
    config_outputdir   = './'     !< command-line option --outputdir
 
-  character*64 :: config_fn_progress = 'progress.txt'   !< option: --fn_progress
+  character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
+  character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
 
 
   !> Number of options of particular executable. Set to -1 here to
@@ -254,6 +255,9 @@ contains
     options(k) = option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
       'directory for output files')
     k = k+1
+    options(k) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
+     'input file name - main configuration')
+    k = k+1
     options(k) = option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator')
   end
@@ -295,18 +299,16 @@ contains
         if (res .eq. HANDLER_OK) then
           call parse_aux_log_assignment('logging level', to_lower(o_arg))
         end if
-
       case ('inputdir')
         ! Note: using same routine parse_aux_assign_fn() to assign directory
         call parse_aux_assign_fn(o_arg, config_inputdir, 'config_inputdir')
-
       case ('outputdir')
         ! Note: using same routine parse_aux_assign_fn() to assign directory
         call parse_aux_assign_fn(o_arg, config_outputdir, 'config_outputdir')
-
+      case ('fn_main')
+        call parse_aux_assign_fn(o_arg, config_fn_main, 'config_fn_main')
       case ('fn_progress')
         call parse_aux_assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
-
       case default
         res = HANDLER_DONT_CARE
     end select
