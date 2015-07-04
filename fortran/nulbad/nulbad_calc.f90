@@ -1,14 +1,7 @@
-! Plan for nulbadgrade
-! Plan for nulbadgrade
-!
-! 3) make it run with new libraries (I may want PFANT in NULBADGRADE mode)
-! 4) separate the calculation from file reading
-! 5) prepare to inject PFANT output vectors (I think I will need to update
-!    PFANT because it currently doesn't store the whole output in the memory).
-! 6) See the dimensions
-! 7) Implement command-line options
-! 8) Incorporate into PFANT
-
+! New plan for nulbad
+! 1) Get rid of internal setup
+! 2) Implement command-line + main.dat setup
+! 3) Write nulbad.f90 file
 
 !  programme NULBT=NULBAD_SQ
 !        lecture et convolution sortie fant93
@@ -17,13 +10,13 @@
 !
 !  Paula, julho de 2003:
 !  - modifiquei para nao normalizar o espectro
-!  - a opcao config_nulbad_convol=F nao estava imprimindo o lambda, corrigi
+!  - a opcao config_convol=F nao estava imprimindo o lambda, corrigi
 !  P.Coelho, dez 2003
-!  - se config_nulbad_norm = .TRUE. (saida do pfant ja eh normalizada), nao
+!  - se config_norm = .TRUE. (saida do pfant ja eh normalizada), nao
 !  altera o valor do fluxo
 !
 
-module nulbad
+module nulbad_calc
   use misc_math
   use logging
   use read_most_files
@@ -85,7 +78,7 @@ contains
   !=======================================================================================
   !> Reads spectrum file
   !>
-  !> @note FWHM from spectrum file is not used, config_nulbad_fwhm is used instead!
+  !> @note FWHM from spectrum file is not used, config_fwhm is used instead!
 
   subroutine read_spectrum()
     ! variables with suffix "_bid" are read from file, but used for nothing
@@ -94,7 +87,7 @@ contains
     real*8 fnu(FILETOH_NP)
     ! character*92  lll
 
-    open(unit=UNIT_,file=full_path_o(config_nulbad_fileflux), status='unknown')
+    open(unit=UNIT_,file=full_path_o(config_fileflux), status='unknown')
 
     icle = 1
     p_ktot = 0
@@ -157,16 +150,16 @@ contains
     character*92 lll
 
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=full_path_o(config_nulbad_flcv))
+    open(unit=UNIT_,status='replace',file=full_path_o(config_flcv))
 
     do k = 1, ktot
       lambd(k) = nulbad_l0+(k-1)*nulbad_dpas
     end do
 
     ! transformation de Fnu en Flambda
-    if(config_nulbad_flam) then
+    if(config_flam) then
       do k = 1, ktot
-        if (.not. config_nulbad_norm) then
+        if (.not. config_norm) then
           ca = 1.e+11/(lambd(k)**2)
           !  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
           cb = ca*c
@@ -181,10 +174,10 @@ contains
       call log_debug(lll)
     end if
 
-    ip = int(config_nulbad_pat/nulbad_dpas)
+    ip = int(config_pat/nulbad_dpas)
 
     if (ip .lt. 1) then
-      call log_warning('New step ('//real82str(config_nulbad_pat)//&
+      call log_warning('New step ('//real82str(config_pat)//&
        ') lower than old step ('//real82str(nulbad_dpas)//'), ip forced to 1')
       ip = 1
     end if
@@ -192,7 +185,7 @@ contains
     !
     !  Convolution sp synthetique avec profil instrumental
     !
-    if(config_nulbad_convol) then
+    if(config_convol) then
       call cafconvh()
       call log_debug('p_ift='//int2str(p_ift))
 
@@ -208,7 +201,7 @@ contains
       end do
       kktot = m
 
-      if(config_nulbad_flam) then
+      if(config_flam) then
         do k = 1,ktot
           fl(k) = ffl(k)
         end do
@@ -228,14 +221,14 @@ contains
       kktot = k
     end if
 
-    if((.not. config_nulbad_convol) .and. (.not. config_nulbad_flam)) then
+    if((.not. config_convol) .and. (.not. config_flam)) then
       kktot = ktot
       do k = 1, kktot
         afl(k) = ffnu(k)
       end do
     end if
 
-    if((.not. config_nulbad_convol) .and. (config_nulbad_flam)) then
+    if((.not. config_convol) .and. (config_flam)) then
       kktot = ktot
       do k = 1,kktot
         afl(k) = ffl(k)
@@ -243,7 +236,7 @@ contains
       end do
     end if
 
-    if(config_nulbad_convol) then
+    if(config_convol) then
       alz = tl(1)
       alf = tl(kktot)
     else
@@ -254,7 +247,7 @@ contains
     write(UNIT_,201) nulbad_titc,nulbad_tetaeff,nulbad_glog,nulbad_asalog,nulbad_amg
     201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
 
-    write(UNIT_,202) kktot,nulbad_l0,nulbad_lf,config_nulbad_pat,config_nulbad_fwhm
+    write(UNIT_,202) kktot,nulbad_l0,nulbad_lf,config_pat,config_fwhm
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
 
@@ -272,7 +265,7 @@ contains
                2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
     call log_debug(lll)
 
-    write(lll,130) alz,alf,kktot,config_nulbad_pat,config_nulbad_fwhm
+    write(lll,130) alz,alf,kktot,config_pat,config_fwhm
     130 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KKTOT=',I7, &
                2X,'PAS nouveau =',F5.2,2x,'FWHM=',F5.2)
     call log_debug(lll)
@@ -334,24 +327,24 @@ contains
     character*392 lll
 
     ! GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
-    sigma = config_nulbad_fwhm/2.35482
+    sigma = config_fwhm/2.35482
     aa = 1.414214*sigma
     totlarg=3.0 * aa
 
     !#logging x2
-    write(lll,119) config_nulbad_fwhm,sigma,aa
+    write(lll,119) config_fwhm,sigma,aa
     119  format(1X,'Profil instrumental gaussien; ', &
      'FWHM =',F7.3,' (A); Sigma=',F7.3,' (A); ', &
      '1/2 Largeur AA =',F7.3,' (A)')
     call log_debug(lll)
     write(lll,134) totlarg
     134 format(' Gaussienne calculee jusqu a une distance du centre:', &
-     ' 3(SIGMA*1.414)=',F7.3,' Ŝ(A)')
+     ' 3(SIGMA*1.414)=',F7.3,' S(A)')
     call log_debug(lll)
 
     at(0)=0
     do i = 1,IPPTOT
-      at(i) = config_nulbad_pat * i
+      at(i) = config_pat * i
       at(-i) = -at(i)
       if(at(i) .gt. totlarg) go to 40
     end do
