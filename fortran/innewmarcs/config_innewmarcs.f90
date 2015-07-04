@@ -24,6 +24,7 @@ module config_innewmarcs
   integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
 
   ! note: maintained variable names found in original innewmarcs.f
+  ! (with "config_" prefix)
 
   character*20 :: config_open_status = 'unknown' !< option: --open_status
 
@@ -48,9 +49,6 @@ module config_innewmarcs
   !> option: --id
   !> @sa get_id()
   integer :: config_id = 0
-
-
-  private assure_read_main
 contains
   !=======================================================================================
   !> Initializes the options list
@@ -168,108 +166,5 @@ contains
         ! if does not handle here, passes on to base handler
         res = config_base_handle_option(opt, o_arg)
     end select
-  end
-
-
-
-
-
-
-
-
-
-
-move logic to inewmarcs in sequential manner, no need for subroutines n shit
-call read_main, yes, then do subsequent shit
-but I may put everything inside a initialization subroutine
-
-  !=======================================================================================
-  !> Returns record id.
-  !>
-  !> config_id has preference, but if 0 (i.e., not set by command-line),
-  !> then returns read_most_files::main_inum
-
-  integer function get_id() result(res)
-    if (config_id .lt. 1) then
-      call assure_read_main()
-      if (main_inum .lt. 1) then
-        ! note: here this consistency check is considered an assertion, because it should
-        ! be validated upon file reading.
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-      res = main_inum
-    else
-      res = config_id
-    end if
-  end
-
-  !=======================================================================================
-  !> Returns title "tirb".
-  !>
-  !> config_tirb has preference, but if '?' (i.e., not set by command-line),
-  !> then returns read_most_files::main_titrav
-
-  character(LEN_TIRB) function get_tirb() result(res)
-    if (config_tirb .eq. '?') then
-      call assure_read_main()
-      res = main_titrav
-    else
-      res = config_tirb
-    end if
-  end
-
-  !=======================================================================================
-  !> Returns teff.
-  !>
-  !> config_teff has preference, but if -1 (i.e., not set by command-line),
-  !> then returns read_most_files::main_teff
-
-  real*4 function get_teff() result(res)
-    if (config_teff .eq. -1) then
-      call assure_read_main()
-      res = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
-    else
-      res = config_teff
-    end if
-  end
-
-  !=======================================================================================
-  !> Returns log g
-  !>
-  !> config_glog has preference, but if -1 (i.e., not set by command-line),
-  !> then returns main_glog
-
-  real*4 function get_glog() result(res)
-    if (config_glog .eq. -1) then
-      call assure_read_main()
-      res = real(main_glog) ! explicit real(8)-to-real(4) conversion to shut up warning
-    else
-      res = config_glog
-    end if
-  end
-
-  !=======================================================================================
-  !> Returns metallicity
-  !>
-  !> config_amet has preference, but if -1 (i.e., not set by command-line),
-  !> then returns main_asalog
-
-  real*4 function get_amet() result(res)
-    if (config_amet .eq. -1) then
-      call assure_read_main()
-      res = real(main_asalog) ! explicit real(8)-to-real(4) conversion to shut up warning
-    else
-      res = config_amet
-    end if
-  end
-
-
-  !=======================================================================================
-  !> Makes sure that read_main() has been called
-
-  subroutine assure_read_main()
-    if (.not. flag_read_main) then
-      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
-    end if
   end
 end module config_innewmarcs
