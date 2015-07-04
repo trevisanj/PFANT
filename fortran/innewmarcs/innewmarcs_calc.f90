@@ -32,6 +32,57 @@ module innewmarcs_calc
   integer :: x_id
 contains
 
+
+  !=======================================================================================
+  !> Initialization of this module
+
+  subroutine innewmarcs_init()
+    call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+
+    !=====
+    ! Assigns x_*
+    !=====
+    ! values in config_* variables have preference, but if they are uninitialized, will
+    ! pick values from infile:main
+      x_teff = config_teff
+      x_glog = config_glog
+      x_amet = config_amet
+      x_tirb = config_tirb
+      x_id   = config_id
+    if (config_id .lt. 1) then
+      if (main_inum .lt. 1) then
+        ! note: here this consistency check is considered an assertion, because it should
+        ! be validated upon file reading.
+        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
+      end if
+      x_id = main_inum
+    end if
+    if (config_tirb .eq. '?') then
+      call assure_read_main()
+      x_tirb = main_titrav
+    end if
+    if (config_teff .eq. -1) then
+      call assure_read_main()
+      x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
+    end if
+    if (config_glog .eq. -1) then
+      call assure_read_main()
+      x_glog = real(main_glog) ! explicit real(8)-to-real(4) conversion to shut up warning
+    end if
+    if (config_amet .eq. -1) then
+      call assure_read_main()
+      x_amet = real(main_asalog) ! explicit real(8)-to-real(4) conversion to shut up warning
+    end if
+  
+    call read_ref_models_map()
+
+    call find_ref_models()  ! calculates nomfipl, amet1, amet2
+
+    !-------------------------------------------------------------
+    ! On cherche ou se trouvent (teff, glog)  par rapport a la table
+    call locatab() ! calculates id11, id12, id21, id22
+  end
+
   !=======================================================================================
   !> Main routine of this module
   !>
@@ -58,20 +109,7 @@ contains
     !=====
     ! Initialization
     !=====
-
-    x_teff = get_teff()
-    x_glog = get_glog()
-    x_amet = get_amet()
-    x_tirb = get_tirb()
-    x_id = get_id()
-    !> @todo implement flag_initialized to call this only once if I call inewmarcs_calc() more than once
-    call read_ref_models_map()
-
-    call find_ref_models()  ! calculates nomfipl, amet1, amet2
-
-    !-------------------------------------------------------------
-    ! On cherche ou se trouvent (teff, glog)  par rapport a la table
-    call locatab() ! calculates id11, id12, id21, id22
+    call innewmarcs_init()
 
 
     !=====
