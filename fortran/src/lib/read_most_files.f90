@@ -93,7 +93,7 @@ module read_most_files
   real*8    main_pas,    & !< ?doc?
             main_echx,   & !< ?doc?
             main_echy,   & !< ?doc?
-            main_fwhm,   & !< not used
+            main_fwhm,   & !< used only by nulbad executable
             main_mu,     & !< ?doc?
             main_afstar, & !< ?doc?
             main_llzero, & !< ?doc?

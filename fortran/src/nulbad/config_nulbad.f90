@@ -20,22 +20,20 @@ module config_nulbad
   use misc
   implicit none
 
-  ! note: maintained variable names found in original nulbadgrade.f
-  !       (however with "config_") prefix
-  
-  
-  
-  
+
+  ! These variables are set to their default values
   logical :: &
    config_norm = .true., &                       !< option: --norm
    config_flam = .true., &                       !< option: --flam
    config_convol = .true.                        !< option: --convol
+  ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
+  ! take values within infile:main
   real*8 :: &
-   config_fwhm = 0.13, &                         !< option: --fwhm
-   config_pat = 0.02                             !< option: --pat
+   config_fwhm = -1, &               !< option: --fwhm
+   config_pat = -1                   !< option: --pat
   character*64 :: &
-    config_fileflux = 'norm.fileflux', &         !< option: --fileflux
-    config_flcv = ''                             !< option: --flcv
+    config_fileflux = '?', &         !< option: --fileflux
+    config_filecv = '?'                !< option: --filecv
 contains
   !=======================================================================================
   !> Initializes the options list
@@ -51,28 +49,26 @@ contains
 
 
     k = k+1
-    options(k) = option('fileflux', ' ', .true., 'file name', config_fileflux, &
-      'Flux file name<br>'//&
-      '*Note*: looks for file in *output* directory, because the flux'//&
-      '        file is a PFANT output.')
+    options(k) = option('fileflux', ' ', .true., 'file name', &
+     '<"main_fileflux" variable>.norm (taken from main configuration file)>', &
+     'Flux file name')
     k = k+1
     options(k) = option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
-      'Is spectrum normalized?<br>'//&
-      '*Note*: this setting is ignored in ''pfant-nulbad'' mode.')
+      'Is spectrum normalized?')
     k = k+1
     options(k) = option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
       'Fnu to FLambda transformation?')
     k = k+1
-    options(k) = option('flcv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
-      'output file name')
+    options(k) = option('filecv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+      'output file name, which will have the convolved spectrum')
     k = k+1
-    options(k) = option('pat',      ' ', .true., 'real value', real82str(config_pat), &
+    options(k) = option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
       'step ?doc?')
     k = k+1
     options(k) = option('convol',   ' ', .true., 'T/F', logical2str(config_convol), &
       'Apply convolution?')
     k = k+1
-    options(k) = option('fwhm',     ' ', .true., 'real value', real82str(config_fwhm), &
+    options(k) = option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
   end
 
@@ -102,23 +98,23 @@ contains
     select case(opt%name)
 
       case ('fwhm')
-        config_fwhm = str2real(opt, o_arg)
+        config_fwhm = parse_aux_str2real8(opt, o_arg)
         call log_assignment('config_fwhm', real82str(config_fwhm))
       case ('convol')
-        config_convol = str2logical(opt, o_arg)
+        config_convol = parse_aux_str2logical(opt, o_arg)
         call log_assignment('config_convol', logical2str(config_convol))
       case ('pat')
-        config_pat = str2real(opt, o_arg)
+        config_pat = parse_aux_str2real8(opt, o_arg)
         call log_assignment('config_pat', real82str(config_pat))
-      case ('flcv')
-        call assign_fn(o_arg, config_flcv, 'config_flcv')
+      case ('filecv')
+        call assign_fn(o_arg, config_filecv, 'config_filecv')
       case ('flam')
-        config_flam = str2logical(opt, o_arg)
+        config_flam = parse_aux_str2logical(opt, o_arg)
         call log_assignment('config_flam', logical2str(config_flam))
       case ('fileflux')
         call assign_fn(o_arg, config_fileflux, 'config_fileflux')
       case ('norm')
-        config_norm = str2logical(opt, o_arg)
+        config_norm = parse_aux_str2logical(opt, o_arg)
         call log_assignment('config_norm', logical2str(config_norm))
       case default
         ! if does not handle here, passes on to base handler

@@ -35,7 +35,7 @@ module config_innewmarcs
    config_nomfidat = 'modeles.dat'    !< option: --nomfidat
   character*25 :: config_modcode = 'NoName' !< option: --modcode
   !> option: --tirb
-  !> @sa get_tirb()
+  !> @sa innewmarcs_init()
   character(LEN_TIRB) :: config_tirb = '?'
   !> option: --teff
   !> @sa get_teff()
@@ -104,9 +104,8 @@ contains
      '"[M/H]"')
 
     k = k+1
-    options(k) = option('id',' ', .true., 'real value', '<"inum" value in main configuration file>', &
-     'Record id within binary file. If not specified, takes value of '//&
-     'main_inum variable (last value of 4th row of main configuration file)')
+    options(k) = option('id',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
+     'Record id within binary file')
   end
 
 

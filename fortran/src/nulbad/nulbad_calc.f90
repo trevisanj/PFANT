@@ -2,101 +2,156 @@ module nulbad_calc
   use misc_math
   use logging
   use read_most_files
+  use config_nulbad
   use filetoh
   implicit none
 
+  public nulbad_calc_
 
-  !=====
-  ! Module configuration
-  !=====
-  ! These variables are either set from outside or by subroutine read_spectrum()
-
-  character nulbad_titc*20
-
-  real*8 &
-   nulbad_tetaeff, & !<
-   nulbad_glog,    & !<
-   nulbad_asalog,  & !<
-   nulbad_amg,     & !<
-   nulbad_l0,      & !<
-   nulbad_lf,      & !<
-   nulbad_dpas,    & !<
-   nulbad_nhe_bid
-
+  private
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
-  ! Private variables have "p_" prefix
-
   ! Attention: MAX_P_IFT *must* be an odd number!
   !> @todo assertion MAX_P_IFT *must* be an odd number!
-  integer, private, parameter :: MAX_P_IFT = 1501 !< length of "convolution function"
-  integer, private, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"
+  integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function"
+  integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"
 
   ! Gaussian function variables, calculated by cafconvh()
-  real*8, private :: &
+  real*8 :: &
    p_tfi(MAX_P_IFT), &  !< x-axis values of gaussian function (calculated by nulbad::cafconvh())
    p_fi(MAX_P_IFT)      !< y-axis values of gaussian function (calculated by nulbad::cafconvh())
   integer, private :: p_ift !< Number of points of gaussian function (calculated by nulbad::cafconvh())
 
   ! Variables set by read_spectrum()
-  real*8, private, allocatable :: p_ffnu(:)
-  integer, private :: p_ktot
+  real*8, allocatable :: rs_ffnu(:)
+  integer :: rs_ktot
 
-  integer, private, parameter :: UNIT_=199 !< unit for file I/O
 
+  ! prefix "rs": variables filled by read_spectrum()
+  character :: rfs_titc*20
+  real*8 :: &
+   rfs_tetaeff, & !<
+   rfs_glog,    & !<
+   rfs_asalog,  & !<
+   rfs_amg,     & !<
+   rfs_l0,      & !<
+   rfs_lf,      & !<
+   rfs_dpas,    & !<
+   rfs_nhe_bid
+
+  integer, parameter :: UNIT_=199 !< unit for file I/O
+
+  ! x_* values may come either from command line or infile:main
+  real*8 :: x_fwhm, x_pat
+  character*64 :: x_fileflux, x_filecv
+  !> Whether or not the spectrum is normalized.
+  !> @sa source for nulbad_init()
+  logical x_norm
 contains
-  !=======================================================================================
-  !> Reads spectrum file and does the calculation
 
-  subroutine nulbad_complete()
+  !=======================================================================================
+  !> Initialization of this module
+  !>
+  !> One of the tasks if the initialization of the x_* variables, whose values may be
+  !> either set from the command line or taken from infile:main
+
+  subroutine nulbad_init()
+    logical :: flag_read_main = .false.
+
+    !=====
+    ! Assigns x_*
+    !=====
+    ! values in config_* variables have preference, but if they are uninitialized, will
+    ! pick values from infile:main
+    x_fwhm = config_fwhm
+    x_pat = config_pat
+    x_fileflux = config_fileflux
+    x_filecv = config_filecv
+    x_norm = config_norm
+    if (config_fwhm .eq. -1) then
+      call assure_read_main()
+      x_fwhm = main_fwhm
+      call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm))
+    end if
+    if (config_pat .eq. -1) then
+      call assure_read_main()
+      x_pat = main_pas
+      call parse_aux_log_assignment('x_pat', real82str(x_pat))
+    end if
+    if (config_fileflux .eq. '?') then
+      call assure_read_main()
+      x_fileflux = trim(main_fileflux)//'.norm'
+      call parse_aux_log_assignment('x_fileflux', trim(x_fileflux))
+      x_norm = .true. ! ignores config_norm because x_fileflux has the name of the
+                      ! normalized file
+      call parse_aux_log_assignment('x_norm', logical2str(x_norm))
+      if (.not. x_norm) then
+        call log_warning('Overring config option "--norm"')
+      end if
+    end if
+    if (config_filecv .eq. '?') then
+      call assure_read_main()
+      x_filecv = trim(x_fileflux)//'.nulbad'
+      call parse_aux_log_assignment('x_filecv', trim(x_filecv))
+    end if
+
     call read_spectrum()
-    call nulbad_calc(p_ffnu, p_ktot)
+
+  contains
+
+    !-------------------------------------------------------------------------------------
+    !> Makes sure that read_main() has been called
+
+    subroutine assure_read_main()
+      if (.not. flag_read_main) then
+        call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+      end if
+    end
   end
+
 
   !=======================================================================================
   !> Reads spectrum file
-  !>
-  !> @note FWHM from spectrum file is not used, config_fwhm is used instead!
 
   subroutine read_spectrum()
     ! variables with suffix "_bid" are read from file, but used for nothing
     real*8 echx_bid, echy_bid, fwhm_bid, lzero_bid, lfin_bid
     integer :: itot, ikeytot, icle, d, k
-    real*8 fnu(FILETOH_NP)
+    real*8 fnu(FILETOH_NP)  ! temporary, just for reading one "icle" iteration
     ! character*92  lll
 
-    open(unit=UNIT_,file=full_path_o(config_fileflux), status='unknown')
+    open(unit=UNIT_,file=full_path_o(x_fileflux), status='unknown')
 
     icle = 1
-    p_ktot = 0
+    rs_ktot = 0
 
     do while (.true.)
       read(UNIT_, 1130) &
        ikeytot,        & ! used locally
-       nulbad_titc,    & ! written back in output file
-       nulbad_tetaeff, & ! written back
-       nulbad_glog,    & ! written back
-       nulbad_asalog,  & ! written back
-       nulbad_nhe_bid,        & ! read and used in logging only
-       nulbad_amg,     & ! written back
-       nulbad_l0,      & ! used by nulbad_calc() & written back
-       nulbad_lf,      & ! written back
+       rfs_titc,    & ! written back in output file
+       rfs_tetaeff, & ! written back
+       rfs_glog,    & ! written back
+       rfs_asalog,  & ! written back
+       rfs_nhe_bid,        & ! read and used in logging only
+       rfs_amg,     & ! written back
+       rfs_l0,      & ! used by nulbad_calc() & written back
+       rfs_lf,      & ! written back
        lzero_bid,      & ! read and discarded
        lfin_bid,       & ! read and discarded
        itot,           & ! used locally
-       nulbad_dpas,    & ! used by nulbad_calc()
+       rfs_dpas,    & ! used by nulbad_calc()
        echx_bid,       & ! read and discarded
        echy_bid,       & ! read and discarded
        fwhm_bid          ! read and discarded
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
 
-      ! allocates ffnu at first iteration
+      ! allocates rs_ffnu at first iteration
       if (icle .eq. 1) then
-        allocate(p_ffnu(ikeytot*itot)) ! This is probably a slight overallocation
+        allocate(rs_ffnu(ikeytot*itot)) ! This is probably a slight overallocation
       end if
 
       read(UNIT_, *)(fnu(d),d=1,itot)
@@ -106,12 +161,11 @@ contains
 
       if (icle .eq. ikeytot) itot = itot+1
 
-      !> @todo hmmmm I have to test if I am mounting ffnu in synthesis_() correctly, why itot-1? Perhaps it skips one repeated lambda?? Will have to check this out
       do d = 1,itot-1
-        k=p_ktot+d
-        p_ffnu(k)=fnu(d)
+        k=rs_ktot+d
+        rs_ffnu(k)=fnu(d)
       end do
-      p_ktot = k
+      rs_ktot = k
       icle = icle+1
       if(icle .gt. ikeytot) exit
     end do
@@ -120,47 +174,47 @@ contains
   end
 
   !=======================================================================================
+  !> Main routine of this module
 
-
-  subroutine nulbad_calc(ffnu, ktot)
-    real*8, intent(in) :: ffnu(ktot)  !< Flux Fnu of ktot valid elements
-    integer, intent(in) :: ktot       !< Number of valid elements in ffnu(:)
+  subroutine nulbad_calc_()
     real*8, parameter :: C = 2.997929E+10
     integer d, dmj, dtotc, k, i, ip, j, jp1, kktot, m
-    real*8, dimension(ktot) :: ffl, lambd, alfl, afl, fl, tl
+    real*8, dimension(rs_ktot) :: ffl, lambd, alfl, afl, fl, tl
     real*8 alf, alz, ca, cb
     character*92 lll
 
-    ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=full_path_o(config_flcv))
+    call nulbad_init()
 
-    do k = 1, ktot
-      lambd(k) = nulbad_l0+(k-1)*nulbad_dpas
+    ! Note: will now replace output file if already existent
+    open(unit=UNIT_,status='replace',file=full_path_o(x_filecv))
+
+    do k = 1, rs_ktot
+      lambd(k) = rfs_l0+(k-1)*rfs_dpas
     end do
 
     ! transformation de Fnu en Flambda
     if(config_flam) then
-      do k = 1, ktot
-        if (.not. config_norm) then
+      do k = 1, rs_ktot
+        if (.not. x_norm) then
           ca = 1.e+11/(lambd(k)**2)
-          !  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
+          !  rs_ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
           cb = ca*c
-          ffl(k) = ffnu(k)*cb
+          ffl(k) = rs_ffnu(k)*cb
         else
-          ffl(k) = ffnu(k)
+          ffl(k) = rs_ffnu(k)
         end if
       end do
 
-      write(lll,122) nulbad_dpas, ktot
+      write(lll,122) rfs_dpas, rs_ktot
       122  format(2x,'pas=',f8.3,2x,'ktot=', i10)
       call log_debug(lll)
     end if
 
-    ip = int(config_pat/nulbad_dpas)
+    ip = int(x_pat/rfs_dpas)
 
     if (ip .lt. 1) then
-      call log_warning('New step ('//real82str(config_pat)//&
-       ') lower than old step ('//real82str(nulbad_dpas)//'), ip forced to 1')
+      call log_warning('New step ('//real82str(x_pat)//&
+       ') lower than old step ('//real82str(rfs_dpas)//'), ip forced to 1')
       ip = 1
     end if
 
@@ -173,7 +227,7 @@ contains
 
       j = (p_ift-1)/2
       jp1 = j+1
-      dmj = ktot-j
+      dmj = rs_ktot-j
       dtotc = dmj-jp1+1
 
       m = 0
@@ -184,12 +238,12 @@ contains
       kktot = m
 
       if(config_flam) then
-        do k = 1,ktot
+        do k = 1,rs_ktot
           fl(k) = ffl(k)
         end do
       else
-        do k = 1,ktot
-          fl(k) = ffnu(k)
+        do k = 1,rs_ktot
+          fl(k) = rs_ffnu(k)
         end do
       end if
 
@@ -204,14 +258,14 @@ contains
     end if
 
     if((.not. config_convol) .and. (.not. config_flam)) then
-      kktot = ktot
+      kktot = rs_ktot
       do k = 1, kktot
-        afl(k) = ffnu(k)
+        afl(k) = rs_ffnu(k)
       end do
     end if
 
     if((.not. config_convol) .and. (config_flam)) then
-      kktot = ktot
+      kktot = rs_ktot
       do k = 1,kktot
         afl(k) = ffl(k)
         tl(k) = lambd(k)
@@ -226,10 +280,10 @@ contains
       alf = lambd(kktot)
     end if
 
-    write(UNIT_,201) nulbad_titc,nulbad_tetaeff,nulbad_glog,nulbad_asalog,nulbad_amg
+    write(UNIT_,201) rfs_titc,rfs_tetaeff,rfs_glog,rfs_asalog,rfs_amg
     201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
 
-    write(UNIT_,202) kktot,nulbad_l0,nulbad_lf,config_pat,config_fwhm
+    write(UNIT_,202) kktot,rfs_l0,rfs_lf,x_pat,x_fwhm
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
 
@@ -242,17 +296,17 @@ contains
     close(unit=UNIT_)
 
     !#loggingx4
-    write(lll,110) nulbad_tetaeff,nulbad_glog,nulbad_asalog,nulbad_nhe_bid,nulbad_amg
+    write(lll,110) rfs_tetaeff,rfs_glog,rfs_asalog,rfs_nhe_bid,rfs_amg
     110 format(2X,'tetaeff=',F8.3,2X,'log g=',F6.2,2X,'[M/H]=',F6.2, &
                2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
     call log_debug(lll)
 
-    write(lll,130) alz,alf,kktot,config_pat,config_fwhm
+    write(lll,130) alz,alf,kktot,x_pat,x_fwhm
     130 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KKTOT=',I7, &
                2X,'PAS nouveau =',F5.2,2x,'FWHM=',F5.2)
     call log_debug(lll)
 
-    write(lll,120) nulbad_l0,nulbad_lf,ktot,nulbad_dpas
+    write(lll,120) rfs_l0,rfs_lf,rs_ktot,rfs_dpas
     120 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
                2X,'PAS original='F5.2)
     call log_debug(lll)
@@ -266,15 +320,15 @@ contains
 
     subroutine volut()
       integer i, imj, j2p, k, jjp1, iimj
-      do i = 1,ktot
+      do i = 1,rs_ktot
         alfl(i) = 0.
       end do
 
-      imj = ktot-j
+      imj = rs_ktot-j
       j2p =  2*j +1
       do i = jp1, imj, ip
         do k = 1, j2p
-          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)*nulbad_dpas
+          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)*rfs_dpas
         end do
       end do
 
@@ -283,12 +337,11 @@ contains
       do i = 1,jjp1
         alfl(i) = fl(i)
       end do
-      do i = iimj,ktot
+      do i = iimj,rs_ktot
         alfl(i)=fl(i)
       end do
     end
-
-  end subroutine nulbad_calc
+  end
 
 
   !=======================================================================================
@@ -309,12 +362,12 @@ contains
     character*392 lll
 
     ! GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
-    sigma = config_fwhm/2.35482
+    sigma = x_fwhm/2.35482
     aa = 1.414214*sigma
     totlarg=3.0 * aa
 
     !#logging x2
-    write(lll,119) config_fwhm,sigma,aa
+    write(lll,119) x_fwhm,sigma,aa
     119  format(1X,'Profil instrumental gaussien; ', &
      'FWHM =',F7.3,' (A); Sigma=',F7.3,' (A); ', &
      '1/2 Largeur AA =',F7.3,' (A)')
@@ -326,7 +379,7 @@ contains
 
     at(0)=0
     do i = 1,IPPTOT
-      at(i) = config_pat * i
+      at(i) = x_pat * i
       at(-i) = -at(i)
       if(at(i) .gt. totlarg) go to 40
     end do

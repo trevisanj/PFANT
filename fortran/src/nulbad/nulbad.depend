@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1434500204 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/logging.f90
+
+1435777286 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/misc.f90
+
+1435794808 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/options2.f90
+
+1435868920 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/config_base.f90
+
+1435863056 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/misc_math.f90
+
+1435868066 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/welcome.f90
+
+1436213245 source:/home/j/Documents/projects/pfant/working/github/master/fortran/lib/read_most_files.f90
+
+1436217403 source:/home/j/Documents/projects/pfant/working/github/master/fortran/nulbad/config_nulbad.f90
+

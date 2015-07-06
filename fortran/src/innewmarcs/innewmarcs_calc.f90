@@ -37,9 +37,12 @@ contains
 
   !=======================================================================================
   !> Initialization of this module
+  !>
+  !> One of the tasks if the initialization of the x_* variables, whose values may be
+  !> either set from the command line or taken from infile:main
 
   subroutine innewmarcs_init()
-    call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+    logical :: flag_read_main = .false.
 
     !=====
     ! Assigns x_*
@@ -52,17 +55,35 @@ contains
       x_tirb = config_tirb
       x_id   = config_id
     if (config_id .lt. 1) then
+      call assure_read_main()()
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
         ! be validated upon file reading.
         call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
       end if
       x_id = main_inum
+      call parse_aux_log_assignment('x_id', int2str(x_id))
     end if
-    if (config_tirb .eq. '?') x_tirb = main_titrav
-    if (config_teff .eq. -1)  x_teff = real(main_teff)   ! explicit real(8)-to-real(4) conversion to shut up warning
-    if (config_glog .eq. -1)  x_glog = real(main_glog)   ! "
-    if (config_amet .eq. -1)  x_amet = real(main_asalog) ! "
+    if (config_tirb .eq. '?') then
+      call assure_read_main()()
+      x_tirb = main_titrav
+      call parse_aux_log_assignment('x_tirb', trim(x_tirb))
+    end if
+    if (config_teff .eq. -1) then
+      call assure_read_main()()
+      x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
+      call parse_aux_log_assignment('x_teff', real42str(x_teff))
+    end if
+    if (config_glog .eq. -1)  then
+      call assure_read_main()()
+      x_glog = real(main_glog)
+      call parse_aux_log_assignment('x_glog', real42str(x_glog))
+    end if
+    if (config_amet .eq. -1) then
+      call assure_read_main()()
+      x_amet = real(main_asalog)
+      call parse_aux_log_assignment('x_amet', real42str(x_amet))
+    end if
 
     call read_ref_models_map()
 
@@ -71,6 +92,17 @@ contains
     !-------------------------------------------------------------
     ! On cherche ou se trouvent (teff, glog)  par rapport a la table
     call locatab() ! calculates id11, id12, id21, id22
+
+  contains
+
+    !-------------------------------------------------------------------------------------
+    !> Makes sure that read_main() has been called
+
+    subroutine assure_read_main()
+    if (.not. flag_read_main) then
+      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+    end if
+    end
   end
 
   !=======================================================================================
@@ -186,10 +218,10 @@ contains
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
-      t1 = config_glog-rglog(1,1)
+      t1 = x_glog-rglog(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102)  rteff(1,1), config_glog
+      ! write(6,102)  rteff(1,1), x_glog
       ! 102 format('  modele interpole avec   Teff=',f9.3,' log g=', f9.3)
 
       call interpol(t0, t1, aa, bb, ee, ntot(iabon))
@@ -197,10 +229,10 @@ contains
 
       ! interpolation sur t
       t0 = rteff(2,1)-rteff(1,1)
-      t1 = config_teff-rteff(1,1)
+      t1 = x_teff-rteff(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102) config_teff, config_glog
+      ! write(6,102) x_teff, x_glog
 
       if (iabon .eq. 1) then
         call interpol(t0, t1, ee, ff, z1, ntot(iabon))
@@ -240,7 +272,7 @@ contains
     call log_debug(lll)
 
     t0 = amet2-amet1
-    t1 = config_amet-amet1
+    t1 = x_amet-amet1
 
     call log_debug(' interpolation sur l''abondance avec')
     write(lll,*) ' amet2=',amet2,'       amet1=',amet1
@@ -258,7 +290,7 @@ contains
     call log_debug(lll)
     write(lll,*) 'model 2 amet, alpha=',amet2,ralfa(2)
     call log_debug(lll)
-    write(lll,*) 'result: amet, alpha=',config_amet,asalalf
+    write(lll,*) 'result: amet, alpha=',x_amet,asalalf
     call log_debug(lll)
 
 
@@ -271,7 +303,7 @@ contains
       zz%pg(n) = 10**zz%pg(n)
     end do
 
-    tir=tira//config_tirb
+    tir=tira//x_tirb
     in = 0
 
     do n = 1,nntot
@@ -287,9 +319,9 @@ contains
     ! Writes binary file
     write(UNIT_MOD, rec=x_id) &
      nntot,          &
-     config_teff, &
-     config_glog, &
-     config_amet, &
+     x_teff, &
+     x_glog, &
+     x_amet, &
      asalalf,        &
      dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
      tir,            &
@@ -305,7 +337,7 @@ contains
      config_modcode, &
      nntot,             &
      tostand,           &
-     config_glog,    &
+     x_glog,    &
      bid0,              &
      bid0
     do n = 1,nntot
@@ -368,7 +400,7 @@ contains
   end
 
 
-  !> Fill variables nomfipl, amet1, amet2 based on config_amet
+  !> Fill variables nomfipl, amet1, amet2 based on x_amet
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
@@ -498,22 +530,22 @@ contains
     nt=7    ! nbre total de temperatures
     ng=7    ! nbre maximum de log g
     do n=1,nt
-    rteff(n)=r1teff(n)
-    ing(n)=inga(n)
-    idt(n)=idta(n)
+      rteff(n)=r1teff(n)
+      ing(n)=inga(n)
+      idt(n)=idta(n)
     end do
     do n=1,ng
-    aglog(1,n)=agloga1(n)
-    aglog(2,n)=agloga2(n)
-    aglog(3,n)=agloga3(n)
-    aglog(4,n)=agloga4(n)
-    aglog(5,n)=agloga5(n)
-    aglog(6,n)=agloga6(n)
-    aglog(7,n)=agloga7(n)
-    ! aglog(8,n)=agloga8(n)
-    ! aglog(9,n)=agloga9(n)
-    ! aglog(10,n)=agloga10(n)
-    ! aglog(11,n)=agloga11(n)
+      aglog(1,n)=agloga1(n)
+      aglog(2,n)=agloga2(n)
+      aglog(3,n)=agloga3(n)
+      aglog(4,n)=agloga4(n)
+      aglog(5,n)=agloga5(n)
+      aglog(6,n)=agloga6(n)
+      aglog(7,n)=agloga7(n)
+      ! aglog(8,n)=agloga8(n)
+      ! aglog(9,n)=agloga9(n)
+      ! aglog(10,n)=agloga10(n)
+      ! aglog(11,n)=agloga11(n)
     end do
 
     call log_debug('Liste du nbre de g en fonction de t')
@@ -525,7 +557,7 @@ contains
 
     do i=1,nt
       jt2 = i
-      if(config_teff .lt. rteff(i)) go to 11
+      if(x_teff .lt. rteff(i)) go to 11
     end do
 
     11 continue
@@ -554,7 +586,7 @@ contains
 
       do i = 1,ngg
         jg2(jjt)=i
-        if(config_glog .lt. rglog(i)) go to 12
+        if(x_glog .lt. rglog(i)) go to 12
       end do
 
       12 continue
