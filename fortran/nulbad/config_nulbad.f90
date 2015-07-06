@@ -24,7 +24,6 @@ module config_nulbad
   !       (however with "config_") prefix
   
   
-  some variables witll have a default, others won't
   
   
   logical :: &

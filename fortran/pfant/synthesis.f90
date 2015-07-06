@@ -137,23 +137,6 @@ module synthesis
   public :: synthesis_ ! subroutine
 
 
-  !=====
-  ! Module configuration
-  !=====
-  !> Whether to store the whole Fnu in vector synthesis::synthesis_ffnu
-  logical, public :: synthesis_flag_ffnu = .false.
-
-
-  !=====
-  ! Spectrum stored in memory to be exported for nulbad
-  !=====
-  !> "Fnu". Only calculated if synthesis::synthesis_flag_ffnu is true
-  real*8, public, allocatable :: synthesis_ffnu(:)
-  !> last valid index within synthesis::synthesis_ffnu
-  integer, public :: synthesis_ktot
-
-
-
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
@@ -346,16 +329,6 @@ contains
          int2str(FILETOH_NP))
       end if
 
-      ! Allocates Fnu at first iteration
-      if (synthesis_flag_ffnu .and. ikey .eq. 1) then
-        ! This is a slight overallocation because dtot may be smaller in the last iteration.
-        allocate(synthesis_ffnu(ikeytot*dtot))
-        synthesis_ktot = 0
-      end if
-
-
-
-
       !#logging
       117 format(5x,'lzero=',f10.3,10x,'lfin=',f10.3,5x,'dtot=',i7)
       write(lll, 117) lzero, lfin, dtot
@@ -488,16 +461,6 @@ contains
         selekfh_fcont(d) = selekfh_fcont(d)*(10.**5)
         fn(d) = selekfh_fl(d) / selekfh_fcont(d)  ! normalized spectrum
       end do
-
-
-      ! Copies normalized spectrum to Fnu vector
-      if (synthesis_flag_ffnu) then
-        do d = i1,i2
-          synthesis_ktot = synthesis_ktot+1
-          synthesis_ffnu(synthesis_ktot) = fn(d)
-        end do
-      end if
-
 
       !=====
       ! Writes results for current iteration into open files
