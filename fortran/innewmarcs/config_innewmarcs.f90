@@ -57,13 +57,10 @@ contains
   !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
   !> &lt;br&gt;
 
-  subroutine init_options()
-    integer i, j, k
-    character(:), allocatable :: name
-    character(1) :: chr
+  subroutine config_init_options()
+    integer k
+    k = config_base_init_options()
 
-
-    k = k+1
     options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
      'Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
@@ -129,7 +126,7 @@ contains
   function config_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
-    integer :: res, iTemp
+    integer :: res
 
     res = HANDLER_OK
 
@@ -148,19 +145,19 @@ contains
         call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
       case ('teff')
         config_teff = parse_aux_str2real4(opt, o_arg)
-        call log_assignment('config_teff', real42str(config_teff))
+        call parse_aux_log_assignment('config_teff', real42str(config_teff))
       case ('glog')
         config_glog = parse_aux_str2real4(opt, o_arg)
-        call log_assignment('config_glog', real42str(config_glog))
+        call parse_aux_log_assignment('config_glog', real42str(config_glog))
       case ('amet')
         config_amet = parse_aux_str2real4(opt, o_arg)
-        call log_assignment('config_amet', real42str(config_amet))
+        call parse_aux_log_assignment('config_amet', real42str(config_amet))
       case ('id')
         config_id = parse_aux_str2int(opt, o_arg)
         if (config_id .lt. 1) then !#validation
           res = HANDLER_ERROR
         else
-          call log_assignment('config_id', int2str(config_id))
+          call parse_aux_log_assignment('config_id', int2str(config_id))
         end if
       case default
         ! if does not handle here, passes on to base handler

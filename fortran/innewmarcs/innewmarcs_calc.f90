@@ -2,6 +2,9 @@ module innewmarcs_calc
   use read_most_files
   use config_innewmarcs
   implicit none
+
+  public innewmarcs_calc_
+
   private
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
@@ -28,10 +31,9 @@ module innewmarcs_calc
 
   ! x_* values may come either from command line or infile:main
   real*4 :: x_teff, x_glog, x_amet
-  character*LEN_TIRB :: x_tirb
+  character(LEN_TIRB) :: x_tirb
   integer :: x_id
 contains
-
 
   !=======================================================================================
   !> Initialization of this module
@@ -57,23 +59,11 @@ contains
       end if
       x_id = main_inum
     end if
-    if (config_tirb .eq. '?') then
-      call assure_read_main()
-      x_tirb = main_titrav
-    end if
-    if (config_teff .eq. -1) then
-      call assure_read_main()
-      x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
-    end if
-    if (config_glog .eq. -1) then
-      call assure_read_main()
-      x_glog = real(main_glog) ! explicit real(8)-to-real(4) conversion to shut up warning
-    end if
-    if (config_amet .eq. -1) then
-      call assure_read_main()
-      x_amet = real(main_asalog) ! explicit real(8)-to-real(4) conversion to shut up warning
-    end if
-  
+    if (config_tirb .eq. '?') x_tirb = main_titrav
+    if (config_teff .eq. -1)  x_teff = real(main_teff)   ! explicit real(8)-to-real(4) conversion to shut up warning
+    if (config_glog .eq. -1)  x_glog = real(main_glog)   ! "
+    if (config_amet .eq. -1)  x_amet = real(main_asalog) ! "
+
     call read_ref_models_map()
 
     call find_ref_models()  ! calculates nomfipl, amet1, amet2
@@ -295,7 +285,7 @@ contains
     end do
 
     ! Writes binary file
-    write(UNIT_MOD, rec=get_id()) &
+    write(UNIT_MOD, rec=x_id) &
      nntot,          &
      config_teff, &
      config_glog, &
@@ -305,7 +295,7 @@ contains
      tir,            &
      dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
-    write(UNIT_MOD,rec=get_id()+1) 9999  ! 4 bytes, i guess
+    write(UNIT_MOD,rec=x_id+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
     bid0 = 0.0
@@ -390,13 +380,10 @@ contains
   subroutine find_ref_models()
     integer i
     logical :: flag_found = .false.
-    real*4 amet
-
-    amet = get_amet()
 
     do i = 1, num_refmodels-1
-      if (amet .ge. modelmap_met(i) .and. &
-          amet .lt. modelmap_met(i+1)) then
+      if (x_amet .ge. modelmap_met(i) .and. &
+          x_amet .lt. modelmap_met(i+1)) then
         nomfipl(1) = modelmap_fn(i)
         nomfipl(2) = modelmap_fn(i+1)
         amet1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
@@ -407,7 +394,7 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(amet)//' is out of interval ['//&
+      call pfant_halt('Metallicity '//real42str(x_amet)//' is out of interval ['//&
        real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
     end if
   end
