@@ -60,7 +60,7 @@ module config_base
 
   !> Number of options of particular executable. Set to -1 here to
   !> allow for assertion.
-  integer :: ex_config_num_options = 5
+  integer :: ex_config_num_options = 6
 
   type(option) coco
 
@@ -143,8 +143,8 @@ contains
 
     ! Fortran will give no error trying to assign options(k), k > ex_config_num_options,
     ! so I put this protection here
-    if (k .gt. ex_config_num_options) then
-      call pfant_halt('Assigned options('//int2str(k)//' > ex_config_num_options='//&
+    if (k .ne. ex_config_num_options) then
+      call pfant_halt('Assigned options ('//int2str(k)//') differs from ex_config_num_options ('//&
        int2str(ex_config_num_options)//')', is_assertion=.true.)
     end if
 

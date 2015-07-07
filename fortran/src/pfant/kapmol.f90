@@ -15,19 +15,21 @@
 
 !> Contains subroutine kapmol_()
 !>
-!> Calculated variables have prefix "kmc_"
+!> Calculated variables have prefix "km_c_"
 
 module kapmol
   use molecules_ids
   use max_
   use dissoc
+  use reader_molecules
+  use filters
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    kmc_gfm,    & !< ?doc?
-    kmc_alargm    !< ?doc?
+    km_c_gfm,    & !< ?doc?
+    km_c_alargm    !< ?doc?
 
-  real*8, dimension(MAX_KM_R_LINES_TOTAL, MAX_MODELES_NTOT) :: kmc_pnvj
+  real*8, dimension(MAX_KM_R_LINES_TOTAL, MAX_MODELES_NTOT) :: km_c_pnvj
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
@@ -102,23 +104,23 @@ contains
                   (2.-cro)*(2.*km_f_jj(l)+1.)*                                             &
                   exp(H*C/KB*modeles_teta(n)/5040.*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))
 
-            kmc_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
+            km_c_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
           end do
 
 
           ! Takes advantage of current j_set loop so it is not necessary to create
-          ! another double loop as in the original KAPMOL() to calculate kmc_gfm
+          ! another double loop as in the original KAPMOL() to calculate km_c_gfm
           if (n .eq. 1) then
             ! Because gfm does not depend on n, runs this part just once, when n is 1.
             facto = km_r_fact(j_set, molid)
-            kmc_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
+            km_c_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
           end if
         end do
       end do
     end do ! end of i_mol loop
 
     do l = 1, km_f_mblend
-      kmc_alargm(l) = 0.1
+      km_c_alargm(l) = 0.1
     end do
   end
 

@@ -17,6 +17,8 @@
 
 module reader_filetoh
   use max_
+  use reader_modeles
+  use config_pfant
   implicit none
 
   !=====
@@ -50,28 +52,28 @@ module reader_filetoh
   character*64 filetoh_filenames(MAX_FILETOH_NUMFILES)
 
 
-  !=====
-  ! Calculated for external use
-  !=====
-  !> ?doc?
-  real*8 ct_tauhi(MAX_DTOT, MAX_MODELES_NTOT)
-  integer :: &
-   ct_dhmi, & !< ?doc?
-   ct_dhpi    !< ?doc?
-
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
-
-
-  !  integer :: jjmax
+  !!=====
+  !! Calculated for external use
+  !!=====
+  !!> ?doc?
+  !real*8 ct_tauhi(MAX_DTOT, MAX_MODELES_NTOT)
+  !integer :: &
+  ! ct_dhmi, & !< ?doc?
+  ! ct_dhpi    !< ?doc?!!
+!
+!  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+!  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+!  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
+!  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols!!
+!
+!
+ ! !  integer :: jjmax
 
   save
 contains
 
   !=======================================================================================
-  !> Tries to open and read all files listed in variable read_most_files::main_filetohy
+  !> Tries to open and read all files listed in variable reader_main::main_filetohy
   !>
   !> If a1 filetoh file listed in infile:main file
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
@@ -120,184 +122,5 @@ contains
     if (i .eq. 0 .and. main_filetoh_numfiles .gt. 0 .and. .not. config_allow_no_filetoh) then
       call pfant_halt('Expecting '//int2str(main_filetoh_numfiles)//' filetoh files, but ZERO files found')
     end if
-  end
-
-
-  !=======================================================================================
-  !> Calculates tauhi, dhmi and dhpi for file specified
-  !>
-  !> @note this is originally subroutine "LECTAUH" without the file reading part
-  !>
-  !> @todo test the pointers
-
-  subroutine filetoh_calc_tauh(i_file, dtot, ttd, ilzero)
-    integer, intent(in) :: i_file !< index of a filetoh file
-    !> ?doc? Number of calculation steps, I think. ISSUE: better explanation
-    !> Calculated as: @code dtot = (lfin-lzero)/main_pas + 1.0005 @endcode
-    integer, intent(in) :: dtot
-    !> integer version of variable lzero in main module
-    integer, intent(in) :: ilzero
-    !> ?doc? Calculated as: ttd(d) = alzero+main_pas*(d-1)
-    real*8, intent(in) :: ttd(MAX_DTOT)
-    integer d, j, jj, jma1, n, &
-     jjmax, &
-     now_jmax ! jmax of file i_file
-
-    real*8, dimension(MAX_FILETOH_JJMAX) :: llambdh, allh, tauhn
-    real*8 :: tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
-    real*8 :: ftth(MAX_DTOT)
-
-    real*8 del
-    ! pointers, point to information within filetoh_r_* matrices at the beginning of\
-    ! a specific file.
-    ! This simplifies the notation within the loop below and is probably faster than
-    ! accessing the variables filetoh_r_* directly
-    real*8, pointer, dimension(:,:) :: now_th
-    real*8, pointer, dimension(:)   :: now_lambdh
-
-    now_jmax   = filetoh_r_jmax(i_file)
-    now_th     => filetoh_r_th(i_file, :, :)
-    now_lambdh => filetoh_r_lambdh(i_file, :)
-
-    jjmax = 2*now_jmax-1
-    jma1 = now_jmax-1
-    do jj = 1, now_jmax
-      del = now_lambdh(now_jmax+1-jj)-now_lambdh(1)
-      llambdh(jj) = now_lambdh(now_jmax+1-jj)-2*del
-    end do
-    do jj = now_jmax+1, jjmax
-      llambdh(jj) = now_lambdh(jj-jma1)
-    end do
-    do n = 1, modeles_ntot
-      do jj = 1, now_jmax
-        tth(jj, n) = now_th(now_jmax+1-jj, n)
-      end do
-      do jj = now_jmax+1, jjmax
-        tth(jj, n) = now_th(jj-jma1, n)
-      end do
-    end do
-
-    !~WRITE(6,'(A80)') filetoh_r_TITRE
-    !~WRITE(6,'(A11)') filetoh_r_TTT
-    !~WRITE(6,'('' now_jmax='',I3)') now_jmax
-    !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)
-    !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)
-    !~
-    !~DO N = 1,modeles_NTOT,5
-    !~  WRITE(6,'('' N='',I3)') N
-    !~  WRITE(6,'(2X,5E12.4)') (TTH(JJ,N), JJ=1,JJMAX)
-    !~END DO
-
-
-    do j = 1,jjmax
-      allh(j) = llambdh(j)-ilzero
-    end do
-
-    !~ WRITE(6, '('' ALLH(1)='',F8.3,2X,''ALLH(JJMAX)='',F8.3,2X)')
-    !~+      ALLH(1),ALLH(JJMAX)
-    !~ WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
-    !~       JJMAX, modeles_NTOT, DTOT
-
-    do n = 1,modeles_ntot
-      do j = 1,jjmax
-        tauhn(j) = tth(j,n)
-      end do
-
-      call ftlin3h()
-
-      do d = 1,dtot
-        ct_tauhi(d, n) = ftth(d)
-      end do
-    end do
-
-
-    !~ !--debugging--!
-    !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
-    !~+ ct_tauhi(1,1), ct_tauhi(1,modeles_NTOT)
-    !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
-    !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
-    !~+ ct_tauhi(DTOT,1), ct_tauhi(DTOT,modeles_NTOT)
-
-  contains
-    !-------------------------------------------------------------------------------
-    !> @todo ISSUE ?what?
-    !>
-    !> @todo This routine is *very similar to misc_math::ftlin3()*, I think the latter
-    !> has been duplicated to build ftlin3h(). Not sure what to do. At least write more
-    !> about the differences.
-    !>
-    !> Uses variables from parent filetoh_auh():
-    !> @li dtot
-    !> @li ttd
-    !> @li jjmax
-    !>
-    subroutine ftlin3h()
-      real*8 dy, ft, t, t0, t1, t2, u0
-      integer j, k, kk, jj, kk1, kq
-
-      j=2
-      kk=1
-      24 continue
-      do 4 k = kk,dtot
-        kq=k
-        t=ttd(k)
-
-        jj=j-1
-        do 1  j=jj,jjmax
-          if(t-allh(j) ) 3,2,1
-          1 continue
-          go to 10
-          2 ft=tauhn(j)
-        if(j .eq. 1) j = j+1
-        go to 4
-
-        3 if (j .eq. 1) go to 10
-        u0 = tauhn(j)-tauhn(j-1)
-        t0 = allh(j)-allh(j-1)
-        t1 = t-allh(j-1)
-
-        t2= t1/t0
-        dy= u0*t2
-        ft= tauhn(j-1) + dy
-        ftth(k) = ft
-      4 continue
-
-      14 continue
-
-      do k=1,dtot
-        if(ftth(k).ne.0.0) go to 20
-      end do
-
-      20 ct_dhmi = k
-
-      !> @todo issue ask blb why this? Take the opportunity to ask for a line on
-      !>
-      !> @todo ask blb or ask pc marie noel reference on this
-      !>
-      !> tauhi(:,:), dhmi and dhpi
-      if (ct_dhmi .eq. dtot) ct_dhmi = 1
-
-
-      kk1 = ct_dhmi+1
-      do k = kk1,dtot
-        if (ftth(k) .eq. 0.0) go to 30
-      end do
-
-      30 ct_dhpi = k
-
-      ! (Paula Coelho 21/11/04) instrucao da Marie Noel
-      !> @todo issue ask blb or ask pc why this?
-      if (ftth(dtot) .ne. 0.0) ct_dhpi = dtot
-
-      return
-
-      10 ftth(k) = 0.
-      j = j+1
-
-      kk = kq
-      kk = kk+1
-      if (kq .gt. dtot) go to 14
-      go to 24
-    end
   end
 end

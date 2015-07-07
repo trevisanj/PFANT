@@ -18,9 +18,10 @@
 module reader_dissoc
   use logging
   use max_
+  use misc
   implicit none
 
-  flag_read_dissoc = .false.    !< Whether read_dissoc() has already been called
+  logical :: flag_read_dissoc = .false.    !< Whether read_dissoc() has already been called
 
 
   ! dissoc.dat, metals part

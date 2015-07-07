@@ -119,17 +119,22 @@
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
 
 module synthesis
-  use filetoh
-  use read_most_files
-  use molecules
   use logging
   use config_pfant
   use flin
   use misc_math
   use absoru
-  use atomgrade
-  use molecules
   use dissoc
+  use reader_atomgrade
+  use reader_filetoh
+  use reader_main
+  use reader_abonds
+  use reader_dissoc
+  use reader_partit
+  use reader_molecules
+  use reader_absoru2
+  use filters
+  use kapmol
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -177,7 +182,7 @@ module synthesis
   integer :: &
    ct_dhmi, & !< Calculated by subroutine calc_tauh
    ct_dhpi    !< Calculated by subroutine calc_tauh
-   
+
   !=====
   ! Constants available to all subroutines within this module
   !=====
@@ -712,7 +717,7 @@ contains
           ! molecule
           if(km_f_mblend.eq.0) go to 250
           do l=1,km_f_mblend
-            if( abs(ecartlm(l)) .gt. kmc_alargm(l) )  then
+            if( abs(ecartlm(l)) .gt. km_c_alargm(l) )  then
               kam(l)=0.
             else
 
@@ -720,7 +725,7 @@ contains
               deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
               vm = abs(ecarm(l)*1.e-08/deltam(l,n))
               phi = (exp(-vm**2))/(RPI*deltam(l,n))
-              kam(l) = phi*kmc_gfm(l)*kmc_pnvj(l,n)
+              kam(l) = phi*km_c_gfm(l)*km_c_pnvj(l,n)
             end if
             kappam(n)=kappam(n)+kam(l)
           end do   !  fin bcle sur l

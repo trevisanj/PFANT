@@ -18,7 +18,6 @@
 module config_innewmarcs
   use config_base
   use misc
-  use read_most_files
   implicit none
 
   integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb

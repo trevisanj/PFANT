@@ -42,11 +42,10 @@ contains
   !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
   !> &lt;br&gt;
 
-  subroutine init_options()
-    integer i, j, k
-    character(:), allocatable :: name
-    character(1) :: chr
+  subroutine config_init_options()
+    integer k
 
+    k = config_base_init_options()
 
     k = k+1
     options(k) = option('fileflux', ' ', .true., 'file name', &
@@ -70,6 +69,8 @@ contains
     k = k+1
     options(k) = option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
+
+    call validate_options(k)
   end
 
 
@@ -91,7 +92,7 @@ contains
   function config_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
-    integer :: res, iTemp
+    integer :: res
 
     res = HANDLER_OK
 
@@ -99,23 +100,23 @@ contains
 
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)
-        call log_assignment('config_fwhm', real82str(config_fwhm))
+        call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm))
       case ('convol')
         config_convol = parse_aux_str2logical(opt, o_arg)
-        call log_assignment('config_convol', logical2str(config_convol))
+        call parse_aux_log_assignment('config_convol', logical2str(config_convol))
       case ('pat')
         config_pat = parse_aux_str2real8(opt, o_arg)
-        call log_assignment('config_pat', real82str(config_pat))
+        call parse_aux_log_assignment('config_pat', real82str(config_pat))
       case ('filecv')
-        call assign_fn(o_arg, config_filecv, 'config_filecv')
+        call parse_aux_assign_fn(o_arg, config_filecv, 'config_filecv')
       case ('flam')
         config_flam = parse_aux_str2logical(opt, o_arg)
-        call log_assignment('config_flam', logical2str(config_flam))
+        call parse_aux_log_assignment('config_flam', logical2str(config_flam))
       case ('fileflux')
-        call assign_fn(o_arg, config_fileflux, 'config_fileflux')
+        call parse_aux_assign_fn(o_arg, config_fileflux, 'config_fileflux')
       case ('norm')
         config_norm = parse_aux_str2logical(opt, o_arg)
-        call log_assignment('config_norm', logical2str(config_norm))
+        call parse_aux_log_assignment('config_norm', logical2str(config_norm))
       case default
         ! if does not handle here, passes on to base handler
         res = config_base_handle_option(opt, o_arg)

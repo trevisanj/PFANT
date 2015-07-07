@@ -1,9 +1,9 @@
 module nulbad_calc
   use misc_math
   use logging
-  use read_most_files
   use config_nulbad
-  use filetoh
+  use max_
+  use reader_main
   implicit none
 
   public nulbad_calc_

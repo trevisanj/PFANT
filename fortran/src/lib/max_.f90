@@ -27,9 +27,9 @@ module max_
   !> Maximum number of "filetoh" files
   integer, parameter :: MAX_FILETOH_NUMFILES=13
   !> ?doc?
-  integer, private, parameter :: MAX_FILETOH_JMAX=50
+  integer, parameter :: MAX_FILETOH_JMAX=50
   !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_filetoh_r_JMAX*2-1 @endcode
-  integer, private, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
+  integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
 
   !=====
   ! Dimensions related to infile:dissoc
@@ -86,7 +86,7 @@ module max_
 
   !> Number of molecules configured in the program.
   !> Conceptually, this should be defined in molecules.f, but there would be cyclic USEs
-  integer, parameter :: NUM_MOL=21  
+  integer, parameter :: NUM_MOL=21
 
   !> Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
   integer, parameter :: MAX_SOL_PER_MOL=200
@@ -99,4 +99,4 @@ module max_
 
 
 end
-  
+

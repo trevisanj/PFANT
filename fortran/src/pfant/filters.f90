@@ -20,6 +20,9 @@
 module filters
   use molecules_ids
   use max_
+  use reader_atomgrade
+  use reader_molecules
+  implicit none
 
 
   !=====
@@ -44,7 +47,7 @@ module filters
   !> km_f_lmbdam, km_f_sj and km_f_jj (after the filtering)
   !>
   !> Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
-  dimension km_f_mblenq(NUM_MOL+1)
+  integer :: km_f_mblenq(NUM_MOL+1)
   !> This is similar but is a "local" one, it contains index of the last
   !> line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
   !> **for the current molecule** I_MOL
@@ -52,7 +55,7 @@ module filters
   !> Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
   !>
   !> @todo Explain better
-  dimension km_f_ln(MAX_SOL_PER_MOL+1, NUM_MOL)
+  integer :: km_f_ln(MAX_SOL_PER_MOL+1, NUM_MOL)
 
 
   !=====

@@ -18,6 +18,7 @@
 module reader_absoru2
   use logging
   use max_
+  use misc
   implicit none
 
   integer absoru2_nm,    & !< NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION

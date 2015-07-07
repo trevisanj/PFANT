@@ -17,6 +17,8 @@
 
 module reader_abonds
   use logging
+  use reader_dissoc
+  use reader_main
   use max_
   implicit none
 

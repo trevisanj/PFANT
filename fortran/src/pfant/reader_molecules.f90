@@ -18,6 +18,8 @@
 module reader_molecules
   use logging
   use max_
+  use misc
+  use molecules_ids
   implicit none
 
 

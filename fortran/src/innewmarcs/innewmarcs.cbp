@@ -31,6 +31,9 @@
 		<Unit filename="../lib/logging.f90">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="../lib/max_.f90">
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="../lib/misc.f90">
 			<Option weight="0" />
 		</Unit>
@@ -40,8 +43,14 @@
 		<Unit filename="../lib/options2.f90">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="../lib/read_most_files.f90">
+		<Unit filename="../lib/reader_dissoc.f90">
 			<Option weight="1" />
+		</Unit>
+		<Unit filename="../lib/reader_main.f90">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="../lib/reader_modeles.f90">
+			<Option weight="3" />
 		</Unit>
 		<Unit filename="../lib/welcome.f90">
 			<Option weight="1" />
@@ -50,10 +59,10 @@
 			<Option weight="2" />
 		</Unit>
 		<Unit filename="innewmarcs.f90">
-			<Option weight="4" />
+			<Option weight="5" />
 		</Unit>
 		<Unit filename="innewmarcs_calc.f90">
-			<Option weight="3" />
+			<Option weight="4" />
 		</Unit>
 		<Extensions>
 			<envvars />

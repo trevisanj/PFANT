@@ -38,14 +38,20 @@
 !> @endverbatim
 !>
 !> Public: only subroutine absoru() and variable absoru_znh
+!>
+!> @todo module absoru in lack of attention
+!>
 !> @todo Identify outputs and inputs
+!>
 !> @todo CHECK ALL TYPES
+!>
 !> @todo CHECK ALL SIZES
+!>
 !> @todo probably get rid of au_ prefix
 
 module absoru
   use absoru_data
-  use read_most_files
+  use reader_absoru2
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -111,8 +117,6 @@ contains
   !> @todo structure arguments for all routines in this file
 
   subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu)
-    use read_most_files
-    implicit none
     real*8, intent(in) :: &
      wl,       & !< ?doc?
      th,       & !< ?doc?
@@ -506,8 +510,6 @@ contains
   !>     A.M COLLE   13/5/69
 
   subroutine sahath(th)
-    use read_most_files
-    implicit none
     real*8 th, tempo, tempor
     integer i, j, n, nrr
     real*8, parameter :: &
@@ -565,11 +567,6 @@ contains
   !>
 
   subroutine athyhe (wl,th,callam,zzk)
-    use read_most_files
-    use logging
-    implicit none
-
-
     ! Note variable named "zk_"
     !   - local "zk" renamed to "zk_"
     !   - old COMMON "zk" so far is a module variable named au_zk

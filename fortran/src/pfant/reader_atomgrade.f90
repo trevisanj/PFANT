@@ -15,9 +15,10 @@
 
 !> Reader and variable declarations for infile:atomgrade
 
-module atomgrade
+module reader_atomgrade
   use max_
   use logging
+  use reader_abonds
   implicit none
 
   !=====

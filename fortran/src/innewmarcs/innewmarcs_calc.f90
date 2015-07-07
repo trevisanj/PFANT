@@ -1,5 +1,6 @@
 module innewmarcs_calc
-  use read_most_files
+  use max_
+  use reader_modeles
   use config_innewmarcs
   implicit none
 
@@ -54,7 +55,7 @@ contains
       x_tirb = config_tirb
       x_id   = config_id
     if (config_id .lt. 1) then
-      call assure_read_main()()
+      call assure_read_main()
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
         ! be validated upon file reading.
@@ -64,22 +65,22 @@ contains
       call parse_aux_log_assignment('x_id', int2str(x_id))
     end if
     if (config_tirb .eq. '?') then
-      call assure_read_main()()
+      call assure_read_main()
       x_tirb = main_titrav
       call parse_aux_log_assignment('x_tirb', trim(x_tirb))
     end if
     if (config_teff .eq. -1) then
-      call assure_read_main()()
+      call assure_read_main()
       x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
       call parse_aux_log_assignment('x_teff', real42str(x_teff))
     end if
     if (config_glog .eq. -1)  then
-      call assure_read_main()()
+      call assure_read_main()
       x_glog = real(main_glog)
       call parse_aux_log_assignment('x_glog', real42str(x_glog))
     end if
     if (config_amet .eq. -1) then
-      call assure_read_main()()
+      call assure_read_main()
       x_amet = real(main_asalog)
       call parse_aux_log_assignment('x_amet', real42str(x_amet))
     end if

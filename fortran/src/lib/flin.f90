@@ -33,8 +33,9 @@
 !> I may have deleted sth
 
 module flin
-  use read_most_files
   use misc_math
+  use misc
+  use max_
   implicit none
   private
 
@@ -117,15 +118,15 @@ contains
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
     !> ?doc?
     real*8, intent(in) :: b(0:MAX_MODELES_NTOT)
-    !> Source is probably @ref read_most_files::modeles_nh
+    !> Source is probably @ref reader_modeles::modeles_nh
     real*8, intent(in) :: nh(MAX_MODELES_NTOT)
-    !> Source is probably @ref read_most_files::modeles_NTOT
+    !> Source is probably @ref reader_modeles::modeles_ntot
     integer, intent(in) :: ntot
-    !> Source is probably @ref read_most_files::main_PTDISK
+    !> Source is probably @ref reader_main::main_pfdisk
     !> @li if .TRUE. : 7 points
     !> @li .FALSE.   : 6 points
     logical, intent(in) :: ptdisk
-    !> Source is probably @REF read_most_files::main_MU
+    !> Source is probably @REF reader_main::main_mu
     real*8, intent(in) :: mu
     !> (old "IOP") accepts 0 or 1.
     !> @li if 0, uses the 6/7 point formulation

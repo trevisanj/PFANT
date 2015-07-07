@@ -21,7 +21,9 @@
 
 module dissoc
   use config_pfant
-  use read_most_files
+  use reader_dissoc
+  use reader_main
+  use reader_modeles
   implicit none
 
   ! They will be pointer targets at molecules::point_ppa_pb()
