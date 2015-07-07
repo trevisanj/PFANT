@@ -31,7 +31,7 @@ module config_pfant
    config_fn_modeles       = 'modeles.mod',       & !< option: --fn_modeles
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
-   config_fn_moleculagrade = 'moleculagrade.dat', & !< option: --fn_moleculagrade
+   config_fn_molecules = 'molecules.dat', & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log'              !< option: --fn_log
 
@@ -93,7 +93,7 @@ contains
     options(k) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
      'input file name - atomic lines')
     k = k+1
-    options(k) = option('fn_moleculagrade', ' ', .true., 'file name', config_fn_moleculagrade, &
+    options(k) = option('fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
 
     k = k+1
@@ -155,8 +155,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_abonds, 'config_fn_abonds')
       case ('fn_atomgrade')
         call parse_aux_assign_fn(o_arg, config_fn_atomgrade, 'config_fn_atomgrade')
-      case ('fn_moleculagrade')
-        call parse_aux_assign_fn(o_arg, config_fn_moleculagrade, 'config_fn_moleculagrade')
+      case ('fn_molecules')
+        call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
 !            case ('fn_lines')
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')

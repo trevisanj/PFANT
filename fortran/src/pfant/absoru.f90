@@ -95,8 +95,6 @@ module absoru
 
 
   real*8, dimension(30) :: au_znu
-  character*192 lll
-
 contains
 
   !-------------------------------------------------------------------------------
@@ -290,14 +288,14 @@ contains
 
   !-------------------------------------------------------------------------------
   !>
-  !> Calcalutes the "Gaunth factor": multiplicative correction to the continuous absorption
+  !> Calculates the "Gaunth factor": multiplicative correction to the continuous absorption
   !> (i.e., a statistical weight)
   !>
   !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930
   !>
   !> A.M COLLE   19/8/69
 
-  subroutine gaunth (wl)
+  subroutine gaunth(wl)
     implicit none
     real*8 wl, cond, delta, rk, zj, zp, zq
     integer i, j, jj, js

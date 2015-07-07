@@ -43,7 +43,7 @@ File containing the atomic abundances
 @anchor infile:atomgrade infile:atomgrade
 File containing the spectral lines information for atoms
 
-@anchor infile:moleculagrade infile:moleculagrade
+@anchor infile:molecules infile:molecules
 File containing the lines information for 21 different molecules
 
 @anchor infile:filetoh   infile:filetoh

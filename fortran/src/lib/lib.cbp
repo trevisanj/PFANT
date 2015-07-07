@@ -25,7 +25,7 @@
 		<Unit filename="flin.f90">
 			<Option weight="2" />
 		</Unit>
-		<Unit filename="main.f90">
+		<Unit filename="max_.f90">
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="misc.f90">

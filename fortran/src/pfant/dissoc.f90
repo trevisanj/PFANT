@@ -48,7 +48,7 @@ module dissoc
    Z_H        = 1,   &  !< Atomic number of Hydrogen
    Z_HE       = 2       !< Atomic number of Helium
 
-  real*8, private, dimension(MAX_Z) :: &
+  real*8, private, dimension(MAX_DISSOC_Z) :: &
    ip,     & ! ?doc?
    ccomp,  & ! ?doc?
    uiidui, & ! ?doc?
@@ -261,14 +261,13 @@ contains
 
   subroutine die(tem, pg)
     real*8 tem, pg
-    real*8, dimension(MAX_Z) :: fx, dfx, z, prev
+    real*8, dimension(MAX_DISSOC_Z) :: fx, dfx, z, prev
     real*8, dimension(MAX_DISSOC_NMETAL) :: wa
     real*8 aplogj, atomj, delta, df, dhh, epsdie, &
      f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
      spnion, t, tem25, u, x, xr, pph, phh
     integer i, imaxp1, iterat, j, k, km5, m, mmaxj, nelemi, nelemj, &
      natomj, niter
-    character*128 lll
 
     epsdie = 5.0e-3
     t      = 5040.0/tem
@@ -387,7 +386,7 @@ contains
     ! Update: kept as-was
     ! !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
     ! !> @todo issue ask blb being divided by 100 is still an issue
-    ! do m =1,MAX_Z
+    ! do m =1,MAX_DISSOC_Z
     !   p(m)=1.0e-2*p(m)
     ! end do
 
@@ -503,4 +502,4 @@ contains
 
     1051 continue
   end
-end module dissoc
+end

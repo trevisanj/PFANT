@@ -453,7 +453,6 @@ contains
 
     real*8 ft, dy, t0, t1, t2, u0, t
     integer i, j, jj, k
-    character*192 lll  !#logging
 
 !     write(6,*) n
 !     105 format(7f10.3)
@@ -557,7 +556,6 @@ contains
      ftt(itot)   !< ?doc?
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
-    character*80 lll
 
     inv = -1
     if (x(n).lt.x(1)) inv = 1

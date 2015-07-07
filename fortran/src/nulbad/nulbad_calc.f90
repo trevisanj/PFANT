@@ -121,8 +121,7 @@ contains
     ! variables with suffix "_bid" are read from file, but used for nothing
     real*8 echx_bid, echy_bid, fwhm_bid, lzero_bid, lfin_bid
     integer :: itot, ikeytot, icle, d, k
-    real*8 fnu(FILETOH_NP)  ! temporary, just for reading one "icle" iteration
-    ! character*92  lll
+    real*8 fnu(MAX_DTOT)  ! temporary, just for reading one "icle" iteration
 
     open(unit=UNIT_,file=full_path_o(x_fileflux), status='unknown')
 
@@ -181,7 +180,6 @@ contains
     integer d, dmj, dtotc, k, i, ip, j, jp1, kktot, m
     real*8, dimension(rs_ktot) :: ffl, lambd, alfl, afl, fl, tl
     real*8 alf, alz, ca, cb
-    character*92 lll
 
     call nulbad_init()
 

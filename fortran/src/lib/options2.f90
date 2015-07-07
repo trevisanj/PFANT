@@ -378,6 +378,7 @@ contains
 
   !> Logs error and halts
   !> This routine was created to standardize the "giving error" behaviuor
+  
   subroutine give_error(lll)
     !> Error message
     character(len=*) :: lll

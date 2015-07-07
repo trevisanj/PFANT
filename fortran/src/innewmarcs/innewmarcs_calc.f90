@@ -27,7 +27,6 @@ module innewmarcs_calc
   real*4 amet1, amet2
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
-  character*192 :: lll  ! #logging
 
   ! x_* values may come either from command line or infile:main
   real*4 :: x_teff, x_glog, x_amet
@@ -509,7 +508,6 @@ contains
     real*8 :: rteff(7),rglog(8),r1teff(7)
     real*8 :: agloga1(8),agloga2(8),agloga3(8),agloga4(8), &
      agloga5(8),agloga6(7),agloga7(7),aglog(7,8)
-    character*128 lll
     integer i, jjt, jt1, jt2, n, ng, ngg, nt
 
     data r1teff /4000.,4250.,4500.,4750.,5000.,5250.,5500./

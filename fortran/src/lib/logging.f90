@@ -25,6 +25,13 @@
 module logging
   implicit none
 
+  !> variable declared for convenience, to be used to log formatted output as in example:
+  !> @code
+  !> write(lll,*) ...
+  !> call log_info(lll)
+  !> @endcode
+  character*256 lll
+
   ! Logging levels copied from Python (except LOGGING_HALT)
   integer, parameter ::   &
    LOGGING_HALT     = 60, &  !< Maximum logging level; logging just before system halts
@@ -179,7 +186,6 @@ contains
     integer, intent(in) :: i, & !< current iteration
                            n    !< number of iterations
     real*8 perc
-    character*50 lll
     integer, parameter :: UNIT_ = 199
     perc = 100.*i/n
 

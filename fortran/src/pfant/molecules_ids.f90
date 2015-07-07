@@ -6,10 +6,8 @@
 module molecules_ids
   use logging
   use misc
+  use max_
   implicit none
-  integer, parameter :: NUM_MOL=21  !< Number of molecules configured in the program.
-                                    !< Conceptually, this should be defined in molecules.f, but there would be cyclic USEs
-                                    !< @todo maybe create a module called "dimensions"...not before I check the other modules to incorporate: hydro2 and inewmarcs
 
   type molid_list
     integer :: n_off, & !< number "off"
@@ -49,7 +47,6 @@ contains
 
   function get_molid(i_mol)
     integer i_mol, get_molid
-    character*80 lll  !#logging
 
     if (.not. flag_molecules_ids_init) then
       call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)

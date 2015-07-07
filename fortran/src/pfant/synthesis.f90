@@ -33,7 +33,7 @@
 !     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
 !
 !     2) troquei nome do arquivo de atomos para 'infile:atomgrade' e o de
-!     moleculas para 'infile:moleculagrade'
+!     moleculas para 'infile:molecules'
 !
 !     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e
 !     psatox95t.f e retirei as rotinas que eram obsoletas e nao eram
@@ -62,7 +62,7 @@
 !     b. dimensao e data de filetoh_llhy e dimensao de main_FILETOHY foram
 !     atualizadas
 !
-!     c. incluidos filetoh_c_tauhi(FILETOH_NP,50),TAUHY(10,FILETOH_NP,50) e excluido IHH(500)
+!     c. incluidos ct_tauhi(MAX_DTOT,50),TAUHY(10,MAX_DTOT,50) e excluido IHH(500)
 !
 !     d. todo o codigo que se referia ao calculo das linha de H foram
 !     ocultados, e o codigo a isto referente que estava em pfant01.h
@@ -72,10 +72,10 @@
 !     e. segundo as instrucoes enviadas pela Marie Noel em 2001:
 !     - na rotina FTLIN3H foi incluida a linha
 !     'if (ftt(itot).ne.0.0) k2=itot'
-!     - DTOT foi substituido por FILETOH_NP nas dimensoes das matrizes
-!           BK : TTD(FILETOH_NP), bk_KCD(FILETOH_NP,5)
-!        LECTAUH : TTD(FILETOH_NP)
-!        SELEKFH : TTD(FILETOH_NP), bk_KCD(FILETOH_NP, 50), selekfh_FL(FILETOH_NP), TAUH(FILETOH_NP,50)`
+!     - DTOT foi substituido por MAX_DTOT nas dimensoes das matrizes
+!           BK : TTD(MAX_DTOT), bk_KCD(MAX_DTOT,5)
+!        LECTAUH : TTD(MAX_DTOT)
+!        SELEKFH : TTD(MAX_DTOT), bk_KCD(MAX_DTOT, 50), selekfh_FL(MAX_DTOT), TAUH(MAX_DTOT,50)`
 !
 !
 !     Tambem reduzi o numero de comentario que vao para a tela
@@ -83,8 +83,8 @@
 !
 ! ========================================================================
 !
-!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(FILETOH_NP) e o
-!     espectro normalizado FN(FILETOH_NP) {Paula, dez 2003}
+!     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(MAX_DTOT) e o
+!     espectro normalizado FN(MAX_DTOT) {Paula, dez 2003}
 !
 !     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
 !     - abro mais dois arquivos binarios unit=UNIT_CONT (continuo) e UNIT_NORM (normalizado)
@@ -160,17 +160,24 @@ module synthesis
    popadelh_pop, popadelh_a, popadelh_delta
 
   !> Calculated by subroutine selekfh
-  real*8, dimension(FILETOH_NP) :: selekfh_fl, selekfh_fcont
+  real*8, dimension(MAX_DTOT) :: selekfh_fl, selekfh_fcont
 
   !> Calculated by subroutine bk
   real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b, bk_b1, bk_b2
   !> Calculated by subroutine bk
   real*8, dimension(MAX_MODELES_NTOT) :: bk_kc, bk_kc1, bk_kc2, bk_phn, bk_ph2
   !> Calculated by subroutine bk
-  real*8, dimension(FILETOH_NP, MAX_MODELES_NTOT) :: bk_kcd
+  real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
   !> Calculated by subroutine bk
-  real*8, dimension(FILETOH_NP) :: bk_fc
+  real*8, dimension(MAX_DTOT) :: bk_fc
 
+
+  !> Calculated by subroutine calc_tauh
+  real*8 ct_tauhi(MAX_DTOT, MAX_MODELES_NTOT)
+  integer :: &
+   ct_dhmi, & !< Calculated by subroutine calc_tauh
+   ct_dhpi    !< Calculated by subroutine calc_tauh
+   
   !=====
   ! Constants available to all subroutines within this module
   !=====
@@ -189,8 +196,6 @@ module synthesis
 
   real*8, parameter :: &
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
-
-  character*192 :: lll  !#logging
 
 contains
 
@@ -219,11 +224,11 @@ contains
     !> @todo still dimensions declared with numbers (absoru.f90 too)
 
     real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
-     ecartm(MAX_KM_MBLEND)
+     ecartm(MAX_KM_F_MBLEND)
 !   fonctions de partition TODO figure out what this comment refers to
 
-    REAL*8 ttd(FILETOH_NP), fn(FILETOH_NP), &
-           tauh(FILETOH_NP, 50), tauhy(10,FILETOH_NP,50)
+    REAL*8 ttd(MAX_DTOT), fn(MAX_DTOT), &
+           tauh(MAX_DTOT, 50), tauhy(10,MAX_DTOT,50)
 
 
     integer i, i1, i2, ih, &
@@ -251,7 +256,7 @@ contains
     call read_abonds(full_path_i(config_fn_abonds))
     call read_atomgrade(full_path_i(config_fn_atomgrade))
     call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
-    call read_moleculagrade(full_path_i(config_fn_moleculagrade))
+    call read_molecules(full_path_i(config_fn_molecules))
 
 
     !> @todo issue ask blb overwriting variables read from infile:absoru2
@@ -324,9 +329,9 @@ contains
       dtot = int((lfin-lzero)/main_pas + 1.0005)
 
       !#spill_check
-      if(dtot .gt. FILETOH_NP) then
-        call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of FILETOH_NP='//&
-         int2str(FILETOH_NP))
+      if(dtot .gt. MAX_DTOT) then
+        call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of MAX_DTOT='//&
+         int2str(MAX_DTOT))
       end if
 
       !#logging
@@ -372,13 +377,13 @@ contains
           ! Type *,' nom des fichiers TAU raies Hydrogene'
           !
           ! Old "LECTAUH()". Calculates tauh, dhmi and dhpi for file identified by ih.
-          call filetoh_calc_tauh(ih, dtot, ttd, ilzero)
+          call calc_tauh(ih, dtot, ttd, ilzero)
 
-          dhmy(im) = filetoh_c_dhmi
-          dhpy(im) = filetoh_c_dhpi
+          dhmy(im) = ct_dhmi
+          dhpy(im) = ct_dhpi
           do n = 1,modeles_ntot
             do d = 1,dtot
-              tauhy(im, d, n) = filetoh_c_tauhi(d,n)
+              tauhy(im, d, n) = ct_tauhi(d,n)
             end do
           end do
         end if
@@ -418,31 +423,31 @@ contains
       ! Quantites dependant de la raie et du modele
       call filter_atomgrade(lzero, lfin)
 
-      if(atomgrade_nblend .gt. 0) then
+      if(atomgrade_f_nblend .gt. 0) then
         call popadelh()
 
         ! -- VI --
         ! Calcul du coefficient d absorption selectif et calcul du spectre
-        do k = 1, atomgrade_nblend
+        do k = 1, atomgrade_f_nblend
 
           !> @todo ISSUE check these variables, they may be misnamed
-          gfal(k) = atomgrade_gf(k)*C2*(atomgrade_lambda(k)*1.e-8)**2
+          gfal(k) = atomgrade_f_gf(k)*C2*(atomgrade_f_lambda(k)*1.e-8)**2
 
           !> @todo issue ?what? ?doc? is ECART? (MT): some sort of delta lambda
-          ecart(k) = atomgrade_lambda(k)-lzero+main_pas
+          ecart(k) = atomgrade_f_lambda(k)-lzero+main_pas
         end do
       end if
 
-      call filter_moleculagrade(lzero, lfin)
-      call use_moleculagrade()
+      call filter_molecules(lzero, lfin)
+      call kapmol_()
 
       !--debugging--!
       704 format(1x,'mblend=',i10)
-      write(lll, 704) km_mblend
+      write(lll, 704) km_f_mblend
       call log_debug(lll)
 
-      do l = 1, km_mblend
-        ecartm(l) = km_lmbdam(l)-lzero + main_pas
+      do l = 1, km_f_mblend
+        ecartm(l) = km_f_lmbdam(l)-lzero + main_pas
       end do
 
       call selekfh()
@@ -584,36 +589,36 @@ contains
       real*8 log_abond
       122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
       write(UNIT_LINES, 122)
-      do k=1,atomgrade_nblend
-        log_abond = log10(atomgrade_abonds_abo(k))
+      do k=1,atomgrade_f_nblend
+        log_abond = log10(atomgrade_f_abonds_abo(k))
 
         125 format(a2,1x,i1,1x,f08.3,1x,f6.3,f09.3,f09.3,1x,3e12.3,f5.1, f7.1)
         write(UNIT_LINES, 125)     &
-         atomgrade_elem(k),        &
-         atomgrade_ioni(k),        &
-         atomgrade_lambda(k),      &
-         atomgrade_kiex(k),        &
-         atomgrade_algf(k),        &
+         atomgrade_f_elem(k),        &
+         atomgrade_f_ioni(k),        &
+         atomgrade_f_lambda(k),      &
+         atomgrade_f_kiex(k),        &
+         atomgrade_f_algf(k),        &
          log_abond-main_afstar+12, &
-         atomgrade_ch(k),          &
-         atomgrade_gr(k),          &
-         atomgrade_ge(k),          &
-         atomgrade_zinf(k),        &
+         atomgrade_f_ch(k),          &
+         atomgrade_f_gr(k),          &
+         atomgrade_f_ge(k),          &
+         atomgrade_f_zinf(k),        &
          popadelh_corch(k)
 
         !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat??? (MT): It is not necessary for me.
        121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
         write(91,121)              &
-         atomgrade_elem(k),        &
-         atomgrade_ioni(k),        &
-         atomgrade_lambda(k),      &
-         atomgrade_kiex(k),        &
-         atomgrade_algf(k),        &
+         atomgrade_f_elem(k),        &
+         atomgrade_f_ioni(k),        &
+         atomgrade_f_lambda(k),      &
+         atomgrade_f_kiex(k),        &
+         atomgrade_f_algf(k),        &
          log_abond-main_afstar+12, &
-         atomgrade_ch(k),          &
-         atomgrade_gr(k),          &
-         atomgrade_ge(k),          &
-         atomgrade_zinf(k),        &
+         atomgrade_f_ch(k),          &
+         atomgrade_f_gr(k),          &
+         atomgrade_f_ge(k),          &
+         atomgrade_f_zinf(k),        &
          popadelh_corch(k)
       end do
     end
@@ -641,41 +646,41 @@ contains
        tauhd,  &
        kappam, &
        kappt
-      real*8, dimension(MAX_KM_MBLEND) :: &
+      real*8, dimension(MAX_KM_F_MBLEND) :: &
        ecarm,   &
        ecartlm, &
        kam
       real*8 :: &
-       deltam(max_km_mblend,MAX_MODELES_NTOT), &
+       deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
        phi, t, v, vm, lambi
 
 
     call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real82str(tetaef))
 
 
-      if (atomgrade_nblend .ne. 0) then
-        do k = 1,atomgrade_nblend
+      if (atomgrade_f_nblend .ne. 0) then
+        do k = 1,atomgrade_f_nblend
           ecar(k) = ecart(k)
         end do
       end if
 
-      if (km_mblend .ne. 0) then
-        do k=1,km_mblend
+      if (km_f_mblend .ne. 0) then
+        do k=1,km_f_mblend
           ecarm(k) = ecartm(k)
         end do
       end if
 
       do d = 1, dtot
         lambi = (6270+(d-1)*0.02)
-        if (atomgrade_nblend .ne. 0) then
-          do k=1,atomgrade_nblend
+        if (atomgrade_f_nblend .ne. 0) then
+          do k=1,atomgrade_f_nblend
             ecar(k)=ecar(k)-main_pas
             ecartl(k)=ecar(k)
           end do
         end if
 
-        if(km_mblend .ne. 0) then
-          do k=1,km_mblend
+        if(km_f_mblend .ne. 0) then
+          do k=1,km_f_mblend
             ecarm(k) = ecarm(k)-main_pas
             ecartlm(k) = ecarm(k)
           end do
@@ -687,15 +692,15 @@ contains
           t = 5040./modeles_teta(n)
 
           ! atomes
-          if(atomgrade_nblend .eq. 0) go to 260
+          if(atomgrade_f_nblend .eq. 0) go to 260
 
-          do  k=1,atomgrade_nblend
-            if(abs(ecartl(k)) .gt. atomgrade_zinf(k)) then
+          do  k=1,atomgrade_f_nblend
+            if(abs(ecartl(k)) .gt. atomgrade_f_zinf(k)) then
               ka(k) = 0.
             else
               v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
               call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
-              ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_abonds_abo(k)
+              ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
               if(k .eq. 1) ka(k) = phi * popadelh_pop(k,n) * gfal(k)
 
             end if
@@ -705,17 +710,17 @@ contains
           260 continue
 
           ! molecule
-          if(km_mblend.eq.0) go to 250
-          do l=1,km_mblend
-            if( abs(ecartlm(l)) .gt. km_alargm(l) )  then
+          if(km_f_mblend.eq.0) go to 250
+          do l=1,km_f_mblend
+            if( abs(ecartlm(l)) .gt. kmc_alargm(l) )  then
               kam(l)=0.
             else
 
-              !> @todo ISSUE ask BLB decided to create big vector km_mm of repeated values
-              deltam(l,n) = (1.e-8*km_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_mm(l))
+              !> @todo ISSUE ask BLB decided to create big vector km_f_mm of repeated values
+              deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
               vm = abs(ecarm(l)*1.e-08/deltam(l,n))
               phi = (exp(-vm**2))/(RPI*deltam(l,n))
-              kam(l) = phi*km_gfm(l)*km_pnvj(l,n)
+              kam(l) = phi*kmc_gfm(l)*kmc_pnvj(l,n)
             end if
             kappam(n)=kappam(n)+kam(l)
           end do   !  fin bcle sur l
@@ -774,7 +779,7 @@ contains
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
       real*8, dimension(2, max_modeles_ntot) :: kcj
       real*8, dimension(2) :: kcn, lambdc
-      real*8 ::  fttc(FILETOH_NP)
+      real*8 ::  fttc(MAX_DTOT)
       real*8 c3, c31, c32, fc1, fc2, t, tet0
       integer d, j
 
@@ -933,6 +938,7 @@ contains
   !>
   !> 40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
   !> Partit donnee pour 33 temperatures au plus ds la table.
+
   subroutine popul()
     real*8 u(3), alistu(63), ue(50), tt(51), &
      aa, bb, uuu, x, y, t, tki2
@@ -994,40 +1000,42 @@ contains
     real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel
     data isi/' '/, iss/' '/
 
-    do k = 1, atomgrade_nblend
+    do k = 1, atomgrade_f_nblend
       popadelh_corch(k) = 0.
       popadelh_cvdw(k) = 0
       do  j=1,partit_npar
-        if(partit_el(j).eq.atomgrade_elem(k)) go to 15
+        if(partit_el(j).eq.atomgrade_f_elem(k)) go to 15
       end do
 
       !> @todo this should probably be checked upon file reading
       104 format('Manque les fcts de partition du ', a2)
-      write(lll,104) atomgrade_elem(k)
+      write(lll,104) atomgrade_f_elem(k)
       call pfant_halt(lll)
 
       15 continue
-      ioo = atomgrade_ioni(k)
+      ioo = atomgrade_f_ioni(k)
 
       !> @todo ISSUE fort.77 disabled until someone misses it.
-      ! write (77,*) atomgrade_elem(k),atomgrade_lambda(k)
+      ! write (77,*) atomgrade_f_elem(k),atomgrade_f_lambda(k)
 
-      if(atomgrade_ch(k).lt.1.e-37)  then
-        kies=(12398.54/atomgrade_lambda(k)) + atomgrade_kiex(k)
+      if(atomgrade_f_ch(k).lt.1.e-37)  then
+        kies=(12398.54/atomgrade_f_lambda(k)) + atomgrade_f_kiex(k)
         if(ioo.eq.1)   kii=partit_ki1(j)
         if(ioo.eq.2)   kii=partit_ki2(j)
         if(popadelh_corch(k).lt.1.e-37)   then
-          popadelh_corch(k)=0.67 * atomgrade_kiex(k) +1
+          popadelh_corch(k)=0.67 * atomgrade_f_kiex(k) +1
         end if
 
         ! 125 format(3x ,' pour',f9.3,'   on calcule ch ', 'van der waals et on multiplie par ',f7.1)
-        ! write(6,125)  atomgrade_lambda(k), popadelh_corch(k)
-        popadelh_cvdw(k)= calch(kii,ioo,atomgrade_kiex(k),isi,kies,iss)
-        atomgrade_ch(k)= popadelh_cvdw(k) * popadelh_corch(k)
+        ! write(6,125)  atomgrade_f_lambda(k), popadelh_corch(k)
+        popadelh_cvdw(k)= calch(kii,ioo,atomgrade_f_kiex(k),isi,kies,iss)
+
+        ! @todo issue overwriting atomgrade_f variable
+        atomgrade_f_ch(k)= popadelh_cvdw(k) * popadelh_corch(k)
       end if
 
 !
-      if(atomgrade_ch(k) .lt. 1.e-20) then
+      if(atomgrade_f_ch(k) .lt. 1.e-20) then
         iopi=1
       else
         iopi=2
@@ -1035,12 +1043,12 @@ contains
 
       do  n=1,modeles_ntot
         t=5040./modeles_teta(n)
-        nul= C* 1.e+8 /atomgrade_lambda(k)
+        nul= C* 1.e+8 /atomgrade_f_lambda(k)
         ahnul= H*nul
         alphl(n)=exp(-ahnul/(KB*t))
 
         tap = 1.-alphl(n)
-        top = 10.**(-atomgrade_kiex(k)*modeles_teta(n))
+        top = 10.**(-atomgrade_f_kiex(k)*modeles_teta(n))
 
 
         !> @todo noxig means number of atoms of oxygen
@@ -1061,16 +1069,194 @@ contains
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
-        popadelh_delta(k,n) =(1.e-8*atomgrade_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
+        popadelh_delta(k,n) =(1.e-8*atomgrade_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
         if (iopi .eq. 1) then
-          gh = C5*atomgrade_ch(k)**0.4*vrel**0.6
+          gh = C5*atomgrade_f_ch(k)**0.4*vrel**0.6
         else
-          gh = atomgrade_ch(k) + popadelh_corch(k)*t
+          gh = atomgrade_f_ch(k) + popadelh_corch(k)*t
         end if
-        gamma = atomgrade_gr(k)+(atomgrade_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
-        popadelh_a(k,n) =gamma*(1.e-8*atomgrade_lambda(k))**2 / (C6*popadelh_delta(k,n))
+        gamma = atomgrade_f_gr(k)+(atomgrade_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
+        popadelh_a(k,n) =gamma*(1.e-8*atomgrade_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
       end do
     end do
+  end
+
+  !=======================================================================================
+  !> Calculates tauhi, dhmi and dhpi for file specified
+  !>
+  !> @note this is originally subroutine "LECTAUH" without the file reading part
+  !>
+  !> @todo test the pointers
+
+  subroutine calc_tauh(i_file, dtot, ttd, ilzero)
+    integer, intent(in) :: i_file !< index of a filetoh file
+    !> ?doc? Number of calculation steps, I think. ISSUE: better explanation
+    !> Calculated as: @code dtot = (lfin-lzero)/main_pas + 1.0005 @endcode
+    integer, intent(in) :: dtot
+    !> integer version of variable lzero in main module
+    integer, intent(in) :: ilzero
+    !> ?doc? Calculated as: ttd(d) = alzero+main_pas*(d-1)
+    real*8, intent(in) :: ttd(MAX_DTOT)
+    integer d, j, jj, jma1, n, &
+     jjmax, &
+     now_jmax ! jmax of file i_file
+
+    real*8, dimension(MAX_FILETOH_JJMAX) :: llambdh, allh, tauhn
+    real*8 :: tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
+    real*8 :: ftth(MAX_DTOT)
+
+    real*8 del
+    ! pointers, point to information within filetoh_r_* matrices at the beginning of\
+    ! a specific file.
+    ! This simplifies the notation within the loop below and is probably faster than
+    ! accessing the variables filetoh_r_* directly
+    real*8, pointer, dimension(:,:) :: now_th
+    real*8, pointer, dimension(:)   :: now_lambdh
+
+    now_jmax   = filetoh_r_jmax(i_file)
+    now_th     => filetoh_r_th(i_file, :, :)
+    now_lambdh => filetoh_r_lambdh(i_file, :)
+
+    jjmax = 2*now_jmax-1
+    jma1 = now_jmax-1
+    do jj = 1, now_jmax
+      del = now_lambdh(now_jmax+1-jj)-now_lambdh(1)
+      llambdh(jj) = now_lambdh(now_jmax+1-jj)-2*del
+    end do
+    do jj = now_jmax+1, jjmax
+      llambdh(jj) = now_lambdh(jj-jma1)
+    end do
+    do n = 1, modeles_ntot
+      do jj = 1, now_jmax
+        tth(jj, n) = now_th(now_jmax+1-jj, n)
+      end do
+      do jj = now_jmax+1, jjmax
+        tth(jj, n) = now_th(jj-jma1, n)
+      end do
+    end do
+
+    !~WRITE(6,'(A80)') filetoh_r_TITRE
+    !~WRITE(6,'(A11)') filetoh_r_TTT
+    !~WRITE(6,'('' now_jmax='',I3)') now_jmax
+    !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)
+    !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)
+    !~
+    !~DO N = 1,modeles_NTOT,5
+    !~  WRITE(6,'('' N='',I3)') N
+    !~  WRITE(6,'(2X,5E12.4)') (TTH(JJ,N), JJ=1,JJMAX)
+    !~END DO
+
+
+    do j = 1,jjmax
+      allh(j) = llambdh(j)-ilzero
+    end do
+
+    !~ WRITE(6, '('' ALLH(1)='',F8.3,2X,''ALLH(JJMAX)='',F8.3,2X)')
+    !~+      ALLH(1),ALLH(JJMAX)
+    !~ WRITE(6, '('' JJMAX='',I3,2X,''NTOT='',I3,2X,''DTOT='',I5)')
+    !~       JJMAX, modeles_NTOT, DTOT
+
+    do n = 1,modeles_ntot
+      do j = 1,jjmax
+        tauhn(j) = tth(j,n)
+      end do
+
+      call ftlin3h()
+
+      do d = 1,dtot
+        ct_tauhi(d, n) = ftth(d)
+      end do
+    end do
+
+
+    !~ !--debugging--!
+    !~ WRITE(6,'('' TAUHI(1,1)='',E14.7,2X,''TAUHI(1,NTOT)='',E14.7)')
+    !~+ ct_tauhi(1,1), ct_tauhi(1,modeles_NTOT)
+    !~ WRITE(6,'('' TAUHI(DTOT,1)='',E14.7,2X,'
+    !~+ //'''TAUHI(DTOT,NTOT)='',E14.7)')
+    !~+ ct_tauhi(DTOT,1), ct_tauhi(DTOT,modeles_NTOT)
+
+  contains
+    !-------------------------------------------------------------------------------
+    !> @todo ISSUE ?what?
+    !>
+    !> @todo This routine is *very similar to misc_math::ftlin3()*, I think the latter
+    !> has been duplicated to build ftlin3h(). Not sure what to do. At least write more
+    !> about the differences.
+    !>
+    !> Uses variables from parent filetoh_auh():
+    !> @li dtot
+    !> @li ttd
+    !> @li jjmax
+    !>
+    subroutine ftlin3h()
+      real*8 dy, ft, t, t0, t1, t2, u0
+      integer j, k, kk, jj, kk1, kq
+
+      j=2
+      kk=1
+      24 continue
+      do 4 k = kk,dtot
+        kq=k
+        t=ttd(k)
+
+        jj=j-1
+        do 1  j=jj,jjmax
+          if(t-allh(j) ) 3,2,1
+          1 continue
+          go to 10
+          2 ft=tauhn(j)
+        if(j .eq. 1) j = j+1
+        go to 4
+
+        3 if (j .eq. 1) go to 10
+        u0 = tauhn(j)-tauhn(j-1)
+        t0 = allh(j)-allh(j-1)
+        t1 = t-allh(j-1)
+
+        t2= t1/t0
+        dy= u0*t2
+        ft= tauhn(j-1) + dy
+        ftth(k) = ft
+      4 continue
+
+      14 continue
+
+      do k=1,dtot
+        if(ftth(k).ne.0.0) go to 20
+      end do
+
+      20 ct_dhmi = k
+
+      !> @todo issue ask blb why this? Take the opportunity to ask for a line on
+      !>
+      !> @todo ask blb or ask pc marie noel reference on this
+      !>
+      !> tauhi(:,:), dhmi and dhpi
+      if (ct_dhmi .eq. dtot) ct_dhmi = 1
+
+
+      kk1 = ct_dhmi+1
+      do k = kk1,dtot
+        if (ftth(k) .eq. 0.0) go to 30
+      end do
+
+      30 ct_dhpi = k
+
+      ! (Paula Coelho 21/11/04) instrucao da Marie Noel
+      !> @todo issue ask blb or ask pc why this?
+      if (ftth(dtot) .ne. 0.0) ct_dhpi = dtot
+
+      return
+
+      10 ftth(k) = 0.
+      j = j+1
+
+      kk = kq
+      kk = kk+1
+      if (kq .gt. dtot) go to 14
+      go to 24
+    end
   end
 end module

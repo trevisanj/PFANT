@@ -34,4 +34,3 @@ program nulbad
   ! calculation
   call nulbad_calc_()
 end
-
