@@ -171,6 +171,9 @@ contains
     !~  IF(DDG.GT.0.01)   GO TO 9
     !~  IF(DDAB.GT.0.01)   GO TO 9
 
+
+    !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
+    
     !__consistency check__
     ! series of consistency checks which were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)

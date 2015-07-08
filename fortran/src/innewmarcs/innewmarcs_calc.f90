@@ -25,12 +25,12 @@ module innewmarcs_calc
 
   ! Variables calculated by find_ref_models()
   character*64 :: nomfipl(2)
-  real*4 amet1, amet2
+  real*4 asalog1, asalog2
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
 
   ! x_* values may come either from command line or infile:main
-  real*4 :: x_teff, x_glog, x_amet
+  real*4 :: x_teff, x_glog, x_asalog
   character(LEN_TIRB) :: x_tirb
   integer :: x_id
 contains
@@ -51,7 +51,7 @@ contains
     ! pick values from infile:main
       x_teff = config_teff
       x_glog = config_glog
-      x_amet = config_amet
+      x_asalog = config_asalog
       x_tirb = config_tirb
       x_id   = config_id
     if (config_id .lt. 1) then
@@ -79,15 +79,15 @@ contains
       x_glog = real(main_glog)
       call parse_aux_log_assignment('x_glog', real42str(x_glog))
     end if
-    if (config_amet .eq. -1) then
+    if (config_asalog .eq. -1) then
       call assure_read_main()
-      x_amet = real(main_asalog)
-      call parse_aux_log_assignment('x_amet', real42str(x_amet))
+      x_asalog = real(main_asalog)
+      call parse_aux_log_assignment('x_asalog', real42str(x_asalog))
     end if
 
     call read_ref_models_map()
 
-    call find_ref_models()  ! calculates nomfipl, amet1, amet2
+    call find_ref_models()  ! calculates nomfipl, asalog1, asalog2
 
     !-------------------------------------------------------------
     ! On cherche ou se trouvent (teff, glog)  par rapport a la table
@@ -241,7 +241,7 @@ contains
       end if
     end do
 
-    ! On a 2 modeles l'un interpole ds grille a amet1 et amet2
+    ! On a 2 modeles l'un interpole ds grille a asalog1 et asalog2
     !
     !     interpolation sur l'abondance
     !     les 2 modeles doivent commencer au meme niveau en log to
@@ -271,11 +271,11 @@ contains
     write(lll,*) '   nntot=',nntot
     call log_debug(lll)
 
-    t0 = amet2-amet1
-    t1 = x_amet-amet1
+    t0 = asalog2-asalog1
+    t1 = x_asalog-asalog1
 
     call log_debug(' interpolation sur l''abondance avec')
-    write(lll,*) ' amet2=',amet2,'       amet1=',amet1
+    write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
     call log_debug(lll)
     write(lll,*) ' t0=', t0, '       t1=',t1
     call log_debug(lll)
@@ -286,11 +286,11 @@ contains
     asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
 
     !#logging
-    write(lll,*) 'model 1 amet, alpha=',amet1,ralfa(1)
+    write(lll,*) 'model 1 asalog, alpha=',asalog1,ralfa(1)
     call log_debug(lll)
-    write(lll,*) 'model 2 amet, alpha=',amet2,ralfa(2)
+    write(lll,*) 'model 2 asalog, alpha=',asalog2,ralfa(2)
     call log_debug(lll)
-    write(lll,*) 'result: amet, alpha=',x_amet,asalalf
+    write(lll,*) 'result: asalog, alpha=',x_asalog,asalalf
     call log_debug(lll)
 
 
@@ -321,7 +321,7 @@ contains
      nntot,          &
      x_teff, &
      x_glog, &
-     x_amet, &
+     x_asalog, &
      asalalf,        &
      dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
      tir,            &
@@ -400,7 +400,7 @@ contains
   end
 
 
-  !> Fill variables nomfipl, amet1, amet2 based on x_amet
+  !> Fill variables nomfipl, asalog1, asalog2 based on x_asalog
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
@@ -414,19 +414,19 @@ contains
     logical :: flag_found = .false.
 
     do i = 1, num_refmodels-1
-      if (x_amet .ge. modelmap_met(i) .and. &
-          x_amet .lt. modelmap_met(i+1)) then
+      if (x_asalog .ge. modelmap_met(i) .and. &
+          x_asalog .lt. modelmap_met(i+1)) then
         nomfipl(1) = modelmap_fn(i)
         nomfipl(2) = modelmap_fn(i+1)
-        amet1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
-        amet2 = modelmap_met(i+1)
+        asalog1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
+        asalog2 = modelmap_met(i+1)
         flag_found = .true.
         exit
       end if
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(x_amet)//' is out of interval ['//&
+      call pfant_halt('Metallicity '//real42str(x_asalog)//' is out of interval ['//&
        real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
     end if
   end

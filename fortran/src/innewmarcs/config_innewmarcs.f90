@@ -42,9 +42,10 @@ module config_innewmarcs
   !> option: --glog
   !> @sa get_teff()
   real*4 :: config_glog = -1
-  !> option: --amet
-  !> @sa get_amet()
-  real*4 :: config_amet = -1
+  !> option: --asalog.
+  !> @note Name changed from "amet" to "asalog" to conform with pfant and hydro2
+  !> @sa get_asalog()
+  real*4 :: config_asalog = -1
   !> option: --id
   !> @sa get_id()
   integer :: config_id = 0
@@ -99,7 +100,7 @@ contains
      '"log g"')
 
     k = k+1
-    options(k) = option('amet',' ', .true., 'real value', real42str(config_amet), &
+    options(k) = option('asalog',' ', .true., 'real value', real42str(config_asalog), &
      '"[M/H]"')
 
     k = k+1
@@ -147,9 +148,9 @@ contains
       case ('glog')
         config_glog = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_glog', real42str(config_glog))
-      case ('amet')
-        config_amet = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_amet', real42str(config_amet))
+      case ('asalog')
+        config_asalog = parse_aux_str2real4(opt, o_arg)
+        call parse_aux_log_assignment('config_asalog', real42str(config_asalog))
       case ('id')
         config_id = parse_aux_str2int(opt, o_arg)
         if (config_id .lt. 1) then !#validation

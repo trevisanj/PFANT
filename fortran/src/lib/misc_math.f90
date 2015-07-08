@@ -541,7 +541,10 @@ contains
   !> INTERPOLATION PARABOLIQUE
   !> DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
   !> AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
-  !> @todo ISSUE: is this still useful?? (NOT SWITCHED ON!!!)
+  !>
+  !> @todo issue This was hard-coded switched off and hydro2 has a very similar routine
+  !> (just below). However, in some situations, ft2_hydro2 jumps to 3 instead of 10
+  !> I keep both routines close due to their similarity.
 
   subroutine ft2(n,x,y,itot,tt,ftt)
     integer, intent(in) :: &
@@ -555,6 +558,7 @@ contains
      ftt(itot)   !< ?doc?
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
+
 
     inv = -1
     if (x(n).lt.x(1)) inv = 1
@@ -606,6 +610,93 @@ contains
     write(lll,100) t
     call pfant_halt(lll)
   end
+
+
+  !> INTERPOLATION PARABOLIQUE
+  !>  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
+  !>  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
+  !>
+  !>  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
+  !>
+  !> @note Even though it is used in hydro2 only, this subroutine was
+  !>       kept close to ft2() due to their similarity
+
+  subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
+    integer, intent(in) :: &
+     n, & !< Size of vectors x and y
+     itot !< Size of vectors tt and ftt
+    real*8, intent(in) :: &
+     x(n),     & !< ?doc?
+     y(n),     & !< ?doc?
+     tt(itot)    !< ?doc?
+    real*8, intent(out) :: &
+     ftt(itot)   !< ?doc?
+    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
+    integer i, inv, j, k
+    real*8 dxa, dxz, xx1, xx2
+
+    inv = -1
+    if(x(n).lt.x(1) ) inv=1
+
+    ! DXA ET DXZ  : LIMITES SUPPORTABLES D EXTRAPOLATION
+    dxa=(x(2)-x(1))/10
+    dxz=(x(n)-x(n-1))/10
+    xx1=x(1)-dxa
+    xxn=x(n)+dxz
+
+    do k = 1,itot
+      t = tt(k)
+      if (inv) 5, 6, 6
+      5 continue
+      if ((t.lt.xx1) .or. (t.gt.xxn)) go to 10
+      do 1 j=1,n
+        i=j
+        if (t-x(j)) 3, 2, 1
+      1 continue
+      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
+               !> seems it is overriding something that should give an error
+
+      6 continue
+      if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
+      do 7 j=1,n
+        i = j
+        if (t-x(j)) 7,2,3
+      7 continue
+      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
+               !> seems it is overriding something that should give an error
+
+      2 continue
+      ft=y(j)
+      go to 4
+
+3     continue
+      if(i .eq. 1) i = 2
+      if(i .ge. n) i = n-1
+      t0=t-x(i-1)
+      t1=t-x(i)
+      t2=t-x(i+1)
+      u0=x(i+1)-x(i-1)
+      u1=x(i+1)-x(i)
+      u2=x(i)-x(i-1)
+      a=t0/u0
+      b=t1/u1
+      c=t2/u2
+      d=t0/u1
+      e=t1/u0
+      ft=y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
+
+      4 continue
+      ftt(k) = ft
+    end do
+      RETURN
+10    WRITE(6,100) X(1),X(N),T
+      STOP
+100   FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION :',
+     1 /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
+      END
+
+
+
 
   !---------------------------------------------------------------------------------------
   !> Nouvelle subroutine naitk3, remplace aitk3 et aitk30.
