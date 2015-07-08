@@ -26,19 +26,21 @@ module reader_main
 
   character*64 main_fileflux  !< ?doc?
   logical   main_ptdisk    !< ?doc?
-  real*8    main_pas,    & !< ?doc?
-            main_echx,   & !< ?doc?
-            main_echy,   & !< ?doc?
-            main_fwhm,   & !< used only by nulbad executable
-            main_mu,     & !< ?doc?
-            main_afstar, & !< ?doc?
-            main_llzero, & !< ?doc?
-            main_llfin,  & !< ?doc?
-            main_aint,   & !< ?doc?
-            main_teff,   & !< ?doc?
-            main_glog,   & !< ?doc?
-            main_asalog, & !< ?doc?
-            main_nhe       !< ?doc?
+  real*8 ::
+   main_pas,    & !< ?doc?
+   main_echx,   & !< ?doc?
+   main_echy,   & !< ?doc?
+   main_fwhm,   & !< "Full-width-half-maximum" of Gaussian function for 
+                & !! convolution of calculated spectrum; used only by nulbad executable
+   main_mu,     & !< ?doc?
+   main_afstar, & !< ?doc?
+   main_llzero, & !< ?doc?
+   main_llfin,  & !< ?doc?
+   main_aint,   & !< ?doc?
+   main_teff,   & !< ?doc?
+   main_glog,   & !< ?doc?
+   main_asalog, & !< ?doc?
+   main_nhe       !< ?doc?
   integer   main_ivtot, & !< affects turbul() issue ?what? ?doc?
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
@@ -59,9 +61,7 @@ contains
   !> Reads infile:main to fill variables main_*
   !>
   !> @note Must be called after read_dissoc().
-  !> @todo ISSUE: VVT(1) is used throughout the program, so why reading VVT(I)??
-  !> @todo ISSUE Explain this part VERY WELL because it is an "anomaly", i.e., infile:main will have MORE LINES
-  !> @todo ISSUE Documentation
+  !> @todo ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., infile:main will have MORE LINES
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
   subroutine read_main(path_to_file, flag_care_about_dissoc)

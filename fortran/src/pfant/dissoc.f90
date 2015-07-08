@@ -122,7 +122,7 @@ contains
 
     !*****INPUT E
 
-    ! @todo issue this block has no comments (MT): nwevas.
+
     do 1020 ito = 1,modeles_ntot
       theta = modeles_teta(ito)
       tem = 5040.0/theta

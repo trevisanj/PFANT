@@ -57,9 +57,6 @@ contains
   !> @todo Various tests:
   !> @todo - mismatched NMETAL and metal rows
   !> @todo - check if NMETAL and NMOL match what they are supposed to (assertions in test)
-  !> @todo ISSUE: This 1X does not appear in my sample dissoc.dat file
-  !> @todo ISSUE: Atually the file that Beatriz sent me does not work under this format!!!!
-  !> @todo ISSUE: THere is no 1X
   !<      READ(UNIT_, '(A3, 5X, E11.5, 4E12.5, 1X, I1, 4(I2,I1))')
   !> @todo PROPOSE: use READ()'s "END=" option
 
@@ -139,14 +136,14 @@ contains
         go to 1014  ! means end-of-file
       end if
 
-      !__consistency check__:
+      !#consistency_check:
       if (mmaxj .gt. 4) then
         write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
          '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
         call pfant_halt(lll)
       end if
 
-      !__consistency check__
+      !#consistency_check
       do m = 1, mmaxj
         flag_found = .false.
         do i = 1, dissoc_nmetal

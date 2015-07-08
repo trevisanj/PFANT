@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="hydro2" />
+		<Option title="hydro2-2015" />
 		<Option pch_mode="2" />
 		<Option compiler="gfortran" />
 		<Build>
@@ -19,9 +19,15 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="absor.f" />
-		<Unit filename="calhy.f" />
-		<Unit filename="hydro2.f" />
+		<Unit filename="absor.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="calhy.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="hydro2.f">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />

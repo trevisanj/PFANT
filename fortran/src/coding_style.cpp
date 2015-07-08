@@ -176,7 +176,7 @@ __assertion__          Marks bit of code that is an assertion. Assertions serve 
                                probably want to increase the size of this constant and recompile
                                the program)
                                
-__consistency check__  Marks bit of code destinated to verify whether we are trying to assign
+#consistency_check  Marks bit of code destinated to verify whether we are trying to assign
                        an element beyond the size of a vector/matrix, commonly performed while
                        reading files
 

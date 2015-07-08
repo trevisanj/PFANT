@@ -31,6 +31,7 @@ module reader_modeles
   !> Hence the real*4 declarations.
 
   type modele_record
+    !> Size of variables nh, teta, pe, pg, t5l
     integer*4 :: ntot
 
     real*4 :: teff, glog, asalog, asalalf, nhe
@@ -95,8 +96,9 @@ contains
      record%tit,     &
      record%tiabs
 
+    !> @todo ISSUE I think this situation occurs when the last record of the file is read. This is a "flag" record
+    !> created by innewmarcs. 
     if (record%ntot .eq. 9999) then
-      !> @todo ISSUE perhaps I should check the condition that leads to this error
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
 
@@ -153,28 +155,12 @@ contains
     call read_mod_record(path_to_file, id_, .true., .true., r)
 
 
-    !> @todo there is an intention here to *look for a model* that matches parameters in main.dat, but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
-
-    !> @todo ISSUE: this seems to be some kind of error check, but will loop forever, better to place it outside, also because of dependence on main_* variables
-    !> @todo ISSUE: I don't get this; it will keep looping forever??? Look at the original code. What should happen if one of these three conditions hold?? Actually, got this. These are really consistency checks  (MT) It is annoying for the user to know exactly the index of the model that they are using. The code could have a "search feature"
-    !~9 READ(18, REC=ID) NTOT,DETEF,glog,asalog,ASALALF,NHE,TIT,TITABS
-    !~  WRITE(6,105)DETEF,glog,asalog,ASALALF,NHE,TIT
-    !~        write(6,108) TIABS
-    !~  IF(NTOT.EQ.9999)   GO TO 6
-    !~  DDT  = ABS(TEFF-DETEF)
-    !~C DDTA  = ABS(TETAEF-DETAEF)
-    !~  DDG = ABS(GLOG-glog)
-    !~  DDAB = ABS(ASALOG-asalog)
-    !~  DDHE= ABS(NHE-DNHE)
-    !~C DDIF = DDTA+DDG+DDAB+DDHE
-    !~5 IF(DDT.GT.1.0)   GO TO 9
-    !~  IF(DDG.GT.0.01)   GO TO 9
-    !~  IF(DDAB.GT.0.01)   GO TO 9
-
+    !> @todo there was an intention here to *look for a model* that matches parameters in main.dat.
+    !> hydro2 has the correct reader. but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
 
     !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
     
-    !__consistency check__
+    !#consistency_check
     ! series of consistency checks which were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
     ddg = abs(main_glog-r%glog)

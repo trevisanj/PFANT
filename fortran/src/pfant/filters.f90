@@ -174,6 +174,8 @@ contains
 !             STOP ERROR_BAD_VALUE
 !           END IF
 
+          !> @todo issue test number of filtered items against original pfantgrade and write testing suite for this
+
           km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, J_SET+1, not J_SET, remember km_LN first row is all ZEROes.
           j_set = j_set+1
         end if

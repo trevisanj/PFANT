@@ -125,7 +125,7 @@ contains
      callam, & !< ?doc?
      calth,  & !< ?doc?
      calpe,  & !< ?doc?
-     calmet, & !< ?doc?
+     calmet, & !< innefective
      calu      !< ?doc?
 
     real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &
@@ -220,7 +220,7 @@ contains
     call athyhe (wl,th,callam,zzk)
 
     9006 continue
-    if (calmet.eq.1) go to 9003 !> @todo ISSUE line doing nothing (MT): Very clever!!!
+    if (calmet.eq.1) go to 9003 ! note: will go to 9003 anyway
 
     9003 continue
     call ionipe (th,zlpe,calth)

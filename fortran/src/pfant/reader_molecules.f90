@@ -229,13 +229,8 @@ contains
         ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file infile:molecules
         !> @todo ISSUE (question) Where does infile:molecules come from?
         ! BLB: NUMLIN -- key as table:
-        ! BLB:           = 1 for the last line of the first (v',v'') set of lines
-        ! BLB:           = 2 for the last line of the second (v', v'') set of lines  ISSUE never used
-        ! BLB:           .
-        ! BLB:           . (etc)  ISSUE never used
-        ! BLB:           .
-        ! BLB:
-        ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a certain molecule
+        ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
+        ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule
         read(unit_,*) km_r_lmbdam(i_line), km_r_sj(i_line), km_r_jj(i_line), iz, numlin
 
         !~km_r_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
@@ -250,7 +245,7 @@ contains
         if (numlin .eq. 9) exit
       end do
 
-      !__consistency check__: J_SET must match NNV
+      !#consistency_check: J_SET must match NNV
       if(j_set .ne. nnv) then
         call pfant_halt('read_molecules():  incorrect number of set-of-lines: '//&
          int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&

@@ -4,7 +4,7 @@ C
       INTEGER*4 PMAX,PNAX,P,CAL,CALMET
       DIMENSION ZP0(30)
       COMMON/LECT2/ZP(30),ZM(30),WI(41,2),NUMSET(2),CAL
-      COMMON/TIT/TITRE(5)
+      COMMON/TITIOLINE/TITRE(5)
       COMMON/SAHT/ZK(11),ZKM(30,9),NR(30) /SAHTP/XI(30,9),PF(30,9)
       COMMON/ABSO1/NM
       COMMON/NOM/NOMET(30)
@@ -104,7 +104,7 @@ C      COMMONS AVEC LE SP D ABSORPTION CONTINUE
        COMMON/ABSO2/MMAX
        COMMON/ABSO1/NM
        COMMON/NOM/NOMET(30)
-       COMMON/TIT/TITRE(5)
+       COMMON/TITIOLINE/TITRE(5)
 c
        DATA ALFAM/16,20.2,24.3,27,28,32,40/
        nalf=7   ! nbre d'elements alfa reconnus par leur masse ALFAM
@@ -184,7 +184,7 @@ C*** End of declarations inserted by SPAG
       COMMON /UNI   / IUNite(2)
       COMMON /ABSO1 / NM
       COMMON /NOM   / NOMet(30)
-      COMMON /TIT   / TITre(5)
+      COMMON /TITIOLINE/ TITre(5)
       COMMON /SOMAB / SUM1
       DATA dif/5.799E-13 , 8.14E-13 , 1.422E-6 , 1.28E-6 , 2.784 , 1.61/
       DATA IUNite/' Noy' , 'au H'/

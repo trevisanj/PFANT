@@ -14,7 +14,7 @@ C     En sortie:
 C     - Un fichier de trace compatible avec GRAFIC (Nom demande)
 C     - dans le cas ou on veut calculer la raie de D dans l'aile de H
 C       un fichier todeut.dat contenant le coef d'ab d'H a lambda de D
-      LOGICAL ECRIT,PTDISK,AMORES,STARK,PAPIER,ASUIVRE,DEUT
+      LOGICAL ECRIT,PTDISK,config_amores,STARK,PAPIER,ASUIVRE,DEUT
       REAL*4 LAM,KC,NH,NE,modeles_nhe,MMU
       REAL*8 LAMC,LAMB
         CHARACTER*30 Nomplot
@@ -40,7 +40,7 @@ C       Common avec ??? (mettre en dimension?)
      &             DEL(50),TO(99)
 C
 C     Commons avec RAIEHU
-      COMMON/D3/HYN(99),XX(99),AMORES,STARK/ABSO2/MMAX
+      COMMON/D3/HYN(99),XX(99),config_amores,STARK/ABSO2/MMAX
       COMMON/D2/VT(99),CMU,TETA(99),CLOG(99),NZ,modeles_ntot,JMAX,IQM,IJ(10)
 
 C ............adios!C
@@ -83,10 +83,10 @@ C     READ(5,*)   PAPIER
       CALL LECTUR (ZZP0,ZZPH)
       write(6,*)'THEORIE QUASISTATIQUE:   ENTER    1'
       write(6,*)'THEORIE DE GRIEM     :   ENTER    0'
-      READ(5,*)   KQ
+      READ(5,*)   config_kq
 C           Attention astuce...
-            IF(KQ.GT.1)   THEN
-            KQ=1
+            IF(config_kq.GT.1)   THEN
+            config_kq=1
             DEUT=.TRUE.
             OPEN(UNIT=16,FILE='todeut.dat',STATUS='unknown')
             END IF
@@ -95,11 +95,11 @@ C           Attention astuce...
 1000          IF(ECRIT)   THEN
                 write(6,*)'ENTRER UN TITRE POUR LE TRAVAIL'
                 READ(5,12)(TTT(I),I=1,11)
-                WRITE (6,71) KQ,(TTT(I),I=1,11)
+                WRITE (6,71) config_kq,(TTT(I),I=1,11)
                 WRITE (6,75) CMU,NZ
                 WRITE (6,79) (DL(J),J=1,JMAX)
                     if (papier) then
-                    WRITE (11,71) KQ,(TTT(I),I=1,11)
+                    WRITE (11,71) config_kq,(TTT(I),I=1,11)
                     WRITE (11,75) CMU,NZ
                     WRITE (11,79) (DL(J),J=1,JMAX)
                     end if
@@ -120,17 +120,17 @@ C           Attention astuce...
       LAMC=LAMB
       LAM=LAMB    ! LAMB EN SIMPLE PRECISION
       write(6,*)' AMORTISSEMENT DE RESONNANCE ?  (T OU F)'
-      READ(5,*)   AMORES
+      READ(5,*)   config_amores
 c
             IF(ECRIT)   THEN
                 WRITE (6,72) NA,NB,LAMB,C1,X,J1,IQM
                 WRITE (6,86) (IJ(IQ),IQ=1,IQM)
-                IF(AMORES) WRITE(6,301)
+                IF(config_amores) WRITE(6,301)
                 IF(STARK) WRITE(6,302)
                    if(papier) then
                    write(11,72) NA,NB,LAMB,C1,X,J1,IQM
                    write(11,86) (IJ(IQ),IQ=1,IQM)
-                   IF(AMORES) write(11,301)
+                   IF(config_amores) write(11,301)
                    IF(STARK) WRITE(11,302)
                    end if
             END IF
@@ -178,7 +178,7 @@ C
             END DO
 C
       write(6,*)' PATIENCE VOUS ENTRER DANS RAIEHU'
-      CALL RAIEHU (IX,NA,NB,NMIN,NMAX,LAMB,C1,C,DL,AL,J1,IND,KQ)
+      CALL RAIEHU (IX,NA,NB,NMIN,NMAX,LAMB,C1,C,DL,AL,J1,IND,config_kq)
       write(6,*)' VOUS ETES SORTI DE RAIEHU'
 C
             IF(ECRIT.and.papier)   THEN
@@ -253,10 +253,10 @@ C
         if(ecrit) write(6,5) (TTT(L),L=1,11)
       WRITE (6,4) LAMB, NA,NB,X, C1
       WRITE(6,21)FC
-      IF(KQ.EQ.1)WRITE(6,401)
-      IF(KQ.NE.1)WRITE(6,402)
-      IF(AMORES) WRITE(6,403)
-      IF(.NOT.AMORES) WRITE(6,404)
+      IF(config_kq.EQ.1)WRITE(6,401)
+      IF(config_kq.NE.1)WRITE(6,402)
+      IF(config_amores) WRITE(6,403)
+      IF(.NOT.config_amores) WRITE(6,404)
       IF(J1.EQ.1) WRITE(6,405)
       IF(J1.EQ.0) WRITE(6,406)VVT
       WRITE(6,120)
@@ -273,10 +273,10 @@ C
         if(ecrit) write(11,5)(TTT(L),L=1,11)
         WRITE (11,4)LAMB, NA,NB,X, C1
         WRITE(11,21)FC
-        IF(KQ.EQ.1)WRITE(11,401)
-        IF(KQ.NE.1)WRITE(11,402)
-        IF(AMORES) WRITE(11,403)
-        IF(.NOT.AMORES) WRITE(11,404)
+        IF(config_kq.EQ.1)WRITE(11,401)
+        IF(config_kq.NE.1)WRITE(11,402)
+        IF(config_amores) WRITE(11,403)
+        IF(.NOT.config_amores) WRITE(11,404)
         IF(J1.EQ.1) WRITE(11,405)
         IF(J1.EQ.0) WRITE(11,406)VVT
         WRITE(11,120)
@@ -384,7 +384,7 @@ C   ***************************************************************
 70    FORMAT(' x_teff=',F7.0,3X,'LOG G=',F5.2,
      &         3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  modeles_nhe=',F6.3)
  73     FORMAT(5A4)
-71    FORMAT ('      KQ=',I4,10X,11A4)
+71    FORMAT ('      config_kq=',I4,10X,11A4)
 72    FORMAT ('  NA=',I4,' NB=',I4,' LAMB=',F14.3,' C1=',E12.7,
      1  ' X=',E12.7,' J1=',I4,' IQM=',I4,
      2 /10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
