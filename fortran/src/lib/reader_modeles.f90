@@ -160,8 +160,7 @@ contains
 
     !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
     
-    !#consistency_check
-    ! series of consistency checks which were already present in the 2015- code
+    !#consistency_check: these were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
     ddg = abs(main_glog-r%glog)
     ddab = abs(main_asalog-r%asalog)
