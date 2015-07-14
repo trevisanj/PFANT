@@ -14,6 +14,7 @@ C     En sortie:
 C     - Un fichier de trace compatible avec GRAFIC (Nom demande)
 C     - dans le cas ou on veut calculer la raie de D dans l'aile de H
 C       un fichier todeut.dat contenant le coef d'ab d'H a lambda de D
+
       LOGICAL ECRIT,PTDISK,config_amores,STARK,PAPIER,ASUIVRE,DEUT
       REAL*4 LAM,KC,NH,NE,modeles_nhe,MMU
       REAL*8 LAMC,LAMB

@@ -30,7 +30,7 @@ module reader_absoru2
   real*8 absoru2_abmet, & !< ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
          absoru2_abhel    !< ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
   !> @todo ISSUE: i am not sure about these character*4, made this from the format below
-  character*4 absoru2_titre(17) !< ?doc?
+  character absoru2_titre(68) !< ?doc?
 
   !> Two possibilities
   !> @li IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
@@ -79,7 +79,7 @@ contains
     ! IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
     read (UNIT_,'(2i2, 19a4)') absoru2_nm, absoru2_nmeta, &
-          (absoru2_iunite(i),i=1,2), (absoru2_titre(i),i=1,17)
+          (absoru2_iunite(i),i=1,2), absoru2_titre
 
     !#spill_check: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. MAX_ABSORU2_NM) then

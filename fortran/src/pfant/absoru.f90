@@ -91,8 +91,8 @@ module absoru
   real*8, dimension(10) :: au_zexp
   real*8, dimension(20) :: au_zeuh, au_zeuhep
   real*8, dimension(11) :: au_zk
-  real*8 :: au_zkm(30, 9)
-  real*8 :: au_ac2(30, 9) !< DEGRE D'IONISATION DES METAUX
+  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR)
+  real*8 :: au_ac2(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< DEGRE D'IONISATION DES METAUX
 
   real*8, dimension(3) :: au_ac1  !< Ionization degrees of H, He+ and He
                                   !! @li au_AC1(1): DEGRE D'IONIZATION DE H
@@ -100,7 +100,13 @@ module absoru
                                   !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
 
 
-  real*8, dimension(30) :: au_znu
+  real*8, dimension(MAX_ABSORU2_NM) :: au_znu
+
+
+  !> See use in subroutine absoru_()
+  !> @todo issue ask blb This value is changed to 14110. in HYDRO2 executable
+  real*8, parameter :: MAX_WLH_I2 = 1200.
+
 contains
 
   !-------------------------------------------------------------------------------
@@ -224,6 +230,8 @@ contains
 
     9003 continue
     call ionipe (th,zlpe,calth)
+
+    !> @todo issue I gotta test variable spill and probably dimension variables
     mm=absoru2_nmeta+1
     mmm=absoru2_nmeta+6
     scatel=9.559063e-13*au_pe*th
@@ -299,10 +307,13 @@ contains
   !>
   !> A.M COLLE   19/8/69
 
-  subroutine gaunth(wl)
-    implicit none
+  subroutine gaunth(wl, flag_hydro2)
+    !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to sqrt() in hydro2
+    !> @todo issue decide upon a single logic, I think
+    logical, intent(in) :: flag_hydro2
     real*8 wl, cond, delta, rk, zj, zp, zq
     integer i, j, jj, js
+    real*8, parameter :: VARIAVEL = 1e-37
     au_jh = 0
     do 1410 i=1,au_jfz
 
@@ -355,7 +366,22 @@ contains
         !=====
 
         zq=wl*j**2/cond
-        rk=sqrt(zq)
+
+
+        if (flag_hydro2) then
+          ! #hydro2_mode
+          if(zq .gt. VARIAVEL) then
+            rk = sqrt(zq)
+          else
+            zq = 0
+            rk = 0
+          end if
+        else
+          rk = sqrt(zq)
+        end if
+
+
+
         go to (1111,1113,1115,1117,1119,2000,2010), j
 
         ! menzel et pekeris=mon. not. vol. 96 p. 77 1935
@@ -508,9 +534,20 @@ contains
   !> @endverbatim
   !>
   !>     A.M COLLE   13/5/69
+  !>
+  !> @todo issue logic is different for PFANT and HYDRO2: solve conflict. For the time,
+  !>       there is a flag_hydro2. Actually it seems that the differences are in sparing
+  !>       a few exponential calculations where the argument to exp() is < -38 or -100.
+  !>       Come back to this later.
+  !>
+  !> @todo issue logic suggests a few "absoru2_nmeta+5" here should be "absoru2_nmeta+n"
 
-  subroutine sahath(th)
-    real*8 th, tempo, tempor
+  subroutine sahath(th, flag_hydro2)
+    real*8, intent(in) :: th
+    !> whether to use PFANT or HYDRO2 logic
+    !> @todo issue decide upon a single logic, I think
+    logical, intent(in) :: flag_hydro2
+    real*8 :: tempo, tempor, potepo
     integer i, j, n, nrr
     real*8, parameter :: &
      POTION(6) = (/-1.720031, 0.0, 0.0, 31.30364, 125.2675, -56.59754/), &
@@ -520,56 +557,92 @@ contains
      C4(3) = (/0.0,28.85946,25.80507/)
 
     do n = 2,3
-      au_zk(absoru2_nmeta+n)=exp(((c1(n)*th+c2(n))*th+c3(n))*th+c4(n))
+      au_zk(absoru2_nmeta+n)=exp(((C1(n)*th+C2(n))*th+C3(n))*th+C4(n))
     end do
 
     tempor=2.5*log(5040.39/th)
     tempo=tempor-1.098794
-    do 2 n = 4,5
-      au_zk(absoru2_nmeta+n)=potion(n)*th-tempo
-      if (n .eq. 4) go to 12
-      if  (au_zk(absoru2_nmeta+5).lt.100.0) go to 12
 
-      au_zk(absoru2_nmeta+5)=0.0
-      go to 2
+    if (flag_hydro2) then
+      ! #hydro2_mode
+      do n = 4,5
+        au_zk(absoru2_nmeta+n) = potion(n)*th-tempo
+        if (au_zk(absoru2_nmeta+5) .lt. 38) then
+          au_zk(absoru2_nmeta+n) = exp(-au_zk(absoru2_nmeta+n))
+        else
+          au_zk(absoru2_nmeta+n) = 0.0
+        end if
+      end do
 
-      12 continue
-      au_zk(absoru2_nmeta+n)=exp(-au_zk(absoru2_nmeta+n))
-    2 continue
+      do  j = 1,absoru2_nm
+        nrr=absoru2_nr(j)
+        do  i=1,nrr
+          au_zkm(j,i)=th*absoru2_xi(j,i)-absoru2_pf(j,i)-tempo
+          if (au_zkm(j,i) .lt. 38) then
+            au_zkm(j,i) = exp(-au_zkm(j,i))
+          else
+            au_zkm(j,i)=0.0
+          end if
+        end do
+      end do
 
-    do 2270 j=1,absoru2_nm
-      nrr=absoru2_nr(j)
-      do 2270 i=1,nrr
-        au_zkm(j,i)=th*absoru2_xi(j,i)-absoru2_pf(j,i)-tempo
-        if (au_zkm(j,i).lt.100.0) go to 2269
-        au_zkm(j,i)=0.0
-        go to 2270
-        2269 au_zkm(j,i)=exp(-au_zkm(j,i))
-    2270 continue
+      tempo=tempor+0.2875929
+      do  n=1,6,5
+        potepo = potion(n)*th+tempo
+        if(potepo .gt. -38) then
+          au_zk(absoru2_nmeta+n) = exp(potepo)
+        else
+          au_zk(absoru2_nmeta+n) = 0  ! saving exponential calculation or improving visual output?
+        end if
+      end do
 
-    tempo=tempor+0.2875929
-    do n=1,6,5
-      au_zk(absoru2_nmeta+n)=exp( potion(n)*th+tempo)
-    end do
-    return
+    else
+      ! PFANT mode
+      do 2 n = 4,5
+        au_zk(absoru2_nmeta+n) = potion(n)*th-tempo
+        if (n .eq. 4) go to 12
+        if  (au_zk(absoru2_nmeta+5) .lt. 100.0) go to 12
+        au_zk(absoru2_nmeta+5) = 0.0
+        go to 2
+        12 continue
+        au_zk(absoru2_nmeta+n) = exp(-au_zk(absoru2_nmeta+n))
+      2 continue
+
+      do 2270 j=1,absoru2_nm
+        nrr=absoru2_nr(j)
+        do 2270 i=1,nrr
+          au_zkm(j,i)=th*absoru2_xi(j,i)-absoru2_pf(j,i)-tempo
+          if (au_zkm(j,i) .lt. 100.0) go to 2269
+          au_zkm(j,i)=0.0
+          go to 2270
+          2269 au_zkm(j,i) = exp(-au_zkm(j,i))
+      2270 continue
+
+      tempo=tempor+0.2875929
+      do n=1,6,5
+        au_zk(absoru2_nmeta+n) = exp(potion(n)*th+tempo)
+      end do
+    end if
   end
 
 
 
 
   !-------------------------------------------------------------------------------
-  !> @ingroup gr_data
   !> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
   !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
   !>
   !> @author A.M COLLE  07/12/1970
   !>
+  ! Note variable named "zk_"
+  !   - local "zk" renamed to "zk_"
+  !   - old COMMON "zk" so far is a module variable named au_zk
 
-  subroutine athyhe (wl,th,callam,zzk)
-    ! Note variable named "zk_"
-    !   - local "zk" renamed to "zk_"
-    !   - old COMMON "zk" so far is a module variable named au_zk
+  subroutine athyhe(wl,th,callam,zzk, flag_hydro2)
+    !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to exp() in hydro2
+    !> @todo issue decide upon a single logic, I think
+    logical, intent(in) :: flag_hydro2
     real*8 althmb, althml, anu, any, bh, bhe, bhem, bhep, bkt, caeta, caro, difeta, &
      difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
      stimu3, tempor, uk, wlm, zkas, zlamin, zleta1, zleta2, znl, znl1, zk_
@@ -682,7 +755,25 @@ contains
     bkt=3.19286e-2/th  ! BKT=K*T EN RYDBERGS POUR H2+
 
     do j=1,46
-      opnu(j)=2.51e-3*au_grdm(j)*(exp(u1(j)/bkt)-(exp(-au_u2(j)/bkt)))
+      if (flag_hydro2) then
+        ! #hydro2_mode
+        zut1 = au_u1(j)/bkt
+        zut2 = -au_u2(j)/bkt
+        if (zut2 .gt. -38) then
+          ezut1 = exp(zut1)
+          ezut2 = exp(zut2)
+          opnu(j)=2.51e-3*grdm(j)*(ezut1-ezut2)
+        else
+          if(zut1 .gt. -38) then
+            ezut1 = exp(zut1)
+            opnu(j) = 2.51e-3*au_grdm(j)*ezut1
+          else
+            opnu(j) = 0
+          end if
+        end if
+      else
+        opnu(j)=2.51e-3*au_grdm(j)*(exp(au_u1(j)/bkt)-(exp(-au_u2(j)/bkt)))
+      end if
     end do
 
     do j = 1,46

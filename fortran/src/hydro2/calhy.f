@@ -1188,13 +1188,13 @@ C     ***
 
 !!! Reads modele. Gotta comform this
         SUBROUTINE READER5N (NH,TETA,PE,PG,T5L,modeles_ntot)
-c     identique a READERN mais lit le titre du modele sur l'unite 5
+c     identique a READERN mais lit le absoru2_titre du modele sur l'unite 5
 C       CE S.P. LIT SUR DISQUE ACCES DIRECT NH,TETA,PE,PG,T5L,modeles_ntot
 C       il lit toujours NH de 1 a 50 (et non 0:50)
         DIMENSION TETA(50),NH(50),PE(50),PG(50),T5L(50),BID(16)
         REAL NH,modeles_nhe
       CHARACTER*4 BLC,modeles_tit
-        COMMON /COM6/x_teff,GLOG,x_asalog,modeles_asalalf,modeles_nhe,modeles_tiabs(5),modeles_tit(5)
+        COMMON /COM6/x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe,modeles_tiabs(5),modeles_tit(5)
 C     COMMON/TOTO/TO
         DATA   BLC/'    '/
 c        type *,' entree dans readern'
@@ -1208,17 +1208,17 @@ c        type *,' On fait l''open du fichier  modeles.mod'
         ID=1
         IDEF=211939
 c
- 10   READ(5,*) x_teff,GLOG,x_asalog,INUM
-        IF(INUM.GT.0)   ID=INUM
-        WRITE(6,102)x_teff,GLOG,x_asalog,modeles_asalalf,modeles_nhe,INUM
-C   SI L ON DESIRE IMPOSER UN MODELE  ON MET EN INUM LE NUM DU MODELE
+ 10   READ(5,*) x_teff,x_glog,x_asalog,x_inum
+        IF(x_inum.GT.0)   ID=x_inum
+        WRITE(6,102)x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe,x_inum
+C   SI L ON DESIRE IMPOSER UN MODELE  ON MET EN x_inum LE NUM DU MODELE
 C   SUR LE FICHIER ACCES DIRECT
  9      READ(18,rec=ID) modeles_ntot,modeles_teff,modeles_glog,modeles_asalog,modeles_asalalf,modeles_nhe,modeles_tit,modeles_tiabs
         WRITE(6,105) modeles_teff,modeles_glog,modeles_asalog,modeles_asalalf,modeles_nhe,modeles_tit
         write(6,108) modeles_tiabs
         IF(modeles_ntot.EQ.9999)   GO TO 6
         DDT  = ABS(x_teff-modeles_teff)
-        DDG  = ABS(GLOG-modeles_glog)
+        DDG  = ABS(x_glog-modeles_glog)
         DDAB = ABS(x_asalog-modeles_asalog)
 c        write(6,*)' D''s=',DDT,DDG,DDAB
  5          IF(DDT.GT.1.0) then
