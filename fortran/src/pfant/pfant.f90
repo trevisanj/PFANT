@@ -10,7 +10,8 @@ program pfant
   implicit none
 
   ! startup
-  write(*,*) pfant_version('PFANT')
+  execonf_name = 'pfant'
+  write(*,*) pfant_version()
   write(*,*) ''
   call molecules_ids_init()
   call config_init()

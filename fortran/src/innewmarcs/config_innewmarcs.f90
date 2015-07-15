@@ -51,15 +51,11 @@ module config_innewmarcs
   integer :: config_id = 0
 contains
   !=======================================================================================
-  !> Initializes the options list
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
+  !> Initializes innewmarcs-specific options
 
-  subroutine config_init_options()
-    integer k
-    k = config_base_init_options()
+  integer function config_init_options(k)
+    !> k is the index of the last initialized option
+    integer, intent(in) :: k
 
     options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
      'Directory containing reference atmospheric models.<br>'//&
@@ -106,16 +102,18 @@ contains
     k = k+1
     options(k) = option('id',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
      'Record id within binary file')
-  end
 
+    config_init_options = k
+  end
 
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
   subroutine config_init()
-    ex_config_option_handler => config_handle_option
-    ex_config_num_options = ex_config_num_options+10
-    call config_init_options()
+    execonf_name = 'innwemarcs'
+    execonf_handle_option => config_handle_option
+    execonf_init_options => config_init_options
+    execonf_num_options = 10
     call config_base_init()
   end
 
@@ -163,4 +161,4 @@ contains
         res = config_base_handle_option(opt, o_arg)
     end select
   end
-end module config_innewmarcs
+end

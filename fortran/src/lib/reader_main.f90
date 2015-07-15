@@ -74,7 +74,7 @@ contains
     integer ih, i
     character*64 filetoh_temp
     logical :: fcad = .true.
-    logical bid
+    logical ecrit_obsolete
 
     if (present(flag_care_about_dissoc)) fcad = flag_care_about_dissoc
 
@@ -88,8 +88,8 @@ contains
     read(UNIT_, '(a15)') main_titrav
 
     ! row 02
-    ! bid is old "ecrit" (obsolete)
-    read(UNIT_, *) bid, main_pas, main_echx, main_echy, main_fwhm
+    ! ecrit is obsolete
+    read(UNIT_, *) ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
 
     ! row 03
     read(UNIT_, *) main_vvt(1)

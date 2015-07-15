@@ -19,8 +19,6 @@ module hydro2_calhy
 contains
     !> L EST LE COEFFICIENT D'ABSORPTION PAR PARTICULE ABSORBANTE
     !>   
-    !> SI IND=0,ON ECRIT LE DETAIL DES APPROX. PAR LESQUELLES L EST CALCU
-    !> SI IND=1, PAS D'ECRITURE
     !>
     !> LL=1,CALCUL EN UN POINT SPECIFIE PAR SA LONGUEUR D'ONDE
     !> SI DANS CE CAS,J1=2 ON SOMME LES COEFF. D'ABSORPTION DE PLUSIEURS
@@ -31,10 +29,15 @@ contains
 
     !> config_kq=1, CALCUL D UN PROFIL PUREMEMT QUASISTATIQUE POUR IONS + ELETRO
 
-  subroutine raiehu(ll,na,nb,nbmin,nbmax,clam,c1,c,dlam,l,j1,ind)
+  subroutine raiehu(ll,na,nb,nbmin,nbmax,clam,c1,c,dlam,l,j1)
     logical d3_stark
     real*4 l,lim,lac,lv
     real*8 clam,xdp(50),xbdp
+
+    ! Verbose flag that was kept, but set internally, not as a parameter as originally
+    ! SI IND=0,ON ECRIT LE DETAIL DES APPROX. PAR LESQUELLES L EST CALCU
+    ! SI IND=1, PAS D'ECRITURE
+    logical, parameter :: ind = 1
 
 
     ! try to make them paRAMETERS, if doesnt work, keep upper case names anyway

@@ -161,7 +161,7 @@ ask BLB
 ask PC
 ask MT                 Suggests the person who probably knows to solve the issue
 
-__assertion__          Marks bit of code that is an assertion. Assertions serve both as
+#assertion          Marks bit of code that is an assertion. Assertions serve both as
                        documentation and error protection.
 
 #logging            Marks bit of code whose purpose is to output log messages.

@@ -55,8 +55,18 @@ module logging
   !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
   !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
   integer :: logging_level = LOGGING_DEBUG
-  !> File to record progress indication
+  !> Full path to file to record progress indication
   character*256 :: logging_path_progress = 'progress.txt'
+  !> If set to .true., will display messages do standard output (usually the screen)
+  logical :: logging_stdout = .false.
+  !> If set to .true., will echo logged messages into dump file specified by logging_path_dump,
+  !> besides logging to standard output.
+  logical :: logging_dump = .false.
+  !> Full path to file to record logging messages indication
+  character*256 :: logging_path_dump = 'logging_dump.log'
+
+
+
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
@@ -189,7 +199,7 @@ contains
     integer, parameter :: UNIT_ = 199
     perc = 100.*i/n
 
-    !__assertion__
+    !#assertion
     if (n .gt. 9999) then
       call pfant_halt('Cannot log progress for number of iterations > 9999', &
        is_assertion=.true.)
@@ -216,25 +226,40 @@ contains
   !> Internal routine, MUST NOT be called from outside
 
   subroutine do_logging(s, level)
-  character(len=*), intent(in) :: s
-  character(len=8) :: t
-  integer level
+    character(len=*), intent(in) :: s
+    character(len=8) :: t
+    integer level
+    integer, parameter :: UNIT_DUMP = 179
+    logical, save :: flag_first_call = .true.
 
-  select case (level)
-    case (logging_halt)
-      t = 'HALTING'
-    case (LOGGING_CRITICAL)
-      t = 'CRITICAL'
-    case (LOGGING_ERROR)
-      t = 'ERROR'
-    case (LOGGING_WARNING)
-      t = 'WARNING'
-    case (LOGGING_INFO)
-      t = 'INFO'
-  case (LOGGING_DEBUG)
-      t = 'DEBUG'
+    select case (level)
+      case (logging_halt)
+        t = 'HALTING'
+      case (LOGGING_CRITICAL)
+        t = 'CRITICAL'
+      case (LOGGING_ERROR)
+        t = 'ERROR'
+      case (LOGGING_WARNING)
+        t = 'WARNING'
+      case (LOGGING_INFO)
+        t = 'INFO'
+      case (LOGGING_DEBUG)
+        t = 'DEBUG'
     end select
 
-    write(*,*) '(', t, ') :: ', trim(s)
+    if (logging_stdout) then
+      write(*,*) '(', t, ') :: ', trim(s)
+    end if
+
+    if (logging_dump) then
+      if (flag_first_call) then
+        open(unit=UNIT_DUMP, file=logging_path_dump, status='unknown')
+      end if
+
+      write(UNIT_DUMP, *) '(', t, ') :: ', trim(s)
+    end if
+
+    flag_first_call = .false.
   end
+
 end module logging

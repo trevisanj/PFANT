@@ -18,8 +18,8 @@ C       un fichier todeut.dat contenant le coef d'ab d'H a lambda de D
 
 contains
   subroutine hydro2()
-      LOGICAL ECRIT,PTDISK,config_amores,d3_stark,PAPIER,ASUIVRE,DEUT
-      REAL*4 LAM,KC,modeles_nh,NE,modeles_nhe,MMU
+      LOGICAL ECRIT,x_ptdisk,config_amores,d3_stark,config_papier,ASUIVRE,DEUT
+      REAL*4 LAM,KC,NE,MMU
       REAL*8 LAMC,LAMB
         CHARACTER*30 Nomplot
 C     CHARACTER*2 TTT(11)
@@ -78,20 +78,18 @@ C     MASSE ET CHARGE DE L ATOME D HYDROGENE
       noname%j1=0       ! OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
       noname%nbmin = 0  ! was being passed uninitialized to raiehu()
       noname%nbmax = 0  ! was being passed uninitialized to raiehu()
-      noname%ind = 1    ! IND=0 ECRITURE DANS RAIEHU ,DEPANNAGE SEULEMENT...
-
 
 
       IOP=0        ! OPTION 6 pts ds calcul du flux
 C     IOP=1        ! OPTION 26 pts ds calcul du flux
-      PTDISK=.FALSE.
+      x_ptdisk=.FALSE.
         ASUIVRE=.FALSE.  !deviendra T au second calcul
       ru%stark = .true.
 C
 C     write(6,*)'VOULEZ UNE SORTIE PAPIER?    (T OU F)'
 C     READ(5,*)   PAPIER
-      PAPIER=.TRUE.
-        if(papier) open(UNIT=11,file='hydro2.prt',status='unknown')
+      config_papier=.TRUE.
+        if(config_papier) open(UNIT=11,file='hydro2.prt',status='unknown')
       write(6,*)' '
       write(6,*)' '
       CALL LECTUR (absoru2_zp,config_zph)
@@ -114,7 +112,7 @@ C           Attention astuce...
                 WRITE (6,71) config_kq,(TTT(I),I=1,11)
                 WRITE (6,75) d2%cmu,NZ
                 WRITE (6,79) (DL(J),J=1,JMAX)
-                    if (papier) then
+                    if (config_papier) then
                     WRITE (11,71) config_kq,(TTT(I),I=1,11)
                     WRITE (11,75) d2%cmu,NZ
                     WRITE (11,79) (DL(J),J=1,JMAX)
@@ -143,7 +141,7 @@ c
                 WRITE (6,86) (d2%ij(IQ),IQ=1,d2%iqm)
                 IF(config_amores) WRITE(6,301)
                 IF(d3_stark) WRITE(6,302)
-                   if(papier) then
+                   if(config_papier) then
                    write(11,72) NA,NB,LAMB,C1,X,J1,d2%iqm
                    write(11,86) (d2%ij(IQ),IQ=1,d2%iqm)
                    IF(config_amores) write(11,301)
@@ -175,7 +173,7 @@ C
                 WRITE (6,201)
                 WRITE (6,202) (I,modeles_nh(I),modeles_teta(I),pe_log(I),modeles_t5l(I),I=1,modeles_ntot)
                 WRITE(6,*)' '
-                   if(papier) then
+                   if(config_papier) then
                    write(11,47)ABMET,(modeles_tit(I),I=1,5)
                    write(11,201)
                    write(11,202)
@@ -198,7 +196,7 @@ C
       CALL RAIEHU (IX,NA,NB,NMIN,NMAX,LAMB,C1,C,DL,AL,J1,IND,config_kq)
       write(6,*)' VOUS ETES SORTI DE RAIEHU'
 C
-            IF(ECRIT.and.papier)   THEN
+            IF(ECRIT.and.config_papier)   THEN
             WRITE (11,18) (modeles_tit(L),L=1,5)
             WRITE(11,14)LAMB,PDS,X
             WRITE(11,25)
@@ -214,11 +212,11 @@ C
      1          X,modeles_ntot,JMAX,AL,BPL,TAU,IX)
             IF(ECRIT)   THEN
             WRITE(6,38)
-                if(papier) write(11,38)
+                if(config_papier) write(11,38)
               DO  I=1,modeles_ntot,5
               WRITE(6,40)I
               WRITE (6,37) (TAU(J,I),J=1,JMAX)
-                    if(papier) then
+                    if(config_papier) then
                     write(11,40)I
                     write(11,37)(TAU(J,I),J=1,JMAX)
                     end if
@@ -228,7 +226,7 @@ C
             WRITE(6,121)
                   WRITE(6,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),VT(I),
      1       NE(I),TOTH(I),I,I=1,modeles_ntot)
-                  if(papier) then
+                  if(config_papier) then
                   write(11,18) (modeles_tit(L),L=1,5)
                   write(11,121)
                   write(11,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),VT(I),
@@ -250,14 +248,14 @@ c        WRITE(6,26)(TAUC(I),I=1,modeles_ntot)
 c        write(6,*)' fonction de Planck'
 c        WRITE(6,26)(BPL(I),I=1,modeles_ntot)
       IF(TAUC(modeles_ntot).LT.3.89) GO TO 1002
-            IF(ECRIT.and.papier)   THEN
+            IF(ECRIT.and.config_papier)   THEN
             WRITE(11,19)
             WRITE(11,26)(TAUC(I),I=1,modeles_ntot)
             WRITE(11,28)
             WRITE(11,29)(BPL(I),I=1,modeles_ntot)
             END IF
 C
-      CALL FLUXIS (TAU,TAUC,BPL,modeles_ntot,PTDISK,MMU,JMAX,FL,FC,IOP)
+      CALL FLUXIS (TAU,TAUC,BPL,modeles_ntot,x_ptdisk,MMU,JMAX,FL,FC,IOP)
             DO J=1,JMAX
             R(J)=FL(J)/FC
             END DO
@@ -283,7 +281,7 @@ C
       WRITE(6, 8)(FL(J),J=1,JMAX)
       WRITE(6,24)
       WRITE(6,34)(R(J),J=1,JMAX)
-      if (papier) then
+      if (config_papier) then
         WRITE (11,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
         WRITE (11,73) (modeles_tit(L),L=1,5)
         WRITE(11,6)(absoru2_titre(I),I=1,17)
@@ -354,10 +352,9 @@ C 1555      FORMAT(5E12.4)
 
       GO TO 1003
 1002  WRITE(6,27)
-        if(papier) write(11,27)
- 1003   write(6,*)' AUTRE CALCUL ?   (T OU F)'
-        read(5,*)ASUIVRE
-        IF(ASUIVRE)   GO TO 1000
+        if(config_papier) write(11,27)
+ 1003 continue
+
       write(6,*) 'TRAVAIL TERMINE'
         write(6,*)' '
 c

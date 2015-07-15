@@ -48,18 +48,11 @@ module config_pfant
   save
 contains
   !=======================================================================================
-  !> Initializes the options list
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
+  !> Initializes executable-specific options
 
-  subroutine config_init_options()
-    integer k
-    !                       character(:), allocatable :: name
-    !                       character(1) :: chr
-
-    k = config_base_init_options()
+  integer function config_init_options(k)
+    !> k is the index of the last initialized option
+    integer, intent(in) :: k
 
     k = k+1
     options(k) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
@@ -100,15 +93,17 @@ contains
     options(k) = option('molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
      '*Note*: This option may be repeated as many times as necessary.')
-  end
 
+    config_init_options = k
+  end
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
   subroutine config_init()
-    ex_config_option_handler => config_handle_option
-    ex_config_num_options = ex_config_num_options+11
-    call config_init_options()
+    execonf_name = 'pfant'
+    execonf_handle_option => config_handle_option
+    execonf_init_options => config_init_options
+    execonf_num_options = 11
     call config_base_init()
   end
 

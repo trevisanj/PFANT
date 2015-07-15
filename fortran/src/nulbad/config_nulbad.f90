@@ -36,16 +36,11 @@ module config_nulbad
     config_filecv = '?'                !< option: --filecv
 contains
   !=======================================================================================
-  !> Initializes the options list
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
+  !> Initializes nulbad-specific options
 
-  subroutine config_init_options()
-    integer k
-
-    k = config_base_init_options()
+  integer function config_init_options(k)
+    !> k is the index of the last initialized option
+    integer, intent(in) :: k
 
     k = k+1
     options(k) = option('fileflux', ' ', .true., 'file name', &
@@ -70,7 +65,7 @@ contains
     options(k) = option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
 
-    call validate_options(k)
+    config_init_options = k
   end
 
 
@@ -78,9 +73,10 @@ contains
   !> Executable-specific initialization + calls config_base_init()
 
   subroutine config_init()
-    ex_config_option_handler => config_handle_option
-    ex_config_num_options = ex_config_num_options+7
-    call config_init_options()
+    execonf_name = 'nulbad'
+    execonf_handle_option => config_handle_option
+    execonf_init_options => config_init_options
+    execonf_num_options = 7
     call config_base_init()
   end
 
