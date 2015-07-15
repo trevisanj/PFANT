@@ -67,6 +67,8 @@ module absoru
   real*8, public, dimension(12) :: absoru_znh
   !> Calculated by absoru_(). ?doc?
   real*8, public, dimension(2) :: absoru_totkap
+  !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3. HYDRO2 uses this.
+  real*8, public :: absoru_toc
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
@@ -83,7 +85,6 @@ module absoru
   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
   real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
   real*8 au_rho  !< DENSITE (G-CM-3)
-  real*8 au_toc  !< NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3
   real*8 au_ac   !< DEGRE D'IONISATION MOYEN
 
   real*8 :: au_g2d(2, 19)  !< FACTEUR DE GAUNT BOUND FREE
@@ -255,7 +256,7 @@ contains
     !> @todo investigate whether absoru_totkap is actually integer or real!
     absoru_totkap(2)=0.
     if (calu.eq.1) unit=au_rho
-    If (calu.eq.2) unit=au_toc ! RAPPEL  au_TOC=NBRE DE NOYAUX DE H PAR CM3
+    If (calu.eq.2) unit=absoru_toc ! RAPPEL  absoru_toc=NBRE DE NOYAUX DE H PAR CM3
 
     scatel=scatel/unit
     do i=1,kkk
@@ -290,7 +291,7 @@ contains
     !!#logging
     !89 format ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSITE='E11.4,' NBR.NOYAU D H/CM3='E11.4, &
     !           ' LOG10PE='0PF5.2,' TETA='F5.2)
-    !write (lll,89) scatel,scat(1),scat(2),au_rho,au_toc,zlpe,th
+    !write (lll,89) scatel,scat(1),scat(2),au_rho,absoru_toc,zlpe,th
     !call log_debug(lll)
 
 
@@ -1063,7 +1064,7 @@ contains
   !-------------------------------------------------------------------------------
   !> Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
   !>
-  !> SSP CALCULANT LES QUANTITES SUIVANTES: PARTH, au_PG, au_ZMU, au_RHO, au_TOC,
+  !> SSP CALCULANT LES QUANTITES SUIVANTES: PARTH, au_PG, au_ZMU, au_RHO, absoru_toc,
   !> au_AC, au_AC1, au_AC2, PHI, absoru_ZNH
   !>
   !> Reference: 'VARDYA' APJ VOL.133,P.107,1961
@@ -1148,8 +1149,8 @@ contains
     absoru_znh(absoru2_nmeta+3)=absoru_znh(absoru2_nmeta+7)*ph*any
     tp1=absoru_znh(absoru2_nmeta+1)+absoru_znh(absoru2_nmeta+4)+absoru_znh(absoru2_nmeta+7)
     tp2=absoru_znh(absoru2_nmeta+2)+absoru_znh(absoru2_nmeta+3)
-    au_toc=2*tp2+tp1
-    parth=au_toc/au_znu1 ! NBRE TOTAL DE NOYAUX PAR CM3
+    absoru_toc=2*tp2+tp1
+    parth=absoru_toc/au_znu1 ! NBRE TOTAL DE NOYAUX PAR CM3
     ppar=(tp1+tp2+parth*(au_znu2+au_znu3))*kth
     au_pg=ppar+au_pe
     au_ac=au_pe/ppar
