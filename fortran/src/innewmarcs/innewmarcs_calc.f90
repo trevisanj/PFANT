@@ -363,9 +363,9 @@ contains
 
 
   !=======================================================================================
-  !> Reads map of models: file "modelmap.da%teta"
+  !> Reads map of models: file "index.dat"
   !>
-  !> By convention, this file is called "modelmap.da%teta". The information it contains is
+  !> By convention, this file is called "index.dat". The information it contains is
   !> a list of metalicity ranges and corresponding reference models to be used.
   !>
 

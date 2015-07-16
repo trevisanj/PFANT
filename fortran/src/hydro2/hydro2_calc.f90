@@ -18,11 +18,10 @@ C       un fichier todeut.dat contenant le coef d'ab d'H a lambda de D
 
 contains
   subroutine hydro2()
-      LOGICAL ECRIT,x_ptdisk,config_amores,d3_stark,config_papier,ASUIVRE,DEUT
-      REAL*4 LAM,KC,NE,MMU
-      REAL*8 LAMC,LAMB
+      LOGICAL x_ptdisk,config_amores,d3_stark,config_papier,ASUIVRE,DEUT
+      REAL*4 KC,NE,MMU
+      REAL*8 clam
         CHARACTER*30 Nomplot
-C     CHARACTER*2 TTT(11)
       DIMENSION BPL(0:99), TAU(50,0:99), TAUC(0:99)
       DIMENSION AL(50,99),FL(99),
      1 KC(99),noname%dlam(50),C(20),TOTH(99),,
@@ -35,7 +34,7 @@ C     Commons avec les sp d'absorption continue
 C
 C       Common avec ??? (mettre en dimension?)
         ! true, there is no one else using this, which was a common
-        dimension TTT(11),R(50),NE(99),ZIG(99),W(2,2),AB(50),
+        dimension R(50),NE(99),ZIG(99),W(2,2),AB(50),
      &             DEL(50),modeles_t5l(99)
 C
 C     Commons avec RAIEHU
@@ -56,7 +55,7 @@ C ............adios!C
       gotta add parameter to absoru_data.f and absoru.f90
 
 
-
+      !> @todo make structure with dlam, iqm, ij, possibly jmax
 
 
 C     POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
@@ -68,7 +67,6 @@ C     POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
 C     NUMEROS DES DISCONTINUITES DANS LES DL:
       d2%iqm=9
       DATA d2%ij/7,9,13,17,29,31,37,43,46,0/
-C        data TTT/11*'    '/
 
 C     FICHIER POUR LE TRACE DES RAIES
 C     MASSE ET CHARGE DE L ATOME D HYDROGENE
@@ -85,41 +83,26 @@ C     IOP=1        ! OPTION 26 pts ds calcul du flux
       x_ptdisk=.FALSE.
         ASUIVRE=.FALSE.  !deviendra T au second calcul
       ru%stark = .true.
-C
-C     write(6,*)'VOULEZ UNE SORTIE PAPIER?    (T OU F)'
-C     READ(5,*)   PAPIER
-      config_papier=.TRUE.
-        if(config_papier) open(UNIT=11,file='hydro2.prt',status='unknown')
-      write(6,*)' '
-      write(6,*)' '
-      CALL LECTUR (absoru2_zp,config_zph)
-      write(6,*)'THEORIE QUASISTATIQUE:   ENTER    1'
-      write(6,*)'THEORIE DE GRIEM     :   ENTER    0'
-      READ(5,*)   config_kq
 
-      noname%kq = config_kq
+
+
+      CALL LECTUR (absoru2_zp,config_zph)
+
+
 C           Attention astuce...
             IF(config_kq.GT.1)   THEN
             config_kq=1
             DEUT=.TRUE.
             OPEN(UNIT=16,FILE='todeut.dat',STATUS='unknown')
             END IF
-      write(6,*)' SORTIES INTERMEDIAIRES ?   (T OU F)'
-      READ(5,*) ECRIT
-1000          IF(ECRIT)   THEN
-                write(6,*)'ENTRER UN absoru2_titre POUR LE TRAVAIL'
-                READ(5,12)(TTT(I),I=1,11)
-                WRITE (6,71) config_kq,(TTT(I),I=1,11)
+
+
+                WRITE (6,'(''      config_kq='',I4,10X,A)') config_kq,config_titre
+
                 WRITE (6,75) d2%cmu,NZ
                 WRITE (6,79) (DL(J),J=1,JMAX)
-                    if (config_papier) then
-                    WRITE (11,71) config_kq,(TTT(I),I=1,11)
-                    WRITE (11,75) d2%cmu,NZ
-                    WRITE (11,79) (DL(J),J=1,JMAX)
-                    end if
-            END IF
       KZ=0
-      write(6,*)'  C1=(PI*E**2)/(M*C**2) * LAMB**2 * F*10E24 '
+      write(6,*)'  C1=(PI*E**2)/(M*C**2) * clam**2 * F*10E24 '
       write(6,*)'  F=FORCE D OSCILLATEUR TOTALE DE LA RAIE'
       write(6,*)'      VALEURS PARTICULIERES DE C1 :'
       write(6,*)' '
@@ -129,20 +112,21 @@ C           Attention astuce...
         write(6,*)' ex H alfa  2 3 6562.817 10.15 2442.326 '
         write(6,*)'    H beta  2 4 4861.342 10.15  249.628 '
         write(6,*)'    H gamma 2 5 4340.475 10.15   74.4776'
+
+
       write(6,*)'ENTER : NIV INF, NIV SUP, LAMBDA, KIEX, C1'
-      READ(5,*) NA,NB,LAMB,X,C1
-      LAMC=LAMB
-      LAM=LAMB    ! LAMB EN SIMPLE PRECISION
-      write(6,*)' AMORTISSEMENT DE RESONNANCE ?  (T OU F)'
-      READ(5,*)   config_amores
+      READ(5,*) NA,NB,clam,kiex,C1
+
+
+
 c
             IF(ECRIT)   THEN
-                WRITE (6,72) NA,NB,LAMB,C1,X,J1,d2%iqm
+                WRITE (6,72) NA,NB,clam,C1,kiex,J1,d2%iqm
                 WRITE (6,86) (d2%ij(IQ),IQ=1,d2%iqm)
                 IF(config_amores) WRITE(6,301)
                 IF(d3_stark) WRITE(6,302)
                    if(config_papier) then
-                   write(11,72) NA,NB,LAMB,C1,X,J1,d2%iqm
+                   write(11,72) NA,NB,clam,C1,kiex,J1,d2%iqm
                    write(11,86) (d2%ij(IQ),IQ=1,d2%iqm)
                    IF(config_amores) write(11,301)
                    IF(d3_stark) WRITE(11,302)
@@ -182,9 +166,9 @@ C
                    end if
             END IF
 C
-      write(6,*)'appel de ABSORU pou LAM=', LAM
+      write(6,*)'appel de ABSORU pou clam=', clam
             DO I=1,modeles_ntot
-            CALL ABSORU(LAM,modeles_teta(I),pe_log(I),1,1,1,1,2,1,KKK,TOTKAP)
+            CALL ABSORU(clam,modeles_teta(I),pe_log(I),1,1,1,1,2,1,KKK,TOTKAP)
             TOTH(I)=absoru_TOC
             KC(I)=absoru_TOTKAP(1)
             d3_hyn(I)=absoru_ZNH(MMAX+4)
@@ -193,12 +177,12 @@ C
 C
       write(6,*)' PATIENCE VOUS ENTRER DANS RAIEHU'
       !> @todo issue nmin and nmax were initialized, I initialized them with zero
-      CALL RAIEHU (IX,NA,NB,NMIN,NMAX,LAMB,C1,C,DL,AL,J1,IND,config_kq)
+      CALL RAIEHU (IX,NA,NB,NMIN,NMAX,clam,C1,C,DL,AL,J1,IND,config_kq)
       write(6,*)' VOUS ETES SORTI DE RAIEHU'
 C
             IF(ECRIT.and.config_papier)   THEN
             WRITE (11,18) (modeles_tit(L),L=1,5)
-            WRITE(11,14)LAMB,PDS,X
+            WRITE(11,14)clam,PDS,kiex
             WRITE(11,25)
             DO I=1,modeles_ntot,5
             WRITE(11,32) I
@@ -207,9 +191,9 @@ C
             END IF
 C
       write(6,*)' VOUS CALCULEZ LE TAU SELECTIF'
-      WRITE(6,*) 'APPEL AMERU pou LAM=',LAM
-      CALL AMERU (modeles_teta,pe_log,modeles_pg,modeles_nh,LAM,PDS,
-     1          X,modeles_ntot,JMAX,AL,BPL,TAU,IX)
+      WRITE(6,*) 'APPEL AMERU pou clam=',clam
+      CALL AMERU (modeles_teta,pe_log,modeles_pg,modeles_nh,clam,PDS,
+     1          kiex,modeles_ntot,JMAX,AL,BPL,TAU,IX)
             IF(ECRIT)   THEN
             WRITE(6,38)
                 if(config_papier) write(11,38)
@@ -265,8 +249,8 @@ C
         WRITE (6,73) (modeles_tit(L),L=1,5)
         write(6,*)' '
       WRITE(6,6)(absoru2_titre(I),I=1,5)
-        if(ecrit) write(6,5) (TTT(L),L=1,11)
-      WRITE (6,4) LAMB, NA,NB,X, C1
+        if(ecrit) write(6,5) (config_titre(L),L=1,11)
+      WRITE (6,4) clam, NA,NB,kiex, C1
       WRITE(6,21)FC
       IF(config_kq.EQ.1)WRITE(6,401)
       IF(config_kq.NE.1)WRITE(6,402)
@@ -285,8 +269,8 @@ C
         WRITE (11,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
         WRITE (11,73) (modeles_tit(L),L=1,5)
         WRITE(11,6)(absoru2_titre(I),I=1,17)
-        if(ecrit) write(11,5)(TTT(L),L=1,11)
-        WRITE (11,4)LAMB, NA,NB,X, C1
+        if(ecrit) write(11,5)(config_titre(L),L=1,11)
+        WRITE (11,4)clam, NA,NB,kiex, C1
         WRITE(11,21)FC
         IF(config_kq.EQ.1)WRITE(11,401)
         IF(config_kq.NE.1)WRITE(11,402)
@@ -343,7 +327,7 @@ C     READ(16,1550)(LAMBDH(J),J=1,JMAX)
 C     READ(16,1555) ((TH(J,N),J=1,JMAX),N=1,modeles_ntot)
 C 1555      FORMAT(5E12.4)
               WRITE(17,1551)JMAX
-            WRITE(17,1550)((DL(JJ)+LAMB),JJ=1,JMAX)
+            WRITE(17,1550)((DL(JJ)+clam),JJ=1,JMAX)
             WRITE(17,1555)((TAU(JJ,N),JJ=1,JMAX),N=1,modeles_ntot)
 
  1550 FORMAT(5F14.3)
@@ -354,6 +338,7 @@ C 1555      FORMAT(5E12.4)
 1002  WRITE(6,27)
         if(config_papier) write(11,27)
  1003 continue
+
 
       write(6,*) 'TRAVAIL TERMINE'
         write(6,*)' '
@@ -398,8 +383,7 @@ C   ***************************************************************
 70    FORMAT(' x_teff=',F7.0,3X,'LOG G=',F5.2,
      &         3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  modeles_nhe=',F6.3)
  73     FORMAT(5A4)
-71    FORMAT ('      config_kq=',I4,10X,11A4)
-72    FORMAT ('  NA=',I4,' NB=',I4,' LAMB=',F14.3,' C1=',E12.7,
+72    FORMAT ('  NA=',I4,' NB=',I4,' clam=',F14.3,' C1=',E12.7,
      1  ' X=',E12.7,' J1=',I4,' d2%iqm=',I4,
      2 /10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
 75    FORMAT ('  d2%cmu=',F5.2,'  NZ=',I5)
