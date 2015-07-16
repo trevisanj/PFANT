@@ -1,0 +1,10 @@
+!        data = c('./hydro2 << DONE', '1', 'F', '2 3 6562.817 10.199 2442.326', 'T', vt_s, 
+!                 Teff_s, logg_s, met_grade_s, '1', 'thalpha', 'F', 'DONE', '######',
+!                 './hydro2 << DONE', '1', 'F', '2 4 4861.342 10.199  249.628', 'T', vt_s, 
+!                 Teff_s, logg_s, met_grade_s, '1', 'thbeta', 'F', 'DONE', '######',
+!                 './hydro2 << DONE', '1', 'F', '2 5 4340.475 10.199  74.4776', 'T', vt_s, 
+!                 Teff_s, logg_s, met_grade_s, '1', 'thgamma', 'F', 'DONE', '######',
+!                 './hydro2 << DONE', '1', 'F', '2 6 4101.742 10.199  32.8903', 'T', vt_s, 
+!                 Teff_s, logg_s, met_grade_s, '1', 'thdelta', 'F', 'DONE', '######',
+!                 './hydro2 << DONE', '1', 'F', '2 7 3970.070 10.199  17.72642', 'T', vt_s, 
+!                 Teff_s, logg_s, met_grade_s, '1', 'thepsilon', 'F', 'DONE')!
