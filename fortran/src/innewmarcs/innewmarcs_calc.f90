@@ -368,6 +368,7 @@ contains
   !> By convention, this file is called "index.dat". The information it contains is
   !> a list of metalicity ranges and corresponding reference models to be used.
   !>
+  !> @todo reader and structure for this (or not)
 
   subroutine read_ref_models_map()
     character*64 :: t_fn
