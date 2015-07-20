@@ -104,9 +104,6 @@ module absoru
   real*8, dimension(MAX_ABSORU2_NM) :: au_znu
 
 
-  !> See use in subroutine absoru_()
-  !> @todo issue ask blb This value is changed to 14110. in HYDRO2 executable
-  real*8, parameter :: MAX_WLH_I2 = 1200.
 
 contains
 
@@ -122,8 +119,10 @@ contains
   !> @note 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
   !> @todo structure arguments for all routines in this file
+  !>
+  !> A.M.Colle
 
-  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu)
+  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu, flag_hydro2)
     real*8, intent(in) :: &
      wl,       & !< ?doc?
      th,       & !< ?doc?
@@ -134,6 +133,8 @@ contains
      calpe,  & !< ?doc?
      calmet, & !< innefective
      calu      !< ?doc?
+    !> Affects value of MAX_WLH_I2: 1200 or 14110
+    logical, intent(in) :: flag_hydro2
 
     real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &
      scatel, sum1, sum2, unit, wl4, wlh
@@ -141,6 +142,13 @@ contains
     integer i, ilt, ith, m, min, mm, mmm, nset, kkk
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
+
+    if (flag_hydro2) then
+      MAX_WLH_I2 = 14110.
+    else
+      MAX_WLH_I2 = 1200.
+    end if
+
 
     !call log_debug(ENTERING//'absoru_()')
 
@@ -197,8 +205,8 @@ contains
       go to 9023
 
       9020 continue
-      if (wl.gt.1200.0) go to 9021
-      wlh=1200.0
+      if (wl .gt. MAX_WLH_I2) go to 9021
+      wlh = MAX_WLH_I2
       go to 9022
 
       9021 continue

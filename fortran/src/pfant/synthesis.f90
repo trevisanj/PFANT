@@ -705,8 +705,14 @@ contains
             else
               v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
               call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
-              ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
-              if(k .eq. 1) ka(k) = phi * popadelh_pop(k,n) * gfal(k)
+
+
+              if(k .le. 2) then
+                ! NOXIG
+                ka(k) = phi * popadelh_pop(k,n) * gfal(k)
+              else
+                ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
+              end if
 
             end if
             kappa(n) = kappa(n) + ka(k)
@@ -800,7 +806,7 @@ contains
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu1/(KB*t))
         bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
+        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
         bk_kc1(n) = absoru_totkap(1)
       end do
 
@@ -812,7 +818,7 @@ contains
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu2/(KB*t))
         bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
+        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
         bk_kc2(n) = absoru_totkap(1)
       end do
 
@@ -823,7 +829,7 @@ contains
         t=5040./modeles_teta(n)
         alph_n = exp(-ahnu/(KB*t))
         bk_b(n) = c3 * (alph_n/(1.-alph_n))
-        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2)
+        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
         bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
         bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
         bk_kc(n) = absoru_totkap(1)
@@ -1056,6 +1062,7 @@ contains
         top = 10.**(-atomgrade_f_kiex(k)*modeles_teta(n))
 
 
+
         !> @todo noxig means number of atoms of oxygen
         !>
         !> @todo atomgrade first element must be oxygen
@@ -1068,7 +1075,9 @@ contains
         !>       My suggestion here is to have a vector flag what is set to true whenever
         !>       the name of the element is "O1" and test this flag in routine popadelh()
 
-        if(k .eq. 1) then
+!        if(k .eq. 1) then
+
+        if(k .le. 2) then
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         else
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
