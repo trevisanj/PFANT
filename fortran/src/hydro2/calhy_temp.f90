@@ -44,8 +44,3 @@ I think I am complicating
     integer :: kq
 
 
-      CALL RAIEHU (IX,NA,NB,NMIN,NMAX,LAMB,C1,C,DL,AL,J1,IND,config_kq)
-
-
-            COMMON/D2/VT(99),CMU,modeles_teta(99),pe_log(99),NZ,modeles_ntot,JMAX,IQM,IJ(10)
-

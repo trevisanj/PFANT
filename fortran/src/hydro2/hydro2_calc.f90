@@ -21,7 +21,7 @@ contains
       LOGICAL x_ptdisk,config_amores,d3_stark,config_papier,ASUIVRE,DEUT
       REAL*4 KC,NE,MMU
       REAL*8 clam
-        CHARACTER*30 Nomplot
+      CHARACTER*30 Nomplot
       DIMENSION BPL(0:99), TAU(50,0:99), TAUC(0:99)
       DIMENSION AL(50,99),FL(99),
      1 KC(99),noname%dlam(50),C(20),TOTH(99),,
@@ -30,7 +30,6 @@ contains
 C     Commons avec les sp d'absorption continue
 
         !> @todo see how it is in PFANT
-        COMMON/LECT1/ABMET,ABHEL
 C
 C       Common avec ??? (mettre en dimension?)
         ! true, there is no one else using this, which was a common
@@ -38,8 +37,8 @@ C       Common avec ??? (mettre en dimension?)
      &             DEL(50),modeles_t5l(99)
 C
 C     Commons avec RAIEHU
-      real*8 d3_hyn(99)  /ABSO2/MMAX
-      COMMON/D2/VT(99),d2%cmu,NZ,modeles_ntot,JMAX,d2%iqm,d2%ij(10)
+      real*8 d3_hyn(99)
+      COMMON/D2/d2%vt(99),d2%cmu,d2%nz,d2%d2%jmax,d2%iqm,d2%ij(10)
 
 C ............adios!C
 C ............adios!C     Common  avec READER5N
@@ -51,15 +50,15 @@ C ............adios!C
 
 
 
-      Gotta investigate if this JMAX has the same meaning as many 46 in absoru_data.f and absoru.f90
+      Gotta investigate if this d2%jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
       gotta add parameter to absoru_data.f and absoru.f90
 
 
-      !> @todo make structure with dlam, iqm, ij, possibly jmax
+      !> @todo make structure with dlam, iqm, ij, possibly d2%jmax
 
 
 C     POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
-      JMAX=46
+      d2%jmax=46
       DATA noname%dlam/0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175,
      1 .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3,
      2 1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5,
@@ -71,7 +70,7 @@ C     NUMEROS DES DISCONTINUITES DANS LES DL:
 C     FICHIER POUR LE TRACE DES RAIES
 C     MASSE ET CHARGE DE L ATOME D HYDROGENE
       d2%cmu=1.
-      NZ=1
+      d2%nz=1
       noname%ll= 2      ! OPTION DANS RAIEHU (old "IX")
       noname%j1=0       ! OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
       noname%nbmin = 0  ! was being passed uninitialized to raiehu()
@@ -99,8 +98,8 @@ C           Attention astuce...
 
                 WRITE (6,'(''      config_kq='',I4,10X,A)') config_kq,config_titre
 
-                WRITE (6,75) d2%cmu,NZ
-                WRITE (6,79) (DL(J),J=1,JMAX)
+                WRITE (6,75) d2%cmu,d2%nz
+                WRITE (6,79) (DL(J),J=1,d2%jmax)
       KZ=0
       write(6,*)'  C1=(PI*E**2)/(M*C**2) * clam**2 * F*10E24 '
       write(6,*)'  F=FORCE D OSCILLATEUR TOTALE DE LA RAIE'
@@ -143,22 +142,23 @@ C
       write(6,*)(modeles_pg(I),I=1,5)
             DO  I=1,modeles_ntot
             pe_log(I)=ALOG10(modeles_pe(I))
-            VT(I)=VVT*1.E+5
+            d2%vt(I)=VVT*1.E+5
             END DO
         TETAEF=5040/x_teff
       COEFALF=10**modeles_asalalf
         ASASOL=10**x_asalog
-      ABHEL=modeles_nhe
+
+
         call abonio(absoru2_zp,config_zph,ASASOL,COEFALF)
       PDS=2*NA**2
 C
             IF(ECRIT)   THEN
-                WRITE(6,47)ABMET,(modeles_tit(I),I=1,5)
+                WRITE(6,47) (modeles_tit(I),I=1,5)
                 WRITE (6,201)
                 WRITE (6,202) (I,modeles_nh(I),modeles_teta(I),pe_log(I),modeles_t5l(I),I=1,modeles_ntot)
                 WRITE(6,*)' '
                    if(config_papier) then
-                   write(11,47)ABMET,(modeles_tit(I),I=1,5)
+                   write(11,47)(modeles_tit(I),I=1,5)
                    write(11,201)
                    write(11,202)
      1                (I,modeles_nh(I),modeles_teta(I),pe_log(I),modeles_t5l(I),I=1,modeles_ntot)
@@ -171,7 +171,7 @@ C
             CALL ABSORU(clam,modeles_teta(I),pe_log(I),1,1,1,1,2,1,KKK,TOTKAP)
             TOTH(I)=absoru_TOC
             KC(I)=absoru_TOTKAP(1)
-            d3_hyn(I)=absoru_ZNH(MMAX+4)
+            d3_hyn(I)=absoru_ZNH(absoru2_nmeta+4)
             NE(I)=modeles_teta(I)*modeles_pe(i)/CSTE
             END DO
 C
@@ -186,34 +186,34 @@ C
             WRITE(11,25)
             DO I=1,modeles_ntot,5
             WRITE(11,32) I
-            WRITE(11,8)(AL(J,I),J=1,JMAX)
+            WRITE(11,8)(AL(J,I),J=1,d2%jmax)
             END DO
             END IF
 C
       write(6,*)' VOUS CALCULEZ LE TAU SELECTIF'
       WRITE(6,*) 'APPEL AMERU pou clam=',clam
       CALL AMERU (modeles_teta,pe_log,modeles_pg,modeles_nh,clam,PDS,
-     1          kiex,modeles_ntot,JMAX,AL,BPL,TAU,IX)
+     1          kiex,modeles_ntot,d2%jmax,AL,BPL,TAU,IX)
             IF(ECRIT)   THEN
             WRITE(6,38)
                 if(config_papier) write(11,38)
               DO  I=1,modeles_ntot,5
               WRITE(6,40)I
-              WRITE (6,37) (TAU(J,I),J=1,JMAX)
+              WRITE (6,37) (TAU(J,I),J=1,d2%jmax)
                     if(config_papier) then
                     write(11,40)I
-                    write(11,37)(TAU(J,I),J=1,JMAX)
+                    write(11,37)(TAU(J,I),J=1,d2%jmax)
                     end if
               END DO
 C
             WRITE (6,18) (modeles_tit(L),L=1,5)
             WRITE(6,121)
-                  WRITE(6,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),VT(I),
+                  WRITE(6,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),d2%vt(I),
      1       NE(I),TOTH(I),I,I=1,modeles_ntot)
                   if(config_papier) then
                   write(11,18) (modeles_tit(L),L=1,5)
                   write(11,121)
-                  write(11,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),VT(I),
+                  write(11,11)(modeles_t5l(I),modeles_nh(I),modeles_teta(I),pe_log(I),KC(I),d2%vt(I),
      1         NE(I),TOTH(I),I,I=1,modeles_ntot)
               end if
             END IF
@@ -239,8 +239,8 @@ c        WRITE(6,26)(BPL(I),I=1,modeles_ntot)
             WRITE(11,29)(BPL(I),I=1,modeles_ntot)
             END IF
 C
-      CALL FLUXIS (TAU,TAUC,BPL,modeles_ntot,x_ptdisk,MMU,JMAX,FL,FC,IOP)
-            DO J=1,JMAX
+      CALL FLUXIS (TAU,TAUC,BPL,modeles_ntot,x_ptdisk,MMU,d2%jmax,FL,FC,IOP)
+            DO J=1,d2%jmax
             R(J)=FL(J)/FC
             END DO
 C
@@ -260,11 +260,11 @@ C
       IF(J1.EQ.0) WRITE(6,406)VVT
       WRITE(6,120)
       WRITE(6,22)
-      WRITE(6,7)(DL(J),J=1,JMAX)
+      WRITE(6,7)(DL(J),J=1,d2%jmax)
       WRITE(6,23)
-      WRITE(6, 8)(FL(J),J=1,JMAX)
+      WRITE(6, 8)(FL(J),J=1,d2%jmax)
       WRITE(6,24)
-      WRITE(6,34)(R(J),J=1,JMAX)
+      WRITE(6,34)(R(J),J=1,d2%jmax)
       if (config_papier) then
         WRITE (11,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
         WRITE (11,73) (modeles_tit(L),L=1,5)
@@ -280,11 +280,11 @@ C
         IF(J1.EQ.0) WRITE(11,406)VVT
         WRITE(11,120)
         WRITE(11,22)
-        WRITE(11,7)(DL(J),J=1,JMAX)
+        WRITE(11,7)(DL(J),J=1,d2%jmax)
         WRITE(11,23)
-        WRITE(11, 8)(FL(J),J=1,JMAX)
+        WRITE(11, 8)(FL(J),J=1,d2%jmax)
         WRITE(11,24)
-        WRITE(11,34)(R(J),J=1,JMAX)
+        WRITE(11,34)(R(J),J=1,d2%jmax)
       end if
 C
 C           FICHIER POUR TRACE
@@ -297,20 +297,20 @@ C
         READ(5,*) Nomplot
         open(unit=17,file=Nomplot,status='unknown')
 c
-            JJMAX=2*JMAX - 1
-            JMA1 =JMAX-1
-            DO JJ=1,JMAX
-            ALL(JJ)=-DL(JMAX+1-JJ)
-            YY(JJ)=R(JMAX+1-JJ)*10000
+            JJMAX=2*d2%jmax - 1
+            JMA1 =d2%jmax-1
+            DO JJ=1,d2%jmax
+            ALL(JJ)=-DL(d2%jmax+1-JJ)
+            YY(JJ)=R(d2%jmax+1-JJ)*10000
             END DO
 C
-            DO JJ=JMAX+1,JJMAX
+            DO JJ=d2%jmax+1,JJMAX
             ALL(JJ)=DL(JJ-JMA1)
             YY(JJ)=R(JJ-JMA1)*10000
             END DO
 C
-            DBL=-DL(JMAX)
-            FINL=DL(JMAX)
+            DBL=-DL(d2%jmax)
+            FINL=DL(d2%jmax)
 C
             ZUT1=0.
             ZUT2=1.
@@ -323,12 +323,12 @@ CCC         WRITE(17,112) ALL(JJ), YY(JJ)
 CCC         END DO
 
 C PFANTGRADE READS:
-C     READ(16,1550)(LAMBDH(J),J=1,JMAX)
-C     READ(16,1555) ((TH(J,N),J=1,JMAX),N=1,modeles_ntot)
+C     READ(16,1550)(LAMBDH(J),J=1,d2%jmax)
+C     READ(16,1555) ((TH(J,N),J=1,d2%jmax),N=1,modeles_ntot)
 C 1555      FORMAT(5E12.4)
-              WRITE(17,1551)JMAX
-            WRITE(17,1550)((DL(JJ)+clam),JJ=1,JMAX)
-            WRITE(17,1555)((TAU(JJ,N),JJ=1,JMAX),N=1,modeles_ntot)
+              WRITE(17,1551)d2%jmax
+            WRITE(17,1550)((DL(JJ)+clam),JJ=1,d2%jmax)
+            WRITE(17,1555)((TAU(JJ,N),JJ=1,d2%jmax),N=1,modeles_ntot)
 
  1550 FORMAT(5F14.3)
  1551 FORMAT(I4)
@@ -379,21 +379,21 @@ C   ***************************************************************
 37    FORMAT(6X, 8E12.4)
 38    FORMAT (1H1,40X,'CALCUL DE TAU SELECTIF'/)
 40    FORMAT(I5)
-47    FORMAT(2X,'AB. METAUX=',E15.8,2X,11A4)
+47    FORMAT(2X,2X,11A4)
 70    FORMAT(' x_teff=',F7.0,3X,'LOG G=',F5.2,
      &         3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  modeles_nhe=',F6.3)
  73     FORMAT(5A4)
 72    FORMAT ('  NA=',I4,' NB=',I4,' clam=',F14.3,' C1=',E12.7,
      1  ' X=',E12.7,' J1=',I4,' d2%iqm=',I4,
      2 /10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
-75    FORMAT ('  d2%cmu=',F5.2,'  NZ=',I5)
+75    FORMAT ('  d2%cmu=',F5.2,'  d2%nz=',I5)
 79    FORMAT ('   DL   =',16F7.3)
 86    FORMAT ('  d2%ij    =',10I5)
 100   FORMAT(1X,5A4,2X,F6.0,3(1X,F6.2) )
 111   FORMAT(I6,2F6.1,2X,2F8.4)
 120   FORMAT (20A4)
 121   FORMAT (6X,'TAU',9X,'modeles_nh',11X,'modeles_teta     LOGPE     KC/NOYAU DE H
-     1 VT CGS      NE       TOTH'/)
+     1 d2%vt CGS      NE       TOTH'/)
 201   FORMAT (/16X,'modeles_nh',10X,'modeles_teta', 5X,'LOG PE',7X,'TAU')
 202   FORMAT ( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
 301   FORMAT(////,' AMORTISSEMENT RESONANCE')
@@ -403,7 +403,7 @@ C   ***************************************************************
 403   FORMAT(30X,'CALCUL DE L AMORTISSEMENT DE RESONNANCE')
 404   FORMAT(30X,'ON NEGLIGE AMORTISSEMENT DE RESONNANCE')
 405   FORMAT(30X,'PAS DE CONVOLUTION AVEC NOYAU DOPPLER')
-406   FORMAT(30X,'CONVOLUTION STARK-DOPPLER',10X,'VT=',
+406   FORMAT(30X,'CONVOLUTION STARK-DOPPLER',10X,'d2%vt=',
      1 F5.1,'KM/S')
 407   FORMAT(5E12.4)
 

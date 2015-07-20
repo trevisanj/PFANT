@@ -51,7 +51,7 @@ contains
 
     DIMENSION BIDON(50,99)
     DIMENSION L(50,99),C(20),DLAM(50),ALFA(50),LV(50),AL(50),VX(50),STOC(99),VAL(5),RES(20),U(20),Q(5),,X(50),d3_hyn(99)
-    COMMON /D2/VT(99),d2%cmu,NZ,IMAX,JMAX,d2%iqm,IJ(10)
+    COMMON /D2/d2%vt(99),d2%cmu,d2%nz,modeles_ntot,d2%jmax,d2%iqm,IJ(10)
     COMMON/D3/d3_hyn,az,d3_stark
 
     !     T1 PROFIL QUASISTAT. MOYEN POUR H ALPHA ET H BETA (DISTR. DU CHAMP
@@ -91,7 +91,7 @@ contains
     dcte = 2.*ck/(cmh*d2%cmu)
     ecte = 1.5127e-27
     ar = na
-    zr = nz
+    zr = d2%nz
     z2 = zr**2
     z3 = z2*zr
     z5 = z3*z2
@@ -129,7 +129,7 @@ contains
 
     !
     !     CALCUL D'UN BLEND
-    14 do 55 i = 1,imax
+    14 do 55 i = 1,modeles_ntot
       55 stoc(i)=0.
 
     if ((nbmax.eq.0).and.(nbmin.eq.0)) go to 15
@@ -224,7 +224,7 @@ contains
     205 modif_ih = i4
     call log_debug('VOUS ENTREZ DANS LA BOUCLE LA PLUS EXTERIEURE QUI '//&
      'PORTE SUR L INDICE DU NIVEAU DU MODELE'
-    do 17 i = 1,imax
+    do 17 i = 1,modeles_ntot
       write(lll,*)'      CALCUL AU NIVEAU',i,' DU MODELE'
       call log_debug(lll)
       t = 5040.39/modeles_teta(i)
@@ -233,7 +233,7 @@ contains
       cam1 = cne**0.1666667
       fo = 1.2532e-9*cam
       fac = 1.0e8*c1/fo
-      alfad = clam*sqrt(dcte*t+vt(i)*vt(i))/(fo*cl)
+      alfad = clam*sqrt(dcte*t+d2%vt(i)*d2%vt(i))/(fo*cl)
       dld = alfad*fo
       az(i)=ecte*d3_hyn(i)*cl2/(alfad*fo)
       ddop = 0.8325*alfad
@@ -281,12 +281,12 @@ contains
 
       !     CALCUL AUX DIFFERENTS POINTS DU PROFIL
 
-      !> @todo issue whaaaaat??? resetting JMAX???
-      19 jmax = 1
+      !> @todo issue whaaaaat??? resetting d2%jmax???
+      19 d2%jmax = 1
 
 
       call log_debug(' VOUS ENTEZ DANS LA BOUCLE INTERIEURE QUI PORTE SUR L INDICE DE POINT DU PROFIL')
-      20 do 1010 j = 1,jmax
+      20 do 1010 j = 1,d2%jmax
         alfa(j)=dlam(j)/fo
         beta = alfa(j)/cab
         iz = 1
@@ -489,14 +489,14 @@ contains
       if ((ll.eq.1).or.(j1.eq.1)) go to 17
       
       !     CALCUL DE LA DEMI LARGEUR STARK DS
-      do 1013 j = 1,jmax
+      do 1013 j = 1,d2%jmax
         lv(j)=l(j,i)
-        l1 = jmax-j+1
+        l1 = d2%jmax-j+1
         vx(l1)=alfa(j)
         1013 al(l1)=alog10(lv(j))
       if (.not.config_amores) go to 4013
-      call pronor(jmax,d2%iqm,ij,lv,alfa,fac,ax)
-      do 4006 j = 1,jmax
+      call pronor(d2%jmax,d2%iqm,ij,lv,alfa,fac,ax)
+      do 4006 j = 1,d2%jmax
       lv(j)=lv(j)*ax
       4006 bidon(j,i)=lv(j)
       if (ind.eq.0) then
@@ -518,10 +518,10 @@ contains
       
       1052 if (j.eq.2) go to 6000
       
-      ds = ft(truc,jmax,al,vx)
+      ds = ft(truc,d2%jmax,al,vx)
       go to 1057
       
-      6000 ds = alfa(2)+(alfa(2)-alfa(1))*(truc-al(jmax-1))/(al(jmax-1)-al(jmax))
+      6000 ds = alfa(2)+(alfa(2)-alfa(1))*(truc-al(d2%jmax-1))/(al(d2%jmax-1)-al(d2%jmax))
       
       1057 if (.not.d3_stark) go to 71
       if (ind.eq.0) then
@@ -544,28 +544,28 @@ contains
 
       1071 ib = 1
 
-      1072 call pronor(jmax,d2%iqm,ij,lv,alfa,fac,ax)
+      1072 call pronor(d2%jmax,d2%iqm,ij,lv,alfa,fac,ax)
       if (ind.eq.1) go to 28
       write(lll,'('' FACTEUR DE NORM.='',1P,E15.7)') ax
       call log_debug(lll)
       ! call log_debug('VOUS PASSEZ AU NIVEAU SUIVANT')
 
-      28 do 1006 j = 1,jmax
+      28 do 1006 j = 1,d2%jmax
         lv(j) = lv(j)*ax
         1006 bidon(j,i)=lv(j)
 
-      tempor = alfa(jmax)-0.7071068*alfad
+      tempor = alfa(d2%jmax)-0.7071068*alfad
       atest = 4.*aldp
-      do 1011 j = 1,jmax
+      do 1011 j = 1,d2%jmax
         if (alfa(j) .ge. atest) ib = 1
         go to (1073,1074), ib
 
         1073 if (tempor-alfa(j)) 1011,1011,1048
 
-        1048 call conf(dlam(j),dld,jmax,ris,lv,dlam)
+        1048 call conf(dlam(j),dld,d2%jmax,ris,lv,dlam)
         go to 1075
 
-        1074 call conv2(dlam(j),dld,jmax,d2%iqm,ij,ris,lv,dlam)
+        1074 call conv2(dlam(j),dld,d2%jmax,d2%iqm,ij,ris,lv,dlam)
 
         1075 l(j,i)=ris
         if (ind.eq.1) go to 1011
@@ -582,7 +582,7 @@ contains
       ! ERA POUR CHAQUE POINT DU PROFIL
       ! ON RESSERRE LA TABLE DE PHI,POUR V COMPRIS ENTRE 1 ET 4,SOIT modif_var COMPR
       ! ENTRE DLD/2 ET 2*DLD
-      4100 call ft2_hydro2(jmax,dlam,lv,modif_ih,modif_var,modif_f1)
+      4100 call ft2_hydro2(d2%jmax,dlam,lv,modif_ih,modif_var,modif_f1)
       ! call log_debug(' VOUS PASSEZ AU NIVEAU SUIVANT')
       b1 = dld/2
       b2 = 2*dld
@@ -617,8 +617,8 @@ contains
       modif_ii = modif_ii+1
       modif_v(modif_ii)=modif_v(modif_ii-1)+5*cty
       call hjen(az(i),modif_v,dld,modif_phi,modif_ii)
-      call conv4(dlam,dld,resc,jmax)
-      do 1017 k = 1,jmax
+      call conv4(dlam,dld,resc,d2%jmax)
+      do 1017 k = 1,d2%jmax
         l(k,i)=resc(k)
       1017 continue
     17 continue ! end of loop opened 400 lines above!
@@ -628,10 +628,10 @@ contains
       if (.not. d3_stark) go to 4011
       write(lll,'(''1'',''STARK='',//)')
       call log_debug(lll)
-      do 4010 i = 1,imax,5
+      do 4010 i = 1,modeles_ntot,5
         write(6,'('' COUCHE'',I4)') i
         call log_debug(lll)
-        write(6,'(8X,10E12.5)') (bidon(k,i),k=1,jmax)
+        write(6,'(8X,10E12.5)') (bidon(k,i),k=1,d2%jmax)
         call log_debug(lll)
       4010 continue
       4011 continue
@@ -642,14 +642,14 @@ contains
     if (k1.eq.1) go to 1027
 
     !     SEQUENCE POUR CALCUL DE BLEND
-    do 54 i = 1,imax
+    do 54 i = 1,modeles_ntot
       54 stoc(i)=stoc(i)+l(1,i)
   
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(6,'(5X,''NA='',I5,5X,''NB='',I5)')na,nb
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(l(1,i),i=1,imax)
+    write(6,'(8(1P,E15.7))')(l(1,i),i=1,modeles_ntot)
     call log_debug(lll)
 
     !***************************
@@ -674,14 +674,14 @@ contains
     go to 16
     3 nb = nb-1
     go to 16
-    48 do 4 i = 1,imax
+    48 do 4 i = 1,modeles_ntot
     4 l(1,i)=stoc(i)
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(lll,'(//10X,''COEF. SOMME (BLEND)'')')
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(L(1,I),I=1,IMAX)
+    write(6,'(8(1P,E15.7))')(L(1,I),I=1,modeles_ntot)
     call log_debug(lll)
 
     !***************************
@@ -708,7 +708,7 @@ contains
   !> @todo check nmax, mmax, may be tied with other values, e.g. tab(9,7)
 
   subroutine ameru (modeles_teta,pe_log,ppg,modeles_nh,lamb,pds, &
-   x,imax,jmax,al,bpl,tau,ix)
+   x,modeles_ntot,d2%jmax,al,bpl,tau,ix)
     real*4 modeles_nh,lamb
     dimension p(0:99), tau(50,0:99), bpl(0:99)
     dimension modeles_teta(99),pe_log(99),al(50,99),modeles_nh(99),dnh(99),ppg(99)
@@ -734,13 +734,13 @@ contains
     call log_debug(lll)
     write(lll,*)'      COEFFICIENTS D ABSORPTION PAR NOYAU D''H'
     call log_debug(lll)
-    write(lll6,116)lamb,jmax
-    format(3x,'lambda=  ',f10.3,10x,'jmax=  ',i5)
+    write(lll6,116)lamb,d2%jmax
+    format(3x,'lambda=  ',f10.3,10x,'d2%jmax=  ',i5)
     call log_debug(lll)
 
     !***************************
     4000 continue
-    do 1000 i = 1,imax
+    do 1000 i = 1,modeles_ntot
       pe = exp(2.302585*pe_log(i))
       temp = 2.5*alog(5040.39/modeles_teta(i))
       zkh = exp(-31.30364 *modeles_teta(i)+temp-1.098794 )
@@ -760,7 +760,7 @@ contains
 
       bpl(i)=cte*f2/(f3*lamb**3)
       
-      do j = 1,jmax
+      do j = 1,d2%jmax
         al(j,i)=f*al(j,i)
       end do
 
@@ -770,7 +770,7 @@ contains
       write(lll,110)i,f,u
       110 format(3x,'i= ',i4,3x,'n2/nhtot=',1p,e13.5,3x,'u=',1p,e13.5)
       call log_debug(lll)
-      write(lll,'(5E15.7)')(al(i,j),j = 1,jmax)
+      write(lll,'(5E15.7)')(al(i,j),j = 1,d2%jmax)
       call log_debug(lll)
 
     1000 continue
@@ -786,13 +786,13 @@ contains
     !
     ! CALCUL DE TAU
     p(0)=0
-    do  j = 1,jmax
-      do i = 1,imax
+    do  j = 1,d2%jmax
+      do i = 1,modeles_ntot
         y(i)=al(j,i)
       end do
       p(1)=modeles_nh(1)*(y(1)-(y(2)-y(1)) / (modeles_nh(2)-modeles_nh(1))*modeles_nh(1)/2.)
-      call integra(modeles_nh,y,p,imax,p(1))
-      do i = 0,imax
+      call integra(modeles_nh,y,p,modeles_ntot,p(1))
+      do i = 0,modeles_ntot
         tau(j,i)=p(i)*1.e-24
       end do
     end do
@@ -803,7 +803,7 @@ contains
 
   !> PRODUIT DE CONVOLUTION EFFECTUE PAR GAUSS HERMITE (N=2)
 
-  subroutine conf(x,y,jmax,res,tab,ab)
+  subroutine conf(x,y,d2%jmax,res,tab,ab)
     integer*2 ix
     dimension tab(50),ab(50)  
     real*8 :: v, h
@@ -816,9 +816,9 @@ contains
     arg = x-v*y*q
     avu = abs(arg)
 
-    if (avu .gt. ab(jmax)) go to 10
+    if (avu .gt. ab(d2%jmax)) go to 10
 
-    to_ = ft(avu,jmax,ab,tab)
+    to_ = ft(avu,d2%jmax,ab,tab)
     res = res+to_*h
     go to (2003,2004), ix
 
@@ -887,14 +887,14 @@ contains
 
   !> CONVOLUTION AVEC H%A,V<,INTEGRATION PAR SIMPSON
 
-  subroutine conv4(x,y,tab,jmax)
+  subroutine conv4(x,y,tab,d2%jmax)
     dimension n(6),pas(6)
     dimension x(50),tab(50),ac(220),phit(220)
     data n/11,21,23,171,191,211/
     data pas/0.001,0.01,0.045,0.1,0.25,0.5/
 
     epsi = 1.e-06
-    do 1017 kk = 1,jmax
+    do 1017 kk = 1,d2%jmax
       bol = x(kk)/y
       ir = 1
       q = 1.
