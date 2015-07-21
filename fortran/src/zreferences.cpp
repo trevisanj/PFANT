@@ -19,6 +19,8 @@
 
 @anchor ThickFont [ThickFont] http://patorjk.com/software/taag/#p=display&f=Thick&t=PRIVATE
 
+@anchor BannerFont [BannerFont] http://patorjk.com/software/taag/#p=display&f=Banner&t=AMERU
+
 @anchor FortranWiki [FortranWiki] http://fortranwiki.org/fortran/show/Command-line+arguments
 
 */
