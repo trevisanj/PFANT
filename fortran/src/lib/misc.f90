@@ -3,6 +3,7 @@
 !> @note Misc math functions are in module misc_math
 
 module misc
+  use logging
   implicit none
 contains
   !> Converts a string to lower case.
@@ -103,6 +104,38 @@ contains
       string = 'F'
     end if
   end function
+
+
+  !> Converts a logical value to 0/1
+
+  pure function logical2int(x) result (y)
+    logical, intent(in) :: x
+    integer, intent(out) :: y
+
+    if (x) then
+      y = 1
+    else
+      y = 2
+    end if
+  end function
+
+  !> Converts an integer to logical. Accepts only 0 or 1
+  !>
+  !> If argument is not (0 or 1), halts the program
+
+  pure function int2logical(x) result (y)
+    integer, intent(in) :: x
+    logical, intent(out) :: y
+
+    if (x .eq. 0) then
+      y = .false.
+    elseif (x .eq. 1) then
+      y = .true.
+    else
+      call pfant_halt('int2logical() accepts only 0/1, not '//int2str(x))
+    end if
+  end function
+
 
 
   !> Trims spaces at the right and adds a final slash, if the latter is not present.

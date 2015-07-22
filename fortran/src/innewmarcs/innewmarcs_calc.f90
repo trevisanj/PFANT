@@ -29,10 +29,14 @@ module innewmarcs_calc
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
 
+  !=====
+  ! x_* values
+  !=====
+
   ! x_* values may come either from command line or infile:main
   real*4 :: x_teff, x_glog, x_asalog
   character(LEN_TIRB) :: x_tirb
-  integer :: x_id
+  integer :: x_inum
 contains
 
   !=======================================================================================
@@ -49,20 +53,20 @@ contains
     !=====
     ! values in config_* variables have preference, but if they are uninitialized, will
     ! pick values from infile:main
-      x_teff = config_teff
-      x_glog = config_glog
-      x_asalog = config_asalog
-      x_tirb = config_tirb
-      x_id   = config_id
-    if (config_id .lt. 1) then
+     x_teff = config_teff
+     x_glog = config_glog
+     x_asalog = config_asalog
+     x_tirb = config_tirb
+     x_inum   = config_inum
+    if (config_inum .lt. 1) then
       call assure_read_main()
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
         ! be validated upon file reading.
         call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
       end if
-      x_id = main_inum
-      call parse_aux_log_assignment('x_id', int2str(x_id))
+      x_inum = main_inum
+      call parse_aux_log_assignment('x_inum', int2str(x_inum))
     end if
     if (config_tirb .eq. '?') then
       call assure_read_main()
@@ -317,7 +321,7 @@ contains
     end do
 
     ! Writes binary file
-    write(UNIT_MOD, rec=x_id) &
+    write(UNIT_MOD, rec=x_inum) &
      nntot,          &
      x_teff, &
      x_glog, &
@@ -327,7 +331,7 @@ contains
      tir,            &
      dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
-    write(UNIT_MOD,rec=x_id+1) 9999  ! 4 bytes, i guess
+    write(UNIT_MOD,rec=x_inum+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
     bid0 = 0.0

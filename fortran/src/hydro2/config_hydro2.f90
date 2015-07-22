@@ -14,15 +14,54 @@
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !> hydro2-specific configuration
+!>
+!> @todo issue ask blb lots of options in infile:main are also configurable through command-line
+!> and repeated in innewmarcs. Ít could be defined that the source for teff, glog, asalog, inum, ptdisk
+!> will be infile:main and remove these config options. But time will tell. With pypfant we will be able
+!> to see how the program will be used etc.
 
 module config_hydro2
   use config_base
   use misc
   implicit none
 
-  ! note: maintained variable names found in original hydro2.f
-  ! (with "config_" prefix)
-  character*20 :: config_ptdisk = 'unknown' !< option: --open_status
+  !> option: --teff
+  !> @sa get_teff()
+  real*4 :: config_teff = -1
+  !> option: --glog
+  !> @sa get_teff()
+  real*4 :: config_glog = -1
+  !> option: --asalog.
+  !> @note Name changed from "amet" to "asalog" to conform with pfant and hydro2
+  !> @sa get_asalog()
+  real*4 :: config_asalog = -1
+  !> option: --inum
+  !> @sa get_id()
+  integer :: config_inum = 0
+
+  !> option: --ptdisk
+  !>
+  !> This is about the "number of points" for subroutine fluxis(). Feeds into variable
+  !> x _ptdisk, which is actually logical. But I needed to make it integer here because
+  !> I need a tristate variable to flag whether it is kept unitialized (-1).
+  !> @li -1 unitialized (hydro2_init() will use main_ptdisk instead)
+  !> @li 0 false
+  !> @li 1 true
+  integer :: config_ptdisk = -1
+
+  !> option: --kik
+  !> @note This was called "IOP" but was changed to match variable name in pfant executable
+  integer :: config_kik = 0
+
+  !> option: --amores
+  !>
+  !> This is a tristate variable, as config_ptdisk, because it has no default and is
+  !> initially set to -1, meaning that it is unitialized.
+  integer config_amores = -1
+
+  !> option: --kq
+  integer config_kq = -1
+
   character*192 :: config_refdir = '.' !< option: --refdir
   character*64 :: &
    config_nomfimod = 'modeles.mod', & !< option: --nomfimod
@@ -43,8 +82,11 @@ module config_hydro2
   real*4 :: config_asalog = -1
   !> option: --id
   !> @sa get_id()
-  integer :: config_id = 0
-  
+  integer :: config_inum = 0
+
+  !> option: --nomplot
+  character*16 :: nomplot = '?'
+
 contains
   !=======================================================================================
   !> Initializes hydro2-specific options
@@ -53,35 +95,6 @@ contains
     !> k is the index of the last initialized option
     integer, intent(in) :: k
 
-    options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
-     'Directory containing reference atmospheric models.<br>'//&
-     'This directory must contain a file named "modelmap.dat" and<br>'//&
-     'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
-
-    k = k+1
-    options(k) = option('open_status',' ', .true., 'string', config_open_status, &
-     'File open mode for binary file<br>'//&
-     IND//'new: file must not exist<br>'//&
-     IND//'old: file must exist<br>'//&
-     IND//'replace: replaces file if exists, otherwise creates new')
-
-    k = k+1
-    options(k) = option('nomfimod',' ', .true., 'file name', config_nomfimod, &
-     'Name of binary file<br>'//&
-     '*Note*: file is opened in directory specified in --inputdir')
-
-    k = k+1
-    options(k) = option('nomfidat',' ', .true., 'file name', config_nomfidat, &
-     'Name of ASCII file<br>'//&
-     '*Note*: file is opened in directory specified in --inputdir')
-
-    k = k+1
-    options(k) = option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
-     '"Model name"')
-
-    k = k+1
-    options(k) = option('tirb',' ', .true., 'string up to 15 characters', config_tirb, &
-     '"Titre"')
 
     k = k+1
     options(k) = option('teff',' ', .true., 'real value', real42str(config_teff), &
@@ -96,8 +109,30 @@ contains
      '"[M/H]"')
 
     k = k+1
-    options(k) = option('id',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
-     'Record id within binary file')
+    options(k) = option('inum',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
+     'Record id within atmospheric model binary file')
+
+    k = k+1
+    options(k) = option('ptdisk',' ', .true., 'T/F', '<"main_ptdisk" variable from main configuration file>', &
+     'option for subroutine fluxis()<br>'//&
+     IND//'T: 7-point integration<br>'//&
+     IND//'F: 6- or 26-point integration, depending on option kik')
+
+    k = k+1
+    options(k) = option('kik', ' ', .TRUE., '0/1', int2str(config_kik), &
+     'option for subroutine fluxis()<br>'//&
+     IND//'0: integration using 6/7 points depending on option ptdisk;<br>'//&
+     IND//'1: 26-point integration)')
+
+    k = k+1
+    options(k) = option('amores',' ', .true., 'T/F', '(no default)', &
+     'AMOrtissement de RESonnance?')
+
+    k = k+1
+    options(k) = option('kq', ' ', .true., '0/1', '(no default)', &
+     '"Theorie"<br>'//&
+     IND//'0: THEORIE DE GRIEM;<br>'//&
+     IND//'1: THEORIE QUASISTATIQUE')
 
     config_init_options = k
   end
@@ -124,18 +159,10 @@ contains
     res = HANDLER_OK
 
     select case(opt%name)
-      case ('refdir')
-        call parse_aux_assign_fn(o_arg, config_refdir, 'refdir')
-      case ('open_status')
-        call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
-      case ('nomfimod')
-        call parse_aux_assign_fn(o_arg, config_nomfimod, 'nomfimod')
-      case ('nomfidat')
-        call parse_aux_assign_fn(o_arg, config_nomfidat, 'nomfidat')
-      case ('modcode')
-        call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
-      case ('tirb')
-        call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
+
+
+      !> @todo issue duplicated in innwemarcs, don't like this; better read only from
+      !> infile:main
       case ('teff')
         config_teff = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_teff', real42str(config_teff))
@@ -145,13 +172,36 @@ contains
       case ('asalog')
         config_asalog = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_asalog', real42str(config_asalog))
-      case ('id')
-        config_id = parse_aux_str2int(opt, o_arg)
-        if (config_id .lt. 1) then !#validation
+      case ('inum')
+        config_inum = parse_aux_str2int(opt, o_arg)
+        if (config_inum .lt. 1) then !#validation
           res = HANDLER_ERROR
         else
-          call parse_aux_log_assignment('config_id', int2str(config_id))
+          call parse_aux_log_assignment('config_inum', int2str(config_inum))
         end if
+
+
+
+      !>
+      !> @todo issue this is also available in infile:main
+      case ('ptdisk')
+        ! This conversion to/from integer is because config_ptdisk is a tristate variable,
+        ! but the user doesn't need to know this
+        ! See hydro2_init() to see how it is treated
+        config_ptdisk = logical2integer(parse_aux_str2logical(opt, o_arg))
+        call parse_aux_log_assignment('config_ptdisk', integer2logical(logical2str(config_ptdisk)))
+
+      case ('kik')
+        config_kik = parse_aux_str2int(opt, o_arg)
+        if (config_kik .eq. 0 .or. config_kik .eq. 1) then !#validation
+          call parse_aux_log_assignment('config_kik', int2str(config_kik))
+        else
+          res = HANDLER_ERROR
+        end if
+      case ('amores')
+        ! config_amores is also tristate, as config_ptdisk
+        config_amores = logical2integer(parse_aux_str2logical(opt, o_arg))
+        call parse_aux_log_assignment('config_amores', integer2logical(logical2str(config_amores)))
       case default
         ! if does not handle here, passes on to base handler
         res = config_base_handle_option(opt, o_arg)

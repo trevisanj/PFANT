@@ -46,9 +46,9 @@ module config_innewmarcs
   !> @note Name changed from "amet" to "asalog" to conform with pfant and hydro2
   !> @sa get_asalog()
   real*4 :: config_asalog = -1
-  !> option: --id
+  !> option: --inum
   !> @sa get_id()
-  integer :: config_id = 0
+  integer :: config_inum = 0
 contains
   !=======================================================================================
   !> Initializes innewmarcs-specific options
@@ -57,6 +57,7 @@ contains
     !> k is the index of the last initialized option
     integer, intent(in) :: k
 
+    k = k+1
     options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
      'Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
@@ -100,8 +101,8 @@ contains
      '"[M/H]"')
 
     k = k+1
-    options(k) = option('id',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
-     'Record id within binary file')
+    options(k) = option('inum',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
+     'Record id within atmospheric model binary file')
 
     config_init_options = k
   end
@@ -149,12 +150,12 @@ contains
       case ('asalog')
         config_asalog = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_asalog', real42str(config_asalog))
-      case ('id')
-        config_id = parse_aux_str2int(opt, o_arg)
-        if (config_id .lt. 1) then !#validation
+      case ('inum')
+        config_inum = parse_aux_str2int(opt, o_arg)
+        if (config_inum .lt. 1) then !#validation
           res = HANDLER_ERROR
         else
-          call parse_aux_log_assignment('config_id', int2str(config_id))
+          call parse_aux_log_assignment('config_inum', int2str(config_inum))
         end if
       case default
         ! if does not handle here, passes on to base handler
