@@ -140,8 +140,8 @@ contains
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
-  subroutine config_init()
-    execonf_name = 'innwemarcs'
+  subroutine config_hydro2_init()
+    execonf_name = 'hydro2'
     execonf_handle_option => config_handle_option
     execonf_init_options => config_init_options
     execonf_num_options = 10
@@ -151,7 +151,7 @@ contains
   !=======================================================================================
   !> Handles options for hydro2 executable
 
-  function config_handle_option(opt, o_arg) result(res)
+  function config_hydro2_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
     integer :: res
@@ -204,7 +204,7 @@ contains
         call parse_aux_log_assignment('config_amores', integer2logical(logical2str(config_amores)))
       case default
         ! if does not handle here, passes on to base handler
-        res = config_base_handle_option(opt, o_arg)
+        res = config_x_handle_option(opt, o_arg)
     end select
   end
 end

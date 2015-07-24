@@ -4,8 +4,92 @@
 !> were moved here.
 
 module hydro2_math
+  implicit none
 
 contains
+
+
+
+  !---------------------------------------------------------------------------------------
+  !> Similar to routines in flin.f90
+  !>
+
+  subroutine fluxis (t1, t2, b, ntot, ptdisk, mu, jmax, f, fc, kik)
+    real, intent(in) :: mu
+    logical, intent(in) :: ptdisk
+    real*8, intent(in), dimension(0:MAX_MODELES_NTOT) :: t2, b
+    real*8, intent(in) :: t1(50,0:MAX_MODELES_NTOT)
+    real*8, intent(in) :: ntot
+    real*8, intent(in) :: kik
+    real*8, intent(out) :: f(MAX_FILETOH_JMAX)
+    real*8, intent(out) :: fc
+
+    real*8 :: cc(26),tt(26),tta(6),cca(6),ttb(26),ccb(26), ttp(7),ccp(7)
+
+    real*8, dimension(0:MAX_MODELES_NTOT) :: t
+
+
+    DATA CCA/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
+    DATA TTA /0.038,0.154,0.335,0.793,1.467,3.890 /
+    DATA CCP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
+    DATA TTP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
+    DATA CCB/0.032517,0.111077,0.071279,0.154237,0.076944,0.143783, &
+     0.063174,0.108330,0.038767,0.059794,0.021983,0.034293,0.012815, &
+     0.020169,0.007616,0.012060,0.004595,0.007308,0.002802,0.004473, &
+     0.001724,0.002761,0.001578,0.002757,0.000396,0.002768/
+    DATA TTB/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
+     12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
+    if (ptdisk) then
+      ipoint = 7
+      do i = 1,ipoint
+        cc(i)=ccp(i)
+        tt(i)=ttp(i)*mu
+        end do
+    else
+      if (kik.eq.0) then
+        ipoint = 6
+        do i = 1,ipoint
+          cc(i)=cca(i)
+          tt(i)=tta(i)
+        end do
+      else
+        ipoint = 26
+        do i = 1,ipoint
+          cc(i)=ccb(i)
+          tt(i)=ttb(i)
+        end do
+      end if
+    end if
+
+    tolim = tt(ipoint)
+    if (t2(ntot).lt.tolim) then
+      call log_halt(' Modele trop court ')
+      write(lll,103) ntot,t2(ntot))
+      103 format(i10,5x,'modeles_t5l=',f10.4)
+      call pfant_halt(lll)
+    end if
+    !
+    fc = 0
+    do k = 1,ipoint
+      bbc = faitk30(tt(k),t2,b,ntot)
+      fc = fc+cc(k)*bbc
+    end do
+
+    do j = 1,jmax
+      fl_ = 0
+      do i = 0,ntot
+        t(i)=t1(j,i)+t2(i)
+      end do
+
+      do k = 1,ipoint
+        bb = faitk30(tt(k),t,b,ntot)
+        fl_ = fl_+cc(k)*bb
+      end do
+      f(j)=fl_
+    end do
+  end
+
+
 
 
   !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
