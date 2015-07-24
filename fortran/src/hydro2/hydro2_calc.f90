@@ -70,9 +70,9 @@ module hydro2_calc
   !> POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
   real*8 m_dlam(50)
 
-  
-  integer m_ij(10), &  !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
-          m_iqm        !< Apparently, (the number of discontinuities within m_dlam)-1
+
+  integer, parameter :: IQM = 9  !< Apparently, (the number of discontinuities within m_dlam)
+  integer m_ij(IQM+1)            !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
 
   real*8 m_hyn(99)
 
@@ -89,7 +89,7 @@ module hydro2_calc
 
 
   real*8 :: m_tau(MAX_FILETOH_JMAX,0:MAX_MODELES_NTOT)
-  real*8 :: m_al(MAX_FILETOH_JMAX,MAX_MODELES_NTOT)
+  real*8 :: m_al(MAX_FILETOH_JMAX, MAX_MODELES_NTOT)
   real*8, dimension(0:MAX_MODELES_NTOT) :: m_bpl, m_tauc
   real*8, dimension(MAX_FILETOH_JMAX) :: r
   real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, ne
@@ -145,9 +145,8 @@ contains
     ! This could be made into a config option or removed completely, if someone wishes either.
     logical, parameter :: ECRIT = .TRUE.
 
-    real*8, dimension(MAX_MODELES_NTOT) :: ne
-
-    real*8, dimension(MAX_MODELES_NTOT) :: fl
+    real*8, dimension(MAX_MODELES_NTOT) :: ne, fl
+    real*8 :: fc
 
 
     ! Note that elements within structure are copied
@@ -179,10 +178,10 @@ contains
     call log_info('    H gamma 2 5 4340.475 10.15   74.4776')
 
     if(ECRIT)   then
-      write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,m_iqm
-      72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,' J1=',I4,' m_iqm=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
+      write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
+      72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,' J1=',I4,' IQM=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
       call log_info(lll)
-      write(lll,86) (m_ij(iq),iq=1,m_iqm)
+      write(lll,86) (m_ij(iq),iq=1,IQM)
       86 format('  IJ    =',10I5)
       call log_info(lll)
 
@@ -270,7 +269,7 @@ contains
  
     !> @todo issue mmu was passed unitialized
     mmu = 0
-    call fluxis(m_tau,m_tauc,m_bpl,modeles_ntot,x_ptdisk,mmu,m_jmax,fl,fc, config_kik)
+    call fluxis(mmu, fl,fc)
     do j=1,m_jmax
       r(j)=fl(j)/fc
     end do
@@ -422,24 +421,16 @@ contains
   !> config_kq=1, CALCUL D UN PROFIL PUREMEMT QUASISTATIQUE POUR IONS + ELETRO
 
   subroutine raiehu()
-    real*4 m_al,lim,lac,lv
-    real*8 m_th%clam,xdp(50),xbdp
-
-    real*8, dimension(MAX_MODELES_NTOT) :: d3_az
 
 
-
+    ! Hard-wired configuration
     ! Verbose flag that was kept, but set internally, not as a parameter as originally
     ! SI IND=0,ON ECRIT LE DETAIL DES APPROX. PAR LESQUELLES m_al EST CALCU
     ! SI IND=1, PAS D'ECRITURE
     logical, parameter :: IND = 1
 
-
-    ! try to make them paRAMETERS, if doesnt work, keep upper case names anyway
-    real*8, dimension(20), parameter :: V1, V2, V3, V4, V5, R1, R2, R3, R4, R5
-    real*8, dimension(20,5) :: T1, T2
-    real*8, parameter :: CK,R,CKP,CL,CMH
-    real*8 :: d3_az(99)
+    ! Dimensions of some constants and variables below
+    integer, parameter :: MAX_IL = 20, MAX_M = 5
 
     !=====
     ! Old common "MODIF"
@@ -447,14 +438,27 @@ contains
     real*8 :: modif_var(220),modif_f1(220),modif_phi(300),modif_v(300), modif_v
     integer :: modif_ih,modif_ii
 
+    !=====
+    ! Other local variables
+    !=====
+    real*8, dimension(MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: bidon
+    real*8, dimension(MAX_FILETOH_JMAX) :: al_, alfa, lv, vx, x, xdp
+    real*8, dimension(MAX_MODELES_NTOT) :: stoc, az
+    real*8, dimension(MAX_IL) ::res
+    real*8, dimension(MAX_M) :: q
+    real*8 :: lim, lac, lv, xbdp, ax
 
-    DIMENSION BIDON(50,99)
-    DIMENSION m_al(50,99),ALFA(50),LV(50),al_(MAX_FILETOH_JMAX),VX(50),STOC(99),VAL(5),RES(20),U(20),Q(5),,X(50)
+    !=====
+    ! Constants
+    !=====
 
+    real*8, dimension(MAX_IL), parameter :: V1, V2, V3, V4, V5, R1, R2, R3, R4, R5, U
+    real*8, dimension(MAX_IL,MAX_M) :: T1, T2
+    real*8, parameter :: CK, R, CKP, CL, CMH
+    real*8, parameter :: VAL(MAX_M) 
     !     T1 PROFIL QUASISTAT. MOYEN POUR H ALPHA ET H BETA (DISTR. DU CHAMP
     !     ELEC. DE MOZER ET BARANGER) T1= CAB*S(ALPHA)
     !     T2 ID POUR LES AUTRES RAIES
-
     equivalence(V1(1),T1(1,1)),(V2(1),T1(1,2)),(V3(1),T1(1,3)),(V4(1),&
      T1(1,4)),(V5(1),T1(1,5))
     equivalence(R1(1),T2(1,1)),(R2(1),T2(1,2)),(R3(1),T2(1,3)),(R4(1),
@@ -482,6 +486,7 @@ contains
      0.01361,0.00985,0.00731,0.00555,0.00430,0.00342,0.00278,0.00192,0.00139,0.00104,0.00081/     
     data VAL/0.0,0.2,0.4,0.6,0.8/,&
          CK,R,CKP,CL,CMH /1.38E-16,109708.3,6.9952E-13,2.9978E10,1.673E-24/
+
 
     call log_debug(ENTERING//' PATIENCE VOUS ENTRER DANS RAIEHU')
 
@@ -644,7 +649,7 @@ contains
       fac = 1.0e8*m_th%c1/fo
       alfad = m_th%clam*sqrt(dcte*t+d2_vt(i)*d2_vt(i))/(fo*cl)
       dld = alfad*fo
-      d3_az(i)=ecte*m_hyn(i)*cl2/(alfad*fo)
+      az(i)=ecte*m_hyn(i)*cl2/(alfad*fo)
       ddop = 0.8325*alfad
       rsurl = 0.0898*cam1*t**(-0.5)
       kp = 0
@@ -855,26 +860,26 @@ contains
         if (kp.eq.1) go to 18
 
         kp = 1
-        do 90 il = 1,20
+        do 90 il = 1,MAX_IL
           if ((m_th%na.eq.2).and.((m_th%nb.eq.3).or.(m_th%nb.eq.4))) go to 92
           
-          do 91 m = 1,5
+          do 91 m = 1,MAX_M
             91 q(m)=t2(il,m)
           go to 90
 
-          92 do 93 m = 1,5
+          92 do 93 m = 1,MAX_M
             93 q(m)=t1(il,m)
 
-          90 res(il)=ft(rvar,5,val,q)
+          90 res(il)=ft(rvar,MAX_M,VAL,q)
 
         18 go to (1090,1091), iy
 
         !     CALCUL DE T(BETA,GAM)
-        1091 call malt(res,u,beta,gam,t)
+        1091 call malt(res, U, beta, gam, t, MAX_IL)
         go to 1036
 
         !     INTERPOLATION DANS TABLE DU PROFIL QUASIST. (VARIABLE BETA)
-        1090 tv = ft(qbeta,20,u,res)
+        1090 tv = ft(qbeta, MAX_IL, U, res)
         go to (6001,6002,6003), ig
 
         6001 t = tv/acte
@@ -903,11 +908,15 @@ contains
         l1 = m_jmax-j+1
         vx(l1)=alfa(j)
         1013 al_(l1)=alog10(lv(j))
+
       if (.not.config_amores) go to 4013
-      call pronor(m_jmax,m_iqm,m_ij,lv,alfa,fac,ax)
+
+      call pronor() ! calculates ax
+
       do 4006 j = 1,m_jmax
-      lv(j)=lv(j)*ax
-      4006 bidon(j,i)=lv(j)
+        lv(j)=lv(j)*ax
+        4006 bidon(j,i)=lv(j)
+
       if (IND.eq.0) then
         write(lll,'(/,6X,'' AX='',1PE13.5)') ax
         call log_debug(lll)
@@ -953,7 +962,7 @@ contains
 
       1071 ib = 1
 
-      1072 call pronor(m_jmax,m_iqm,m_ij,lv,alfa,fac,ax)
+      1072 call pronor() ! calculates ax
       if (IND.eq.1) go to 28
       write(lll,'('' FACTEUR DE NORM.='',1P,E15.7)') ax
       call log_debug(lll)
@@ -971,10 +980,10 @@ contains
 
         1073 if (tempor-alfa(j)) 1011,1011,1048
 
-        1048 call conf(m_dlam(j),dld,m_jmax,ris,lv,m_dlam)
+        1048 call conf(j)
         go to 1075
 
-        1074 call conv2(m_dlam(j),dld,m_jmax,m_iqm,m_ij,ris,lv,m_dlam)
+        1074 call conv2(m_dlam(j),dld,m_jmax,IQM,m_ij,ris,lv,m_dlam)
 
         1075 m_al(j,i)=ris
         if (IND.eq.1) go to 1011
@@ -1024,9 +1033,9 @@ contains
         modif_v(modif_ii)=cty*modif_var(ik)
       218 continue
       modif_ii = modif_ii+1
-      modif_v(modif_ii)=modif_v(modif_ii-1)+5*cty
-      call hjen(d3_az(i),modif_v,dld,modif_phi,modif_ii)
-      call conv4(m_dlam, dld, resc)
+      modif_v(modif_ii) = modif_v(modif_ii-1)+5*cty
+      call hjen(az(i), modif_v, dld, modif_phi, modif_ii)
+      call conv4(resc)
       do 1017 k = 1,m_jmax
         m_al(k,i)=resc(k)
       1017 continue
@@ -1110,22 +1119,20 @@ contains
     !>
     !> Contained inside raiehu() to share variables modif_*
 
-    subroutine conv4(x,y,result)
+    subroutine conv4()
       integer, parameter :: N(6) = (/11,21,23,171,191,211/)
       real*8, parameter :: PAS(6) /0.001,0.01,0.045,0.1,0.25,0.5/
 
-      real*8, intent(in) :: x(50), y
-      real*8, intent(out) :: res(50)
       real*8 :: ac(220), phit(220)
       real*8 :: bol, epsi, q, qy, ff1, ff2, ff4, res, res1, resg, som
       integer :: i, ir, j, k, kk
 
       epsi = 1.e-06
       do 1017 kk = 1,m_jmax
-        bol = x(kk)/y
+        bol = m_dlam(kk)/dld
         ir = 1
         q = 1.
-        qy = q/y
+        qy = q/dld
         25 res = 0.
         resg = 1.
         do 50 i = 1,modif_ih
@@ -1157,7 +1164,7 @@ contains
 
         45 go to (20,35),ir
 
-        20 if (x(kk).eq.0.) go to 30
+        20 if (m_dlam(kk).eq.0.) go to 30
         
         qy=-qy
         res1 = res
@@ -1165,12 +1172,94 @@ contains
         go to 25
 
         35 res = res1+res
-        result(kk)=res
+        resc(kk)=res
         go to 1017
 
         30 res = 2.*res
-        result(kk)=res
+        resc(kk)=res
       1017 continue
+    end
+
+
+    !-------------------------------------------------------------------------------------
+    !> NORMALISATION DU PROFIL DE STARK,INTEGRATION PAR SIMPSON
+    !>
+    !> Result goes in ax
+
+    subroutine pronor())
+      real*8 :: h(IQM), anor, s, sig, som
+      integer :: i, i1, k, k1, k2, k3, k4
+
+      h(1)=alfa(2)
+      do 10 i = 2,IQM
+        i1 = m_ij(i-1)
+        10 h(i)=alfa(i1+1)-alfa(i1)
+
+      som = 0.
+
+      do 12 i = 1,IQM
+        if (i.gt.1) go to 20
+        k1 = 1
+        k2 = m_ij(1)
+        go to 21
+
+        20 k1 = m_ij(i-1)
+        k2 = m_ij(i)
+
+        21 k3 = k1+1
+        k4 = k2-3
+        sig = lv(k1)+lv(k2)+4.*lv(k2-1)
+
+        if (k4.lt.k3) go to 16
+
+        do 13 k = k3,k4,2
+          13 sig = sig+4.*lv(k)+2.*lv(k+1)
+
+        16 s = sig*h(i)/3.
+
+        12 som = som+s
+
+      anor = 2.*som
+      ax = fac/anor
+    end
+
+    !-------------------------------------------------------------------------------------
+    !> PRODUIT DE CONVOLUTION EFFECTUE PAR GAUSS HERMITE (N=2)
+    !>
+    !> Results goes in variable ris
+
+
+    subroutine conf(j)
+      integer, intent(in) :: j
+      integer*2 ix
+      real*8 :: v, h, arg, avu, to_, q
+      data v, h /.7071068, .8862269/
+
+      ris = 0.
+      q = 1.
+      ix = 1
+      2002 continue
+      arg = m_dlam(j)-v*dld*q
+      avu = abs(arg)
+
+      if (avu .gt. m_dlam(m_jmax)) go to 10
+
+      to_ = ft(avu,m_jmax,m_dlam,lv)
+      ris = ris+to_*h
+      go to (2003,2004), ix
+
+      2003 continue
+      q = -1.
+      ix = 2
+      go to 2002
+
+      2004 continue
+      ris = ris/RPI
+      go to 11
+
+      10 continue
+      call pfant_halt('conf() says: "impossible"')  ! note: wasn't halting before 2015+
+      11 return
     end
 
   end
@@ -1291,93 +1380,6 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> PRODUIT DE CONVOLUTION EFFECTUE PAR GAUSS HERMITE (N=2)
-
-  subroutine conf(x,y,m_jmax,res,tab,ab)
-    integer*2 ix
-    dimension tab(50),ab(50)  
-    real*8 :: v, h
-    data v, h /.7071068, .8862269/
-
-    res = 0.
-    q = 1.
-    ix = 1
-    2002 continue
-    arg = x-v*y*q
-    avu = abs(arg)
-
-    if (avu .gt. ab(m_jmax)) go to 10
-
-    to_ = ft(avu,m_jmax,ab,tab)
-    res = res+to_*h
-    go to (2003,2004), ix
-
-    2003 continue
-    q = -1.
-    ix = 2
-    go to 2002
-
-    2004 continue
-    res = res/rpi
-    go to 11
-
-    10 continue
-    call pfant_halt('conf() says: "impossible"')  ! note: wasn't halting before 2015+
-  end
-
-
-  !---------------------------------------------------------------------------------------
-  !> PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
-  !> VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
-
-  subroutine conv2(x,y,jm,res,t,ab)
-    integer*2 ir
-    dimension m_ij(10),f(50),ab(50),h(10),v(50),t(50),ac(50)
-    bol = x/y
-    h(1) = ab(2)
-    do 10 i = 2,m_iqm
-       i1 = m_ij(i-1)
-       10 h(i)=ab(i1+1)-ab(i1)
-
-    do 11 n = 1,jm
-      11 v(n)=ab(n)/y
-
-    q = 1.
-    ir = 1
-
-    40 do 15 n = 1,jm
-      ac(n)=-(bol-q*v(n))**2
-      15 f(n)=t(n)*exp(ac(n))
-
-    som = 0.
-    do 12 i = 1,m_iqm
-      if (i.gt.1) go to 20
-      k1 = 1
-      k2 = m_ij(1)
-      go to 21
-      20 k1 = m_ij(i-1)
-      k2 = m_ij(i)
-      21 k3 = k1+1
-      k4 = k2-3
-      sig = f(k1)+f(k2)+4.*f(k2-1)
-      if (k4.lt.k3) go to 16
-      do 13 k = k3,k4,2
-      13 sig = sig+4.*f(k)+2.*f(k+1)
-      16 s = sig*h(i)/3.
-      12 som = som+s
-
-    go to(60,61),ir
-    60 s1 = som
-    q=-1.
-    ir = 2
-    go to 40
-    61 s2 = som
-    res = (s1+s2)/(rpi*y)
-  end
-
-
-
-  !---------------------------------------------------------------------------------------
   !> CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL.
   !> modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.KAP COEFFT D'ABSORPTION
   !> PAR NOYAU D'HYDROGENE.
@@ -1392,43 +1394,86 @@ contains
   end
 
 
+
+
   !---------------------------------------------------------------------------------------
-  !> NORMALISATION DU PROFIL DE STARK,INTEGRATION PAR SIMPSON
+  !> Calculates m_fl and m_fc
+  !>
+  !> Similar to routines in flin.f90
+  !>
+  !> 
 
-  subroutine pronor(jm,f,ab,z,ax)
-    dimension ab(50),h(10),f(50)
-    h(1)=ab(2)
-    do10i = 2,m_iqm
-    i1 = m_ij(i-1)
 
-    10 h(i)=ab(i1+1)-ab(i1)
-    som = 0.
+  subroutine fluxis(mmu, fl, fc)
+    real*8, intent(in) :: mmu
+    real*8, intent(out), dimension(MAX_MODELES_NTOT) :: fl
+    real*8, intent(out) :: fc
 
-    do 12 i = 1,m_iqm
-      if (i.gt.1) go to 20
-      k1 = 1
-      k2 = m_ij(1)
-      go to 21
+    real*8 :: cc(26),tt(26),tta(6),cca(6),ttb(26),ccb(26), ttp(7),ccp(7)
+    real*8, dimension(0:MAX_MODELES_NTOT) :: t
 
-      20 k1 = m_ij(i-1)
-      k2 = m_ij(i)
 
-      21 k3 = k1+1
-      k4 = k2-3
-      sig = f(k1)+f(k2)+4.*f(k2-1)
+    DATA CCA/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
+    DATA TTA /0.038,0.154,0.335,0.793,1.467,3.890 /
+    DATA CCP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
+    DATA TTP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
+    DATA CCB/0.032517,0.111077,0.071279,0.154237,0.076944,0.143783, &
+     0.063174,0.108330,0.038767,0.059794,0.021983,0.034293,0.012815, &
+     0.020169,0.007616,0.012060,0.004595,0.007308,0.002802,0.004473, &
+     0.001724,0.002761,0.001578,0.002757,0.000396,0.002768/
+    DATA TTB/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
+     12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
+    if (x_ptdisk) then
+      ipoint = 7
+      do i = 1,ipoint
+        cc(i)=ccp(i)
+        tt(i)=ttp(i)*mmu
+        end do
+    else
+      if (config_kik.eq.0) then
+        ipoint = 6
+        do i = 1,ipoint
+          cc(i)=cca(i)
+          tt(i)=tta(i)
+        end do
+      else
+        ipoint = 26
+        do i = 1,ipoint
+          cc(i)=ccb(i)
+          tt(i)=ttb(i)
+        end do
+      end if
+    end if
 
-      if (k4.lt.k3) go to 16
+    tolim = tt(ipoint)
+    if (m_tauc(modeles_ntot).lt.tolim) then
+      call log_halt(' Modele trop court ')
+      write(lll,103) modeles_ntot,m_tauc(modeles_ntot))
+      103 format(i10,5x,'modeles_t5l=',f10.4)
+      call pfant_halt(lll)
+    end if
+    !
+    fc = 0
+    do k = 1,ipoint
+      bbc = faitk30(tt(k),m_tauc,m_bpl,modeles_ntot)
+      fc = fc+cc(k)*bbc
+    end do
 
-      do 13 k = k3,k4,2
-        13 sig = sig+4.*f(k)+2.*f(k+1)
+    do j = 1,m_jmax
+      fl_ = 0
+      do i = 0,modeles_ntot
+        t(i)=m_tau(j,i)+m_tauc(i)
+      end do
 
-      16 s = sig*h(i)/3.
-
-      12 som = som+s
-
-    anor = 2.*som
-    ax = z/anor
+      do k = 1,ipoint
+        bb = faitk30(tt(k),t,m_bpl,modeles_ntot)
+        fl_ = fl_+cc(k)*bb
+      end do
+      fl(j)=fl_
+    end do
   end
+
+
 
 
   !> Initialization steps
@@ -1443,7 +1488,6 @@ contains
      .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
      1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
      15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
-    m_iqm = 9
     data m_ij /7,9,13,17,29,31,37,43,46,0/
 
     !=====

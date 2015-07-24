@@ -7,91 +7,6 @@ module hydro2_math
   implicit none
 
 contains
-
-
-
-  !---------------------------------------------------------------------------------------
-  !> Similar to routines in flin.f90
-  !>
-
-  subroutine fluxis (t1, t2, b, ntot, ptdisk, mu, jmax, f, fc, kik)
-    real, intent(in) :: mu
-    logical, intent(in) :: ptdisk
-    real*8, intent(in), dimension(0:MAX_MODELES_NTOT) :: t2, b
-    real*8, intent(in) :: t1(50,0:MAX_MODELES_NTOT)
-    real*8, intent(in) :: ntot
-    real*8, intent(in) :: kik
-    real*8, intent(out) :: f(MAX_FILETOH_JMAX)
-    real*8, intent(out) :: fc
-
-    real*8 :: cc(26),tt(26),tta(6),cca(6),ttb(26),ccb(26), ttp(7),ccp(7)
-
-    real*8, dimension(0:MAX_MODELES_NTOT) :: t
-
-
-    DATA CCA/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
-    DATA TTA /0.038,0.154,0.335,0.793,1.467,3.890 /
-    DATA CCP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
-    DATA TTP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
-    DATA CCB/0.032517,0.111077,0.071279,0.154237,0.076944,0.143783, &
-     0.063174,0.108330,0.038767,0.059794,0.021983,0.034293,0.012815, &
-     0.020169,0.007616,0.012060,0.004595,0.007308,0.002802,0.004473, &
-     0.001724,0.002761,0.001578,0.002757,0.000396,0.002768/
-    DATA TTB/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
-     12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
-    if (ptdisk) then
-      ipoint = 7
-      do i = 1,ipoint
-        cc(i)=ccp(i)
-        tt(i)=ttp(i)*mu
-        end do
-    else
-      if (kik.eq.0) then
-        ipoint = 6
-        do i = 1,ipoint
-          cc(i)=cca(i)
-          tt(i)=tta(i)
-        end do
-      else
-        ipoint = 26
-        do i = 1,ipoint
-          cc(i)=ccb(i)
-          tt(i)=ttb(i)
-        end do
-      end if
-    end if
-
-    tolim = tt(ipoint)
-    if (t2(ntot).lt.tolim) then
-      call log_halt(' Modele trop court ')
-      write(lll,103) ntot,t2(ntot))
-      103 format(i10,5x,'modeles_t5l=',f10.4)
-      call pfant_halt(lll)
-    end if
-    !
-    fc = 0
-    do k = 1,ipoint
-      bbc = faitk30(tt(k),t2,b,ntot)
-      fc = fc+cc(k)*bbc
-    end do
-
-    do j = 1,jmax
-      fl_ = 0
-      do i = 0,ntot
-        t(i)=t1(j,i)+t2(i)
-      end do
-
-      do k = 1,ipoint
-        bb = faitk30(tt(k),t,b,ntot)
-        fl_ = fl_+cc(k)*bb
-      end do
-      f(j)=fl_
-    end do
-  end
-
-
-
-
   !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
 
   subroutine hjen(a,vh,del,phi,ii)
@@ -145,6 +60,57 @@ contains
       phi(k) = (exp(-v**2)+a*h1)/(rpi*del)
     100 continue
   END
+
+
+
+  !---------------------------------------------------------------------------------------
+  !> PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
+  !> VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
+
+  subroutine conv2(x,y,jmax,iqm,ij,res,t,ab)
+    integer*2 ir
+    dimension m_ij(10),f(50),ab(50),h(10),v(50),t(50),ac(50)
+    bol = x/y
+    h(1) = ab(2)
+    do 10 i = 2,m_iqm
+       i1 = m_ij(i-1)
+       10 h(i)=ab(i1+1)-ab(i1)
+
+    do 11 n = 1,jmax
+      11 v(n)=ab(n)/y
+
+    q = 1.
+    ir = 1
+
+    40 do 15 n = 1,jmax
+      ac(n)=-(bol-q*v(n))**2
+      15 f(n)=t(n)*exp(ac(n))
+
+    som = 0.
+    do 12 i = 1,m_iqm
+      if (i.gt.1) go to 20
+      k1 = 1
+      k2 = m_ij(1)
+      go to 21
+      20 k1 = m_ij(i-1)
+      k2 = m_ij(i)
+      21 k3 = k1+1
+      k4 = k2-3
+      sig = f(k1)+f(k2)+4.*f(k2-1)
+      if (k4.lt.k3) go to 16
+      do 13 k = k3,k4,2
+      13 sig = sig+4.*f(k)+2.*f(k+1)
+      16 s = sig*h(i)/3.
+      12 som = som+s
+
+    go to(60,61),ir
+    60 s1 = som
+    q=-1.
+    ir = 2
+    go to 40
+    61 s2 = som
+    res = (s1+s2)/(rpi*y)
+  end
 
 
 
@@ -257,21 +223,27 @@ contains
 
 
 
+  !> ?doc?
 
-  subroutine malt(th,u,beta,gam,t)
-    dimension u(20),th(20),asm(150)
-    DATA PI/3.141593/, IBORN/20/
+  subroutine malt(th, u, beta, gam, t, max_il)
+    !> length of th and u
+    integer, intent(in) :: max_il
+    real*8, intent(in), dimension(max_il) :: th, u
+    eral*8, intent(in) :: beta, gam
+    real*8, intent(out) :: t
+    real*8, dimension(150) :: asm ! Can't track down why 150
+    DATA PI/3.141593/
 
-    t1 = ta(1.,beta,gam)
-    t2 = ta(-1.,beta,gam)
+    t1 = f_ta(1.,beta,gam)
+    t2 = f_ta(-1.,beta,gam)
     vu = 0.
     sigma = 0.
     avu = vu
-    to_ = ft(avu,iborn,u,th)
-    aso = as(gam,beta,0.,to_)
+    to_ = ft(avu,MAX_IL,u,th)
+    aso = f_as(gam,beta,0.,to_)
     pp = beta+gam
 
-    if (pp-20.) 48,47,47
+    if (pp-20.) 48,47,47  ! dunno if "20." is same as MAX_IL, but I think not, hope not
 
     47 h1 = pp/100.
     h2 = 0.
@@ -309,8 +281,8 @@ contains
     59 do 56 i = in,ir
       vu = vu+ah
       avu = abs(vu)
-      to_ = ft(avu,iborn,u,th)
-      56 asm(i)=as(gam,beta,vu,to_)
+      to_ = ft(avu,MAX_IL,u,th)
+      56 asm(i)=f_as(gam,beta,vu,to_)
 
     do 57 i = in,im,2
       sig = (1.333333*asm(i)+0.6666667*asm(i+1))*abs(ah)
@@ -341,13 +313,38 @@ contains
 
     63 tb = (sigma+sigma1+aso*(h1+0.5)/3.)/pi
     t = t1+t2+tb
+
+  contains
+    !> ?doc?
+
+    real*8 function f_as(vu_)
+      real*8, intent(in) :: vu_
+      f_as = to_*gam/(gam**2+(beta-vu_)**2)
+    end
+
+    !> ?doc?
+
+    real*8 function f_ta(x)
+      real*8, intent(in) :: x
+      real*8 :: aa, bb, q, rm, en, bca, aca, rca, fac, phi
+      bb = 2.*beta*x
+      aa = beta**2+gam**2
+      q = sqrt(aa)
+      rm = sqrt(2.*q-bb)
+      en = sqrt(2.*q+bb)
+      bca = bb**2
+      aca = aa**2
+      rca = sqrt(20.)
+      fac = (bca-aa)/(aca*q)
+      phi = bb/(4.*aca*rm)-fac/(4.*rm)
+      f_ta = (3.*gam/pi)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*alog((20.+rca*rm+q)/&
+       (20.-rca*rm+q))+(fac/(2.*en))*(pi/2.-atan((20.-q)/(rca*en)))+&
+       (bb/(2.*aca*en))*(pi-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
+    end
   end
 
 
 
-  function as(gam,beta,vu,to_)
-    as = to_*gam/(gam**2+(beta-vu)**2)
-  end
 
   !> INTERPOLATION DANS UN TABLEAU A DOUBLE ENTREE NOTE TAB
   !> XX=TABLE DE LA VARIABLE LIGNE.  YY=TABLE DE LA VARIABLE COLONNE.
@@ -405,22 +402,5 @@ contains
     mu = (u(2)-u(1))/(xx (nn+1)-xx (nn))
     nu = (u(3)-u(2))/(xx (nn+2)-xx(nn+1))
     pipe = u(1)+s0*mu+phi*(nu-mu)
-  end
-
-
-  function ta(x,beta,gam)
-    bb = 2.*beta*x
-    aa = beta**2+gam**2
-    q = sqrt(aa)
-    rm = sqrt(2.*q-bb)
-    en = sqrt(2.*q+bb)
-    bca = bb**2
-    aca = aa**2
-    rca = sqrt(20.)
-    fac = (bca-aa)/(aca*q)
-    phi = bb/(4.*aca*rm)-fac/(4.*rm)
-    ta = (3.*gam/pi)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*alog((20.+rca*rm+q)/&
-     (20.-rca*rm+q))+(fac/(2.*en))*(pi/2.-atan((20.-q)/(rca*en)))+&
-     (bb/(2.*aca*en))*(pi-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
   end
 end
