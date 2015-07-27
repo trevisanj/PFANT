@@ -2,33 +2,17 @@
 !>
 !> (si modeles_tit va bien modeles_tiabs du modele = absoru2_titre de absoru)
 
-!>                              - HYD2 -
-!>                   MEUDON OBSERVATORY
-!>           CALCUL DU PROFIL D UNE RAIE DE L HYDROGENE
-!>
-!>     CE PROGRAMME A ETE ECRIT PAR F.PRADERIE (ANN D AP 1967)
-!>     TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
-!>     G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
-!>
-!>     A linker avec absor et calhy
-!>     En sortie:
-!>     - Un fichier de trace compatible avec GRAFIC (Nom demande)
-!> !     - dans le cas ou on veut calculer la raie de D dans l'aile de H
-!> !      un fichier todeut.dat contenant le coef d'ab d'H a lambda de D
-
-
 module hydro2_calc
   use logging
+  use reader_thmap
   implicit none
 
   private
 
-  character*256 lll
-
   ! command-line option: config_zph (default=12) because it will no longer be taken from file
 
   real*8, parameter :: &
-   CSTE = 6.958258E-13
+   CSTE = 6.958258E-13, &
    RPI  = 1.772454, &
    PI   = 3.141593
 
@@ -68,22 +52,19 @@ module hydro2_calc
   integer m_jmax
 
   !> POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
-  real*8 m_dlam(50)
+  real*8 m_dlam(MAX_FILETOH_JMAX)
 
 
   integer, parameter :: IQM = 9  !< Apparently, (the number of discontinuities within m_dlam)
-  integer m_ij(IQM+1)            !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
+  !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
+  integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
+
+
 
   real*8 m_hyn(99)
 
 
   type(thmap_row) :: m_th
-
-
-
-
-
-
 
   real*8, dimension(MAX_MODELES_NTOT) :: m_pelog
 
@@ -100,7 +81,7 @@ module hydro2_calc
   !=====
 
   !> Maximum value for na/nb (superior/inferior level)
-  real*8, parameter :: MAX_LEVEL = 20 
+  real*8, parameter :: MAX_LEVEL = 20
 
   !> @todo issue was being used uninitialized
   real*8 :: c(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
@@ -136,7 +117,7 @@ contains
   !       could be later removed or changed to DEBUG level.
   !
 
-  subroutine hydro2(arg_th)
+  subroutine hydro2_calc_(arg_th)
     !> Hydrogen line specification
     type(thmap_row), intent(in) :: arg_th
 
@@ -181,7 +162,7 @@ contains
       write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
       72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,' J1=',I4,' IQM=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
       call log_info(lll)
-      write(lll,86) (m_ij(iq),iq=1,IQM)
+      write(lll,86) (IJ(iq),iq=1,IQM)
       86 format('  IJ    =',10I5)
       call log_info(lll)
 
@@ -204,7 +185,7 @@ contains
 
     call abonio()
 
-      
+
 
     if(ECRIT) then
       call log_info(modeles_tit)
@@ -266,7 +247,7 @@ contains
       write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89')
       call pfant_halt(lll)
     end if
- 
+
     !> @todo issue mmu was passed unitialized
     mmu = 0
     call fluxis(mmu, fl,fc)
@@ -329,18 +310,18 @@ contains
     write(17,'(5e12.4)')((m_tau(jj,n),jj=1,m_jmax),n=1,modeles_ntot)
 
     call log_info('TRAVAIL TERMINE')
-  end  
+  end
 
 
   !---------------------------------------------------------------------------------------
 
-  !    #    ######  ####### #     # ### ####### 
-  !   # #   #     # #     # ##    #  #  #     # 
-  !  #   #  #     # #     # # #   #  #  #     # 
-  ! #     # ######  #     # #  #  #  #  #     # 
-  ! ####### #     # #     # #   # #  #  #     # 
-  ! #     # #     # #     # #    ##  #  #     # 
-  ! #     # ######  ####### #     # ### ####### 
+  !    #    ######  ####### #     # ### #######
+  !   # #   #     # #     # ##    #  #  #     #
+  !  #   #  #     # #     # # #   #  #  #     #
+  ! #     # ######  #     # #  #  #  #  #     #
+  ! ####### #     # #     # #   # #  #  #     #
+  ! #     # #     # #     # #    ##  #  #     #
+  ! #     # ######  ####### #     # ### #######
 
   !> Calcule l'abondance des elements en tenant compte
   !> d'une eventuelle surabondance des elements alfa
@@ -358,7 +339,7 @@ contains
     real*8 coefalf, asasol
 
     !> nbre d'elements alfa reconnus par leur masse ALFAM
-    integer, parameter :: NALF = 7   
+    integer, parameter :: NALF = 7
     real*8, parameter :: ALFAM(7) = (/16.,20.2,24.3,27.,28.,32.,40./)
 
     call log_debug(ENTERING//' abonio')
@@ -401,13 +382,13 @@ contains
 
   !---------------------------------------------------------------------------------------
 
-  ! ######     #    ### ####### #     # #     # 
-  ! #     #   # #    #  #       #     # #     # 
-  ! #     #  #   #   #  #       #     # #     # 
-  ! ######  #     #  #  #####   ####### #     # 
-  ! #   #   #######  #  #       #     # #     # 
-  ! #    #  #     #  #  #       #     # #     # 
-  ! #     # #     # ### ####### #     #  #####  
+  ! ######     #    ### ####### #     # #     #
+  ! #     #   # #    #  #       #     # #     #
+  ! #     #  #   #   #  #       #     # #     #
+  ! ######  #     #  #  #####   ####### #     #
+  ! #   #   #######  #  #       #     # #     #
+  ! #    #  #     #  #  #       #     # #     #
+  ! #     # #     # ### ####### #     #  #####
 
   !> L EST LE COEFFICIENT D'ABSORPTION PAR PARTICULE ABSORBANTE
   !>
@@ -415,7 +396,7 @@ contains
   !> SI DANS CE CAS,J1=2 ON SOMME LES COEFF. D'ABSORPTION DE PLUSIEURS
   !> RAIES D'UNE MEME SERIE
   !> LL=2,CALCUL EN UN OU PLUSIEURS POINTS SPECIFIES PAR DELTA LAMBDA
-  !> 
+  !>
   !> SI DANS CE CAS,J1=1,LA CONVOLUTION FINALE EST SAUTEE.
   !>
   !> config_kq=1, CALCUL D UN PROFIL PUREMEMT QUASISTATIQUE POUR IONS + ELETRO
@@ -435,7 +416,7 @@ contains
     !=====
     ! Old common "MODIF"
     !=====
-    real*8 :: modif_var(220),modif_f1(220),modif_phi(300),modif_v(300), modif_v
+    real*8 :: modif_var(220),modif_f1(220),modif_phi(MAX_HJEN_II),modif_v(MAX_HJEN_II), modif_v
     integer :: modif_ih,modif_ii
 
     !=====
@@ -455,7 +436,7 @@ contains
     real*8, dimension(MAX_IL), parameter :: V1, V2, V3, V4, V5, R1, R2, R3, R4, R5, U
     real*8, dimension(MAX_IL,MAX_M) :: T1, T2
     real*8, parameter :: CK, R, CKP, CL, CMH
-    real*8, parameter :: VAL(MAX_M) 
+    real*8, parameter :: VAL(MAX_M)
     !     T1 PROFIL QUASISTAT. MOYEN POUR H ALPHA ET H BETA (DISTR. DU CHAMP
     !     ELEC. DE MOZER ET BARANGER) T1= CAB*S(ALPHA)
     !     T2 ID POUR LES AUTRES RAIES
@@ -483,7 +464,7 @@ contains
     data R4/0.14759,0.14595,0.13621,0.11587,0.09529,0.07484,0.05809,0.03665,0.02367,&
      0.01619,0.01133,0.00840,0.00630,0.00489,0.00384,0.00305,0.00206,0.00149,0.00111,0.00085/
     data R5/0.17122,0.16737,0.14580,0.11845,0.09197,0.07139,0.05415,0.03188,0.02012,&
-     0.01361,0.00985,0.00731,0.00555,0.00430,0.00342,0.00278,0.00192,0.00139,0.00104,0.00081/     
+     0.01361,0.00985,0.00731,0.00555,0.00430,0.00342,0.00278,0.00192,0.00139,0.00104,0.00081/
     data VAL/0.0,0.2,0.4,0.6,0.8/,&
          CK,R,CKP,CL,CMH /1.38E-16,109708.3,6.9952E-13,2.9978E10,1.673E-24/
 
@@ -565,7 +546,7 @@ contains
     !>
     !> @todo issue c being used but nothing was ever assigned to this variable
     !>
-    m_th%c1 = c(m_th%nb) 
+    m_th%c1 = c(m_th%nb)
 
     !> @todo issue overwriting data vector???
     m_dlam(1)=delta
@@ -616,23 +597,23 @@ contains
     200 i4 = 21
     pas = 0.01
     go to 260
-    
+
     201 i4 = 23
     pas = 0.045
     go to 260
-    
+
     202 i4 = 171
     pas = 0.10
     go to 260
-    
+
     203 i4 = 191
     pas = 0.25
     go to 260
-    
+
     204 i4 = 211
     pas = 0.5
     go to 260
-    
+
     !
     !     CALCUL DE QUANTITES DEPENDANT DU MODELE
     205 modif_ih = i4
@@ -682,7 +663,7 @@ contains
 
       call log_debug('1 RSURL        FZERO        ALFAD        NE DELIE        DELOM        DELP         LIM           I')
       write (lll, '(3X,1P,8E13.5,4X,I2)') rsurl,fo,alfad,cne,delie,delom,delp,lim,i
-      call log_debug(lll)     
+      call log_debug(lll)
       go to 94
 
       120 if (IND.eq.1) go to 94
@@ -732,7 +713,7 @@ contains
 
         1012 alfa(j)=alfa(j)/acte
 
-        2011 if (IND.eq.1) go to 2015      
+        2011 if (IND.eq.1) go to 2015
         call log_debug(' APPROX.QUASISTATIQUE POUR IONS + ELECTRONS')
 
         2015 ci = 2.*s1
@@ -809,7 +790,7 @@ contains
         !     FORMULES NON ASYMPTOTIQUES
         21 iz = 2
         if (config_kq.eq.1) go to 100
-        
+
         go to 110
 
         53 if (m_th%na.eq.3) go to 84
@@ -862,7 +843,7 @@ contains
         kp = 1
         do 90 il = 1,MAX_IL
           if ((m_th%na.eq.2).and.((m_th%nb.eq.3).or.(m_th%nb.eq.4))) go to 92
-          
+
           do 91 m = 1,MAX_M
             91 q(m)=t2(il,m)
           go to 90
@@ -901,7 +882,7 @@ contains
       1010 continue
 
       if ((LL.eq.1).or.(j1.eq.1)) go to 17
-      
+
       !     CALCUL DE LA DEMI LARGEUR STARK DS
       do 1013 j = 1,m_jmax
         lv(j)=m_al(j,i)
@@ -925,22 +906,22 @@ contains
       4013 lac = m_al(1,i)/2.
       truc = alog10(lac)
       j = 2
-      
+
       1053 if (lac-m_al(j,i)) 1050,1051,1052
-      
+
       1050 j = j+1
       go to 1053
-      
+
       1051 ds = alfa(j)
       go to 1057
-      
+
       1052 if (j.eq.2) go to 6000
-      
+
       ds = ft(truc,m_jmax,al_,vx)
       go to 1057
-      
+
       6000 ds = alfa(2)+(alfa(2)-alfa(1))*(truc-al_(m_jmax-1))/(al_(m_jmax-1)-al_(m_jmax))
-      
+
       1057 if (.not.IS_STARK) go to 71
       if (IND.eq.0) then
         write(6,'(/,''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
@@ -983,7 +964,7 @@ contains
         1048 call conf(j)
         go to 1075
 
-        1074 call conv2(m_dlam(j),dld,m_jmax,IQM,m_ij,ris,lv,m_dlam)
+        1074 call conv2(m_dlam(j),dld,m_jmax,IQM,IJ,ris,lv,m_dlam)
 
         1075 m_al(j,i)=ris
         if (IND.eq.1) go to 1011
@@ -1035,7 +1016,7 @@ contains
       modif_ii = modif_ii+1
       modif_v(modif_ii) = modif_v(modif_ii-1)+5*cty
       call hjen(az(i), modif_v, dld, modif_phi, modif_ii)
-      call conv4(resc)
+      call conv4()
       do 1017 k = 1,m_jmax
         m_al(k,i)=resc(k)
       1017 continue
@@ -1054,15 +1035,15 @@ contains
       4010 continue
       4011 continue
     end if
-    
-    
+
+
     if (j1.ne.2) go to 1027
     if (k1.eq.1) go to 1027
 
     !     SEQUENCE POUR CALCUL DE BLEND
     do 54 i = 1,modeles_ntot
       54 stoc(i)=stoc(i)+m_al(1,i)
-  
+
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(6,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
@@ -1114,6 +1095,8 @@ contains
     return
   contains
 
+
+
     !---------------------------------------------------------------------------------------
     !> CONVOLUTION AVEC H(A,V),INTEGRATION PAR SIMPSON
     !>
@@ -1144,7 +1127,7 @@ contains
         i = 1
         k = 1
         som = modif_f1(1)*phit(1)
-        
+
         do 10 i = 2,modif_ih,2
           ff4 = 4*modif_f1(i)*phit(i)
           j = i+1
@@ -1165,7 +1148,7 @@ contains
         45 go to (20,35),ir
 
         20 if (m_dlam(kk).eq.0.) go to 30
-        
+
         qy=-qy
         res1 = res
         ir = 2
@@ -1181,6 +1164,61 @@ contains
     end
 
 
+    !---------------------------------------------------------------------------------------
+    !> PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
+    !> VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
+    !>
+    !> Result goes in variable ris
+
+    subroutine conv2(j)
+      integer, intent(in) :: j
+
+      real*8 :: h(10), q, bol, s, som, s1, s2, sig
+      real*8, dimension(MAX_FILETOH_JMAX) :: v, ac, f
+      integer :: ir, n, i, i1, k, k1, k2, k3, k4
+
+      bol = m_dlam(j)/dld
+      h(1) = m_dlam(2)
+      do 10 i = 2,IQM
+         i1 = IJ(i-1)
+         10 h(i)=m_dlam(i1+1)-m_dlam(i1)
+
+      do 11 n = 1, m_jmax
+        11 v(n) = m_dlam(n)/dld
+
+      q = 1.
+      ir = 1
+
+      40 do 15 n = 1,m_jmax
+        ac(n) = -(bol-q*v(n))**2
+        15 f(n) = lv(n)*exp(ac(n))
+
+      som = 0.
+      do 12 i = 1,IQM
+        if (i.gt.1) go to 20
+        k1 = 1
+        k2 = IJ(1)
+        go to 21
+        20 k1 = IJ(i-1)
+        k2 = IJ(i)
+        21 k3 = k1+1
+        k4 = k2-3
+        sig = f(k1)+f(k2)+4.*f(k2-1)
+        if (k4.lt.k3) go to 16
+        do 13 k = k3,k4,2
+        13 sig = sig+4.*f(k)+2.*f(k+1)
+        16 s = sig*h(i)/3.
+        12 som = som+s
+
+      go to(60,61),ir
+      60 s1 = som
+      q=-1.
+      ir = 2
+      go to 40
+      61 s2 = som
+      ris = (s1+s2)/(RPI*dld)
+    end
+
     !-------------------------------------------------------------------------------------
     !> NORMALISATION DU PROFIL DE STARK,INTEGRATION PAR SIMPSON
     !>
@@ -1192,7 +1230,7 @@ contains
 
       h(1)=alfa(2)
       do 10 i = 2,IQM
-        i1 = m_ij(i-1)
+        i1 = IJ(i-1)
         10 h(i)=alfa(i1+1)-alfa(i1)
 
       som = 0.
@@ -1200,11 +1238,11 @@ contains
       do 12 i = 1,IQM
         if (i.gt.1) go to 20
         k1 = 1
-        k2 = m_ij(1)
+        k2 = IJ(1)
         go to 21
 
-        20 k1 = m_ij(i-1)
-        k2 = m_ij(i)
+        20 k1 = IJ(i-1)
+        k2 = IJ(i)
 
         21 k3 = k1+1
         k4 = k2-3
@@ -1267,13 +1305,13 @@ contains
 
   !---------------------------------------------------------------------------------------
 
-  !    #    #     # ####### ######  #     # 
-  !   # #   ##   ## #       #     # #     # 
-  !  #   #  # # # # #       #     # #     # 
-  ! #     # #  #  # #####   ######  #     # 
-  ! ####### #     # #       #   #   #     # 
-  ! #     # #     # #       #    #  #     # 
-  ! #     # #     # ####### #     #  #####  
+  !    #    #     # ####### ######  #     #
+  !   # #   ##   ## #       #     # #     #
+  !  #   #  # # # # #       #     # #     #
+  ! #     # #  #  # #####   ######  #     #
+  ! ####### #     # #       #   #   #     #
+  ! #     # #     # #       #    #  #     #
+  ! #     # #     # ####### #     #  #####
 
   !> CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION
   !> EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR
@@ -1282,15 +1320,18 @@ contains
   give attention below
   !> @todo check nmax, mmax, may be tied with other values, e.g. tab(9,7)
 
-  subroutine ameru(m_al,m_bpl,m_tau)
-    dimension p(0:99), m_tau(50,0:99), m_bpl(0:99)
-    dimension m_al(50,99),dnh(99)
+  subroutine ameru()
+    dimension p(0:99)
+    dimension dnh(99)
     dimension tet(7),alp(9),tab(9,7)
-    dimension y(99)  
+    dimension y(99)
 
     ! tab=log 10(u), u=fonction de partition de h
-    data alp/5.,4.,3.,2.,1.,0.,-1.,-2.,-3./,mmax,nmax/9,7/,tet/0.1,0.2,0.3,0.4,0.5,0.6,0.7/
-    data tab/1.43,1.83,2.28,2.77,3.27,3.77,4.27,4.77,5.27,   & 
+    data alp /5.,4.,3.,2.,1.,0.,-1.,-2.,-3./, &
+         mmax,nmax /9,7/, &
+         tet /0.1,0.2,0.3,0.4,0.5,0.6,0.7/
+    data tab &
+    /1.43,1.83,2.28,2.77,3.27,3.77,4.27,4.77,5.27, &
      0.47,0.62,0.91,1.31,1.78,2.26,2.75,3.25,3.76, &
      0.31,0.32,0.35,0.42,0.61,0.93,1.35,1.82,2.32, &
      0.30,0.30,0.30,0.31,0.32,0.35,0.44,0.65,0.99, &
@@ -1299,7 +1340,6 @@ contains
     real*8, parameter :: CTE = 3.972257e+8, C1_ = 2.8546e+4
 
     real*8 :: pds
-
 
     pds = 2*m_th%na**2
 
@@ -1327,7 +1367,7 @@ contains
       f3 = 1.-f2
 
       if ((modeles_teta(i).ge.0.7).or.(m_pelog(i).le.-3.)) go to 5
-      
+
       uv = pipe(modeles_teta(i),m_pelog(i),tet,alp,tab,nmax,mmax)
       u = exp(2.302585 *uv)
       go to 6
@@ -1337,7 +1377,7 @@ contains
       6 f = pds*f1*f3/u*10.**(-m_th%kiex*modeles_teta(i))
 
       m_bpl(i)=CTE*f2/(f3*m_th%clam**3)
-      
+
       do j = 1,m_jmax
         m_al(j,i)=f*m_al(j,i)
       end do
@@ -1381,18 +1421,17 @@ contains
 
   !---------------------------------------------------------------------------------------
   !> CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL.
-  !> modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.KAP COEFFT D'ABSORPTION
+  !> modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.m_kc COEFFT D'ABSORPTION
   !> PAR NOYAU D'HYDROGENE.
+  !>
+  !>
+  !> Output goes
 
-  subroutine optic1(kap,m_tauc)
-    real kap
-    dimension m_tauc(0:99)
-    dimension kap(99)
+  subroutine optic1()
     m_tauc(0)=0.
-    m_tauc(1)=modeles_nh(1)*(kap(1) - (kap(2)-kap(1))/(modeles_nh(2)-modeles_nh(1))*modeles_nh(1)/2.)
-    call integra(modeles_nh,kap,m_tauc,modeles_ntot,m_tauc(1))
+    m_tauc(1)=modeles_nh(1)*(m_kc(1) - (m_kc(2)-m_kc(1))/(modeles_nh(2)-modeles_nh(1))*modeles_nh(1)/2.)
+    call integra(modeles_nh,m_kc,m_tauc,modeles_ntot,m_tauc(1))
   end
-
 
 
 
@@ -1401,7 +1440,7 @@ contains
   !>
   !> Similar to routines in flin.f90
   !>
-  !> 
+  !>
 
 
   subroutine fluxis(mmu, fl, fc)
@@ -1488,7 +1527,6 @@ contains
      .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
      1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
      15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
-    data m_ij /7,9,13,17,29,31,37,43,46,0/
 
     !=====
     ! Assigns x_*

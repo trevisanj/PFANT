@@ -143,13 +143,6 @@ contains
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
 
-    if (flag_hydro2) then
-      MAX_WLH_I2 = 14110.
-    else
-      MAX_WLH_I2 = 1200.
-    end if
-
-
     !call log_debug(ENTERING//'absoru_()')
 
     ilt = callam
@@ -205,8 +198,8 @@ contains
       go to 9023
 
       9020 continue
-      if (wl .gt. MAX_WLH_I2) go to 9021
-      wlh = MAX_WLH_I2
+      if (wl .gt. 1200.0) go to 9021
+      wlh = 1200.0
       go to 9022
 
       9021 continue
@@ -223,16 +216,16 @@ contains
     ilt=callam-1
 
     5018 continue
-    call gaunth(wl)
+    call gaunth(wl, flag_hydro2)
 
     5017  continue
     call tempa(wl,th,calth,callam)
     if (calth.eq.2) go to 9007
-    call sahath(th)
+    call sahath(th, flag_hydro2)
 
     9007 continue
     if ((calth.eq.2).and.(callam.eq.2)) go to 9006
-    call athyhe (wl,th,callam,zzk)
+    call athyhe (wl,th,callam,zzk, flag_hydro2)
 
     9006 continue
     if (calmet.eq.1) go to 9003 ! note: will go to 9003 anyway
@@ -659,6 +652,7 @@ contains
     integer callam, jhe, jhep, jhem
     real*8 wl, th
     real*8 :: tgaunt(5),trhog(5),opnu(46),zzk(11,2), expon(2)
+    real*8 :: ezut1, ezut2, zut1, zut2
     real*8, parameter ::                                  &
      expo(2) = (/-68.88230,-71.45087/),                   &
      cons(2) = (/3.3,3.6/),                               &
@@ -771,7 +765,7 @@ contains
         if (zut2 .gt. -38) then
           ezut1 = exp(zut1)
           ezut2 = exp(zut2)
-          opnu(j)=2.51e-3*grdm(j)*(ezut1-ezut2)
+          opnu(j)=2.51e-3*au_grdm(j)*(ezut1-ezut2)
         else
           if(zut1 .gt. -38) then
             ezut1 = exp(zut1)

@@ -6,111 +6,76 @@
 module hydro2_math
   implicit none
 
+  !> Maximum possible value for hjen() ii argument
+  integer, parameter :: MAX_HJEN_II = 300
+
 contains
   !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
 
   subroutine hjen(a,vh,del,phi,ii)
-    dimension h11(41),h12(43), v1(43),v2(43)
-    dimension vh(300)
-    data H11/-1.128380,-1.105960,-1.040480,-0.937030,-0.803460, &
-             -0.649450,-0.485520,-0.321920,-0.167720,-0.030120, &
-             +0.085940,+0.177890, 0.245370, 0.289810, 0.313940, &
-              0.321300, 0.315730, 0.300940, 0.280270, 0.256480, &
-              0.231726, 0.207528, 0.184882, 0.164341, 0.146128, &
-              0.130236, 0.116515, 0.104739, 0.094653, 0.086005, &
-              0.078565, 0.072129, 0.066526, 0.061615, 0.057281, &
-              0.053430, 0.049988, 0.046894, 0.044098, 0.041561, &
-              0.039250/
-    data H12/0.0440980,0.0392500,0.0351950,0.0317620,0.0288240, &
-             0.0262880,0.0240810,0.0221460,0.0204410,0.0189290, &
-             0.0175820,0.0163750,0.0152910,0.0143120,0.0134260, &
-             0.0126200,0.0118860,0.0112145,0.0105990,0.0100332, &
-             0.0095119,0.0090306,0.0085852,0.0081722,0.0077885, &
-             0.0074314,0.0070985,0.0067875,0.0064967,0.0062243, &
-             0.0059688,0.0057287,0.0055030,0.0052903,0.0050898, &
-             0.0049006,0.0047217,0.0045526,0.0043924,0.0042405, &
-             0.0040964,0.0039595,0.0038308/
+    real*8, intent(in) :: a, vh(MAX_HJEN_II), del
+    integer, intent(in) :: ii !< Length of vh and phi vectors
+    real*8, intent(out) :: phi(MAX_HJEN_II)
+
+    real*8 :: v1(43),v2(43)
+    real*8, parameter :: &
+     H11(41) = (/ &
+      -1.128380,-1.105960,-1.040480,-0.937030,-0.803460, &
+      -0.649450,-0.485520,-0.321920,-0.167720,-0.030120, &
+      +0.085940,+0.177890, 0.245370, 0.289810, 0.313940, &
+       0.321300, 0.315730, 0.300940, 0.280270, 0.256480, &
+       0.231726, 0.207528, 0.184882, 0.164341, 0.146128, &
+       0.130236, 0.116515, 0.104739, 0.094653, 0.086005, &
+       0.078565, 0.072129, 0.066526, 0.061615, 0.057281, &
+       0.053430, 0.049988, 0.046894, 0.044098, 0.041561, &
+       0.039250/), &
+     H12(43) = (/ &
+       0.0440980,0.0392500,0.0351950,0.0317620,0.0288240, &
+       0.0262880,0.0240810,0.0221460,0.0204410,0.0189290, &
+       0.0175820,0.0163750,0.0152910,0.0143120,0.0134260, &
+       0.0126200,0.0118860,0.0112145,0.0105990,0.0100332, &
+       0.0095119,0.0090306,0.0085852,0.0081722,0.0077885, &
+       0.0074314,0.0070985,0.0067875,0.0064967,0.0062243, &
+       0.0059688,0.0057287,0.0055030,0.0052903,0.0050898, &
+       0.0049006,0.0047217,0.0045526,0.0043924,0.0042405, &
+       0.0040964,0.0039595,0.0038308/)
+
+    if (ii .gt. MAX_HJEN_II) &
+      call pfant_halt('hjen(): ii exceeds maximum: '//int2str(ii)//' > '//&
+       int2str(MAX_HJEN_II), is_assertion=.true.)
 
     ! SI V>3.9 LE CALCUL DE EXP(-V**2) EST INUTILE
     do 100 k = 1,ii
       v = vh(k)
       if (v-12)1,1,2
-      
+
       2 w = 1./(2*v**2)
       h1 = 2.*w*(1.+w*(3.+15.*w*(1.+7.*w)))
       h1 = h1/rpi
       go to 10
-      
+
       1 v1(1)=0.
       v2(1)=03.8
-      
+
       do 5 i = 1,42
         v1(i+1)=v1(i)+0.1
         v2(i+1)=v2(i)+0.2
       5 continue
 
       if (v-3.9)3,3,4
-      
-      4 h1 = ft(v,43,v2,h12)
-      
+
+      4 h1 = ft(v,43,v2,H12)
+
       10 phi(k) = (a*h1)/(rpi*del)
       go to 100
-      
-      3 h1 = ft(v,41,v1,h11)
+
+      3 h1 = ft(v,41,v1,H11)
       phi(k) = (exp(-v**2)+a*h1)/(rpi*del)
     100 continue
   END
 
 
 
-  !---------------------------------------------------------------------------------------
-  !> PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
-  !> VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
-
-  subroutine conv2(x,y,jmax,iqm,ij,res,t,ab)
-    integer*2 ir
-    dimension m_ij(10),f(50),ab(50),h(10),v(50),t(50),ac(50)
-    bol = x/y
-    h(1) = ab(2)
-    do 10 i = 2,m_iqm
-       i1 = m_ij(i-1)
-       10 h(i)=ab(i1+1)-ab(i1)
-
-    do 11 n = 1,jmax
-      11 v(n)=ab(n)/y
-
-    q = 1.
-    ir = 1
-
-    40 do 15 n = 1,jmax
-      ac(n)=-(bol-q*v(n))**2
-      15 f(n)=t(n)*exp(ac(n))
-
-    som = 0.
-    do 12 i = 1,m_iqm
-      if (i.gt.1) go to 20
-      k1 = 1
-      k2 = m_ij(1)
-      go to 21
-      20 k1 = m_ij(i-1)
-      k2 = m_ij(i)
-      21 k3 = k1+1
-      k4 = k2-3
-      sig = f(k1)+f(k2)+4.*f(k2-1)
-      if (k4.lt.k3) go to 16
-      do 13 k = k3,k4,2
-      13 sig = sig+4.*f(k)+2.*f(k+1)
-      16 s = sig*h(i)/3.
-      12 som = som+s
-
-    go to(60,61),ir
-    60 s1 = som
-    q=-1.
-    ir = 2
-    go to 40
-    61 s2 = som
-    res = (s1+s2)/(rpi*y)
-  end
 
 
 
@@ -134,8 +99,8 @@ contains
   !> QUE SOIT POSSIBLE.
 
   subroutine inait(x,y,p,err,n)
-    real*8 :: dimension x(99),y(99),aly(200),p(99),err(99)
-    real*8 aly(200), xmilieu, xgauss1, xgauss2, del, ym, yg1, yg2, const
+    real*8 :: x(99),y(99),aly(200),p(99),err(99), xmilieu, xgauss1, xgauss2, &
+     del, ym, yg1, yg2, const
     integer i, j
 
     p(1)=0.
@@ -214,7 +179,7 @@ contains
 
     4 if (i.eq.1) i = 2
 
-    5 if (i.ge.n) i = n-1   
+    5 if (i.ge.n) i = n-1
     a = x-xa-dx*float(i-2)
     b = a-dx
     c = b-dx
@@ -229,7 +194,7 @@ contains
     !> length of th and u
     integer, intent(in) :: max_il
     real*8, intent(in), dimension(max_il) :: th, u
-    eral*8, intent(in) :: beta, gam
+    real*8, intent(in) :: beta, gam
     real*8, intent(out) :: t
     real*8, dimension(150) :: asm ! Can't track down why 150
     DATA PI/3.141593/
@@ -250,34 +215,34 @@ contains
     go to 606
 
     48 if (pp-15.)50,49,49
-    
+
     49 ih1 = 100
     ih2 = 10
     go to 55
-    
+
     50 if (pp-10.)52,51,51
-    
+
     51 ih1 = 76
     ih2 = 20
     go to 55
-    
+
     52 if (pp-5.)54,53,53
-    
+
     53 ih1 = 50
     ih2 = 30
     go to 55
-    
+
     54 ih1 = 30
     ih2 = 40
-    
+
     55 h1 = pp/ih1
     h2 = (20.-pp)/ih2
-    
+
     606 ah = h1
     in = 1
     im = ih1-1
     ir = ih1
-    
+
     59 do 56 i = in,ir
       vu = vu+ah
       avu = abs(vu)
@@ -311,7 +276,7 @@ contains
     ah=-0.5
     go to 59
 
-    63 tb = (sigma+sigma1+aso*(h1+0.5)/3.)/pi
+    63 tb = (sigma+sigma1+aso*(h1+0.5)/3.)/PI
     t = t1+t2+tb
 
   contains
@@ -337,10 +302,11 @@ contains
       rca = sqrt(20.)
       fac = (bca-aa)/(aca*q)
       phi = bb/(4.*aca*rm)-fac/(4.*rm)
-      f_ta = (3.*gam/pi)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*alog((20.+rca*rm+q)/&
-       (20.-rca*rm+q))+(fac/(2.*en))*(pi/2.-atan((20.-q)/(rca*en)))+&
-       (bb/(2.*aca*en))*(pi-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
+      f_ta = (3.*gam/PI)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*alog((20.+rca*rm+q)/&
+       (20.-rca*rm+q))+(fac/(2.*en))*(PI/2.-atan((20.-q)/(rca*en)))+&
+       (bb/(2.*aca*en))*(PI-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
     end
+
   end
 
 
@@ -350,7 +316,7 @@ contains
   !> XX=TABLE DE LA VARIABLE LIGNE.  YY=TABLE DE LA VARIABLE COLONNE.
   !> RESULTAT=VALEUR DE LA FONCTION POUR LES ENTREES X ET Y
 
-  function pipe(x,y,xx,yy,tab,nmax,mmax)
+  real*8 function pipe(x,y,xx,yy,tab,nmax,mmax)
     integer*2 j
     real mu,nu
     dimension u(3),tab(mmax,nmax),xx(nmax),yy(mmax)

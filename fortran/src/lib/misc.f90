@@ -46,7 +46,7 @@ contains
           ic = index(low, x(i:i))
           if (ic > 0) string(i:i) = cap(ic:ic)
       end do
-  end function to_lower
+  end
 
   !> Converts an integer to string
   !>
@@ -110,7 +110,7 @@ contains
 
   pure function logical2int(x) result (y)
     logical, intent(in) :: x
-    integer, intent(out) :: y
+    integer :: y
 
     if (x) then
       y = 1
@@ -123,9 +123,9 @@ contains
   !>
   !> If argument is not (0 or 1), halts the program
 
-  pure function int2logical(x) result (y)
+  function int2logical(x) result (y)
     integer, intent(in) :: x
-    logical, intent(out) :: y
+    logical :: y
 
     if (x .eq. 0) then
       y = .false.

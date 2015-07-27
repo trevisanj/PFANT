@@ -633,7 +633,7 @@ contains
      ftt(itot)   !< ?doc?
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
-    real*8 dxa, dxz, xx1, xx2
+    real*8 dxa, dxz, xx1, xxn
 
     inv = -1
     if(x(n).lt.x(1) ) inv=1
@@ -688,12 +688,13 @@ contains
       4 continue
       ftt(k) = ft
     end do
-      RETURN
-10    WRITE(6,100) X(1),X(N),T
-      STOP
-100   FORMAT(5X,'ON SORT DE LA TABLE D INTERPOLATION :',
-     1 /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
-      END
+    return
+
+    10 write(lll,100) X(1),X(N),T
+    100 format(5X,'ON SORT DE LA TABLE D INTERPOLATION :', &
+     /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
+    call pfant_halt(lll)
+  end
 
 
 

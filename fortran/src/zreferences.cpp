@@ -23,4 +23,6 @@
 
 @anchor FortranWiki [FortranWiki] http://fortranwiki.org/fortran/show/Command-line+arguments
 
+@anchor DerivedTypeAssignments [DerivedTypeAssignments] http://h21007.www2.hp.com/portal/download/files/unprot/fortran/docs/lrm/lrm0076.htm
+
 */

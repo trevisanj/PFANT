@@ -10,12 +10,8 @@ program pfant
   implicit none
 
   ! startup
-  execonf_name = 'pfant'
-  write(*,*) pfant_version()
-  write(*,*) ''
   call molecules_ids_init()
-  call config_init()
-  call print_welcome(6)
+  call config_pfant_init()
 
   ! Spectral synthesis
   call synthesis_()

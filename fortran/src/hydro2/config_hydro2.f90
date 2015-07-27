@@ -57,46 +57,42 @@ module config_hydro2
   !>
   !> This is a tristate variable, as config_ptdisk, because it has no default and is
   !> initially set to -1, meaning that it is unitialized.
-  integer config_amores = -1
+  integer :: config_amores = -1
 
   !> option: --kq
-  integer config_kq = -1
+  integer :: config_kq = -1
 
   character*192 :: config_refdir = '.' !< option: --refdir
   character*64 :: &
    config_nomfimod = 'modeles.mod', & !< option: --nomfimod
    config_nomfidat = 'modeles.dat'    !< option: --nomfidat
   character*25 :: config_modcode = 'NoName' !< option: --modcode
-  !> option: --tirb
-  !> @sa hydro2_init()
-  character(LEN_TIRB) :: config_tirb = '?'
-  !> option: --teff
-  !> @sa get_teff()
-  real*4 :: config_teff = -1
-  !> option: --glog
-  !> @sa get_teff()
-  real*4 :: config_glog = -1
-  !> option: --asalog.
-  !> @note Name changed from "amet" to "asalog" to conform with pfant and hydro2
-  !> @sa get_asalog()
-  real*4 :: config_asalog = -1
-  !> option: --id
-  !> @sa get_id()
-  integer :: config_inum = 0
 
   !> option: --nomplot
   character*16 :: nomplot = '?'
 
 contains
+
+  !=======================================================================================
+  !> Executable-specific initialization + calls config_base_init()
+
+  subroutine config_hydro2_init()
+    execonf_name = 'hydro2'
+    execonf_handle_option => config_hydro2_handle_option
+    execonf_init_options => config_hydro2_init_options
+    execonf_num_options = 222
+    call config_base_init()
+  end
+
   !=======================================================================================
   !> Initializes hydro2-specific options
 
-  integer function config_init_options(k)
+  integer function config_hydro2_init_options(j)
     !> k is the index of the last initialized option
-    integer, intent(in) :: k
+    integer, intent(in) :: j
+    integer :: k
 
-
-    k = k+1
+    k = j+1
     options(k) = option('teff',' ', .true., 'real value', real42str(config_teff), &
      '"Teff"')
 
@@ -133,19 +129,6 @@ contains
      '"Theorie"<br>'//&
      IND//'0: THEORIE DE GRIEM;<br>'//&
      IND//'1: THEORIE QUASISTATIQUE')
-
-    config_init_options = k
-  end
-
-  !=======================================================================================
-  !> Executable-specific initialization + calls config_base_init()
-
-  subroutine config_hydro2_init()
-    execonf_name = 'hydro2'
-    execonf_handle_option => config_handle_option
-    execonf_init_options => config_init_options
-    execonf_num_options = 10
-    call config_base_init()
   end
 
   !=======================================================================================
@@ -188,8 +171,8 @@ contains
         ! This conversion to/from integer is because config_ptdisk is a tristate variable,
         ! but the user doesn't need to know this
         ! See hydro2_init() to see how it is treated
-        config_ptdisk = logical2integer(parse_aux_str2logical(opt, o_arg))
-        call parse_aux_log_assignment('config_ptdisk', integer2logical(logical2str(config_ptdisk)))
+        config_ptdisk = logical2int(parse_aux_str2logical(opt, o_arg))
+        call parse_aux_log_assignment('config_ptdisk', logical2str(int2logical(config_ptdisk)))
 
       case ('kik')
         config_kik = parse_aux_str2int(opt, o_arg)
@@ -200,11 +183,11 @@ contains
         end if
       case ('amores')
         ! config_amores is also tristate, as config_ptdisk
-        config_amores = logical2integer(parse_aux_str2logical(opt, o_arg))
-        call parse_aux_log_assignment('config_amores', integer2logical(logical2str(config_amores)))
+        config_amores = logical2int(parse_aux_str2logical(opt, o_arg))
+        call parse_aux_log_assignment('config_amores', logical2str(int2logical(config_amores)))
       case default
         ! if does not handle here, passes on to base handler
-        res = config_x_handle_option(opt, o_arg)
+        res = config_base_handle_option(opt, o_arg)
     end select
   end
 end

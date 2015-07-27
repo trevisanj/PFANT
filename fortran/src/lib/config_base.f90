@@ -13,8 +13,6 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_config
-!>
 !> Command-line parsing and respective global variable declarations
 !> @li Configuration globals with their default values
 !> @li Routines to parse command-line arguments
@@ -38,6 +36,42 @@
 !> @todo explain how to create new option
 
 
+!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+!vvv ANOTHER MODULE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+!> Contains the interfaces for the execonf_* routine pointers
+!>
+!> Formalities kept separate to keep config_base module more clean.
+!>
+
+module config_base_handler_interfaces
+  use options2
+
+  !> executable-specific routine to handle option must have this interface
+  interface
+    ! Result value must be a HANDLER_* value
+
+    function handle_option_template(opt, o_arg) result(res)
+      import :: option
+      type(option), intent(in) :: opt
+      character(len=*), intent(in) :: o_arg
+      integer :: res
+    end
+  end interface
+
+  !> executable-specific routine to initialize options must have this interface
+  interface
+    ! Result value must be a HANDLER_* value
+
+    function init_options_template(j) result(k)
+      !> k is the index of the last initialized option
+      integer, intent(in) :: j
+      integer :: k
+    end
+  end interface
+end
+
+
 module config_base
   use logging
   use options2
@@ -54,29 +88,29 @@ module config_base
    HANDLER_DONT_CARE = 2     !< handler not responsible for handling that option
 
 
-  !===== 
-  ! Executable-specific options that must be set programatically 
+  !=====
+  ! Executable-specific options that must be set programatically
   !=====
 
   !> Name of executable. Case doesn't matter. It will be converted to all uppercase or
   !> lowercave, depending on the use.
-  character*16 execonf_name = '?'
+  character*16 :: execonf_name = '?'
   !> Number of options defined in particular executable.
   integer :: execonf_num_options = -1
 
   !> Variable that points to function to handle command-line option. Each executable
-  !> has a specific handler 
+  !> has a specific handler
 
   procedure(handle_option_template), pointer :: &
    execonf_handle_option => handle_option_give_error
 
   procedure(init_options_template), pointer :: &
-execonf_init_options => init_options_give_error
+    execonf_init_options => init_options_give_error
 
 
   !=====
   ! Variables configurable by command line
-  !===== 
+  !=====
 
   character*192 :: &
    config_inputdir    = './', &  !< command-line option --inputdir
@@ -87,7 +121,7 @@ execonf_init_options => init_options_give_error
   character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
 
   logical :: config_logging_stdout = .true., & !< option --logging_stdout
-             config_logging_dump   = .false. & !< option --logging_dump
+             config_logging_dump   = .false.   !< option --logging_dump
 
 
   !> List of command-line options
@@ -109,10 +143,10 @@ execonf_init_options => init_options_give_error
   private :: handle_option_give_error, init_options_give_error, validate_options, &
    init_options, parse_args, get_total_num_options, show_help
 contains
-  ! 8b   d8 8    8 .d88b. 88888      .d88b    db    8    8    
-  ! 8YbmdP8 8    8 YPwww.   8        8P      dPYb   8    8    
-  ! 8  "  8 8b..d8     d8   8   wwww 8b     dPwwYb  8    8    
-  ! 8     8 `Y88P' `Y88P'   8        `Y88P dP    Yb 8888 8888 
+  ! 8b   d8 8    8 .d88b. 88888      .d88b    db    8    8
+  ! 8YbmdP8 8    8 YPwww.   8        8P      dPYb   8    8
+  ! 8  "  8 8b..d8     d8   8   wwww 8b     dPwwYb  8    8
+  ! 8     8 `Y88P' `Y88P'   8        `Y88P dP    Yb 8888 8888
   !
   ! Routines that *must* be called from executable-specific configuration module.
 
@@ -122,11 +156,15 @@ contains
   !> @note Must be called *after* module-specific initialization
 
   subroutine config_base_init()
+    use welcome
     if (execonf_name .eq. '?') &
      call pfant_halt('Executable name not set', is_assertion=.true.)
+
+    write(*,*) to_upper(execonf_name)//pfant_version()
+    write(*,*) ''
+
     if (execonf_num_options .eq. -1) &
      call pfant_halt('Forgot to set execonf_num_options', is_assertion=.true.)
-
 
     call init_options()
     call parse_args()
@@ -141,6 +179,8 @@ contains
     end if
 
     logging_path_dump = full_path_o(config_fn_progress)
+
+    call print_welcome(6)
   end
 
   !=======================================================================================
@@ -305,9 +345,9 @@ contains
   end
 
 
-  ! 88888 .d88b. .d88b. 8    .d88b. 
-  !   8   8P  Y8 8P  Y8 8    YPwww. 
-  !   8   8b  d8 8b  d8 8        d8 
+  ! 88888 .d88b. .d88b. 8    .d88b.
+  !   8   8P  Y8 8P  Y8 8    YPwww.
+  !   8   8b  d8 8b  d8 8        d8
   !   8   `Y88P' `Y88P' 8888 `Y88P'  Tools
 
   !=======================================================================================
@@ -527,6 +567,7 @@ contains
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
     integer :: res
+    res = 0  ! shuts up one warning
     call pfant_halt('Forgot to set function pointer "execonf_handle_option"', &
      is_assertion=.true.)
   end
@@ -534,44 +575,16 @@ contains
   !=======================================================================================
   !> This routine exists for assertion purpose only
 
-  subroutine init_options_give_error()
+  function init_options_give_error(k) result(y)
+    integer, intent(in) :: k
+    integer :: y
+    y = k  ! shuts up two warnings
     call pfant_halt('Forgot to set subroutine pointer "execonf_init_options"', &
      is_assertion=.true.)
   end
+
+
+
 end
 
 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-!vvv ANOTHER MODULE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-!> Contains the interfaces for the execonf_* routine pointers
-!> 
-!> Formalities kept separate to keep config_base module more clean.
-!>
-
-module config_base_handler_interfaces
-  use options2
-
-  !> executable-specific routine to handle option must have this interface
-  interface
-    ! Result value must be a HANDLER_* value
-
-    function handle_option_template(opt, o_arg) result(res)
-      import :: option
-      type(option), intent(in) :: opt
-      character(len=*), intent(in) :: o_arg
-      integer :: res
-    end
-  end interface
-
-  !> executable-specific routine to initialize options must have this interface
-  interface
-    ! Result value must be a HANDLER_* value
-
-    subroutine init_options_template(k) result(res)
-      !> k is the index of the last initialized option
-      integer, intent(in) :: k
-      integer :: res
-    end
-  end interface
-end

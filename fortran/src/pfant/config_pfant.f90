@@ -47,14 +47,27 @@ module config_pfant
 
   save
 contains
+
+  !=======================================================================================
+  !> Executable-specific initialization + calls config_base_init()
+
+  subroutine config_pfant_init()
+    execonf_name = 'pfant'
+    execonf_handle_option => config_pfant_handle_option
+    execonf_init_options => config_pfant_init_options
+    execonf_num_options = 11
+    call config_base_init()
+  end
+
   !=======================================================================================
   !> Initializes executable-specific options
 
-  integer function config_init_options(k)
+  function config_pfant_init_options(j) result (k)
     !> k is the index of the last initialized option
-    integer, intent(in) :: k
+    integer, intent(in) :: j
+    integer :: k
 
-    k = k+1
+    k = j+1
     options(k) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
@@ -93,24 +106,12 @@ contains
     options(k) = option('molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
      '*Note*: This option may be repeated as many times as necessary.')
-
-    config_init_options = k
-  end
-  !=======================================================================================
-  !> Executable-specific initialization + calls config_base_init()
-
-  subroutine config_init()
-    execonf_name = 'pfant'
-    execonf_handle_option => config_handle_option
-    execonf_init_options => config_init_options
-    execonf_num_options = 11
-    call config_base_init()
   end
 
   !=======================================================================================
   !> Handles options for PFANT main executable
 
-  function config_handle_option(opt, o_arg) result(res)
+  function config_pfant_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
     integer :: res, iTemp

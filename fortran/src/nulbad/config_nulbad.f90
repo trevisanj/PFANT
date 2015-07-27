@@ -35,14 +35,27 @@ module config_nulbad
     config_fileflux = '?', &         !< option: --fileflux
     config_filecv = '?'                !< option: --filecv
 contains
+
+  !=======================================================================================
+  !> Executable-specific initialization + calls config_base_init()
+
+  subroutine config_init()
+    execonf_name = 'nulbad'
+    execonf_handle_option => config_nulbad_handle_option
+    execonf_init_options => config_nulbad_init_options
+    execonf_num_options = 7
+    call config_base_init()
+  end
+
   !=======================================================================================
   !> Initializes nulbad-specific options
 
-  integer function config_init_options(k)
+  function config_nulbad_init_options(j) result (k)
     !> k is the index of the last initialized option
-    integer, intent(in) :: k
+    integer, intent(in) :: j
+    integer :: k
 
-    k = k+1
+    k = j+1
     options(k) = option('fileflux', ' ', .true., 'file name', &
      '<"main_fileflux" variable>.norm (taken from main configuration file)>', &
      'Flux file name')
@@ -64,28 +77,12 @@ contains
     k = k+1
     options(k) = option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
-
-    config_init_options = k
   end
-
-
-  !=======================================================================================
-  !> Executable-specific initialization + calls config_base_init()
-
-  subroutine config_init()
-    execonf_name = 'nulbad'
-    execonf_handle_option => config_handle_option
-    execonf_init_options => config_init_options
-    execonf_num_options = 7
-    call config_base_init()
-  end
-
-
 
   !=======================================================================================
   !> Handles options for nulbad executable
 
-  function config_handle_option(opt, o_arg) result(res)
+  function config_nulbad_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
     integer :: res

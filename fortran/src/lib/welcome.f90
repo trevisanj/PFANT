@@ -1,13 +1,12 @@
 module welcome
   use logging
-  use config
   use misc
 contains
   !> Returns string representing current PFANT version
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = to_upper(config_exec_name)//' v15.7.9-alpha'
+    v = ' v15.7.9-alpha'
   end
 
   !> Displays welcome message

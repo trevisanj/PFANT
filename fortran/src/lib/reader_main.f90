@@ -26,12 +26,10 @@ module reader_main
 
   character*64 main_fileflux  !< ?doc?
   logical   main_ptdisk    !< ?doc?
-  real*8 ::
+  real*8 :: &
    main_pas,    & !< ?doc?
    main_echx,   & !< ?doc?
    main_echy,   & !< ?doc?
-   main_fwhm,   & !< "Full-width-half-maximum" of Gaussian function for 
-                & !! convolution of calculated spectrum; used only by nulbad executable
    main_mu,     & !< ?doc?
    main_afstar, & !< ?doc?
    main_llzero, & !< ?doc?
@@ -41,6 +39,10 @@ module reader_main
    main_glog,   & !< ?doc?
    main_asalog, & !< ?doc?
    main_nhe       !< ?doc?
+  !> "Full-width-half-maximum" of Gaussian function for
+  !> convolution of calculated spectrum; used only by nulbad executable
+  real*8 :: main_fwhm
+
   integer   main_ivtot, & !< affects turbul() issue ?what? ?doc?
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
