@@ -2,20 +2,40 @@
 !>
 !> Routines in callhy.f that 1) didn't use COMMONs; 2) didn't take COMMON as argument
 !> were moved here.
+!>
+!> @note Arrays passed to routines now have assumed-shape declarations + assertions against
+!> access beyond boundaries.
+!> 
+!> @todo Routines that have the size of arrays passed to them now have assertions. This may
+!> slow down the calculations (depending on the number of calls to given routine)
+!> and may be subject to re-visit.
 
 module hydro2_math
+  use misc_math
+  use misc
   implicit none
 
+
+  ! Dimensions of some constants and variables
+  integer, parameter :: MAX_IL = 20, MAX_M = 5
+
+  ! Variables that were declared with dimension 220. modif_ih is the last valid index of
+  ! these vectors
+  integer, parameter :: MAX_MODIF_IH = 220
+
   !> Maximum possible value for hjen() ii argument
-  integer, parameter :: MAX_HJEN_II = 300
+  integer, parameter :: MAX_MODIF_II = 300
+
+
 
 contains
+  !=======================================================================================
   !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
 
   subroutine hjen(a,vh,del,phi,ii)
-    real*8, intent(in) :: a, vh(MAX_HJEN_II), del
+    real*8, intent(in) :: a, vh(:), del
     integer, intent(in) :: ii !< Length of vh and phi vectors
-    real*8, intent(out) :: phi(MAX_HJEN_II)
+    real*8, intent(out) :: phi(:)
 
     real*8 :: v1(43),v2(43)
     real*8, parameter :: &
@@ -40,9 +60,11 @@ contains
        0.0049006,0.0047217,0.0045526,0.0043924,0.0042405, &
        0.0040964,0.0039595,0.0038308/)
 
-    if (ii .gt. MAX_HJEN_II) &
-      call pfant_halt('hjen(): ii exceeds maximum: '//int2str(ii)//' > '//&
-       int2str(MAX_HJEN_II), is_assertion=.true.)
+    real*8 :: h1, v, w
+    integer :: i, k
+
+    call log_assert_le(ii, size(vh), 'hjen()', 'ii', 'size(vh)')  
+    call log_assert_le(ii, size(phi), 'hjen()', 'ii', 'size(phi)')  
 
     ! SI V>3.9 LE CALCUL DE EXP(-V**2) EST INUTILE
     do 100 k = 1,ii
@@ -51,7 +73,7 @@ contains
 
       2 w = 1./(2*v**2)
       h1 = 2.*w*(1.+w*(3.+15.*w*(1.+7.*w)))
-      h1 = h1/rpi
+      h1 = h1/RPI
       go to 10
 
       1 v1(1)=0.
@@ -66,146 +88,43 @@ contains
 
       4 h1 = ft(v,43,v2,H12)
 
-      10 phi(k) = (a*h1)/(rpi*del)
+      10 phi(k) = (a*h1)/(RPI*del)
       go to 100
 
       3 h1 = ft(v,41,v1,H11)
-      phi(k) = (exp(-v**2)+a*h1)/(rpi*del)
+      phi(k) = (exp(-v**2)+a*h1)/(RPI*del)
     100 continue
   END
 
 
 
 
-
-
-
-  !> CE PROGRAMME INTEGRE NUMERIQUEMENT UNE FONCTION RELLE, DONNEE PAR
-  !> UN TABLEAU DE VALEURS X(I),Y(I).
-  !>
-  !> LA METHODE CONSISTE A CALCULER
-  !> L' INTEGRALE DEFINIE SUR CHAQUE INTERVALLE (X(I),X(I+1)) D'ABORD
-  !> PAR SIMPSON,PUIS PAR GAUSS A DEUX POINTS. LES VALEURS DE Y AU
-  !> POINT MILIEU ET AU DEUX POINTS DE GAUSS SONT CALCULES PAR INTER-
-  !> POLATION CUBIQUE A QUATRE POINTS EN UTILISANT LES VALEURS DE LA
-  !> TABLE.ON FORME ENSUITE UNE MOYENNE PONDEREE DES DEUX RESULTATS
-  !> QUI ANNULE L'ERREUR DU QUATRIEME (ET AUUSI DU CINQUIEME PAR RAI-
-  !> SON DE PARITE) ORDRE.L' ERREUR SUR L'INTEGRATION EST DONC
-  !> GENERALEMENT NEGLIGEABLE PAR RAPPORT A L'ERREUR SUR L'INTERPOLA-
-  !> TION DU TROSIEME ORDRE.CETTE DERNIERE EST EVALUEE EN COMPARANT
-  !> LA VALEUR INTERPOLEE SUR LA FONCTION ELLE MEME ET SUR LA VALEUR
-  !> INTERPOLEE EN PASSANT PAR SON LOGARITHME.IL FAUT QUE LA FONCTION
-  !> SOIT POSITIVE PAR NATURE POUR QUE LA TRANSFORMATION LOGARITHMI-
-  !> QUE SOIT POSSIBLE.
-
-  subroutine inait(x,y,p,err,n)
-    real*8 :: x(99),y(99),aly(200),p(99),err(99), xmilieu, xgauss1, xgauss2, &
-     del, ym, yg1, yg2, const
-    integer i, j
-
-    p(1)=0.
-    const = 1./sqrt(3.)
-    do i = 1,n
-      aly(i)=alog(y(i))
-    end do
-    i = 1
-    j = 1
-    call step()
-
-    n2 = n-2
-    do i = 2,n2
-      j = i-1
-      call step()
-
-      k = i+1
-    end do
-    i = n-1
-    j = n-3
-    call step()
-
-  contains
-      subroutine step()
-        real*8 :: out_
-
-        xmilieu = (x(i)+x(i+1))/2.
-        del = x(i+1)-x(i)
-        xgauss1 = xmilieu-del*const/2.
-        xgauss2 = xmilieu+del*const/2.
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         aly(j),aly(j+1),aly(j+2),aly(j+3),xmilieu,out_)
-        yml = exp(out_)
-
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         aly(j),aly(j+1),aly(j+2),aly(j+3),xgauss1,out_)
-        yg1l = exp(out_)
-
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         aly(j),aly(j+1),aly(j+2),aly(j+3),xgauss2,out_)
-        yg2l = exp(out_)
-
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         y(j),y(j+1),y(j+2),y(j+3),xmilieu,ym)
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         y(j),y(j+1),y(j+2),y(j+3),xgauss1,yg1)
-        call naitk3(x(j),x(j+1),x(j+2),x(j+3), &
-         y(j),y(j+1),y(j+2),y(j+3),xgauss2,yg2)
-        amys = (y(i)+4.*ym+y(i+1))/6.
-        amyg = (yg1+yg2)/2.
-        amy = 0.6*amyg+0.4*amys
-        amyls = (y(i)+4.*yml+y(i+1))/6.
-        amylg = (yg1l+yg2l)/2.
-        amyl = 0.6*amylg+0.4*amyls
-        err(i+1) = (amyl-amy)/amy
-        amyruse = 0.0*amy+1.0*amyl
-        p(i+1) = p(i)+del*amyruse
-      end
-  end
-
-
-  !> INTERPOLATION DANS UNE TABLE A PAS CONSTANT
-
-  subroutine inpol1(x,xa,dx,n,yt,y)
-    dimension yt(1)
-
-    i = 1
-    1 if (x-xa-dx*float(i-1)) 4,3,2
-
-    2 if (i.ge.n) go to 5
-    i = i+1
-    go to 1
-
-    3 y = yt(i)
-    return
-
-    4 if (i.eq.1) i = 2
-
-    5 if (i.ge.n) i = n-1
-    a = x-xa-dx*float(i-2)
-    b = a-dx
-    c = b-dx
-    y = (b*(a*yt(i+1) + c*yt(i-1))/2. - a*c*yt(i) )/dx**2
-  end
-
-
-
+  !=======================================================================================
   !> ?doc?
+  !>
+  !> Output: t
 
-  subroutine malt(th, u, beta, gam, t, max_il)
-    !> length of th and u
-    integer, intent(in) :: max_il
-    real*8, intent(in), dimension(max_il) :: th, u
+  subroutine malt(th, u, beta, gam, t, iii)
+    integer, intent(in) :: iii !< maximum valid index of th and u
+    real*8, intent(in), dimension(:) :: th, u
     real*8, intent(in) :: beta, gam
     real*8, intent(out) :: t
-    real*8, dimension(150) :: asm ! Can't track down why 150
-    DATA PI/3.141593/
 
-    t1 = f_ta(1.,beta,gam)
-    t2 = f_ta(-1.,beta,gam)
+    real*8, dimension(150) :: asm ! Can't track down why 150
+
+    real*8 :: ah, aso, avu, h1, h2, pp, sig, sigma, sigma1, t1, t2, tb, to_, vu
+    integer :: i, ih1, ih2, im, in, ir
+
+    call log_assert_le(iii, size(th), 'malt()', 'iii', 'size(th)')  
+    call log_assert_le(iii, size(u), 'malt()', 'iii', 'size(u)')  
+       
+    t1 = f_ta(dble(1.))
+    t2 = f_ta(dble(-1.))
     vu = 0.
     sigma = 0.
     avu = vu
     to_ = ft(avu,MAX_IL,u,th)
-    aso = f_as(gam,beta,0.,to_)
+    aso = f_as(dble(0.))
     pp = beta+gam
 
     if (pp-20.) 48,47,47  ! dunno if "20." is same as MAX_IL, but I think not, hope not
@@ -247,7 +166,7 @@ contains
       vu = vu+ah
       avu = abs(vu)
       to_ = ft(avu,MAX_IL,u,th)
-      56 asm(i)=f_as(gam,beta,vu,to_)
+      56 asm(i)=f_as(vu)
 
     do 57 i = in,im,2
       sig = (1.333333*asm(i)+0.6666667*asm(i+1))*abs(ah)
@@ -302,7 +221,7 @@ contains
       rca = sqrt(20.)
       fac = (bca-aa)/(aca*q)
       phi = bb/(4.*aca*rm)-fac/(4.*rm)
-      f_ta = (3.*gam/PI)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*alog((20.+rca*rm+q)/&
+      f_ta = (3.*gam/PI)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*log((20.+rca*rm+q)/&
        (20.-rca*rm+q))+(fac/(2.*en))*(PI/2.-atan((20.-q)/(rca*en)))+&
        (bb/(2.*aca*en))*(PI-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
     end
@@ -310,63 +229,94 @@ contains
   end
 
 
+  !=======================================================================================
+  !> INTERPOLATION PARABOLIQUE
+  !>  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
+  !>  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
+  !>
+  !>  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
+  !>
+  !> @note This routine is extremely similar to misc_math::ft2()
 
+  subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
+    integer, intent(in) :: &
+     n, & !< Last valid element of vectors x and y
+     itot !< Size valid element of vectors tt and ftt
+    real*8, intent(in) :: &
+     x(:),     & !< ?doc?
+     y(:),     & !< ?doc?
+     tt(:)    !< ?doc?
+    real*8, intent(out) :: &
+     ftt(:)   !< ?doc?
+    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
+    integer i, inv, j, k
+    real*8 dxa, dxz, xx1, xxn
 
-  !> INTERPOLATION DANS UN TABLEAU A DOUBLE ENTREE NOTE TAB
-  !> XX=TABLE DE LA VARIABLE LIGNE.  YY=TABLE DE LA VARIABLE COLONNE.
-  !> RESULTAT=VALEUR DE LA FONCTION POUR LES ENTREES X ET Y
+    call assert_le(n, size(x), 'ft2_hydro2()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'ft2_hydro2()', 'n', 'size(y)')
+    call assert_le(itot, size(tt), 'ft2_hydro2()', 'itot', 'size(tt)')
+    call assert_le(itot, size(ftt), 'ft2_hydro2()', 'itot', 'size(ftt)')
 
-  real*8 function pipe(x,y,xx,yy,tab,nmax,mmax)
-    integer*2 j
-    real mu,nu
-    dimension u(3),tab(mmax,nmax),xx(nmax),yy(mmax)
-    n = 1
-    80 if (x-xx (n))72,71,70
+    inv = -1
+    if(x(n).lt.x(1) ) inv=1
 
-    70 n = n+1
-    go to 80
+    ! DXA ET DXZ  : LIMITES SUPPORTABLES D EXTRAPOLATION
+    dxa=(x(2)-x(1))/10
+    dxz=(x(n)-x(n-1))/10
+    xx1=x(1)-dxa
+    xxn=x(n)+dxz
 
-    71 nn = n
-    go to 90
+    do k = 1,itot
+      t = tt(k)
+      if (inv) 5, 6, 6
+      5 continue
+      if ((t.lt.xx1) .or. (t.gt.xxn)) go to 10
+      do 1 j=1,n
+        i=j
+        if (t-x(j)) 3, 2, 1
+      1 continue
+      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
+               !> seems it is overriding something that should give an error
 
-    72 if (nmax-n)74,74,73
+      6 continue
+      if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
+      do 7 j=1,n
+        i = j
+        if (t-x(j)) 7,2,3
+      7 continue
+      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
+               !> seems it is overriding something that should give an error
 
-    73 nn = n-1
-    go to 90
+      2 continue
+      ft=y(j)
+      go to 4
 
-    74 nn = n-2
+3     continue
+      if(i .eq. 1) i = 2
+      if(i .ge. n) i = n-1
+      t0=t-x(i-1)
+      t1=t-x(i)
+      t2=t-x(i+1)
+      u0=x(i+1)-x(i-1)
+      u1=x(i+1)-x(i)
+      u2=x(i)-x(i-1)
+      a=t0/u0
+      b=t1/u1
+      c=t2/u2
+      d=t0/u1
+      e=t1/u0
+      ft=y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
 
-    90 m = 1
+      4 continue
+      ftt(k) = ft
+    end do
+    return
 
-    91 if (yy (m)-y) 92,93,94
-
-    93 mm = m
-    go to 95
-
-    94 m = m+1
-    go to 91
-
-    92 if (mmax-m)97,97,96
-
-    96 mm = m-1
-    go to 95
-
-    97 mm = m-2
-
-    95 s0 = y-yy (mm)
-    phi = s0*(y-yy (mm+1))/(yy (mm+2)-yy (mm))
-    inn = nn+2
-    j = 0
-    do 200 nc = nn,inn
-      j = j+1
-      mu = (tab  (mm+1,nc)-tab  (mm,nc))/(yy (mm+1)-yy (mm))
-      nu = (tab  (mm+2,nc)-tab  (mm+1,nc))/(yy (mm+2)-yy (mm+1))
-      200 u(j)=tab(mm,nc)+s0*mu+phi*(nu-mu)
-
-    s0 = x-xx (nn)
-    phi = s0*(x-xx (nn+1))/(xx (nn+2)-xx (nn))
-    mu = (u(2)-u(1))/(xx (nn+1)-xx (nn))
-    nu = (u(3)-u(2))/(xx (nn+2)-xx(nn+1))
-    pipe = u(1)+s0*mu+phi*(nu-mu)
+    10 write(lll,100) X(1),X(N),T
+    100 format(5X,'ON SORT DE LA TABLE D INTERPOLATION :', &
+     /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
+    call pfant_halt(lll)
   end
+
+
 end

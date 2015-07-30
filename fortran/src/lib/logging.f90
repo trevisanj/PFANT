@@ -219,6 +219,28 @@ contains
 
     11 continue
   end
+  
+  
+  !---------------------------------------------------------------------------------------
+  !> Asserts i1 <= i2; if not, halts showing message
+  !>
+  !> This routine is called to make sure that we won't try to access an element beyond the
+  !> maximum allocated for an array, since Fortran doesn't care about that.
+
+  subroutine assert_le(i1, i2, title, name1, name2)
+    integer, intent(in) :: i1, i2
+    character(:), intent(in) :: &
+     title, & !< title of caller routine, e.g., "integra()"
+     name1, & !< name of argument corresponding to the value in i1
+     name2    !< name of argument corresponding to the value in i2
+
+    if (i1 .gt. i2) then
+      call pfant_halt(title//': '//name1//' > '//name2//' ('//int2str(i1)//&
+       ' > '//int2str(i2)//')', is_assertion=.true.)
+    end if
+  end
+
+  
 
   !=======================================================================================
 

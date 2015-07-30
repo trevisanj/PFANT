@@ -15,10 +15,41 @@
 
 !> @ingroup gr_math
 !> MISCellaneous MATHs: re-usable Math library
+!>
+!> Arrays passed to routines now have assumed-shape declarations, e.g.,
+!> @code
+!> real*8 :: fr(:)
+!> @endcode
+!>
+!> instead of
+!>
+!> @code
+!> real*8 :: fr(itot)
+!> @endcode
+!>
+!> In the example latter, Fortran won't give a runtime error if
+!> <code>itot > size(fr)</code>. Therefore, declaring <code>fr(ntot)</code>
+!> provides *no* error protection.
+!>
+!> On the other hand, declaring <code>fr(:)</code> gives access to the array size
+!> using function <code>size()</code>, allows for placing assertions inside the
+!> routines.
+!> 
+!> @note However, assertions may slow down the code. Once the code is tested enough,
+!> assertions should be taken out from routines that are called many times. *However*,
+!> assertions are good documentation, so don't delete them; rather, comment them out.!!
+
 
 module misc_math
   use logging
   implicit none
+
+  ! Mathematical constants used throughout. Better to use these than define them every
+  ! time they are needed inside a routine
+  real*8, parameter :: &
+   RPI  = 1.7724538509055159, &  !< square root of PI
+   PI   = 3.141592653589793      !< aka acos(-1)
+
 contains
 
   !> Computes the Voight function.
@@ -168,13 +199,15 @@ contains
   !> i* (ia <= i* <= iz) such that
   !> fr(i*) = minimum( fr(i), ia <= i <= iz)
   integer function iinf(fr,itot,ia,iz)
-    real*8, intent(in):: fr(itot) !< search vector
+    real*8, intent(in):: fr(:) !< search vector
     integer, intent(in) :: &
      itot, & !< size of vector fr
      ia,   & !< interval lower index
      iz      !< interval upper index
     integer i, ia2
     real*8 fmin
+
+    call assert_le(itot, size(fr), 'iinf()', 'itot', 'size(fr)')
 
     ia2=ia+1
     iinf=ia
@@ -195,13 +228,15 @@ contains
   !> EST MAXIMUM.
 
   integer function isup(fr, itot, ia, iz)
-    real*8, intent(in):: fr(itot) !< search vector
+    real*8, intent(in):: fr(:) !< search vector
     integer, intent(in) :: &
      itot, & !< size of vector fr
      ia,   & !< interval lower index
      iz      !< interval upper index
     integer i, ia2
     real*8 fmax
+
+    call assert_le(itot, size(fr), 'isup()', 'itot', 'size(fr)')
 
     ia2=ia+1
     isup=ia
@@ -220,11 +255,13 @@ contains
 
   integer function mini(ifa, ntot, ia, iz)
     integer, intent(in) :: &
-     ifa(ntot), & !< search vector
+     ifa(:), & !< search vector
      ntot,      & !< size of vector ifa
      ia,        & !< interval lower index
      iz           !< interval upper index
     integer i, ia2
+
+    call assert_le(itot, size(ifa), 'mini()', 'ntot', 'size(ifa)')
 
     mini=ifa(ia)
     ia2=ia+1
@@ -240,11 +277,13 @@ contains
 
   integer function maxi(ifa, ntot, ia, iz)
     integer, intent(in) :: &
-     ifa(ntot), & !< search vector
+     ifa(:), & !< search vector
      ntot,      & !< size of vector ifa
      ia,        & !< interval lower index
      iz           !< interval upper index
     integer i, ia2
+
+    call assert_le(itot, size(ifa), 'maxi()', 'ntot', 'size(ifa)')
 
     maxi=ifa(ia)
     ia2=ia+1
@@ -264,13 +303,17 @@ contains
   !>   naitk3()
   subroutine integra(x, y, p, n, pdeb)
     real*8, intent(in) :: &
-     x(n), & !< TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS CROISSANTES
-     y(n), & !< TABLEAU DES VALEURS ASSOCIEES DE LA FONCTION A INTEGRER
+     x(:), & !< TABLEAU DE VALEURS DE LA VARIABLE INDEPENDANTE, PAR VALEURS CROISSANTES
+     y(:), & !< TABLEAU DES VALEURS ASSOCIEES DE LA FONCTION A INTEGRER
      pdeb    !< VALEUR DE LA PRIMITIVE POUR X(1),PREMIERE VALEUR DU TABLEAU
-    integer, intent(in) :: n !< Size of x, y, and p
-    real*8, intent(out) :: p(0:n) !< TABLEAU DES VALEURS DE LA PRIMITIVE AUX POINTS X(I)
+    integer, intent(in) :: n !< maximum indexes in x, y, and p
+    real*8, intent(out) :: p(0:) !< TABLEAU DES VALEURS DE LA PRIMITIVE AUX POINTS X(I)
     real*8 fx, xmilieu
     integer i, j
+
+    call log_assert_le(n, size(p)-1, 'integra()', 'n', 'size(p)-1')  
+    call log_assert_le(n, size(x), 'integra()', 'n', 'size(x)')  
+    call log_assert_le(n, size(y), 'integra()', 'n', 'size(y)')  
 
     p(1) = pdeb
 
@@ -299,6 +342,7 @@ contains
   !>
   !> SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54, SINON 82-55
   !> @todo improve documentation ?doc?
+  
   real*8 function calch(kii, iz, kiex1, is1, kiex2, is2)
     real*8, intent(in) :: &
      kii,   & !< ?doc?
@@ -362,15 +406,19 @@ contains
   !> @todo reference
   !>
   !> @todo Function used in specific context, called by BK only. I don't know if not better there.
+
   real*8 function fteta0(pg, teta, n)
     !> Size of vectors pf and teta; example source is reader_modeles::modeles_ntot
     integer, intent(in) :: n
-    real*8, intent(in), dimension(n) :: &
-      pg, & !< Example source is reader_modeles::modeles_pg
-      teta  !< Example source is reader_modeles::modeles_teta
+    real*8, intent(in) :: &
+      pg(:), & !< Example source is reader_modeles::modeles_pg
+      teta(:)  !< Example source is reader_modeles::modeles_teta
     real*8, dimension(5) :: pp1,tt1,pp2,tt2
     integer i
     real*8 teta3
+
+    call assert_le(n, size(pg), 'fteta0()', 'n', 'size(pg)')
+    call assert_le(n, size(teta), 'fteta0()', 'n', 'size(teta)')
 
     !~logical ecrit  i think this has been tested already, no need to verbose flag, would slow down the maths
     !~ecrit=.false.
@@ -401,10 +449,13 @@ contains
     integer, intent(in) :: n !< Size of vectors x and f
     real*8, intent(in) :: &
      t,    & !< ?doc?
-     x(n), & !< ?doc?
-     f(n)    !< ?doc?
+     x(:), & !< ?doc?
+     f(:)    !< ?doc?
     real*8 t0, t1, t2, u0, u1, u2, a, b, c, d, e
     integer i, j
+
+    call assert_le(n, size(x), 'ft()', 'n', 'size(x)')
+    call assert_le(n, size(f), 'ft()', 'n', 'size(f)')
 
     do 1 j = 1,n
       i = j
@@ -445,20 +496,19 @@ contains
      n, & !< Size of vectors x and y
      itot !< Size of vectors tt and ftt
     real*8, intent(in) :: &
-     x(n),     & !< ?doc?
-     y(n),     & !< ?doc?
-     tt(itot)    !< ?doc?
+     x(:),     & !< ?doc?
+     y(:),     & !< ?doc?
+     tt(:)    !< ?doc?
     real*8, intent(out) :: &
-     ftt(itot)   !< ?doc?
+     ftt(:)   !< ?doc?
 
     real*8 ft, dy, t0, t1, t2, u0, t
     integer i, j, jj, k
 
-!     write(6,*) n
-!     105 format(7f10.3)
-!     write (6,105) (x(j),j=1,n)
-!     write (6,105) (y(j),j=1,n)
-!
+    call assert_le(n, size(x), 'ftlin3()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'ftlin3()', 'n', 'size(y)')
+    call assert_le(itot, size(tt), 'ftlin3()', 'itot', 'size(tt)')
+    call assert_le(itot, size(ftt), 'ftlin3()', 'itot', 'size(ftt)')
 
     j=2
     do k=1,itot
@@ -513,10 +563,14 @@ contains
     integer, intent(in) :: n !< Size of vectors x and y
     real*8, intent(in) :: &
      xx,     & !< ?doc?
-     x(0:n), & !< ?doc?
-     y(0:n)    !< ?doc?
+     x(0:), & !< ?doc?; 0-based
+     y(0:)    !< ?doc?; 0-based
     integer i, j
     real*8 resulta
+    
+    call assert_le(n, size(x)-1, 'faitk30()', 'n', 'size(x)-1')
+    call assert_le(n, size(y)-1, 'faitk30()', 'n', 'size(y)-1')   
+    
     if (xx .lt. x(2)) then
       i=0
       goto 200
@@ -551,14 +605,18 @@ contains
      n, & !< Size of vectors x and y
      itot !< Size of vectors tt and ftt
     real*8, intent(in) :: &
-     x(n),     & !< ?doc?
-     y(n),     & !< ?doc?
-     tt(itot)    !< ?doc?
+     x(:),     & !< ?doc?
+     y(:),     & !< ?doc?
+     tt(:)    !< ?doc?
     real*8, intent(out) :: &
-     ftt(itot)   !< ?doc?
+     ftt(:)   !< ?doc?
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
 
+    call assert_le(n, size(x), 'ft2_hydro2()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'ft2_hydro2()', 'n', 'size(y)')
+    call assert_le(itot, size(tt), 'ft2_hydro2()', 'itot', 'size(tt)')
+    call assert_le(itot, size(ftt), 'ft2_hydro2()', 'itot', 'size(ftt)')
 
     inv = -1
     if (x(n).lt.x(1)) inv = 1
@@ -610,93 +668,6 @@ contains
     write(lll,100) t
     call pfant_halt(lll)
   end
-
-
-  !> INTERPOLATION PARABOLIQUE
-  !>  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
-  !>  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
-  !>
-  !>  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
-  !>
-  !> @note Even though it is used in hydro2 only, this subroutine was
-  !>       kept close to ft2() due to their similarity
-
-  subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
-    integer, intent(in) :: &
-     n, & !< Size of vectors x and y
-     itot !< Size of vectors tt and ftt
-    real*8, intent(in) :: &
-     x(n),     & !< ?doc?
-     y(n),     & !< ?doc?
-     tt(itot)    !< ?doc?
-    real*8, intent(out) :: &
-     ftt(itot)   !< ?doc?
-    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
-    integer i, inv, j, k
-    real*8 dxa, dxz, xx1, xxn
-
-    inv = -1
-    if(x(n).lt.x(1) ) inv=1
-
-    ! DXA ET DXZ  : LIMITES SUPPORTABLES D EXTRAPOLATION
-    dxa=(x(2)-x(1))/10
-    dxz=(x(n)-x(n-1))/10
-    xx1=x(1)-dxa
-    xxn=x(n)+dxz
-
-    do k = 1,itot
-      t = tt(k)
-      if (inv) 5, 6, 6
-      5 continue
-      if ((t.lt.xx1) .or. (t.gt.xxn)) go to 10
-      do 1 j=1,n
-        i=j
-        if (t-x(j)) 3, 2, 1
-      1 continue
-      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
-               !> seems it is overriding something that should give an error
-
-      6 continue
-      if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
-      do 7 j=1,n
-        i = j
-        if (t-x(j)) 7,2,3
-      7 continue
-      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
-               !> seems it is overriding something that should give an error
-
-      2 continue
-      ft=y(j)
-      go to 4
-
-3     continue
-      if(i .eq. 1) i = 2
-      if(i .ge. n) i = n-1
-      t0=t-x(i-1)
-      t1=t-x(i)
-      t2=t-x(i+1)
-      u0=x(i+1)-x(i-1)
-      u1=x(i+1)-x(i)
-      u2=x(i)-x(i-1)
-      a=t0/u0
-      b=t1/u1
-      c=t2/u2
-      d=t0/u1
-      e=t1/u0
-      ft=y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
-
-      4 continue
-      ftt(k) = ft
-    end do
-    return
-
-    10 write(lll,100) X(1),X(N),T
-    100 format(5X,'ON SORT DE LA TABLE D INTERPOLATION :', &
-     /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
-    call pfant_halt(lll)
-  end
-
-
 
 
   !---------------------------------------------------------------------------------------

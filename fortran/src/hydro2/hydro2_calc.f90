@@ -5,23 +5,23 @@
 module hydro2_calc
   use logging
   use reader_thmap
+  use misc_math
+  use reader_absoru2
   implicit none
 
   private
 
   ! command-line option: config_zph (default=12) because it will no longer be taken from file
 
-  real*8, parameter :: &
-   CSTE = 6.958258E-13, &
-   RPI  = 1.772454, &
-   PI   = 3.141593
 
+
+
+  real*8, parameter :: &
+   CSTE = 6.958258E-13
 
   !=====
   ! Hard-wired configuration
   !=====
-
-
 
   integer, parameter :: LL = 2 !< OPTION DANS RAIEHU (old "IX")
   integer, parameter :: J1 = 0 !< OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
@@ -59,21 +59,15 @@ module hydro2_calc
   !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
   integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
 
-
-
-  real*8 m_hyn(99)
-
-
+  !> This information is passed to hydro2_calc_() and copied into m_th
   type(thmap_row) :: m_th
-
-  real*8, dimension(MAX_MODELES_NTOT) :: m_pelog
 
 
   real*8 :: m_tau(MAX_FILETOH_JMAX,0:MAX_MODELES_NTOT)
   real*8 :: m_al(MAX_FILETOH_JMAX, MAX_MODELES_NTOT)
   real*8, dimension(0:MAX_MODELES_NTOT) :: m_bpl, m_tauc
   real*8, dimension(MAX_FILETOH_JMAX) :: r
-  real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, ne
+  real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, m_pelog, m_hyn, m_vt
 
 
   !=====
@@ -84,7 +78,7 @@ module hydro2_calc
   real*8, parameter :: MAX_LEVEL = 20
 
   !> @todo issue was being used uninitialized
-  real*8 :: c(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
+  real*8, parameter :: C(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
 
   !> ?doc?
   !> @todo issue was being used uninitialized
@@ -160,7 +154,8 @@ contains
 
     if(ECRIT)   then
       write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
-      72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,' J1=',I4,' IQM=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
+      72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,&
+       ' J1=',I4,' IQM=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
       call log_info(lll)
       write(lll,86) (IJ(iq),iq=1,IQM)
       86 format('  IJ    =',10I5)
@@ -180,7 +175,7 @@ contains
 
     do  i=1,modeles_ntot
       m_pelog(i)=alog10(modeles_pe(i))
-      d2_vt(i)=x_vvt*1.e+5
+      m_vt(i)=x_vvt*1.e+5
     end do
 
     call abonio()
@@ -227,15 +222,15 @@ contains
         write (lll,'(6X, 8E12.4)') (m_tau(j,i),j=1,m_jmax)
         call log_info(lll)
       end do
-      write(lll,'(/10X,20A4/)') (modeles_tit(l),l=1,5)
+      write(lll,'(/10X,A/)') modeles_tit
       call log_info(lll)
 
       write(lll,121)
-      121 format(6X,'m_tau',9X,'modeles_nh',11X,'modeles_teta     LOGPE     KC/NOYAU DE H d2_vt CGS      NE       TOTH'/)
+      121 format(6X,'m_tau',9X,'modeles_nh',11X,'modeles_teta     LOGPE     KC/NOYAU DE H VT CGS      NE       TOTH'/)
       call log_info(lll)
 
       write(lll,11) (modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
-       d2_vt(i),ne(i),m_toth(i),i,i=1,modeles_ntot)
+       m_vt(i),ne(i),m_toth(i),i,i=1,modeles_ntot)
       11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
       call log_info(lll)
     end if
@@ -244,7 +239,7 @@ contains
     call optic1(m_kc,modeles_nh,modeles_ntot,m_tauc)
 
     if(m_tauc(modeles_ntot).lt.3.89) then
-      write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89')
+      write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89'
       call pfant_halt(lll)
     end if
 
@@ -259,7 +254,7 @@ contains
     write(lll,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
     70 format(' TEFF=',F7.0,3X,'LOG G=',F5.2, 3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  NHE=',F6.3)
     call log_info(lll)
-    write (lll,73) (modeles_tit(l),l=1,5)
+    write (lll,73) modeles_tit
     call log_info(lll)
     call log_info(' ')
     write(lll,'('' Absorption calculee avec table '',A//)') absoru2_titre
@@ -356,9 +351,8 @@ contains
         end if
       end do  !fin de la bcke sur k
 
-      if (ialfa .eq. 0) then
-        absoru2_zp(J) = absoru2_zp(J)
-      else
+      if (ialfa .gt. 0) then
+        ! Overwrites value read from file if ialfa > 0
         absoru2_zp(J) = absoru2_zp(J) * coefalf
       end if
     end do   ! fin de la bcle sur j
@@ -410,14 +404,14 @@ contains
     ! SI IND=1, PAS D'ECRITURE
     logical, parameter :: IND = 1
 
-    ! Dimensions of some constants and variables below
-    integer, parameter :: MAX_IL = 20, MAX_M = 5
 
     !=====
     ! Old common "MODIF"
     !=====
-    real*8 :: modif_var(220),modif_f1(220),modif_phi(MAX_HJEN_II),modif_v(MAX_HJEN_II), modif_v
-    integer :: modif_ih,modif_ii
+    real*8 :: &
+     modif_var(MAX_MODIF_IH),modif_f1(MAX_MODIF_IH), &
+     modif_phi(MAX_MODIF_II),modif_v(MAX_MODIF_II)
+    integer :: modif_ih, modif_ii
 
     !=====
     ! Other local variables
@@ -628,7 +622,7 @@ contains
       cam1 = cne**0.1666667
       fo = 1.2532e-9*cam
       fac = 1.0e8*m_th%c1/fo
-      alfad = m_th%clam*sqrt(dcte*t+d2_vt(i)*d2_vt(i))/(fo*cl)
+      alfad = m_th%clam*sqrt(dcte*t+m_vt(i)*m_vt(i))/(fo*cl)
       dld = alfad*fo
       az(i)=ecte*m_hyn(i)*cl2/(alfad*fo)
       ddop = 0.8325*alfad
@@ -856,7 +850,7 @@ contains
         18 go to (1090,1091), iy
 
         !     CALCUL DE T(BETA,GAM)
-        1091 call malt(res, U, beta, gam, t, MAX_IL)
+        1091 call malt(res, U, beta, gam, t)
         go to 1036
 
         !     INTERPOLATION DANS TABLE DU PROFIL QUASIST. (VARIABLE BETA)
@@ -1106,7 +1100,7 @@ contains
       integer, parameter :: N(6) = (/11,21,23,171,191,211/)
       real*8, parameter :: PAS(6) /0.001,0.01,0.045,0.1,0.25,0.5/
 
-      real*8 :: ac(220), phit(220)
+      real*8, dimension(MAX_MODIF_IH) :: ac, phit
       real*8 :: bol, epsi, q, qy, ff1, ff2, ff4, res, res1, resg, som
       integer :: i, ir, j, k, kk
 
@@ -1317,26 +1311,12 @@ contains
   !> EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR
   !> DANS LE MODELE,LAMB=LONGUEUR D'ONDE
   !>
-  give attention below
-  !> @todo check nmax, mmax, may be tied with other values, e.g. tab(9,7)
 
   subroutine ameru()
-    dimension p(0:99)
-    dimension dnh(99)
-    dimension tet(7),alp(9),tab(9,7)
-    dimension y(99)
+    real*8 :: p(0:MAX_MODELES_NTOT)
+    dimension y(MAX_MODELES_NTOT)
 
-    ! tab=log 10(u), u=fonction de partition de h
-    data alp /5.,4.,3.,2.,1.,0.,-1.,-2.,-3./, &
-         mmax,nmax /9,7/, &
-         tet /0.1,0.2,0.3,0.4,0.5,0.6,0.7/
-    data tab &
-    /1.43,1.83,2.28,2.77,3.27,3.77,4.27,4.77,5.27, &
-     0.47,0.62,0.91,1.31,1.78,2.26,2.75,3.25,3.76, &
-     0.31,0.32,0.35,0.42,0.61,0.93,1.35,1.82,2.32, &
-     0.30,0.30,0.30,0.31,0.32,0.35,0.44,0.65,0.99, &
-     0.30,0.30,0.30,0.30,0.30,0.30,0.31,0.32,0.36, &
-     18*0.30/
+
     real*8, parameter :: CTE = 3.972257e+8, C1_ = 2.8546e+4
 
     real*8 :: pds
@@ -1368,7 +1348,7 @@ contains
 
       if ((modeles_teta(i).ge.0.7).or.(m_pelog(i).le.-3.)) go to 5
 
-      uv = pipe(modeles_teta(i),m_pelog(i),tet,alp,tab,nmax,mmax)
+      uv = pipe(modeles_teta(i),m_pelog(i))
       u = exp(2.302585 *uv)
       go to 6
 
@@ -1416,6 +1396,83 @@ contains
     end do
     write(lll,*) LEAVING, '   Sortie de AMERU'
     call log_debug(lll)
+  contains
+
+    !-------------------------------------------------------------------------------------
+    !> INTERPOLATION DANS UN TABLEAU A DOUBLE ENTREE NOTE TAB
+    !>
+    !> TET=TABLE DE LA VARIABLE LIGNE.  ALP=TABLE DE LA VARIABLE COLONNE.
+    !> RESULTAT=VALEUR DE LA FONCTION POUR LES ENTREES X ET Y
+
+    real*8 function pipe(x,y)
+      real*8, intent(in) :: x, y
+      integer, parameter :: MMAX = 9, NMAX = 7
+      real*8, parameter :: &
+       TET(NMAX) = (/0.1,0.2,0.3,0.4,0.5,0.6,0.7/), &
+       ALP(MMAX) = (/5.,4.,3.,2.,1.,0.,-1.,-2.,-3./), &
+       TAB(MMAX,NMAX) = reshape( (/ &
+        1.43,1.83,2.28,2.77,3.27,3.77,4.27,4.77,5.27, &
+        0.47,0.62,0.91,1.31,1.78,2.26,2.75,3.25,3.76, &
+        0.31,0.32,0.35,0.42,0.61,0.93,1.35,1.82,2.32, &
+        0.30,0.30,0.30,0.31,0.32,0.35,0.44,0.65,0.99, &
+        0.30,0.30,0.30,0.30,0.30,0.30,0.31,0.32,0.36, &
+        0.30,0.30,0.30,0.30,0.30,0.30,0.30,0.30,0.30, &
+        0.30,0.30,0.30,0.30,0.30,0.30,0.30,0.30,0.30/), (/MMAX,NMAX/) )
+
+      real*8 :: u(3), mu, nu, phi, s0
+      integer j, n, inn, nn, m, mm, nc
+
+      n = 1
+      80 if (x-TET (n))72,71,70
+
+      70 n = n+1
+      go to 80
+
+      71 nn = n
+      go to 90
+
+      72 if (nmax-n)74,74,73
+
+      73 nn = n-1
+      go to 90
+
+      74 nn = n-2
+
+      90 m = 1
+
+      91 if (ALP (m)-y) 92,93,94
+
+      93 mm = m
+      go to 95
+
+      94 m = m+1
+      go to 91
+
+      92 if (mmax-m)97,97,96
+
+      96 mm = m-1
+      go to 95
+
+      97 mm = m-2
+
+      95 s0 = y-ALP(mm)
+      phi = s0*(y-ALP (mm+1))/(ALP(mm+2)-ALP(mm))
+      inn = nn+2
+      j = 0
+      do 200 nc = nn,inn
+        j = j+1
+        mu = (TAB(mm+1,nc)-TAB(mm,nc))/(ALP(mm+1)-ALP(mm))
+        nu = (TAB(mm+2,nc)-TAB(mm+1,nc))/(ALP(mm+2)-ALP(mm+1))
+        200 u(j)=TAB(mm,nc)+s0*mu+phi*(nu-mu)
+
+      s0 = x-TET (nn)
+      phi = s0*(x-TET(nn+1))/(TET (nn+2)-TET(nn))
+      mu = (u(2)-u(1))/(TET (nn+1)-TET (nn))
+      nu = (u(3)-u(2))/(TET (nn+2)-TET(nn+1))
+      pipe = u(1)+s0*mu+phi*(nu-mu)
+    end
+
+
   end
 
 

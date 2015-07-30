@@ -19,14 +19,41 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="absor.f">
+		<Unit filename="../lib/absoru.f90">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="../lib/absoru_data.f">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="calhy.f">
+		<Unit filename="../lib/config_base.f90">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="../lib/logging.f90">
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="hydro2.f">
+		<Unit filename="../lib/misc.f90">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="../lib/misc_math.f90">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="../lib/options2.f90">
 			<Option weight="0" />
+		</Unit>
+		<Unit filename="config_hydro2.f90">
+			<Option weight="3" />
+		</Unit>
+		<Unit filename="hydro2.f90">
+			<Option weight="4" />
+		</Unit>
+		<Unit filename="hydro2_calc.f90">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="hydro2_math.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="reader_thmap.f90">
+			<Option weight="1" />
 		</Unit>
 		<Extensions>
 			<envvars />

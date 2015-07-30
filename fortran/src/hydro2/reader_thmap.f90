@@ -18,11 +18,11 @@
 module reader_thmap
   use logging
   use max_
-  use reader_dissoc
+  ! use reader_dissoc
   implicit none
 
   !> Structure to store one row of infile:thmap
-  type thmap_row  
+  type thmap_row
     !> file name
     character*16 fn
     !> NIV INF
