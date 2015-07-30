@@ -12,10 +12,10 @@
 !> @li Un fichier de trace compatible avec GRAFIC (Nom demande)
 
 program hydro2
-  use config_innewmarcs
+  use config_hydro2
   use logging
   use welcome
-  use innewmarcs_calc
+  use hydro2_calc
   implicit none
 
   call config_hydro2_init()
