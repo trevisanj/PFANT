@@ -24,12 +24,6 @@ program innewmarcs
   use innewmarcs_calc
   implicit none
 
-  ! startup
-  write(*,*) pfant_version('INNEWMARCS')
-  write(*,*) ''
-  call config_init()
-  call print_welcome(6)
-
-  ! calculation
+  call config_innewmarcs_init()
   call innewmarcs_calc_()
 end

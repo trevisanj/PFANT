@@ -25,12 +25,6 @@ program nulbad
   use nulbad_calc
   implicit none
 
-  ! startup
-  write(*,*) pfant_version('NULBAD')
-  write(*,*) ''
-  call config_init()
-  call print_welcome(6)
-
-  ! calculation
+  call config_nulbad_init()
   call nulbad_calc_()
 end

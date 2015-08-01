@@ -191,13 +191,11 @@ module synthesis
     C = 2.997929E+10,  & !< ?doc?
     H = 6.6252E-27,    & !< ?doc?
    KB = 1.38046E-16,   & !< ?doc?
-   PI = acos(-1.),     & !< "pi" constant
    C1 = 4.8298E+15,    & !< ?doc?
    C2 = 8.8525E-13,    & !< ?doc?
    C4 = 2.1179E+8,     & !< ?doc?
    C6 = 3.76727E+11,   & !< ?doc?
-   DEUXR = 1.6634E+8,  & !< ?doc?
-   RPI = 1.77245385      !< ?doc?
+   DEUXR = 1.6634E+8     !< ?doc?
 
   real*8, parameter :: &
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?

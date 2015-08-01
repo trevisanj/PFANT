@@ -65,7 +65,7 @@ contains
   !=======================================================================================
   !> Initializes innewmarcs-specific options
 
-  function config_innewmarcs_init_options(j)
+  function config_innewmarcs_init_options(j) result(k)
     !> k is the index of the last initialized option
     integer, intent(in) :: j
     integer :: k

@@ -46,9 +46,8 @@ module misc_math
 
   ! Mathematical constants used throughout. Better to use these than define them every
   ! time they are needed inside a routine
-  real*8, parameter :: &
-   RPI  = 1.7724538509055159, &  !< square root of PI
-   PI   = 3.141592653589793      !< aka acos(-1)
+  real*8, parameter :: PI = acos(-1.) !< "pi" constant
+  real*8, parameter :: RPI = sqrt(PI) !< square root of pi
 
 contains
 

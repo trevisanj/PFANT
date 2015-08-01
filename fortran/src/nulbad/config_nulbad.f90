@@ -39,7 +39,7 @@ contains
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
-  subroutine config_init()
+  subroutine config_nulbad_init()
     execonf_name = 'nulbad'
     execonf_handle_option => config_nulbad_handle_option
     execonf_init_options => config_nulbad_init_options
