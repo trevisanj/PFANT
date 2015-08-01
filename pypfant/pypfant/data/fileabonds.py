@@ -38,7 +38,3 @@ class FileAbonds(InputFile):
                           for i in xrange(len(self))])
             h.writelines(['1\n', '1\n'])
 
-    def init_default(self):
-        """Initializes with default abundances (which are hard-coded)."""
-        fullpath = path_to_default("abonds.dat")
-        self.load(fullpath)
