@@ -25,6 +25,9 @@ module config_hydro2
   use misc
   implicit none
 
+
+  logical :: config_thmap = .false. !< option: --thmap
+
   !> Option: --zph
   !> @note (historical note) This value was being read from an altered-format
   !> infile:absoru2 which was incompatible with the pfant executable. Therefore,
@@ -82,8 +85,18 @@ module config_hydro2
 
 
   character*64 :: &
-   config_fn_absoru2       = 'absoru2.dat',& !< option: --fn_absoru2
-   config_fn_modeles       = 'modeles.mod'   !< option: --fn_modeles
+   config_fn_absoru2 = 'absoru2.dat',& !< option: --fn_absoru2
+   config_fn_modeles = 'modeles.mod',& !< option: --fn_modeles
+   config_fn_thmap   = 'thmap.dat'     !< option: --fn_thmap
+
+  integer :: &
+   config_na = -1, &   !< option: --na
+   config_nb = -1      !< option: --nb
+  real*8 :: &
+   config_clam = -1, & !< option: --clam
+   config_kiex = -1, & !< option: --kiex
+   config_c1   = -1    !< option: --c1
+
 
 contains
 
@@ -163,6 +176,31 @@ contains
     options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
 
+    k = k+1
+    options(k) = option('thmap', ' ', .false., '', '', &
+      'If set, will read wavelength interval from main configuration file and<br>'//&
+      'determine automatically which hydrogen lines to calculate according to<br>'//&
+      'thmap file')
+
+    k = k+1
+    options(k) = option('na', ' ', .true., 'integer', '(no default)', &
+      'NIV INF')
+
+    k = k+1
+    options(k) = option('nb', ' ', .true., 'integer', '(no default)', &
+      'NIV SUP')
+
+    k = k+1
+    options(k) = option('clam', ' ', .true., 'real', '(no default)', &
+      'Central wavelength')
+
+    k = k+1
+    options(k) = option('kiex', ' ', .true., 'real', '(no default)', &
+      'KIEX ?doc?')
+
+    k = k+1
+    options(k) = option('c1', ' ', .true., 'real', '(no default)', &
+      'C1 ?doc?')
   end
 
   !=======================================================================================
@@ -242,6 +280,40 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
       case ('fn_modeles')
         call parse_aux_assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
+      case ('fn_thmap')
+        call parse_aux_assign_fn(o_arg, config_fn_thmap, 'config_fn_thmap')
+
+      case ('na')
+        config_na = parse_aux_str2int(opt, o_arg)
+        if (config_na .eq. 0 .or. config_na .eq. 1) then !#validation
+          call parse_aux_log_assignment('config_na', int2str(config_na))
+        else
+          res = HANDLER_ERROR
+        end if
+
+      case ('nb')
+        config_nb = parse_aux_str2int(opt, o_arg)
+        if (config_nb .eq. 0 .or. config_nb .eq. 1) then !#validation
+          call parse_aux_log_assignment('config_nb', int2str(config_nb))
+        else
+          res = HANDLER_ERROR
+        end if
+
+      case ('clam')
+        config_clam = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_clam', real82str(config_clam))
+
+      case ('kiex')
+        config_kiex = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_kiex', real82str(config_kiex))
+
+      case ('c1')
+        config_c1 = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_c1', real82str(config_c1))
+
+      case ('thmap')
+        config_thmap = .true.
+        call parse_aux_log_assignment('config_thmap', '.true.')
 
       case default
         ! if does not handle here, passes on to base handler

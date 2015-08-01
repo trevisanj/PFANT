@@ -19,6 +19,7 @@ module reader_main
   use logging
   use max_
   use reader_dissoc
+  use config_base
   implicit none
 
   !> Flag indicating whether read_main() has already been called.
@@ -58,6 +59,17 @@ module reader_main
   real*8 :: main_xxcor(MAX_DISSOC_NMETAL) !< ?doc?
   save
 contains
+
+  !=======================================================================================
+  !> Makes sure that read_main() has been called
+  !>
+  !> @note Calls read_main() with argument flag_care_about_dissoc set to .false.
+
+  subroutine assure_read_main()
+    if (.not. flag_read_main) then
+      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+    end if
+  end
 
   !=======================================================================================
   !> Reads infile:main to fill variables main_*

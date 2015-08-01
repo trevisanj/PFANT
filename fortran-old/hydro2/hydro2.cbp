@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="hydro2" />
+		<Option title="hydro2-old" />
 		<Option pch_mode="2" />
 		<Option compiler="gfortran" />
 		<Build>

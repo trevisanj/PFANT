@@ -21,12 +21,10 @@ module hydro2_x
   real*8 :: x_vvt
   logical :: x_amores
 
-
 contains
   !> Initializes x_* variables
 
   subroutine hydro2_init_x()
-    logical :: flag_read_main = .false.
 
     if (config_ptdisk .eq. -1) then
       call assure_read_main()
@@ -93,17 +91,5 @@ contains
       x_vvt = main_vvt(1)
       call parse_aux_log_assignment('x_vvt', real82str(x_teff))
     end if
-
-  contains
-
-    !-------------------------------------------------------------------------------------
-    !> Makes sure that read_main() has been called
-
-    subroutine assure_read_main()
-    if (.not. flag_read_main) then
-      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
-    end if
-    end
-
   end
 end

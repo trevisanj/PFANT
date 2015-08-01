@@ -46,7 +46,6 @@ contains
   !> either set from the command line or taken from infile:main
 
   subroutine innewmarcs_init()
-    logical :: flag_read_main = .false.
 
     !=====
     ! Assigns x_*
@@ -96,17 +95,6 @@ contains
     !-------------------------------------------------------------
     ! On cherche ou se trouvent (teff, glog)  par rapport a la table
     call locatab() ! calculates id11, id12, id21, id22
-
-  contains
-
-    !-------------------------------------------------------------------------------------
-    !> Makes sure that read_main() has been called
-
-    subroutine assure_read_main()
-    if (.not. flag_read_main) then
-      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
-    end if
-    end
   end
 
   !=======================================================================================
