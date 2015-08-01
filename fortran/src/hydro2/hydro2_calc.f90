@@ -5,9 +5,16 @@
 module hydro2_calc
   use logging
   use reader_thmap
-  use misc_math
   use reader_absoru2
+  use reader_modeles
+  use misc_math
+  use hydro2_x
+  use hydro2_math
+  use absoru
+
   implicit none
+
+  public hydro2_calc_
 
   private
 
@@ -49,10 +56,16 @@ module hydro2_calc
   !>
   !> @todo Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
   !> gotta add parameter to absoru_data.f and absoru.f90
-  integer m_jmax
+  integer :: m_jmax = 46
 
   !> POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
   real*8 m_dlam(MAX_FILETOH_JMAX)
+
+  data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
+   .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
+   1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
+   15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
+
 
 
   integer, parameter :: IQM = 9  !< Apparently, (the number of discontinuities within m_dlam)
@@ -75,7 +88,7 @@ module hydro2_calc
   !=====
 
   !> Maximum value for na/nb (superior/inferior level)
-  real*8, parameter :: MAX_LEVEL = 20
+  integer, parameter :: MAX_LEVEL = 20
 
   !> @todo issue was being used uninitialized
   real*8, parameter :: C(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
@@ -86,22 +99,6 @@ module hydro2_calc
   !> ?doc?
   !> @todo issue was being used uninitialized
   integer :: nbmax = 0
-
-
-  !=====
-  ! x_* values
-  !=====
-
-  !> Option for subroutine fluxis() (6/7/26 points for integration).
-  !> @note This was originally set to .FALSE. but I opened it for configuration
-  !>       because this information is available inside infile:main
-  logical :: x_ptdisk
-
-  !> @todo at least I could write a module shared between innewmarcs and hydro2 to avoid all this code duplication
-
-  ! x_* values may come either from command line or infile:main
-  real*4 :: x_teff, x_glog, x_asalog
-  integer :: x_inum
 
 contains
 
@@ -121,20 +118,19 @@ contains
     logical, parameter :: ECRIT = .TRUE.
 
     real*8, dimension(MAX_MODELES_NTOT) :: ne, fl
-    real*8 :: fc
+    real*8 :: fc, zut1, zut2, zut3
+
+    integer :: i, iq, j, jj, mmu, n
 
 
     ! Note that elements within structure are copied
     ! http://h21007.www2.hp.com/portal/download/files/unprot/fortran/docs/lrm/lrm0076.htm
     m_th = arg_th
 
-    ! CALL LECTUR (absoru2_zp,config_zph)
-    call read_absoru2()
-
     write(lll,'(''      KQ='',I4,10X,A)') config_kq, absoru2_titre
     call log_debug(lll)
 
-    write (lll,75) D2_CMU,D2_NZ
+    write (lll,75) CMU,NZ
     75 format('  CMU=',F5.2,'  NZ=',I5)
     call log_debug(lll)
     write (lll,79) (m_dlam(J),J=1,m_jmax)
@@ -161,20 +157,17 @@ contains
       86 format('  IJ    =',10I5)
       call log_info(lll)
 
-      if(config_amores) call log_info(' AMORTISSEMENT RESONANCE')
+      if(x_amores) call log_info(' AMORTISSEMENT RESONANCE')
       if(IS_STARK) call log_info(' ECRITURE ELARG. STARK')
     end if
 
-    ! LECTURE DU MODELE
-    !call reader5n(modeles_nh,modeles_teta,modeles_pe,modeles_pg,modeles_t5l,modeles_ntot)
-    call read_modele()
 
     call log_debug('   sortie de READER   modeles_pg(1 a 5)')
     write(lll,*)(modeles_pg(I),I=1,5)
     call log_debug(lll)
 
     do  i=1,modeles_ntot
-      m_pelog(i)=alog10(modeles_pe(i))
+      m_pelog(i)=log10(modeles_pe(i))
       m_vt(i)=x_vvt*1.e+5
     end do
 
@@ -198,7 +191,7 @@ contains
 
     do i = 1,modeles_ntot
       !> @todo I probably changed the parameters of this routine
-      call absoru(m_th%clam,modeles_teta(i),m_pelog(i),1,1,1,1,2,1,kkk,totkap)
+      call absoru_(m_th%clam,modeles_teta(i),m_pelog(i),1,1,1,1,2,.true.)
       m_toth(i) = absoru_toc
       m_kc(i) = absoru_totkap(1)
       m_hyn(i) = absoru_znh(absoru2_nmeta+4)
@@ -236,7 +229,7 @@ contains
     end if
 
     call log_debug('   APPEL OPTIC1  ')
-    call optic1(m_kc,modeles_nh,modeles_ntot,m_tauc)
+    call optic1()
 
     if(m_tauc(modeles_ntot).lt.3.89) then
       write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89'
@@ -254,7 +247,7 @@ contains
     write(lll,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
     70 format(' TEFF=',F7.0,3X,'LOG G=',F5.2, 3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  NHE=',F6.3)
     call log_info(lll)
-    write (lll,73) modeles_tit
+    write (lll,*) modeles_tit
     call log_info(lll)
     call log_info(' ')
     write(lll,'('' Absorption calculee avec table '',A//)') absoru2_titre
@@ -268,8 +261,8 @@ contains
     call log_info(lll)
     if(config_kq .eq. 1) call log_info('PROFIL QUASI-STATIQUE')
     if(config_kq .ne. 1) call log_info('THEORIE DE GRIEM')
-    if(config_amores) call log_info('CALCUL DE L AMORTISSEMENT DE RESONNANCE')
-    if(.not. config_amores) call log_info('ON NEGLIGE AMORTISSEMENT DE RESONNANCE')
+    if(x_amores) call log_info('CALCUL DE L AMORTISSEMENT DE RESONNANCE')
+    if(.not. x_amores) call log_info('ON NEGLIGE AMORTISSEMENT DE RESONNANCE')
     if(J1 .eq. 1) call log_info('PAS DE CONVOLUTION AVEC NOYAU DOPPLER')
     if(J1 .eq. 0) then
       write(lll,406)x_vvt
@@ -331,11 +324,13 @@ contains
   !>          which are initially read from infile:absoru2
 
   SUBROUTINE abonio()
-    real*8 coefalf, asasol
-
     !> nbre d'elements alfa reconnus par leur masse ALFAM
     integer, parameter :: NALF = 7
-    real*8, parameter :: ALFAM(7) = (/16.,20.2,24.3,27.,28.,32.,40./)
+    real*8, parameter :: ALFAM(NALF) = (/16.,20.2,24.3,27.,28.,32.,40./)
+
+    real*8 coefalf, asasol, a0, ddm, som1
+    integer :: ialfa, j, k
+
 
     call log_debug(ENTERING//' abonio')
 
@@ -345,7 +340,7 @@ contains
     do j = 1,absoru2_nm
       ialfa = 0
       do K = 1, NALF
-        ddm = abs(absoru2_zm(j)-alfam(k))
+        ddm = abs(absoru2_zm(j)-ALFAM(k))
         if (ddm .lt. 0.3) then
           ialfa = ialfa+1
         end if
@@ -368,8 +363,8 @@ contains
     ! Changing value that was read from infile:absoru2
     absoru2_abmet = a0*asasol
 
-    write(lll, *) 'in abonio ABMET=',ABMET
-    call log_debug(lll)
+    write(lll, *) 'in abonio ABMET=',absoru2_abmet
+    call log_info(lll)
 
   end
 
@@ -402,7 +397,7 @@ contains
     ! Verbose flag that was kept, but set internally, not as a parameter as originally
     ! SI IND=0,ON ECRIT LE DETAIL DES APPROX. PAR LESQUELLES m_al EST CALCU
     ! SI IND=1, PAS D'ECRITURE
-    logical, parameter :: IND = 1
+    integer, parameter :: IND = 1
 
 
     !=====
@@ -417,26 +412,34 @@ contains
     ! Other local variables
     !=====
     real*8, dimension(MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: bidon
-    real*8, dimension(MAX_FILETOH_JMAX) :: al_, alfa, lv, vx, x, xdp
+    real*8, dimension(MAX_FILETOH_JMAX) :: al_, alfa, lv, vx, x, xdp, resc
     real*8, dimension(MAX_MODELES_NTOT) :: stoc, az
     real*8, dimension(MAX_IL) ::res
     real*8, dimension(MAX_M) :: q
-    real*8 :: lim, lac, lv, xbdp, ax
+    real*8 :: lim, lac, xbdp, ax, a2, acte, afi, aldp, ar, atest, alfad, b1, b2, b2a2, &
+     bcte, beta, bic, bom, br, br4, cab, cam, cam1, cam2, ceg, ci, cl2, cne, corr, corr1,&
+     corr2, ct, cty, dan, dcte, dd, dd1, ddop, delie, delom, delp, delta, din, dld, &
+     dmoin, ds, ecte, ens, f, fac, g, gam, gam1, gams, fo, ho
+    integer :: i, i4, ib, ibou, ical, id, ig, ik, ik1, ikd, ikf, ikt, il, iy, iz, j, k, &
+     k1, kp, l1, m, n, n2, nb1
+    real*8 :: pak, pas, qbeta, qrsurl, rac, rad, ris, rj, rj2, rnt, rsurl, rvar, rzr, s, &
+     s1, t, tdeg, tdens, tempor, timp, truc, tv, xb, z2, z3, z5, zdem, zr
+
 
     !=====
     ! Constants
     !=====
 
-    real*8, dimension(MAX_IL), parameter :: V1, V2, V3, V4, V5, R1, R2, R3, R4, R5, U
+    real*8, dimension(MAX_IL) :: V1, V2, V3, V4, V5, R1, R2, R3, R4, R5, U
     real*8, dimension(MAX_IL,MAX_M) :: T1, T2
-    real*8, parameter :: CK, R, CKP, CL, CMH
-    real*8, parameter :: VAL(MAX_M)
+    real*8 :: CK, R, CKP, CL, CMH
+    real*8 :: VAL(MAX_M)
     !     T1 PROFIL QUASISTAT. MOYEN POUR H ALPHA ET H BETA (DISTR. DU CHAMP
     !     ELEC. DE MOZER ET BARANGER) T1= CAB*S(ALPHA)
     !     T2 ID POUR LES AUTRES RAIES
     equivalence(V1(1),T1(1,1)),(V2(1),T1(1,2)),(V3(1),T1(1,3)),(V4(1),&
      T1(1,4)),(V5(1),T1(1,5))
-    equivalence(R1(1),T2(1,1)),(R2(1),T2(1,2)),(R3(1),T2(1,3)),(R4(1),
+    equivalence(R1(1),T2(1,1)),(R2(1),T2(1,2)),(R3(1),T2(1,3)),(R4(1),&
      T2(1,4)),(R5(1),T2(1,5))
     data U/0.,0.5,1.,1.5,2.,2.5,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,14.,16.,18.,20./
     data V1/0.11133,0.11133,0.11000,0.10384,0.09049,0.07881,0.06708,0.04860,0.03363,&
@@ -467,10 +470,10 @@ contains
 
     acte = 2.**0.6666667
     bcte = 2.**0.1666667
-    dcte = 2.*ck/(cmh*D2_CMU)
+    dcte = 2.*ck/(cmh*CMU)
     ecte = 1.5127e-27
     ar = m_th%na
-    zr = D2_NZ
+    zr = NZ
     z2 = zr**2
     z3 = z2*zr
     z5 = z3*z2
@@ -513,7 +516,7 @@ contains
 
     if ((nbmax.eq.0).and.(nbmin.eq.0)) go to 15
 
-    43 k1 = nbmax-nbmin+1
+    k1 = nbmax-nbmin+1
     if (nbmin.eq.nb1) ik1 = 3
     if ((nbmax.gt.nb1).and.(nbmin.lt.nb1)) ik1 = 2
     if ((nbmax.eq.nb1).and.(nbmin.lt.nb1)) ik1 = 1
@@ -612,7 +615,7 @@ contains
     !     CALCUL DE QUANTITES DEPENDANT DU MODELE
     205 modif_ih = i4
     call log_debug('VOUS ENTREZ DANS LA BOUCLE LA PLUS EXTERIEURE QUI '//&
-     'PORTE SUR L INDICE DU NIVEAU DU MODELE'
+     'PORTE SUR L INDICE DU NIVEAU DU MODELE')
     do 17 i = 1,modeles_ntot
       write(lll,*)'      CALCUL AU NIVEAU',i,' DU MODELE'
       call log_debug(lll)
@@ -629,10 +632,10 @@ contains
       rsurl = 0.0898*cam1*t**(-0.5)
       kp = 0
       delie = 4.736e-06*cl2/(br*(br-1.)*modeles_teta(i))
-      delom = zr*cl2*0.3503192 e-4/(b2*modeles_teta(i))
+      delom = zr*cl2*0.3503192e-4/(b2*modeles_teta(i))
       delp = 2.9953e-15*cl2*cne**0.5
       lim = 1.23e-18*cl2*b2*cam
-      dd1 = alog10(delom/delp)
+      dd1 = log10(delom/delp)
       if (config_kq.eq.1) go to 24
 
       !     QUANTITES UTILES UNIQUEMENT POUR ELARGISSEMENT IMPACT
@@ -642,7 +645,7 @@ contains
       timp = 2.1e10*t/cam
       tdens = 1.277e5*t**0.5/cam2
       ens = b2-tdens
-      rnt = 4.6*(z3/t)**0.5*alog10(4.0e6*t*zr/(b2*cne**0.5))*dan
+      rnt = 4.6*(z3/t)**0.5*log10(4.0e6*t*zr/(b2*cne**0.5))*dan
       gam1 = 1.217e-6*rnt*din*cam2/zdem
       bom = delom/(fo*cab)
       gams = 1.5*pi/(bom**0.5)
@@ -685,7 +688,7 @@ contains
         if ((m_dlam(j).eq.0.).or.(config_kq.eq.1)) go to 23
 
         rac = m_dlam(j)**0.5
-        corr = alog(delom/m_dlam(j))/dd
+        corr = log(delom/m_dlam(j))/dd
 
         23 if (m_dlam(j)-lim) 21,22,22
 
@@ -768,7 +771,7 @@ contains
         ig = 3
         go to 3003
 
-        3005 corr1 = 2.+alog10(m_dlam(j)/delom)/dd1
+        3005 corr1 = 2.+log10(m_dlam(j)/delom)/dd1
 
         !     NE=NE*CORR1(SELON SCHLUTER ET AVILA APJ 144,785,1966)
         corr2 = corr1**0.6666667
@@ -806,7 +809,7 @@ contains
 
         1033 if (IND.eq.1) go to 2012
         call log_debug('   BETA.GT.15')
-)
+
         2012 afi = lim/m_dlam(j)
         go to 52
 
@@ -850,7 +853,7 @@ contains
         18 go to (1090,1091), iy
 
         !     CALCUL DE T(BETA,GAM)
-        1091 call malt(res, U, beta, gam, t)
+        1091 call malt(res, U, beta, gam, t, MAX_IL)
         go to 1036
 
         !     INTERPOLATION DANS TABLE DU PROFIL QUASIST. (VARIABLE BETA)
@@ -882,9 +885,9 @@ contains
         lv(j)=m_al(j,i)
         l1 = m_jmax-j+1
         vx(l1)=alfa(j)
-        1013 al_(l1)=alog10(lv(j))
+        1013 al_(l1)=log10(lv(j))
 
-      if (.not.config_amores) go to 4013
+      if (.not.x_amores) go to 4013
 
       call pronor() ! calculates ax
 
@@ -898,7 +901,7 @@ contains
       end if
 
       4013 lac = m_al(1,i)/2.
-      truc = alog10(lac)
+      truc = log10(lac)
       j = 2
 
       1053 if (lac-m_al(j,i)) 1050,1051,1052
@@ -928,7 +931,7 @@ contains
       call log_debug(lll)
 
       71 continue
-      if (config_amores) go to 4100
+      if (x_amores) go to 4100
 
       if (ds-ddop) 1070,1070,1071
 
@@ -958,7 +961,7 @@ contains
         1048 call conf(j)
         go to 1075
 
-        1074 call conv2(m_dlam(j),dld,m_jmax,IQM,IJ,ris,lv,m_dlam)
+        1074 call conv2(j)
 
         1075 m_al(j,i)=ris
         if (IND.eq.1) go to 1011
@@ -1016,7 +1019,7 @@ contains
       1017 continue
     17 continue ! end of loop opened 400 lines above!
 
-    call log_debug(,*)'LE DERNIER NIVEAU DU MODELE EST ATTEINT'
+    call log_debug('LE DERNIER NIVEAU DU MODELE EST ATTEINT')
     if (IND .eq. 0)   then
       if (.not. IS_STARK) go to 4011
       write(lll,'(''1'',''STARK='',//)')
@@ -1095,10 +1098,12 @@ contains
     !> CONVOLUTION AVEC H(A,V),INTEGRATION PAR SIMPSON
     !>
     !> Contained inside raiehu() to share variables modif_*
+    !>
+    !> Calculates variable resc
 
     subroutine conv4()
       integer, parameter :: N(6) = (/11,21,23,171,191,211/)
-      real*8, parameter :: PAS(6) /0.001,0.01,0.045,0.1,0.25,0.5/
+      real*8, parameter :: PAS(6) = (/0.001,0.01,0.045,0.1,0.25,0.5/)
 
       real*8, dimension(MAX_MODIF_IH) :: ac, phit
       real*8 :: bol, epsi, q, qy, ff1, ff2, ff4, res, res1, resg, som
@@ -1149,11 +1154,11 @@ contains
         go to 25
 
         35 res = res1+res
-        resc(kk)=res
+        resc(kk) = res
         go to 1017
 
         30 res = 2.*res
-        resc(kk)=res
+        resc(kk) = res
       1017 continue
     end
 
@@ -1218,7 +1223,7 @@ contains
     !>
     !> Result goes in ax
 
-    subroutine pronor())
+    subroutine pronor()
       real*8 :: h(IQM), anor, s, sig, som
       integer :: i, i1, k, k1, k2, k3, k4
 
@@ -1313,13 +1318,11 @@ contains
   !>
 
   subroutine ameru()
-    real*8 :: p(0:MAX_MODELES_NTOT)
-    dimension y(MAX_MODELES_NTOT)
-
-
     real*8, parameter :: CTE = 3.972257e+8, C1_ = 2.8546e+4
 
-    real*8 :: pds
+    real*8 :: p(0:MAX_MODELES_NTOT), y(MAX_MODELES_NTOT), &
+     pds, f, f1, f2, f20, f3, f30, pe, temp, tet0, u, uv, zkh
+    integer :: i, j
 
     pds = 2*m_th%na**2
 
@@ -1332,15 +1335,15 @@ contains
     call log_debug(lll)
     write(lll,*)'      COEFFICIENTS D ABSORPTION PAR NOYAU D''H'
     call log_debug(lll)
-    write(lll6,116)m_th%clam,m_jmax
-    format(3x,'lambda=  ',f10.3,10x,'m_jmax=  ',i5)
+    write(lll,116) m_th%clam,m_jmax
+    116 format(3x,'lambda=  ',f10.3,10x,'m_jmax=  ',i5)
     call log_debug(lll)
 
     !***************************
     4000 continue
     do 1000 i = 1,modeles_ntot
       pe = exp(2.302585*m_pelog(i))
-      temp = 2.5*alog(5040.39/modeles_teta(i))
+      temp = 2.5*log(5040.39/modeles_teta(i))
       zkh = exp(-31.30364 *modeles_teta(i)+temp-1.098794 )
       f1 = 1./(1.+zkh/pe)
       f2 = exp(-C1_*modeles_teta(i)/m_th%clam)
@@ -1376,7 +1379,7 @@ contains
     write(lll,*)' Calcul de la fonction de Plank au niveau zero'
     call log_debug(lll)
 
-    tet0 = fteta0(modeles_pg,modeles_teta)   ! on extrapole modeles_teta pour modeles_nh=0
+    tet0 = fteta0(modeles_pg,modeles_teta,modeles_ntot)   ! on extrapole modeles_teta pour modeles_nh=0
     f20 = exp(-C1_*tet0/m_th%clam)
     f30 = 1-f20
     m_bpl(0) = CTE*f20/(f30*m_th%clam**3)
@@ -1501,24 +1504,27 @@ contains
 
 
   subroutine fluxis(mmu, fl, fc)
-    real*8, intent(in) :: mmu
+    integer, intent(in) :: mmu
     real*8, intent(out), dimension(MAX_MODELES_NTOT) :: fl
     real*8, intent(out) :: fc
 
-    real*8 :: cc(26),tt(26),tta(6),cca(6),ttb(26),ccb(26), ttp(7),ccp(7)
+    real*8 :: cc(26),tt(26)
     real*8, dimension(0:MAX_MODELES_NTOT) :: t
+    real*8 :: bb, bbc, fl_, tolim
+    integer :: i, ipoint, j, k
 
+    real*8, parameter :: &
+     CCA(6) = (/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/), &
+     TTA(6) = (/0.038,0.154,0.335,0.793,1.467,3.890/), &
+     CCP(7) = (/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/), &
+     TTP(7) = (/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/), &
+     CCB(26) = (/0.032517,0.111077,0.071279,0.154237,0.076944,0.143783, &
+      0.063174,0.108330,0.038767,0.059794,0.021983,0.034293,0.012815, &
+      0.020169,0.007616,0.012060,0.004595,0.007308,0.002802,0.004473, &
+      0.001724,0.002761,0.001578,0.002757,0.000396,0.002768/), &
+     TTB(26) = (/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
+      12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/)
 
-    DATA CCA/0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
-    DATA TTA /0.038,0.154,0.335,0.793,1.467,3.890 /
-    DATA CCP/0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
-    DATA TTP/0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
-    DATA CCB/0.032517,0.111077,0.071279,0.154237,0.076944,0.143783, &
-     0.063174,0.108330,0.038767,0.059794,0.021983,0.034293,0.012815, &
-     0.020169,0.007616,0.012060,0.004595,0.007308,0.002802,0.004473, &
-     0.001724,0.002761,0.001578,0.002757,0.000396,0.002768/
-    DATA TTB/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
-     12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
     if (x_ptdisk) then
       ipoint = 7
       do i = 1,ipoint
@@ -1544,7 +1550,7 @@ contains
     tolim = tt(ipoint)
     if (m_tauc(modeles_ntot).lt.tolim) then
       call log_halt(' Modele trop court ')
-      write(lll,103) modeles_ntot,m_tauc(modeles_ntot))
+      write(lll,103) modeles_ntot,m_tauc(modeles_ntot)
       103 format(i10,5x,'modeles_t5l=',f10.4)
       call pfant_halt(lll)
     end if
@@ -1579,83 +1585,11 @@ contains
 
   subroutine hydro2_init()
 
-    m_jmax = 46
-    data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
-     .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
-     1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
-     15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
+!    m_jmax = 46
+!    data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
+!     .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
+!     1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
+!     15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
 
-    !=====
-    ! Assigns x_*
-    !=====
-    ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from infile:main
-
-
-    if (config_ptdisk .eq. -1) then
-      call assure_read_main()
-      x_ptdisk = main_ptdisk
-    else
-      x_ptdisk = integer2logical(config_ptdisk)
-    end if
-
-
-    if (config_amores .eq. -1) then
-      ! No default because it was originally asking user
-      call pfant_halt('Option --amores has not been set')
-    else
-      x_amores = integer2logical(config_amores)
-    end if
-
-    if (config_kq .eq. -1) then
-      ! No default because it was originally asking user
-      call pfant_halt('Option --amores has not been set')
-    else
-      x_amores = integer2logical(config_amores)
-    end if
-
-    ! duplicated in innewmarcs
-    x_teff = config_teff
-    x_glog = config_glog
-    x_asalog = config_asalog
-    x_inum = config_inum
-    if (config_id .lt. 1) then
-      call assure_read_main()
-      if (main_inum .lt. 1) then
-        ! note: here this consistency check is considered an assertion, because it should
-        ! be validated upon file reading.
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-      x_inum = main_inum
-      call parse_aux_log_assignment('x_inum', int2str(x_inum))
-    end if
-    if (config_teff .eq. -1) then
-      call assure_read_main()
-      x_teff = main_teff
-      call parse_aux_log_assignment('x_teff', real42str(x_teff))
-    end if
-    if (config_glog .eq. -1)  then
-      call assure_read_main()
-      x_glog = main_glog
-      call parse_aux_log_assignment('x_glog', real42str(x_glog))
-    end if
-    if (config_asalog .eq. -1) then
-      call assure_read_main()
-      x_asalog = main_asalog
-      call parse_aux_log_assignment('x_asalog', real42str(x_asalog))
-    end if
-
-
-    x_vvt = config_vvt
-    if (config_vvt .eq. -1) then
-      call assure_read_main()
-
-      if (main_ivtot .gt. 1) then
-        call pfant_halt('Tried to read vvt from main configuration file, '//
-         'but not prepared for multiple microturbulence velocities')
-      end if
-      x_vvt = main_vvt(1)
-      call parse_aux_log_assignment('x_vvt', real42str(x_teff))
-    end if
   end
 end

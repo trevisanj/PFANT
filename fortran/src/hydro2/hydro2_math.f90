@@ -1,11 +1,11 @@
-!> Math routines used only in hydro2 and not other programs
+!> Math routines used in hydro2_calc.f90 + MAX_* declarations
 !>
 !> Routines in callhy.f that 1) didn't use COMMONs; 2) didn't take COMMON as argument
 !> were moved here.
 !>
 !> @note Arrays passed to routines now have assumed-shape declarations + assertions against
 !> access beyond boundaries.
-!> 
+!>
 !> @todo Routines that have the size of arrays passed to them now have assertions. This may
 !> slow down the calculations (depending on the number of calls to given routine)
 !> and may be subject to re-visit.
@@ -63,8 +63,8 @@ contains
     real*8 :: h1, v, w
     integer :: i, k
 
-    call log_assert_le(ii, size(vh), 'hjen()', 'ii', 'size(vh)')  
-    call log_assert_le(ii, size(phi), 'hjen()', 'ii', 'size(phi)')  
+    call assert_le(ii, size(vh), 'hjen()', 'ii', 'size(vh)')
+    call assert_le(ii, size(phi), 'hjen()', 'ii', 'size(phi)')
 
     ! SI V>3.9 LE CALCUL DE EXP(-V**2) EST INUTILE
     do 100 k = 1,ii
@@ -115,9 +115,9 @@ contains
     real*8 :: ah, aso, avu, h1, h2, pp, sig, sigma, sigma1, t1, t2, tb, to_, vu
     integer :: i, ih1, ih2, im, in, ir
 
-    call log_assert_le(iii, size(th), 'malt()', 'iii', 'size(th)')  
-    call log_assert_le(iii, size(u), 'malt()', 'iii', 'size(u)')  
-       
+    call assert_le(iii, size(th), 'malt()', 'iii', 'size(th)')
+    call assert_le(iii, size(u), 'malt()', 'iii', 'size(u)')
+
     t1 = f_ta(dble(1.))
     t2 = f_ta(dble(-1.))
     vu = 0.

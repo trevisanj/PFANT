@@ -79,7 +79,12 @@ module config_base
   use config_base_handler_interfaces
   implicit none
 
-  character(3), parameter :: IND = '.. ' !< indentation string to be used in help text
+  !> indentation string to be used in help text at will
+  character(3), parameter :: IND = '.. '
+
+  !> Message to be used in help text at will.
+  character(:), parameter :: FROM_MAIN = ' (read from main configuration file)'
+
 
   ! Possible return values of option handler
   integer, parameter ::    &

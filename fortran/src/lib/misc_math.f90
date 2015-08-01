@@ -34,7 +34,7 @@
 !> On the other hand, declaring <code>fr(:)</code> gives access to the array size
 !> using function <code>size()</code>, allows for placing assertions inside the
 !> routines.
-!> 
+!>
 !> @note However, assertions may slow down the code. Once the code is tested enough,
 !> assertions should be taken out from routines that are called many times. *However*,
 !> assertions are good documentation, so don't delete them; rather, comment them out.!!
@@ -261,7 +261,7 @@ contains
      iz           !< interval upper index
     integer i, ia2
 
-    call assert_le(itot, size(ifa), 'mini()', 'ntot', 'size(ifa)')
+    call assert_le(ntot, size(ifa), 'mini()', 'ntot', 'size(ifa)')
 
     mini=ifa(ia)
     ia2=ia+1
@@ -283,7 +283,7 @@ contains
      iz           !< interval upper index
     integer i, ia2
 
-    call assert_le(itot, size(ifa), 'maxi()', 'ntot', 'size(ifa)')
+    call assert_le(ntot, size(ifa), 'maxi()', 'ntot', 'size(ifa)')
 
     maxi=ifa(ia)
     ia2=ia+1
@@ -311,9 +311,9 @@ contains
     real*8 fx, xmilieu
     integer i, j
 
-    call log_assert_le(n, size(p)-1, 'integra()', 'n', 'size(p)-1')  
-    call log_assert_le(n, size(x), 'integra()', 'n', 'size(x)')  
-    call log_assert_le(n, size(y), 'integra()', 'n', 'size(y)')  
+    call assert_le(n, size(p)-1, 'integra()', 'n', 'size(p)-1')
+    call assert_le(n, size(x), 'integra()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'integra()', 'n', 'size(y)')
 
     p(1) = pdeb
 
@@ -342,7 +342,7 @@ contains
   !>
   !> SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54, SINON 82-55
   !> @todo improve documentation ?doc?
-  
+
   real*8 function calch(kii, iz, kiex1, is1, kiex2, is2)
     real*8, intent(in) :: &
      kii,   & !< ?doc?
@@ -567,10 +567,10 @@ contains
      y(0:)    !< ?doc?; 0-based
     integer i, j
     real*8 resulta
-    
+
     call assert_le(n, size(x)-1, 'faitk30()', 'n', 'size(x)-1')
-    call assert_le(n, size(y)-1, 'faitk30()', 'n', 'size(y)-1')   
-    
+    call assert_le(n, size(y)-1, 'faitk30()', 'n', 'size(y)-1')
+
     if (xx .lt. x(2)) then
       i=0
       goto 200

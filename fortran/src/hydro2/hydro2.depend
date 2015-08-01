@@ -15,13 +15,13 @@
 
 1437060226 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\absoru_data.f
 
-1437060226 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\logging.f90
+1438376657 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\logging.f90
 
 1437060226 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\options2.f90
 
 1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\misc.f90
 
-1438269861 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\misc_math.f90
+1438387521 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\misc_math.f90
 
 1438269918 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\reader_thmap.f90
 
@@ -29,13 +29,21 @@
 
 1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\welcome.f90
 
-1438271726 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\hydro2_math.f90
+1438387552 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\hydro2_math.f90
 
 1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\absoru.f90
 
-1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\config_base.f90
+1438378168 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\config_base.f90
 
-1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\config_hydro2.f90
+1438387225 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\config_hydro2.f90
 
 1438274186 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\hydro2_max.f90
+
+1437060226 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\reader_dissoc.f90
+
+1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\reader_main.f90
+
+1438387712 source:c:\users\j\documents\projects\pfant\github\fortran\src\hydro2\hydro2_x.f90
+
+1437060226 source:c:\users\j\documents\projects\pfant\github\fortran\src\lib\reader_modeles.f90
 

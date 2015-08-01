@@ -5,6 +5,7 @@
 module hydro2_x
   use logging
   use reader_main
+  use config_hydro2
   implicit none
 
   !> Option for subroutine fluxis() (6/7/26 points for integration).
@@ -18,17 +19,20 @@ module hydro2_x
   integer :: x_inum
 
   real*8 :: x_vvt
+  logical :: x_amores
 
 
 contains
   !> Initializes x_* variables
 
-  subroutine init_x()
+  subroutine hydro2_init_x()
+    logical :: flag_read_main = .false.
+
     if (config_ptdisk .eq. -1) then
       call assure_read_main()
       x_ptdisk = main_ptdisk
     else
-      x_ptdisk = integer2logical(config_ptdisk)
+      x_ptdisk = int2logical(config_ptdisk)
     end if
 
 
@@ -36,14 +40,14 @@ contains
       ! No default because it was originally asking user
       call pfant_halt('Option --amores has not been set')
     else
-      x_amores = integer2logical(config_amores)
+      x_amores = int2logical(config_amores)
     end if
 
     if (config_kq .eq. -1) then
       ! No default because it was originally asking user
       call pfant_halt('Option --amores has not been set')
     else
-      x_amores = integer2logical(config_amores)
+      x_amores = int2logical(config_amores)
     end if
 
     ! duplicated in innewmarcs
@@ -51,7 +55,7 @@ contains
     x_glog = config_glog
     x_asalog = config_asalog
     x_inum = config_inum
-    if (config_id .lt. 1) then
+    if (config_inum .lt. 1) then
       call assure_read_main()
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
@@ -83,11 +87,23 @@ contains
       call assure_read_main()
 
       if (main_ivtot .gt. 1) then
-        call pfant_halt('Tried to read vvt from main configuration file, '//
+        call pfant_halt('Tried to read vvt from main configuration file, '//&
          'but not prepared for multiple microturbulence velocities')
       end if
       x_vvt = main_vvt(1)
       call parse_aux_log_assignment('x_vvt', real82str(x_teff))
     end if
+
+  contains
+
+    !-------------------------------------------------------------------------------------
+    !> Makes sure that read_main() has been called
+
+    subroutine assure_read_main()
+    if (.not. flag_read_main) then
+      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+    end if
+    end
+
   end
 end

@@ -13,11 +13,22 @@
 
 program hydro2
   use config_hydro2
-  use logging
-  use welcome
+  use hydro2_x
+  use reader_absoru2
+  use reader_modeles
   use hydro2_calc
   implicit none
 
   call config_hydro2_init()
+  call hydro2_init_x()
+
+  call read_absoru2(full_path_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(full_path_i(config_fn_modeles))   ! LECTURE DU MODELE
+
+
+  ok ok ok ok ok
+  gotta make the call loop
+  arg_th
+
   call hydro2_calc_()
 end

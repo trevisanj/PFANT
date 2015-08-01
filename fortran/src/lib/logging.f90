@@ -219,8 +219,8 @@ contains
 
     11 continue
   end
-  
-  
+
+
   !---------------------------------------------------------------------------------------
   !> Asserts i1 <= i2; if not, halts showing message
   !>
@@ -229,18 +229,19 @@ contains
 
   subroutine assert_le(i1, i2, title, name1, name2)
     integer, intent(in) :: i1, i2
-    character(:), intent(in) :: &
+    character(len=*), intent(in) :: &
      title, & !< title of caller routine, e.g., "integra()"
      name1, & !< name of argument corresponding to the value in i1
      name2    !< name of argument corresponding to the value in i2
 
     if (i1 .gt. i2) then
-      call pfant_halt(title//': '//name1//' > '//name2//' ('//int2str(i1)//&
-       ' > '//int2str(i2)//')', is_assertion=.true.)
+      write(lll,10) title, name1, name2, i1, i2
+      10 format(A,': ',A,' > ',A,' (',I5,' > ',I5,')')
+      call pfant_halt(lll)
     end if
   end
 
-  
+
 
   !=======================================================================================
 

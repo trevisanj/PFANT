@@ -102,19 +102,19 @@ contains
      '"Titre"')
 
     k = k+1
-    options(k) = option('teff',' ', .true., 'real value', real42str(config_teff), &
+    options(k) = option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
      '"Teff"')
 
     k = k+1
-    options(k) = option('glog',' ', .true., 'real value', real42str(config_glog), &
+    options(k) = option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
      '"log g"')
 
     k = k+1
-    options(k) = option('asalog',' ', .true., 'real value', real42str(config_asalog), &
+    options(k) = option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
      '"[M/H]"')
 
     k = k+1
-    options(k) = option('inum',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
+    options(k) = option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
      'Record id within atmospheric model binary file')
   end
 

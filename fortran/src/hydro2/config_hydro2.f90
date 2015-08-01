@@ -25,16 +25,22 @@ module config_hydro2
   use misc
   implicit none
 
+  !> Option: --zph
+  !> @note (historical note) This value was being read from an altered-format
+  !> infile:absoru2 which was incompatible with the pfant executable. Therefore,
+  !> it has been assigned a default value and this command-line option was added
+  real*8 :: config_zph = 12
+
   !> option: --teff
   !> @sa get_teff()
-  real*4 :: config_teff = -1
+  real*8 :: config_teff = -1
   !> option: --glog
   !> @sa get_teff()
-  real*4 :: config_glog = -1
+  real*8 :: config_glog = -1
   !> option: --asalog.
   !> @note Name changed from "amet" to "asalog" to conform with pfant and hydro2
   !> @sa get_asalog()
-  real*4 :: config_asalog = -1
+  real*8 :: config_asalog = -1
   !> option: --inum
   !> @sa get_id()
   integer :: config_inum = 0
@@ -69,7 +75,15 @@ module config_hydro2
   character*25 :: config_modcode = 'NoName' !< option: --modcode
 
   !> option: --nomplot
-  character*16 :: nomplot = '?'
+  character*16 :: config_nomplot = '?'
+
+  !> option: --vvt
+  real*8 :: config_vvt = -1
+
+
+  character*64 :: &
+   config_fn_absoru2       = 'absoru2.dat',& !< option: --fn_absoru2
+   config_fn_modeles       = 'modeles.mod'   !< option: --fn_modeles
 
 contains
 
@@ -93,23 +107,23 @@ contains
     integer :: k
 
     k = j+1
-    options(k) = option('teff',' ', .true., 'real value', real42str(config_teff), &
+    options(k) = option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
      '"Teff"')
 
     k = k+1
-    options(k) = option('glog',' ', .true., 'real value', real42str(config_glog), &
+    options(k) = option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
      '"log g"')
 
     k = k+1
-    options(k) = option('asalog',' ', .true., 'real value', real42str(config_asalog), &
+    options(k) = option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
      '"[M/H]"')
 
     k = k+1
-    options(k) = option('inum',' ', .true., 'real value', '<"main_inum" variable (taken from main configuration file)>', &
+    options(k) = option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
      'Record id within atmospheric model binary file')
 
     k = k+1
-    options(k) = option('ptdisk',' ', .true., 'T/F', '<"main_ptdisk" variable from main configuration file>', &
+    options(k) = option('ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
      'option for subroutine fluxis()<br>'//&
      IND//'T: 7-point integration<br>'//&
      IND//'F: 6- or 26-point integration, depending on option kik')
@@ -129,6 +143,26 @@ contains
      '"Theorie"<br>'//&
      IND//'0: THEORIE DE GRIEM;<br>'//&
      IND//'1: THEORIE QUASISTATIQUE')
+
+    k = k+1
+    options(k) = option('nomplot', ' ', .true., 'file name', config_nomplot, &
+     'output file name - hydrogen lines')
+
+    k = k+1
+    options(k) = option('vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
+     'velocity of microturbulence')
+
+    k = k+1
+    options(k) = option('zph', ' ', .true., 'real value', real82str(config_zph), &
+     'abondance d''H pour laquelle sont donnees les abondances metalliques')
+
+    k = k+1
+    options(k) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+     'input file name - absoru2')
+    k = k+1
+    options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+     'input file name - model')
+
   end
 
   !=======================================================================================
@@ -148,13 +182,13 @@ contains
       !> infile:main
       case ('teff')
         config_teff = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_teff', real42str(config_teff))
+        call parse_aux_log_assignment('config_teff', real82str(config_teff))
       case ('glog')
         config_glog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_glog', real42str(config_glog))
+        call parse_aux_log_assignment('config_glog', real82str(config_glog))
       case ('asalog')
         config_asalog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_asalog', real42str(config_asalog))
+        call parse_aux_log_assignment('config_asalog', real82str(config_asalog))
       case ('inum')
         config_inum = parse_aux_str2int(opt, o_arg)
         if (config_inum .lt. 1) then !#validation
@@ -163,13 +197,11 @@ contains
           call parse_aux_log_assignment('config_inum', int2str(config_inum))
         end if
 
-
-
       !>
       !> @todo issue this is also available in infile:main
       case ('ptdisk')
         ! This conversion to/from integer is because config_ptdisk is a tristate variable,
-        ! but the user doesn't need to know this
+        ! but the user may think it is just a logical variable
         ! See hydro2_init() to see how it is treated
         config_ptdisk = logical2int(parse_aux_str2logical(opt, o_arg))
         call parse_aux_log_assignment('config_ptdisk', logical2str(int2logical(config_ptdisk)))
@@ -181,10 +213,36 @@ contains
         else
           res = HANDLER_ERROR
         end if
+
+      case ('kq')
+        config_kq = parse_aux_str2int(opt, o_arg)
+        if (config_kq .eq. 0 .or. config_kq .eq. 1) then !#validation
+          call parse_aux_log_assignment('config_kq', int2str(config_kq))
+        else
+          res = HANDLER_ERROR
+        end if
+
       case ('amores')
         ! config_amores is also tristate, as config_ptdisk
         config_amores = logical2int(parse_aux_str2logical(opt, o_arg))
         call parse_aux_log_assignment('config_amores', logical2str(int2logical(config_amores)))
+
+      case ('nomplot')
+        call parse_aux_assign_fn(o_arg, config_nomplot, 'config_nomplot')
+
+      case ('vvt')
+        config_vvt = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_vvt', real82str(config_vvt))
+
+      case ('zph')
+        config_zph = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_zph', real82str(config_zph))
+
+      case ('fn_absoru2')
+        call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
+      case ('fn_modeles')
+        call parse_aux_assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
+
       case default
         ! if does not handle here, passes on to base handler
         res = config_base_handle_option(opt, o_arg)

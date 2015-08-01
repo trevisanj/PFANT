@@ -252,7 +252,7 @@ contains
     !=====
 
 
-    ! dissoc.dat needs to be read first because READ_MAIN() depends on dissoc_NMETAL
+    ! note that infile:dissoc needs to be read before infile:main
     call read_dissoc(full_path_i(config_fn_dissoc))
     call read_main(full_path_i(config_fn_main))
     call read_partit(full_path_i(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
