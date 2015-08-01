@@ -120,5 +120,7 @@ def chunk_string(string, length):
   generator returns the string sliced, from 0 + a multiple of the length
   of the chunks, to the length of the chunks + a multiple of the length
   of the chunks.
+
+  Reference: http://stackoverflow.com/questions/18854620
   """
   return (string[0+i:length+i] for i in range(0, len(string), length))

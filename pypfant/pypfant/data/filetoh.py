@@ -58,9 +58,10 @@ class FileToH(InputFile):
       num_rows = lambda x: int(math.ceil(float(x)/5))
       C = 14  # size of stored float value in characters
       nr = num_rows(self.jmax)
-      self.lambdh = []
+      v = []
       for i in range(nr):
-        self.lambdh.extend([float(x) for x in chunk_string(readline_strip(h), C)])
+        v.extend([float(x) for x in chunk_string(readline_strip(h), C)])
+      self.lambdh = np.array(v)
 
       if not (len(self.lambdh) == self.jmax):
         raise FileConsistencyError("len(lambdh)=%d should be %d" % (len(self.lambdh), self.jmax))
@@ -74,7 +75,10 @@ class FileToH(InputFile):
       if len(v)/self.jmax != self.ntot:
         raise FileConsistencyError("Should have found %d values for th matrix (found %d)" %
                                    (self.jmax*self.ntot, len(v)))
-      self.th = np.reshape(v, (self.jmax, self.ntot)).T
+
+      # Note that matrix is filled horizontally, i.e., first row, then second row, ...
+      # whereas it was dumped in the file by column; hence we have to transpose it
+      self.th = np.reshape(v, (self.ntot, self.jmax)).T
 
   def save(self, filename):
     """Saves to file."""
