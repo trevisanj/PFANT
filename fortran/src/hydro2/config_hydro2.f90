@@ -64,12 +64,14 @@ module config_hydro2
 
   !> option: --amores
   !>
-  !> This is a tristate variable, as config_ptdisk, because it has no default and is
-  !> initially set to -1, meaning that it is unitialized.
-  integer :: config_amores = -1
+  !> This is a tristate variable, as config_ptdisk.
+  !>
+  !> @note Default value taken from M.Trevisan's pfant12.R script
+  integer :: config_amores = 1
 
   !> option: --kq
-  integer :: config_kq = -1
+  !> @note Default taken from M.Trevisan's pfant12.R script
+  integer :: config_kq = 1
 
   character*192 :: config_refdir = '.' !< option: --refdir
   character*64 :: &
@@ -107,99 +109,75 @@ contains
     execonf_name = 'hydro2'
     execonf_handle_option => config_hydro2_handle_option
     execonf_init_options => config_hydro2_init_options
-    execonf_num_options = 222
     call config_base_init()
   end
 
   !=======================================================================================
   !> Initializes hydro2-specific options
 
-  integer function config_hydro2_init_options(j)
-    !> k is the index of the last initialized option
-    integer, intent(in) :: j
-    integer :: k
-
-    k = j+1
-    options(k) = option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
+  subroutine config_hydro2_init_options()
+    call add_option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
      '"Teff"')
 
-    k = k+1
-    options(k) = option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
+    call add_option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
      '"log g"')
 
-    k = k+1
-    options(k) = option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
+    call add_option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
      '"[M/H]"')
 
-    k = k+1
-    options(k) = option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
+    call add_option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
      'Record id within atmospheric model binary file')
 
-    k = k+1
-    options(k) = option('ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
+    call add_option('ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
      'option for subroutine fluxis()<br>'//&
      IND//'T: 7-point integration<br>'//&
      IND//'F: 6- or 26-point integration, depending on option kik')
 
-    k = k+1
-    options(k) = option('kik', ' ', .TRUE., '0/1', int2str(config_kik), &
+    call add_option('kik', ' ', .TRUE., '0/1', int2str(config_kik), &
      'option for subroutine fluxis()<br>'//&
      IND//'0: integration using 6/7 points depending on option ptdisk;<br>'//&
      IND//'1: 26-point integration)')
 
-    k = k+1
-    options(k) = option('amores',' ', .true., 'T/F', '(no default)', &
+    call add_option('amores',' ', .true., 'T/F', logical2str(int2logical(config_amores)), &
      'AMOrtissement de RESonnance?')
 
-    k = k+1
-    options(k) = option('kq', ' ', .true., '0/1', '(no default)', &
+    call add_option('kq', ' ', .true., '0/1', int2str(config_kq), &
      '"Theorie"<br>'//&
      IND//'0: THEORIE DE GRIEM;<br>'//&
      IND//'1: THEORIE QUASISTATIQUE')
 
-    k = k+1
-    options(k) = option('nomplot', ' ', .true., 'file name', config_nomplot, &
+    call add_option('nomplot', ' ', .true., 'file name', config_nomplot, &
      'output file name - hydrogen lines')
 
-    k = k+1
-    options(k) = option('vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
+    call add_option('vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
      'velocity of microturbulence')
 
-    k = k+1
-    options(k) = option('zph', ' ', .true., 'real value', real82str(config_zph), &
+    call add_option('zph', ' ', .true., 'real value', real82str(config_zph), &
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
 
-    k = k+1
-    options(k) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+    call add_option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
      'input file name - absoru2')
-    k = k+1
-    options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+    call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
 
-    k = k+1
-    options(k) = option('thmap', ' ', .false., '', '', &
+    call add_option('thmap', ' ', .false., '', '', &
       'If set, will read wavelength interval from main configuration file and<br>'//&
       'determine automatically which hydrogen lines to calculate according to<br>'//&
       'thmap file')
 
-    k = k+1
-    options(k) = option('na', ' ', .true., 'integer', '(no default)', &
+    call add_option('na', ' ', .true., 'integer', '(no default)', &
       'NIV INF')
 
-    k = k+1
-    options(k) = option('nb', ' ', .true., 'integer', '(no default)', &
+    call add_option('nb', ' ', .true., 'integer', '(no default)', &
       'NIV SUP')
 
-    k = k+1
-    options(k) = option('clam', ' ', .true., 'real', '(no default)', &
+    call add_option('clam', ' ', .true., 'real', '(no default)', &
       'Central wavelength')
 
-    k = k+1
-    options(k) = option('kiex', ' ', .true., 'real', '(no default)', &
+    call add_option('kiex', ' ', .true., 'real', '(no default)', &
       'KIEX ?doc?')
 
-    k = k+1
-    options(k) = option('c1', ' ', .true., 'real', '(no default)', &
+    call add_option('c1', ' ', .true., 'real', '(no default)', &
       'C1 ?doc?')
   end
 

@@ -43,39 +43,28 @@ contains
     execonf_name = 'nulbad'
     execonf_handle_option => config_nulbad_handle_option
     execonf_init_options => config_nulbad_init_options
-    execonf_num_options = 7
     call config_base_init()
   end
 
   !=======================================================================================
   !> Initializes nulbad-specific options
 
-  function config_nulbad_init_options(j) result (k)
-    !> k is the index of the last initialized option
-    integer, intent(in) :: j
-    integer :: k
+  subroutine config_nulbad_init_options()
 
-    k = j+1
-    options(k) = option('fileflux', ' ', .true., 'file name', &
+    call add_option('fileflux', ' ', .true., 'file name', &
      '<"main_fileflux" variable>.norm (taken from main configuration file)>', &
      'Flux file name')
-    k = k+1
-    options(k) = option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
+    call add_option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
       'Is spectrum normalized?')
-    k = k+1
-    options(k) = option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
+    call add_option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
       'Fnu to FLambda transformation?')
-    k = k+1
-    options(k) = option('filecv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+    call add_option('filecv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
       'output file name, which will have the convolved spectrum')
-    k = k+1
-    options(k) = option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
+    call add_option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
       'step ?doc?')
-    k = k+1
-    options(k) = option('convol',   ' ', .true., 'T/F', logical2str(config_convol), &
+    call add_option('convol',   ' ', .true., 'T/F', logical2str(config_convol), &
       'Apply convolution?')
-    k = k+1
-    options(k) = option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
+    call add_option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
   end
 

@@ -55,55 +55,40 @@ contains
     execonf_name = 'pfant'
     execonf_handle_option => config_pfant_handle_option
     execonf_init_options => config_pfant_init_options
-    execonf_num_options = 11
     call config_base_init()
   end
 
   !=======================================================================================
   !> Initializes executable-specific options
 
-  function config_pfant_init_options(j) result (k)
-    !> k is the index of the last initialized option
-    integer, intent(in) :: j
-    integer :: k
-
-    k = j+1
-    options(k) = option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
+  subroutine config_pfant_init_options()
+    call add_option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
      IND//'2: parabolic)')
-    k = k+1
-    options(k) = option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
+    call add_option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
      'selector for subroutines flin1() and flinh()<br>'//&
      IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
      IND//'1: 26-point integration)')
-    k = k+1
 
     !> @todo Find names for each file and update options help
 
-    options(k) = option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
+    call add_option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
-    k = k+1
-    options(k) = option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
+    call add_option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
      'input file name - partition functions')
-    k = k+1
-    options(k) = option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+    call add_option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
      'input file name - absoru2')
-    k = k+1
-    options(k) = option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+    call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
-    k = k+1
-    options(k) = option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
+    call add_option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
      'input file name - atomic abundances')
-    k = k+1
-    options(k) = option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
+    call add_option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
      'input file name - atomic lines')
-    k = k+1
-    options(k) = option('fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
+    call add_option('fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
 
-    k = k+1
-    options(k) = option('molid_off',        ' ', .true., 'molecule id', '', &
+    call add_option('molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
      '*Note*: This option may be repeated as many times as necessary.')
   end

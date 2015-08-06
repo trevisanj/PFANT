@@ -25,10 +25,8 @@
 !>       command-line option. These variables will not be documented in comments, but
 !>       in the help text associated with their command-line options (the reason is to
 !>       avoid text duplication). There are two ways to access this documentation:
-!>       @li a) view the source code for subroutine config::init_options()
+!>       @li a) view the source code for subroutine config::init_common_options()
 !>       @li b) execute the program with the --help option
-!>
-!> @attention Particular executable must set (at least) execonf_num_options, execonf_handle_option
 !>
 !> @attention Subroutines starting with "config_base_" must be called by particular
 !>            executable, see for example config_pfant.f90
@@ -46,6 +44,7 @@
 
 module config_base_handler_interfaces
   use options2
+  use max_
 
   !> executable-specific routine to handle option must have this interface
   interface
@@ -63,10 +62,7 @@ module config_base_handler_interfaces
   interface
     ! Result value must be a HANDLER_* value
 
-    function init_options_template(j) result(k)
-      !> k is the index of the last initialized option
-      integer, intent(in) :: j
-      integer :: k
+    subroutine init_options_template()
     end
   end interface
 end
@@ -100,8 +96,6 @@ module config_base
   !> Name of executable. Case doesn't matter. It will be converted to all uppercase or
   !> lowercave, depending on the use.
   character*16 :: execonf_name = '?'
-  !> Number of options defined in particular executable.
-  integer :: execonf_num_options = -1
 
   !> Variable that points to function to handle command-line option. Each executable
   !> has a specific handler
@@ -111,7 +105,6 @@ module config_base
 
   procedure(init_options_template), pointer :: &
     execonf_init_options => init_options_give_error
-
 
   !=====
   ! Variables configurable by command line
@@ -129,16 +122,21 @@ module config_base
              config_logging_dump   = .false.   !< option --logging_dump
 
 
-  !> List of command-line options
-  type(option), allocatable :: options(:)
-
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
-  !> Number of options defined here
-  integer, private :: CONFIG_BASE_NUM_OPTIONS = 9
+  !=====
+  ! Command-line options definition
+  !=====
+  !> List of command-line options
+  type(option), private :: options(MAX_NUM_OPTIONS)
+  !> Maximum valid index of the options variable
+  integer, private :: num_options = 0
+
+!!!!!!!!!!!!!  !> Number of options defined here
+  !!!!!!!!!!!!! integer, private :: CONFIG_BASE_NUM_OPTIONS = 9
 
   character(len=:), private, allocatable :: &
    inputdir_trim  !< Input directory without trailling spaces and ending with a "/"
@@ -146,8 +144,10 @@ module config_base
    outputdir_trim   !< Output directory without trailling spaces and ending with a "/"
 
   private :: handle_option_give_error, init_options_give_error, validate_options, &
-   init_options, parse_args, get_total_num_options, show_help
+   init_common_options, parse_args, show_help
+
 contains
+
   ! 8b   d8 8    8 .d88b. 88888      .d88b    db    8    8
   ! 8YbmdP8 8    8 YPwww.   8        8P      dPYb   8    8
   ! 8  "  8 8b..d8     d8   8   wwww 8b     dPwwYb  8    8
@@ -168,10 +168,9 @@ contains
     write(*,*) to_upper(execonf_name)//pfant_version()
     write(*,*) ''
 
-    if (execonf_num_options .eq. -1) &
-     call pfant_halt('Forgot to set execonf_num_options', is_assertion=.true.)
-
-    call init_options()
+    call init_common_options()
+    call execonf_init_options()
+    call validate_options()
     call parse_args()
 
     ! data directories...
@@ -187,6 +186,30 @@ contains
 
     call print_welcome(6)
   end
+
+
+  !=======================================================================================
+  !> Creates option and adds to options variable
+  !>
+  !> @note character arguments are declared with len=*, truncation may occur when
+  !> option structure is created.
+
+  subroutine add_option(name, chr, has_arg, argname, default_, descr)
+    character(len=*), intent(in) :: name, argname, default_, descr
+    character(len=1), intent(in) :: chr
+    logical, intent(in) :: has_arg
+
+    num_options = num_options+1
+
+    if (num_options .gt. MAX_NUM_OPTIONS) then
+      call pfant_halt('Reached maximum number of command-line options, increase '//&
+       'value of MAX_NUM_OPTIONS', is_assertion=.true.)
+    end if
+
+    options(num_options) = option(name, chr, has_arg, argname, default_, descr)
+  end
+
+
 
   !=======================================================================================
   !> Handles limited set of options
@@ -250,105 +273,6 @@ contains
         res = HANDLER_DONT_CARE
     end select
   end
-
-
-  !=======================================================================================
-  !> Initialization of command-line options
-  !>
-  !> - allocates options variable
-  !> - initializes options common to all executables
-  !> - calls executable-specific options initializer
-  !> - assertions to try to catch options initialization errors
-  !>
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
-  !>
-  !> @todo where to put the explanation on option text formatting
-
-  subroutine init_options()
-    integer k !< Number of initialized options
-
-    allocate(options(1:get_total_num_options()))
-
-    k = 1
-    options(k) = option('help', 'h', .false., '', '', &
-      'Displays this help text.')
-    k = k+1
-    options(k) = option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
-      'directory containing input files')
-    k = k+1
-    options(k) = option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
-      'directory for output files')
-
-    ! Logging options
-    k = k+1
-    options(k) = option('logging_level', 'l', .TRUE., 'level', 'debug', &
-     'logging level<br>'//&
-     IND//'debug<br>'//&
-     IND//'info<br>'//&
-     IND//'warning<br>'//&
-     IND//'error<br>'//&
-     IND//'critical<br>'//&
-     IND//'halt')
-    k = k+1
-    options(k) = option('logging_stdout',   ' ', .true., 'T/F', logical2str(config_logging_stdout), &
-     'Print log messages to standard output (usually monitor screen)?')
-    k = k+1
-    options(k) = option('logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
-      'Print log messages to dump log file?')
-    k = k+1
-    options(k) = option('logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
-     'output file name - dump log file')
-
-    k = k+1
-    options(k) = option('fn_main',          ' ', .true., 'file name', config_fn_main, &
-     'input file name - main configuration')
-    k = k+1
-    options(k) = option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
-     'output file name - progress indicator')
-
-    k = execonf_init_options(k)
-
-    call validate_options(k)
-  end
-
-  !=======================================================================================
-  !> Performs a series of checks to avoid programming errors while defining the
-  !> command-line options
-  !>
-  !> This subroutine must be called at the end of the init_options() of a config module
-
-  subroutine validate_options(k)
-    integer, intent(in) :: k !< Number of options initialized
-    integer i, j
-    character*1 :: chr
-    character*100 :: name
-
-    ! Fortran will give no error trying to assign options(k), k > execonf_num_options,
-    ! so I put this assertion here
-    if (k .ne. get_total_num_options()) then
-      call pfant_halt('Assigned options ('//int2str(k)//') differs from execonf_num_options ('//&
-       int2str(get_total_num_options())//')', is_assertion=.true.)
-    end if
-
-    !#assertion: make sure that there are no repeated options. Checks all against all
-    do i = 1, get_total_num_options()
-      name = options(i)%name
-      ! write(*,*) i, name
-      chr = options(i)%chr
-      do j = i+1, get_total_num_options()
-        if (name .eq. options(j)%name) then
-          call pfant_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
-        end if
-        if (chr .ne. ' ' .and. chr .eq. options(j)%chr) then
-          call pfant_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
-        end if
-      end do
-    end do
-  end
-
 
   ! 88888 .d88b. .d88b. 8    .d88b.
   !   8   8P  Y8 8P  Y8 8    YPwww.
@@ -537,13 +461,6 @@ contains
   end
 
   !=======================================================================================
-  !> Returns total number of command-line options
-
-  integer function get_total_num_options()
-    get_total_num_options = execonf_num_options+CONFIG_BASE_NUM_OPTIONS
-  end
-
-  !=======================================================================================
   !> Writes help to particular unit
 
   subroutine show_help(unit)
@@ -558,7 +475,7 @@ contains
     write(*,*) '  [=xxx]     default value'
     write(*,*) '  <arg name> argument that must be specified'
 
-    do i = 1, execonf_num_options
+    do i = 1, num_options
       write(unit,*) ''
       call print_opt(options(i), unit)
     end do
@@ -580,14 +497,89 @@ contains
   !=======================================================================================
   !> This routine exists for assertion purpose only
 
-  function init_options_give_error(k) result(y)
-    integer, intent(in) :: k
-    integer :: y
-    y = k  ! shuts up two warnings
+  subroutine init_options_give_error()
     call pfant_halt('Forgot to set subroutine pointer "execonf_init_options"', &
      is_assertion=.true.)
   end
 
+  !=======================================================================================
+  !> Initialization of command-line options
+  !>
+  !> - allocates options variable
+  !> - initializes options common to all executables
+  !> - calls executable-specific options initializer
+  !> - assertions to try to catch options initialization errors
+  !>
+  !> @note It is possible to break description lines using &lt;br&gt;
+  !>
+  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
+  !> &lt;br&gt;
+  !>
+  !> @par Important:
+  !> If you add options here, you must change the CONFIG_BASE_NUM_OPTIONS constant
+  !> accordingly.
+  !>
+  !> @todo where to put the explanation on option text formatting
+
+  subroutine init_common_options()
+
+    call add_option('help', 'h', .false., '', '', &
+      'Displays this help text.')
+    call add_option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
+      'directory containing input files')
+    call add_option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
+      'directory for output files')
+
+    ! Logging options
+    call add_option('logging_level', 'l', .TRUE., 'level', 'debug', &
+     'logging level<br>'//&
+     IND//'debug<br>'//&
+     IND//'info<br>'//&
+     IND//'warning<br>'//&
+     IND//'error<br>'//&
+     IND//'critical<br>'//&
+     IND//'halt')
+    call add_option('logging_stdout',   ' ', .true., 'T/F', logical2str(config_logging_stdout), &
+     'Print log messages to standard output (usually monitor screen)?')
+    call add_option('logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
+      'Print log messages to dump log file?')
+    call add_option('logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
+     'output file name - dump log file')
+
+    ! Files that all executables will use
+    call add_option('fn_main',          ' ', .true., 'file name', config_fn_main, &
+     'input file name - main configuration')
+    call add_option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
+     'output file name - progress indicator')
+  end
+
+
+  !=======================================================================================
+  !> Performs a series of checks to avoid programming errors while defining the
+  !> command-line options
+  !>
+  !> This subroutine must be called at the end of the init_options() of a config module
+
+  subroutine validate_options()
+    integer i, j
+    character*1 :: chr
+    character*100 :: name
+
+    !#assertion: make sure that there are no repeated options. Checks all against all
+    do i = 1, num_options
+      name = options(i)%name
+      ! write(*,*) i, name
+      chr = options(i)%chr
+      do j = i+1, num_options
+        if (name .eq. options(j)%name) then
+          call pfant_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
+        end if
+        if (chr .ne. ' ' .and. chr .eq. options(j)%chr) then
+          call pfant_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
+        end if
+      end do
+    end do
+  end
 
 
 end

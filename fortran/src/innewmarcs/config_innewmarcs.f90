@@ -58,63 +58,48 @@ contains
     execonf_name = 'innwemarcs'
     execonf_handle_option => config_innewmarcs_handle_option
     execonf_init_options => config_innewmarcs_init_options
-    execonf_num_options = 10
     call config_base_init()
   end
 
   !=======================================================================================
   !> Initializes innewmarcs-specific options
 
-  function config_innewmarcs_init_options(j) result(k)
-    !> k is the index of the last initialized option
-    integer, intent(in) :: j
-    integer :: k
-
-    k = j+1
-    options(k) = option('refdir',' ', .true., 'directory name', config_refdir, &
+  subroutine config_innewmarcs_init_options()
+    call add_option('refdir',' ', .true., 'directory name', config_refdir, &
      'Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
      'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
 
-    k = k+1
-    options(k) = option('open_status',' ', .true., 'string', config_open_status, &
+    call add_option('open_status',' ', .true., 'string', config_open_status, &
      'File open mode for binary file<br>'//&
      IND//'new: file must not exist<br>'//&
      IND//'old: file must exist<br>'//&
      IND//'replace: replaces file if exists, otherwise creates new')
 
-    k = k+1
-    options(k) = option('nomfimod',' ', .true., 'file name', config_nomfimod, &
+    call add_option('nomfimod',' ', .true., 'file name', config_nomfimod, &
      'Name of binary file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
-    k = k+1
-    options(k) = option('nomfidat',' ', .true., 'file name', config_nomfidat, &
+    call add_option('nomfidat',' ', .true., 'file name', config_nomfidat, &
      'Name of ASCII file<br>'//&
      '*Note*: file is opened in directory specified in --inputdir')
 
-    k = k+1
-    options(k) = option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
+    call add_option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
      '"Model name"')
 
-    k = k+1
-    options(k) = option('tirb',' ', .true., 'string up to 15 characters', config_tirb, &
+    call add_option('tirb',' ', .true., 'string up to 15 characters', config_tirb, &
      '"Titre"')
 
-    k = k+1
-    options(k) = option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
+    call add_option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
      '"Teff"')
 
-    k = k+1
-    options(k) = option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
+    call add_option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
      '"log g"')
 
-    k = k+1
-    options(k) = option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
+    call add_option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
      '"[M/H]"')
 
-    k = k+1
-    options(k) = option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
+    call add_option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
      'Record id within atmospheric model binary file')
   end
 

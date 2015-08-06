@@ -98,5 +98,13 @@ module max_
                         !< filtering operation performed by filter_molecules()
 
 
+
+
+  !=====
+  ! Misc
+  !=====
+  !> Maximum number of command-line options
+  integer, parameter :: MAX_NUM_OPTIONS = 50
+
 end
 

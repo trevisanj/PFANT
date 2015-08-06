@@ -1,0 +1,8 @@
+First and second rows of this file are skipped. Note: *must* be sorted in ascending order of metallicity
+columns: metallicity, file name. 
+-1.50 newnewm150.mod
+-1.00 newnewm100.mod
+-0.50 newnewm050.mod
+ 0.00 newnewp000.mod
+ 0.25 newnewp025.mod
+ 
