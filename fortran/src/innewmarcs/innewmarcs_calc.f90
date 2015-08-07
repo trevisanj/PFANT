@@ -2,6 +2,7 @@ module innewmarcs_calc
   use max_
   use reader_modeles
   use config_innewmarcs
+  use innewmarcs_x
   implicit none
 
   public innewmarcs_calc_
@@ -29,14 +30,6 @@ module innewmarcs_calc
 
   private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
 
-  !=====
-  ! x_* values
-  !=====
-
-  ! x_* values may come either from command line or infile:main
-  real*4 :: x_teff, x_glog, x_asalog
-  character(LEN_TIRB) :: x_tirb
-  integer :: x_inum
 contains
 
   !=======================================================================================
@@ -47,54 +40,9 @@ contains
 
   subroutine innewmarcs_init()
 
-    !=====
-    ! Assigns x_*
-    !=====
-    ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from infile:main
-     x_teff = config_teff
-     x_glog = config_glog
-     x_asalog = config_asalog
-     x_tirb = config_tirb
-     x_inum   = config_inum
-    if (config_inum .lt. 1) then
-      call assure_read_main()
-      if (main_inum .lt. 1) then
-        ! note: here this consistency check is considered an assertion, because it should
-        ! be validated upon file reading.
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-      x_inum = main_inum
-      call parse_aux_log_assignment('x_inum', int2str(x_inum))
-    end if
-    if (config_tirb .eq. '?') then
-      call assure_read_main()
-      x_tirb = main_titrav
-      call parse_aux_log_assignment('x_tirb', trim(x_tirb))
-    end if
-    if (config_teff .eq. -1) then
-      call assure_read_main()
-      x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
-      call parse_aux_log_assignment('x_teff', real42str(x_teff))
-    end if
-    if (config_glog .eq. -1)  then
-      call assure_read_main()
-      x_glog = real(main_glog)
-      call parse_aux_log_assignment('x_glog', real42str(x_glog))
-    end if
-    if (config_asalog .eq. -1) then
-      call assure_read_main()
-      x_asalog = real(main_asalog)
-      call parse_aux_log_assignment('x_asalog', real42str(x_asalog))
-    end if
-
     call read_ref_models_map()
 
     call find_ref_models()  ! calculates nomfipl, asalog1, asalog2
-
-    !-------------------------------------------------------------
-    ! On cherche ou se trouvent (teff, glog)  par rapport a la table
-    call locatab() ! calculates id11, id12, id21, id22
   end
 
   !=======================================================================================
@@ -119,6 +67,7 @@ contains
     real*4 :: a(MAX_MODELES_NTOT*5)  ! modele resultant
     real*4 :: rteff(2,2), rglog(2,2), ralfa(2)
 
+    character(len=:), allocatable :: path  ! full path to .mod file
 
     !=====
     ! Initialization
@@ -131,11 +80,11 @@ contains
     !=====
 
     write(lll,*) 'Creating ASCII file ', full_path_i(config_nomfidat)
-    call log_debug(lll)
+    call log_info(lll)
 
     open(unit=UNIT_DAT,file=full_path_i(config_nomfidat),status='unknown')
 
-    call log_debug('Opening binary file '//full_path_i(config_nomfimod)//&
+    call log_info('Opening binary file '//full_path_i(config_nomfimod)//&
      ' in status='//trim(config_open_status))
 
     open(unit=UNIT_MOD,access='direct',status=config_open_status, &
@@ -144,34 +93,55 @@ contains
     ! **********************Boucle sur l'abondance*******************
     do iabon = 1,2 ! on interpole dans 2 grilles d'abondance
       nomfiple = nomfipl(iabon)
+      path = ref_models_path(nomfiple)
 
-      call log_debug('On va interpoler dans la table de Plez '//nomfiple)
-      call log_debug('Indice d''abondance: '//int2str(iabon))
 
-      ! all values are wasted, no point in the following call:
-      ! call readerbn(id,aa%nh,aa%teta,aa%pe,aa%pg,aa%t5l,ntot(iabon),.true.,.false.) ! Open du fichier
+
+      !> @todo Still have to verify if "fiple"'s with different (teff, glog) grids will be ok
+
+      !-------------------------------------------------------------
+      ! On cherche ou se trouvent (teff, glog)  par rapport a la table
+      call locatab(path) ! calculates id11, id12, id21, id22
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      call log_info('On va interpoler dans la table de Plez '//nomfiple//'; indice d''abondance: '//int2str(iabon))
 
       !-------------------------------------------------------------
       ! Lecture des modeles
       !
       ! Note: last two logical values control whether to open and close the file
       !       File is opened and kept open; then closed at the last call to readerbn()
+      call open_mod_file(path)
 
-      call readerbn(nomfiple, id11, .true., .false., aa)
+      call readerbn(id11, aa)
       rteff(1,1) = aa%teff
       rglog(1,1) = aa%glog
 
-      call readerbn(nomfiple, id12, .false., .false., bb)
+      call readerbn(id12, bb)
       rteff(1,2) = bb%teff
       rglog(1,2) = bb%glog
 
-      call readerbn(nomfiple, id21, .false., .false., cc)
+      call readerbn(id21, cc)
       rteff(2,1) = cc%teff
       rglog(2,1) = cc%glog
 
-      call readerbn(nomfiple, id22, .false., .true., dd)
+      call readerbn(id22, dd)
       rteff(2,2) = dd%teff
       rglog(2,2) = dd%glog
+
+      call close_mod_file()
 
       ! sets the alpha abundance of the models for each iabon
       !> @todo issue assumption: asalalf is the same for aa, bb, cc, dd????
@@ -188,14 +158,14 @@ contains
       nnc = int((to0-cc%t5l(1))*10+0.1)
       nnd = int((to0-dd%t5l(1))*10+0.1)
 
-      write(lll,*) ' to0max=', to0
-      call log_debug(lll)
-      write(lll,*) aa%t5l(1),bb%t5l(1),cc%t5l(1),dd%t5l(1)
-      call log_debug(lll)
-      write(lll,*) ' couches a oter'
-      call log_debug(lll)
-      write(lll,*)  nna, nnb, nnc, nnd
-      call log_debug(lll)
+      ! write(lll,*) ' to0max=', to0
+      ! call log_debug(lll)
+      ! write(lll,*) aa%t5l(1),bb%t5l(1),cc%t5l(1),dd%t5l(1)
+      ! call log_debug(lll)
+      ! write(lll,*) ' couches a oter'
+      ! call log_debug(lll)
+      ! write(lll,*)  nna, nnb, nnc, nnd
+      ! call log_debug(lll)
 
       ! les 4 modeles doivent commencer au meme niveau en log toR
       if(nna .gt. 0) call rangmod(aa, aa%ntot, nna)
@@ -205,8 +175,8 @@ contains
 
       ntot(iabon) = min0(aa%ntot, bb%ntot, cc%ntot, dd%ntot)
 
-      write(lll,*) '   ntot(',iabon,')=', ntot(iabon)
-      call log_debug(lll)
+      !!!! write(lll,*) '   ntot(',iabon,')=', ntot(iabon)
+      !!!! call log_debug(lll)
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
@@ -242,13 +212,13 @@ contains
     nz1 = int((to0-z1%t5l(1))*10+0.1)
     nz2 = int((to0-z2%t5l(1))*10+0.1)
 
-    write(lll,*)' to0max=', to0
-    call log_debug(lll)
-    write(lll,*) z1%t5l(1),z2%t5l(1)
-    call log_debug(lll)
-    call log_debug(' couches a oter:')
-    write(lll,*) nz1, nz2
-    call log_debug(lll)
+    ! write(lll,*)' to0max=', to0
+    ! call log_debug(lll)
+    ! write(lll,*) z1%t5l(1),z2%t5l(1)
+    ! call log_debug(lll)
+    ! call log_debug(' couches a oter:')
+    ! write(lll,*) nz1, nz2
+    ! call log_debug(lll)
 
     if(ntot(1) .gt. 0) call rangmod(z1, ntot(1), nz1)
     if(ntot(2) .gt. 0) call rangmod(z2, ntot(2), nz2)
@@ -260,30 +230,29 @@ contains
 
     nntot = min0(ntot(1), ntot(2))
 
-    write(lll,*) '   nntot=',nntot
-    call log_debug(lll)
+    ! write(lll,*) '   nntot=',nntot
+    ! call log_debug(lll)
 
     t0 = asalog2-asalog1
     t1 = x_asalog-asalog1
 
-    call log_debug(' interpolation sur l''abondance avec')
-    write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
-    call log_debug(lll)
-    write(lll,*) ' t0=', t0, '       t1=',t1
-    call log_debug(lll)
+    !!!! call log_debug(' interpolation sur l''abondance avec')
+    !!!! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
+    !!!! call log_debug(lll)
+    !!!! write(lll,*) ' t0=', t0, '       t1=',t1
+    !!!! call log_debug(lll)
 
     call interpol(t0, t1, z1, z2, zz, nntot)
 
     ! calcule les elements alpha resultants
     asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
 
-    !#logging
-    write(lll,*) 'model 1 asalog, alpha=',asalog1,ralfa(1)
-    call log_debug(lll)
-    write(lll,*) 'model 2 asalog, alpha=',asalog2,ralfa(2)
-    call log_debug(lll)
-    write(lll,*) 'result: asalog, alpha=',x_asalog,asalalf
-    call log_debug(lll)
+    ! write(lll,*) 'model 1 asalog, alpha=',asalog1,ralfa(1)
+    ! call log_debug(lll)
+    ! write(lll,*) 'model 2 asalog, alpha=',asalog2,ralfa(2)
+    ! call log_debug(lll)
+    ! write(lll,*) 'result: asalog, alpha=',x_asalog,asalalf
+    ! call log_debug(lll)
 
 
     ! ***********************Ecriture du résultat*********************
@@ -483,6 +452,7 @@ contains
   end
 
 
+
   !=======================================================================================
   !> On cherche les numeros des 4 modeles de la table entre lesquels
   !> le programme devra interpoler. On donne les limites en T et g
@@ -494,51 +464,105 @@ contains
   !>
   !> Outputs are in module variables id11, id12, id21, id22
   !>
+  !> @todo issue big why not mount table from file?? Actually this is not matching the actual files!!!!!
 
-  subroutine locatab()
-    integer*4 :: idt(7),ing(8),jg1(8),jg2(8), &
-                 idta(7), & ! indice des 1ers mod de chque temp
-                 inga(7)    ! nbre de logg pour chaq temp
-    real*8 :: rteff(7),rglog(8),r1teff(7)
-    real*8 :: agloga1(8),agloga2(8),agloga3(8),agloga4(8), &
-     agloga5(8),agloga6(7),agloga7(7),aglog(7,8)
+  subroutine locatab(path)
+    character(len=*), intent(in) :: path
+
+    integer, parameter :: MAX_NT=20, &  ! Maximum number of different temperatures
+                          MAX_NG=20     ! Maximum number of different glog or each temperature
+
+    integer*4 :: idt(MAX_NT), & ! index of first record for each tempearture
+                 ing(MAX_NG), & ! number of glog for each temperature
+                 jg1(MAX_NG), &
+                 jg2(MAX_NG)
+    !!!!!!!             idta(MAX_NT), & ! index of first record for each tempearture
+    !!!!!!!             inga(MAX_NT)    ! number of glog for each temperature
+
+    real*8 :: rteff(MAX_NT), rglog(MAX_NG)
+    !!!!!!! ,r1teff(MAX_NT)
+    !!!!!!! real*8 :: agloga1(MAX_NG),agloga2(MAX_NG),agloga3(MAX_NG),agloga4(MAX_NG), &
+    !!!!!!! agloga5(MAX_NG),agloga6(MAX_NT),agloga7(MAX_NT)
+
+    real*8 :: aglog(MAX_NT,MAX_NG)
+
     integer i, jjt, jt1, jt2, n, ng, ngg, nt
 
-    data r1teff /4000.,4250.,4500.,4750.,5000.,5250.,5500./
-    data agloga1 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga2 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga3 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga4 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga5 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga6 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    data agloga7 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    ! data agloga8 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-
-    data idta /1, 9, 17, 25, 33, 41, 48/
-    data inga /8, 8, 8, 8, 8, 7, 7/
+    type(modele_record) :: r  ! filled by read_mod_record()
+    integer inum, num_rec
+    real*8 teff_last
 
     call log_debug(ENTERING//'Entree dans le SP locatab')
 
-    nt=7    ! nbre total de temperatures
-    ng=7    ! nbre maximum de log g
-    do n=1,nt
-      rteff(n)=r1teff(n)
-      ing(n)=inga(n)
-      idt(n)=idta(n)
+    ! First task is to
+    ! mount (nt, rteff, idt, ing, aglog) from file
+
+    teff_last = -1
+    nt = 0
+    num_rec = get_num_records(path)
+    call log_debug('Number of records: '//int2str(num_rec))
+    call open_mod_file(path)
+
+    do inum = 1, num_rec
+      call read_mod_record(inum, r)
+
+      if (inum .eq. 1 .or. abs(teff_last-r%teff) .gt. 0.001) then
+        if (inum .gt. 1) ing(inum-1) = ng
+
+        teff_last = r%teff
+        nt = nt+1
+  
+        call assert_le(nt, MAX_NT, 'locatab()', 'nt', 'MAX_NT')
+  
+        ng = 0
+        rteff(nt) = r%teff
+        idt(nt) = inum
+      end if
+
+      ng = ng+1
+      aglog(nt,ng) = r%glog
     end do
-    do n=1,ng
-      aglog(1,n)=agloga1(n)
-      aglog(2,n)=agloga2(n)
-      aglog(3,n)=agloga3(n)
-      aglog(4,n)=agloga4(n)
-      aglog(5,n)=agloga5(n)
-      aglog(6,n)=agloga6(n)
-      aglog(7,n)=agloga7(n)
-      ! aglog(8,n)=agloga8(n)
-      ! aglog(9,n)=agloga9(n)
-      ! aglog(10,n)=agloga10(n)
-      ! aglog(11,n)=agloga11(n)
-    end do
+    ing(inum) = ng
+
+    call close_mod_file()
+
+
+
+
+    !!!!!!! data r1teff /4000.,4250.,4500.,4750.,5000.,5250.,5500./
+    !!!!!!! data agloga1 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga2 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga3 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga4 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga5 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga6 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    !!!!!!! data agloga7 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+    ! data agloga8 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+
+    !!!!!!! data idta /1, 9, 17, 25, 33, 41, 48/
+    !!!!!!! data inga /8, 8, 8, 8, 8, 7, 7/
+
+    !!!!!!! nt=7    ! nbre total de temperatures
+    !!!!!!! ng=7    ! nbre maximum de log g
+    !!!!!!! do n=1,nt
+    !!!!!!!   rteff(n)=r1teff(n)
+    !!!!!!!   ing(n)=inga(n)
+    !!!!!!!   idt(n)=idta(n)
+    !!!!!!! end do
+    !!!!!!!
+    !!!!!!! do n=1,ng
+    !!!!!!!   aglog(1,n)=agloga1(n)
+    !!!!!!!   aglog(2,n)=agloga2(n)
+    !!!!!!!   aglog(3,n)=agloga3(n)
+    !!!!!!!   aglog(4,n)=agloga4(n)
+    !!!!!!!   aglog(5,n)=agloga5(n)
+    !!!!!!!   aglog(6,n)=agloga6(n)
+    !!!!!!!   aglog(7,n)=agloga7(n)
+    !!!!!!!   ! aglog(8,n)=agloga8(n)
+    !!!!!!!   ! aglog(9,n)=agloga9(n)
+    !!!!!!!   ! aglog(10,n)=agloga10(n)
+    !!!!!!!   ! aglog(11,n)=agloga11(n)
+    !!!!!!! end do
 
     call log_debug('Liste du nbre de g en fonction de t')
     write(lll,*) (ing(n),n=1,nt)
@@ -608,21 +632,18 @@ contains
     call log_debug(LEAVING//'Sortie de locatab')
   end
 
+
   !=======================================================================================
   !> Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot
   !>
   !> Lit sur le fichier de type .mod nh,teta,pe,pg,t5l,ntot
 
-  subroutine readerbn(path_to_file, rec_id, flag_open, flag_close, r)
-    character(len=*), intent(in) :: path_to_file
+  subroutine readerbn(rec_id, r)
     integer, intent(in) :: rec_id
-    logical, intent(in) :: flag_open, flag_close
     type(modele_record), intent(out) :: r
     integer i
 
-
-    call read_mod_record(path_to_file, rec_id, flag_open, flag_close, r)
-
+    call read_mod_record(rec_id, r)
 
     write(lll,'(f10.0,4f10.2,5a4)') r%teff, r%glog, r%asalog, r%asalalf, r%nhe, r%tit
 
@@ -632,12 +653,144 @@ contains
       r%pg(i) = alog10(r%pg(i))
     end do
 
-    call log_debug('        log NH           TETA          log PE         log PG     To(5000)')
-    do i = 1, 3
-      write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%t5l(i)
-      call log_debug(lll)
-    end do
-    call log_debug('     ETC.....')
+    !!!! call log_debug('        log NH           TETA          log PE         log PG     To(5000)')
+    !!!! do i = 1, 3
+    !!!!   write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%t5l(i)
+    !!!!   call log_debug(lll)
+    !!!! end do
+    !!!! call log_debug('     ETC.....')
   end
 end
 
+
+
+
+
+!!!!!!!!!!!!!!!!!! OLD LOCATAB()
+
+!!!!!!  !=======================================================================================
+!!!!!!  !> On cherche les numeros des 4 modeles de la table entre lesquels
+!!!!!!  !> le programme devra interpoler. On donne les limites en T et g
+!!!!!!  !> des modeles.
+!!!!!!  !> Les modeles doivent etre ranges en temperature croissante
+!!!!!!  !> a l'interieur de chaque temp les gravites doivent croitre
+!!!!!!  !>
+!!!!!!  !> NEWMARCS 2005 metallicities -1.5 to +1.00 included
+!!!!!!  !>
+!!!!!!  !> Outputs are in module variables id11, id12, id21, id22
+!!!!!!  !>
+!!!!!!  !> @todo issue big why not mount table from file?? Actually this is not matching the actual files!!!!!
+!!!!!!
+!!!!!!  subroutine locatab()
+!!!!!!    integer*4 :: idt(7),ing(8),jg1(8),jg2(8), &
+!!!!!!                 idta(7), & ! indice des 1ers mod de chque temp
+!!!!!!                 inga(7)    ! nbre de logg pour chaq temp
+!!!!!!    real*8 :: rteff(7),rglog(8),r1teff(7)
+!!!!!!    real*8 :: agloga1(8),agloga2(8),agloga3(8),agloga4(8), &
+!!!!!!     agloga5(8),agloga6(7),agloga7(7),aglog(7,8)
+!!!!!!    integer i, jjt, jt1, jt2, n, ng, ngg, nt
+!!!!!!
+!!!!!!    data r1teff /4000.,4250.,4500.,4750.,5000.,5250.,5500./
+!!!!!!    data agloga1 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga2 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga3 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga4 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga5 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga6 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    data agloga7 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!    ! data agloga8 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
+!!!!!!
+!!!!!!    data idta /1, 9, 17, 25, 33, 41, 48/
+!!!!!!    data inga /8, 8, 8, 8, 8, 7, 7/
+!!!!!!
+!!!!!!    call log_debug(ENTERING//'Entree dans le SP locatab')
+!!!!!!
+!!!!!!    nt=7    ! nbre total de temperatures
+!!!!!!    ng=7    ! nbre maximum de log g
+!!!!!!    do n=1,nt
+!!!!!!      rteff(n)=r1teff(n)
+!!!!!!      ing(n)=inga(n)
+!!!!!!      idt(n)=idta(n)
+!!!!!!    end do
+!!!!!!    do n=1,ng
+!!!!!!      aglog(1,n)=agloga1(n)
+!!!!!!      aglog(2,n)=agloga2(n)
+!!!!!!      aglog(3,n)=agloga3(n)
+!!!!!!      aglog(4,n)=agloga4(n)
+!!!!!!      aglog(5,n)=agloga5(n)
+!!!!!!      aglog(6,n)=agloga6(n)
+!!!!!!      aglog(7,n)=agloga7(n)
+!!!!!!      ! aglog(8,n)=agloga8(n)
+!!!!!!      ! aglog(9,n)=agloga9(n)
+!!!!!!      ! aglog(10,n)=agloga10(n)
+!!!!!!      ! aglog(11,n)=agloga11(n)
+!!!!!!    end do
+!!!!!!
+!!!!!!    call log_debug('Liste du nbre de g en fonction de t')
+!!!!!!    write(lll,*) (ing(n),n=1,nt)
+!!!!!!    call log_debug(lll)
+!!!!!!
+!!!!!!    ! sera suivi d'ordres equivalent si plusieurs abond donc autres IABON
+!!!!!!    ! etc...
+!!!!!!
+!!!!!!    do i=1,nt
+!!!!!!      jt2 = i
+!!!!!!      if(x_teff .lt. rteff(i)) go to 11
+!!!!!!    end do
+!!!!!!
+!!!!!!    11 continue
+!!!!!!    if (jt2 .eq. 1) jt2 = 2
+!!!!!!
+!!!!!!    jt1 = jt2-1
+!!!!!!    write(lll,*) 'Indices de temperatures', jt1,jt2
+!!!!!!    call log_debug(lll)
+!!!!!!
+!!!!!!    do jjt=jt1,jt2
+!!!!!!      ngg=ing(jjt)
+!!!!!!
+!!!!!!      write(lll,*)'jtt=',jjt,'   ngg=',ngg
+!!!!!!      call log_debug(lll)
+!!!!!!      write(lll,*) 'Nbre de gravite pour la temp ngg=',ngg
+!!!!!!      call log_debug(lll)
+!!!!!!
+!!!!!!      do i=1,ngg
+!!!!!!        rglog(i)=aglog(jjt,i)
+!!!!!!      end do
+!!!!!!
+!!!!!!      write(lll,*) ' rglog(i) pour jjt=', jjt
+!!!!!!      call log_debug(lll)
+!!!!!!      write(lll,'(10f5.1)') (rglog(i),i=1,ngg)
+!!!!!!      call log_debug(lll)
+!!!!!!
+!!!!!!      do i = 1,ngg
+!!!!!!        jg2(jjt)=i
+!!!!!!        if(x_glog .lt. rglog(i)) go to 12
+!!!!!!      end do
+!!!!!!
+!!!!!!      12 continue
+!!!!!!      if (jg2(jjt) .eq. 1) jg2(jjt) = 2
+!!!!!!
+!!!!!!      jg1(jjt)=jg2(jjt)-1
+!!!!!!
+!!!!!!      write(lll,*) ' jjt jg1 jg2', jjt, jg1(jjt), jg2(jjt)
+!!!!!!      call log_debug(lll)
+!!!!!!    end do
+!!!!!!
+!!!!!!
+!!!!!!    write(lll,*) ' jjt, idt jg1(jjt), jg2(jjt) ',jt1,idt(jt1), jg1(jt1), jg2(jt1)
+!!!!!!    call log_debug(lll)
+!!!!!!    write(lll,*) ' jjt, idt jg1(jjt), jg2(jjt) ',jt2,idt(jt2), jg1(jt2) , jg2(jt2)
+!!!!!!    call log_debug(lll)
+!!!!!!
+!!!!!!
+!!!!!!    ! ID des modeles dans la table
+!!!!!!    id11 = idt(jt1)+jg1(jt1)-1
+!!!!!!    id12 = idt(jt1)+jg2(jt1)-1
+!!!!!!    id21 = idt(jt2)+jg1(jt2)-1
+!!!!!!    id22 = idt(jt2)+jg2(jt2)-1
+!!!!!!    call log_debug('Dans cette table les modeles entre lesquels on va interpoler ont les numeros:')
+!!!!!!    write(lll,*)  id11,id12,id21,id22
+!!!!!!    call log_debug(lll)
+!!!!!!    call log_debug(LEAVING//'Sortie de locatab')
+!!!!!!  end
+!!!!!!

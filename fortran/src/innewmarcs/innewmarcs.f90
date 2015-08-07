@@ -22,8 +22,10 @@ program innewmarcs
   use logging
   use welcome
   use innewmarcs_calc
+  use innewmarcs_x
   implicit none
 
   call config_innewmarcs_init()
+  call innewmarcs_init_x()
   call innewmarcs_calc_()
 end

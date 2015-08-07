@@ -58,7 +58,60 @@ module reader_modeles
    modeles_pg,   & !< ?doc?
    modeles_t5l     !< ?doc?
 
+   !> Unit to open infile:modeles
+   integer, parameter :: UNIT_MOD = 198
+
+   !> Whether the file is open
+   logical :: flag_open = .false.
+
+   integer, parameter :: MOD_RECL = 1200 !< record length
+
 contains
+  !=======================================================================================
+  !> Returns number of records in file
+
+  integer function get_num_records(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+    integer :: size
+
+    inquire(FILE=path_to_file, SIZE=size)
+
+    ! Note the "-1": last 1200 bytes are used as a end-of-file flag with only an integer
+    ! value of 9999 recorded
+    get_num_records = size/MOD_RECL-1
+  end
+
+
+
+  !=======================================================================================
+  !> Opens existing models binary file
+
+  subroutine open_mod_file(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+
+    if (flag_open) then
+      call pfant_halt('There is already a models file open', is_assertion=.true.)
+    end if
+
+    open(unit=UNIT_MOD, access='direct',status='old', file=path_to_file, recl=MOD_RECL)
+
+    flag_open = .true.
+  end
+
+  !=======================================================================================
+  !> Closes open file
+
+  subroutine close_mod_file()
+    if (.not. flag_open) then
+      call pfant_halt('No models is open', is_assertion=.true.)
+    end if
+
+    close(UNIT_MOD)
+
+    flag_open = .false.
+  end
+
+
   !=======================================================================================
   !> Reads single record from .mod file
   !>
@@ -70,23 +123,16 @@ contains
   !>       memory, i.e., would the whole structure be copied into the variable declared at
   !>       the caller?? Better to avoid doubts: we know that args are passed by reference.
 
-  subroutine read_mod_record(path_to_file, rec_id, flag_open, flag_close, record)
-    integer, parameter :: UNIT_=198
-    character(len=*), intent(in) :: path_to_file
+  subroutine read_mod_record(rec_id, record)
     integer, intent(in) :: rec_id       !< record identifier (>= 1)
-    logical, intent(in) :: flag_open, & !< whether to open the file
-                           flag_close   !< whether to close the file
     type(modele_record), intent(out) :: record
+
     integer i
 
     ! Record is read twice; second time bid "grabs" everything that was read before
     real*4 bid(16)
 
-    if (flag_open) then
-      open(unit=UNIT_, access='direct',status='old', file=path_to_file, recl=1200)
-    end if
-
-    read(UNIT_, rec=rec_id) &
+    read(UNIT_MOD, rec=rec_id) &
      record%ntot,    &
      record%teff,   &
      record%glog,   &
@@ -97,7 +143,7 @@ contains
      record%tiabs
 
     !> @todo ISSUE I think this situation occurs when the last record of the file is read. This is a "flag" record
-    !> created by innewmarcs. 
+    !> created by innewmarcs.
     if (record%ntot .eq. 9999) then
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
@@ -108,25 +154,22 @@ contains
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
-    read(UNIT_, rec=rec_id) bid, &
+    read(UNIT_MOD, rec=rec_id) bid, &
          (record%nh(i),   &
           record%teta(i), &
           record%pe(i),   &
           record%pg(i),   &
           record%t5l(i), i=1,record%ntot)
 
-    write(lll, *) 'read_mod_record(): ntot=', record%ntot
-    call log_debug(lll)
-    write(lll, *) 'read_mod_record(): teff=', record%teff
-    call log_debug(lll)
-    write(lll, *) 'read_mod_record(): glog=', record%glog
-    call log_debug(lll)
-    write(lll, *) 'read_mod_record(): asalog=', record%asalog
-    call log_debug(lll)
+    ! write(lll, *) 'read_mod_record(): ntot=', record%ntot
+    ! call log_debug(lll)
+    ! write(lll, *) 'read_mod_record(): teff=', record%teff
+    ! call log_debug(lll)
+    ! write(lll, *) 'read_mod_record(): glog=', record%glog
+    ! call log_debug(lll)
+    ! write(lll, *) 'read_mod_record(): asalog=', record%asalog
+    ! call log_debug(lll)
 
-    if (flag_close) then
-      close(UNIT_)
-    end if
   end
 
 
@@ -152,14 +195,15 @@ contains
     id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
-    call read_mod_record(path_to_file, id_, .true., .true., r)
-
+    call open_mod_file(path_to_file)
+    call read_mod_record(id_, r)
+    call close_mod_file()
 
     !> @todo there was an intention here to *look for a model* that matches parameters in main.dat.
     !> hydro2 has the correct reader. but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
 
     !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
-    
+
     !#consistency_check: these were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
     ddg = abs(main_glog-r%glog)

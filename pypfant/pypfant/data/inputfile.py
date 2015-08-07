@@ -5,20 +5,11 @@ Ancestor class for all classes that represent an input file.
 __all__ = ["InputFile"]
 
 from ..misc import *
+from ..parts import *
 
 
-class InputFile(object):
+class InputFile(AttrsPart):
   default_filename = None  ## Descendants shoulds set this
-
-  # for __str__()
-  attrs = []
-
-  def __str__(self):
-    s_format = "{:>%d} = {}" % max([len(x) for x in self.attrs])
-    s = object.__str__(self)+"\n"+\
-      "\n".join([s_format.format(x, self.__getattribute__(x)) for x in self.attrs])
-    return s
-
 
   def save(self, filename):
     raise NotImplementedError()

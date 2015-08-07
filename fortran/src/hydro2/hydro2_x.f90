@@ -21,8 +21,7 @@ module hydro2_x
   real*8 :: x_vvt
   logical :: x_amores
 
-contains
-  !> Initializes x_* variables
+contains!> Initializes x_* variables
 
   subroutine hydro2_init_x()
 

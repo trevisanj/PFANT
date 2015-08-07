@@ -6,11 +6,12 @@ from pypfant import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-r = FileMod()
-r.load('modeles.mod')
+f = FileMod()
+f.load('modeles.mod')
 
-print r
+print f
 
+r = f.records[0]
 
 # 5 subplots sharing same x-axis
 f, axarr = plt.subplots(5, sharex=True)

@@ -1,7 +1,14 @@
-# todo make this a command-line tool with filename as argument
-
 """
-Reads models from MARCS table and plots vectors nh, teta, pe, pg, t5l
+Reads models from MARCS table and plots vectors (nh, teta, pe, pg, t5l)
+
+This is something I discovered about these files: for different 1200-byte
+records,
+- teff goes in steps
+- glog is saw-line
+- asalog, asalalf and nhe are constant
+
+So, each record has (nh, teta, pe, pg, t5l) vectors for a given (teff, glog)
+
 """
 
 from pypfant import *
@@ -12,29 +19,10 @@ import matplotlib.pyplot as plt
 
 
 filename = 'newnewm150.mod'
-rr = []
+m = FileMod()
+m.load(filename)
 
-# Reads records from file until end of file
-inum = 1
-while True:
-  ok = True
-  try:
-    r = FileMod()
-
-    r.load(filename, inum)
-
-    # print r
-
-    rr.append(r)
-
-    inum += 1
-  except ValueError:
-    ok = False
-
-  if not ok:
-    break
-
-nr = len(rr)
+nr = len(m)
 print "Read %d records" % nr
 
 
@@ -43,7 +31,7 @@ print "Read %d records" % nr
 
 f, axarr = plt.subplots(5, sharex=True)
 x = np.linspace(1, nr, nr)
-
+rr = m.records
 aa = ['teff', 'glog', 'asalog', 'asalalf', 'nhe']
 n = len(aa)
 for i, a in enumerate(aa):
@@ -51,10 +39,8 @@ for i, a in enumerate(aa):
   for r in rr:
     v.append(r.__getattribute__(a))
 
-  try:
-    axarr[i].plot(x, v)
-  except:
-    print "olholho"
+  axarr[i].plot(x, v)
+
   axarr[i].set_ylabel(a)
 
 axarr[4].set_xlabel("Record #")
@@ -77,12 +63,9 @@ for var in vars:
     y = np.ones(len(x))*(i+1)
     z = r.__getattribute__(var)
 
-    print "#%d - %d; (%d, %d, %d)" % (i, r.ntot, len(x), len(y), len(z))
+    # print "#%d - %d; (%d, %d, %d)" % (i, r.ntot, len(x), len(y), len(z))
 
-    try:
-      ax.plot(x, y, z, label='a', color='k')
-    except:
-      print "olholho"
+    ax.plot(x, y, z, label='a', color='k')
 
   # ax.set_xlabel('Wavelength (A)')
   # ax.set_ylabel('Atmospheric layer')
