@@ -161,14 +161,20 @@ contains
           record%pg(i),   &
           record%t5l(i), i=1,record%ntot)
 
-    ! write(lll, *) 'read_mod_record(): ntot=', record%ntot
-    ! call log_debug(lll)
-    ! write(lll, *) 'read_mod_record(): teff=', record%teff
-    ! call log_debug(lll)
-    ! write(lll, *) 'read_mod_record(): glog=', record%glog
-    ! call log_debug(lll)
-    ! write(lll, *) 'read_mod_record(): asalog=', record%asalog
-    ! call log_debug(lll)
+    write(lll, *) 'read_mod_record(): ntot=', record%ntot
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): teff=', record%teff
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): glog=', record%glog
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): asalog=', record%asalog
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): asalalf=', record%asalalf
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): tit=', record%tit
+    call log_debug(lll)
+    write(lll, *) 'read_mod_record(): tiabs=', record%tiabs
+    call log_debug(lll)
 
   end
 

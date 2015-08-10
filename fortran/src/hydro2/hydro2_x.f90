@@ -88,7 +88,7 @@ contains!> Initializes x_* variables
          'but not prepared for multiple microturbulence velocities')
       end if
       x_vvt = main_vvt(1)
-      call parse_aux_log_assignment('x_vvt', real82str(x_teff))
+      call parse_aux_log_assignment('x_vvt', real82str(x_vvt))
     end if
   end
 end

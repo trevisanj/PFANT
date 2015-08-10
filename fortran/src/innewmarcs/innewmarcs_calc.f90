@@ -3,6 +3,7 @@ module innewmarcs_calc
   use reader_modeles
   use config_innewmarcs
   use innewmarcs_x
+  use reader_gridsmap
   implicit none
 
   public innewmarcs_calc_
@@ -14,21 +15,15 @@ module innewmarcs_calc
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
-  ! Variables related to the reference models
-  integer, parameter:: MAX_NUM_REFMODELS = 10
-  integer num_refmodels
-  real*4, dimension(MAX_NUM_REFMODELS) :: modelmap_met
-  character*64, dimension(MAX_NUM_REFMODELS) :: modelmap_fn
-
   ! Calculated by locatab()
   ! "Dans cette table les modeles entre lesquels on va interpoler ont les numeros:"
   integer id11, id12, id21, id22
 
-  ! Variables calculated by find_ref_models()
+  ! Variables calculated by find_two_grid_files()
   character*64 :: nomfipl(2)
   real*4 asalog1, asalog2
 
-  private ref_models_path, read_ref_models_map, find_ref_models, rangmod, interpol, locatab, readerbn
+  private find_two_grid_files, rangmod, interpol, locatab, readerbn
 
 contains
 
@@ -39,10 +34,7 @@ contains
   !> either set from the command line or taken from infile:main
 
   subroutine innewmarcs_init()
-
-    call read_ref_models_map()
-
-    call find_ref_models()  ! calculates nomfipl, asalog1, asalog2
+    call find_two_grid_files()  ! calculates nomfipl, asalog1, asalog2
   end
 
   !=======================================================================================
@@ -93,30 +85,14 @@ contains
     ! **********************Boucle sur l'abondance*******************
     do iabon = 1,2 ! on interpole dans 2 grilles d'abondance
       nomfiple = nomfipl(iabon)
-      path = ref_models_path(nomfiple)
-
-
-
-      !> @todo Still have to verify if "fiple"'s with different (teff, glog) grids will be ok
+      path = full_path_gridsdir(nomfiple)
 
       !-------------------------------------------------------------
       ! On cherche ou se trouvent (teff, glog)  par rapport a la table
       call locatab(path) ! calculates id11, id12, id21, id22
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-      call log_info('On va interpoler dans la table de Plez '//nomfiple//'; indice d''abondance: '//int2str(iabon))
+      call log_info('On va interpoler dans la table de Plez '//nomfiple//&
+       '; indice d''abondance: '//int2str(iabon))
 
       !-------------------------------------------------------------
       ! Lecture des modeles
@@ -312,76 +288,26 @@ contains
   end
 
 
-  !=======================================================================================
-  !> Returns full path to file within models directory
-
-  function ref_models_path(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = trim_and_add_slash(config_refdir) // trim(filename)
-  end
-
-
-  !=======================================================================================
-  !> Reads map of models: file "index.dat"
-  !>
-  !> By convention, this file is called "index.dat". The information it contains is
-  !> a list of metalicity ranges and corresponding reference models to be used.
-  !>
-  !> @todo reader and structure for this (or not)
-
-  subroutine read_ref_models_map()
-    character*64 :: t_fn
-    real*4 t_met
-    character(len=:), allocatable :: path_to_file
-    integer, parameter :: UNIT_ = 199
-
-    path_to_file = ref_models_path('index.dat')
-
-    open(unit=UNIT_,file=path_to_file, status='old')
-
-    ! row 01: (skipped) general information
-    read(UNIT_,*)
-    ! row 02: (skipped) table header
-    read(UNIT_,*)
-
-    num_refmodels = 0
-    do while (.true.)
-      ! rows 03..end: metallicity, filename
-      read(UNIT_, *, end=10) t_met, t_fn
-
-      num_refmodels = num_refmodels+1
-      modelmap_met(num_refmodels) = t_met
-      modelmap_fn(num_refmodels) = t_fn
-    end do
-
-    10 continue  ! reached EOF
-
-    close(unit=UNIT_)
-  end
-
-
   !> Fill variables nomfipl, asalog1, asalog2 based on x_asalog
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
-  !> [ modelmap_met(i), modelmap_met(i+1) [
+  !> [ gridsmap_asalog(i), gridsmap_asalog(i+1) [
   !>
-  !> (1 <= i < num_refmodels)
+  !> (1 <= i < gridsmap_num_files)
   !> @endverbatim
 
-  subroutine find_ref_models()
+  subroutine find_two_grid_files()
     integer i
     logical :: flag_found = .false.
 
-    do i = 1, num_refmodels-1
-      if (x_asalog .ge. modelmap_met(i) .and. &
-          x_asalog .lt. modelmap_met(i+1)) then
-        nomfipl(1) = modelmap_fn(i)
-        nomfipl(2) = modelmap_fn(i+1)
-        asalog1 = modelmap_met(i) !sert a l'interpolation sur la metallicite
-        asalog2 = modelmap_met(i+1)
+    do i = 1, gridsmap_num_files-1
+      if (x_asalog .ge. gridsmap_asalog(i) .and. &
+          x_asalog .lt. gridsmap_asalog(i+1)) then
+        nomfipl(1) = gridsmap_fn(i)
+        nomfipl(2) = gridsmap_fn(i+1)
+        asalog1 = gridsmap_asalog(i) !sert a l'interpolation sur la metallicite
+        asalog2 = gridsmap_asalog(i+1)
         flag_found = .true.
         exit
       end if
@@ -389,10 +315,9 @@ contains
 
     if (.not. flag_found) then
       call pfant_halt('Metallicity '//real42str(x_asalog)//' is out of interval ['//&
-       real42str(modelmap_met(1))//', '//real42str(modelmap_met(num_refmodels))//'[')
+       real42str(gridsmap_asalog(1))//', '//real42str(gridsmap_asalog(gridsmap_num_files))//'[')
     end if
   end
-
 
 
 
@@ -460,11 +385,13 @@ contains
   !> Les modeles doivent etre ranges en temperature croissante
   !> a l'interieur de chaque temp les gravites doivent croitre
   !>
-  !> NEWMARCS 2005 metallicities -1.5 to +1.00 included
-  !>
   !> Outputs are in module variables id11, id12, id21, id22
   !>
-  !> @todo issue big why not mount table from file?? Actually this is not matching the actual files!!!!!
+  !> @note This routine has been re-designed to sweep the whole models file to mount the
+  !> tables
+  !>
+  !> @todo issue ask BLB I tested with (teff=2400, glog=-1), and it turns out that it selects
+  !> records
 
   subroutine locatab(path)
     character(len=*), intent(in) :: path
@@ -486,7 +413,7 @@ contains
 
     real*8 :: aglog(MAX_NT,MAX_NG)
 
-    integer i, jjt, jt1, jt2, n, ng, ngg, nt
+    integer i, j, jjt, jt1, jt2, n, ng, ngg, nt
 
     type(modele_record) :: r  ! filled by read_mod_record()
     integer inum, num_rec
@@ -494,6 +421,10 @@ contains
 
     call log_debug(ENTERING//'Entree dans le SP locatab')
 
+
+    !=====
+    ! Mounts data variables from file
+    !=====
     ! First task is to
     ! mount (nt, rteff, idt, ing, aglog) from file
 
@@ -507,13 +438,15 @@ contains
       call read_mod_record(inum, r)
 
       if (inum .eq. 1 .or. abs(teff_last-r%teff) .gt. 0.001) then
-        if (inum .gt. 1) ing(inum-1) = ng
+        if (inum .gt. 1) then
+          ing(nt) = ng
+        end if
 
         teff_last = r%teff
         nt = nt+1
-  
+
         call assert_le(nt, MAX_NT, 'locatab()', 'nt', 'MAX_NT')
-  
+
         ng = 0
         rteff(nt) = r%teff
         idt(nt) = inum
@@ -526,43 +459,21 @@ contains
 
     call close_mod_file()
 
+    call log_debug('teff='//real42str(x_teff))
+    call log_debug('glog='//real42str(x_glog))
+    call log_debug('nt='//int2str(nt))
+    write(lll,*) 'idt=', (idt(i), i=1,nt)
+    call log_debug(lll)
+    write(lll,*) 'ing=', (ing(i), i=1,nt)
+    call log_debug(lll)
 
+    do i = 1, nt
+      write(lll,*) 'rteff(', i, ')=', rteff(i)
+      call log_debug(lll)
+      write(lll,*) 'aglog(i,:)=', (aglog(i,j), j=1,ing(i))
+      call log_debug(lll)
+    end do
 
-
-    !!!!!!! data r1teff /4000.,4250.,4500.,4750.,5000.,5250.,5500./
-    !!!!!!! data agloga1 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga2 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga3 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga4 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga5 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga6 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    !!!!!!! data agloga7 /0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-    ! data agloga8 /0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5/
-
-    !!!!!!! data idta /1, 9, 17, 25, 33, 41, 48/
-    !!!!!!! data inga /8, 8, 8, 8, 8, 7, 7/
-
-    !!!!!!! nt=7    ! nbre total de temperatures
-    !!!!!!! ng=7    ! nbre maximum de log g
-    !!!!!!! do n=1,nt
-    !!!!!!!   rteff(n)=r1teff(n)
-    !!!!!!!   ing(n)=inga(n)
-    !!!!!!!   idt(n)=idta(n)
-    !!!!!!! end do
-    !!!!!!!
-    !!!!!!! do n=1,ng
-    !!!!!!!   aglog(1,n)=agloga1(n)
-    !!!!!!!   aglog(2,n)=agloga2(n)
-    !!!!!!!   aglog(3,n)=agloga3(n)
-    !!!!!!!   aglog(4,n)=agloga4(n)
-    !!!!!!!   aglog(5,n)=agloga5(n)
-    !!!!!!!   aglog(6,n)=agloga6(n)
-    !!!!!!!   aglog(7,n)=agloga7(n)
-    !!!!!!!   ! aglog(8,n)=agloga8(n)
-    !!!!!!!   ! aglog(9,n)=agloga9(n)
-    !!!!!!!   ! aglog(10,n)=agloga10(n)
-    !!!!!!!   ! aglog(11,n)=agloga11(n)
-    !!!!!!! end do
 
     call log_debug('Liste du nbre de g en fonction de t')
     write(lll,*) (ing(n),n=1,nt)

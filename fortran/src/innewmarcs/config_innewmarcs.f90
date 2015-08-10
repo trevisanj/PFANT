@@ -27,7 +27,8 @@ module config_innewmarcs
 
   character*20 :: config_open_status = 'unknown' !< option: --open_status
 
-  character*192 :: config_refdir = '.' !< option: --refdir
+  !> @todo ask blb better name
+  character*192 :: config_gridsdir = '.' !< option: --gridsdir
 
   character*64 :: &
    config_nomfimod = 'modeles.mod', & !< option: --nomfimod
@@ -51,6 +52,18 @@ module config_innewmarcs
   integer :: config_inum = 0
 contains
 
+
+  !=======================================================================================
+  !> Returns full path to file within gridsdir directory
+
+  function full_path_gridsdir(filename) result(res)
+    character(len=*), intent(in) :: filename  !< File name
+    character(len=:), allocatable :: res
+
+    res = trim_and_add_slash(config_gridsdir) // trim(filename)
+  end
+
+
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
@@ -65,7 +78,7 @@ contains
   !> Initializes innewmarcs-specific options
 
   subroutine config_innewmarcs_init_options()
-    call add_option('refdir',' ', .true., 'directory name', config_refdir, &
+    call add_option('gridsdir',' ', .true., 'directory name', config_gridsdir, &
      'Directory containing reference atmospheric models.<br>'//&
      'This directory must contain a file named "modelmap.dat" and<br>'//&
      'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
@@ -114,8 +127,8 @@ contains
     res = HANDLER_OK
 
     select case(opt%name)
-      case ('refdir')
-        call parse_aux_assign_fn(o_arg, config_refdir, 'refdir')
+      case ('gridsdir')
+        call parse_aux_assign_fn(o_arg, config_gridsdir, 'gridsdir')
       case ('open_status')
         call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
       case ('nomfimod')

@@ -23,9 +23,11 @@ program innewmarcs
   use welcome
   use innewmarcs_calc
   use innewmarcs_x
+  use reader_gridsmap
   implicit none
 
   call config_innewmarcs_init()
+  call read_gridsmap()
   call innewmarcs_init_x()
   call innewmarcs_calc_()
 end

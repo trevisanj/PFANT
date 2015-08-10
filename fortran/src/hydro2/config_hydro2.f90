@@ -73,12 +73,6 @@ module config_hydro2
   !> @note Default taken from M.Trevisan's pfant12.R script
   integer :: config_kq = 1
 
-  character*192 :: config_refdir = '.' !< option: --refdir
-  character*64 :: &
-   config_nomfimod = 'modeles.mod', & !< option: --nomfimod
-   config_nomfidat = 'modeles.dat'    !< option: --nomfidat
-  character*25 :: config_modcode = 'NoName' !< option: --modcode
-
   !> option: --nomplot
   character*16 :: config_nomplot = '?'
 

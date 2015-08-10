@@ -134,6 +134,31 @@ contains
     call do_logging(s, LOGGING_HALT)
   end
 
+
+  !---------------------------------------------------------------------------------------
+  !> Generic logging with level passed as argument.
+  !>
+  !> This routine also provides an additional flag_dress argument, which allows to switch
+  !> off logging message "dressing" ("dressing" here means the addition of extra
+  !> information such as the logging level, date/time etc)
+
+  subroutine log_any(s, level, flag_dress)
+    character(len=*), intent(in) :: s
+    integer, intent(in) :: level
+    !> If .true., adds information to string, e.g., logging level.
+    !> If .false., logs exactly what is in "s", without dressing with more info.
+    !> Default: .true.
+    logical, intent(in), optional :: flag_dress
+    logical :: flag_dress_
+
+    flag_dress_ = .true.
+    if (present(flag_dress)) flag_dress_ = flag_dress
+
+    if (logging_level .le. level) then
+      call do_logging(s, level, flag_dress)
+    end if
+  end
+
   !---------------------------------------------------------------------------------------
   !> Logs message as CRITICAL
 
@@ -248,30 +273,40 @@ contains
   !---------------------------------------------------------------------------------------
   !> Internal routine, MUST NOT be called from outside
 
-  subroutine do_logging(s, level)
+  subroutine do_logging(s, level, flag_dress)
     character(len=*), intent(in) :: s
+    !> If .true., adds information to string, e.g., logging level.
+    !> If .false., logs exactly what is in "s", without dressing with more info.
+    !> Default: .true.
+    logical, intent(in), optional :: flag_dress
     character(len=8) :: t
     integer level
     integer, parameter :: UNIT_DUMP = 179
     logical, save :: flag_first_call = .true.
+    logical :: flag_dress_
 
-    select case (level)
-      case (logging_halt)
-        t = 'HALTING'
-      case (LOGGING_CRITICAL)
-        t = 'CRITICAL'
-      case (LOGGING_ERROR)
-        t = 'ERROR'
-      case (LOGGING_WARNING)
-        t = 'WARNING'
-      case (LOGGING_INFO)
-        t = 'INFO'
-      case (LOGGING_DEBUG)
-        t = 'DEBUG'
-    end select
+    flag_dress_ = .true.
+    if (present(flag_dress)) flag_dress_ = flag_dress
+
+    if (flag_dress_) then
+      select case (level)
+        case (logging_halt)
+          t = 'HALTING'
+        case (LOGGING_CRITICAL)
+          t = 'CRITICAL'
+        case (LOGGING_ERROR)
+          t = 'ERROR'
+        case (LOGGING_WARNING)
+          t = 'WARNING'
+        case (LOGGING_INFO)
+          t = 'INFO'
+        case (LOGGING_DEBUG)
+          t = 'DEBUG'
+      end select
+    end if
 
     if (logging_stdout) then
-      write(*,*) '(', t, ') :: ', trim(s)
+      call do_writing(6)
     end if
 
     if (logging_dump) then
@@ -279,10 +314,22 @@ contains
         open(unit=UNIT_DUMP, file=logging_path_dump, status='unknown')
       end if
 
-      write(UNIT_DUMP, *) '(', t, ') :: ', trim(s)
+      call do_writing(UNIT_DUMP)
     end if
 
     flag_first_call = .false.
+
+  contains
+    !> Writes (dressed or undressed) to unit of choice
+
+    subroutine do_writing(unit_)
+      integer :: unit_
+      if (flag_dress_) then
+        write(unit_, '(4a)') '(', t, ') :: ', trim(s)
+      else
+        write(unit_, '(a)') trim(s)
+      end if
+    end
   end
 
 end module logging
