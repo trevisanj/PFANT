@@ -27,11 +27,10 @@ contains
   !> This this is necessary because Fortran doesn't have a cross-platform solution for
   !> listing the files in a directory.
   !>
-  !> @note first and second rows of file are skipped.
-  !>
 
   subroutine read_gridsmap()
-    character*64 :: t_fn
+    character*64 :: t_fn0
+    character(len=:), allocatable :: t_fn
     character(len=:), allocatable :: path_to_file
     integer, parameter :: UNIT_ = 199
     type(modele_record) :: rec
@@ -43,15 +42,15 @@ contains
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
-    ! rows 01, 02: Skipped (may contain description)
-    read(UNIT_, *)
-    read(UNIT_, *)
-
 
     gridsmap_num_files = 0
     do while (.true.)
-      ! rows 03...etc: filename
-      read(UNIT_, *, end=10) t_fn
+      read(UNIT_, '(a)', end=10) t_fn0
+
+      t_fn = adjustl(trim(t_fn0))  ! Tolerant with lines starting with spaces
+
+      if (len(t_fn) .eq. 0) cycle
+      if (t_fn(1:1) .eq. '#') cycle  ! Comment lines starting with a '#'
 
       ! Opens .mod file to get metallicity from its first record
       ! (metallicity should be the same for all records)
@@ -76,6 +75,7 @@ contains
     end do
 
     !#logging
+    call log_info('reader_gridsmap():')
     call log_info('List of model grid files: # asalog filename')
     do i = 1, gridsmap_num_files
       11 format(26x,i1,' ', f6.3,' ',a)

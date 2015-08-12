@@ -153,7 +153,9 @@ contains
     ! row 09
     read(UNIT_, *) main_llzero, main_llfin, main_aint
 
-    write(*,*) main_llzero, main_llfin, main_aint
+    101 format('reader_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
+    write(lll,101) main_llzero, main_llfin, main_aint
+    call log_info(lll)
 
     ! row 10 - ....
     ! Considers the remaining rows as the filetoh file names

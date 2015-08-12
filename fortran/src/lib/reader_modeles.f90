@@ -171,6 +171,8 @@ contains
     call log_debug(lll)
     write(lll, *) 'read_mod_record(): asalalf=', record%asalalf
     call log_debug(lll)
+    write(lll, *) 'read_mod_record(): nhe=', record%nhe
+    call log_debug(lll)
     write(lll, *) 'read_mod_record(): tit=', record%tit
     call log_debug(lll)
     write(lll, *) 'read_mod_record(): tiabs=', record%tiabs

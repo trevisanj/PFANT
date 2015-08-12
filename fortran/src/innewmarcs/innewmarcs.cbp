@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="innewmarcs" />
+		<Option title="innewmarcs-2015" />
 		<Option pch_mode="2" />
 		<Option compiler="gfortran" />
 		<Build>
@@ -43,6 +43,7 @@
 		<Unit filename="../lib/options2.f90">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="../lib/qsort.f90" />
 		<Unit filename="../lib/reader_dissoc.f90">
 			<Option weight="1" />
 		</Unit>
@@ -64,6 +65,8 @@
 		<Unit filename="innewmarcs_calc.f90">
 			<Option weight="4" />
 		</Unit>
+		<Unit filename="innewmarcs_x.f90" />
+		<Unit filename="reader_gridsmap.f90" />
 		<Extensions>
 			<envvars />
 			<code_completion />
