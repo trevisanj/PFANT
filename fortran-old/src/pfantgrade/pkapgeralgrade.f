@@ -280,8 +280,8 @@ cpc   WRITE(6,1021) MBLEND
       DO 11 N=1,NTOT
       DO 11 L=1,MBLEND
       CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-     X      CRO)
-     1      *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
+     X CRO)
+     1 *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
       PSI=D0*TETA(N)+2.5*ALOG10(TETA(N))-1.5*ALOG10(RM)-ALOG10
      1(UA*UB)-13.670
       PSI=10.**PSI
@@ -290,8 +290,8 @@ cpc   WRITE(6,1021) MBLEND
    10 DO 12 N=1,NTOT
       DO 12 L=1,MBLEND
       CSC(L)=EXP(-H*C/KB*TETA(N)/5040.*(TE+GV+BV*(JJ(L)+1)*JJ(L)))*(2.-
-     X      CRO)
-     1      *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
+     X CRO)
+     1 *(2.*S+1)*EXP(-2*ALS*CK*TETA(N))/(1.+2.*COSH(2*ALS*CK*TETA(N)))
       UUA=UA+EXP(A0+A1*ALOG(TETA(N))+A2*(ALOG(TETA(N)))**2+
      X      A3*(ALOG(TETA
      1(N)))**3+A4*(ALOG(TETA(N)))**4)

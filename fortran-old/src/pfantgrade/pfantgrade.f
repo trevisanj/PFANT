@@ -562,12 +562,12 @@ C     WRITE(6,160)  ((TTD(D),FL(D) ),D=1,DTOT)
       OPEN(UNIT=32, FILE='lines.pfant', STATUS='UNKNOWN')
 c     IF(ECRIT) THEN
       WRITE(32,122)
-         if(nblend.ne.0) then
-            DO K=1,NBLEND
-            WRITE(32,125) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
-            WRITE(91,121) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
-     1      alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
+      if(nblend.ne.0) then
+        DO K=1,NBLEND
+        WRITE(32,125) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
+     1   alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
+        WRITE(91,121) ELEM(K),IONI(K),LAMBDA(K),KIEX(K),ALGF(K),
+     1   alog10(ABOND(K))-afstar+12,CH(K),GR(K),GE(K),ZINF(K),CORCH(K)
 cpc   WRITE(6,123)
             END DO
         end if

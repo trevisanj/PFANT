@@ -216,10 +216,14 @@ contains
     ddt  = abs(main_teff-r%teff)
     ddg = abs(main_glog-r%glog)
     ddab = abs(main_asalog-r%asalog)
-    if (abs(main_nhe-r%nhe) .gt. 0.001) then  !> @todo Get the proper (abs(main_nhe-modeles_nhe) .gt. 0.001) epsilon from MT
-      write(lll, *) 'modele nhe (', r%nhe, ') does not match main nhe (', main_nhe, ')'
-      call pfant_halt(lll)
-    end if
+
+    !> @todo issue I think that nhe doesn't need to match. Anyway, pfantgrade wasn't checking this.
+    !> r%nhe comes straight from the newmarcs grid file and is not calculated.
+    ! if (abs(main_nhe-r%nhe) .gt. 0.001) then
+    !  write(lll, *) 'modele nhe (', r%nhe, ') does not match main nhe (', main_nhe, ')'
+    !  call pfant_halt(lll)
+    ! end if
+
     if(ddt .gt. 1.0) then
       write(lll,*) 'abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
       call pfant_halt(lll)

@@ -20,7 +20,7 @@ program hydro2
   use hydro2_calc
   use logging
   implicit none
-  integer i
+  integer i, cnt_in
   type(thmap_row) :: th
 
   call config_hydro2_init()
@@ -39,22 +39,33 @@ program hydro2
     10 format ('Interval in main configuration file: [',F14.3,',',F14.3,']')
     call log_info(lll)
 
+    cnt_in = 0
     do i = 1, thmap_n
       th = thmap_rows(i)
       if (th%clam .ge. main_llzero .and. th%clam .le. main_llfin) then
-        write(lll,20) i, th
-        20 format('*** selected row from thmap file'/,&
-         '*    row #: ',I2/, &
-         '* filename: ',A16/,&
-         '*       na: ',I4/,&
-         '*       nb: ',I4/,&
-         '*     clam: ',F14.3/,&
-         '*     kiex: ',E12.7/,&
-         '*       c1: ',E12.7)
+        cnt_in = cnt_in+1
+        call log_info('*** selected row from thmap file')
+        write(lll,'(''*    row #: '',I2)') i
+        call log_info(lll)
+        write(lll,'(''* filename: '',A16)') th%fn
+        call log_info(lll)
+        write(lll,'(''*       na: '',I4)') th%na
+        call log_info(lll)
+        write(lll,'(''*       nb: '',I4)') th%nb
+        call log_info(lll)
+        write(lll,'(''*     clam: '',F14.3)') th%clam
+        call log_info(lll)
+        write(lll,'(''*     kiex: '',E12.7)') th%kiex
+        call log_info(lll)
+        write(lll,'(''*       c1: '',E12.7)') th%c1
+        call log_info(lll)
 
         call hydro2_calc_(th)
       end if
     end do
+
+    call log_info('Summary: '//int2str(cnt_in)//'/'//int2str(thmap_n)//&
+     ' hydrogen lines calculated')
 
   else
     th%fn = config_nomplot

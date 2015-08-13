@@ -18,6 +18,7 @@
 module reader_thmap
   use logging
   use max_
+  use misc
   ! use reader_dissoc
   implicit none
 
@@ -52,6 +53,8 @@ contains
   subroutine read_thmap(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer, parameter :: UNIT_ = 199
+    logical :: skip_row(MAX_FILE_ROWS)
+    integer :: num_rows, i
 
     ! Temporary auxiliary variables for reading file
     character*16 t_fn
@@ -61,30 +64,40 @@ contains
     real*8 t_kiex
     real*8 t_c1
 
+    call map_file_comments(path_to_file, skip_row, num_rows)
+
+    write(*,*) 'num_rows=', num_rows
+
     open(unit=UNIT_,file=path_to_file, status='old')
 
-    ! row 01: (skipped) general information
-    read(UNIT_,*)
-    ! row 02: (skipped) table header
-    read(UNIT_,*)
-
     thmap_n = 0
-    do while (.true.)
-      ! rows 03..end
-      read(UNIT_, *, end=10) t_fn, t_na, t_nb, t_clam, t_kiex, t_c1
+    do i = 1, num_rows
+      if (skip_row(i)) then
+        read(UNIT_,*)   ! skips comment row
+      else
+        read(UNIT_, *) t_fn, t_na, t_nb, t_clam, t_kiex, t_c1
 
-      thmap_n = thmap_n+1
+        thmap_n = thmap_n+1
 
-      thmap_rows(thmap_n)%fn = t_fn
-      thmap_rows(thmap_n)%na = t_na
-      thmap_rows(thmap_n)%nb = t_nb
-      thmap_rows(thmap_n)%clam = t_clam
-      thmap_rows(thmap_n)%kiex = t_kiex
-      thmap_rows(thmap_n)%c1 = t_c1
+        thmap_rows(thmap_n)%fn = t_fn
+        thmap_rows(thmap_n)%na = t_na
+        thmap_rows(thmap_n)%nb = t_nb
+        thmap_rows(thmap_n)%clam = t_clam
+        thmap_rows(thmap_n)%kiex = t_kiex
+        thmap_rows(thmap_n)%c1 = t_c1
+      end if
+      print *, 'read row ', i, ' successfully'
     end do
-
-    10 continue  ! reached EOF
-
     close(unit=UNIT_)
+
+
+    !#logging
+    call log_info('reader_thmap():')
+    call log_info('filename         na nb c.lambda     kiex       c1')
+    do i = 1, thmap_n
+      11 format(a16,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
+      write(lll, 11) thmap_rows(i)
+      call log_info(lll)
+    end do
   end
 end

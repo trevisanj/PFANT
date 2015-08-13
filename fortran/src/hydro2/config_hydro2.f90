@@ -153,6 +153,9 @@ contains
      'input file name - absoru2')
     call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
+    call add_option('fn_thmap',       ' ', .true., 'file name', config_fn_thmap, &
+     'input file name - table containing table with<br>'//&
+     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
 
     call add_option('thmap', ' ', .false., '', '', &
       'If set, will read wavelength interval from main configuration file and<br>'//&

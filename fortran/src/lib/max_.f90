@@ -35,7 +35,6 @@ module max_
   ! Dimensions related to infile:dissoc
   !=====
 
-
   !> Maximum number of metal rows in dissoc.dat
   !> (number of elements actually used is specified by variable
   !> dissoc_nmetal <= MAX_DISSOC_NMETAL)
@@ -48,8 +47,16 @@ module max_
   !> Maximum atomic number that can be found in dissoc.dat
   integer, parameter :: MAX_DISSOC_Z = 100
 
+  !=====
+  ! Dimensions related to infile:modeles
+  !=====
+
   !> Maximum possible value of modeles_ntot
   integer, parameter :: MAX_MODELES_NTOT=50
+
+  !=====
+  ! Dimensions related to infile:partit
+  !=====
 
   !> Maximum number of "items" in infile:partit:
   !> @li Maximum value for partit_npar
@@ -58,8 +65,16 @@ module max_
   !> Third dimension of partit_TABU
   integer, parameter :: MAX_PARTIT_KMAX=63
 
+  !=====
+  ! Dimensions related to infile:abonds
+  !=====
+
   !> Maximum number of abundances in abonds.dat
   integer, parameter :: MAX_ABONDS_NABOND=100
+
+  !=====
+  ! Dimensions related to infile:absoru
+  !=====
 
   !> Maximum value for absoru2_NM
   integer, parameter :: MAX_ABSORU2_NM=30
@@ -67,10 +82,6 @@ module max_
   !> Maximum value for absoru2_NR(J)
   integer, parameter :: MAX_ABSORU2_NRR=9  !> Maximum value for each element of absoru2_NUMSET
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
-
-  !> dtot maximum: maximum number of points in each calculation interval.
-  integer, parameter :: MAX_DTOT=7000
-
 
   !=====
   ! Dimensions related to infile:atomgrade
@@ -97,14 +108,13 @@ module max_
    MAX_KM_F_MBLEND=200000 !< Maximum number of spectral lines that can be filtered in at a
                         !< filtering operation performed by filter_molecules()
 
-
-
-
   !=====
   ! Misc
   !=====
   !> Maximum number of command-line options
   integer, parameter :: MAX_NUM_OPTIONS = 50
 
+  !> dtot maximum: maximum number of points in each calculation interval.
+  integer, parameter :: MAX_DTOT=7000
 end
 

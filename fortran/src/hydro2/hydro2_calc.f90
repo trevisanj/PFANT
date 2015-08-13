@@ -133,9 +133,11 @@ contains
     write (lll,75) CMU,NZ
     75 format('  CMU=',F5.2,'  NZ=',I5)
     call log_debug(lll)
-    write (lll,79) (m_dlam(J),J=1,m_jmax)
-    79 format('   DL   =',16F7.3)
-    call log_debug(lll)
+    do j = 1, m_jmax
+      write (lll,79) j, m_dlam(j)
+      79 format('dlam(',i2,')=',F7.3)
+      call log_debug(lll)
+    end do
 
     call log_info('  C1=(PI*E**2)/(M*C**2) * CLAM**2 * F*10E24 ')
     call log_info('  F=FORCE D OSCILLATEUR TOTALE DE LA RAIE')
@@ -151,7 +153,7 @@ contains
     if(ECRIT)   then
       write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
       72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,&
-       ' J1=',I4,' IQM=',I4,/10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
+       ' J1=',I4,' IQM=',I4,10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
       call log_info(lll)
       write(lll,86) (IJ(iq),iq=1,IQM)
       86 format('  IJ    =',10I5)
@@ -178,12 +180,14 @@ contains
     if(ECRIT) then
       call log_info(modeles_tit)
       write(lll,201)
-      201 format(/16X,'modeles_nh',10X,'modeles_teta', 5X,'LOG PE',7X,'m_tau')
+      201 format(13X,'modeles_nh',1X,'modeles_teta', 1X,'LOG PE',12X,'m_tau')
       call log_info(lll)
-      write(lll,202) (i,modeles_nh(i),modeles_teta(i),m_pelog(i),modeles_t5l(i),i=1,modeles_ntot)
-      202 format( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
-      call log_info(lll)
-      call log_info(' ')
+      do i=1,modeles_ntot
+        write(lll,202) i,modeles_nh(i),modeles_teta(i),m_pelog(i),modeles_t5l(i)
+        202 format( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
+        call log_info(lll)
+      end do
+      call log_info('')
     end if
 
     write(lll,*)'appel de ABSORU pour clam=', m_th%clam
@@ -207,25 +211,28 @@ contains
     call ameru()
 
     if(ECRIT) then
-      write(lll,'(1H1,40X,''CALCUL DE m_tau SELECTIF''/)')
+      write(lll,'(1H1,40X,''CALCUL DE m_tau SELECTIF'')')
       call log_info(lll)
       do  i=1,modeles_ntot,5
-        write(lll,'(I5)') i
+        write(lll,'(''NIVEAU '',I5,'' -- m_tau='')') i
         call log_info(lll)
-        write (lll,'(6X, 8E12.4)') (m_tau(j,i),j=1,m_jmax)
+        write (lll,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
         call log_info(lll)
       end do
-      write(lll,'(/10X,A/)') modeles_tit
+      write(lll,'(10X,A)') modeles_tit
       call log_info(lll)
 
       write(lll,121)
-      121 format(6X,'m_tau',9X,'modeles_nh',11X,'modeles_teta     LOGPE     KC/NOYAU DE H VT CGS      NE       TOTH'/)
+      121 format(7X,'m_tau',5X,'modeles_nh',1X,'modeles_teta LOGPE  KC/NOYAU_DE_H',&
+       '            VT           NE         TOTH')
       call log_info(lll)
 
-      write(lll,11) (modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
-       m_vt(i),ne(i),m_toth(i),i,i=1,modeles_ntot)
-      11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
-      call log_info(lll)
+      do i = 1, modeles_ntot
+        write(lll,11) modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
+         m_vt(i),ne(i),m_toth(i),i
+        11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
+        call log_info(lll)
+      end do
     end if
 
     call log_debug('   APPEL OPTIC1  ')
@@ -250,14 +257,14 @@ contains
     write (lll,*) modeles_tit
     call log_info(lll)
     call log_info(' ')
-    write(lll,'('' Absorption calculee avec table '',A//)') absoru2_titre
+    write(lll,'('' Absorption calculee avec table '',A)') absoru2_titre
     call log_info(lll)
     write(lll,4) m_th%clam, m_th%na,m_th%nb,m_th%kiex, m_th%c1
     4 format('Lambda=',F10.3,'A','   NA=',I2,' NB=',I2,4X, 'KIEX=',F7.3,4X,'C1=',E12.4)
     call log_info(lll)
 
     write(lll,21) fc
-    21 format(//'      FLUX CONTINU=',E16.7,'CGS')
+    21 format('      FLUX CONTINU=',E16.7,'CGS')
     call log_info(lll)
     if(config_kq .eq. 1) call log_info('PROFIL QUASI-STATIQUE')
     if(config_kq .ne. 1) call log_info('THEORIE DE GRIEM')
@@ -269,15 +276,12 @@ contains
       406 format(30X,'CONVOLUTION STARK-DOPPLER',10X,'VT=', F5.1,'KM/S')
       call log_info(lll)
     end if
-    call log_info('LISTE DES DELTA LAMBDA (A)')
-    write(lll,'(1X,5F15.3)') (m_dlam(j),j=1,m_jmax)
-    call log_info(lll)
-    call log_info('FLUX DANS LA RAIE')
-    write(lll, '(1X,5E15.7)')(fl(j),j=1,m_jmax)
-    call log_info(lll)
-    call log_info('F/FC')
-    write(lll,'(1X,5F15.5)')(r(j),j=1,m_jmax)
-    call log_info(lll)
+
+    call log_info('DELTA_LAMBDA(A) FLUX_DANS_LA_RAIE            F/FC')
+    do j = 1, m_jmax
+      write(lll,'(F15.3,3X,E15.7,1X,F15.5)') m_dlam(j), fl(j), r(j)
+      call log_info(lll)
+    end do
 
     !=====
     ! FICHIER POUR TRACE
@@ -666,7 +670,7 @@ contains
       120 if (IND.eq.1) go to 94
 
       call log_debug('1 DELOM        DELP        DELIE        RSURL R(N,T)       FZERO        LIM         ALFAD         NEI')
-      write(lll,'(3X,9(E12.5,1X),3X,I2/)')DELOM,DELP,DELIE,RSURL,RNT,FO,LIM,ALFAD,CNE,I
+      write(lll,'(3X,9(E12.5,1X),3X,I2)')DELOM,DELP,DELIE,RSURL,RNT,FO,LIM,ALFAD,CNE,I
       call log_debug(lll)
 
       94 if (LL-1) 19,19,20
@@ -896,7 +900,7 @@ contains
         4006 bidon(j,i)=lv(j)
 
       if (IND.eq.0) then
-        write(lll,'(/,6X,'' AX='',1PE13.5)') ax
+        write(lll,'(6X,'' AX='',1PE13.5)') ax
         call log_debug(lll)
       end if
 
@@ -921,13 +925,13 @@ contains
 
       1057 if (.not.IS_STARK) go to 71
       if (IND.eq.0) then
-        write(6,'(/,''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
+        write(6,'(''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
         call log_debug(lll)
       end if
 
       !     CONVOLUTION DES PROFILS STARK ET DOPPLER
       if (IND.eq.1) go to 71
-      write(lll, '(''1'',///''     RESULTATS DU PRODUIT DE CONVOLUTION''//)')
+      write(lll, '(''1'',''     RESULTATS DU PRODUIT DE CONVOLUTION'')')
       call log_debug(lll)
 
       71 continue
@@ -1022,7 +1026,7 @@ contains
     call log_debug('LE DERNIER NIVEAU DU MODELE EST ATTEINT')
     if (IND .eq. 0)   then
       if (.not. IS_STARK) go to 4011
-      write(lll,'(''1'',''STARK='',//)')
+      write(lll,'(''1'',''STARK='')')
       call log_debug(lll)
       do 4010 i = 1,modeles_ntot,5
         write(6,'('' COUCHE'',I4)') i
@@ -1075,7 +1079,7 @@ contains
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
-    write(lll,'(//10X,''COEF. SOMME (BLEND)'')')
+    write(lll,'(10X,''COEF. SOMME (BLEND)'')')
     call log_debug(lll)
     write(6,'(8(1P,E15.7))')(m_al(1,I),I=1,modeles_ntot)
     call log_debug(lll)

@@ -5,6 +5,10 @@
 module misc
   use logging
   implicit none
+
+  !> Maximum number of rows in a file with comments, e.g. thmap.dat.
+  !> Used in misc.f90
+  integer, parameter :: MAX_FILE_ROWS=1000
 contains
   !> Converts a string to lower case.
   !>
@@ -105,7 +109,7 @@ contains
     end if
   end function
 
-
+  !=======================================================================================
   !> Converts a logical value to 0/1
 
   pure function logical2int(x) result (y)
@@ -119,6 +123,7 @@ contains
     end if
   end function
 
+  !=======================================================================================
   !> Converts an integer to logical. Accepts only 0 or 1
   !>
   !> If argument is not (0 or 1), halts the program
@@ -136,9 +141,7 @@ contains
     end if
   end function
 
-
-
-  !> Trims spaces at the right and adds a final slash, if the latter is not present.
+  !=======================================================================================  !> Trims spaces at the right and adds a final slash, if the latter is not present.
   !>
   !> Examples:
   !> @verbatim
@@ -160,6 +163,59 @@ contains
       if (y(i:i) .eq. BACKSLASH) y(i:i) = '/'
     end do
     if (y(n:n) .ne. '/') y = y // '/'
+  end
+
+  !=======================================================================================
+  !> Creates a logical vector indicating which rows should be skipped in a text file.
+  !>
+  !> This subroutine opens a text file and sweeps it until the end, then closes it.
+  !> If row i starts with a "#" or is blank, skip_row(i) will be .true., otherwise
+  !> .false.
+  !>
+  !> n is the total number of rows in file.
+
+  subroutine map_file_comments(path_to_file, skip_row, n)
+    integer, parameter :: UNIT_=195
+    character(len=*), intent(in) :: path_to_file
+    !> element i  (i=1,n) will be .true. if row i is a comment line (starts with "#"),
+    !> or is blank
+    logical, intent(out) :: skip_row(MAX_FILE_ROWS)
+    !> Number of rows in text file
+    integer, intent(out) :: n
+
+    integer :: n_temp
+    character(len=128) :: s_temp0
+    character(len=:), allocatable :: s_temp
+    logical :: skip
+
+    open(unit=UNIT_,file=path_to_file, status='old')
+
+    n_temp = 0
+    do while (.true.)
+      read(UNIT_,'(a)',end=10) s_temp0
+
+      n_temp = n_temp+1
+
+      if (n_temp .gt. MAX_FILE_ROWS) &
+        call pfant_halt('Increase MAX_FILE_ROWS (='//int2str(MAX_FILE_ROWS)//')')
+
+      s_temp = trim(adjustl(s_temp0))  ! tolerant with rows starting with spaces
+
+      if (len(s_temp) .eq. 0) then
+        skip = .true.
+      else if (s_temp(1:1) .eq. '#') then
+        skip = .true.
+      else
+        skip = .false.
+      end if
+      skip_row(n_temp) = skip
+
+      write(*,*) 'skip row ', n_temp, '? ', skip
+    end do
+
+    10 continue
+    n = n_temp
+    close(UNIT_)
   end
 end module misc
 
