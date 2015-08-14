@@ -17,7 +17,7 @@ class FileAbonds(InputFile):
         """Returns length of "ele" attribute."""
         return len(self.ele)
 
-    def load(self, filename):
+    def _do_load(self, filename):
         """Clears internal lists and loads from file."""
         self.abol, self.ele = [], []
 

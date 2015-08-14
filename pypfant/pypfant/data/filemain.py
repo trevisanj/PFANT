@@ -42,7 +42,7 @@ class FileMain(InputFile):
     self.aint = None
     self.filetohy = None
   
-  def load(self, filename):
+  def _do_load(self, filename):
     """Loads from file."""
   
     with open(filename, "r") as h:
@@ -102,8 +102,3 @@ class FileMain(InputFile):
       write_lf(h, list2str([self.llzero, self.llfin, self.aint]))
       for filetoh in self.filetohy:
         write_lf(h, filetoh)
-  
-  def init_default(self):
-    """Initializes with default abundances (which are hard-coded)."""
-    fullpath = path_to_default("main.dat")
-    self.load(fullpath)

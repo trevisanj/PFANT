@@ -1,4 +1,4 @@
-__all__ = ["FileMod"]
+__all__ = ["FileMod", "ModRecord"]
 
 from .inputfile import *
 from ..errors import *
@@ -35,7 +35,7 @@ class FileMod(InputFile):
       raise RuntimeError("File not loaded yet, len() is undefined")
     return len(self.records)
 
-  def load(self, filename):
+  def _do_load(self, filename):
     REC_SIZE = 1200
 
     b = os.path.getsize(filename)

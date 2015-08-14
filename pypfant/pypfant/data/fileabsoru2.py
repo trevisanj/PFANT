@@ -9,7 +9,7 @@ class FileAbsoru2(InputFile):
   def __init__(self):
     pass
 
-  def load(self, filename):
+  def _do_load(self, filename):
     raise NotImplementedError("This class is a stub ATM")
 
   def save(self, filename):

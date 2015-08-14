@@ -11,10 +11,26 @@ from ..parts import *
 class InputFile(AttrsPart):
   default_filename = None  ## Descendants shoulds set this
 
+  def __init__(self):
+    AttrsPart.__init__(self)
+    # File name is set by load()
+    self.filename = None
+
   def save(self, filename):
     raise NotImplementedError()
 
-  def load(self, filename):
+  def load(self, filename=None):
+    """Loads file and registers filename as attribute."""
+    if filename is None:
+      filename = self.default_filename
+    assert filename is not None, \
+      "%s class has no default filename" % self.__class__.__name__
+
+    self._do_load(filename)
+    self.filename = filename
+
+
+  def _do_load(self, filename):
     raise NotImplementedError()
 
   def init_default(self):

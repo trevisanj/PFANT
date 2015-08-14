@@ -30,7 +30,7 @@ module hydro2_calc
   ! Hard-wired configuration
   !=====
 
-  integer, parameter :: LL = 2 !< OPTION DANS RAIEHU (old "IX")
+  integer, parameter :: LL = 2 !< OPTION DANS RAIEHU (old "IX"). If 1, sets m_jmax=1
   integer, parameter :: J1 = 0 !< OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
 
   !> ?doc? configuration option
