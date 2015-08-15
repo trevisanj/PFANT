@@ -1,12 +1,12 @@
 __all__ = ["FileAbonds"]
 
 import struct
-from .inputfile import *
+from .datafile import *
 
 from ..misc import *
 
 
-class FileAbonds(InputFile):
+class FileAbonds(DataFile):
     default_filename = "abonds.dat"
 
     def __init__(self):

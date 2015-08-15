@@ -1,11 +1,11 @@
 __all__ = ["FileMain"]
 
-from .inputfile import *
+from .datafile import *
 from ..errors import *
 from ..misc import *
 
 
-class FileMain(InputFile):
+class FileMain(DataFile):
   """
   Represents PFANT main configuration file.
   

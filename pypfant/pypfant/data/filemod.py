@@ -1,6 +1,6 @@
 __all__ = ["FileMod", "ModRecord"]
 
-from .inputfile import *
+from .datafile import *
 from ..errors import *
 from ..misc import *
 from ..parts import *
@@ -11,7 +11,7 @@ import os
 
 # @todo actually I probably will have to read all the records
 
-class FileMod(InputFile):
+class FileMod(DataFile):
   """
   Represents atmospheric model file, e.g. "modeles.mod" (infile:modeles)
 

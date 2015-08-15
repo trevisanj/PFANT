@@ -2,13 +2,13 @@
 Ancestor class for all classes that represent an input file.
 """
 
-__all__ = ["InputFile"]
+__all__ = ["DataFile"]
 
 from ..misc import *
 from ..parts import *
 
 
-class InputFile(AttrsPart):
+class DataFile(AttrsPart):
   default_filename = None  ## Descendants shoulds set this
 
   def __init__(self):
@@ -37,7 +37,7 @@ class InputFile(AttrsPart):
       """
       Default initialization of attributes listed in self.attrs.
 
-      InputFile behaviour is to try to load self.default_filename from default
+      DataFile behaviour is to try to load self.default_filename from default
       directory.
       """
       fullpath = path_to_default(self.default_filename)

@@ -1,9 +1,9 @@
 __all__ = ["FileAbsoru2"]
 
-from .inputfile import *
+from .datafile import *
 
 
-class FileAbsoru2(InputFile):
+class FileAbsoru2(DataFile):
   default_filename = "absoru2.dat"
 
   def __init__(self):

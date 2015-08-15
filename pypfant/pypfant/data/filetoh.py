@@ -1,6 +1,6 @@
 __all__ = ["FileToH"]
 
-from .inputfile import *
+from .datafile import *
 from ..errors import *
 from ..misc import *
 import struct
@@ -8,7 +8,7 @@ import math
 import numpy as np
 import fortranformat as ff
 
-class FileToH(InputFile):
+class FileToH(DataFile):
   """
   Represents single-band hydrogen lines file.
 
