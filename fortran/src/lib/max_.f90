@@ -21,6 +21,16 @@
 module max_
 
   !=====
+  ! "delta lambda" parameters
+  !=====
+
+  !> amount to stretch calculation interval (both to the left and to the right)
+  real*8, parameter :: LAMBDA_STRETCH = 20.
+  !> assumed width of a hydrogen line
+  real*8, parameter :: H_LINE_WIDTH = 35.
+
+
+  !=====
   ! Dimensions related to infile:filetoh
   !=====
 

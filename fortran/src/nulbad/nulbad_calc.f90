@@ -108,7 +108,7 @@ contains
 
     subroutine assure_read_main()
       if (.not. flag_read_main) then
-        call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+        call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false.)
       end if
     end
   end
@@ -123,7 +123,7 @@ contains
     integer :: itot, ikeytot, icle, d, k
     real*8 fnu(MAX_DTOT)  ! temporary, just for reading one "icle" iteration
 
-    open(unit=UNIT_,file=full_path_o(x_fileflux), status='unknown')
+    open(unit=UNIT_,file=full_path_w(x_fileflux), status='unknown')
 
     icle = 1
     rs_ktot = 0
@@ -184,7 +184,7 @@ contains
     call nulbad_init()
 
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=full_path_o(x_filecv))
+    open(unit=UNIT_,status='replace',file=full_path_w(x_filecv))
 
     do k = 1, rs_ktot
       lambd(k) = rfs_l0+(k-1)*rfs_dpas

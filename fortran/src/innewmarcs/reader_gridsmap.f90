@@ -18,9 +18,9 @@ module reader_gridsmap
 
 contains
   !=======================================================================================
-  !> Reads map of models: file "index.dat"
+  !> Reads map of models: infile:gridslist
   !>
-  !> By convention, this file is called "index.dat". The information it contains is
+  !> The information it contains is
   !> just a list of .mod files. Files needn't be sorted. Metallicities are taken from the
   !> first record of each file and the files are sorted in ascending order of metallicity
   !>
@@ -38,7 +38,7 @@ contains
     real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
     integer :: order(MAX_GRIDSMAP_NUM_FILES), i
 
-    path_to_file = full_path_gridsdir('index.dat')
+    path_to_file = full_path_w(config_fn_gridslist)
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
@@ -54,7 +54,7 @@ contains
 
       ! Opens .mod file to get metallicity from its first record
       ! (metallicity should be the same for all records)
-      call open_mod_file(full_path_gridsdir(t_fn))
+      call open_mod_file(full_path_w(t_fn))
       call read_mod_record(1, rec)
       call close_mod_file()
 

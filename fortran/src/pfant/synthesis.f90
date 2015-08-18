@@ -212,8 +212,6 @@ contains
      UNIT_NORM  = 20, &
      UNIT_LINES = 32, &
      UNIT_LOG   = 31
-    !<  amount to stretch calculation interval (both to the left and to the right)
-    real*8, parameter :: LAMBDA_STRETCH = 20.
 
     real*8 lzero, lfin
 
@@ -230,9 +228,8 @@ contains
      ecartm(MAX_KM_F_MBLEND)
 !   fonctions de partition TODO figure out what this comment refers to
 
-    REAL*8 ttd(MAX_DTOT), fn(MAX_DTOT), &
+    real*8 ttd(MAX_DTOT), fn(MAX_DTOT), &
            tauh(MAX_DTOT, 50), tauhy(10,MAX_DTOT,50)
-
 
     integer i, i1, i2, ih, &
      ikey,    & ! ikey-th main_aint-large calculation interval
@@ -246,21 +243,10 @@ contains
     call log_debug(ENTERING//'synthesis_()')
 
     !=====
-    ! Read/setup
+    ! Setup
     !=====
 
-
-    ! note that infile:dissoc needs to be read before infile:main
-    call read_dissoc(full_path_i(config_fn_dissoc))
-    call read_main(full_path_i(config_fn_main))
-    call read_partit(full_path_i(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
-    call read_absoru2(full_path_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-    call read_modele(full_path_i(config_fn_modeles))  ! LECTURE DU MODELE
-    call read_abonds(full_path_i(config_fn_abonds))
-    call read_atomgrade(full_path_i(config_fn_atomgrade))
-    call read_filetoh() ! Hydrogen lines need no file names (uses main_filetohy array)
-    call read_molecules(full_path_i(config_fn_molecules))
-
+    ! note that infile:dissoc nee
 
     !> @todo issue ask blb overwriting variables read from infile:absoru2
     absoru2_abhel = modeles_nhe
@@ -272,11 +258,11 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    open(unit=UNIT_SPEC, file=full_path_o(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=full_path_o(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=full_path_o(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
-    open(unit=UNIT_LINES,file=full_path_o(config_fn_lines), status='replace')               ! outfile:lines
-    open(unit=UNIT_LOG,  file=full_path_o(config_fn_log), status='replace')                 ! log.log
+    open(unit=UNIT_SPEC, file=full_path_w(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=full_path_w(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=full_path_w(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
+    open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
+    open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
 
 
     !=====
@@ -362,10 +348,8 @@ contains
       do ih = 1,main_filetoh_numfiles
         allhy = filetoh_llhy(ih)-lzero
 
-        !> @todo issue ask blb why +55 & -35?
-
-        if (((allhy .gt. 0) .and. (allhy .le. (main_aint+55.))) .or. &
-            ((allhy .lt. 0.) .and. (allhy .ge. (-35.)))) then
+        if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
+            ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
 
           im = im+1
           irh = 1

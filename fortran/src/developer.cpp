@@ -28,7 +28,7 @@ Backslashes
 Doxygen crashed because of the following line of code:
 
 
-      if (inputdir_trim(i:i) .eq. '\') inputdir_trim(i:i) = '/'
+      if (wdir_trim(i:i) .eq. '\') wdir_trim(i:i) = '/'
 
 
 Doxyfile must have

@@ -1,8 +1,10 @@
 
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
-       "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip"]
+       "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip", "find_session_id"]
 
 import os.path
+import glob
+import random
 
 # reads next line of file and makes it a vector of strings
 str_vector = lambda f: f.readline().split()
@@ -124,3 +126,23 @@ def chunk_string(string, length):
   Reference: http://stackoverflow.com/questions/18854620
   """
   return (string[0+i:length+i] for i in range(0, len(string), length))
+
+
+def find_session_id(directory="./"):
+  """
+  Finds a 6-digit integer that is not part of any file in directory.
+  """
+  if directory is None:
+    directory = ""
+  mask = os.path.join(directory, "*")
+  while True:
+    s = "%06d" % random.randint(0, 999999)
+    ff = glob.glob(mask)
+    flag_exit = True
+    for f in ff:
+      if s in f:
+        flag_exit = False
+        break
+    if flag_exit:
+      break
+  return s

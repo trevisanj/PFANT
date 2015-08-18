@@ -71,21 +71,21 @@ contains
     ! Calculation
     !=====
 
-    write(lll,*) 'Creating ASCII file ', full_path_i(config_nomfidat)
+    write(lll,*) 'Creating ASCII file ', full_path_w(config_fn_moddat)
     call log_info(lll)
 
-    open(unit=UNIT_DAT,file=full_path_i(config_nomfidat),status='unknown')
+    open(unit=UNIT_DAT,file=full_path_w(config_fn_moddat),status='unknown')
 
-    call log_info('Opening binary file '//full_path_i(config_nomfimod)//&
+    call log_info('Opening binary file '//full_path_w(config_fn_modeles)//&
      ' in status='//trim(config_open_status))
 
     open(unit=UNIT_MOD,access='direct',status=config_open_status, &
-     file=full_path_i(config_nomfimod), recl=1200)
+     file=full_path_w(config_fn_modeles), recl=1200)
 
     ! **********************Boucle sur l'abondance*******************
     do iabon = 1,2 ! on interpole dans 2 grilles d'abondance
       nomfiple = nomfipl(iabon)
-      path = full_path_gridsdir(nomfiple)
+      path = full_path_w(nomfiple)
 
       !-------------------------------------------------------------
       ! On cherche ou se trouvent (teff, glog)  par rapport a la table

@@ -7,29 +7,49 @@ program pfant
   use logging
   use synthesis
   use welcome
+  use reader_atomgrade
+  use reader_filetoh
+  use reader_main
+  use reader_abonds
+  use reader_dissoc
+  use reader_partit
+  use reader_molecules
+  use reader_absoru2
+  use reader_thmap
+
   implicit none
 
-  ! startup
+  !=====
+  ! Startup
+  !=====
   call molecules_ids_init()
   call config_pfant_init()
 
+
+  !=====
+  ! File reading
+  !=====
+  call read_dissoc(full_path_w(config_fn_dissoc))
+  call read_main(full_path_w(config_fn_main))
+  call read_partit(full_path_w(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
+  call read_absoru2(full_path_w(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(full_path_w(config_fn_modeles))  ! LECTURE DU MODELE
+  call read_abonds(full_path_w(config_fn_abonds))
+  call read_atomgrade(full_path_w(config_fn_atomgrade))
+
+  ! Gets list of hydrogen lines filenames either from infile:main or infile:thmap.
+  ! The latter is not the preferred way.
+  if (config_thmap) then
+    call read_thmap(full_path_w(config_fn_thmap))
+  else
+    call thmap_copy_from_main()
+  end if
+
+  call read_filetoh(main_llzero, main_llfin)
+  call read_molecules(full_path_w(config_fn_molecules))
+
+
   ! Spectral synthesis
   call synthesis_()
-
-!  select case (config_mode)
-!    case ('pfant')
-!      call synthesis_()
-!    case ('nulbad')
-!      call nulbad_complete()
-!    case ('pfant-nulbad')
-!      synthesis_flag_ffnu = .true.
-!      ! This overrides possible setting from command-line because synthesis_ffnu
-!      ! is the normalized spectrum.
-!      config_nulbad_norm = .true.
-!      call synthesis_()
-!      call nulbad_calc(synthesis_ffnu, synthesis_ktot)
-!    case default
-!      call pfant_halt('Unknown mode: "'//config_mode//'"', is_assertion=.true.)
-!  end select
 
 end program pfant

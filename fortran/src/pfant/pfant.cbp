@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="pfant" />
+		<Option title="pfant-2015" />
 		<Option pch_mode="2" />
 		<Option compiler="gfortran" />
 		<Build>
@@ -33,6 +33,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../lib/absoru.f90" />
+		<Unit filename="../lib/absoru_data.f" />
 		<Unit filename="../lib/config_base.f90">
 			<Option weight="1" />
 		</Unit>
@@ -77,12 +79,6 @@
 		</Unit>
 		<Unit filename="../lib/welcome.f90">
 			<Option weight="1" />
-		</Unit>
-		<Unit filename="absoru.f90">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="absoru_data.f">
-			<Option weight="0" />
 		</Unit>
 		<Unit filename="config_pfant.f90">
 			<Option weight="2" />

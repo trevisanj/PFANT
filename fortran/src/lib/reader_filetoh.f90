@@ -19,6 +19,7 @@ module reader_filetoh
   use max_
   use reader_modeles
   use config_pfant
+  use reader_thmap
   implicit none
 
   !=====
@@ -73,21 +74,27 @@ module reader_filetoh
 contains
 
   !=======================================================================================
-  !> Tries to open and read all files listed in variable reader_main::main_filetohy
+  !> Tries to open and read all files listed in variable thmap_rows
   !>
-  !> If a1 filetoh file listed in infile:main file
+  !> [llzero, llfin] is the calculation lambda interval. Here this interval is used for
+  !> error checking: if it doesn't find a file that should exist, it will give an error
+  !>
+  !> @todo issue pfant no longer has the ability to know whether a hydrogen line file is missing,
+  !> unless I make the "--thmap" mode the only mode for pfant, which I am very much inclined to do.
+  !> So, for the moment it means that llzero and llfin cannot be used
+  !>
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
 
-  subroutine read_filetoh()
+  subroutine read_filetoh(llzero, llfin)
+    real*8, intent(in) :: llzero, llfin
     integer unit_
     parameter(unit_=199)
     integer i, j, n, i_file
     character(len=:), allocatable :: file_now
 
-
     i = 0
-    do i_file = 1, main_filetoh_numfiles
-      file_now = full_path_i(main_filetohy(i_file))
+    do i_file = 1, thmap_n
+      file_now = full_path_w(thmap_rows(i_file)%fn)
 
       open(err=111, unit=unit_,file=file_now,status='old')
 
@@ -100,12 +107,11 @@ contains
       read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
        j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
 
-      !> @todo ask blb not taking lambda from files instead
       ! Takes first lambda of file as a reference
       filetoh_llhy(i) = filetoh_r_lambdh(i, 1)
 
       ! Registers filename in list of files that were found
-      filetoh_filenames(i) = main_filetohy(i_file)
+      filetoh_filenames(i) = thmap_rows(i_file)%fn
 
       close(unit_)
       goto 112
@@ -115,12 +121,11 @@ contains
 
 
       112 continue
-
-    !> @todo Check jmax spill here
     end do
 
-    if (i .eq. 0 .and. main_filetoh_numfiles .gt. 0 .and. .not. config_allow_no_filetoh) then
-      call pfant_halt('Expecting '//int2str(main_filetoh_numfiles)//' filetoh files, but ZERO files found')
+    !> @todo palliative check, needs more powerful one with llzero and llfin
+    if (i .eq. 0 .and. thmap_n .gt. 0 .and. .not. config_allow_no_filetoh) then
+      call pfant_halt('Expecting '//int2str(thmap_n)//' filetoh files, but ZERO files found')
     end if
   end
 end

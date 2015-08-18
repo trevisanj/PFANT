@@ -111,14 +111,13 @@ module config_base
   !=====
 
   character*192 :: &
-   config_inputdir    = './', &  !< command-line option --inputdir
-   config_outputdir   = './'     !< command-line option --outputdir
+   config_wdir    = './'  !< command-line option --wdir
 
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
   character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
 
-  logical :: config_logging_stdout = .true., & !< option --logging_stdout
+  logical :: config_logging_screen = .true., & !< option --logging_screen
              config_logging_dump   = .false.   !< option --logging_dump
 
 
@@ -139,9 +138,7 @@ module config_base
   !!!!!!!!!!!!! integer, private :: CONFIG_BASE_NUM_OPTIONS = 9
 
   character(len=:), private, allocatable :: &
-   inputdir_trim  !< Input directory without trailling spaces and ending with a "/"
-  character(len=:), private, allocatable :: &
-   outputdir_trim   !< Output directory without trailling spaces and ending with a "/"
+   wdir_trim  !< Input directory without trailling spaces and ending with a "/"
 
   private :: handle_option_give_error, init_options_give_error, validate_options, &
    init_common_options, parse_args, show_help
@@ -173,16 +170,15 @@ contains
     call validate_options()
     call parse_args()
 
-    ! data directories...
-    inputdir_trim = trim_and_add_slash(config_inputdir)
-    outputdir_trim = trim_and_add_slash(config_outputdir)
+    ! working directory...
+    wdir_trim = trim_and_add_slash(config_wdir)
     ! logging module...
-    logging_path_progress = full_path_o(config_fn_progress)
+    logging_path_progress = full_path_w(config_fn_progress)
     if (config_logging_fn_dump .eq. '?') then
       config_logging_fn_dump = to_lower(execonf_name)//'_dump.log'
     end if
 
-    logging_path_dump = full_path_o(config_fn_progress)
+    logging_path_dump = full_path_w(config_fn_progress)
 
     call print_welcome(6)
   end
@@ -251,18 +247,15 @@ contains
         if (res .eq. HANDLER_OK) then
           call parse_aux_log_assignment('logging level', to_lower(o_arg))
         end if
-      case ('logging_stdout')
-        config_logging_stdout = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_logging_stdout', logical2str(config_logging_stdout))
+      case ('logging_screen')
+        config_logging_screen = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_logging_screen', logical2str(config_logging_screen))
       case ('logging_dump')
         config_logging_dump = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_logging_dump', logical2str(config_logging_dump))
-      case ('inputdir')
+      case ('wdir')
         ! Note: using same routine parse_aux_assign_fn() to assign directory
-        call parse_aux_assign_fn(o_arg, config_inputdir, 'config_inputdir')
-      case ('outputdir')
-        ! Note: using same routine parse_aux_assign_fn() to assign directory
-        call parse_aux_assign_fn(o_arg, config_outputdir, 'config_outputdir')
+        call parse_aux_assign_fn(o_arg, config_wdir, 'config_wdir')
       case ('fn_main')
         call parse_aux_assign_fn(o_arg, config_fn_main, 'config_fn_main')
       case ('logging_fn_dump')
@@ -280,23 +273,13 @@ contains
   !   8   `Y88P' `Y88P' 8888 `Y88P'  Tools
 
   !=======================================================================================
-  !> Concatenates config_inputdir with specific filename
+  !> Concatenates config_wdir with specific filename
 
-  function full_path_i(filename) result(res)
+  function full_path_w(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 
-    res = inputdir_trim // trim(filename)
-  end
-
-  !=======================================================================================
-  !> Concatenates config_outputdir with specific filename
-
-  function full_path_o(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = outputdir_trim // trim(filename)
+    res = wdir_trim // trim(filename)
   end
 
   !=======================================================================================
@@ -525,10 +508,8 @@ contains
 
     call add_option('help', 'h', .false., '', '', &
       'Displays this help text.')
-    call add_option('inputdir',         ' ', .true., 'directory name', config_inputdir, &
-      'directory containing input files')
-    call add_option('outputdir',         ' ', .true., 'directory name', config_outputdir, &
-      'directory for output files')
+    call add_option('wdir',         ' ', .true., 'directory name', config_wdir, &
+      'working directory (directory for all input/output files')
 
     ! Logging options
     call add_option('logging_level', 'l', .TRUE., 'level', 'debug', &
@@ -539,7 +520,7 @@ contains
      IND//'error<br>'//&
      IND//'critical<br>'//&
      IND//'halt')
-    call add_option('logging_stdout',   ' ', .true., 'T/F', logical2str(config_logging_stdout), &
+    call add_option('logging_screen',   ' ', .true., 'T/F', logical2str(config_logging_screen), &
      'Print log messages to standard output (usually monitor screen)?')
     call add_option('logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
       'Print log messages to dump log file?')

@@ -1,0 +1,804 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"grids",
+				"gridsmap_fn"
+			],
+			[
+				"gri",
+				"gridsmap_asalog"
+			],
+			[
+				"open",
+				"open_mod_file"
+			],
+			[
+				"flag_c",
+				"flag_care_about_dissoc"
+			],
+			[
+				"rea",
+				"readerbn"
+			],
+			[
+				"log",
+				"log_debug"
+			],
+			[
+				"config",
+				"config_inewmarcs_nomfimod"
+			],
+			[
+				"loggin_",
+				"logging_path_progress"
+			],
+			[
+				"data",
+				"datadir_trim"
+			],
+			[
+				"abso",
+				"absoru_"
+			],
+			[
+				"f_fileto",
+				"f_filetoh_jmax"
+			],
+			[
+				"FILETO",
+				"FILETOH_N"
+			],
+			[
+				"max_",
+				"max_km__lines_total"
+			],
+			[
+				"modeles_N",
+				"modeles_NTOT"
+			],
+			[
+				"error",
+				"error_unit"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "innewmarcs/innewmarcs_calc.f90",
+			"settings":
+			{
+				"buffer_size": 21609,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "innewmarcs/innewmarcs.f90",
+			"settings":
+			{
+				"buffer_size": 1044,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "innewmarcs/reader_gridsmap.f90",
+			"settings":
+			{
+				"buffer_size": 2821,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/reader_modeles.f90",
+			"settings":
+			{
+				"buffer_size": 8915,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src"
+	],
+	"file_history":
+	[
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/qsort.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/innewmarcs/reader_grids_map.f90",
+		"/home/j/Documents/projects/pfant/working/other/debugging/grade_x_06_2015_bwf1/pfant2015/bring_pfant2015.sh",
+		"/home/j/Documents/projects/pfant/working/other/debugging/hydro2_old_vs_new/new/run_pfant2015.sh",
+		"/home/j/Documents/projects/pfant/working/other/scrap/apara.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/absoru.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/hydro2_calc.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/calhy_temp.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/reader_thmap.f90",
+		"/home/j/Documents/projects/pfant/working/other/data/fits/open_sun_example.py",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/thmap_example.dat",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/hydro2_math.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/absor.f",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/calhy.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/flin.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/absor.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/innewmarcs/index_example.dat",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2/calhy.f",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/misc_math.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/nulbad/config_nulbad.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/innewmarcs/innewmarcs_calc.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/synthesis.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/lib/welcome.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/lib/misc.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/config_pfant.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/lib/read_most_files.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/atomgrade.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/lib/config_base.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/molecules_ids.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/pfant.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/inewmarcs.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/pfant.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/config.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/nulbad.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/filetoh.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/config.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/filetoh.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/molecules.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/nulbad.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/synthesis.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/bin/Debug/pfant",
+		"/home/j/Documents/projects/pfant/working/github/master/main/read_most_files.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/innewmarcs.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/dissoc.f90",
+		"/home/j/Documents/projects/pfant/working/other/src-fortran/original/newmarcs/innewmarcs_linux15.f",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/atomgrade.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/dissoc.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/read_most_files.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/flin.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/bin/Debug/fl.norm.nulbad",
+		"/home/j/Documents/projects/pfant/working/other/src-fortran/original/1/pfant11.R",
+		"/home/j/Documents/projects/pfant/working/github/master/main/misc.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/logging.f90",
+		"/home/j/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/j/Documents/projects/revistaea/github/func.php",
+		"/home/j/Documents/projects/pfant/working/github/master/nulbadgrade/nulbadgrade.cbp",
+		"/home/j/Documents/projects/pfant/working/github/master/main/user.cpp",
+		"/home/j/Documents/projects/pfant/working/github/master/main/atomgrade.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/codeblocks.cpp",
+		"/home/j/Documents/projects/revistaea/github/ss_func.php",
+		"/home/j/Documents/projects/pfant/working/github/master/main/coding_style.cpp",
+		"/home/j/Documents/projects/pfant/working/github/master/main/molecules.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/absoru.f90",
+		"/home/j/Documents/projects/revistaea/github/artigo.php",
+		"/home/j/Documents/projects/revistaea/github/artigos.php",
+		"/home/j/Documents/projects/revistaea/github/fe_func.php",
+		"/home/j/Documents/projects/revistaea/github/ss_help.php",
+		"/home/j/Documents/projects/pfant/working/github/master/main/options2.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/developer.cpp",
+		"/home/j/Documents/projects/pfant/working/github/master/main/dimensions.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/misc_math.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/molecula.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/atoms.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/zreferences.cpp",
+		"/home/j/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/j/Documents/projects/pfant/working/github/master/main/read_files.f90",
+		"/home/j/Documents/projects/pfant/working/github/master/main/bin/Debug/main",
+		"/home/j/Documents/projects/pfant/working/github/master/main/bin/Debug/sun.sh",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/read_files.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/molecula.mod",
+		"/home/j/Documents/projects/pfant/working/github/master/main/obj/Debug/synthesis.mod",
+		"/home/j/Documents/projects/revistaea/github/EnDecryptText.php",
+		"/home/j/Documents/projects/revistaea/github/be.cad.sessao.php",
+		"/home/j/Documents/projects/revistaea/github/be.envia.php",
+		"/home/j/Documents/projects/revistaea/github/be.erro.php",
+		"/home/j/Documents/projects/revistaea/github/be.func.php",
+		"/home/j/Documents/projects/revistaea/github/be.l_tabledesigner.php",
+		"/home/j/Documents/projects/revistaea/github/be.l_wahtable.php",
+		"/home/j/Documents/projects/revistaea/github/be.wahcadastro.php",
+		"/home/j/Documents/projects/revistaea/github/cadastrese.php",
+		"/home/j/Documents/projects/revistaea/github/class.phpmailer.php",
+		"/home/j/Documents/projects/revistaea/github/contato.php",
+		"/home/j/Documents/projects/revistaea/github/db_add_palavras.php",
+		"/home/j/Documents/projects/revistaea/github/db_artigo.php",
+		"/home/j/Documents/projects/revistaea/github/db_autor.php",
+		"/home/j/Documents/projects/revistaea/github/db_del_temp.php",
+		"/home/j/Documents/projects/revistaea/github/db_exemplar.php",
+		"/home/j/Documents/projects/revistaea/github/db_exp_vis.php",
+		"/home/j/Documents/projects/revistaea/github/db_func.php",
+		"/home/j/Documents/projects/revistaea/github/db_func_se.php",
+		"/home/j/Documents/projects/revistaea/github/db_index.php",
+		"/home/j/Documents/projects/revistaea/github/db_login.php",
+		"/home/j/Documents/projects/revistaea/github/db_logout.php",
+		"/home/j/Documents/projects/revistaea/github/db_query.php",
+		"/home/j/Documents/projects/revistaea/github/db_rel_visita.php",
+		"/home/j/Documents/projects/revistaea/github/db_rel_visita2.php",
+		"/home/j/Documents/projects/revistaea/github/db_secao.php",
+		"/home/j/Documents/projects/revistaea/github/db_sub_hist.php",
+		"/home/j/Documents/projects/revistaea/github/db_submissao.php",
+		"/home/j/Documents/projects/revistaea/github/db_upload.php",
+		"/home/j/Documents/projects/revistaea/github/db_usuario.php",
+		"/home/j/Documents/projects/revistaea/github/db_visitante.php",
+		"/home/j/Documents/projects/revistaea/github/fe_seeya.php",
+		"/home/j/Documents/projects/revistaea/github/index.php",
+		"/home/j/Documents/projects/revistaea/github/info.php",
+		"/home/j/Documents/projects/revistaea/github/lib_nonsense.php",
+		"/home/j/Documents/projects/revistaea/github/mailteste.php",
+		"/home/j/Documents/projects/revistaea/github/phpinfo.php",
+		"/home/j/Documents/projects/revistaea/github/search.php",
+		"/home/j/Documents/projects/revistaea/github/ss_autor.php",
+		"/home/j/Documents/projects/revistaea/github/ss_download.php",
+		"/home/j/Documents/projects/revistaea/github/ss_n.php",
+		"/home/j/Documents/projects/revistaea/github/ss_pag.php",
+		"/home/j/Documents/projects/revistaea/github/teste.php",
+		"/home/j/Documents/projects/revistaea/github/teste1.php",
+		"/home/j/Documents/projects/pypfant/pfant/github/master/main/absoru_data.f",
+		"/home/j/Documents/projects/pypfant/pfant/github/master/main/obj/Debug/absoru.mod",
+		"/home/j/Documents/projects/pypfant/pfant/github/master/original/original_merged_reference.f"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2",
+			"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2``",
+			"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2",
+			"/home/j/Documents/projects/pfant/working/github/master/fortran/src/innewmarcs",
+			"/home/j/Documents/projects/pfant/working/github/master/fortran/src/hydro2",
+			"/home/j/Documents/projects/pfant/working/github/master/main",
+			".",
+			"*.f90",
+			".",
+			"*.f90",
+			"/home/j/Documents/projects/pfant/working/github/master/main/*.f90",
+			"/home/j/Documents/projects/pfant/working/github/master/main",
+			"/home/j/Documents/projects/revistaea/github",
+			"/home/j/Documents/projects/pypfant/pfant/github/master/main",
+			"/home/j/Documents/projects/pypfant/pfant/github/trunk/main",
+			"*.f;*.f90"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"t_met",
+			"if",
+			"ng",
+			"nt",
+			"1200",
+			"readerbn",
+			"UNIT_",
+			"readerbn",
+			"locatab",
+			"8",
+			"7",
+			"nntot",
+			"nntot=",
+			"log_debug",
+			"j",
+			"conv4",
+			"m_dlab",
+			"ab",
+			"t",
+			"res",
+			"ij",
+			"m_ij",
+			"ij",
+			"rpi",
+			"y",
+			"x",
+			"conv2",
+			"m_ij",
+			"300",
+			"modif_v",
+			"modif_ii",
+			"hjen",
+			"flag_hydro2",
+			"1200",
+			"flag_hydro2",
+			"14",
+			"140",
+			"wlh",
+			"flag_hydro2",
+			"ameru",
+			"kap",
+			"m_kc",
+			"optic1",
+			"fluxis",
+			"conf",
+			"call conf",
+			"tab",
+			"ab",
+			"lv",
+			"res",
+			"y",
+			"X",
+			"conf",
+			"j",
+			"conf",
+			"call",
+			"call pronor",
+			"pronor",
+			"m_iqm",
+			"i+1",
+			"iqm",
+			"m_ij",
+			"iqm",
+			"m_iqm",
+			"h",
+			"fac",
+			"AZ",
+			"z",
+			"ab",
+			"f",
+			"lv",
+			"iqm",
+			"jm",
+			"pronor",
+			"ax",
+			"call pronor",
+			"pronor",
+			"call",
+			"call malt",
+			"call",
+			"xbdp",
+			"x",
+			"xdp",
+			"PI",
+			"result",
+			"conv4",
+			"y",
+			"conv4",
+			"x",
+			"conv4",
+			"dlam",
+			"conv4",
+			"X",
+			"cty",
+			"5",
+			"res",
+			"q",
+			"VAL",
+			"val",
+			"T2",
+			"t1",
+			"q",
+			"5",
+			"t",
+			"20",
+			"malt",
+			"x",
+			"ta",
+			"asm",
+			"IBORN",
+			"f_as",
+			"as",
+			"AS",
+			"PP",
+			"IBORN",
+			"MALT",
+			"U",
+			"res",
+			"20",
+			"t1",
+			"v1",
+			"hjen",
+			"d3_az",
+			"az",
+			"d3_az",
+			"res",
+			"val",
+			"stoc"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"t_asalog",
+			"UNIT_MOD",
+			"MAX_NG",
+			"MAX_N",
+			"MAX_NG",
+			"MAX_NT",
+			"m_dlam",
+			"m_dlab",
+			"lv",
+			"ri",
+			"ris",
+			"IJ",
+			"RPI",
+			"dld",
+			"m_dlam(j)",
+			"M_IJ",
+			"MAX_HJEN_II",
+			"m_kc",
+			"lv",
+			"m_dlam",
+			"ris",
+			"dld",
+			"m_dlam(j)",
+			"IQM",
+			"ax",
+			"fac",
+			"alfa",
+			"lv",
+			"m_jmax",
+			"PI",
+			"resc",
+			"dld",
+			"m_dlam",
+			"MAX_M",
+			"f_as",
+			"MAX_IL",
+			"az",
+			"config_kik",
+			"fl",
+			"m_jmax",
+			"mmu",
+			"x_ptdisk",
+			"modeles_ntot",
+			"m_bpl",
+			"m_tauc",
+			"m_tau",
+			"jmax",
+			"kik",
+			"ntot",
+			"ptdisk",
+			"m_pelog",
+			"m_toth",
+			"m_kc",
+			"m_fl",
+			"m_bpl",
+			"m_tauc",
+			"m_al",
+			"m_tau",
+			"m_pe_log",
+			"m_th",
+			"m_hyn",
+			"m_iqm",
+			"m_ij",
+			"m_dlam",
+			"m_jmax",
+			"nbmax",
+			"nbmin",
+			"fl_",
+			"al",
+			"al_",
+			"J1",
+			"p_th%kiex",
+			"p_th%clam",
+			"p_th@clam",
+			"modeles_pg",
+			"x_vvt",
+			"config_kq",
+			"p_iqm",
+			"IS_STARK",
+			"p_hyn",
+			"p_th",
+			"p_ij",
+			"p_dlam",
+			"p_jmax",
+			"dlam",
+			"th%",
+			"th%fn",
+			"th%",
+			"th%fn",
+			"th%",
+			"th%clam",
+			"x_inum",
+			"modeles_teff",
+			"write(lll",
+			"x_nomplot",
+			"write(lll",
+			"IND",
+			"ECRIT",
+			"absoru2_titre",
+			"absoru2_titre\\",
+			"x_kq",
+			"D3_STARK",
+			"amores",
+			"config_kik",
+			"x_ptdisk",
+			"CTE",
+			"C1_",
+			"x_c1",
+			"x_kiex",
+			"x_clam",
+			"x_nb",
+			"x_na",
+			"config_nb",
+			"config_na",
+			"NBMIN",
+			"NBMAX",
+			"KIK",
+			"LL",
+			"D2_NZ",
+			"D2_CMU",
+			"result",
+			"N",
+			"res",
+			"d2_",
+			"$1 = $2",
+			"$1 = $1",
+			"absoru2_zp",
+			"dlam"
+		],
+		"reverse": false,
+		"show_context": false,
+		"use_buffer2": false,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "innewmarcs/innewmarcs_calc.f90",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21609,
+						"regions":
+						{
+							"bookmarks":
+							{
+								"flags": 144,
+								"icon": "bookmark",
+								"regions":
+								[
+									[
+										3821,
+										3829
+									],
+									[
+										3834,
+										3834
+									],
+									[
+										14289,
+										14289
+									]
+								],
+								"scope": "bookmarks"
+							}
+						},
+						"selection":
+						[
+							[
+								1018,
+								1018
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Fortran/Fortran - Modern.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "innewmarcs/innewmarcs.f90",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1044,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								729,
+								729
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Fortran/Fortran - Modern.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "innewmarcs/reader_gridsmap.f90",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1992,
+								1992
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Fortran/Fortran - Modern.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/reader_modeles.f90",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8915,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2384,
+								2384
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Fortran/Fortran - Modern.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 345.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 384.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 112.0
+	},
+	"pinned_build_system": "",
+	"project": "src.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

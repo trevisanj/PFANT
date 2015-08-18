@@ -1,6 +1,12 @@
 __all__ = ["Executable"]
 
-from pypfant import *
+import os
+import subprocess
+import logging
+from pypfant.misc import find_session_id
+from pypfant.data.datafile import *
+
+logger = logging.getLogger("exe")
 
 class Executable(object):
   """
@@ -11,24 +17,106 @@ class Executable(object):
     # Full path to executable (including executable name)
     self.exe_path = "./none"
 
+    self.session_id = None
 
     # Command-line options present in all executables
-    self.opt_inputdir = None
-    self.opt_outputdir = None
+    self.opt_wdir = None
+    self.opt_logging_level = None
+    self.opt_logging_screen = None
+    self.opt_logging_dump = None
+    self.opt_logging_fn_dump = None
+    self.opt_fn_main = None
+
+    # FileMain instance
+    self.fo_main = None
 
     self.stdout = None
 
     self.popen = None
 
 
+  ##############################################################################
+  # PUBLIC INTERFACE
+
+  def run(self):
+    """Blocking routine. Overwrites self.popen."""
+
+    assert not self.is_running(), "Already running"
+
+    self.create_data_files()
+    args = self.get_args()
+    cmd_line = [self.exe_path]+args
+
+    logger.debug("%s command-line:" % (self.__class__.__name__,))
+    logger.debug(" ".join(cmd_line))
+
+    self.popen = subprocess.Popen(cmd_line, stdout=self.stdout)
+    self.popen.wait()  # Blocks execution until finished
+
+    self.popen.poll()
+
+    logger.debug("%s finished with returncode=%s" %
+                 (self.__class__.__name__, self.popen.returncode))
+
   def is_running(self):
     if self.popen is None:
-        return False
+      return False
     self.popen.poll()
     return self.popen.returncode is None
 
+  def kill(self):
+    assert self.is_running(), "Not running"
+    self.popen.kill()
 
-  def _create_data(self):
+
+  ##############################################################################
+  # ROUTINES TO BE OVERRIDEN
+
+  def get_args(self):
+    """
+    Returns a list of command-line arguments from "opt_" and "optf_" attributes.
+
+    Sweeps all object attributes.
+      - If attribute starts with "opt_", it is an option requiring an argument
+      - If attribute starts with "optf_", it is a flag option without argument
+
+    Example:
+      Suppose that a class descending from Executable has the following
+      attributes and values:
+        - self.opt_fn_main = "main1234.dat"
+        - self.optf_thmap = True
+
+      In such case, this method will return
+      "--fn_main", "main1234.dat", "--thmap"]
+
+      If self.optf_thmap were False, "--thmap" would be absent from the result.
+
+    """
+
+    l = []
+    for attr_name in dir(self):
+      if attr_name.startswith("opt_"):
+        value = self.__getattribute__(attr_name)
+        if value is not None:
+          s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
+          l.extend(["--"+attr_name[4:], s_value])
+      elif attr_name.startswith("optf_"):
+        value = self.__getattribute__(attr_name)
+        if value:
+          l.append("--"+attr_name[5:])
+    return l
+
+  ##############################################################################
+  # ROUTINES TO BE LEFT AS-ARE
+
+  def full_path_w(self, fn):
+    """Joins self.inputdir with specified filename."""
+    if self.opt_wdir is not None:
+      return os.path.join(self.opt_wdir, fn)
+    else:
+      return fn
+
+  def create_data_files(self):
     """
     Creates files for all object attributes starting with prefix "fo_"
 
@@ -41,10 +129,8 @@ class Executable(object):
           - self.fn_main will be overwritten
 
     Now this example extends to fo_* attributes.
-
-
     """
-
+    self.assure_session_id()
     for attr_name in dir(self):
       if attr_name[0:3] == "fo_":
         obj = self.__getattribute__(attr_name)
@@ -52,139 +138,22 @@ class Executable(object):
         if obj is not None:
           assert isinstance(obj, DataFile)
 
-          # Makes filename, e.g., abonds32732.dat
+          self.assure_session_id()
+
+          # Makes filename, e.g., session123456_abonds.dat
           # -----
           # Uses default name as a base for name of file that doesn't exist
           name, ext = obj.default_filename.split('.')
-          new_fn = new_filename("auto_"+name, ext)
-          fullpath = self._get_fullpath_i(new_fn)
+          new_fn = "session%s%s.%s" % (self.session_id, name, ext)
+          fullpath = self.full_path_w(new_fn)
           # Saves file
           obj.save(fullpath)
           # Overwrites config option
           self.__setattr__("opt_fn_"+attr_name[3:], new_fn)
 
-    def get_opt_args(self):
-      """
-      Returns a list of command-line arguments.
-
-      Sweeps all object attributes.
-        - If attribute starts with "opt_", it is an option requiring an argument
-        - If attribute starts with "optf_", it is a flag option without argument
-
-      Example:
-        Suppose that a class descending from Executable has the following
-        attributes and values:
-          - self.opt_fn_main = "main1234.dat"
-          - self.optf_thmap = True
-
-        In such case, this method will return
-        "--fn_main", "main1234.dat", "--thmap"]
-
-        If self.optf_thmap were False, "--thmap" would be absent from the result.
-      """
-
-      l = []
-      for attr_name in dir(self):
-        if attr_name[0:4] == "opt_":
-          value = self.__getattribute__(attr_name)
-          if value is not None:
-            s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
-            l.extend([attr_name[4:], s_value])
-        elif attr_name[0:5] == "optf_":
-          value = self.__getattribute__(attr_name)
-          if value:
-            l.extend([attr_name[5:]])
-      return l
-
-
-    def run(self):
-      """Blocking routine. Overwrites self.popen."""
-
-      assert not self.is_running(), "Already running"
-
-      self._run
-
-        self._create_data
-        map0 = [(self.o_main, 'fn_main'),
-                (self.o_abonds, 'fn_abonds'),
-                ]
-
-        for obj, attr_name in map0:
-            if obj is not None:
-                assert isinstance(obj, DataFile)
-                # Makes filename, e.g., abonds32732.dat
-                # -----
-                # Uses default name as a base for name of file that doesn't exist
-                name, ext = obj.default_filename.split('.')
-                new_fn = new_filename(name, ext)
-                fullpath = self._get_fullpath_i(new_fn)
-                # Saves file
-                obj.save(fullpath)
-                # Overwrites config option
-                self.__setattr__(attr_name, new_fn)
-
-        l = self._get_command_line()
-
-        logger.debug("PFANT Command-line:")
-        logger.debug(" ".join(l))
-
-        self.popen = subprocess.Popen(l, stdout=self.stdout)
-        self.popen.wait()  # Blocks execution until finished
-        logger.debug("PFANT returned")
-
-    def kill(self):
-        assert self.is_running(), "Not running"
-        self.popen.kill()
-
-    def poll(self):
-        """Calls popen poll() and tries to read progress file."""
-        if self.popen is not None:
-            self.popen.poll()
-
-        p = self._get_fullpath_o(self._fn_progress)
-        if os.path.isfile(p):
-            with open(p) as h:
-                self.ikey, self.ikeytot = map(int, h.readline().split("/"))
-        else:
-            self.ikey, self.ikeytot = None, None
-
-    def _get_fullpath_i(self, fn):
-        """Joins self.inputdir with specified filename."""
-        if self.inputdir is not None:
-            return os.path.join(self.inputdir, fn)
-        else:
-            return fn
-
-    def _get_fullpath_o(self, fn):
-        """Joins self.inputdir with specified filename."""
-        if self.inputdir is not None:
-            return os.path.join(self.inputdir, fn)
-        else:
-            return fn
-
-    def _get_command_line(self):
-        """Returns list [program, arg0, arg1, ...]."""
-        if self.exe_path is None:
-            raise RuntimeError("Must set path to executable (exe_path)")
-
-        cmd_line = [self.exe_path, "--fn_progress", self._fn_progress]
-
-        # Input/output file names
-        # Actually, options with argument
-        # -----
-        # command-line option has same name as self.* attribute
-        map0 = ["fn_dissoc", "fn_main", "fn_partit", "fn_absoru2", "fn_modeles",
-                "fn_abonds", "fn_atomgrade", "fn_moleculagrade", "fn_lines", "fn_log",
-                "inputdir", "outputdir"] # @todo actually all options can be treated thus, I think
-
-        for option_name in map0:
-            arg = self.__getattribute__(option_name)
-            if arg is not None:
-                if isinstance(arg, str):
-                    # Checks if string has space in order to add quotes
-                    if " " in arg:
-                        arg = '"'+arg+'"'
-                cmd_line.append("--%s" % option_name)
-                cmd_line.append(str(arg))
-
-        return cmd_line
+  def assure_session_id(self):
+    """
+    Makes sure that session id is assigned.
+    """
+    if self.session_id is None:
+      self.session_id = find_session_id(self.opt_wdir)

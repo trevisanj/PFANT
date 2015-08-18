@@ -27,12 +27,12 @@ program hydro2
   call validate_config()
   call hydro2_init_x()
 
-  call read_absoru2(full_path_i(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-  call read_modele(full_path_i(config_fn_modeles))   ! LECTURE DU MODELE
+  call read_absoru2(full_path_w(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(full_path_w(config_fn_modeles))   ! LECTURE DU MODELE
 
   if (config_thmap) then
     call assure_read_main()
-    call read_thmap(full_path_i(config_fn_thmap))
+    call read_thmap(full_path_w(config_fn_thmap))
 
     call log_info('Using thmap file')
     write(lll, 10) main_llzero, main_llfin

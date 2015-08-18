@@ -27,12 +27,11 @@ module config_innewmarcs
 
   character*20 :: config_open_status = 'unknown' !< option: --open_status
 
-  !> @todo ask blb better name
-  character*192 :: config_gridsdir = '.' !< option: --gridsdir
-
   character*64 :: &
-   config_nomfimod = 'modeles.mod', & !< option: --nomfimod
-   config_nomfidat = 'modeles.dat'    !< option: --nomfidat
+   config_fn_modeles = 'modeles.mod', &    !< option: --fn_modeles
+   config_fn_moddat = 'modeles.dat', &     !< option: --fn_moddat
+   config_fn_gridslist = 'gridslist.dat' !< option: --fn_gridslist
+
   character*25 :: config_modcode = 'NoName' !< option: --modcode
   !> option: --tirb
   !> @sa innewmarcs_init()
@@ -51,19 +50,6 @@ module config_innewmarcs
   !> @sa get_id()
   integer :: config_inum = 0
 contains
-
-
-  !=======================================================================================
-  !> Returns full path to file within gridsdir directory
-
-  function full_path_gridsdir(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = trim_and_add_slash(config_gridsdir) // trim(filename)
-  end
-
-
   !=======================================================================================
   !> Executable-specific initialization + calls config_base_init()
 
@@ -78,24 +64,17 @@ contains
   !> Initializes innewmarcs-specific options
 
   subroutine config_innewmarcs_init_options()
-    call add_option('gridsdir',' ', .true., 'directory name', config_gridsdir, &
-     'Directory containing reference atmospheric models.<br>'//&
-     'This directory must contain a file named "modelmap.dat" and<br>'//&
-     'several ".mod" binary files. See inewmarcs.f90::read_modelmap() for more info.')
-
     call add_option('open_status',' ', .true., 'string', config_open_status, &
      'File open mode for binary file<br>'//&
      IND//'new: file must not exist<br>'//&
      IND//'old: file must exist<br>'//&
      IND//'replace: replaces file if exists, otherwise creates new')
 
-    call add_option('nomfimod',' ', .true., 'file name', config_nomfimod, &
-     'Name of binary file<br>'//&
-     '*Note*: file is opened in directory specified in --inputdir')
+    call add_option('fn_modeles',' ', .true., 'file name', config_fn_modeles, &
+     'Name of binary file')
 
-    call add_option('nomfidat',' ', .true., 'file name', config_nomfidat, &
-     'Name of ASCII file<br>'//&
-     '*Note*: file is opened in directory specified in --inputdir')
+    call add_option('fn_moddat',' ', .true., 'file name', config_fn_moddat, &
+     'Name of ASCII file')
 
     call add_option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
      '"Model name"')
@@ -127,14 +106,12 @@ contains
     res = HANDLER_OK
 
     select case(opt%name)
-      case ('gridsdir')
-        call parse_aux_assign_fn(o_arg, config_gridsdir, 'gridsdir')
       case ('open_status')
         call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
-      case ('nomfimod')
-        call parse_aux_assign_fn(o_arg, config_nomfimod, 'nomfimod')
-      case ('nomfidat')
-        call parse_aux_assign_fn(o_arg, config_nomfidat, 'nomfidat')
+      case ('fn_modeles')
+        call parse_aux_assign_fn(o_arg, config_fn_modeles, 'fn_modeles')
+      case ('fn_moddat')
+        call parse_aux_assign_fn(o_arg, config_fn_moddat, 'fn_moddat')
       case ('modcode')
         call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
       case ('tirb')

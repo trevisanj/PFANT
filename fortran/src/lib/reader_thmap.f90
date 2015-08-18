@@ -19,13 +19,14 @@ module reader_thmap
   use logging
   use max_
   use misc
+  use reader_main
   ! use reader_dissoc
   implicit none
 
   !> Structure to store one row of infile:thmap
   type thmap_row
     !> file name
-    character*16 fn
+    character*64 fn
     !> NIV INF
     integer na
     !> NIV SUP
@@ -57,7 +58,7 @@ contains
     integer :: num_rows, i
 
     ! Temporary auxiliary variables for reading file
-    character*16 t_fn
+    character*64 t_fn
     integer t_na
     integer t_nb
     real*8 t_clam
@@ -98,6 +99,31 @@ contains
       11 format(a16,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
       write(lll, 11) thmap_rows(i)
       call log_info(lll)
+    end do
+  end
+
+
+  !========================================================================================
+  !> Fills thmap_rows according with main_filetohy.
+  !>
+  !> This routine fills only the "fn" (filename) field of the thmap_row structure because
+  !> the filenames are all that's available in infile:main.
+  !>
+  !> This routine is used only by pfant when not in "--thmap" mode.
+  !>
+  !> This routine is part of a mechanism to allow pfant to work in two ways.
+  !> @li either use infile:thmap for the list of hydrogen line files (likely to become the
+  !>     standard way in the future)
+  !> @li take this list from infile:main (legacy)
+
+  subroutine thmap_copy_from_main()
+    integer :: i
+    character(len=:), allocatable :: file_now
+
+    thmap_n = 0
+    do i = 1, main_filetoh_numfiles
+      thmap_n = thmap_n+1
+      thmap_rows(thmap_n)%fn = main_filetohy(i)
     end do
   end
 end

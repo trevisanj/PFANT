@@ -67,7 +67,7 @@ contains
 
   subroutine assure_read_main()
     if (.not. flag_read_main) then
-      call read_main(full_path_i(config_fn_main), flag_care_about_dissoc=.false.)
+      call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false.)
     end if
   end
 
@@ -78,21 +78,29 @@ contains
   !> @todo ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., infile:main will have MORE LINES
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
-  subroutine read_main(path_to_file, flag_care_about_dissoc)
+  subroutine read_main(path_to_file, flag_care_about_dissoc, flag_read_filetoh)
     character(len=*), intent(in) :: path_to_file
-    !> Defaults to .true. If .false., won't bother about reading infile:dissoc first and
+    !> (=.true.) If .false., won't bother about reading infile:dissoc first and
     !> will skip the xxcor line. Only pfant bother about the xxcor line; other executables
     !> want to use infile:main without having to read infile:dissoc first.
     logical, intent(in), optional :: flag_care_about_dissoc
+    !> (=.true.) If .false., does not read the hydrogen lines filenames.
+    logical, intent(in), optional :: flag_read_filetoh
     integer, parameter :: UNIT_ = 4
     integer ih, i
     character*64 filetoh_temp
-    logical :: fcad = .true.
+    logical :: flag_care_about_dissoc_, flag_read_filetoh_
     logical ecrit_obsolete
 
-    if (present(flag_care_about_dissoc)) fcad = flag_care_about_dissoc
 
-    if (fcad .and. .not. flag_read_dissoc) then
+
+    flag_care_about_dissoc_ = .true.
+    if (present(flag_care_about_dissoc)) flag_care_about_dissoc_ = flag_care_about_dissoc
+
+    flag_read_filetoh_ = .true.
+    if (present(flag_read_filetoh)) flag_read_filetoh_ = flag_read_filetoh
+
+    if (flag_care_about_dissoc_ .and. .not. flag_read_dissoc) then
       call pfant_halt('read_dissoc() must be called before read_main()')
     end if
 
@@ -137,7 +145,7 @@ contains
     ! row 07: XXCOR(i)
     ! @todo ISSUE: Should be a column in dissoc.dat !!!!!
     ! (MT) I agree
-    if (fcad) then
+    if (flag_care_about_dissoc_) then
       read(UNIT_, *) (main_xxcor(i), i=1, dissoc_nmetal)
     else
       read(UNIT_, *) ! skips the line
@@ -157,34 +165,36 @@ contains
     write(lll,101) main_llzero, main_llfin, main_aint
     call log_info(lll)
 
-    ! row 10 - ....
-    ! Considers the remaining rows as the filetoh file names
-    ! Doesn't know yet the number of files
-    ih = 1
-    110 continue
-    read(UNIT_, '(a)', end=111) filetoh_temp
+    if (flag_read_filetoh_) then
+      ! row 10 - ....
+      ! Considers the remaining rows as the filetoh file names
+      ! Doesn't know yet the number of files
+      ih = 1
+      110 continue
+      read(UNIT_, '(a)', end=111) filetoh_temp
 
-    if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
+      if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
 
-    !#spill_check
-    if (ih .gt. MAX_FILETOH_NUMFILES) then
-      call pfant_halt('Too many filetoh files specified (maximum is '//&
-       'MAX_FILETOH_NUMFILES='//int2str(MAX_FILETOH_NUMFILES)//')')
+      !#spill_check
+      if (ih .gt. MAX_FILETOH_NUMFILES) then
+        call pfant_halt('Too many filetoh files specified (maximum is '//&
+         'MAX_FILETOH_NUMFILES='//int2str(MAX_FILETOH_NUMFILES)//')')
+      end if
+
+      main_filetohy(ih) = filetoh_temp
+
+      write(lll,*) 'filetohy(', ih, ') = "', trim(main_filetohy(ih)), '"'
+      call log_debug(lll)
+
+      ih = ih+1
+      goto 110
+
+      111 continue
+      main_filetoh_numfiles = ih-1
+
+      write(lll,*) 'Number of filetoh files: ', main_filetoh_numfiles
+      call log_debug(lll)
     end if
-
-    main_filetohy(ih) = filetoh_temp
-
-    write(lll,*) 'filetohy(', ih, ') = "', trim(main_filetohy(ih)), '"'
-    call log_debug(lll)
-
-    ih = ih+1
-    goto 110
-
-    111 continue
-    main_filetoh_numfiles = ih-1
-
-    write(lll,*) 'Number of filetoh files: ', main_filetoh_numfiles
-    call log_debug(lll)
 
     close(unit=UNIT_)
     flag_read_main = .true.
