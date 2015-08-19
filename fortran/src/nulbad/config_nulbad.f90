@@ -21,19 +21,7 @@ module config_nulbad
   implicit none
 
 
-  ! These variables are set to their default values
-  logical :: &
-   config_norm = .true., &                       !< option: --norm
-   config_flam = .true., &                       !< option: --flam
-   config_convol = .true.                        !< option: --convol
-  ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
-  ! take values within infile:main
-  real*8 :: &
-   config_fwhm = -1, &               !< option: --fwhm
-   config_pat = -1                   !< option: --pat
-  character*64 :: &
-    config_fn_flux = '?', &         !< option: --fn_flux
-    config_fn_cv = '?'                !< option: --fn_cv
+
 contains
 
   !=======================================================================================
@@ -51,21 +39,6 @@ contains
 
   subroutine config_nulbad_init_options()
 
-    call add_option('fn_flux', ' ', .true., 'file name', &
-     '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
-     'Flux file name')
-    call add_option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
-      'Is spectrum normalized?')
-    call add_option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
-      'Fnu to FLambda transformation?')
-    call add_option('fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
-      'output file name, which will have the convolved spectrum')
-    call add_option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
-      'step ?doc?')
-    call add_option('convol',   ' ', .true., 'T/F', logical2str(config_convol), &
-      'Apply convolution?')
-    call add_option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
-      'Full-width-half-maximum of Gaussian function')
   end
 
   !=======================================================================================
@@ -80,25 +53,6 @@ contains
 
     select case(opt%name)
 
-      case ('fwhm')
-        config_fwhm = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm))
-      case ('convol')
-        config_convol = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_convol', logical2str(config_convol))
-      case ('pat')
-        config_pat = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_pat', real82str(config_pat))
-      case ('fn_cv')
-        call parse_aux_assign_fn(o_arg, config_fn_cv, 'config_fn_cv')
-      case ('flam')
-        config_flam = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_flam', logical2str(config_flam))
-      case ('fn_flux')
-        call parse_aux_assign_fn(o_arg, config_fn_flux, 'config_fn_flux')
-      case ('norm')
-        config_norm = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_norm', logical2str(config_norm))
       case default
         ! if does not handle here, passes on to base handler
         res = config_base_handle_option(opt, o_arg)

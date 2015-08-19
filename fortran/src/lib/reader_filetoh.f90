@@ -140,8 +140,5 @@ contains
 
     ! Note: when taking the "filetohy" from main configuration file, will not bother
     ! about hydrogen lines files not found, so bewhare (--hmap is the preferred mode anyway)
-    !if (i .eq. 0 .and. hmap_n .gt. 0 .and. .not. config_allow_no_filetoh) then
-    !  call pfant_halt('Expecting '//int2str(hmap_n)//' filetoh files, but ZERO files found')
-    !end if
   end
 end
