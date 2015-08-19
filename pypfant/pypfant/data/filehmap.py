@@ -1,8 +1,11 @@
 __all__ = ["FileHmap", "HmapRow"]
 
 from .datafile import *
-from ..errors import *
 from ..misc import *
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class HmapRow(object):
@@ -41,17 +44,22 @@ class FileHmap(DataFile):
     """Loads from file."""
 
     with open(filename, "r") as h:
-      for line in h:
-        line = line.strip()
-        if line.startswith("#"):
-          continue
+      for i, line in enumerate(h):
+        try:
+          line = line.strip()
+          if line.startswith("#") or len(line) == 0:
+            continue
 
-        r = HmapRow()
-        [r.fn, r.na, r.nb, r.clam, r.kiex, r.c1] = line.split()
-        [r.na, r.nb] = map(int, (r.na, r.nb))
-        [r.clam, r.kiex, r.c1] = map(float, [r.clam, r.kiex, r.c1])
+          r = HmapRow()
+          [r.fn, r.na, r.nb, r.clam, r.kiex, r.c1] = line.split()
+          [r.na, r.nb] = map(int, (r.na, r.nb))
+          [r.clam, r.kiex, r.c1] = map(float, [r.clam, r.kiex, r.c1])
 
-        self.rows.append(r)
+          self.rows.append(r)
+        except:
+          logger.error("Error reading row #%d, file \"%s\"" % (i+1, filename))
+          raise
+
 
   def save(self, filename):
     """Saves to file."""

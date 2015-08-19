@@ -52,7 +52,7 @@ contains
   subroutine config_nulbad_init_options()
 
     call add_option('fn_flux', ' ', .true., 'file name', &
-     '<"main_fn_flux" variable>.norm (taken from main configuration file)>', &
+     '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
      'Flux file name')
     call add_option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
       'Is spectrum normalized?')

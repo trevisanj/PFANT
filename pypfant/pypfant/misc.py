@@ -129,7 +129,7 @@ def chunk_string(string, length):
   return (string[0+i:length+i] for i in range(0, len(string), length))
 
 
-def find_session_id(directory="./"):
+def find_session_id(directory="."):
   """
   Finds a 6-digit integer that is not part of any file in directory.
   """

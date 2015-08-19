@@ -85,7 +85,7 @@ contains
     end if
     if (config_fn_flux .eq. '?') then
       call assure_read_main()
-      x_fn_flux = trim(main_fn_flux)//'.norm'
+      x_fn_flux = trim(main_flprefix)//'.norm'
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
       x_norm = .true. ! ignores config_norm because x_fn_flux has the name of the
                       ! normalized file

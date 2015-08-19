@@ -5,22 +5,22 @@ import subprocess
 import logging
 from pypfant.misc import find_session_id
 from pypfant.data.datafile import *
+from .runnable import *
 
 logger = logging.getLogger("exe")
 
-class Executable(object):
+
+class Executable(Runnable):
   """
   Generic class to represent an executable.
   """
 
   def __init__(self):
+    Runnable.__init__(self)
     # Full path to executable (including executable name)
     self.exe_path = "./none"
 
-    self.session_id = None
-
     # Command-line options present in all executables
-    self.opt_wdir = None
     self.opt_logging_level = None
     self.opt_logging_screen = None
     self.opt_logging_dump = None
@@ -132,7 +132,7 @@ class Executable(object):
 
     Now this example extends to fo_* attributes.
     """
-    self.assure_session_id()
+
     for attr_name in dir(self):
       if attr_name[0:3] == "fo_":
         obj = self.__getattribute__(attr_name)
@@ -140,22 +140,10 @@ class Executable(object):
         if obj is not None:
           assert isinstance(obj, DataFile)
 
-          self.assure_session_id()
-
-          # Makes filename, e.g., session123456_abonds.dat
-          # -----
-          # Uses default name as a base for name of file that doesn't exist
-          name, ext = obj.default_filename.split('.')
-          new_fn = "session%s%s.%s" % (self.session_id, name, ext)
+          new_fn = self.nman.get_relative_path(obj.default_filename)
           fullpath = self.full_path_w(new_fn)
           # Saves file
           obj.save(fullpath)
           # Overwrites config option
           self.__setattr__("opt_fn_"+attr_name[3:], new_fn)
 
-  def assure_session_id(self):
-    """
-    Makes sure that session id is assigned.
-    """
-    if self.session_id is None:
-      self.session_id = find_session_id(self.opt_wdir)

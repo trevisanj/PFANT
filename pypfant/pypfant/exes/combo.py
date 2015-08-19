@@ -5,12 +5,19 @@ import os
 import subprocess
 import logging
 from threading import Lock
+from .runnable import *
 
 logger = logging.getLogger("combo")
 
-class Combo(object):
+class Combo(Runnable):
   """
   Runs sequence of executables: innermarcs, hydro2, pfant, nulbad.
+
+  Important: some opt* attributes will be propagated when the combo is run.
+   - self.opt_wdir (working directory) should be set to change the working
+     directory
+   - options common to all executables should be set at self.common
+
   """
 
   @property
@@ -33,17 +40,21 @@ class Combo(object):
 
 
   def __init__(self, exe):
+    Runnable.__init__(self)
 
     assert isinstance(exe, Executable)
 
-    # Object of class Executable to hold the command-line options that are
-    # common to all executables. Attributes starting with "opt" will be
-    # assigned to Innewmarcs, Hydro2, Pfant, Nulbad  executables
-    self.exe = exe
 
     # Directory containing the 4 executables
     self.exe_dir = "."
 
+    # Object of class Executable to hold the command-line options that are
+    # common to all executables. Attributes starting with "opt" will be
+    # assigned to Innewmarcs, Hydro2, Pfant, Nulbad  executables
+    #
+    # In practice, all options that are common to all executables must be set
+    # here.
+    self.common = Executable()
     self.innewmarcs = Innewmarcs()
     self.hydro2 = Hydro2()
     self.pfant = Pfant()
@@ -70,38 +81,52 @@ class Combo(object):
 
     assert not self.is_running, "Already running"
 
-    def run_e():
-      self.assign_opt(e)
-      e.run()
-      e.poll()
-      if e.popen.returncode != 0:
-        raise RuntimeError("%s failed" % e.__class__.__name__)
-
-
     self.is_running = True
     try:
+      # Propagates working directory
+      self.common.opt_wdir = self.opt_wdir
+
+      ## Runs innewmarcs
+
       self.running_exe = e = f = self.innewmarcs
-      run_e()
+      assert isinstance(e, Innewmarcs)
+      if e.opt_fn_modeles is None:
+        e.opt_fn_modeles = asdsda
+      self.__run_e(e)
 
       self.running_exe = e = f = self.hydro2
-      run_e()
+      self.__run_e(e)
 
       self.running_exe = e = f = self.pfant
-      run_e()
+      self.__run_e(e)
 
       self.running_exe = e = self.nulbad
-      run_e()
+      self.__run_e(e)
 
     finally:
       self.is_running = False
 
-  def assign_opt(self, target):
-    """Copies all attributes starting with "opt" between self.exe and target."""
-    assert isinstance(target, Executable)
-    for attr_name in dir(self.exe):
+
+
+  def __run_e(self, e):
+    """Sets up executable object and runs it."""
+
+    assert isinstance(e, Executable)
+
+    # Propagates session id and name manager
+    e.session_id = self.session_id
+    e.nman = self.nman
+
+    # Propagates all common options
+    for attr_name in dir(self.common):
       if attr_name.startswith("opt"):
-        attr = self.exe.__getattribute__(attr_name)
-        target.__setattr__(attr_name, attr)
+        attr = self.common.__getattribute__(attr_name)
+        e.__setattr__(attr_name, attr)
+
+    e.run()
+    if e.popen.returncode != 0:
+      raise RuntimeError("%s failed" % e.__class__.__name__)
+
 
 
   def poll_progress(self):

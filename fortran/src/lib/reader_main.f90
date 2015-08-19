@@ -25,21 +25,21 @@ module reader_main
   !> Flag indicating whether read_main() has already been called.
   logical :: flag_read_main   = .false.
 
-  character*64 main_fn_flux  !< ?doc?
+  character*64 main_flprefix  !< prefix for flux files: <main_flprefix>.(spec, cont, norm)
   logical   main_ptdisk    !< ?doc?
   real*8 :: &
-   main_pas,    & !< ?doc?
+   main_pas,    & !< calculation step within each calculation sub-interval; this is a "delta lambda"
    main_echx,   & !< ?doc?
    main_echy,   & !< ?doc?
    main_mu,     & !< ?doc?
    main_afstar, & !< ?doc?
-   main_llzero, & !< ?doc?
-   main_llfin,  & !< ?doc?
-   main_aint,   & !< ?doc?
-   main_teff,   & !< ?doc?
-   main_glog,   & !< ?doc?
-   main_asalog, & !< ?doc?
-   main_nhe       !< ?doc?
+   main_llzero, & !< lower boundary of calculation interval
+   main_llfin,  & !< upper boundary of calculation interval
+   main_aint,   & !< length of each calculation sub-interval (llfin-llzero) is divided into intervals of roughly aint
+   main_teff,   & !< effective temperature of the star
+   main_glog,   & !< log10 of gravity
+   main_asalog, & !< log10 of metallicity
+   main_nhe       !< ?doc? I think this is not used, overwritten by sth that comes from infile:modeles
   !> "Full-width-half-maximum" of Gaussian function for
   !> convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
@@ -158,10 +158,10 @@ contains
 
     ! row 08 -- part of a file name
     ! This line will define the names of three output files:
-    !   fn_flux.cont
-    !   fn_flux.norm
-    !   fn_flux.spec
-    read(UNIT_, '(a)') main_fn_flux
+    !   <fn_flux>.cont
+    !   <fn_flux>.norm
+    !   <fn_flux>.spec
+    read(UNIT_, '(a)') main_flprefix
 
     ! row 09
     read(UNIT_, *) main_llzero, main_llfin, main_aint
