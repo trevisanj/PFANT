@@ -30,7 +30,7 @@ module logging
   !> write(lll,*) ...
   !> call log_info(lll)
   !> @endcode
-  character(len=512) :: lll
+  character*512 lll
 
   ! Logging levels copied from Python (except LOGGING_HALT)
   integer, parameter ::   &

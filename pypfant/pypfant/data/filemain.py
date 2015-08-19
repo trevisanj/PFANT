@@ -9,15 +9,18 @@ class FileMain(DataFile):
   """
   Represents PFANT main configuration file.
   
-  Imitates the logic of read_most_files.f90::read_main().
+  Imitates the logic of reader_main.f90::read_main().
   
-  Attributes match read_most_files.f90::main_* (minus the "main_" prefix)
+  Attributes match reader_main.f90::main_* (minus the "main_" prefix)
   """
+
   default_filename = "main.dat"
   attrs = ["titrav", "ecrit", "pas", "echx", "echy", "fwhm", "ivtot", "vvt", "tolv",
            "teff", "glog", "asalog", "nhe", "inum", "ptdisk", "mu", "afstar",
            "xxcor", "fileflux", "llzero", "llfin", "aint", "filetohy"]
+
   def __init__(self):
+    DataFile.__init__(self)
     self.titrav = None
     self.ecrit = None
     self.pas = None
@@ -41,7 +44,7 @@ class FileMain(DataFile):
     self.llfin = None
     self.aint = None
     self.filetohy = None
-  
+
   def _do_load(self, filename):
     """Loads from file."""
   

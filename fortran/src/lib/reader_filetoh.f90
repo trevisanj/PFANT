@@ -19,7 +19,7 @@ module reader_filetoh
   use max_
   use reader_modeles
   use config_pfant
-  use reader_thmap
+  use reader_hmap
   implicit none
 
   !=====
@@ -74,14 +74,14 @@ module reader_filetoh
 contains
 
   !=======================================================================================
-  !> Tries to open and read all files listed in variable thmap_rows
+  !> Tries to open and read all files listed in variable hmap_rows
   !>
   !> [llzero, llfin] is the calculation lambda interval. Here this interval is used for
   !> error checking: if it doesn't find a file that should exist, it will give an error
   !>
-  !> @todo issue pfant no longer has the ability to know whether a hydrogen line file is missing,
-  !> unless I make the "--thmap" mode the only mode for pfant, which I am very much inclined to do.
-  !> So, for the moment it means that llzero and llfin cannot be used
+  !> @note For compatibility, it will allow to pass if the filetoh list came from inside
+  !> infile:main. This is assumed to have happened if the "clam" field of a given hmap
+  !> row is zero.
   !>
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
 
@@ -91,10 +91,19 @@ contains
     parameter(unit_=199)
     integer i, j, n, i_file
     character(len=:), allocatable :: file_now
+    real*8 :: clam
+    logical :: must_exist
+
 
     i = 0
-    do i_file = 1, thmap_n
-      file_now = full_path_w(thmap_rows(i_file)%fn)
+    do i_file = 1, hmap_n
+      file_now = full_path_w(hmap_rows(i_file)%fn)
+      clam = hmap_rows(i_file)%clam
+
+      must_exist = .false.
+      if (clam .ne. 0) then
+        if (h_line_is_inside(clam, llzero, llfin)) must_exist = .true.
+      end if
 
       open(err=111, unit=unit_,file=file_now,status='old')
 
@@ -111,21 +120,28 @@ contains
       filetoh_llhy(i) = filetoh_r_lambdh(i, 1)
 
       ! Registers filename in list of files that were found
-      filetoh_filenames(i) = thmap_rows(i_file)%fn
+      filetoh_filenames(i) = hmap_rows(i_file)%fn
 
       close(unit_)
       goto 112
 
       111 continue
+      if (must_exist) then
+        130 format('[',F7.1,'-',F5.1,',',F7.1,'+',F5.1,'] overlaps with [',&
+         F7.1,'-',F5.1,',',F7.1,'+',F5.1,'], but cannot open file "',A,'"')
+        write(lll,130) clam, H_LINE_WIDTH, clam, H_LINE_WIDTH, llzero, LAMBDA_STRETCH, &
+         llfin, LAMBDA_STRETCH, file_now
+        call pfant_halt(lll)
+      end if
       call log_warning('Error opening file "' // file_now // '"')
-
 
       112 continue
     end do
 
-    !> @todo palliative check, needs more powerful one with llzero and llfin
-    if (i .eq. 0 .and. thmap_n .gt. 0 .and. .not. config_allow_no_filetoh) then
-      call pfant_halt('Expecting '//int2str(thmap_n)//' filetoh files, but ZERO files found')
-    end if
+    ! Note: when taking the "filetohy" from main configuration file, will not bother
+    ! about hydrogen lines files not found, so bewhare (--hmap is the preferred mode anyway)
+    !if (i .eq. 0 .and. hmap_n .gt. 0 .and. .not. config_allow_no_filetoh) then
+    !  call pfant_halt('Expecting '//int2str(hmap_n)//' filetoh files, but ZERO files found')
+    !end if
   end
 end

@@ -18,7 +18,7 @@ module reader_gridsmap
 
 contains
   !=======================================================================================
-  !> Reads map of models: infile:gridslist
+  !> Reads map of models: infile:gridsmap
   !>
   !> The information it contains is
   !> just a list of .mod files. Files needn't be sorted. Metallicities are taken from the

@@ -1,3 +1,6 @@
+!>
+!> Prefixes:
+!> @
 module nulbad_calc
   use misc_math
   use logging
@@ -32,22 +35,22 @@ module nulbad_calc
 
 
   ! prefix "rs": variables filled by read_spectrum()
-  character :: rfs_titc*20
+  character :: rs_titc*20
   real*8 :: &
-   rfs_tetaeff, & !<
-   rfs_glog,    & !<
-   rfs_asalog,  & !<
-   rfs_amg,     & !<
-   rfs_l0,      & !<
-   rfs_lf,      & !<
-   rfs_dpas,    & !<
-   rfs_nhe_bid
+   rs_tetaeff, & !<
+   rs_glog,    & !<
+   rs_asalog,  & !<
+   rs_amg,     & !<
+   rs_l0,      & !<
+   rs_lf,      & !<
+   rs_dpas,    & !<
+   rs_nhe_bid
 
   integer, parameter :: UNIT_=199 !< unit for file I/O
 
   ! x_* values may come either from command line or infile:main
   real*8 :: x_fwhm, x_pat
-  character*64 :: x_fileflux, x_filecv
+  character*64 :: x_fn_flux, x_fn_cv
   !> Whether or not the spectrum is normalized.
   !> @sa source for nulbad_init()
   logical x_norm
@@ -60,8 +63,6 @@ contains
   !> either set from the command line or taken from infile:main
 
   subroutine nulbad_init()
-    logical :: flag_read_main = .false.
-
     !=====
     ! Assigns x_*
     !=====
@@ -69,8 +70,8 @@ contains
     ! pick values from infile:main
     x_fwhm = config_fwhm
     x_pat = config_pat
-    x_fileflux = config_fileflux
-    x_filecv = config_filecv
+    x_fn_flux = config_fn_flux
+    x_fn_cv = config_fn_cv
     x_norm = config_norm
     if (config_fwhm .eq. -1) then
       call assure_read_main()
@@ -82,37 +83,29 @@ contains
       x_pat = main_pas
       call parse_aux_log_assignment('x_pat', real82str(x_pat))
     end if
-    if (config_fileflux .eq. '?') then
+    if (config_fn_flux .eq. '?') then
       call assure_read_main()
-      x_fileflux = trim(main_fileflux)//'.norm'
-      call parse_aux_log_assignment('x_fileflux', trim(x_fileflux))
-      x_norm = .true. ! ignores config_norm because x_fileflux has the name of the
+      x_fn_flux = trim(main_fn_flux)//'.norm'
+      call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
+      x_norm = .true. ! ignores config_norm because x_fn_flux has the name of the
                       ! normalized file
       call parse_aux_log_assignment('x_norm', logical2str(x_norm))
       if (.not. x_norm) then
         call log_warning('Overring config option "--norm"')
       end if
     end if
-    if (config_filecv .eq. '?') then
+    if (config_fn_cv .eq. '?') then
       call assure_read_main()
-      x_filecv = trim(x_fileflux)//'.nulbad'
-      call parse_aux_log_assignment('x_filecv', trim(x_filecv))
+      x_fn_cv = trim(x_fn_flux)//'.nulbad'
+      call parse_aux_log_assignment('x_fn_cv', trim(x_fn_cv))
     end if
 
     call read_spectrum()
 
-  contains
 
-    !-------------------------------------------------------------------------------------
-    !> Makes sure that read_main() has been called
+    write(*,*) '$$$$$$', lll, '$$$$$$'
 
-    subroutine assure_read_main()
-      if (.not. flag_read_main) then
-        call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false.)
-      end if
-    end
   end
-
 
   !=======================================================================================
   !> Reads spectrum file
@@ -120,10 +113,10 @@ contains
   subroutine read_spectrum()
     ! variables with suffix "_bid" are read from file, but used for nothing
     real*8 echx_bid, echy_bid, fwhm_bid, lzero_bid, lfin_bid
-    integer :: itot, ikeytot, icle, d, k
+    integer :: itot, ikeytot, icle, d, k, size_ffnu
     real*8 fnu(MAX_DTOT)  ! temporary, just for reading one "icle" iteration
 
-    open(unit=UNIT_,file=full_path_w(x_fileflux), status='unknown')
+    open(unit=UNIT_,file=full_path_w(x_fn_flux), status='unknown')
 
     icle = 1
     rs_ktot = 0
@@ -131,18 +124,18 @@ contains
     do while (.true.)
       read(UNIT_, 1130) &
        ikeytot,        & ! used locally
-       rfs_titc,    & ! written back in output file
-       rfs_tetaeff, & ! written back
-       rfs_glog,    & ! written back
-       rfs_asalog,  & ! written back
-       rfs_nhe_bid,        & ! read and used in logging only
-       rfs_amg,     & ! written back
-       rfs_l0,      & ! used by nulbad_calc() & written back
-       rfs_lf,      & ! written back
+       rs_titc,    & ! written back in output file
+       rs_tetaeff, & ! written back
+       rs_glog,    & ! written back
+       rs_asalog,  & ! written back
+       rs_nhe_bid,        & ! read and used in logging only
+       rs_amg,     & ! written back
+       rs_l0,      & ! used by nulbad_calc() & written back
+       rs_lf,      & ! written back
        lzero_bid,      & ! read and discarded
        lfin_bid,       & ! read and discarded
        itot,           & ! used locally
-       rfs_dpas,    & ! used by nulbad_calc()
+       rs_dpas,    & ! used by nulbad_calc()
        echx_bid,       & ! read and discarded
        echy_bid,       & ! read and discarded
        fwhm_bid          ! read and discarded
@@ -150,7 +143,8 @@ contains
 
       ! allocates rs_ffnu at first iteration
       if (icle .eq. 1) then
-        allocate(rs_ffnu(ikeytot*itot)) ! This is probably a slight overallocation
+        size_ffnu = ikeytot*itot
+        allocate(rs_ffnu(size_ffnu)) ! This is probably a slight overallocation
       end if
 
       read(UNIT_, *)(fnu(d),d=1,itot)
@@ -165,9 +159,15 @@ contains
         rs_ffnu(k)=fnu(d)
       end do
       rs_ktot = k
+
       icle = icle+1
       if(icle .gt. ikeytot) exit
     end do
+
+
+    print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
+
+
     close(unit=UNIT_)
     !> @todo check if Fortran needs explicit deallocation
   end
@@ -178,17 +178,22 @@ contains
   subroutine nulbad_calc_()
     real*8, parameter :: C = 2.997929E+10
     integer d, dmj, dtotc, k, i, ip, j, jp1, kktot, m
-    real*8, dimension(rs_ktot) :: ffl, lambd, alfl, afl, fl, tl
+    real*8, dimension(:), allocatable :: ffl, lambd, alfl, afl, fl, tl
     real*8 alf, alz, ca, cb
 
     call nulbad_init()
 
+    allocate(ffl(rs_ktot), lambd(rs_ktot), alfl(rs_ktot), afl(rs_ktot), fl(rs_ktot), &
+     tl(rs_ktot))
+
+
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=full_path_w(x_filecv))
+    open(unit=UNIT_,status='replace',file=full_path_w(x_fn_cv))
 
     do k = 1, rs_ktot
-      lambd(k) = rfs_l0+(k-1)*rfs_dpas
+      lambd(k) = rs_l0+(k-1)*rs_dpas
     end do
+
 
     ! transformation de Fnu en Flambda
     if(config_flam) then
@@ -203,18 +208,19 @@ contains
         end if
       end do
 
-      write(lll,122) rfs_dpas, rs_ktot
+      write(lll,122) rs_dpas, rs_ktot
       122  format(2x,'pas=',f8.3,2x,'ktot=', i10)
       call log_debug(lll)
     end if
 
-    ip = int(x_pat/rfs_dpas)
+    ip = int(x_pat/rs_dpas)
 
     if (ip .lt. 1) then
       call log_warning('New step ('//real82str(x_pat)//&
-       ') lower than old step ('//real82str(rfs_dpas)//'), ip forced to 1')
+       ') lower than old step ('//real82str(rs_dpas)//'), ip forced to 1')
       ip = 1
     end if
+
 
     !
     !  Convolution sp synthetique avec profil instrumental
@@ -278,10 +284,10 @@ contains
       alf = lambd(kktot)
     end if
 
-    write(UNIT_,201) rfs_titc,rfs_tetaeff,rfs_glog,rfs_asalog,rfs_amg
+    write(UNIT_,201) rs_titc,rs_tetaeff,rs_glog,rs_asalog,rs_amg
     201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
 
-    write(UNIT_,202) kktot,rfs_l0,rfs_lf,x_pat,x_fwhm
+    write(UNIT_,202) kktot,rs_l0,rs_lf,x_pat,x_fwhm
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
 
@@ -294,7 +300,7 @@ contains
     close(unit=UNIT_)
 
     !#loggingx4
-    write(lll,110) rfs_tetaeff,rfs_glog,rfs_asalog,rfs_nhe_bid,rfs_amg
+    write(lll,110) rs_tetaeff,rs_glog,rs_asalog,rs_nhe_bid,rs_amg
     110 format(2X,'tetaeff=',F8.3,2X,'log g=',F6.2,2X,'[M/H]=',F6.2, &
                2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
     call log_debug(lll)
@@ -304,7 +310,7 @@ contains
                2X,'PAS nouveau =',F5.2,2x,'FWHM=',F5.2)
     call log_debug(lll)
 
-    write(lll,120) rfs_l0,rfs_lf,rs_ktot,rfs_dpas
+    write(lll,120) rs_l0,rs_lf,rs_ktot,rs_dpas
     120 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
                2X,'PAS original='F5.2)
     call log_debug(lll)
@@ -326,7 +332,7 @@ contains
       j2p =  2*j +1
       do i = jp1, imj, ip
         do k = 1, j2p
-          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)*rfs_dpas
+          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)*rs_dpas
         end do
       end do
 

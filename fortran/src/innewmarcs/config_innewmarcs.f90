@@ -30,7 +30,7 @@ module config_innewmarcs
   character*64 :: &
    config_fn_modeles = 'modeles.mod', &    !< option: --fn_modeles
    config_fn_moddat = 'modeles.dat', &     !< option: --fn_moddat
-   config_fn_gridslist = 'gridslist.dat' !< option: --fn_gridslist
+   config_fn_gridslist = 'gridsmap.dat' !< option: --fn_gridslist
 
   character*25 :: config_modcode = 'NoName' !< option: --modcode
   !> option: --tirb

@@ -32,8 +32,8 @@ module config_nulbad
    config_fwhm = -1, &               !< option: --fwhm
    config_pat = -1                   !< option: --pat
   character*64 :: &
-    config_fileflux = '?', &         !< option: --fileflux
-    config_filecv = '?'                !< option: --filecv
+    config_fn_flux = '?', &         !< option: --fn_flux
+    config_fn_cv = '?'                !< option: --fn_cv
 contains
 
   !=======================================================================================
@@ -51,14 +51,14 @@ contains
 
   subroutine config_nulbad_init_options()
 
-    call add_option('fileflux', ' ', .true., 'file name', &
-     '<"main_fileflux" variable>.norm (taken from main configuration file)>', &
+    call add_option('fn_flux', ' ', .true., 'file name', &
+     '<"main_fn_flux" variable>.norm (taken from main configuration file)>', &
      'Flux file name')
     call add_option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
       'Is spectrum normalized?')
     call add_option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
       'Fnu to FLambda transformation?')
-    call add_option('filecv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+    call add_option('fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
       'output file name, which will have the convolved spectrum')
     call add_option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
       'step ?doc?')
@@ -89,13 +89,13 @@ contains
       case ('pat')
         config_pat = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_pat', real82str(config_pat))
-      case ('filecv')
-        call parse_aux_assign_fn(o_arg, config_filecv, 'config_filecv')
+      case ('fn_cv')
+        call parse_aux_assign_fn(o_arg, config_fn_cv, 'config_fn_cv')
       case ('flam')
         config_flam = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_flam', logical2str(config_flam))
-      case ('fileflux')
-        call parse_aux_assign_fn(o_arg, config_fileflux, 'config_fileflux')
+      case ('fn_flux')
+        call parse_aux_assign_fn(o_arg, config_fn_flux, 'config_fn_flux')
       case ('norm')
         config_norm = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_norm', logical2str(config_norm))

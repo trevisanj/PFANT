@@ -55,6 +55,7 @@
 		<Unit filename="../lib/reader_modeles.f90">
 			<Option weight="5" />
 		</Unit>
+		<Unit filename="../lib/reader_thmap.f90" />
 		<Unit filename="../lib/welcome.f90">
 			<Option weight="2" />
 		</Unit>
@@ -75,9 +76,6 @@
 		</Unit>
 		<Unit filename="hydro2_x.f90">
 			<Option weight="5" />
-		</Unit>
-		<Unit filename="reader_thmap.f90">
-			<Option weight="1" />
 		</Unit>
 		<Extensions>
 			<envvars />

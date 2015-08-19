@@ -35,9 +35,9 @@
 
 1435867965 source:/home/j/Documents/projects/pfant/working/github/master/fortran/pfant/pfant.f90
 
-1439834159 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/logging.f90
+1439939239 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/logging.f90
 
-1439415189 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/misc.f90
+1439941775 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/misc.f90
 
 1436222284 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/options2.f90
 
@@ -47,13 +47,13 @@
 
 1438878660 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/misc_math.f90
 
-1439856347 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/max_.f90
+1439941312 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/max_.f90
 
 1438025760 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/welcome.f90
 
 1436375226 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_dissoc.f90
 
-1439858910 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_main.f90
+1439936887 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_main.f90
 
 1439409052 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_modeles.f90
 
@@ -69,7 +69,7 @@
 
 1436232070 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/absoru.f90
 
-1439854757 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/config_pfant.f90
+1439940575 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/config_pfant.f90
 
 1436231869 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_abonds.f90
 
@@ -139,13 +139,13 @@
 
 1438261507 source:c:\users\j\documents\projects\pfant\github\fortran\src\pfant\pfant.f90
 
-1439857354 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/synthesis.f90
+1439936340 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/synthesis.f90
 
-1439859070 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/pfant.f90
+1439940575 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant/pfant.f90
 
 1438027625 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/absoru.f90
 
 1438878661 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/absoru_data.f
 
-1439859644 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_thmap.f90
+1439940632 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/lib/reader_hmap.f90
 

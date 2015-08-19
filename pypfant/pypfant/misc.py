@@ -6,10 +6,11 @@ import os.path
 import glob
 import random
 
-# reads next line of file and makes it a vector of strings
+# Reads next line of file and makes it a vector of strings
+# Note that each str.split() already strips each resulting string of any whitespaces.
 str_vector = lambda f: f.readline().split()
 
-# reads next line of file and makes it a vector of floats
+# Reads next line of file and makes it a vector of floats
 float_vector = lambda f: [float(s) for s in str_vector(f)]
 
 # reads next line of file and strips the newline

@@ -13,9 +13,9 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> Reading routines and variable declarations for infile:thmap
+!> Reading routines and variable declarations for infile:hmap
 
-module reader_thmap
+module reader_hmap
   use logging
   use max_
   use misc
@@ -23,8 +23,8 @@ module reader_thmap
   ! use reader_dissoc
   implicit none
 
-  !> Structure to store one row of infile:thmap
-  type thmap_row
+  !> Structure to store one row of infile:hmap
+  type hmap_row
     !> file name
     character*64 fn
     !> NIV INF
@@ -39,19 +39,19 @@ module reader_thmap
     real*8 c1
   end type
 
-  !> Array to store all rows in infile:thmap
-  type(thmap_row) :: thmap_rows(MAX_FILETOH_NUMFILES)
+  !> Array to store all rows in infile:hmap
+  type(hmap_row) :: hmap_rows(MAX_FILETOH_NUMFILES)
 
-  !> Number of rows in infile:thmap
-  integer :: thmap_n
+  !> Number of rows in infile:hmap
+  integer :: hmap_n
 
 contains
 
   !=======================================================================================
-  !> Reads infile:thmap to fill variables thmap_*
+  !> Reads infile:hmap to fill variables hmap_*
   !>
 
-  subroutine read_thmap(path_to_file)
+  subroutine read_hmap(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer, parameter :: UNIT_ = 199
     logical :: skip_row(MAX_FILE_ROWS)
@@ -71,21 +71,21 @@ contains
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
-    thmap_n = 0
+    hmap_n = 0
     do i = 1, num_rows
       if (skip_row(i)) then
         read(UNIT_,*)   ! skips comment row
       else
         read(UNIT_, *) t_fn, t_na, t_nb, t_clam, t_kiex, t_c1
 
-        thmap_n = thmap_n+1
+        hmap_n = hmap_n+1
 
-        thmap_rows(thmap_n)%fn = t_fn
-        thmap_rows(thmap_n)%na = t_na
-        thmap_rows(thmap_n)%nb = t_nb
-        thmap_rows(thmap_n)%clam = t_clam
-        thmap_rows(thmap_n)%kiex = t_kiex
-        thmap_rows(thmap_n)%c1 = t_c1
+        hmap_rows(hmap_n)%fn = t_fn
+        hmap_rows(hmap_n)%na = t_na
+        hmap_rows(hmap_n)%nb = t_nb
+        hmap_rows(hmap_n)%clam = t_clam
+        hmap_rows(hmap_n)%kiex = t_kiex
+        hmap_rows(hmap_n)%c1 = t_c1
       end if
       print *, 'read row ', i, ' successfully'
     end do
@@ -93,37 +93,42 @@ contains
 
 
     !#logging
-    call log_info('reader_thmap():')
+    call log_info('reader_hmap():')
     call log_info('filename         na nb c.lambda     kiex       c1')
-    do i = 1, thmap_n
+    do i = 1, hmap_n
       11 format(a16,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
-      write(lll, 11) thmap_rows(i)
+      write(lll, 11) hmap_rows(i)
       call log_info(lll)
     end do
   end
 
 
   !========================================================================================
-  !> Fills thmap_rows according with main_filetohy.
+  !> Fills hmap_rows according with main_filetohy. For compatibility with old way of
+  !> informing the "filetoh" filenames, which was inside infile:main
   !>
-  !> This routine fills only the "fn" (filename) field of the thmap_row structure because
+  !> This routine fills only the "fn" (filename) field of the hmap_row structure because
   !> the filenames are all that's available in infile:main.
   !>
-  !> This routine is used only by pfant when not in "--thmap" mode.
+  !> This routine is used only by pfant when not in "--hmap" mode.
   !>
   !> This routine is part of a mechanism to allow pfant to work in two ways.
-  !> @li either use infile:thmap for the list of hydrogen line files (likely to become the
+  !> @li either use infile:hmap for the list of hydrogen line files (likely to become the
   !>     standard way in the future)
   !> @li take this list from infile:main (legacy)
 
-  subroutine thmap_copy_from_main()
+  subroutine hmap_copy_from_main()
     integer :: i
-    character(len=:), allocatable :: file_now
 
-    thmap_n = 0
+    hmap_n = 0
     do i = 1, main_filetoh_numfiles
-      thmap_n = thmap_n+1
-      thmap_rows(thmap_n)%fn = main_filetohy(i)
+      hmap_n = hmap_n+1
+      hmap_rows(hmap_n)%fn = main_filetohy(i)
+      hmap_rows(hmap_n)%na = 0
+      hmap_rows(hmap_n)%nb = 0
+      hmap_rows(hmap_n)%clam = 0
+      hmap_rows(hmap_n)%kiex = 0
+      hmap_rows(hmap_n)%c1 = 0
     end do
   end
 end

@@ -25,7 +25,7 @@ module reader_main
   !> Flag indicating whether read_main() has already been called.
   logical :: flag_read_main   = .false.
 
-  character*64 main_fileflux  !< ?doc?
+  character*64 main_fn_flux  !< ?doc?
   logical   main_ptdisk    !< ?doc?
   real*8 :: &
    main_pas,    & !< ?doc?
@@ -64,10 +64,15 @@ contains
   !> Makes sure that read_main() has been called
   !>
   !> @note Calls read_main() with argument flag_care_about_dissoc set to .false.
+  !> @note Calls read_main() with argument flag_read_filetoh set to .false.
+  !>
+  !> This routine is used by hydro2, innewmarcs, nulbad. None of these care about dissoc
+  !> or filetoh variables.
 
   subroutine assure_read_main()
     if (.not. flag_read_main) then
-      call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false.)
+      call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false., &
+       flag_read_filetoh=.false.)
     end if
   end
 
@@ -153,10 +158,10 @@ contains
 
     ! row 08 -- part of a file name
     ! This line will define the names of three output files:
-    !   fileflux.cont
-    !   fileflux.norm
-    !   fileflux.spec
-    read(UNIT_, '(a)') main_fileflux
+    !   fn_flux.cont
+    !   fn_flux.norm
+    !   fn_flux.spec
+    read(UNIT_, '(a)') main_fn_flux
 
     ! row 09
     read(UNIT_, *) main_llzero, main_llfin, main_aint

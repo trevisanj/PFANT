@@ -28,6 +28,8 @@ class Executable(object):
     self.opt_fn_main = None
 
     # FileMain instance
+    # If set, main configuration file (of random name) will be created before
+    # running the executable.
     self.fo_main = None
 
     self.stdout = None
@@ -84,12 +86,12 @@ class Executable(object):
       Suppose that a class descending from Executable has the following
       attributes and values:
         - self.opt_fn_main = "main1234.dat"
-        - self.optf_thmap = True
+        - self.optf_hmap = True
 
       In such case, this method will return
-      "--fn_main", "main1234.dat", "--thmap"]
+      "--fn_main", "main1234.dat", "--hmap"]
 
-      If self.optf_thmap were False, "--thmap" would be absent from the result.
+      If self.optf_hmap were False, "--hmap" would be absent from the result.
 
     """
 

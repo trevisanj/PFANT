@@ -46,7 +46,7 @@ class Pfant(Executable):
     self.opt_fn_lines     = None
     self.opt_fn_log       = None
     self.opt_fn_progress = "progress.txt"
-    self.optf_thmap = True  # "--thmap" is not default in pfant, but let's make it like this
+    self.optf_hmap = True  # Overriding pfant default, which is .false.
 
     ## Variables assigned by poll_progress()
     self.ikey = None  # Current iteration (Fortran: ikey)

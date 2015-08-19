@@ -26,7 +26,7 @@ module config_hydro2
   implicit none
 
 
-  logical :: config_thmap = .false. !< option: --thmap
+  logical :: config_hmap = .false. !< option: --hmap
 
   !> Option: --zph
   !> @note (historical note) This value was being read from an altered-format
@@ -83,7 +83,7 @@ module config_hydro2
   character*64 :: &
    config_fn_absoru2 = 'absoru2.dat',& !< option: --fn_absoru2
    config_fn_modeles = 'modeles.mod',& !< option: --fn_modeles
-   config_fn_thmap   = 'thmap.dat'     !< option: --fn_thmap
+   config_fn_hmap   = 'hmap.dat'     !< option: --fn_hmap
 
 
   integer :: &
@@ -154,14 +154,14 @@ contains
      'input file name - absoru2')
     call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
      'input file name - model')
-    call add_option('fn_thmap',       ' ', .true., 'file name', config_fn_thmap, &
+    call add_option('fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
      'input file name - table containing table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
 
-    call add_option('thmap', ' ', .false., '', '', &
+    call add_option('hmap', ' ', .false., '', '', &
       'If set, will read wavelength interval from main configuration file and<br>'//&
       'determine automatically which hydrogen lines to calculate according to<br>'//&
-      'thmap file')
+      'hmap file')
 
     call add_option('na', ' ', .true., 'integer', '(no default)', &
       'NIV INF')
@@ -256,8 +256,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
       case ('fn_modeles')
         call parse_aux_assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
-      case ('fn_thmap')
-        call parse_aux_assign_fn(o_arg, config_fn_thmap, 'config_fn_thmap')
+      case ('fn_hmap')
+        call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
 
       case ('na')
         config_na = parse_aux_str2int(opt, o_arg)
@@ -287,9 +287,9 @@ contains
         config_c1 = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_c1', real82str(config_c1))
 
-      case ('thmap')
-        config_thmap = .true.
-        call parse_aux_log_assignment('config_thmap', '.true.')
+      case ('hmap')
+        config_hmap = .true.
+        call parse_aux_log_assignment('config_hmap', '.true.')
 
       case default
         ! if does not handle here, passes on to base handler

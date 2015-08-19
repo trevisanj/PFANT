@@ -34,10 +34,10 @@ module config_pfant
    config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log',           & !< option: --fn_log
-   config_fn_thmap         = 'thmap.dat'            !< option: --fn_thmap
+   config_fn_hmap         = 'hmap.dat'            !< option: --fn_hmap
 
 
-  logical :: config_thmap = .false. !< option: --thmap
+  logical :: config_hmap = .false. !< option: --hmap
 
   !=====
   ! Misc
@@ -91,11 +91,11 @@ contains
     call add_option('fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
 
-    call add_option('fn_thmap',       ' ', .true., 'file name', config_fn_thmap, &
+    call add_option('fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
      'input file name - table containing table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('thmap', ' ', .false., '', '', &
-      'If set, will read hydrogen lines filenames from thmap file instead of from<br>'//&
+    call add_option('hmap', ' ', .false., '', '', &
+      'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
       'main configuration file')  ! This behavious is likely to become default soon...or not
 
     call add_option('molid_off',        ' ', .true., 'molecule id', '', &
@@ -153,11 +153,11 @@ contains
 !            case ('fn_log')
 !              call parse_aux_assign_fn(o_arg, config_fn_log)
 
-      case ('fn_thmap')
-        call parse_aux_assign_fn(o_arg, config_fn_thmap, 'config_fn_thmap')
-      case ('thmap')
-        config_thmap = .true.
-        call parse_aux_log_assignment('config_thmap', '.true.')
+      case ('fn_hmap')
+        call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
+      case ('hmap')
+        config_hmap = .true.
+        call parse_aux_log_assignment('config_hmap', '.true.')
 
       case ('molid_off')
         iTemp = parse_aux_str2int(opt, o_arg)

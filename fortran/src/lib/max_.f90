@@ -19,6 +19,7 @@
 !> parameters that can be considered of "general interest".
 
 module max_
+  implicit none
 
   !=====
   ! "delta lambda" parameters

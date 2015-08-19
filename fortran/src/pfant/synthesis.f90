@@ -86,7 +86,7 @@
 !     Alteracao para calcular simultaneamente o continuo selekfh_FCONT(MAX_DTOT) e o
 !     espectro normalizado FN(MAX_DTOT) {Paula, dez 2003}
 !
-!     - acrescentei as variaveis FN, selekfh_FCONT, FILEFLUX2, FILEFLUX3
+!     - acrescentei as variaveis FN, selekfh_FCONT, fn_flux2, fn_flux3
 !     - abro mais dois arquivos binarios unit=UNIT_CONT (continuo) e UNIT_NORM (normalizado)
 !     - rotina SELEKFH:
 !           - recebe tbem selekfh_FCONT e FN
@@ -125,16 +125,11 @@ module synthesis
   use misc_math
   use absoru
   use dissoc
-  use reader_atomgrade
-  use reader_filetoh
-  use reader_main
-  use reader_abonds
-  use reader_dissoc
-  use reader_partit
-  use reader_molecules
-  use reader_absoru2
   use filters
   use kapmol
+  use reader_filetoh
+  use reader_partit
+  use reader_absoru2
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -258,9 +253,9 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    open(unit=UNIT_SPEC, file=full_path_w(trim(main_fileflux)//'.spec'), status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=full_path_w(trim(main_fileflux)//'.cont'), status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=full_path_w(trim(main_fileflux)//'.norm'), status='replace')  ! normalized
+    open(unit=UNIT_SPEC, file=full_path_w(trim(main_fn_flux)//'.spec'), status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=full_path_w(trim(main_fn_flux)//'.cont'), status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=full_path_w(trim(main_fn_flux)//'.norm'), status='replace')  ! normalized
     open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
     open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
 

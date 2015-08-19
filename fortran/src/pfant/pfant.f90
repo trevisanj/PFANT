@@ -15,7 +15,7 @@ program pfant
   use reader_partit
   use reader_molecules
   use reader_absoru2
-  use reader_thmap
+  use reader_hmap
 
   implicit none
 
@@ -37,12 +37,12 @@ program pfant
   call read_abonds(full_path_w(config_fn_abonds))
   call read_atomgrade(full_path_w(config_fn_atomgrade))
 
-  ! Gets list of hydrogen lines filenames either from infile:main or infile:thmap.
+  ! Gets list of hydrogen lines filenames either from infile:main or infile:hmap.
   ! The latter is not the preferred way.
-  if (config_thmap) then
-    call read_thmap(full_path_w(config_fn_thmap))
+  if (config_hmap) then
+    call read_hmap(full_path_w(config_fn_hmap))
   else
-    call thmap_copy_from_main()
+    call hmap_copy_from_main()
   end if
 
   call read_filetoh(main_llzero, main_llfin)

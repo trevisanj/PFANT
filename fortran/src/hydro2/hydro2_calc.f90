@@ -4,7 +4,7 @@
 
 module hydro2_calc
   use logging
-  use reader_thmap
+  use reader_hmap
   use reader_absoru2
   use reader_modeles
   use misc_math
@@ -73,7 +73,7 @@ module hydro2_calc
   integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
 
   !> This information is passed to hydro2_calc_() and copied into m_th
-  type(thmap_row) :: m_th
+  type(hmap_row) :: m_th
 
 
   real*8 :: m_tau(MAX_FILETOH_JMAX,0:MAX_MODELES_NTOT)
@@ -110,7 +110,7 @@ contains
 
   subroutine hydro2_calc_(arg_th)
     !> Hydrogen line specification
-    type(thmap_row), intent(in) :: arg_th
+    type(hmap_row), intent(in) :: arg_th
 
     ! Enabled/disables lots of log_info() calls.
     ! This was originally being asked as "SORTIES INTERMEDIARIES (T/F)".

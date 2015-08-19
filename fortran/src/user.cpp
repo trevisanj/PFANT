@@ -54,11 +54,11 @@ Files containing the hydrogen lines
 
 @subsection outputfiles Output files
 
-fileflux.spec
+fn_flux.spec
 
-fileflux.cont
+fn_flux.cont
 
-fileflux.norm
+fn_flux.norm
 
 
 @todo ask blb other files

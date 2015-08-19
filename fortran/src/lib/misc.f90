@@ -4,12 +4,34 @@
 
 module misc
   use logging
+  use max_
   implicit none
 
-  !> Maximum number of rows in a file with comments, e.g. thmap.dat.
+  !> Maximum number of rows in a file with comments, e.g. hmap.dat.
   !> Used in misc.f90
   integer, parameter :: MAX_FILE_ROWS=1000
 contains
+
+  !> Checks if hydrogen line interval overlaps with calculation interval
+  !>
+  !> Overlap is checked for these two intervals:
+  !> @verbatim
+  !> [clam-H_LINE_WIDTH, clam+H_LINE_WIDTH]  and
+  !>
+  !> [llzero-LAMBDA_STRETCH, llfin+CLAMBDA_STRETCH]
+  logical function h_line_is_inside(clam, llzero, llfin) result(res)
+    real*8, intent(in) :: &
+     clam,   & !< central lambda of a hydrogen line
+     llzero, & !< lower boundary of calculation interval, probably taken from infile:main
+     llfin     !< lower boundary of calculation interval, probably taken from infile:main
+
+    res = .false.
+    if (clam+H_LINE_WIDTH .ge. llzero-LAMBDA_STRETCH .and. &
+        clam-H_LINE_WIDTH .le. llfin+LAMBDA_STRETCH) then
+      res = .true.
+    end if
+  end
+
   !> Converts a string to lower case.
   !>
   !> @note Works on A-Z letters only (does not handle letter modifiers such as acute,
@@ -209,8 +231,6 @@ contains
         skip = .false.
       end if
       skip_row(n_temp) = skip
-
-      write(*,*) 'skip row ', n_temp, '? ', skip
     end do
 
     10 continue
