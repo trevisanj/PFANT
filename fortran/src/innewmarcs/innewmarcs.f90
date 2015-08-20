@@ -27,8 +27,6 @@ program innewmarcs
   implicit none
 
   execonf_name = 'innwemarcs'
-
-
   call config_innewmarcs_init()
   call read_gridsmap()
   call innewmarcs_init_x()

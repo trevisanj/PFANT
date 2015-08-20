@@ -25,7 +25,8 @@ program hydro2
   integer i, cnt_in
   type(hmap_row) :: th
 
-  call config_hydro2_init()
+  execonf_name = 'hydro2'
+  call config_init()
   call validate_config()
   call hydro2_init_x()
 

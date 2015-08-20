@@ -22,9 +22,9 @@ program pfant
   !=====
   ! Startup
   !=====
+  execonf_name = 'pfant'
   call molecules_ids_init()
-  call config_pfant_init()
-
+  call config_init()
 
   !=====
   ! File reading
@@ -48,8 +48,9 @@ program pfant
   call read_filetoh(main_llzero, main_llfin)
   call read_molecules(full_path_w(config_fn_molecules))
 
-
+  !=====
   ! Spectral synthesis
+  !=====
   call synthesis_()
 
 end program pfant

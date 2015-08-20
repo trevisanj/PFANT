@@ -25,6 +25,7 @@ program nulbad
   use nulbad_calc
   implicit none
 
+  execonf_name = 'nulbad'
   call config_nulbad_init()
   call nulbad_calc_()
 end

@@ -23,6 +23,9 @@ module options2
   integer, parameter :: MAX_LEN_DESCR = 500 !< Maximum length of option description
 
   type option
+    !> Initials of executable(s) where option is applicable.
+    !> [i]nnewmarcs, [h]ydro2, [p]fant, [n]ulbad
+    character(len=4) :: ihpn
     !> Long name.
     character(len=100) :: name
     !> Corresponding short name.

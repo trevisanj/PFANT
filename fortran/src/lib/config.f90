@@ -34,41 +34,7 @@
 !> @todo explain how to create new option
 
 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-!vvv ANOTHER MODULE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-!> Contains the interfaces for the execonf_* routine pointers
-!>
-!> Formalities kept separate to keep config_base module more clean.
-!>
-
-module config_base_handler_interfaces
-  use options2
-  use max_
-
-  !> executable-specific routine to handle option must have this interface
-  interface
-    ! Result value must be a HANDLER_* value
-
-    function handle_option_template(opt, o_arg) result(res)
-      import :: option
-      type(option), intent(in) :: opt
-      character(len=*), intent(in) :: o_arg
-      integer :: res
-    end
-  end interface
-
-  !> executable-specific routine to initialize options must have this interface
-  interface
-    ! Result value must be a HANDLER_* value
-
-    subroutine init_options_template()
-    end
-  end interface
-end
-
-
-module config_base
+module config
   use logging
   use options2
   use misc
@@ -96,15 +62,6 @@ module config_base
   !> Name of executable. Case doesn't matter. It will be converted to all uppercase or
   !> lowercave, depending on the use.
   character*16 :: execonf_name = '?'
-
-  !> Variable that points to function to handle command-line option. Each executable
-  !> has a specific handler
-
-  procedure(handle_option_template), pointer :: &
-   execonf_handle_option => handle_option_give_error
-
-  procedure(init_options_template), pointer :: &
-    execonf_init_options => init_options_give_error
 
 
   !=====
@@ -271,8 +228,8 @@ module config_base
   character(len=:), private, allocatable :: &
    wdir_trim  !< Input directory without trailling spaces and ending with a "/"
 
-  private :: handle_option_give_error, init_options_give_error, validate_options, &
-   init_common_options, parse_args, show_help
+  private :: validate_options, &
+   init_options, parse_args, show_help, exe_wants
 
 contains
 
@@ -288,7 +245,7 @@ contains
   !>
   !> @note Must be called *after* module-specific initialization
 
-  subroutine config_base_init()
+  subroutine config_init()
     use welcome
     if (execonf_name .eq. '?') &
      call pfant_halt('Executable name not set', is_assertion=.true.)
@@ -321,7 +278,8 @@ contains
   !> @note character arguments are declared with len=*, truncation may occur when
   !> option structure is created.
 
-  subroutine add_option(name, chr, has_arg, argname, default_, descr)
+  subroutine add_option(ihpn, name, chr, has_arg, argname, default_, descr)
+    character(len=*), intent(in) :: ihpn  !< initials of executables where option is valid
     character(len=*), intent(in) :: name, argname, default_, descr
     character(len=1), intent(in) :: chr
     logical, intent(in) :: has_arg
@@ -333,7 +291,192 @@ contains
        'value of MAX_NUM_OPTIONS', is_assertion=.true.)
     end if
 
-    options(num_options) = option(name, chr, has_arg, argname, default_, descr)
+    options(num_options) = option(ihpn, name, chr, has_arg, argname, default_, descr)
+  end
+
+  !=======================================================================================
+  !> Initialization of command-line options
+  !>
+  !> - initializes all options for all executables
+  !> - assertions to try to catch options initialization errors (e.g. repeated option(s))
+  !>
+  !> @note It is possible to break description lines using &lt;br&gt;
+  !>
+  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
+  !> &lt;br&gt;
+  !>
+  !> @par Important:
+  !> If you add options here, you must change the CONFIG_BASE_NUM_OPTIONS constant
+  !> accordingly.
+  !>
+  !> @todo where to put the explanation on option text formatting
+
+  subroutine init_options()
+    ! ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌
+    ! │  │ ││││││││ ││││
+    ! └─┘└─┘┴ ┴┴ ┴└─┘┘└┘
+    call add_option('ihpn', 'help', 'h', .false., '', '', &
+      'Displays this help text.')
+    call add_option('wdir',         ' ', .true., 'directory name', config_wdir, &
+      'working directory (directory for all input/output files')
+
+    ! Logging options
+    call add_option('ihpn', 'logging_level', 'l', .TRUE., 'level', 'debug', &
+     'logging level<br>'//&
+     IND//'debug<br>'//&
+     IND//'info<br>'//&
+     IND//'warning<br>'//&
+     IND//'error<br>'//&
+     IND//'critical<br>'//&
+     IND//'halt')
+    call add_option('ihpn', 'logging_screen',   ' ', .true., 'T/F', logical2str(config_logging_screen), &
+     'Print log messages to standard output (usually monitor screen)?')
+    call add_option('ihpn', 'logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
+      'Print log messages to dump log file?')
+    call add_option('ihpn', 'logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
+     'output file name - dump log file')
+
+    ! Files that all executables will use
+    call add_option('ihpn', 'fn_main',          ' ', .true., 'file name', config_fn_main, &
+     'input file name - main configuration')
+    call add_option('ihpn', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
+     'output file name - progress indicator')
+
+    ! ┬┌┐┌┌┐┌┌─┐┬ ┬┌┬┐┌─┐┬─┐┌─┐┌─┐
+    ! │││││││├┤ ││││││├─┤├┬┘│  └─┐
+    ! ┴┘└┘┘└┘└─┘└┴┘┴ ┴┴ ┴┴└─└─┘└─┘
+    call add_option('i', 'open_status',' ', .true., 'string', config_open_status, &
+     'File open mode for binary file<br>'//&
+     IND//'new: file must not exist<br>'//&
+     IND//'old: file must exist<br>'//&
+     IND//'replace: replaces file if exists, otherwise creates new')
+
+    call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
+     'Binary file containing information about atmospheric model (created by innewmarcs)')
+
+    call add_option('i', 'fn_moddat',' ', .true., 'file name', config_fn_moddat, &
+     'ASCII file containing information about atmospheric model (created by innewmarcs)')
+
+    call add_option('i', 'modcode',' ', .true., 'string up to 25 characters', config_modcode, &
+     '"Model name"')
+
+    call add_option('i', 'tirb',' ', .true., 'string up to 15 characters', config_tirb, &
+     '"Titre"')
+
+    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
+     '"Teff"')
+
+    call add_option('ih', 'glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
+     '"log g"')
+
+    call add_option('ih', 'asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
+     '"[M/H]"')
+
+    call add_option('ih', 'inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
+     'Record id within atmospheric model binary file')
+
+    ! ┬ ┬┬ ┬┌┬┐┬─┐┌─┐┌─┐
+    ! ├─┤└┬┘ ││├┬┘│ │┌─┘
+    ! ┴ ┴ ┴ ─┴┘┴└─└─┘└─┘
+    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
+     '"Teff"')
+    call add_option('h', 'ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
+     'option for interpolation subroutines<br>'//&
+     IND//'T: 7-point integration<br>'//&
+     IND//'F: 6- or 26-point integration, depending on option kik')
+    call add_option('hp', 'kik', ' ', .TRUE., '0/1', int2str(config_kik), &
+     'option for interpolation subroutines<br>'//&
+     IND//'0: integration using 6/7 points depending on option ptdisk;<br>'//&
+     IND//'1: 26-point integration)')
+    call add_option('h', 'amores',' ', .true., 'T/F', logical2str(int2logical(config_amores)), &
+     'AMOrtissement de RESonnance?')
+
+    call add_option('h', 'kq', ' ', .true., '0/1', int2str(config_kq), &
+     '"Theorie"<br>'//&
+     IND//'0: THEORIE DE GRIEM;<br>'//&
+     IND//'1: THEORIE QUASISTATIQUE')
+
+    call add_option('h', 'nomplot', ' ', .true., 'file name', config_nomplot, &
+     'output file name - hydrogen lines')
+
+    call add_option('h', 'vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
+     'velocity of microturbulence')
+
+    call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph), &
+     'abondance d''H pour laquelle sont donnees les abondances metalliques')
+
+    call add_option('hp', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+     'input file name - absoru2')
+    call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
+     'input file name - table containing table with<br>'//&
+     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
+    call add_option('hp', 'hmap', ' ', .false., '', '', &
+      'If set, will read wavelength interval from main configuration file and<br>'//&
+      'determine automatically which hydrogen lines to calculate according to<br>'//&
+      'hmap file')
+    call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
+      'NIV INF')
+    call add_option('h', 'nb', ' ', .true., 'integer', '(no default)', &
+      'NIV SUP')
+    call add_option('h', 'clam', ' ', .true., 'real', '(no default)', &
+      'Central wavelength')
+    call add_option('h', 'kiex', ' ', .true., 'real', '(no default)', &
+      'KIEX ?doc?')
+    call add_option('h', 'c1', ' ', .true., 'real', '(no default)', &
+      'C1 ?doc?')
+
+    ! ┌─┐┌─┐┌─┐┌┐┌┌┬┐
+    ! ├─┘├┤ ├─┤│││ │
+    ! ┴  └  ┴ ┴┘└┘ ┴ 
+    call add_option('p', 'interp', 'i', .TRUE., 'type', int2str(config_interp), &
+     'interpolation type for subroutine turbul()<br>'//&
+     IND//'1: linear;<br>'//&
+     IND//'2: parabolic)')
+    !> @todo Find names for each file and update options help
+    call add_option('p', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
+     'input file name - dissociative equilibrium')
+    call add_option('p', 'fn_partit',        ' ', .true., 'file name', config_fn_partit, &
+     'input file name - partition functions')
+    call add_option('p', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+     'input file name - absoru2')
+    call add_option('p', 'fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
+     'input file name - model')
+    call add_option('p', 'fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
+     'input file name - atomic abundances')
+    call add_option('p', 'fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
+     'input file name - atomic lines')
+    call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
+     'input file name - molecular lines')
+
+    call add_option('p', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
+     'input file name - table containing table with<br>'//&
+     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
+    call add_option('p', 'hmap', ' ', .false., '', '', &
+      'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
+      'main configuration file')  ! This behavious is likely to become default soon...or not
+
+    call add_option('p', 'molid_off',        ' ', .true., 'molecule id', '', &
+     'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
+     '*Note*: This option may be repeated as many times as necessary.')
+
+    ! ┌┐┌┬ ┬┬  ┌┐ ┌─┐┌┬┐
+    ! ││││ ││  ├┴┐├─┤ ││
+    ! ┘└┘└─┘┴─┘└─┘┴ ┴─┴┘
+    call add_option('n', 'fn_flux', ' ', .true., 'file name', &
+     '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
+     'Flux file name')
+    call add_option('n', 'norm',     ' ', .true., 'T/F', logical2str(config_norm), &
+      'Is spectrum normalized?')
+    call add_option('n', 'flam',     ' ', .true., 'T/F', logical2str(config_flam), &
+      'Fnu to FLambda transformation?')
+    call add_option('n', 'fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+      'output file name, which will have the convolved spectrum')
+    call add_option('n', 'pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
+      'step ?doc?')
+    call add_option('n', 'convol',   ' ', .true., 'T/F', logical2str(config_convol), &
+      'Apply convolution?')
+    call add_option('n', 'fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
+      'Full-width-half-maximum of Gaussian function')
   end
 
 
@@ -520,7 +663,7 @@ contains
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)
           case (1, 2)
-            config_INTERP = iTemp
+            config_interp = iTemp
             call parse_aux_log_assignment('config_interp', int2str(config_interp))
           case default
             res = HANDLER_ERROR
@@ -759,15 +902,32 @@ contains
            exit
         case (0)  ! option successfully parsed
           opt = options(o_index)
-          res = execonf_handle_option(opt, o_arg)
-          select case(res)
-            case(HANDLER_DONT_CARE)
-              call pfant_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
-            case (HANDLER_ERROR)
-              call pfant_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
-          end select
+
+          if (exe_wants()) then
+            res = execonf_handle_option(opt, o_arg)
+            select case(res)
+              case(HANDLER_DONT_CARE)
+                call pfant_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
+              case (HANDLER_ERROR)
+                call pfant_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
+            end select
+          else
+            ! Executable will ignore options that are not meant for it
+          end if
       end select
     end do
+  end
+
+  !=======================================================================================
+  !> Returns whether or not the option is applicable to the executable running.
+  
+  logical function exe_wants(opt) result(res)
+    type(option), intent(in) :: opt
+    res = .true.
+    if (index(opt%ihpn, execonf_name(1:1)) .eq. 0) then
+      call log_warning(execonf_name//' ignoring option '//get_option_name(opt))
+      res = .false.
+    end if
   end
 
   !=======================================================================================
@@ -787,239 +947,12 @@ contains
     write(*,*) '  <arg name> argument that must be specified'
 
     do i = 1, num_options
-      write(unit,*) ''
-      call print_opt(options(i), unit)
+      if exe_wants(options(i)) then
+        write(unit,*) ''
+        call print_opt(options(i), unit)
+      end if
     end do
   end
-
-
-  !=======================================================================================
-  !> This routine exists for assertion purpose only
-
-  function handle_option_give_error(opt, o_arg) result(res)
-    type(option), intent(in) :: opt
-    character(len=*), intent(in) :: o_arg
-    integer :: res
-    res = 0  ! shuts up one warning
-    call pfant_halt('Forgot to set function pointer "execonf_handle_option"', &
-     is_assertion=.true.)
-  end
-
-  !=======================================================================================
-  !> This routine exists for assertion purpose only
-
-  subroutine init_options_give_error()
-    call pfant_halt('Forgot to set subroutine pointer "execonf_init_options"', &
-     is_assertion=.true.)
-  end
-
-  !=======================================================================================
-  !> Initialization of command-line options
-  !>
-  !> - allocates options variable
-  !> - initializes options common to all executables
-  !> - calls executable-specific options initializer
-  !> - assertions to try to catch options initialization errors
-  !>
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
-  !>
-  !> @par Important:
-  !> If you add options here, you must change the CONFIG_BASE_NUM_OPTIONS constant
-  !> accordingly.
-  !>
-  !> @todo where to put the explanation on option text formatting
-
-  subroutine init_common_options()
-    ! ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌
-    ! │  │ ││││││││ ││││
-    ! └─┘└─┘┴ ┴┴ ┴└─┘┘└┘
-    call add_option('help', 'h', .false., '', '', &
-      'Displays this help text.')
-    call add_option('wdir',         ' ', .true., 'directory name', config_wdir, &
-      'working directory (directory for all input/output files')
-
-    ! Logging options
-    call add_option('logging_level', 'l', .TRUE., 'level', 'debug', &
-     'logging level<br>'//&
-     IND//'debug<br>'//&
-     IND//'info<br>'//&
-     IND//'warning<br>'//&
-     IND//'error<br>'//&
-     IND//'critical<br>'//&
-     IND//'halt')
-    call add_option('logging_screen',   ' ', .true., 'T/F', logical2str(config_logging_screen), &
-     'Print log messages to standard output (usually monitor screen)?')
-    call add_option('logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
-      'Print log messages to dump log file?')
-    call add_option('logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
-     'output file name - dump log file')
-
-    ! Files that all executables will use
-    call add_option('fn_main',          ' ', .true., 'file name', config_fn_main, &
-     'input file name - main configuration')
-    call add_option('fn_progress',      ' ', .true., 'file name', config_fn_progress, &
-     'output file name - progress indicator')
-
-    ! ┬┌┐┌┌┐┌┌─┐┬ ┬┌┬┐┌─┐┬─┐┌─┐┌─┐
-    ! │││││││├┤ ││││││├─┤├┬┘│  └─┐
-    ! ┴┘└┘┘└┘└─┘└┴┘┴ ┴┴ ┴┴└─└─┘└─┘
-    call add_option('open_status',' ', .true., 'string', config_open_status, &
-     'File open mode for binary file<br>'//&
-     IND//'new: file must not exist<br>'//&
-     IND//'old: file must exist<br>'//&
-     IND//'replace: replaces file if exists, otherwise creates new')
-
-    call add_option('fn_modeles',' ', .true., 'file name', config_fn_modeles, &
-     'Name of binary file')
-
-    call add_option('fn_moddat',' ', .true., 'file name', config_fn_moddat, &
-     'Name of ASCII file')
-
-    call add_option('modcode',' ', .true., 'string up to 25 characters', config_modcode, &
-     '"Model name"')
-
-    call add_option('tirb',' ', .true., 'string up to 15 characters', config_tirb, &
-     '"Titre"')
-
-    call add_option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
-     '"Teff"')
-
-    call add_option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
-     '"log g"')
-
-    call add_option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
-     '"[M/H]"')
-
-    call add_option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
-     'Record id within atmospheric model binary file')
-
-    call add_option('interp', 'i', .TRUE., 'type', int2str(config_interp), &
-     'interpolation type for subroutine turbul()<br>'//&
-     IND//'1: linear;<br>'//&
-     IND//'2: parabolic)')
-    call add_option('kik', 'k', .TRUE., 'type', int2str(config_kik), &
-     'selector for subroutines flin1() and flinh()<br>'//&
-     IND//'0: integration using 6/7 points depending on main_ptdisk;<br>'//&
-     IND//'1: 26-point integration)')
-
-
-    ! ┬ ┬┬ ┬┌┬┐┬─┐┌─┐┌─┐
-    ! ├─┤└┬┘ ││├┬┘│ │┌─┘
-    ! ┴ ┴ ┴ ─┴┘┴└─└─┘└─┘
-    call add_option('teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
-     '"Teff"')
-
-    call add_option('glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
-     '"log g"')
-
-    call add_option('asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
-     '"[M/H]"')
-
-    call add_option('inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
-     'Record id within atmospheric model binary file')
-
-    call add_option('ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
-     'option for subroutine fluxis()<br>'//&
-     IND//'T: 7-point integration<br>'//&
-     IND//'F: 6- or 26-point integration, depending on option kik')
-
-    call add_option('kik', ' ', .TRUE., '0/1', int2str(config_kik), &
-     'option for subroutine fluxis()<br>'//&
-     IND//'0: integration using 6/7 points depending on option ptdisk;<br>'//&
-     IND//'1: 26-point integration)')
-
-    call add_option('amores',' ', .true., 'T/F', logical2str(int2logical(config_amores)), &
-     'AMOrtissement de RESonnance?')
-
-    call add_option('kq', ' ', .true., '0/1', int2str(config_kq), &
-     '"Theorie"<br>'//&
-     IND//'0: THEORIE DE GRIEM;<br>'//&
-     IND//'1: THEORIE QUASISTATIQUE')
-
-    call add_option('nomplot', ' ', .true., 'file name', config_nomplot, &
-     'output file name - hydrogen lines')
-
-    call add_option('vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
-     'velocity of microturbulence')
-
-    call add_option('zph', ' ', .true., 'real value', real82str(config_zph), &
-     'abondance d''H pour laquelle sont donnees les abondances metalliques')
-
-    call add_option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-     'input file name - absoru2')
-    call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
-     'input file name - model')
-    call add_option('fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
-     'input file name - table containing table with<br>'//&
-     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('hmap', ' ', .false., '', '', &
-      'If set, will read wavelength interval from main configuration file and<br>'//&
-      'determine automatically which hydrogen lines to calculate according to<br>'//&
-      'hmap file')
-    call add_option('na', ' ', .true., 'integer', '(no default)', &
-      'NIV INF')
-    call add_option('nb', ' ', .true., 'integer', '(no default)', &
-      'NIV SUP')
-    call add_option('clam', ' ', .true., 'real', '(no default)', &
-      'Central wavelength')
-    call add_option('kiex', ' ', .true., 'real', '(no default)', &
-      'KIEX ?doc?')
-    call add_option('c1', ' ', .true., 'real', '(no default)', &
-      'C1 ?doc?')
-
-    ! ┌─┐┌─┐┌─┐┌┐┌┌┬┐
-    ! ├─┘├┤ ├─┤│││ │
-    ! ┴  └  ┴ ┴┘└┘ ┴ 
-    !> @todo Find names for each file and update options help
-    call add_option('fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
-     'input file name - dissociative equilibrium')
-    call add_option('fn_partit',        ' ', .true., 'file name', config_fn_partit, &
-     'input file name - partition functions')
-    call add_option('fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-     'input file name - absoru2')
-    call add_option('fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
-     'input file name - model')
-    call add_option('fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
-     'input file name - atomic abundances')
-    call add_option('fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
-     'input file name - atomic lines')
-    call add_option('fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
-     'input file name - molecular lines')
-
-    call add_option('fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
-     'input file name - table containing table with<br>'//&
-     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('hmap', ' ', .false., '', '', &
-      'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
-      'main configuration file')  ! This behavious is likely to become default soon...or not
-
-    call add_option('molid_off',        ' ', .true., 'molecule id', '', &
-     'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
-     '*Note*: This option may be repeated as many times as necessary.')
-
-    ! ┌┐┌┬ ┬┬  ┌┐ ┌─┐┌┬┐
-    ! ││││ ││  ├┴┐├─┤ ││
-    ! ┘└┘└─┘┴─┘└─┘┴ ┴─┴┘
-    call add_option('fn_flux', ' ', .true., 'file name', &
-     '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
-     'Flux file name')
-    call add_option('norm',     ' ', .true., 'T/F', logical2str(config_norm), &
-      'Is spectrum normalized?')
-    call add_option('flam',     ' ', .true., 'T/F', logical2str(config_flam), &
-      'Fnu to FLambda transformation?')
-    call add_option('fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
-      'output file name, which will have the convolved spectrum')
-    call add_option('pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
-      'step ?doc?')
-    call add_option('convol',   ' ', .true., 'T/F', logical2str(config_convol), &
-      'Apply convolution?')
-    call add_option('fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
-      'Full-width-half-maximum of Gaussian function')
-  end
-
 
   !=======================================================================================
   !> Performs a series of checks to avoid programming errors while defining the
