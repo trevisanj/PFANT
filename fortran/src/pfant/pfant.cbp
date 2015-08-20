@@ -35,9 +35,7 @@
 		</Compiler>
 		<Unit filename="../lib/absoru.f90" />
 		<Unit filename="../lib/absoru_data.f" />
-		<Unit filename="../lib/config_base.f90">
-			<Option weight="1" />
-		</Unit>
+		<Unit filename="../lib/config.f90" />
 		<Unit filename="../lib/flin.f90">
 			<Option weight="2" />
 		</Unit>
@@ -68,6 +66,7 @@
 		<Unit filename="../lib/reader_filetoh.f90">
 			<Option weight="4" />
 		</Unit>
+		<Unit filename="../lib/reader_hmap.f90" />
 		<Unit filename="../lib/reader_main.f90">
 			<Option weight="2" />
 		</Unit>
@@ -80,9 +79,6 @@
 		<Unit filename="../lib/welcome.f90">
 			<Option weight="1" />
 		</Unit>
-		<Unit filename="config_pfant.f90">
-			<Option weight="2" />
-		</Unit>
 		<Unit filename="dissoc.f90">
 			<Option weight="4" />
 		</Unit>
@@ -92,7 +88,6 @@
 		<Unit filename="kapmol.f90">
 			<Option weight="6" />
 		</Unit>
-		<Unit filename="main.cbp" />
 		<Unit filename="molecules_ids.f90">
 			<Option weight="1" />
 		</Unit>

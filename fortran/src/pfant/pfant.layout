@@ -1,74 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="../lib/flin.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1428" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="filters.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="700" topLine="13" />
-		</Cursor>
-	</File>
-	<File name="reader_molecules.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="793" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../lib/logging.f90" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="../lib/misc_math.f90" open="0" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="12163" topLine="381" />
-		</Cursor>
-	</File>
-	<File name="config_pfant.f90" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3866" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="molecules_ids.f90" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1741" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../lib/max_.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1186" topLine="12" />
-		</Cursor>
-	</File>
-	<File name="../lib/welcome.f90" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="127" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../lib/options2.f90" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9787" topLine="270" />
-		</Cursor>
-	</File>
-	<File name="reader_atomgrade.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4440" topLine="103" />
-		</Cursor>
-	</File>
-	<File name="kapmol.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1079" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="dissoc.f90" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="868" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../lib/reader_filetoh.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4139" topLine="54" />
 		</Cursor>
 	</File>
 	<File name="../lib/misc.f90" open="0" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -76,24 +11,84 @@
 			<Cursor1 position="12" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="synthesis.f90" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="reader_atomgrade.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="27326" topLine="755" />
+			<Cursor1 position="4440" topLine="103" />
 		</Cursor>
 	</File>
-	<File name="../lib/config_base.f90" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../lib/reader_filetoh.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="16010" topLine="388" />
+			<Cursor1 position="4951" topLine="67" />
 		</Cursor>
 	</File>
-	<File name="pfant.f90" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="filters.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="292" topLine="0" />
+			<Cursor1 position="700" topLine="13" />
 		</Cursor>
 	</File>
 	<File name="../lib/reader_abonds.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="783" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="reader_molecules.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="793" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="molecules_ids.f90" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1741" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="kapmol.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1079" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="pfant.f90" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1148" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../lib/misc_math.f90" open="0" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12163" topLine="381" />
+		</Cursor>
+	</File>
+	<File name="../lib/welcome.f90" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="127" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../lib/flin.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1428" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../lib/logging.f90" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="75" />
+		</Cursor>
+	</File>
+	<File name="../lib/options2.f90" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9787" topLine="270" />
+		</Cursor>
+	</File>
+	<File name="../lib/reader_main.f90" open="1" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3136" topLine="6" />
+		</Cursor>
+	</File>
+	<File name="../lib/max_.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1186" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="synthesis.f90" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5287" topLine="74" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

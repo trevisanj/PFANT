@@ -12,7 +12,7 @@
 !> @li Un fichier de trace compatible avec GRAFIC (Nom demande)
 
 program hydro2
-  use config_hydro2
+  use config
   use hydro2_x
   use reader_absoru2
   use reader_modeles

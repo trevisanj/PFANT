@@ -18,7 +18,7 @@
 !> ce SP peut se tester avec le programme locat.f
 
 program innewmarcs
-  use config_innewmarcs
+  use config
   use logging
   use welcome
   use innewmarcs_calc
@@ -27,7 +27,7 @@ program innewmarcs
   implicit none
 
   execonf_name = 'innwemarcs'
-  call config_innewmarcs_init()
+  call config_init()
   call read_gridsmap()
   call innewmarcs_init_x()
   call innewmarcs_calc_()

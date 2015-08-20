@@ -120,7 +120,7 @@
 
 module synthesis
   use logging
-  use config_pfant
+  use config
   use flin
   use misc_math
   use absoru

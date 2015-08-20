@@ -19,7 +19,7 @@
 				</Compiler>
 			</Target>
 		</Build>
-		<Unit filename="config_base.f90">
+		<Unit filename="config.f90">
 			<Option weight="1" />
 		</Unit>
 		<Unit filename="flin.f90">

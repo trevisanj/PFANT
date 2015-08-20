@@ -19,13 +19,13 @@
 
 
 program nulbad
-  use config_nulbad
+  use config
   use logging
   use welcome
   use nulbad_calc
   implicit none
 
   execonf_name = 'nulbad'
-  call config_nulbad_init()
+  call config_init()
   call nulbad_calc_()
 end

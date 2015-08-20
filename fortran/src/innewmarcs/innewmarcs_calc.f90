@@ -1,7 +1,7 @@
 module innewmarcs_calc
   use max_
   use reader_modeles
-  use config_innewmarcs
+  use config
   use innewmarcs_x
   use reader_gridsmap
   implicit none

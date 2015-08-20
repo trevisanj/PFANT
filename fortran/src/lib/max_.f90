@@ -123,7 +123,7 @@ module max_
   ! Misc
   !=====
   !> Maximum number of command-line options
-  integer, parameter :: MAX_NUM_OPTIONS = 50
+  integer, parameter :: MAX_NUM_OPTIONS = 100
 
   !> dtot maximum: maximum number of points in each calculation interval.
   integer, parameter :: MAX_DTOT=7000

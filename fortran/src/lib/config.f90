@@ -25,11 +25,8 @@
 !>       command-line option. These variables will not be documented in comments, but
 !>       in the help text associated with their command-line options (the reason is to
 !>       avoid text duplication). There are two ways to access this documentation:
-!>       @li a) view the source code for subroutine config::init_common_options()
+!>       @li a) view the source code for subroutine config::init_options()
 !>       @li b) execute the program with the --help option
-!>
-!> @attention Subroutines starting with "config_base_" must be called by particular
-!>            executable, see for example config_pfant.f90
 !>
 !> @todo explain how to create new option
 
@@ -38,7 +35,7 @@ module config
   use logging
   use options2
   use misc
-  use config_base_handler_interfaces
+  use molecules_ids
   implicit none
 
   !> indentation string to be used in help text at will
@@ -180,13 +177,11 @@ module config
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
    config_fn_absoru2       = 'absoru2.dat',       & !< option: --fn_absoru2
-   config_fn_modeles       = 'modeles.mod',       & !< option: --fn_modeles
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
    config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log',           & !< option: --fn_log
-   config_fn_hmap         = 'hmap.dat'            !< option: --fn_hmap
+   config_fn_log           = 'log.log'              !< option: --fn_log
 
   integer :: config_interp = 1  !< option: --interp
 
@@ -222,9 +217,6 @@ module config
   !> Maximum valid index of the options variable
   integer, private :: num_options = 0
 
-!!!!!!!!!!!!!  !> Number of options defined here
-  !!!!!!!!!!!!! integer, private :: CONFIG_BASE_NUM_OPTIONS = 9
-
   character(len=:), private, allocatable :: &
    wdir_trim  !< Input directory without trailling spaces and ending with a "/"
 
@@ -253,8 +245,7 @@ contains
     write(*,*) to_upper(execonf_name)//pfant_version()
     write(*,*) ''
 
-    call init_common_options()
-    call execonf_init_options()
+    call init_options()
     call validate_options()
     call parse_args()
 
@@ -306,7 +297,7 @@ contains
   !> &lt;br&gt;
   !>
   !> @par Important:
-  !> If you add options here, you must change the CONFIG_BASE_NUM_OPTIONS constant
+  !> If you add options here, you must change the config_NUM_OPTIONS constant
   !> accordingly.
   !>
   !> @todo where to put the explanation on option text formatting
@@ -317,7 +308,7 @@ contains
     ! └─┘└─┘┴ ┴┴ ┴└─┘┘└┘
     call add_option('ihpn', 'help', 'h', .false., '', '', &
       'Displays this help text.')
-    call add_option('wdir',         ' ', .true., 'directory name', config_wdir, &
+    call add_option('ihpn', 'wdir',         'w', .true., 'directory name', config_wdir, &
       'working directory (directory for all input/output files')
 
     ! Logging options
@@ -378,8 +369,6 @@ contains
     ! ┬ ┬┬ ┬┌┬┐┬─┐┌─┐┌─┐
     ! ├─┤└┬┘ ││├┬┘│ │┌─┘
     ! ┴ ┴ ┴ ─┴┘┴└─└─┘└─┘
-    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
-     '"Teff"')
     call add_option('h', 'ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
      'option for interpolation subroutines<br>'//&
      IND//'T: 7-point integration<br>'//&
@@ -410,10 +399,20 @@ contains
     call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
      'input file name - table containing table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('hp', 'hmap', ' ', .false., '', '', &
-      'If set, will read wavelength interval from main configuration file and<br>'//&
-      'determine automatically which hydrogen lines to calculate according to<br>'//&
-      'hmap file')
+
+    ! Here there is a slight difference on the description of this option depending
+    ! on the executable.
+    if (execonf_name .eq. 'hydro2') then
+      call add_option('hp', 'hmap', ' ', .false., '', '', &
+        'If set, will read wavelength interval from main configuration file and<br>'//&
+        'determine automatically which hydrogen lines to calculate according to<br>'//&
+        'hmap file')
+    else
+      call add_option('p', 'hmap', ' ', .false., '', '', &
+        'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
+        'main configuration file')  ! This behavious is likely to become default soon...or not
+    end if
+
     call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
       'NIV INF')
     call add_option('h', 'nb', ' ', .true., 'integer', '(no default)', &
@@ -427,7 +426,7 @@ contains
 
     ! ┌─┐┌─┐┌─┐┌┐┌┌┬┐
     ! ├─┘├┤ ├─┤│││ │
-    ! ┴  └  ┴ ┴┘└┘ ┴ 
+    ! ┴  └  ┴ ┴┘└┘ ┴
     call add_option('p', 'interp', 'i', .TRUE., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
@@ -437,10 +436,6 @@ contains
      'input file name - dissociative equilibrium')
     call add_option('p', 'fn_partit',        ' ', .true., 'file name', config_fn_partit, &
      'input file name - partition functions')
-    call add_option('p', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-     'input file name - absoru2')
-    call add_option('p', 'fn_modeles',       ' ', .true., 'file name', config_fn_modeles, &
-     'input file name - model')
     call add_option('p', 'fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
      'input file name - atomic abundances')
     call add_option('p', 'fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
@@ -448,12 +443,6 @@ contains
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
 
-    call add_option('p', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
-     'input file name - table containing table with<br>'//&
-     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('p', 'hmap', ' ', .false., '', '', &
-      'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
-      'main configuration file')  ! This behavious is likely to become default soon...or not
 
     call add_option('p', 'molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
@@ -489,10 +478,10 @@ contains
   !>
   !> @note If finds "-h" or "--help", will display help text and halt.
 
-  function config_base_handle_option(opt, o_arg) result(res)
+  function config_handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
-    integer :: res
+    integer :: res, itemp
 
     res = HANDLER_OK
 
@@ -553,29 +542,6 @@ contains
         call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
       case ('teff')
         config_teff = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_teff', real42str(config_teff))
-      case ('glog')
-        config_glog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_glog', real42str(config_glog))
-      case ('asalog')
-        config_asalog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_asalog', real42str(config_asalog))
-      case ('inum')
-        config_inum = parse_aux_str2int(opt, o_arg)
-        if (config_inum .lt. 1) then !#validation
-          res = HANDLER_ERROR
-        else
-          call parse_aux_log_assignment('config_inum', int2str(config_inum))
-        end if
-
-
-      !=====
-      ! hydro2
-      !=====
-      !> @todo issue duplicated in innwemarcs, don't like this; better read only from
-      !> infile:main
-      case ('teff')
-        config_teff = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_teff', real82str(config_teff))
       case ('glog')
         config_glog = parse_aux_str2real4(opt, o_arg)
@@ -590,6 +556,13 @@ contains
         else
           call parse_aux_log_assignment('config_inum', int2str(config_inum))
         end if
+
+
+      !=====
+      ! hydro2
+      !=====
+      !> @todo issue duplicated in innwemarcs, don't like this; better read only from
+      !> infile:main
       case ('ptdisk')
         ! This conversion to/from integer is because config_ptdisk is a tristate variable,
         ! but the user may think it is just a logical variable
@@ -624,8 +597,6 @@ contains
         call parse_aux_log_assignment('config_zph', real82str(config_zph))
       case ('fn_absoru2')
         call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
-      case ('fn_modeles')
-        call parse_aux_assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
       case ('fn_hmap')
         call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
       case ('na')
@@ -669,24 +640,10 @@ contains
             res = HANDLER_ERROR
         end select
 
-      case ('kik')
-        iTemp = parse_aux_str2int(opt, o_arg)
-        select case(iTemp)
-          case (0, 1)
-            config_kik = iTemp
-            call parse_aux_log_assignment('config_kik', int2str(config_kik))
-          case default
-            res = HANDLER_ERROR
-        end select
-
       case ('fn_dissoc')
         call parse_aux_assign_fn(o_arg, config_fn_dissoc, 'config_fn_dissoc')
       case ('fn_partit')
         call parse_aux_assign_fn(o_arg, config_fn_partit, 'config_fn_partit')
-      case ('fn_absoru2')
-        call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
-      case ('fn_modeles')
-        call parse_aux_assign_fn(o_arg, config_fn_modeles, 'config_fn_modeles')
       case ('fn_abonds')
         call parse_aux_assign_fn(o_arg, config_fn_abonds, 'config_fn_abonds')
       case ('fn_atomgrade')
@@ -697,12 +654,6 @@ contains
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
 !              call parse_aux_assign_fn(o_arg, config_fn_log)
-      case ('fn_hmap')
-        call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
-      case ('hmap')
-        config_hmap = .true.
-        call parse_aux_log_assignment('config_hmap', '.true.')
-
       case ('molid_off')
         iTemp = parse_aux_str2int(opt, o_arg)
         call add_molid_off(iTemp)
@@ -903,8 +854,8 @@ contains
         case (0)  ! option successfully parsed
           opt = options(o_index)
 
-          if (exe_wants()) then
-            res = execonf_handle_option(opt, o_arg)
+          if (exe_wants(opt)) then
+            res = config_handle_option(opt, o_arg)
             select case(res)
               case(HANDLER_DONT_CARE)
                 call pfant_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
@@ -913,6 +864,7 @@ contains
             end select
           else
             ! Executable will ignore options that are not meant for it
+            call log_debug(execonf_name//' ignoring option '//get_option_name(opt))
           end if
       end select
     end do
@@ -920,12 +872,11 @@ contains
 
   !=======================================================================================
   !> Returns whether or not the option is applicable to the executable running.
-  
+
   logical function exe_wants(opt) result(res)
     type(option), intent(in) :: opt
     res = .true.
     if (index(opt%ihpn, execonf_name(1:1)) .eq. 0) then
-      call log_warning(execonf_name//' ignoring option '//get_option_name(opt))
       res = .false.
     end if
   end
@@ -936,7 +887,6 @@ contains
   subroutine show_help(unit)
     !> logical unit number, e.g., 6=screen
     integer, intent(in) :: unit
-    character*1 :: initial  ! executable initial
 
     integer i
 
@@ -947,7 +897,7 @@ contains
     write(*,*) '  <arg name> argument that must be specified'
 
     do i = 1, num_options
-      if exe_wants(options(i)) then
+      if (exe_wants(options(i))) then
         write(unit,*) ''
         call print_opt(options(i), unit)
       end if

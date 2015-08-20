@@ -3,7 +3,7 @@
 !> @todo Canonic cases: Sun, Arcturus
 
 program pfant
-  use config_pfant
+  use config
   use logging
   use synthesis
   use welcome

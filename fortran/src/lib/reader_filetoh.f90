@@ -18,7 +18,7 @@
 module reader_filetoh
   use max_
   use reader_modeles
-  use config_pfant
+  use config
   use reader_hmap
   implicit none
 

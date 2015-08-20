@@ -4,7 +4,7 @@
 module nulbad_calc
   use misc_math
   use logging
-  use config_nulbad
+  use config
   use max_
   use reader_main
   implicit none

@@ -7,7 +7,7 @@ module reader_gridsmap
   use reader_modeles
   use qsort
   use logging
-  use config_innewmarcs
+  use config
   implicit none
 
   ! Variables related to the reference models

@@ -20,7 +20,7 @@
 
 
 module dissoc
-  use config_pfant
+  use config
   use reader_dissoc
   use reader_main
   use reader_modeles
@@ -71,8 +71,6 @@ contains
   !> Subroutine d'equilibre dissociatif
 
   subroutine sat4()
-    use config_pfant
-    implicit none
     real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
     real*8  kplog, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog

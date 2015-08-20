@@ -5,7 +5,7 @@
 module hydro2_x
   use logging
   use reader_main
-  use config_hydro2
+  use config
   implicit none
 
   !> Option for subroutine fluxis() (6/7/26 points for integration).

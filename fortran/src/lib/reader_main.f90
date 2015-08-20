@@ -19,7 +19,7 @@ module reader_main
   use logging
   use max_
   use reader_dissoc
-  use config_base
+  use config
   implicit none
 
   !> Flag indicating whether read_main() has already been called.

@@ -5,7 +5,7 @@
 module innewmarcs_x
   use logging
   use reader_main
-  use config_innewmarcs
+  use config
   implicit none
 
   ! x_* values may come either from command line or infile:main
@@ -21,9 +21,9 @@ contains
 
     ! values in config_* variables have preference, but if they are uninitialized, will
     ! pick values from infile:main
-     x_teff = config_teff
-     x_glog = config_glog
-     x_asalog = config_asalog
+     x_teff = real(config_teff)
+     x_glog = real(config_glog)
+     x_asalog = real(config_asalog)
      x_inum   = config_inum
 
      x_tirb = config_tirb

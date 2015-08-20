@@ -25,9 +25,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../lib/config_base.f90">
-			<Option weight="1" />
-		</Unit>
+		<Unit filename="../lib/config.f90" />
 		<Unit filename="../lib/logging.f90">
 			<Option weight="0" />
 		</Unit>
@@ -55,9 +53,6 @@
 		</Unit>
 		<Unit filename="../lib/welcome.f90">
 			<Option weight="1" />
-		</Unit>
-		<Unit filename="config_innewmarcs.f90">
-			<Option weight="2" />
 		</Unit>
 		<Unit filename="innewmarcs.f90">
 			<Option weight="5" />
