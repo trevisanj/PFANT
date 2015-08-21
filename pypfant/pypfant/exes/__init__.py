@@ -2,8 +2,6 @@
 Objects representing the executables
 """
 
-from .executable import *
-from .pfant import *
-from .innewmarcs import *
-from .hydro2 import *
-from .nulbad import *
+from .execonf import *
+from .exes import *
+from .combo import *

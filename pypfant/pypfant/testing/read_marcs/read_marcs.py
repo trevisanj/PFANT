@@ -47,7 +47,6 @@ axarr[4].set_xlabel("Record #")
 axarr[0].set_title(filename)
 plt.tight_layout()
 
-#################
 
 vars = ['nh', 'teta', 'pe', 'pg', 't5l']
 

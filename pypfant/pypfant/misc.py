@@ -1,10 +1,13 @@
 
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
-       "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip", "find_session_id"]
+       "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
+       "add_file_handler"]
 
 import os.path
 import glob
 import random
+from threading import Lock
+import logging
 
 # Reads next line of file and makes it a vector of strings
 # Note that each str.split() already strips each resulting string of any whitespaces.
@@ -129,21 +132,13 @@ def chunk_string(string, length):
   return (string[0+i:length+i] for i in range(0, len(string), length))
 
 
-def find_session_id(directory="."):
-  """
-  Finds a 6-digit integer that is not part of any file in directory.
-  """
-  if directory is None:
-    directory = ""
-  mask = os.path.join(directory, "*")
-  while True:
-    s = "%06d" % random.randint(0, 999999)
-    ff = glob.glob(mask)
-    flag_exit = True
-    for f in ff:
-      if s in f:
-        flag_exit = False
-        break
-    if flag_exit:
-      break
-  return s
+
+
+def add_file_handler(logger, logFilename=None):
+  """Adds file handler to logger."""
+
+  assert isinstance(logger, logging.Logger)
+
+  ch = logging.FileHandler(filename=logFilename)
+  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
+  logger.addHandler(ch)

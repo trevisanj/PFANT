@@ -3,6 +3,23 @@
 
 PFANT is spectral synthesis software for astrononic applications written in Fortran.
 
+Why "PFANT"?
+------------
+
+Name evolution from the late 60's till nowadays.
+
+@verbatim
+
+   FANTÔME   - French for "spectrum"
+   FANTOMOL  - molecular calculus added
+  PFANT      - final name 
+  !
+  +-- homage to Perrin, Marie-Noel
+@endverbatim
+
+Quick links
+-----------
+
 @ref userguide
 
 @ref developerguide

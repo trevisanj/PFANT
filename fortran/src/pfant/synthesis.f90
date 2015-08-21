@@ -130,6 +130,7 @@ module synthesis
   use reader_filetoh
   use reader_partit
   use reader_absoru2
+  use pfant_x
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -253,9 +254,9 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    open(unit=UNIT_SPEC, file=full_path_w(trim(main_flprefix)//'.spec'), status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=full_path_w(trim(main_flprefix)//'.cont'), status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=full_path_w(trim(main_flprefix)//'.norm'), status='replace')  ! normalized
+    open(unit=UNIT_SPEC, file=full_path_w(trim(x_flprefix)//'.spec'), status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=full_path_w(trim(x_flprefix)//'.cont'), status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=full_path_w(trim(x_flprefix)//'.norm'), status='replace')  ! normalized
     open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
     open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
 

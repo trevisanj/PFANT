@@ -28,7 +28,7 @@
 !>       @li a) view the source code for subroutine config::init_options()
 !>       @li b) execute the program with the --help option
 !>
-!> @todo explain how to create new option
+!> @todo explain how to create new option, including that flag options (argumentless) are forbidden bcz pypfant is not prepared for them (for simplicity)
 
 
 module config
@@ -64,41 +64,40 @@ module config
   !=====
   ! Variables configurable by command line
   !=====
-  ! Variable order is the same as sequence of running executables.
-  ! So, variables used by several executables will appear below in the section of the
-  ! executable that first uses ("introduces") it.
+  ! Variable order is the roughly in the same sequence as that of running the executables.
+  ! I.e., executables are run in this order: innewmarcs, hydro2, pfant, nulbad
 
-  ! ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌
-  ! │  │ ││││││││ ││││
-  ! └─┘└─┘┴ ┴┴ ┴└─┘┘└┘  options useful to all executables
-
-  character*192 :: &
-   config_wdir    = './'  !< command-line option --wdir
-
+  !
+  ! all executables
+  !
+  character*192 :: config_wdir    = './'  !< command-line option --wdir
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
   character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
-
   logical :: config_logging_screen = .true., & !< option --logging_screen
              config_logging_dump   = .false.   !< option --logging_dump
 
+  !---
+  ! innewmarcs, hydro2, pfant
+  !---
+  character*64 :: config_fn_modeles = 'modeles.mod' !< option: --fn_modeles
 
-  ! ┬┌┐┌┌┐┌┌─┐┬ ┬┌┬┐┌─┐┬─┐┌─┐┌─┐
-  ! │││││││├┤ ││││││├─┤├┬┘│  └─┐
-  ! ┴┘└┘┘└┘└─┘└┴┘┴ ┴┴ ┴┴└─└─┘└─┘ innewmarcs-introduced options
-
-  integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
-
-  ! note: maintained variable names found in original innewmarcs.f
-  ! (with "config_" prefix)
-
-  character*20 :: config_open_status = 'unknown' !< option: --open_status
-
+  !
+  ! hydro2, pfant
+  !
+  logical :: config_hmap = .false. !< option: --hmap
   character*64 :: &
-   config_fn_modeles = 'modeles.mod', &    !< option: --fn_modeles
+   config_fn_hmap    = 'hmap.dat', &  !< option: --fn_hmap
+   config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
+
+  !---
+  ! innewmarcs-only
+  !---
+  integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
+  character*20 :: config_open_status = 'unknown' !< option: --open_status
+  character*64 :: &
    config_fn_moddat = 'modeles.dat', &     !< option: --fn_moddat
    config_fn_gridslist = 'gridsmap.dat' !< option: --fn_gridslist
-
   character*25 :: config_modcode = 'NoName' !< option: --modcode
   !> option: --tirb
   character(LEN_TIRB) :: config_tirb = '?'
@@ -111,19 +110,14 @@ module config
   !> option: --inum
   integer :: config_inum = 0
 
-  ! ┬ ┬┬ ┬┌┬┐┬─┐┌─┐┌─┐
-  ! ├─┤└┬┘ ││├┬┘│ │┌─┘
-  ! ┴ ┴ ┴ ─┴┘┴└─└─┘└─┘ hydro2-introduced options
-
-  logical :: config_hmap = .false. !< option: --hmap
-
+  !---
+  ! hydro2-only
+  !---
   !> Option: --zph
   !> @note (historical note) This value was being read from an altered-format
   !> infile:absoru2 which was incompatible with the pfant executable. Therefore,
   !> it has been assigned a default value and this command-line option was added
   real*8 :: config_zph = 12
-
-
   !> option: --ptdisk
   !>
   !> This is about the "number of points" for subroutine fluxis(). Feeds into variable
@@ -133,33 +127,22 @@ module config
   !> @li 0 false
   !> @li 1 true
   integer :: config_ptdisk = -1
-
   !> option: --kik
   !> @note This was called "IOP" but was changed to match variable name in pfant executable
   integer :: config_kik = 0
-
   !> option: --amores
   !>
   !> This is a tristate variable, as config_ptdisk.
   !>
   !> @note Default value taken from M.Trevisan's pfant12.R script
   integer :: config_amores = 1
-
   !> option: --kq
   !> @note Default taken from M.Trevisan's pfant12.R script
   integer :: config_kq = 1
-
   !> option: --nomplot
   character*16 :: config_nomplot = '?'
-
   !> option: --vvt
   real*8 :: config_vvt = -1
-
-
-  character*64 :: &
-   config_fn_hmap   = 'hmap.dat'     !< option: --fn_hmap
-
-
   integer :: &
    config_na = -1, &   !< option: --na
    config_nb = -1      !< option: --nb
@@ -169,28 +152,23 @@ module config
    config_c1   = -1    !< option: --c1
 
 
-  ! ┌─┐┌─┐┌─┐┌┐┌┌┬┐
-  ! ├─┘├┤ ├─┤│││ │
-  ! ┴  └  ┴ ┴┘└┘ ┴  pfant-introduced options
-
+  !---
+  ! pfant-only
+  !---
   character*64 :: &
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
-   config_fn_absoru2       = 'absoru2.dat',       & !< option: --fn_absoru2
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
    config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log'              !< option: --fn_log
-
+   config_fn_log           = 'log.log',           & !< option: --fn_log
+   config_flprefix         = '?'                    !< option: --flprefix
   integer :: config_interp = 1  !< option: --interp
 
-
-  ! ┌┐┌┬ ┬┬  ┌┐ ┌─┐┌┬┐
-  ! ││││ ││  ├┴┐├─┤ ││
-  ! ┘└┘└─┘┴─┘└─┘┴ ┴─┴┘ nulbad-introduced options
-
-  ! These variables are set to their default values
+  !---
+  ! nulbad-only
+  !---
   logical :: &
    config_norm = .true., &                       !< option: --norm
    config_flam = .true., &                       !< option: --flam
@@ -203,6 +181,8 @@ module config
   character*64 :: &
     config_fn_flux = '?', &         !< option: --fn_flux
     config_fn_cv = '?'                !< option: --fn_cv
+  !===== end of command-line variables declarations
+
 
   ! 888b. 888b. 888 Yb    dP  db   88888 8888
   ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
@@ -303,16 +283,14 @@ contains
   !> @todo where to put the explanation on option text formatting
 
   subroutine init_options()
-    ! ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌
-    ! │  │ ││││││││ ││││
-    ! └─┘└─┘┴ ┴┴ ┴└─┘┘└┘
+    !
+    ! All executables
+    !
     call add_option('ihpn', 'help', 'h', .false., '', '', &
       'Displays this help text.')
     call add_option('ihpn', 'wdir',         'w', .true., 'directory name', config_wdir, &
       'working directory (directory for all input/output files')
-
-    ! Logging options
-    call add_option('ihpn', 'logging_level', 'l', .TRUE., 'level', 'debug', &
+    call add_option('ihpn', 'logging_level', 'l', .true., 'level', 'debug', &
      'logging level<br>'//&
      IND//'debug<br>'//&
      IND//'info<br>'//&
@@ -326,49 +304,69 @@ contains
       'Print log messages to dump log file?')
     call add_option('ihpn', 'logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
      'output file name - dump log file')
-
-    ! Files that all executables will use
     call add_option('ihpn', 'fn_main',          ' ', .true., 'file name', config_fn_main, &
      'input file name - main configuration')
     call add_option('ihpn', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator')
 
-    ! ┬┌┐┌┌┐┌┌─┐┬ ┬┌┬┐┌─┐┬─┐┌─┐┌─┐
-    ! │││││││├┤ ││││││├─┤├┬┘│  └─┐
-    ! ┴┘└┘┘└┘└─┘└┴┘┴ ┴┴ ┴┴└─└─┘└─┘
+    !
+    ! innewmarcs, hydro2, pfant
+    !
+    call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
+     'Binary file containing information about atmospheric model (created by innewmarcs)')
+
+    !
+    ! innewmarcs, hydro2
+    !
+    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
+     '"Teff"')
+    call add_option('ih', 'glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
+     '"log g"')
+    call add_option('ih', 'asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
+     '"[M/H]"')
+    call add_option('ih', 'inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
+     'Record id within atmospheric model binary file')
+
+    !
+    ! hydro2, pfant
+    !
+    call add_option('hp', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
+     'input file name - absoru2')
+    call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
+     'input file name - table containing table with<br>'//&
+     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
+
+    ! Here there is a slight difference on the description of this option depending
+    ! on the executable.
+    if (execonf_name .eq. 'hydro2') then
+      call add_option('hp', 'hmap', ' ', .true., '', logical2str(config_hmap), &
+        'If set, will read wavelength interval from main configuration file and<br>'//&
+        'determine automatically which hydrogen lines to calculate according to<br>'//&
+        'hmap file')
+    else
+      call add_option('p', 'hmap', ' ', .true., '', logical2str(config_hmap), &
+        'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
+        'main configuration file')  ! This behavious is likely to become default soon...or not
+    end if
+
+    !
+    ! innewmarcs-only
+    !
     call add_option('i', 'open_status',' ', .true., 'string', config_open_status, &
      'File open mode for binary file<br>'//&
      IND//'new: file must not exist<br>'//&
      IND//'old: file must exist<br>'//&
      IND//'replace: replaces file if exists, otherwise creates new')
-
-    call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
-     'Binary file containing information about atmospheric model (created by innewmarcs)')
-
     call add_option('i', 'fn_moddat',' ', .true., 'file name', config_fn_moddat, &
      'ASCII file containing information about atmospheric model (created by innewmarcs)')
-
     call add_option('i', 'modcode',' ', .true., 'string up to 25 characters', config_modcode, &
      '"Model name"')
-
     call add_option('i', 'tirb',' ', .true., 'string up to 15 characters', config_tirb, &
      '"Titre"')
 
-    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
-     '"Teff"')
-
-    call add_option('ih', 'glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
-     '"log g"')
-
-    call add_option('ih', 'asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
-     '"[M/H]"')
-
-    call add_option('ih', 'inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
-     'Record id within atmospheric model binary file')
-
-    ! ┬ ┬┬ ┬┌┬┐┬─┐┌─┐┌─┐
-    ! ├─┤└┬┘ ││├┬┘│ │┌─┘
-    ! ┴ ┴ ┴ ─┴┘┴└─└─┘└─┘
+    !
+    ! hydro2-only
+    !
     call add_option('h', 'ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
      'option for interpolation subroutines<br>'//&
      IND//'T: 7-point integration<br>'//&
@@ -394,25 +392,6 @@ contains
     call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph), &
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
 
-    call add_option('hp', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
-     'input file name - absoru2')
-    call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
-     'input file name - table containing table with<br>'//&
-     IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-
-    ! Here there is a slight difference on the description of this option depending
-    ! on the executable.
-    if (execonf_name .eq. 'hydro2') then
-      call add_option('hp', 'hmap', ' ', .false., '', '', &
-        'If set, will read wavelength interval from main configuration file and<br>'//&
-        'determine automatically which hydrogen lines to calculate according to<br>'//&
-        'hmap file')
-    else
-      call add_option('p', 'hmap', ' ', .false., '', '', &
-        'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
-        'main configuration file')  ! This behavious is likely to become default soon...or not
-    end if
-
     call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
       'NIV INF')
     call add_option('h', 'nb', ' ', .true., 'integer', '(no default)', &
@@ -424,10 +403,10 @@ contains
     call add_option('h', 'c1', ' ', .true., 'real', '(no default)', &
       'C1 ?doc?')
 
-    ! ┌─┐┌─┐┌─┐┌┐┌┌┬┐
-    ! ├─┘├┤ ├─┤│││ │
-    ! ┴  └  ┴ ┴┘└┘ ┴
-    call add_option('p', 'interp', 'i', .TRUE., 'type', int2str(config_interp), &
+    !
+    ! pfant-only
+    !
+    call add_option('p', 'interp', 'i', .true., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
      IND//'2: parabolic)')
@@ -442,15 +421,20 @@ contains
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
-
-
     call add_option('p', 'molid_off',        ' ', .true., 'molecule id', '', &
      'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
      '*Note*: This option may be repeated as many times as necessary.')
+    call add_option('p', 'flprefix',        ' ', .true., 'filename prefix', &
+                    '<"main_flprefix" variable> (taken from main configuration file)', &
+     'pfant output - prefix for flux output files.<br>'//&
+     'Three files will be created based on this prefix:<br>'//&
+     IND//'<flprefix>.spec: un-normalized spectrum<br>'//&
+     IND//'<flprefix>.cont: continuum<br>'//&
+     IND//'<flprefix>.norm: normalized spectrum')
 
-    ! ┌┐┌┬ ┬┬  ┌┐ ┌─┐┌┬┐
-    ! ││││ ││  ├┴┐├─┤ ││
-    ! ┘└┘└─┘┴─┘└─┘┴ ┴─┴┘
+    !
+    ! nulbad-only
+    !
     call add_option('n', 'fn_flux', ' ', .true., 'file name', &
      '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
      'Flux file name')
@@ -525,11 +509,6 @@ contains
         call parse_aux_assign_fn(o_arg, config_logging_fn_dump, 'config_logging_fn_dump')
       case ('fn_progress')
         call parse_aux_assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
-
-
-      !=====
-      ! innewmarcs
-      !=====
       case ('open_status')
         call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
       case ('fn_modeles')
@@ -556,13 +535,6 @@ contains
         else
           call parse_aux_log_assignment('config_inum', int2str(config_inum))
         end if
-
-
-      !=====
-      ! hydro2
-      !=====
-      !> @todo issue duplicated in innwemarcs, don't like this; better read only from
-      !> infile:main
       case ('ptdisk')
         ! This conversion to/from integer is because config_ptdisk is a tristate variable,
         ! but the user may think it is just a logical variable
@@ -625,11 +597,6 @@ contains
       case ('hmap')
         config_hmap = .true.
         call parse_aux_log_assignment('config_hmap', '.true.')
-
-
-      !=====
-      ! pfant
-      !=====
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)
@@ -639,7 +606,6 @@ contains
           case default
             res = HANDLER_ERROR
         end select
-
       case ('fn_dissoc')
         call parse_aux_assign_fn(o_arg, config_fn_dissoc, 'config_fn_dissoc')
       case ('fn_partit')
@@ -657,11 +623,11 @@ contains
       case ('molid_off')
         iTemp = parse_aux_str2int(opt, o_arg)
         call add_molid_off(iTemp)
+      case ('flprefix')
+        call parse_aux_assign_fn(o_arg, config_flprefix, 'config_flprefix')
 
 
-      !=====
-      ! nulbad
-      !=====
+
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm))
@@ -681,7 +647,6 @@ contains
       case ('norm')
         config_norm = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_norm', logical2str(config_norm))
-
 
       case default
         res = HANDLER_DONT_CARE
@@ -708,7 +673,7 @@ contains
 
   subroutine parse_aux_log_assignment(varname, value)
     character(*), intent(in) :: varname, value
-    call log_info('set '//varname//' = '//trim(adjustl(value)))
+    call log_info('set '//varname//' = '''//trim(adjustl(value))//'''')
   end
 
   !=======================================================================================
