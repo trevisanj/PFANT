@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="PFANT suite" />
+		<Option pch_mode="2" />
+		<Option compiler="gfortran" />
+		<Build>
+			<Target title="pfant">
+				<Option output="../bin/pfant" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/" />
+				<Option type="1" />
+				<Option compiler="gfortran" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="nulbad">
+				<Option output="../bin/pfant" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/" />
+				<Option type="1" />
+				<Option compiler="gfortran" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="innewmarcs">
+				<Option output="../bin/pfant" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/" />
+				<Option type="1" />
+				<Option compiler="gfortran" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="hydro2">
+				<Option output="../bin/pfant" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/" />
+				<Option type="1" />
+				<Option compiler="gfortran" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="absoru.f90">
+			<Option weight="4" />
+		</Unit>
+		<Unit filename="absoru_data.f">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="config.f90">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="dimensions.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="hydro2.f90">
+			<Option target="hydro2" />
+		</Unit>
+		<Unit filename="innewmarcs.f90">
+			<Option target="innewmarcs" />
+		</Unit>
+		<Unit filename="logging.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="misc.f90">
+			<Option weight="1" />
+		</Unit>
+		<Unit filename="misc_math.f90">
+			<Option weight="2" />
+		</Unit>
+		<Unit filename="nulbad.f90">
+			<Option target="nulbad" />
+		</Unit>
+		<Unit filename="pfant.f90">
+			<Option weight="5" />
+			<Option target="pfant" />
+		</Unit>
+		<Unit filename="readers.f90">
+			<Option weight="3" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
