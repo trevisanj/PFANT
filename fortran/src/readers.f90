@@ -21,7 +21,7 @@
 
 module reader_dissoc
   use logging
-  use max_
+  use dimensions
   use misc
   implicit none
 
@@ -68,7 +68,7 @@ contains
     integer, parameter :: UNIT_=199
     integer i, j, k, m, mmaxj
     character(len=*) :: path_to_file
-    character*2 symbol
+    character*2 symbol, symbol_
     logical flag_found
 
     ! Auxiliary temp variables for reading file
@@ -86,20 +86,22 @@ contains
     !
     do i = 1, dissoc_nmetal
       read (UNIT_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
-       symbol, dissoc_nelemx(i), dissoc_ip(i), &
+       symbol_, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
+
+       symbol = adjust_atomic_symbol(symbol_)
 
         ! makes sure that elements first and second are h and he, respectively,
         ! because sat4() and die() count on this
         select case (i)
           case (1)
-            if (to_lower(trim(symbol)) .ne. 'h') then
-              write(lll,*) 'First element must be hydrogen ("H"), not "', symbol, '"!'
+            if (symbol .ne. ' H') then
+              write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
               call pfant_halt(lll)
             end if
           case (2)
-            if (to_lower(symbol) .ne. 'he') then
-              write(lll,*) 'First element must be helium ("He"), not "', symbol, '"!'
+            if (symbol .ne. 'HE') then
+              write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
               call pfant_halt(lll)
             end if
         end select
@@ -190,7 +192,7 @@ end
 
 module reader_main
   use logging
-  use max_
+  use dimensions
   use reader_dissoc
   use config
   implicit none
@@ -390,7 +392,7 @@ end
 
 module reader_modeles
   use logging
-  use max_
+  use dimensions
   use reader_main
   implicit none
 
@@ -636,7 +638,7 @@ end
 
 module reader_hmap
   use logging
-  use max_
+  use dimensions
   use misc
   use reader_main
   implicit none
@@ -759,7 +761,7 @@ end
 !> Reading routines and variable declarations for infile:filetoh
 
 module reader_filetoh
-  use max_
+  use dimensions
   use reader_modeles
   use config
   use reader_hmap
@@ -795,25 +797,6 @@ module reader_filetoh
   !> Names of filetoh files that were actually found in disk
   character*64 filetoh_filenames(MAX_FILETOH_NUMFILES)
 
-
-  !!=====
-  !! Calculated for external use
-  !!=====
-  !!> ?doc?
-  !real*8 ct_tauhi(MAX_DTOT, MAX_MODELES_NTOT)
-  !integer :: &
-  ! ct_dhmi, & !< ?doc?
-  ! ct_dhpi    !< ?doc?!!
-!
-!  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-!  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-!  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-!  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols!!
-!
-!
- ! !  integer :: jjmax
-
-  save
 contains
 
   !=======================================================================================
@@ -828,6 +811,8 @@ contains
   !>
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
 
+  !> @todo not tested; also the calctauh in synthesis needs testing
+
   subroutine read_filetoh(llzero, llfin)
     real*8, intent(in) :: llzero, llfin
     integer unit_
@@ -835,7 +820,7 @@ contains
     integer i, j, n, i_file
     character(len=:), allocatable :: file_now
     real*8 :: clam
-    logical :: must_exist
+    logical :: must_exist, flag_inside
 
 
     i = 0
@@ -844,39 +829,55 @@ contains
       clam = hmap_rows(i_file)%clam
 
       must_exist = .false.
+      flag_inside = .true.
       if (clam .ne. 0) then
-        if (h_line_is_inside(clam, llzero, llfin)) must_exist = .true.
+        if (h_line_is_inside(clam, llzero, llfin)) then
+          must_exist = .true.
+        else
+          flag_inside = .false.  ! hydrogen line if outside calculation interval, skips it
+        end if
+      else
+        ! list of nydrogen line files came from infile:man and we don't know their central lambda unless we open the file
       end if
 
-      open(err=111, unit=unit_,file=file_now,status='old')
+      if (flag_inside) then
+        open(err=111, unit=unit_,file=file_now,status='old')
 
-      i = i+1
+        i = i+1
 
-      read(unit_,'(a80)') filetoh_r_titre(i)
-      read(unit_,'(a11)') filetoh_r_ttt(i)
-      read(unit_,*) filetoh_r_jmax(i)  ! Note: format was i3
-      read(unit_,'(5f14.3)') (filetoh_r_lambdh(i,j), j=1,filetoh_r_jmax(i))
-      read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
-       j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
+        read(unit_,'(a80)') filetoh_r_titre(i)
+        read(unit_,'(a11)') filetoh_r_ttt(i)
+        read(unit_,*) filetoh_r_jmax(i)
+        read(unit_,'(5f14.3)') (filetoh_r_lambdh(i,j), j=1,filetoh_r_jmax(i))
+        read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
+         j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
+        close(unit_)
 
-      ! Takes first lambda of file as a reference
-      filetoh_llhy(i) = filetoh_r_lambdh(i, 1)
+        ! Takes first lambda of file as a reference
+        clam = filetoh_r_lambdh(i, 1)
 
-      ! Registers filename in list of files that were found
-      filetoh_filenames(i) = hmap_rows(i_file)%fn
+        if (.not. h_line_is_inside(clam, llzero, llfin)) then
+          i = i-1  ! "rewinds" 1
+          go to 112
+        end if
 
-      close(unit_)
-      goto 112
+        filetoh_llhy(i) = clam
 
-      111 continue
-      if (must_exist) then
-        130 format('[',F7.1,'-',F5.1,',',F7.1,'+',F5.1,'] overlaps with [',&
-         F7.1,'-',F5.1,',',F7.1,'+',F5.1,'], but cannot open file "',A,'"')
-        write(lll,130) clam, H_LINE_WIDTH, clam, H_LINE_WIDTH, llzero, LAMBDA_STRETCH, &
-         llfin, LAMBDA_STRETCH, file_now
-        call pfant_halt(lll)
+        ! Registers filename in list of files that were found
+        filetoh_filenames(i) = hmap_rows(i_file)%fn
+
+        goto 112
+
+        111 continue
+        if (must_exist) then
+          130 format('[',F7.1,'-',F5.1,',',F7.1,'+',F5.1,'] overlaps with [',&
+           F7.1,'-',F5.1,',',F7.1,'+',F5.1,'], but cannot open file "',A,'"')
+          write(lll,130) clam, H_LINE_WIDTH, clam, H_LINE_WIDTH, llzero, LAMBDA_STRETCH, &
+           llfin, LAMBDA_STRETCH, file_now
+          call pfant_halt(lll)
+        end if
+        call log_warning('Error opening file "' // file_now // '"')
       end if
-      call log_warning('Error opening file "' // file_now // '"')
 
       112 continue
     end do
@@ -895,7 +896,7 @@ end
 
 module reader_absoru2
   use logging
-  use max_
+  use dimensions
   use misc
   implicit none
 
@@ -987,6 +988,9 @@ contains
         read (UNIT_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
          nion, absoru2_xi(j,i), absoru2_pf(j,i)
 
+        ! makes sure the atomic symbol looks OK (even thou this variable is not used so far)
+        absoru2_nomet(j) = adjust_atomic_symbol(absoru2_nomet(j))
+
         ! ON LIT NR CARTES CONTENANT CHACUNE LE POTENTIEL D'IONISATION ET LA
         ! FONCTION DE PARTITION(LOG10(2UI+1)/UI)DE CHAQUE DEGRE D'IONISATION
         ! CES VALEURS SONT LUES DANS L'ORDRE CROISSANT DU DEGRE D'IONISATION
@@ -1039,7 +1043,7 @@ module reader_abonds
   use logging
   use reader_dissoc
   use reader_main
-  use max_
+  use dimensions
   implicit none
 
   !=====
@@ -1098,6 +1102,8 @@ contains
       read(UNIT_, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
 
       if (finab .lt. 1) then
+        abonds_ele(j) = adjust_atomic_symbol(abonds_ele(j))
+
         ! Extra tasks (i.e., apart from reading file) [1], [2]:
         !
         ! [1] Searches dissoc.dat' metals table by atomic symbol to get value of XXCOR variable
@@ -1153,11 +1159,11 @@ end
 module reader_partit
   use logging
   use misc
-  use max_
+  use dimensions
   implicit none
 
   character*2, dimension(MAX_PARTIT_NPAR) :: &
-   partit_el !< ?doc?
+   partit_el !< Element symbol. Must be right-aligned and uppercase.
   integer partit_npar !< ?doc?
 
   real*8, dimension (MAX_PARTIT_NPAR) :: &
@@ -1218,6 +1224,7 @@ contains
            int2str(MAX_PARTIT_NPAR))
         end if
 
+        partit_el(j) = adjust_atomic_symbol(partit_el(j))
 
         kmax = partit_jkmax(j)
 
@@ -1343,7 +1350,7 @@ end
 !> Reader and variable declarations for infile:atomgrade
 
 module reader_atomgrade
-  use max_
+  use dimensions
   use logging
   use reader_abonds
   implicit none
@@ -1353,7 +1360,8 @@ module reader_atomgrade
   !=====
   ! infile:atomgrade, file originals
   integer atomgrade_r_nblend !< ?doc?
-  character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND) !< ?doc?
+  !> atomic symbol. Must be right-aligned and uppercase
+  character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND)
   integer, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
    atomgrade_r_ioni !< ?doc?
   real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
@@ -1377,7 +1385,7 @@ contains
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atomgrade_r_elem(K) ?doc?
+  !>     col 1 -- 2-letter atomgrade_r_elem(K) atomic symbol
   !>     col 2 -- atomgrade_r_ioni(k) ?doc?
   !>     col 3 -- atomgrade_r_lambda(K) ?doc?
   !>   even row
@@ -1427,6 +1435,7 @@ contains
       read(unit_, '(a2, i1, 1x, f10.3)') atomgrade_r_elem(k), &
                                          atomgrade_r_ioni(k), &
                                          atomgrade_r_lambda(k)
+      atomgrade_r_elem(k) = adjust_atomic_symbol(atomgrade_r_elem(k))
 
       read(unit_, *) atomgrade_r_kiex(k), &
        atomgrade_r_algf(k), &
@@ -1512,7 +1521,7 @@ end
 
 module reader_molecules
   use logging
-  use max_
+  use dimensions
   use misc
   use molecules_ids
   implicit none

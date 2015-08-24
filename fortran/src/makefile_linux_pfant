@@ -32,7 +32,7 @@ SRC_DIR_f90d1 =
 
 SRC_DIR_fd1 = 
 OBJS_DIR = ../obj-linux/
-EXE_DIR = ../bin-linux/
+EXE_DIR = ../bin/
 
 EXE = pfant
 FC = gfortran

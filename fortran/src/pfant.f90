@@ -515,7 +515,7 @@ end
 
 module filters
   use molecules_ids
-  use max_
+  use dimensions
   use reader_atomgrade
   use reader_molecules
   implicit none
@@ -563,7 +563,7 @@ module filters
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
   integer atomgrade_f_nblend !< ?doc?
-  character*2 atomgrade_f_elem(MAX_ATOMGRADE_NBLEND) !< ?doc?
+  character*2 atomgrade_f_elem(MAX_ATOMGRADE_NBLEND) !< atomic symbol (right-alignes, uppercase)
   integer, dimension(MAX_ATOMGRADE_NBLEND) :: &
    atomgrade_f_ioni !< ?doc?
   real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
@@ -745,7 +745,7 @@ end
 
 module kapmol
   use molecules_ids
-  use max_
+  use dimensions
   use dissoc
   use reader_molecules
   use filters
@@ -1521,8 +1521,15 @@ contains
               call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
 
 
-              if(k .le. 2) then
-                ! NOXIG
+              if(atomgrade_f_elem(k) .eq. ' O') then
+                ! #NOXIG: oxygen is a particular case here
+
+                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
+                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
+                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222', k
+                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
+                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
+
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k)
               else
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
@@ -1891,7 +1898,15 @@ contains
 
 !        if(k .eq. 1) then
 
-        if(k .le. 2) then
+
+        if(atomgrade_f_elem(k) .eq. ' O') then
+          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
+          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
+          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111', k
+          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
+          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
+
+          ! #NOXIG: 
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         else
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap

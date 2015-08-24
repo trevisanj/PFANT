@@ -18,7 +18,7 @@
 !> This module is supposed to contain the declaration for all the "MAX_"
 !> parameters that can be considered of "general interest".
 
-module max_
+module dimensions
   implicit none
 
   !=====

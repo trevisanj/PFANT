@@ -747,7 +747,7 @@ end module misc_math
 module flin
   use misc_math
   use misc
-  use max_
+  use dimensions
   implicit none
   private
 

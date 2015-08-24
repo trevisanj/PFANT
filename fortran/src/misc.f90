@@ -4,7 +4,7 @@
 
 module misc
   use logging
-  use max_
+  use dimensions
   implicit none
 
   !> Maximum number of rows in a file with comments, e.g. hmap.dat.
@@ -30,6 +30,19 @@ contains
         clam-H_LINE_WIDTH .le. llfin+LAMBDA_STRETCH) then
       res = .true.
     end if
+  end
+
+  !> Adjusts a 2-character string containing atomic symbol to right-aligned uppercase
+  !>
+  !> This is used to prevent against left-alignment/lovercase  in specifying the atomic
+  !> symbols in several input data files.
+  !>
+  !> ExampleL: "O ", " o", "o ", all will result in " O"
+
+  pure function adjust_atomic_symbol(elem) result(res)
+    character(len=2), intent(in) :: elem
+    character(len=2) :: res
+    res = to_upper(adjustr(elem))
   end
 
   !> Converts a string to lower case.
@@ -389,7 +402,7 @@ end
 module molecules_ids
   use logging
   use misc
-  use max_
+  use dimensions
   implicit none
 
   type molid_list

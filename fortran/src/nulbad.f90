@@ -8,7 +8,7 @@ module nulbad_calc
   use misc_math
   use logging
   use config
-  use max_
+  use dimensions
   use reader_main
   implicit none
 

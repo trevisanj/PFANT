@@ -32,7 +32,7 @@ SRC_DIR_f90d1 =
 
 SRC_DIR_fd1 = 
 OBJS_DIR = ../obj-windows/
-EXE_DIR = ../bin-windows/
+EXE_DIR = ../bin/
 
 EXE = nulbad.exe
 FC = mingw32-gfortran.exe

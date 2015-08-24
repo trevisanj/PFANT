@@ -2036,7 +2036,7 @@ program hydro2
   use reader_hmap
   use hydro2_calc
   use logging
-  use max_
+  use dimensions
   use misc
   implicit none
   integer i, cnt_in
