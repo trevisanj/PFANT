@@ -1,6 +1,8 @@
 __all__ = ["Combo"]
 
-from pypfant import ExeConf, Pfant, Innewmarcs, Hydro2, Nulbad, add_file_handler
+from pypfant import * #ExeConf, Pfant, Innewmarcs, Hydro2, Nulbad, add_file_handler
+from pypfant.exes.execonf import *
+from pypfant.exes.exes import *
 import os
 import logging
 from threading import Lock
@@ -34,8 +36,6 @@ class Combo(object):
       self.__running_exe = x
 
   def __init__(self):
-    self.logger = logging.getLogger("combo%d" % id(self))
-
     # Directory containing the 4 executables
     self.exe_dir = "."
 
@@ -58,6 +58,7 @@ class Combo(object):
     self.__is_running = False
     self.__running_exe = None  # Executable object currently running
 
+    self.logger = None
 
   def configure(self):
     """
@@ -70,14 +71,22 @@ class Combo(object):
     c.make_session_id()
     c.prepare_filenames_for_combo()
 
-    add_file_handler(self.logger, c.add_session_dir("commands.log"))
+    self.logger = logging.getLogger("combo") # % id(self))
+    add_file_handler(self.logger, c.full_path_w(c.add_session_dir("commands.log")))
+
 
     # All files that will be created need to have the session directory added to their names
     for e in self.get_exes():
       # Propagates configuration
       e.execonf = c
+      e.logger = self.logger
+      # Sets exe output to log file
+      log_path = c.full_path_w(c.add_session_dir("stdout_%s.log" % e.__class__.__name__.lower()))
+      e.stdout = open(log_path, 'w')
       # Fixes exe path
-      e.exe_path = os.path.join(self.exe_dir, os.path.split(e.exe_path)[-1])
+      exe_filename = os.path.split(e.exe_path)[-1]
+      e.exe_path = os.path.join(self.exe_dir, exe_filename)
+
 
     c.create_data_files()
 

@@ -9,14 +9,14 @@ import logging
 from .execonf import ExeConf
 import os
 
-logger = logging.getLogger("exe")
-
 class Executable(object):
   """
   Generic class to represent an executable.
   """
 
   def __init__(self):
+    self.logger = None
+
     # Full path to executable (including executable name)
     self.exe_path = "./none"
 
@@ -27,25 +27,23 @@ class Executable(object):
     # Created by _run()
     self.popen = None
 
-
-
-STOPPED TRYING TO DEFINE WHERE TO LOG WHAT IS GOING ON
-session123456/commands.log
-session123456/stdout_pfant.log
-.....
-
   def run(self):
     """Runs executable.
 
     Blocking routine. Only returns when executable finishes running.
     """
     assert not self.is_running(), "Already running"
+    self.logger = logging.getLogger(self.__class__.__name__.lower())
     self.execonf.make_session_id()
     self.execonf.create_data_files()
     self._run()
 
   def run_from_combo(self):
-    """Alternative to run executable (called from Combo class)."""
+    """Alternative to run executable (called from Combo class).
+
+    This routine bypasses all the configuration that is done prior to running.
+    (Combo.configure() will do the necessary configuration).
+    """
     assert not self.is_running(), "Already running"
     self._run()
 
@@ -53,18 +51,18 @@ session123456/stdout_pfant.log
     args = self.execonf.get_args()
     cmd_line = [self.exe_path]+args
 
-    logger.debug("%s command-line:" % (self.__class__.__name__,))
-    logger.debug(" ".join(cmd_line))
+    self.logger.debug("%s command-line:" % (self.__class__.__name__,))
+    self.logger.debug(" ".join(cmd_line))
 
     try:
       self.popen = subprocess.Popen(cmd_line, stdout=self.stdout)
     except OSError:
-      logger.error("Failed to execute $ "+(" ".join(cmd_line)))
+      self.logger.error("Failed to execute $ "+(" ".join(cmd_line)))
       raise
     self.popen.wait()  # Blocks execution until finished
     self.popen.poll()
 
-    logger.debug("%s finished with returncode=%s" %
+    self.logger.debug("%s finished with returncode=%s" %
                  (self.__class__.__name__, self.popen.returncode))
 
 

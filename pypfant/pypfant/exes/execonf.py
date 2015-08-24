@@ -5,7 +5,7 @@ executables.
 
 __all__ = ["ExeConf"]
 
-from pypfant import *
+from pypfant.data import DataFile, FileHmap, FileMod
 import shutil
 import os
 import random
@@ -23,7 +23,8 @@ class ExeConf(object):
     # **
     # ** Session control
 
-    # Session id is used to make up filenames as needed
+    # Session id is used to make up filenames as needed.
+    # This variable can be set directly
     self.session_id = None
     self._flag_first = True # first time calling _get_relative_path()
     self._session_dir = None
@@ -123,8 +124,10 @@ class ExeConf(object):
     # Finds a 6-digit integer that is not part of any file in directory.
     w = self.get_wdir()
     mask = os.path.join(w, "*")
+    i = 0
     while True:
-      s = "%06d" % random.randint(0, 999999)
+      #s = "%06d" % random.randint(0, 999999)
+      s = "%06d" % i
       ff = glob.glob(mask)
       flag_exit = True
       for f in ff:
@@ -133,6 +136,7 @@ class ExeConf(object):
           break
       if flag_exit:
         break
+      i += 1
 
     self.session_id = s
 
@@ -157,7 +161,7 @@ class ExeConf(object):
 
     if self._flag_first:
       assert self.session_id is not None, "Session id not assigned"
-      d = self._session_dir = "session"+self.session_id
+      d = self._session_dir = "session_"+self.session_id
       os.mkdir(os.path.join(self.get_wdir(), d))
       self._flag_first = False
     return os.path.join(self._session_dir, fn)
@@ -249,6 +253,7 @@ class ExeConf(object):
     # ** pfant -> nulbad
     # ** Restriction: flux prefix will be always "flux"
     self.opt_flprefix = self.add_session_dir("flux")  # this is for pfant
-    # these two are options for nulbad
+    # ** these two are options for nulbad
     self.opt_norm = True
-    self.opt_fn_flux = self.add_session_dir("flux.norm") # not: here it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
+    # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
+    self.opt_fn_flux = self.add_session_dir("flux.norm")

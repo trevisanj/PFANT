@@ -241,3 +241,567 @@ end module misc
 
 
 
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!> Module containing quicksort for array of real numbers
+!>
+!> @verbatim
+!> ! Quick sort routine from:
+!> Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
+!> Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
+!> Modified by Alan Miller to include an associated integer array which gives
+!> the positions of the elements in the original order.
+!> @endverbatim
+
+module qsort
+  implicit none
+contains
+
+  !=======================================================================================
+  !> Credits (verbatim from @ref http://jblevins.org/mirror/amiller/qsort.f90):
+  !> @verbatim
+  !> Quick sort routine from:
+  !> Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
+  !> Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
+  !> Modified by Alan Miller to include an associated integer array which gives
+  !> the positions of the elements in the original order.
+  !> @endverbatim
+  !>
+  !> Further changed by JT to use argument "n" instead of size(list).
+
+  RECURSIVE SUBROUTINE quick_sort(list, order, n)
+    REAL*8, DIMENSION (:), INTENT(IN OUT)  :: list
+    INTEGER, DIMENSION (:), INTENT(OUT)  :: order
+    !> Operation is restricted to elements 1 to n
+    INTEGER, INTENT(IN) :: n
+
+    ! Local variable
+    INTEGER :: i
+
+    DO i = 1, n
+      order(i) = i
+    END DO
+
+    CALL quick_sort_1(1, n)
+
+  CONTAINS
+
+    !-------------------------------------------------------------------------------------
+    !> Quick sort auxiliary internal.
+    !>
+    !> Does the actual hard work (the main routine is mostly initialization).
+
+    RECURSIVE SUBROUTINE quick_sort_1(left_end, right_end)
+
+      INTEGER, INTENT(IN) :: left_end, right_end
+
+      !     Local variables
+      INTEGER             :: i, j, itemp
+      REAL*8                :: reference, temp
+      INTEGER, PARAMETER  :: max_simple_sort_size = 6
+
+      IF (right_end < left_end + max_simple_sort_size) THEN
+        ! Use interchange sort for small lists
+        CALL interchange_sort(left_end, right_end)
+
+      ELSE
+        ! Use partition ("quick") sort
+        reference = list((left_end + right_end)/2)
+        i = left_end - 1; j = right_end + 1
+
+        DO
+          ! Scan list from left end until element >= reference is found
+          DO
+            i = i + 1
+            IF (list(i) >= reference) EXIT
+          END DO
+          ! Scan list from right end until element <= reference is found
+          DO
+            j = j - 1
+            IF (list(j) <= reference) EXIT
+          END DO
+
+
+          IF (i < j) THEN
+            ! Swap two out-of-order elements
+            temp = list(i); list(i) = list(j); list(j) = temp
+            itemp = order(i); order(i) = order(j); order(j) = itemp
+          ELSE IF (i == j) THEN
+            i = i + 1
+            EXIT
+          ELSE
+            EXIT
+          END IF
+        END DO
+
+        IF (left_end < j) CALL quick_sort_1(left_end, j)
+        IF (i < right_end) CALL quick_sort_1(i, right_end)
+      END IF
+
+    END SUBROUTINE quick_sort_1
+
+
+    !-------------------------------------------------------------------------------------
+    !> Quick sort auxiliary internal, does the swapping
+
+    SUBROUTINE interchange_sort(left_end, right_end)
+
+      INTEGER, INTENT(IN) :: left_end, right_end
+
+      !     Local variables
+      INTEGER             :: i, j, itemp
+      REAL*8                :: temp
+
+      DO i = left_end, right_end - 1
+        DO j = i+1, right_end
+          IF (list(i) > list(j)) THEN
+            temp = list(i)
+            list(i) = list(j)
+            list(j) = temp
+
+            itemp = order(i)
+            order(i) = order(j)
+            order(j) = itemp
+          END IF
+        END DO
+      END DO
+
+    END SUBROUTINE interchange_sort
+
+  END SUBROUTINE quick_sort
+end
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+!> Maintains a list of molecules that are on/off
+!>
+!> Has routines to maintain the list and retrieve information.
+
+module molecules_ids
+  use logging
+  use misc
+  use max_
+  implicit none
+
+  type molid_list
+    integer :: n_off, & !< number "off"
+               n_on     !< number "on"
+
+    integer, dimension(NUM_MOL) :: &
+      on,  & !< molecule ids "on"
+      off    !< molecule ids "off"
+  end type
+
+  type(molid_list) :: molids
+
+  ! 888b. 888b. 888 Yb    dP  db   88888 8888
+  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
+  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
+  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+
+  ! There is a calling order to be observed. These flags + assertions inforce that
+  logical, private :: &
+   flag_molecules_ids_init = .false.   !< molecules_ids_init() has been called?
+
+  private make_molids_on
+contains
+
+  !> Module initialization:
+  !> Must be called at some point of system startup.
+
+  subroutine molecules_ids_init()
+    call make_molids_on()
+    flag_molecules_ids_init = .true.
+  end
+
+  !=======================================================================================
+  !> Returns molecule id given index
+  !>
+  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
+
+  function get_molid(i_mol)
+    integer i_mol, get_molid
+
+    if (.not. flag_molecules_ids_init) then
+      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    end if
+
+    !#spill_check
+    if (i_mol .gt. molids%n_on) then
+      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
+       i_mol, ') must be maximum ', molids%n_on
+      call pfant_halt(lll)
+    end if
+
+    get_molid = molids%on(i_mol)
+  end
+
+  !=======================================================================================
+  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on"
+  !> or "off"
+  !>
+  !> Can be called anytime
+
+  function molecule_is_on(molid)
+    integer molid, j
+    logical molecule_is_on
+
+    if (.not. flag_molecules_ids_init) then
+      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    end if
+
+    molecule_is_on = .true.
+    do j = 1, molids%n_off
+      if (molid .eq. molids%off(j)) then
+        molecule_is_on = .false.
+        exit
+      end if
+    end do
+  end
+
+  !=======================================================================================
+  !> Adds molecule id to list of "off" molecules
+
+  subroutine add_molid_off(molid)
+    integer, intent(in) :: molid !< molecule id
+
+    if (.not. flag_molecules_ids_init) then
+      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    end if
+
+    !#spill_check
+    if (molid .gt. NUM_MOL .or. molid .lt. 1) then
+      call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
+       int2str(NUM_MOL)//')')
+    end if
+
+    if (molecule_is_on(molid)) then
+      ! The condition we-re in prevents duplication
+      molids%n_off = molids%n_off+1
+      molids%off(molids%n_off) = molid
+      call log_info('molecule id '//int2str(molid)//' added to molids%off')
+    else
+      call log_warning('molecule id '//int2str(molid)//' *already turned off*')
+    end if
+
+    call make_molids_on()
+  end
+
+  !=======================================================================================
+  !> Fills molids%on and molids%n_on based on their complements.
+  !>
+  !> @todo see what is public and what is private in this module
+
+  subroutine make_molids_on()
+    integer i_mol, j, molid
+    logical is_off
+
+    i_mol = 0
+    do molid = 1, NUM_MOL
+      is_off = .false.  ! Whether molecule I_MOL is off
+      do j = 1, molids%n_off
+        if (molid .eq. molids%off(j)) then
+          is_off = .true.
+          exit
+        end if
+      end do
+      if (.not. is_off) then
+        i_mol = i_mol+1
+        molids%on(i_mol) = molid
+      end if
+    end do
+    molids%n_on = i_mol
+  end
+end
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+module welcome
+  use logging
+  use misc
+contains
+  !> Returns string representing current PFANT version
+
+  function pfant_version() result(v)
+    character(:), allocatable :: v
+    v = ' v15.7.9-alpha'
+  end
+
+  !> Displays welcome message
+  !>
+  !> Banner created by patorjk.com Text to ASCII Art Generator (TAAG) @ref IvritFont.
+  !>
+  !> @note This is considered logging at INFO level; therefore nothing will be outputted
+  !>       if the logging level is greater than this.
+  !>
+  !> @todo this is just an idea: I could make a bigger sky and select a random rectangle of it. At least 2x visible width and height to get uniform probability of given pixel being in the rectangle
+
+  subroutine print_welcome(unit_)
+    integer, intent(in) :: unit_
+
+    if (logging_level .gt. LOGGING_INFO) return
+
+
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+  !! Shadow
+  !  write(unit_,*) '   _ \   ____|  \      \  | __ __| '
+  !  write(unit_,*) '  |   |  |     _ \      \ |    |   '
+  !  write(unit_,*) '  ___/   __|  ___ \   |\  |    |   '
+  !  write(unit_,*) ' _|     _|  _/    _\ _| \_|   _|   '
+  !  write(unit_,*) '                                   '
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+  !! Italic
+  !  write(unit_,*) '     ____  _________    _   ________'
+  !  write(unit_,*) '    / __ \/ ____/   |  / | / /_  __/'
+  !  write(unit_,*) '   / /_/ / /_  / /| | /  |/ / / /   '
+  !  write(unit_,*) '  / ____/ __/ / ___ |/ /|  / / /    '
+  !  write(unit_,*) ' /_/   /_/   /_/  |_/_/ |_/ /_/     '
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+  !! Glenyn
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' ____ ____ ___  __   ____ '
+  !  write(unit_,*) ' | . \|  _\|  \ | \|\|_ _\'
+  !  write(unit_,*) ' | __/| _\ | . \|  \|  || '
+  !  write(unit_,*) ' |/   |/   |/\_/|/\_/  |/'
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+  !  write(unit_,*) '  ____  _____ _    _   _ _____ '
+  !  write(unit_,*) ' |  _ \|  ___/ \  | \ | |_   _|'
+  !  write(unit_,*) ' | |_) | |_ / _ \ |  \| | | |  '
+  !  write(unit_,*) ' |  __/|  _/ ___ \| |\  | | |  '
+  !  write(unit_,*) ' |_|   |_|/_/   \_\_| \_| |_|  '
+  !  write(unit_,*) ' '
+  !  write(unit_,*) ' '
+
+
+
+    !write(unit_,*) '________________________________________________________________________'
+    !write(unit_,*) '          `                  `                   `            ``        '
+    !write(unit_,*) '                                                   `    `     ``        '
+    !write(unit_,*) '             `                   `             `                        '
+    !write(unit_,*) '                                           ``  ``                       '
+    !write(unit_,*) '   `          @.     ``             `        ``                         '
+    !write(unit_,*) '                                                `                       '
+    !write(unit_,*) '                                               `                        '
+    !write(unit_,*) '                        @                                               '
+    !write(unit_,*) '             `      `              `                 `                  '
+    !write(unit_,*) '`                     `           `                                     '
+    !write(unit_,*) '                  `                                                     '
+    !write(unit_,*) '               @`@`@ `          `                                       '
+    !write(unit_,*) '`              `    `                            `             `        '
+    !write(unit_,*) '               `                                                        '
+    !write(unit_,*) '              `                   ____  _____ _    _   _ _____          '
+    !write(unit_,*) '               `        `        |  _ \|  ___/ \  | \ | |_   _|         '
+    !write(unit_,*) '        @        `  `            | |_) | |_ / _ \ |  \| | | |         ` '
+    !write(unit_,*) '                    @            |  __/|  _/ ___ \| |\  | | |           '
+    !write(unit_,*) '__/\/\/\_________________________|_|___|_|/_/___\_\_|_\_|_|_|_____/\/\__'
+
+
+    write(unit_,*) ''
+    write(unit_,*) ''
+    write(unit_,*) ''
+    write(unit_,*) '`   `        `              `                                           '
+    write(unit_,*) '       Welcome to PFANT      `                   `            ``        '
+    write(unit_,*) '                                                   `    `     ``        '
+    write(unit_,*) '             `                   `             `                        '
+    write(unit_,*) '                                           ``  ``                       '
+    write(unit_,*) '   `          @.     ``             `        ``                         '
+    write(unit_,*) '                                                `                       '
+    write(unit_,*) '                                               `                        '
+    write(unit_,*) '                        @                                               '
+    write(unit_,*) '             `      `              `                 `                  '
+    write(unit_,*) '`                     `           `    Bugs/crashes: please report at   '
+    write(unit_,*) '                  `                                                     '
+    write(unit_,*) '               @`@`@ `          `      http://github.com/trevisanj/pfant'
+    write(unit_,*) '`              `    `                            `             `        '
+    write(unit_,*) '               `                                                        '
+    write(unit_,*) '              `                     ____  _____ _    _   _ _____        '
+    write(unit_,*) '               `        `          |  _ \|  ___/ \  | \ | |_   _|       '
+    write(unit_,*) '        @        `  `              | |_) | |_ / _ \ |  \| | | |       ` '
+    write(unit_,*) '   _                @              |  __/|  _/ ___ \| |\  | | |         '
+    write(unit_,*) '__|o|______________________________|_|___|_|/_/___\_\_|_\_|_|_|_________'
+    write(unit_,*) ''
+    write(unit_,*) ''
+    write(unit_,*) ''
+  end
+end
+
+
+!'`   `        `              `                                           '
+!'          `                  `                   `            ``        '
+!'                                                   `    `     ``        '
+!'             `                   `             `                        '
+!'                                           ``  ``                       '
+!'   `          @.     ``             `        ``                         '
+!'                                                `                       '
+!'                                               `                        '
+!'                        @                                               '
+!'             `      `              `                 `                  '
+!'`                     `           `                                     '
+!'                  `                                                     '
+!'               @`@`@ `          `                                       '
+!'`              `    `                            `             `        '
+!'               `                                                        '
+!'              `                                                         '
+!'               `        `                                               '
+!'        @        `  `                                                 ` '
+!'                    @                                                   '
+
+!> Allows printing with coordinates on a "canvas"
+!>
+!> ASCII image is mounted, then printed on-screen at once
+
+module ascii_canvas
+  use logging
+  use misc
+  implicit none
+
+  integer, parameter, private :: MAX_DIM=100
+
+  type canvas
+    character(len=MAX_DIM) :: rows(MAX_DIM)
+    integer :: nr !< number of rows
+    integer :: nc !< number of columns
+  contains
+    procedure :: init => canvas_init
+    procedure :: paint => canvas_paint
+    procedure :: print => canvas_print
+  end type
+
+contains
+
+  !> Initializes with given number of rows and columns
+
+  subroutine canvas_init(this, nr, nc)
+    class(canvas) :: this
+    integer, intent(in) :: nr, nc
+
+    character(len=MAX_DIM) :: s_temp
+    integer :: i
+
+    call assert_le(nr, MAX_DIM, 'canvas_init()', 'nr', 'MAX_DIM')
+    call assert_le(nc, MAX_DIM, 'canvas_init()', 'nc', 'MAX_DIM')
+
+    s_temp = repeat(' ', MAX_DIM)
+
+    this%nr = nr
+    this%nc = nc
+    do i = 1,nr
+      this%rows(i) = s_temp
+    end do
+  end
+
+  !> "paints" string in canvas
+
+  subroutine canvas_paint(this, lin, col, str)
+    class(canvas) :: this
+    integer :: lin, col
+    character(len=*), intent(in) :: str
+
+    !integer :: len_eff, i
+
+
+    call assert_le(lin, this%nr, 'canvas_paint()', 'lin', 'this%nr')
+
+    call replace_part(this%rows(lin))
+
+    !len_eff = min(len(str), this%nc-col+1)
+
+    !write(*,*) 'len_eff=',len_eff
+
+
+    !if (len_eff .gt. 0) then
+    !  this%rows(lin)(col:col+len_eff-1) = str(1:len_eff)
+      !do i = 1, len_eff
+      !  this%rows(i+col-1, lin) = str(i:i)
+      !end do
+
+      !this%rows(col:col+len_eff-1, lin) = str(1:len_eff)
+      !this%rows(lin,col:col+len_eff-1) = str(1:len_eff)
+    !end if
+
+    !write(*,*) '#',this%rows(col:col+len_eff-1, lin),'#'
+    !write(*,*) '!',str(1:len_eff),'!'
+
+    !write(*,*) '$',this%rows,'$'
+
+  contains
+    !> Does the "painting"
+
+    subroutine replace_part(row)
+      character(len=*) :: row !< row of the canvas
+      integer :: len_eff
+
+      len_eff = min(len(str), this%nc-col+1)
+
+
+      if (len_eff .gt. 0) then
+        row(col:col+len_eff-1) = str(1:len_eff)
+      !do i = 1, len_eff
+      !  this%rows(i+col-1, lin) = str(i:i)
+      !end do
+
+      !this%rows(col:col+len_eff-1, lin) = str(1:len_eff)
+      !this%rows(lin,col:col+len_eff-1) = str(1:len_eff)
+    end if
+
+    !write(*,*) '#',this%rows(col:col+len_eff-1, lin),'#'
+    !write(*,*) '!',str(1:len_eff),'!'
+
+    !write(*,*) '$',this%rows,'$'
+  end
+  end
+
+  !> prints to given unit
+
+  subroutine canvas_print(this, flag_frame, level)
+    class(canvas) :: this
+    !> Whether to print a "frame" around (optional). Default: .false.
+    logical, intent(in), optional :: flag_frame
+    !> Logging level (optional). Default: LOGGING_INFO
+    integer, intent(in), optional :: level
+
+    logical :: flag_frame_
+    character(len=:), allocatable :: dashes ! for the frame
+    character(len=MAX_DIM) :: s_temp
+    integer :: level_, i
+
+    flag_frame_ = .false.
+    if (present(flag_frame)) flag_frame_ = flag_frame
+
+    level_ = LOGGING_INFO
+    if (present(level)) level_ = level
+
+
+    if (flag_frame_) then
+      dashes = repeat('-', this%nc)
+      call log_any('+'//dashes//'+', level_, .false.)
+      do i = 1, this%nr
+        s_temp = this%rows(i)
+        call log_any('|'//s_temp(1:this%nc)//'|', level_, .false.)
+      end do
+      call log_any('+'//dashes//'+', level_, .false.)
+    else
+      do i = 1, this%nr
+        s_temp = this%rows(i)
+        call log_any(s_temp(1:this%nc), level_, .false.)
+      end do
+    end if
+  end
+end

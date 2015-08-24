@@ -51,6 +51,7 @@
 		<Unit filename="../lib/misc_math.f90">
 			<Option weight="1" />
 		</Unit>
+		<Unit filename="../lib/molecules_ids.f90" />
 		<Unit filename="../lib/options2.f90">
 			<Option weight="0" />
 		</Unit>
@@ -88,12 +89,10 @@
 		<Unit filename="kapmol.f90">
 			<Option weight="6" />
 		</Unit>
-		<Unit filename="molecules_ids.f90">
-			<Option weight="1" />
-		</Unit>
 		<Unit filename="pfant.f90">
 			<Option weight="8" />
 		</Unit>
+		<Unit filename="pfant_x.f90" />
 		<Unit filename="reader_atomgrade.f90">
 			<Option weight="4" />
 		</Unit>
