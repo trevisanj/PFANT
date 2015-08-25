@@ -48,17 +48,17 @@ contains
     if (config_teff .eq. -1) then
       call assure_read_main()
       x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
-      call parse_aux_log_assignment('x_teff', real42str(x_teff))
+      call parse_aux_log_assignment('x_teff', real42str(x_teff, 1))
     end if
     if (config_glog .eq. -1)  then
       call assure_read_main()
       x_glog = real(main_glog)
-      call parse_aux_log_assignment('x_glog', real42str(x_glog))
+      call parse_aux_log_assignment('x_glog', real42str(x_glog, 3))
     end if
     if (config_asalog .eq. -1) then
       call assure_read_main()
       x_asalog = real(main_asalog)
-      call parse_aux_log_assignment('x_asalog', real42str(x_asalog))
+      call parse_aux_log_assignment('x_asalog', real42str(x_asalog, 3))
     end if
   end
 end
@@ -118,7 +118,7 @@ contains
      aa, bb, cc, dd, &   ! input records
      ee, ff, z1, z2, zz  ! records that are calculated by interpol()
 
-    character*5 :: tira = ' Ple '  !> @todo what does "Ple" mean?
+    character*5 :: tira = ' Ple '  !> @todo ask Elvis what does "Ple" mean?
     character*20 tir    ! titre du modele interpole
     character*65 nomfiple
     real*4 bid0, vvt, tostand, t0, t1, tau, to0, tttt
@@ -384,8 +384,8 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(x_asalog)//' is out of interval ['//&
-       real42str(gridsmap_asalog(1))//', '//real42str(gridsmap_asalog(gridsmap_num_files))//'[')
+      call pfant_halt('Metallicity '//real42str(x_asalog, 3)//' is out of interval ['//&
+       real42str(gridsmap_asalog(1), 3)//', '//real42str(gridsmap_asalog(gridsmap_num_files), 3)//'[')
     end if
   end
 
@@ -458,10 +458,7 @@ contains
   !> Outputs are in module variables id11, id12, id21, id22
   !>
   !> @note This routine has been re-designed to sweep the whole models file to mount the
-  !> tables
-  !>
-  !> @todo issue ask BLB I tested with (teff=2400, glog=-1), and it turns out that it selects
-  !> records
+  !> tables (there was a table hard-coded before)
 
   subroutine locatab(path)
     character(len=*), intent(in) :: path
@@ -529,8 +526,8 @@ contains
 
     call close_mod_file()
 
-    call log_debug('teff='//real42str(x_teff))
-    call log_debug('glog='//real42str(x_glog))
+    call log_debug('teff='//real42str(x_teff), 1)
+    call log_debug('glog='//real42str(x_glog), 3)
     call log_debug('nt='//int2str(nt))
     write(lll,*) 'idt=', (idt(i), i=1,nt)
     call log_debug(lll)

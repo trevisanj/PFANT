@@ -39,7 +39,7 @@ module dimensions
   integer, parameter :: MAX_FILETOH_NUMFILES=13
   !> ?doc?
   integer, parameter :: MAX_FILETOH_JMAX=50
-  !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_filetoh_r_JMAX*2-1 @endcode
+  !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
 
   !=====

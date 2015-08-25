@@ -102,28 +102,38 @@ contains
 
 
   !> Converts a real*8 number to string
-  !>
-  !> @todo improve representation
 
-  pure function real82str(x) result (string)
+  pure function real82str(x, dec) result (string)
     real*8, intent(in) :: x
+    !> Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
+    integer, intent(in), optional :: dec
     character(:), allocatable :: string
     character(80) :: ch
 
-    write(ch,*) x
+    if (present(dec)) then
+      write(ch,'f18.'//int2str(dec)) x
+    else
+      write(ch,*) x
+    end if
+
     string = trim(adjustl(ch))
   end function
 
-  !> Converts a float number to string
-  !>
-  !> @todo improve representation
+  !> Converts a real*4 number to string
 
-  pure function real42str(x) result (string)
+  pure function real42str(x, dec) result (string)
     real*4, intent(in) :: x
+    !> Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
+    integer, intent(in), optional :: dec
     character(:), allocatable :: string
     character(80) :: ch
 
-    write(ch,*) x
+    if (present(dec)) then
+      write(ch,'f18.'//int2str(dec)) x
+    else
+      write(ch,*) x
+    end if
+
     string = trim(adjustl(ch))
   end function
 
@@ -511,8 +521,6 @@ contains
 
   !=======================================================================================
   !> Fills molids%on and molids%n_on based on their complements.
-  !>
-  !> @todo see what is public and what is private in this module
 
   subroutine make_molids_on()
     integer i_mol, j, molid

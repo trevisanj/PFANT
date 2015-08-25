@@ -1177,7 +1177,7 @@ contains
 
 
       im = 0
-      do ih = 1,main_filetoh_numfiles
+      do ih = 1,filetoh_numfiles
         allhy = filetoh_llhy(ih)-lzero
 
         if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
@@ -1188,8 +1188,8 @@ contains
           iht = ih
 
           !#logging
-          712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,a,2x,'ih=',i5)
-          write(lll,712) im, filetoh_llhy(ih), main_filetohy(iht), iht
+          712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,'filename=',a,2x,'ih=',i5)
+          write(lll,712) im, filetoh_llhy(ih), ''''//trim(filetoh_filenames(iht))//'''', iht
           call log_info(lll)
 
           ! Lecture tau raie hydrogene et interpolation de tauh
@@ -1474,7 +1474,7 @@ contains
        phi, t, v, vm, lambi
 
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real82str(tetaef))
+    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real82str(tetaef, 3))
 
 
       if (atomgrade_f_nblend .ne. 0) then
@@ -1523,13 +1523,6 @@ contains
 
               if(atomgrade_f_elem(k) .eq. ' O') then
                 ! #NOXIG: oxygen is a particular case here
-
-                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
-                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
-                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222', k
-                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
-                write (*,*) 'NOXIG 22222222222222222222222222222222222222222222'
-
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k)
               else
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
@@ -1882,31 +1875,8 @@ contains
         tap = 1.-alphl(n)
         top = 10.**(-atomgrade_f_kiex(k)*modeles_teta(n))
 
-
-
-        !> @todo noxig means number of atoms of oxygen
-        !>
-        !> @todo atomgrade first element must be oxygen
-        !>
-        !> @todo ISSUE BIG CONSIDERING Oxygen 1 but may have been filtered out!
-        !>
-        !> @todo ISSUE ask BLB why is Oxygen treated differently
-        !>
-        !> @todo issue ask blb what if we want more than 1 line of Oxygen?
-        !>       My suggestion here is to have a vector flag what is set to true whenever
-        !>       the name of the element is "O1" and test this flag in routine popadelh()
-
-!        if(k .eq. 1) then
-
-
         if(atomgrade_f_elem(k) .eq. ' O') then
-          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
-          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
-          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111', k
-          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
-          write (*,*) 'NOXIG 11111111111111111111111111111111111111111111'
-
-          ! #NOXIG: 
+          ! #NOXIG: oxygen is treated differently
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         else
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
@@ -1933,7 +1903,7 @@ contains
   !> @todo test the pointers
 
   subroutine calc_tauh(i_file, dtot, ttd, ilzero)
-    integer, intent(in) :: i_file !< index of a filetoh file
+    integer, intent(in) :: i_file !< index pointing to element of the filetoh_* arrays
     !> ?doc? Number of calculation steps, I think. ISSUE: better explanation
     !> Calculated as: @code dtot = (lfin-lzero)/main_pas + 1.0005 @endcode
     integer, intent(in) :: dtot
@@ -1950,16 +1920,16 @@ contains
     real*8 :: ftth(MAX_DTOT)
 
     real*8 del
-    ! pointers, point to information within filetoh_r_* matrices at the beginning of\
+    ! pointers, point to information within filetoh_* matrices at the beginning of
     ! a specific file.
     ! This simplifies the notation within the loop below and is probably faster than
-    ! accessing the variables filetoh_r_* directly
+    ! accessing the variables filetoh_* directly
     real*8, pointer, dimension(:,:) :: now_th
     real*8, pointer, dimension(:)   :: now_lambdh
 
-    now_jmax   = filetoh_r_jmax(i_file)
-    now_th     => filetoh_r_th(i_file, :, :)
-    now_lambdh => filetoh_r_lambdh(i_file, :)
+    now_jmax   = filetoh_jmax(i_file)
+    now_th     => filetoh_th(i_file, :, :)
+    now_lambdh => filetoh_lambdh(i_file, :)
 
     jjmax = 2*now_jmax-1
     jma1 = now_jmax-1
@@ -1979,8 +1949,8 @@ contains
       end do
     end do
 
-    !~WRITE(6,'(A80)') filetoh_r_TITRE
-    !~WRITE(6,'(A11)') filetoh_r_TTT
+    !~WRITE(6,'(A80)') filetoh_TITRE
+    !~WRITE(6,'(A11)') filetoh_TTT
     !~WRITE(6,'('' now_jmax='',I3)') now_jmax
     !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)
     !~WRITE(6,'(2X,5F14.3)') (LLAMBDH(JJ), JJ=1,JJMAX)

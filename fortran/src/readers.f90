@@ -31,7 +31,7 @@ module reader_dissoc
   ! dissoc.dat, metals part
   integer dissoc_nmetal !< number of elements considered in chemical equilibrium
   integer dissoc_nimax  !< maximum number of iterations in Newton-Rapson method
-  character*2 dissoc_elems(MAX_DISSOC_NMETAL)    !< Elements table field 1/6: element symbol
+  character*2 dissoc_elems(MAX_DISSOC_NMETAL)    !< Elements table field 1/6: atomic symbol
   integer     dissoc_nelemx(MAX_DISSOC_NMETAL)   !< Elements table field 2/6: atomic number
   real*8      dissoc_ip(MAX_DISSOC_NMETAL)      !< Elements table field 3/6: ?
   integer     dissoc_ig0(MAX_DISSOC_NMETAL),  & !< Elements table field 4/6: ?
@@ -707,7 +707,6 @@ contains
         hmap_rows(hmap_n)%kiex = t_kiex
         hmap_rows(hmap_n)%c1 = t_c1
       end if
-      print *, 'read row ', i, ' successfully'
     end do
     close(unit=UNIT_)
 
@@ -772,18 +771,18 @@ module reader_filetoh
   !=====
   ! These are read by read_filetoh() and processed by filetoh_auh()
   !> ?doc?
-  character*80 filetoh_r_titre(MAX_FILETOH_NUMFILES)
+  character*80 filetoh_titre(MAX_FILETOH_NUMFILES)
   !> ?doc?
-  character*11 filetoh_r_ttt(MAX_FILETOH_NUMFILES)
+  character*11 filetoh_ttt(MAX_FILETOH_NUMFILES)
   !> Will be pointer target
   !> ?doc?
   real*8, target, dimension(MAX_FILETOH_NUMFILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
-   filetoh_r_th
+   filetoh_th
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(MAX_FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_r_lambdh
+  real*8, target, dimension(MAX_FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_lambdh
   !> ?doc?
-  integer filetoh_r_jmax(MAX_FILETOH_NUMFILES)
+  integer filetoh_jmax(MAX_FILETOH_NUMFILES)
 
   !> This variable was a constant hard-coded as
   !> @code
@@ -845,16 +844,16 @@ contains
 
         i = i+1
 
-        read(unit_,'(a80)') filetoh_r_titre(i)
-        read(unit_,'(a11)') filetoh_r_ttt(i)
-        read(unit_,*) filetoh_r_jmax(i)
-        read(unit_,'(5f14.3)') (filetoh_r_lambdh(i,j), j=1,filetoh_r_jmax(i))
-        read(unit_,'(5e12.4)') ((filetoh_r_th(i,j,n),&
-         j=1,filetoh_r_jmax(i)), n=1,modeles_ntot)
+        read(unit_,'(a80)') filetoh_titre(i)
+        read(unit_,'(a11)') filetoh_ttt(i)
+        read(unit_,*) filetoh_jmax(i)
+        read(unit_,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
+        read(unit_,'(5e12.4)') ((filetoh_th(i,j,n),&
+         j=1,filetoh_jmax(i)), n=1,modeles_ntot)
         close(unit_)
 
         ! Takes first lambda of file as a reference
-        clam = filetoh_r_lambdh(i, 1)
+        clam = filetoh_lambdh(i, 1)
 
         if (.not. h_line_is_inside(clam, llzero, llfin)) then
           i = i-1  ! "rewinds" 1

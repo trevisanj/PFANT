@@ -79,12 +79,12 @@ contains
     if (config_fwhm .eq. -1) then
       call assure_read_main()
       x_fwhm = main_fwhm
-      call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm))
+      call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm, 3))
     end if
     if (config_pat .eq. -1) then
       call assure_read_main()
       x_pat = main_pas
-      call parse_aux_log_assignment('x_pat', real82str(x_pat))
+      call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
     if (config_fn_flux .eq. '?') then
       call assure_read_main()
@@ -219,8 +219,8 @@ contains
     ip = int(x_pat/rs_dpas)
 
     if (ip .lt. 1) then
-      call log_warning('New step ('//real82str(x_pat)//&
-       ') lower than old step ('//real82str(rs_dpas)//'), ip forced to 1')
+      call log_warning('New step ('//real82str(x_pat, 3)//&
+       ') lower than old step ('//real82str(rs_dpas, 3)//'), ip forced to 1')
       ip = 1
     end if
 

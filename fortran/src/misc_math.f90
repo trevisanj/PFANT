@@ -58,7 +58,9 @@ contains
   !> LA FONCTION EST ENSUITE NORMALISEE
   !> @endverbatim
   !>
-  !> @todo sort this reference Reference: Q.S.R.T. VOL16,611 (1976)
+  !> @par Reference
+  !> Drayson, S. Roland. "Rapid computation of the Voigt profile." Journal of
+  !> Quantitative Spectroscopy and Radiative Transfer 16.7 (1976): 611-614.
 
   subroutine hjenor(y,x,del,phi)
     real*8, intent(in) :: &
@@ -338,8 +340,9 @@ contains
   !---------------------------------------------------------------------------------------
   !> CALCUL DE CH VAN DER WAALS  APPROXIMATIONS D UNSOLD (1955)
   !>
+  !> @verbatim
   !> SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54, SINON 82-55
-  !> @todo improve documentation ?doc?
+  !> @endverbatim
 
   real*8 function calch(kii, iz, kiex1, is1, kiex2, is2)
     real*8, intent(in) :: &
@@ -824,8 +827,6 @@ contains
 
 
   !> Generic routine, called by flin1() and flinh()
-  !>
-  !> @todo ISSUE TOP using 7 points in flin1() MODE!!!!!!!!!!!!!!!
 
   subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
     implicit none
@@ -877,12 +878,6 @@ contains
         tolim=4.0
       else
         ipoint = 6
-
-        ! if (mode_ .eqv. mode_flin1) then
-        !   ipoint = 7  !> @todo ISSUE big !!!!! i kept this behaviour until i get feedback from blb
-        ! else
-        !   ipoint = 6
-        ! end if
         tolim=3.89
       end if
 
@@ -958,8 +953,8 @@ contains
 
         call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
          int2str(ntot) //'; to(' //&
-         int2str(ntot) // ') = ' // real82str(flin_to(ntot)) // ' (must be >= '//&
-          real82str(tolim) // ')')
+         int2str(ntot) // ') = ' // real82str(flin_to(ntot), 7) // ' (must be >= '//&
+          real82str(tolim, 3) // ')')
         !write(lll,1504)
         !call log_halt(lll)
         !write(lll,1503) ntot, flin_to(ntot)

@@ -1,6 +1,3 @@
-!> @todo remove au_* prefixes
-
-
 ! This file is part of PFANT.
 !
 ! PFANT is free software: you can redistribute it and/or modify
@@ -39,15 +36,6 @@
 !>
 !> Public: only subroutine absoru() and variable absoru_znh
 !>
-!> @todo module absoru in lack of attention
-!>
-!> @todo Identify outputs and inputs
-!>
-!> @todo CHECK ALL TYPES
-!>
-!> @todo CHECK ALL SIZES
-!>
-!> @todo probably get rid of au_ prefix
 
 module absoru
   use absoru_data
@@ -118,7 +106,6 @@ contains
   !>
   !> @note 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
   !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
-  !> @todo structure arguments for all routines in this file
   !>
   !> A.M.Colle
 
@@ -254,7 +241,6 @@ contains
       end do
     end do
 
-    !> @todo investigate whether absoru_totkap is actually integer or real!
     absoru_totkap(2)=0.
     if (calu.eq.1) unit=au_rho
     If (calu.eq.2) unit=absoru_toc ! RAPPEL  absoru_toc=NBRE DE NOYAUX DE H PAR CM3
@@ -311,7 +297,6 @@ contains
 
   subroutine gaunth(wl, flag_hydro2)
     !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to sqrt() in hydro2
-    !> @todo issue decide upon a single logic, I think
     logical, intent(in) :: flag_hydro2
     real*8 wl, cond, delta, rk, zj, zp, zq
     integer i, j, jj, js
@@ -330,7 +315,6 @@ contains
       if (i .ne. 2) go to 1334
 
       !
-
       ! CE N'EST PAS UNE DISCONTINUITE DE L'HYDROGENE
       !
 
@@ -381,8 +365,6 @@ contains
         else
           rk = sqrt(zq)
         end if
-
-
 
         go to (1111,1113,1115,1117,1119,2000,2010), j
 
@@ -547,7 +529,6 @@ contains
   subroutine sahath(th, flag_hydro2)
     real*8, intent(in) :: th
     !> whether to use PFANT or HYDRO2 logic
-    !> @todo issue decide upon a single logic, I think
     logical, intent(in) :: flag_hydro2
     real*8 :: tempo, tempor, potepo
     integer i, j, n, nrr

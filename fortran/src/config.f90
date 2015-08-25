@@ -255,16 +255,11 @@ contains
       character(len=*), intent(in) :: name
       integer :: i
 
-      ! todo take it out write(*,*) '>>>>> looking up @', name, '@'
-
       do i = 1, size(options)
-        ! todo take it out write(*,*) '>>>>> checking if @', options(i)%name, '@'
         if (name == options(i)%name) then
-          ! todo take it out write (*,*) '>>>>> IT IS'
           lookup_long = i
           return
         else
-          ! todo take it out write (*,*) '>>>>> IT IS NOT'
         end if
       end do
       ! if we get to this point, the option was not found
@@ -801,7 +796,7 @@ contains
     call add_option('h', 'vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
      'velocity of microturbulence')
 
-    call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph), &
+    call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph, 2), &
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
 
     call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
@@ -933,13 +928,13 @@ contains
         call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
       case ('teff')
         config_teff = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_teff', real82str(config_teff))
+        call parse_aux_log_assignment('config_teff', real82str(config_teff, 1))
       case ('glog')
         config_glog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_glog', real82str(config_glog))
+        call parse_aux_log_assignment('config_glog', real82str(config_glog, 3))
       case ('asalog')
         config_asalog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_asalog', real82str(config_asalog))
+        call parse_aux_log_assignment('config_asalog', real82str(config_asalog, 3))
       case ('inum')
         config_inum = parse_aux_str2int(opt, o_arg)
         if (config_inum .lt. 1) then !#validation
@@ -975,10 +970,10 @@ contains
         call parse_aux_assign_fn(o_arg, config_nomplot, 'config_nomplot')
       case ('vvt')
         config_vvt = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_vvt', real82str(config_vvt))
+        call parse_aux_log_assignment('config_vvt', real82str(config_vvt, 3))
       case ('zph')
         config_zph = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_zph', real82str(config_zph))
+        call parse_aux_log_assignment('config_zph', real82str(config_zph, 2))
       case ('fn_absoru2')
         call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
       case ('fn_hmap')
@@ -999,13 +994,13 @@ contains
         end if
       case ('clam')
         config_clam = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_clam', real82str(config_clam))
+        call parse_aux_log_assignment('config_clam', real82str(config_clam, 2))
       case ('kiex')
         config_kiex = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_kiex', real82str(config_kiex))
+        call parse_aux_log_assignment('config_kiex', real82str(config_kiex, 4))
       case ('c1')
         config_c1 = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_c1', real82str(config_c1))
+        call parse_aux_log_assignment('config_c1', real82str(config_c1, 4))
       case ('hmap')
         config_hmap = .true.
         call parse_aux_log_assignment('config_hmap', '.true.')
@@ -1042,13 +1037,13 @@ contains
 
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm))
+        call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm, 3))
       case ('convol')
         config_convol = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_convol', logical2str(config_convol))
       case ('pat')
         config_pat = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_pat', real82str(config_pat))
+        call parse_aux_log_assignment('config_pat', real82str(config_pat, 3))
       case ('fn_cv')
         call parse_aux_assign_fn(o_arg, config_fn_cv, 'config_fn_cv')
       case ('flam')
@@ -1091,8 +1086,7 @@ contains
   !=======================================================================================
   !> Assigns option argument to filename variable
   !>
-  !> @todo This subroutine is currently not doing much but in the future some filename
-  !> validation could be added.
+  !> @todo Filename validation could be added here.
 
   subroutine parse_aux_assign_fn(arg, dest, varname)
     character(len=*), intent(in)  :: arg !< command-line option argument
@@ -1210,10 +1204,6 @@ contains
 
   !=======================================================================================
   !> Parses and validates all command-line arguments.
-  !>
-  !> @todo will inform ' ' for options with no short equivalent, but I don't know if options2.f90 is prepared for this
-  !>
-  !> @todo Documentation: somehow think how to link option descriptions below, their default values, and the documentation for their respective config_* at their declarations.
   !>
   !> @note If finds "-h" or "--help", will display help text and halt.
 

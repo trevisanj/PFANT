@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from pfant.f90
-MD5:3100caa84cb277adc8e51b664142c081 -- If you edit this, you'll get what you deserve.
+MD5:c7061ec960262a73055ef4f651cab95c -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -479,36 +479,36 @@ UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '64'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '13')) 0 () () () 0 0)
-169 'filetoh_llhy' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13')) 0 () () () 0 0)
-170 'filetoh_numfiles' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() () 0 () () () 0 0)
-171 'filetoh_r_jmax' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+169 'filetoh_jmax' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13')) 0 () () () 0 0)
-172 'filetoh_r_lambdh' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+170 'filetoh_lambdh' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0
 REAL ()) 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1')
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 ()
 () () 0 0)
-173 'filetoh_r_th' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+171 'filetoh_llhy' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13')) 0 () () () 0 0)
+172 'filetoh_numfiles' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() () 0 () () () 0 0)
+173 'filetoh_th' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0
 REAL ()) 0 0 () (3 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1')
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '50')) 0 () () () 0 0)
-174 'filetoh_r_titre' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+174 'filetoh_titre' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '80'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '13')) 0 () () () 0 0)
-175 'filetoh_r_ttt' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
+175 'filetoh_ttt' 'reader_filetoh' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '11'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
@@ -1529,12 +1529,12 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 156 'dissoc_mol' 0 157 'dissoc_natom' 0 158 'dissoc_nelem' 0 159
 'dissoc_nelemx' 0 160 'dissoc_nimax' 0 161 'dissoc_nmetal' 0 162
 'dissoc_nmol' 0 163 'dissoc_switer' 0 164 'entering' 0 165 'error_unit'
-0 166 'execonf_name' 0 167 'filetoh_filenames' 0 168 'filetoh_llhy' 0
-169 'filetoh_numfiles' 0 170 'filetoh_r_jmax' 0 171 'filetoh_r_lambdh' 0
-172 'filetoh_r_th' 0 173 'filetoh_r_titre' 0 174 'filetoh_r_ttt' 0 175
-'flag_open' 0 176 'flag_read_abonds' 0 177 'flag_read_dissoc' 0 178
-'flag_read_main' 0 179 'from_main' 0 180 'full_path_w' 0 181 'get_molid'
-0 185 'get_num_records' 0 188 'get_option_name' 0 191 'getopt' 0 195
+0 166 'execonf_name' 0 167 'filetoh_filenames' 0 168 'filetoh_jmax' 0
+169 'filetoh_lambdh' 0 170 'filetoh_llhy' 0 171 'filetoh_numfiles' 0 172
+'filetoh_th' 0 173 'filetoh_titre' 0 174 'filetoh_ttt' 0 175 'flag_open'
+0 176 'flag_read_abonds' 0 177 'flag_read_dissoc' 0 178 'flag_read_main'
+0 179 'from_main' 0 180 'full_path_w' 0 181 'get_molid' 0 185
+'get_num_records' 0 188 'get_option_name' 0 191 'getopt' 0 195
 'gridsmap_asalog' 0 204 'gridsmap_fn' 0 205 'gridsmap_num_files' 0 206
 'h_line_is_inside' 0 207 'h_line_width' 0 213 'handler_dont_care' 0 214
 'handler_error' 0 215 'handler_ok' 0 216 'hmap_copy_from_main' 0 217

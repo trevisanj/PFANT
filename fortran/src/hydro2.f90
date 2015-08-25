@@ -342,8 +342,6 @@ module hydro2_x
   !>       because this information is available inside infile:main
   logical :: x_ptdisk
 
-  !> @todo at least I could write a module shared between innewmarcs and hydro2 to avoid all this code duplication
-
   real*8 :: x_teff, x_glog, x_asalog
   integer :: x_inum
 
@@ -394,17 +392,17 @@ contains!> Initializes x_* variables
     if (config_teff .eq. -1) then
       call assure_read_main()
       x_teff = main_teff
-      call parse_aux_log_assignment('x_teff', real82str(x_teff))
+      call parse_aux_log_assignment('x_teff', real82str(x_teff, 1))
     end if
     if (config_glog .eq. -1)  then
       call assure_read_main()
       x_glog = main_glog
-      call parse_aux_log_assignment('x_glog', real82str(x_glog))
+      call parse_aux_log_assignment('x_glog', real82str(x_glog, 3))
     end if
     if (config_asalog .eq. -1) then
       call assure_read_main()
       x_asalog = main_asalog
-      call parse_aux_log_assignment('x_asalog', real82str(x_asalog))
+      call parse_aux_log_assignment('x_asalog', real82str(x_asalog, 3))
     end if
 
 
@@ -417,7 +415,7 @@ contains!> Initializes x_* variables
          'but not prepared for multiple microturbulence velocities')
       end if
       x_vvt = main_vvt(1)
-      call parse_aux_log_assignment('x_vvt', real82str(x_vvt))
+      call parse_aux_log_assignment('x_vvt', real82str(x_vvt, 3))
     end if
   end
 end
@@ -478,8 +476,6 @@ module hydro2_calc
   !=====
 
   !> ?doc?
-  !> @todo issue this variable is being initialized at 46 in this module and reset to 1
-  !> in subroutine raiehu()
   !>
   !> @todo Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
   !> gotta add parameter to absoru_data.f and absoru.f90
@@ -517,14 +513,12 @@ module hydro2_calc
   !> Maximum value for na/nb (superior/inferior level)
   integer, parameter :: MAX_LEVEL = 20
 
-  !> @todo issue was being used uninitialized
+  !> ?doc? (note: this was uninitialized, has been initialized to zero)
   real*8, parameter :: C(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
 
-  !> ?doc?
-  !> @todo issue was being used uninitialized
+  !> ?doc? (note: this was uninitialized, has been initialized to zero)
   integer :: nbmin = 0
-  !> ?doc?
-  !> @todo issue was being used uninitialized
+  !> ?doc? (note: this was uninitialized, has been initialized to zero)
   integer :: nbmax = 0
 
 contains
@@ -670,8 +664,7 @@ contains
       call pfant_halt(lll)
     end if
 
-    !> @todo issue mmu was passed unitialized
-    mmu = 0
+    mmu = 0 ! (note: this was uninitialized, has been initialized to zero)
     call fluxis(mmu, fl,fc)
     do j=1,m_jmax
       r(j)=fl(j)/fc
@@ -977,7 +970,7 @@ contains
     m_th%c1 = c(m_th%nb)
 
     !> @todo issue overwriting data vector???
-    m_dlam(1)=delta
+    m_dlam(1) = delta
 
     cl2 = xb**2
     go to 80
@@ -1104,8 +1097,7 @@ contains
 
       !     CALCUL AUX DIFFERENTS POINTS DU PROFIL
 
-      !> @todo issue whaaaaat??? resetting m_jmax???
-      19 m_jmax = 1
+      19 m_jmax = 1  ! this is OK, this is not executed as long as LL>=2
 
 
       call log_debug(' VOUS ENTEZ DANS LA BOUCLE INTERIEURE QUI PORTE SUR L INDICE DE POINT DU PROFIL')
