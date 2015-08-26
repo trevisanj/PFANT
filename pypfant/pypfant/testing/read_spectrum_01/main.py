@@ -12,7 +12,7 @@ class test_read_spectrum_01(unittest.TestCase):
     def test_read_pfant(self):
         print "*****************************************************************"
 
-        o = spectrum()
+        o = Spectrum()
         o.read_pfant('fl.norm')
 
         print "ikeytot = ", o.ikeytot
@@ -29,11 +29,11 @@ class test_read_spectrum_01(unittest.TestCase):
         print "echy = ", o.echy
         print "fwhm = ", o.fwhm
         print "============"
-        print "Size of spectrum: ", len(o)
+        print "Size of Spectrum: ", len(o)
 
     def test_read_nulbad(self):
         print "*****************************************************************"
-        o = spectrum()
+        o = Spectrum()
         o.read_nulbad('fl.norm.nulbad')
 
         print "ikeytot = ", o.ikeytot
@@ -50,7 +50,7 @@ class test_read_spectrum_01(unittest.TestCase):
         print "echy = ", o.echy
         print "fwhm = ", o.fwhm
         print "============"
-        print "Size of spectrum: ", len(o)
+        print "Size of Spectrum: ", len(o)
 
 if __name__ == '__main__':
     unittest.main()

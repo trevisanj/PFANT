@@ -21,9 +21,7 @@ module nulbad_calc
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
-  ! Attention: MAX_P_IFT *must* be an odd number!
-  !> @todo assertion MAX_P_IFT *must* be an odd number!
-  integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function"
+  integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function" (odd number)
   integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"
 
   ! Gaussian function variables, calculated by cafconvh()
@@ -51,7 +49,7 @@ module nulbad_calc
 
   integer, parameter :: UNIT_=199 !< unit for file I/O
 
-  ! x_* values may come either from command line or infile:main
+  ! x_* values may come either from command line or dfile:main
   real*8 :: x_fwhm, x_pat
   character*64 :: x_fn_flux, x_fn_cv
   !> Whether or not the spectrum is normalized.
@@ -63,14 +61,20 @@ contains
   !> Initialization of this module
   !>
   !> One of the tasks if the initialization of the x_* variables, whose values may be
-  !> either set from the command line or taken from infile:main
+  !> either set from the command line or taken from dfile:main
 
   subroutine nulbad_init()
+    ! MAX_P_IFT must be an odd number
+    if (mod(MAX_P_IFT, 2) .eq. 0) then
+      call pfant_halt('MAX_P_IFT='//int2str(MAX_P_IFT)//' must be an odd number', &
+       is_assertion=.true.)
+    end if
+
     !=====
     ! Assigns x_*
     !=====
     ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from infile:main
+    ! pick values from dfile:main
     x_fwhm = config_fwhm
     x_pat = config_pat
     x_fn_flux = config_fn_flux
@@ -172,7 +176,6 @@ contains
 
 
     close(unit=UNIT_)
-    !> @todo check if Fortran needs explicit deallocation
   end
 
   !=======================================================================================
@@ -393,7 +396,6 @@ contains
 
     bb = 3*aa
     write(lll,133) bb
-    !> @todo numbers in message probably wrong
     133  FORMAT(' LE PROFIL GAUSSIEN PAR LEQUEL ON CONVOLE NE PEUT', &
       ' AVOIR PLUS DE 121 PTS (60 DE CHAQUE COTE DU CENTRE); ', &
       ' CETTE GAUSSIENNE EST CALCULEE JUSQU A UNE DISTANCE DE', &
@@ -407,12 +409,10 @@ contains
     p_ift = 1 + 2*ifd
 
     if(p_ift .gt. MAX_P_IFT)  then
-      write(lll,137)
-      !> @todo numbers in message probably wrong
+      write(lll,137) MAX_P_IFT, p_ift
       137  FORMAT(5X,'LA FCTION PAR LAQUELLE VOUS VOULEZ CONVOLER A ', &
-       ' PLUS DE 500 PTS -CHANGEZ LE PAS-. (LE NBRE DE PTS TOTAL ', &
-       ' SUR LA FCTION S OBTIENT EN MULTIPLIANT PAR 6 LE NBRE ', &
-       ' DE PTS SUR LA DEMI LARGEUR')
+       ' PLUS DE ',i4,' PTS (ift=)',i4,': -CHANGEZ LE PAS-. (LE NBRE DE PTS TOTAL ', &
+       ' SUR LA FCTION S OBTIENT EN MULTIPLIANT PAR 6 LE NBRE DE PTS SUR LA DEMI LARGEUR')
       call pfant_halt(lll)
     end if
 

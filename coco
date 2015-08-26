@@ -1,0 +1,6 @@
+# added by add_paths.py (PFANT)
+export PYTHONPATH="${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant" 
+# added by add_paths.py (PFANT)
+export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin" 
+# added by add_paths.py (PFANT)
+export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/src/bin" 

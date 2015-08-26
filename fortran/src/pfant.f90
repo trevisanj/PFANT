@@ -13,6 +13,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -36,11 +37,6 @@ module dissoc
    sat4_po,   & !< ?doc?
    sat4_pti,  & !< ?doc?
    sat4_pfe     !< ?doc?
-
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
 
   private :: die ! private subroutine
 
@@ -85,7 +81,7 @@ contains
     ! Infers other variables from variables dissoc_*
     do i = 1, dissoc_nmetal
       cclogi = dissoc_cclog(i)+main_afstar
-      !> @todo ISSUE ask blb This is the thing that Beatriz mentioned that it is not used anymore, I think. (MT): Get rid of it.
+      !> @todo xxcor on the way. MT: Get rid of it.
       cclogi = cclogi+main_xxcor(i)
       if(i .eq. 1) cclogi = 0.0
       if(i .eq. 2) cclogi = -1.0
@@ -116,10 +112,9 @@ contains
 
     !> @todo issue ?what? ?doc? if atomic number 99 was already in dissoc.dat?
     p(Z_ELECTRON) = 1.0e-10
-    !> @todo ISSUE: what about 100?
 
+    !
     !*****INPUT E
-
 
     do 1020 ito = 1,modeles_ntot
       theta = modeles_teta(ito)
@@ -257,7 +252,8 @@ contains
 
   !=======================================================================================
   !> DIE9
-  !> @todo issue ?what? ?doc?
+  !>
+  !> ?doc?
 
   subroutine die(tem, pg)
     real*8 tem, pg
@@ -317,7 +313,6 @@ contains
     ph = 0.5*(sqrt(dhh*(dhh+4.0*pg/(1.0+heh)))-dhh)
 
     ! EVALUATION OF THE FICTITIOUS PRESSURES OF HYDROGEN
-    ! PG = PH+PHH+2.0*PPH+HEH*(PH+2.0*PHH+PPH)  !> @todo ISSUE i may have commented this by accident
     1102 continue
     u = (1.0+2.0*heh)/dhh
     q = 1.0+heh
@@ -357,8 +352,8 @@ contains
     fph = ph+2.0*phh+pph
 
     !> @todo ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
-    ! THe current dissoc.dat has no Z=100 (neither 99).
-    ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
+    !> THe current dissoc.dat has no Z=100 (neither 99).
+    !> Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
     p(Z_H_STAR) = pph
 
 
@@ -533,24 +528,28 @@ module filters
     km_f_sj,     & !< ?doc?
     km_f_jj,     & !< ?doc?
     km_f_mm        !< Replicates km_f_mm(molid) for all selected lines of molecule molid.
-                 !< Redundant information but simplifies use. Used in synthesis::selekfh()
+                   !< Redundant information but simplifies use. Used in synthesis::selekfh()
 
   !------
   ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
   !------
 
-  !> This one points to the last index of the lines of each molecule within
+  !> This one points to the last index of each molecule within
   !> km_f_lmbdam, km_f_sj and km_f_jj (after the filtering)
   !>
-  !> Update: **augmented!** -- first element is 0 (ZERO) -- facilitates the algorithm
+  !> @par Augmented vectors
+  !> First element is 0 (ZERO) -- facilitates the algorithm implementation
+  !> (first molecule corresponds to 2nd element).
   integer :: km_f_mblenq(NUM_MOL+1)
-  !> This is similar but is a "local" one, it contains index of the last
+
+  !> This has a use "similar" to km_f_mblenq, but is a "local" one, it contains
+  !> the index of the last
   !> line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
   !> **for the current molecule** I_MOL
   !>
-  !> Update: **augmented!** -- first row is 0 (ZERO) -- facilitates the algorithm
-  !>
-  !> @todo Explain better
+  !> @par Augmented
+  !> First column is 0 (ZERO) -- facilitates the algorithm
+  !> (second column of matrix corresponds to first molecule)
   integer :: km_f_ln(MAX_SOL_PER_MOL+1, NUM_MOL)
 
 
@@ -558,7 +557,7 @@ module filters
   ! atomgrade_f_*Variables filled by filter_atomgrade()
   !=====
 
-  ! infile:atomgrade, filtered variables
+  ! dfile:atomgrade, filtered variables
   ! Very similar to above; differences are
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
@@ -582,6 +581,8 @@ contains
 
   !=======================================================================================
   !> Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN
+  !>
+  !> @todo test
 
   subroutine filter_molecules(lzero, lfin)
     !> Lower edge of wavelength interval
@@ -656,8 +657,8 @@ contains
 
 !           !> @todo ISSUE Should we think about preparing it for not having a single line within LZERO-LFIN for set J_SET, J_SET=1,NNV?????
 !           IF (.NOT. FLAG_IN) THEN
-!             !> @todo, IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
-!             !> @todo but I can give a *WARNING*, more for testing than for anything else, actually
+!             !> @todo IDEA Actually I think that it might work without having lines within a given lambda range, because the routines that use the calculations just don't care which molecule it is
+!             !> but I can give a *WARNING*, more for testing than for anything else, actually
 !
 !             !--error checking--!
 !             !> @todo test this error
@@ -903,7 +904,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Declaration and initialization of x_* variables
 !>
-!> These variable values may come either from infile:main or command-line options.
+!> These variable values may come either from dfile:main or command-line options.
 
 module pfant_x
   use reader_main
@@ -948,8 +949,6 @@ end
 !> @note Flux absolu sortant a ete multiplie par 10**5
 !>
 !> @note Existing files are replaced
-!>
-!> @todo make file replacing clear somewhere because it was not the original behaviour
 
 !>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
@@ -1035,6 +1034,7 @@ module synthesis
 contains
 
   !======================================================================================================================
+  !> @todo make file replacing clear somewhere because it was not the original behaviour
 
   subroutine synthesis_()
     ! Units for output files
@@ -1049,19 +1049,19 @@ contains
 
     integer :: &
      d,        &
-     dtot,     & ! (MT): The flux will be calculated for dtot different wavelenghts
-     dhmy(10), &
-     dhpy(10)
+     dtot,     & ! number of different wavelenghts for which flux will be calculated at each ikey-iteration
+     dhmy(MAX_FILETOH_NUMFILES), &
+     dhpy(MAX_FILETOH_NUMFILES)
     integer dhm,dhp
 
-    !> @todo still dimensions declared with numbers (absoru.f90 too)
+    real*8 gfal(MAX_ATOMGRADE_NBLEND), &
+           ecart(MAX_ATOMGRADE_NBLEND), &  ! MT: some sort of delta lambda
+           ecartm(MAX_KM_F_MBLEND)
 
-    real*8 gfal(MAX_ATOMGRADE_NBLEND), ecart(MAX_ATOMGRADE_NBLEND), &
-     ecartm(MAX_KM_F_MBLEND)
-!   fonctions de partition TODO figure out what this comment refers to
-
-    real*8 ttd(MAX_DTOT), fn(MAX_DTOT), &
-           tauh(MAX_DTOT, 50), tauhy(10,MAX_DTOT,50)
+    real*8 ttd(MAX_DTOT), &
+           fn(MAX_DTOT), &
+           tauh(MAX_DTOT, MAX_MODELES_NTOT), &
+           tauhy(MAX_FILETOH_NUMFILES, MAX_DTOT, MAX_MODELES_NTOT)
 
     integer i, i1, i2, ih, &
      ikey,    & ! ikey-th main_aint-large calculation interval
@@ -1072,15 +1072,11 @@ contains
      ahnu2, alph0, alph01, alph02
 
 
-    call log_debug(ENTERING//'synthesis_()')
-
     !=====
     ! Setup
     !=====
 
-    ! note that infile:dissoc nee
-
-    !> @todo issue ask blb overwriting variables read from infile:absoru2
+    ! @todo ?doc? The reason why values read from file are being overwritten should be explained.
     absoru2_abhel = modeles_nhe
     absoru2_abmet = absoru2_abmet*10.**main_asalog
 
@@ -1114,13 +1110,14 @@ contains
     call sat4()
 
 
-    !> @todo ISSUE Explain what it does
+    ! initial calculation sub-interval
     xlzero = main_llzero-LAMBDA_STRETCH
     xlfin = xlzero+main_aint+LAMBDA_STRETCH
+
+    ! discovers the number of iterations
     if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
-      !> @todo issue it seems that i could write this using a modulus operator
       do i = 2,250
         xlfin = xlfin+main_aint
         if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) exit
@@ -1132,7 +1129,9 @@ contains
     lfin = lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
 
-    !> @todo check if 10 is LAMBDA_STRETCH/2
+    !> @todo check if 10 is LAMBDA_STRETCH/2.
+    !
+    !> @todo This is used by nulbad. Gotta plot non-convolved on top of convolved and see if the lambdas are right
     l0 = main_llzero-10.
     lf = main_llfin+10.
 
@@ -1248,11 +1247,7 @@ contains
         ! -- VI --
         ! Calcul du coefficient d absorption selectif et calcul du spectre
         do k = 1, atomgrade_f_nblend
-
-          !> @todo ISSUE check these variables, they may be misnamed
           gfal(k) = atomgrade_f_gf(k)*C2*(atomgrade_f_lambda(k)*1.e-8)**2
-
-          !> @todo issue ?what? ?doc? is ECART? (MT): some sort of delta lambda
           ecart(k) = atomgrade_f_lambda(k)-lzero+main_pas
         end do
       end if
@@ -1289,8 +1284,8 @@ contains
       !=====
       ! Writes results for current iteration into open files
       !=====
-      call write_lines_fort91()                        ! outfile:lines and fort.91
-      call write_log()                                ! log.log
+      ! call write_lines_fort91()                        ! outfile:lines and fort.91
+      ! call write_log()                                ! log.log
       call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
       call write_spec_item(UNIT_NORM, fn)             ! normalized
@@ -1303,7 +1298,7 @@ contains
       call log_progress(ikey, ikeytot)
 
       ikey = ikey+1
-      if (ikey .gt. ikeytot) exit !main loop exit door!> @todo issue ?what? ?doc? does this condition mean?
+      if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
       !#logging
       708 format(1x,'ikey=',i10,2x,'irh=',i6)
@@ -1345,7 +1340,7 @@ contains
       !> either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
-      amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium? (MT) I think that they did this because the alpha-enhanced is specified nowhere.
+      amg = main_xxcor(8)  ! ?doc? MT: I think that somebody did this because the "alpha-enhanced" is specified nowhere. See also in write_log()
 
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
@@ -1369,78 +1364,78 @@ contains
       write(unit_,'(40000f15.5)') (item(d), d=i1,i2)
     end
 
-    !> Writes into file log.log
-    !> @todo issue too similar to write_spec_item (MT): Either get rid of it or include it as an optional output.
-
-    subroutine write_log()
-      integer d
-      real*8 amg
-      amg = main_xxcor(8)  !> @todo issue is this assuming something to do with magnesium?
-
-      1130  format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
-      write(UNIT_LOG, 1130) &
-       ikeytot, &
-       modeles_tit, &
-       tetaef, &
-       main_glog, &
-       main_asalog, &
-       modeles_nhe, &
-       amg, &
-       l0, &
-       lf, &
-       lzero, &
-       lfin, &
-       itot, &
-       main_pas, &
-       main_echx, &
-       main_echy, &
-       main_fwhm
-
-      do d = i1,i2
-        write(UNIT_LOG, *) l0+(d-1)*main_pas, selekfh_fl(d)
-      end do
-    end
-
-
-    !> Writes into outfile:lines and fort.91
-
-    subroutine write_lines_fort91()
-      real*8 log_abond
-      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
-      write(UNIT_LINES, 122)
-      do k=1,atomgrade_f_nblend
-        log_abond = log10(atomgrade_f_abonds_abo(k))
-
-        125 format(a2,1x,i1,1x,f08.3,1x,f6.3,f09.3,f09.3,1x,3e12.3,f5.1, f7.1)
-        write(UNIT_LINES, 125)     &
-         atomgrade_f_elem(k),        &
-         atomgrade_f_ioni(k),        &
-         atomgrade_f_lambda(k),      &
-         atomgrade_f_kiex(k),        &
-         atomgrade_f_algf(k),        &
-         log_abond-main_afstar+12, &
-         atomgrade_f_ch(k),          &
-         atomgrade_f_gr(k),          &
-         atomgrade_f_ge(k),          &
-         atomgrade_f_zinf(k),        &
-         popadelh_corch(k)
-
-        !> @todo ISSUE: Is file "fort.91" still wanted???? So similar to above!!! Why repeat??? (MT): It is not necessary for me.
-       121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
-        write(91,121)              &
-         atomgrade_f_elem(k),        &
-         atomgrade_f_ioni(k),        &
-         atomgrade_f_lambda(k),      &
-         atomgrade_f_kiex(k),        &
-         atomgrade_f_algf(k),        &
-         log_abond-main_afstar+12, &
-         atomgrade_f_ch(k),          &
-         atomgrade_f_gr(k),          &
-         atomgrade_f_ge(k),          &
-         atomgrade_f_zinf(k),        &
-         popadelh_corch(k)
-      end do
-    end
+! Disabled until someone misses
+! MT: Either get rid of it or include it as an optional output.
+!    !> Writes into file log.log
+!
+!    subroutine write_log()
+!      integer d
+!      real*8 amg
+!      amg = main_xxcor(8)
+!
+!      1130  format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
+!      write(UNIT_LOG, 1130) &
+!       ikeytot, &
+!       modeles_tit, &
+!       tetaef, &
+!       main_glog, &
+!       main_asalog, &
+!       modeles_nhe, &
+!       amg, &
+!       l0, &
+!       lf, &
+!       lzero, &
+!       lfin, &
+!       itot, &
+!       main_pas, &
+!       main_echx, &
+!       main_echy, &
+!       main_fwhm
+!
+!      do d = i1,i2
+!        write(UNIT_LOG, *) l0+(d-1)*main_pas, selekfh_fl(d)
+!      end do
+!    end
+!
+!    !> Writes into outfile:lines and fort.91
+!
+!    subroutine write_lines_fort91()
+!      real*8 log_abond
+!      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
+!      write(UNIT_LINES, 122)
+!      do k=1,atomgrade_f_nblend
+!        log_abond = log10(atomgrade_f_abonds_abo(k))
+!
+!        125 format(a2,1x,i1,1x,f08.3,1x,f6.3,f09.3,f09.3,1x,3e12.3,f5.1, f7.1)
+!        write(UNIT_LINES, 125)     &
+!         atomgrade_f_elem(k),        &
+!         atomgrade_f_ioni(k),        &
+!         atomgrade_f_lambda(k),      &
+!         atomgrade_f_kiex(k),        &
+!         atomgrade_f_algf(k),        &
+!         log_abond-main_afstar+12, &
+!         atomgrade_f_ch(k),          &
+!         atomgrade_f_gr(k),          &
+!         atomgrade_f_ge(k),          &
+!         atomgrade_f_zinf(k),        &
+!         popadelh_corch(k)
+!
+! MT: fort.91 is not necessary to me.
+!       121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
+!        write(91,121)              &
+!         atomgrade_f_elem(k),        &
+!         atomgrade_f_ioni(k),        &
+!         atomgrade_f_lambda(k),      &
+!         atomgrade_f_kiex(k),        &
+!         atomgrade_f_algf(k),        &
+!         log_abond-main_afstar+12, &
+!         atomgrade_f_ch(k),          &
+!         atomgrade_f_gr(k),          &
+!         atomgrade_f_ge(k),          &
+!         atomgrade_f_zinf(k),        &
+!         popadelh_corch(k)
+!      end do
+!    end
 
 
 
@@ -1474,9 +1469,6 @@ contains
        phi, t, v, vm, lambi
 
 
-    call log_debug('LLLLLLLLLLLLLLLLook at tetaef '//real82str(tetaef, 3))
-
-
       if (atomgrade_f_nblend .ne. 0) then
         do k = 1,atomgrade_f_nblend
           ecar(k) = ecart(k)
@@ -1488,6 +1480,7 @@ contains
           ecarm(k) = ecartm(k)
         end do
       end if
+
 
       do d = 1, dtot
         lambi = (6270+(d-1)*0.02)
@@ -1520,7 +1513,6 @@ contains
               v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
               call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
 
-
               if(atomgrade_f_elem(k) .eq. ' O') then
                 ! #NOXIG: oxygen is a particular case here
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k)
@@ -1540,8 +1532,6 @@ contains
             if( abs(ecartlm(l)) .gt. km_c_alargm(l) )  then
               kam(l)=0.
             else
-
-              !> @todo ISSUE ask BLB decided to create big vector km_f_mm of repeated values
               deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
               vm = abs(ecarm(l)*1.e-08/deltam(l,n))
               phi = (exp(-vm**2))/(RPI*deltam(l,n))
@@ -1593,12 +1583,11 @@ contains
 
     !======================================================================================================================
     !> Calculates the flux in the continuum.
-    !> @todo Issue there is a lot of calculation here that is independent from lzero and lfin
+    !> @todo There is a lot of calculation here that is independent from lzero and lfin (optimize?)
+    !>
     !> @todo log_pe not used yet
-    !>       was telling me
 
     subroutine bk()
-
       real*8 nu, llzero, llfin, nu1, nu2, &
        alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
        log_pe   ! Created to avoid calculating ALOG10(PE) 3x
@@ -1628,7 +1617,7 @@ contains
       ahnu2 = H*nu2
       c32 =(2*ahnu2) * (nu2/C)**2
       do n = 1,modeles_ntot
-        !> @todo: calculate this "T" somewhere else, this is calculated all the time! a lot of waste
+        !> @todo: calculate this "T" somewhere else, this is calculated all the time (optimize)
         t = 5040./modeles_teta(n)
         alph_n = exp(-ahnu2/(KB*t))
         bk_b2(n) = c32 * (alph_n/(1.-alph_n))
@@ -1681,7 +1670,7 @@ contains
         end do
         call ftlin3(2,lambdc,kcn,dtot,ttd,fttc)
         do d=1,dtot
-          bk_kcd(d,n)=fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here
+          bk_kcd(d,n)=fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
         end do
       end do
 
@@ -1725,8 +1714,7 @@ contains
       if(config_interp .eq. 1) then
         call ftlin3(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
       elseif (config_interp .eq. 2) then
-        !> @todo issue ask if still useful mbecause it was switched off.
-        !> @todo test this interpolation
+        !> @todo issue ask blb config_interp was hard-switched to 1, config_interp=2 path needs testing
         call ft2(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l,turbul_vt)
       end if
 
@@ -1796,7 +1784,8 @@ contains
 
         x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modeles_teta(n))
         tki2= partit_ki2(j) * modeles_teta(n)
-        !> @todo issue ask blb why 77???
+
+        !> @todo ?doc? ask blb why 77? Needs some comment on it.
         if (tki2 .ge. 77.) then
           y = 0.
           popul_p(3,j,n) = 0.
@@ -1826,37 +1815,44 @@ contains
     data isi/' '/, iss/' '/
 
     do k = 1, atomgrade_f_nblend
-      popadelh_corch(k) = 0.
-      popadelh_cvdw(k) = 0
-      do  j=1,partit_npar
-        if(partit_el(j).eq.atomgrade_f_elem(k)) go to 15
+      ! Search: finds j-th atomic symbol in partit_el matching atomgrade_f_elem(k)
+      ! This is a "inner join"
+      do j = 1,partit_npar
+        if(partit_el(j) .eq. atomgrade_f_elem(k)) go to 15
       end do
 
-      !> @todo this should probably be checked upon file reading
       104 format('Manque les fcts de partition du ', a2)
       write(lll,104) atomgrade_f_elem(k)
       call pfant_halt(lll)
 
       15 continue
+
+      popadelh_corch(k) = 0.
+      popadelh_cvdw(k) = 0
       ioo = atomgrade_f_ioni(k)
 
-      !> @todo ISSUE fort.77 disabled until someone misses it.
+      ! fort.77 disabled until someone misses it.
       ! write (77,*) atomgrade_f_elem(k),atomgrade_f_lambda(k)
 
+      ! ?doc?
+      ! If "ch" variable from dfile:atomgrade is zero, overwrites it with a calculated value.
+      ! See also read_atomgrade(), variable atomgrade_r_gr, which is also overwritten.
       if(atomgrade_f_ch(k).lt.1.e-37)  then
-        kies=(12398.54/atomgrade_f_lambda(k)) + atomgrade_f_kiex(k)
-        if(ioo.eq.1)   kii=partit_ki1(j)
-        if(ioo.eq.2)   kii=partit_ki2(j)
+        !> @todo optimize create atomgrade_partit_ki1, atomgrade_partit_ki2 to be filled by inner join upon reading atomgrade
+
+        kies = (12398.54/atomgrade_f_lambda(k)) + atomgrade_f_kiex(k)
+        if(ioo.eq.1) kii = partit_ki1(j)
+        if(ioo.eq.2) kii = partit_ki2(j)
+
         if(popadelh_corch(k).lt.1.e-37)   then
-          popadelh_corch(k)=0.67 * atomgrade_f_kiex(k) +1
+          popadelh_corch(k) = 0.67 * atomgrade_f_kiex(k) +1
         end if
 
         ! 125 format(3x ,' pour',f9.3,'   on calcule ch ', 'van der waals et on multiplie par ',f7.1)
         ! write(6,125)  atomgrade_f_lambda(k), popadelh_corch(k)
         popadelh_cvdw(k)= calch(kii,ioo,atomgrade_f_kiex(k),isi,kies,iss)
 
-        ! @todo issue overwriting atomgrade_f variable
-        atomgrade_f_ch(k)= popadelh_cvdw(k) * popadelh_corch(k)
+        atomgrade_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
       end if
 
 !
@@ -1866,7 +1862,7 @@ contains
         iopi=2
       end if
 
-      do  n=1,modeles_ntot
+      do n = 1, modeles_ntot
         t=5040./modeles_teta(n)
         nul= C* 1.e+8 /atomgrade_f_lambda(k)
         ahnul= H*nul
@@ -1890,7 +1886,7 @@ contains
           gh = atomgrade_f_ch(k) + popadelh_corch(k)*t
         end if
         gamma = atomgrade_f_gr(k)+(atomgrade_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
-        popadelh_a(k,n) =gamma*(1.e-8*atomgrade_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
+        popadelh_a(k,n) = gamma*(1.e-8*atomgrade_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
       end do
     end do
   end
@@ -1900,7 +1896,7 @@ contains
   !>
   !> @note this is originally subroutine "LECTAUH" without the file reading part
   !>
-  !> @todo test the pointers
+  !> @todo top test the pointers
 
   subroutine calc_tauh(i_file, dtot, ttd, ilzero)
     integer, intent(in) :: i_file !< index pointing to element of the filetoh_* arrays
@@ -1992,11 +1988,9 @@ contains
 
   contains
     !-------------------------------------------------------------------------------
-    !> @todo ISSUE ?what?
+    !> ?doc?
     !>
-    !> @todo This routine is *very similar to misc_math::ftlin3()*, I think the latter
-    !> has been duplicated to build ftlin3h(). Not sure what to do. At least write more
-    !> about the differences.
+    !> @note This routine is very similar to misc_math::ftlin3()*.
     !>
     !> Uses variables from parent filetoh_auh():
     !> @li dtot
@@ -2042,11 +2036,7 @@ contains
 
       20 ct_dhmi = k
 
-      !> @todo issue ask blb why this? Take the opportunity to ask for a line on
-      !>
-      !> @todo ask blb or ask pc marie noel reference on this
-      !>
-      !> tauhi(:,:), dhmi and dhpi
+      ! ?doc?
       if (ct_dhmi .eq. dtot) ct_dhmi = 1
 
 
@@ -2058,7 +2048,7 @@ contains
       30 ct_dhpi = k
 
       ! (Paula Coelho 21/11/04) instrucao da Marie Noel
-      !> @todo issue ask blb or ask pc why this?
+      ! ?doc?
       if (ftth(dtot) .ne. 0.0) ct_dhpi = dtot
 
       return
@@ -2074,17 +2064,19 @@ contains
   end
 end module
 
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-
+module pfant_lib
+end
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> PFANT main executable: spectral synthesis
 !>
-!> @todo Canonic cases: Sun, Arcturus
-!>
-!> @todo Explain that each [subroutine] module declares the variables that it calculates
+!> @todo List of prefixes somewhere
 
 program pfant
   use config
@@ -2114,7 +2106,7 @@ program pfant
   call read_modele(full_path_w(config_fn_modeles))  ! LECTURE DU MODELE
   call read_abonds(full_path_w(config_fn_abonds))
   call read_atomgrade(full_path_w(config_fn_atomgrade))
-  ! Gets list of hydrogen lines filenames either from infile:main or infile:hmap.
+  ! Gets list of hydrogen lines filenames either from dfile:main or dfile:hmap.
   ! The latter is not the preferred way.
   if (config_hmap) then
     call read_hmap(full_path_w(config_fn_hmap))
@@ -2129,7 +2121,7 @@ program pfant
   !=====
   ! Spectral synthesis
   !=====
-  ! Initializes variables whose values may come either from infile:main or
+  ! Initializes variables whose values may come either from dfile:main or
   ! command-line argument
   call pfant_init_x()
   ! Does the calculus

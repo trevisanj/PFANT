@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1438878661 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/absoru_data.f
+
+1440456630 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/dimensions.f90
+
+1439939239 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/logging.f90
+
+1440521398 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/misc.f90
+
+1440458541 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/config.f90
+
+1440520850 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/misc_math.f90
+
+1440456927 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/readers.f90
+
+1440525012 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/absoru.f90
+
+1440528270 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/pfant.f90
+
+1440521558 source:/home/j/Documents/projects/pfant/working/github/master/fortran/src/nulbad.f90
+

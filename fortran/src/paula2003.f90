@@ -13,8 +13,8 @@
 !     Passos realizados (nov/2003):
 !     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
 !
-!     2) troquei nome do arquivo de atomos para 'infile:atomgrade' e o de
-!     moleculas para 'infile:molecules'
+!     2) troquei nome do arquivo de atomos para 'dfile:atomgrade' e o de
+!     moleculas para 'dfile:molecules'
 !
 !     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e
 !     psatox95t.f e retirei as rotinas que eram obsoletas e nao eram
@@ -77,6 +77,6 @@
 !     - escrevo nos devidos arquivos
 !
 !     Portanto, para diferenciar os arquivos binarios criados,
-!     alem do arquivo normal criado como 'spe.' + nome no infile:main
+!     alem do arquivo normal criado como 'spe.' + nome no dfile:main
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
 !===PC2003 END===

@@ -175,7 +175,7 @@ contains
 
       if (ch /= '-' .and. len_trim(arg0) > 2) then
         ! single dash, but name too long ('-xxxx...')
-        write(lll, *) 'Invalid name for short option: "', trim(arg0(2:))
+        write(lll, *) 'Invalid name for short option: "', trim(arg0(2:)), '"'
         call give_error(lll)
       end if
 
@@ -522,7 +522,7 @@ module config
   !---
   !> Option: --zph
   !> @note (historical note) This value was being read from an altered-format
-  !> infile:absoru2 which was incompatible with the pfant executable. Therefore,
+  !> dfile:absoru2 which was incompatible with the pfant executable. Therefore,
   !> it has been assigned a default value and this command-line option was added
   real*8 :: config_zph = 12
   !> option: --ptdisk
@@ -567,7 +567,7 @@ module config
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
    config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
-   config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
+   config_fn_molecules     = 'moleculagrade.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log',           & !< option: --fn_log
    config_flprefix         = '?'                    !< option: --flprefix
@@ -581,7 +581,7 @@ module config
    config_flam = .true., &                       !< option: --flam
    config_convol = .true.                        !< option: --convol
   ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
-  ! take values within infile:main
+  ! take values within dfile:main
   real*8 :: &
    config_fwhm = -1, &               !< option: --fwhm
    config_pat = -1                   !< option: --pat

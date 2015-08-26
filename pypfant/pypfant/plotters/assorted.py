@@ -16,7 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 def plot_filetoh(fig, r, title):
   """
   Plots hydrogen lines: each atmospheric layer is plotted as a y-axis-dislocated
-  spectrum in a 3D plot.
+  Spectrum in a 3D plot.
   """
   assert isinstance(fig, mpl.figure.Figure)
   assert isinstance(r, FileToH)

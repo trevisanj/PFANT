@@ -37,7 +37,7 @@ class Combo(object):
 
   def __init__(self):
     # Directory containing the 4 executables
-    self.exe_dir = "."
+    self.exe_dir = ""
 
     # ExeConf instance
     self.execonf = ExeConf()

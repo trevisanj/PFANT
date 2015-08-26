@@ -17,7 +17,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:dissoc
+!> Reading routines and variable declarations for dfile:dissoc
 
 module reader_dissoc
   use logging
@@ -188,7 +188,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:main
+!> Reading routines and variable declarations for dfile:main
 
 module reader_main
   use logging
@@ -214,7 +214,7 @@ module reader_main
    main_teff,   & !< effective temperature of the star
    main_glog,   & !< log10 of gravity
    main_asalog, & !< log10 of metallicity
-   main_nhe       !< ?doc? I think this is not used, overwritten by sth that comes from infile:modeles
+   main_nhe       !< ?doc? I think this is not used, overwritten by sth that comes from dfile:modeles
   !> "Full-width-half-maximum" of Gaussian function for
   !> convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
@@ -252,17 +252,17 @@ contains
   end
 
   !=======================================================================================
-  !> Reads infile:main to fill variables main_*
+  !> Reads dfile:main to fill variables main_*
   !>
   !> @note Must be called after read_dissoc().
-  !> @todo ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., infile:main will have MORE LINES
+  !> @todo ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., dfile:main will have MORE LINES
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
   subroutine read_main(path_to_file, flag_care_about_dissoc, flag_read_filetoh)
     character(len=*), intent(in) :: path_to_file
-    !> (=.true.) If .false., won't bother about reading infile:dissoc first and
+    !> (=.true.) If .false., won't bother about reading dfile:dissoc first and
     !> will skip the xxcor line. Only pfant bother about the xxcor line; other executables
-    !> want to use infile:main without having to read infile:dissoc first.
+    !> want to use dfile:main without having to read dfile:dissoc first.
     logical, intent(in), optional :: flag_care_about_dissoc
     !> (=.true.) If .false., does not read the hydrogen lines filenames.
     logical, intent(in), optional :: flag_read_filetoh
@@ -386,9 +386,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:modeles
+!> Reading routines and variable declarations for dfile:modeles
 !>
-!> @todo (MT) infile:modeles could become an ASCII file
+!> @todo (MT) dfile:modeles could become an ASCII file
 
 module reader_modeles
   use logging
@@ -431,7 +431,7 @@ module reader_modeles
    modeles_pg,   & !< ?doc?
    modeles_t5l     !< ?doc?
 
-   !> Unit to open infile:modeles
+   !> Unit to open dfile:modeles
    integer, parameter :: UNIT_MOD = 198
 
    !> Whether the file is open
@@ -555,7 +555,7 @@ contains
 
 
   !=======================================================================================
-  !> Reads single record from file infile:modeles into variables modeles_*
+  !> Reads single record from file dfile:modeles into variables modeles_*
   !>
   !> SI L ON DESIRE IMPOSER UN MODELE ON MET EN main_inum LE NUM DU MODELE
   !> SUR LE FICHIER ACCES DIRECT
@@ -567,12 +567,12 @@ contains
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
-            id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on infile:main and would become MUCH more flexible
+            id_   !> @todo This could well be an input parameter, because it wouldn't have to rely on dfile:main and would become MUCH more flexible
     type(modele_record) :: r
 
     !> @todo better to give error if main_inum is not set
     !> @todo Check if FORTRAN initializes variables to zero automatically: can I rely on this??
-    !> @todo Maybe implement variable main_FLAG to FLAG that infile:main has been read already
+    !> @todo Maybe implement variable main_FLAG to FLAG that dfile:main has been read already
     id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
@@ -634,7 +634,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:hmap
+!> Reading routines and variable declarations for dfile:hmap
 
 module reader_hmap
   use logging
@@ -643,7 +643,7 @@ module reader_hmap
   use reader_main
   implicit none
 
-  !> Structure to store one row of infile:hmap
+  !> Structure to store one row of dfile:hmap
   type hmap_row
     !> file name
     character*64 fn
@@ -659,16 +659,16 @@ module reader_hmap
     real*8 c1
   end type
 
-  !> Array to store all rows in infile:hmap
+  !> Array to store all rows in dfile:hmap
   type(hmap_row) :: hmap_rows(MAX_FILETOH_NUMFILES)
 
-  !> Number of rows in infile:hmap
+  !> Number of rows in dfile:hmap
   integer :: hmap_n
 
 contains
 
   !=======================================================================================
-  !> Reads infile:hmap to fill variables hmap_*
+  !> Reads dfile:hmap to fill variables hmap_*
   !>
 
   subroutine read_hmap(path_to_file)
@@ -724,17 +724,17 @@ contains
 
   !========================================================================================
   !> Fills hmap_rows according with main_filetohy. For compatibility with old way of
-  !> informing the "filetoh" filenames, which was inside infile:main
+  !> informing the "filetoh" filenames, which was inside dfile:main
   !>
   !> This routine fills only the "fn" (filename) field of the hmap_row structure because
-  !> the filenames are all that's available in infile:main.
+  !> the filenames are all that's available in dfile:main.
   !>
   !> This routine is used only by pfant when not in "--hmap" mode.
   !>
   !> This routine is part of a mechanism to allow pfant to work in two ways.
-  !> @li either use infile:hmap for the list of hydrogen line files (likely to become the
+  !> @li either use dfile:hmap for the list of hydrogen line files (likely to become the
   !>     standard way in the future)
-  !> @li take this list from infile:main (legacy)
+  !> @li take this list from dfile:main (legacy)
 
   subroutine hmap_copy_from_main()
     integer :: i
@@ -757,7 +757,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:filetoh
+!> Reading routines and variable declarations for dfile:filetoh
 
 module reader_filetoh
   use dimensions
@@ -805,7 +805,7 @@ contains
   !> error checking: if it doesn't find a file that should exist, it will give an error
   !>
   !> @note For compatibility, it will allow to pass if the filetoh list came from inside
-  !> infile:main. This is assumed to have happened if the "clam" field of a given hmap
+  !> dfile:main. This is assumed to have happened if the "clam" field of a given hmap
   !> row is zero.
   !>
   !> LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
@@ -836,7 +836,7 @@ contains
           flag_inside = .false.  ! hydrogen line if outside calculation interval, skips it
         end if
       else
-        ! list of nydrogen line files came from infile:man and we don't know their central lambda unless we open the file
+        ! list of nydrogen line files came from dfile:man and we don't know their central lambda unless we open the file
       end if
 
       if (flag_inside) then
@@ -891,7 +891,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:absoru2
+!> Reading routines and variable declarations for dfile:absoru2
 
 module reader_absoru2
   use logging
@@ -927,7 +927,7 @@ module reader_absoru2
 
 contains
   !=======================================================================================
-  !> Reads file infile:absoru2 to fill variables absoru2_*
+  !> Reads file dfile:absoru2 to fill variables absoru2_*
   !>
   !> @note Variables absoru2_ZP, absoru2_XI, and absoru2_PF
   !>       undergo transformation after their values are read from file.
@@ -1036,7 +1036,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:abonds
+!> Reading routines and variable declarations for dfile:abonds
 
 module reader_abonds
   use logging
@@ -1153,7 +1153,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:partit
+!> Reading routines and variable declarations for dfile:partit
 
 module reader_partit
   use logging
@@ -1179,7 +1179,7 @@ module reader_partit
 
 contains
   !=======================================================================================
-  !> Reads file infile:partit to fill variables partit_*
+  !> Reads file dfile:partit to fill variables partit_*
   !>
   !> LECTURE DES FCTS DE PARTITION
   !>
@@ -1251,7 +1251,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:gridsmap (used by innewmarcs)
+!> Reading routines and variable declarations for dfile:gridsmap (used by innewmarcs)
 !>
 !> @li gridsmap -
 
@@ -1271,7 +1271,7 @@ module reader_gridsmap
 
 contains
   !=======================================================================================
-  !> Reads map of models: infile:gridsmap
+  !> Reads map of models: dfile:gridsmap
   !>
   !> The information it contains is
   !> just a list of .mod files. Files needn't be sorted. Metallicities are taken from the
@@ -1346,7 +1346,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reader and variable declarations for infile:atomgrade
+!> Reader and variable declarations for dfile:atomgrade
 
 module reader_atomgrade
   use dimensions
@@ -1355,9 +1355,9 @@ module reader_atomgrade
   implicit none
 
   !=====
-  ! Variables filled by read_atomgrade() (file infile:atomgrade)
+  ! Variables filled by read_atomgrade() (file dfile:atomgrade)
   !=====
-  ! infile:atomgrade, file originals
+  ! dfile:atomgrade, file originals
   integer atomgrade_r_nblend !< ?doc?
   !> atomic symbol. Must be right-aligned and uppercase
   character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND)
@@ -1377,7 +1377,7 @@ module reader_atomgrade
 
 contains
   !=======================================================================================
-  !> Reads file infile:atomgrade to fill variables atomgrade_r_* (double underscore)
+  !> Reads file dfile:atomgrade to fill variables atomgrade_r_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
   !>
@@ -1516,7 +1516,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reading routines and variable declarations for infile:molecules
+!> Reading routines and variable declarations for dfile:molecules
 
 module reader_molecules
   use logging
@@ -1558,7 +1558,7 @@ module reader_molecules
 
 contains
   !=======================================================================================
-  !> Reads file infile:molecules to fill variables km_r_*
+  !> Reads file dfile:molecules to fill variables km_r_*
   !>
   !> Reads molecular lines
   !>
@@ -1729,8 +1729,8 @@ contains
         ! BLB:       P3 - 10
         ! BLB:       Q3 - 11
         ! BLB:       R3 - 12
-        ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file infile:molecules
-        !> @todo ISSUE (question) Where does infile:molecules come from?
+        ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations ISSUE: !P! missing from sample file dfile:molecules
+        !> @todo ISSUE (question) Where does dfile:molecules come from?
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule

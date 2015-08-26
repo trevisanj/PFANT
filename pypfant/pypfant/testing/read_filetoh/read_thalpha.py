@@ -1,7 +1,7 @@
 
 
 """
-Loads thalpha file and plots each atmospheric layer as a different spectrum in a 3D plot
+Loads thalpha file and plots each atmospheric layer as a different Spectrum in a 3D plot
 
 References:
 http://matplotlib.org/mpl_toolkits/mplot3d/tutorial.html#line-plots

@@ -3,7 +3,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Declaration and initialization of x_* variables
 !>
-!> These variable values may come either from infile:main or command-line options.
+!> These variable values may come either from dfile:main or command-line options.
 
 module innewmarcs_x
   use logging
@@ -11,7 +11,7 @@ module innewmarcs_x
   use config
   implicit none
 
-  ! x_* values may come either from command line or infile:main
+  ! x_* values may come either from command line or dfile:main
   real*4 :: x_teff, x_glog, x_asalog
   character(LEN_TIRB) :: x_tirb
   integer :: x_inum
@@ -23,7 +23,7 @@ contains
   subroutine innewmarcs_init_x()
 
     ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from infile:main
+    ! pick values from dfile:main
      x_teff = real(config_teff)
      x_glog = real(config_glog)
      x_asalog = real(config_asalog)
@@ -101,7 +101,7 @@ contains
   !> Initialization of this module
   !>
   !> One of the tasks if the initialization of the x_* variables, whose values may be
-  !> either set from the command line or taken from infile:main
+  !> either set from the command line or taken from dfile:main
 
   subroutine innewmarcs_init()
     call find_two_grid_files()  ! calculates nomfipl, asalog1, asalog2
@@ -526,8 +526,8 @@ contains
 
     call close_mod_file()
 
-    call log_debug('teff='//real42str(x_teff), 1)
-    call log_debug('glog='//real42str(x_glog), 3)
+    call log_debug('teff='//real42str(x_teff, 1))
+    call log_debug('glog='//real42str(x_glog, 3))
     call log_debug('nt='//int2str(nt))
     write(lll,*) 'idt=', (idt(i), i=1,nt)
     call log_debug(lll)
@@ -646,21 +646,8 @@ end
 !> INNEWMARCS
 !>
 !> Interpolation d'un modele dans les grilles de modeles de
-!> NEWMARCS (2005) en fonction de Teff, log g et [Fe/H]
-!> (lit newmarcsm200.mod  newmarcsm150.mod newmarcsm100.mod
-!> newmarcsm075.mod newmarcsm050.mod  newmarcsm025.mod
-!> newmarcsp000.mod newmarcsp025.mod  newmarcsp050.mod
-!> newmarcsp075.mod newmarcsp100.mod
+!> NEWMARCS (2005) en fonction de Teff, log g et [Fe/H].
 !>
-!> @todo issue ask someone what the following means:
-!> Si dans une autre grille les Teff log g sont differents
-!> il faudrait modifier le SP locatab. (Une generalisation
-!> est possible en introduisant les caracteristiques des
-!> tables de modele dans un fichier separe).
-!>
-!> Le point critique de ce programme est le SP locatab qui
-!> determine entre quels modeles on doit interpoler
-!> ce SP peut se tester avec le programme locat.f
 
 program innewmarcs
   use config

@@ -32,7 +32,7 @@ module dimensions
 
 
   !=====
-  ! Dimensions related to infile:filetoh
+  ! Dimensions related to dfile:filetoh
   !=====
 
   !> Maximum number of "filetoh" files
@@ -43,7 +43,7 @@ module dimensions
   integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
 
   !=====
-  ! Dimensions related to infile:dissoc
+  ! Dimensions related to dfile:dissoc
   !=====
 
   !> Maximum number of metal rows in dissoc.dat
@@ -59,17 +59,17 @@ module dimensions
   integer, parameter :: MAX_DISSOC_Z = 100
 
   !=====
-  ! Dimensions related to infile:modeles
+  ! Dimensions related to dfile:modeles
   !=====
 
   !> Maximum possible value of modeles_ntot
   integer, parameter :: MAX_MODELES_NTOT=50
 
   !=====
-  ! Dimensions related to infile:partit
+  ! Dimensions related to dfile:partit
   !=====
 
-  !> Maximum number of "items" in infile:partit:
+  !> Maximum number of "items" in dfile:partit:
   !> @li Maximum value for partit_npar
   !> @li Second dimension of partit_tabu
   integer, parameter :: MAX_PARTIT_NPAR=85
@@ -77,14 +77,14 @@ module dimensions
   integer, parameter :: MAX_PARTIT_KMAX=63
 
   !=====
-  ! Dimensions related to infile:abonds
+  ! Dimensions related to dfile:abonds
   !=====
 
   !> Maximum number of abundances in abonds.dat
   integer, parameter :: MAX_ABONDS_NABOND=100
 
   !=====
-  ! Dimensions related to infile:absoru
+  ! Dimensions related to dfile:absoru
   !=====
 
   !> Maximum value for absoru2_NM
@@ -95,15 +95,15 @@ module dimensions
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
   !=====
-  ! Dimensions related to infile:atomgrade
+  ! Dimensions related to dfile:atomgrade
   !=====
 
   integer, parameter :: &
-   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in infile:atomgrade
+   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in dfile:atomgrade
    MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
-  ! Dimensions related to infile:molecules
+  ! Dimensions related to dfile:molecules
   !=====
 
   !> Number of molecules configured in the program.
@@ -114,7 +114,7 @@ module dimensions
   integer, parameter :: MAX_SOL_PER_MOL=200
 
   integer, parameter :: &
-   MAX_KM_R_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in infile:molecules
+   MAX_KM_R_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in dfile:molecules
                                    !< pertaining all molecules
    MAX_KM_F_MBLEND=200000 !< Maximum number of spectral lines that can be filtered in at a
                         !< filtering operation performed by filter_molecules()

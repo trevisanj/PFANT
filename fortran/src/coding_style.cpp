@@ -48,7 +48,7 @@ Data types
   REAL*4 vs. REAL*8
   -----------------
   Now all real variables must be REAL*8.
-  The routine that reads file infile:modeles still has to declare REAL*4 to read this binary
+  The routine that reads file dfile:modeles still has to declare REAL*4 to read this binary
   file.
 
   "If you must use floating point, use double precision unless you have reason

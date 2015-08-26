@@ -5,16 +5,5 @@ T 0.02 5.0 1.   .12
 T  1.
 0.0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-flu
-6100 6200  50
-invalid_thk
-invalid_thi
-invalid_thteta
-invalid_thneta
-invalid_thzeta
-invalid_thepsilon
-invalid_thdelta
-invalid_thgamma
-invalid_th1
-invalid_thalpha
-
+flux
+6059 6065  50

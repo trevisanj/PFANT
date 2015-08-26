@@ -1,7 +1,5 @@
-!> Miscellanea of [*not* mathematical] functions
+!> Miscellanea of routines.
 !>
-!> @note Misc math functions are in module misc_math
-
 module misc
   use logging
   use dimensions
@@ -22,8 +20,8 @@ contains
   logical function h_line_is_inside(clam, llzero, llfin) result(res)
     real*8, intent(in) :: &
      clam,   & !< central lambda of a hydrogen line
-     llzero, & !< lower boundary of calculation interval, probably taken from infile:main
-     llfin     !< lower boundary of calculation interval, probably taken from infile:main
+     llzero, & !< lower boundary of calculation interval, probably taken from dfile:main
+     llfin     !< lower boundary of calculation interval, probably taken from dfile:main
 
     res = .false.
     if (clam+H_LINE_WIDTH .ge. llzero-LAMBDA_STRETCH .and. &
@@ -111,7 +109,7 @@ contains
     character(80) :: ch
 
     if (present(dec)) then
-      write(ch,'f18.'//int2str(dec)) x
+      write(ch,'(f18.'//int2str(dec)//')') x
     else
       write(ch,*) x
     end if
@@ -129,7 +127,7 @@ contains
     character(80) :: ch
 
     if (present(dec)) then
-      write(ch,'f18.'//int2str(dec)) x
+      write(ch,'(f18.'//int2str(dec)//')') x
     else
       write(ch,*) x
     end if

@@ -15,6 +15,8 @@
 
 !> MISCellaneous MATHs: re-usable Math library
 !>
+!> This module contains routines existing in the 2015- code base .
+!>
 !> Arrays passed to routines now have assumed-shape declarations, e.g.,
 !> @code
 !> real*8 :: fr(:)
@@ -759,6 +761,7 @@ module flin
   !> Output variables
   !=====
   !> ?doc?
+  !> @todo fixed dimension, still
   real*8, public, dimension(0:50) :: flin_to
   !> ?doc?
   real*8, public :: flin_f = 0

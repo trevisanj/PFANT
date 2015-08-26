@@ -329,7 +329,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Declaration and initialization of x_* variables
 !>
-!> These variable values may come either from infile:main or command-line options.
+!> These variable values may come either from dfile:main or command-line options.
 
 module hydro2_x
   use logging
@@ -339,7 +339,7 @@ module hydro2_x
 
   !> Option for subroutine fluxis() (6/7/26 points for integration).
   !> @note This was originally set to .FALSE. but I opened it for configuration
-  !>       because this information is available inside infile:main
+  !>       because this information is available inside dfile:main
   logical :: x_ptdisk
 
   real*8 :: x_teff, x_glog, x_asalog
@@ -708,7 +708,7 @@ contains
     !=====
     ! (creates the "th" file, e.g., "thalpha")
 
-    open(unit=17, file=m_th%fn, status='unknown')
+    open(unit=17, file=full_path_w(m_th%fn), status='replace')
 
     zut1 = 0.
     zut2 = 1.
@@ -745,7 +745,7 @@ contains
   !> Les elements alfa sont reconnus par leur masse
   !>
   !> @warning This routine overwrites variables absoru2_zp absoru2_abmet,
-  !>          which are initially read from infile:absoru2
+  !>          which are initially read from dfile:absoru2
 
   SUBROUTINE abonio()
     !> nbre d'elements alfa reconnus par leur masse ALFAM
@@ -784,7 +784,7 @@ contains
 
     a0 = som1/config_zph
 
-    ! Changing value that was read from infile:absoru2
+    ! Changing value that was read from dfile:absoru2
     absoru2_abmet = a0*asasol
 
     write(lll, *) 'in abonio ABMET=',absoru2_abmet
@@ -2098,7 +2098,7 @@ contains
 
     ! (na, nb, clam, kiex, c1) taken from
     !   - command-line argument, or
-    !   - infile:hmap??
+    !   - dfile:hmap??
     if (.not. config_hmap) then
       flag_error = .false.
 
