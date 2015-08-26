@@ -1,0 +1,9 @@
+<map id="reader_main::assure_read_main" name="reader_main::assure_read_main">
+<area shape="rect" id="node2" href="$namespacereader__main.html#a87ee8d183d80f426edb100f777c0d687" title="Reads dfile:main to fill variables main_*. " alt="" coords="195,56,357,83"/>
+<area shape="rect" id="node8" href="$namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="211,107,341,133"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="407,5,535,32"/>
+<area shape="rect" id="node6" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="413,56,529,83"/>
+<area shape="rect" id="node7" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="405,107,536,133"/>
+<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="584,56,717,83"/>
+<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="766,56,847,83"/>
+</map>

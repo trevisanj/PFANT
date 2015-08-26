@@ -1,0 +1,5 @@
+<map id="config::parse_aux_log_assignment" name="config::parse_aux_log_assignment">
+<area shape="rect" id="node2" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="203,12,319,39"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="368,12,501,39"/>
+<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="550,12,631,39"/>
+</map>

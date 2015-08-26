@@ -1,0 +1,23 @@
+<map id="bk" name="bk">
+<area shape="rect" id="node2" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="824,247,955,273"/>
+<area shape="rect" id="node5" href="$namespaceabsoru.html#a2d60649af39c2775d4002eb8fda0a91b" title="Calculates the &quot;continuum absorption&quot;. " alt="" coords="100,385,215,412"/>
+<area shape="rect" id="node11" href="$namespacemisc__math.html#a6eb96f749d84825581884333883f42d5" title="INTERPOLATION D UNE LISTE A PAS NON CONSTANT. " alt="" coords="94,81,221,108"/>
+<area shape="rect" id="node14" href="$namespaceflin.html#a85a052100ab8bbb29d5afe0d87c5e42b" title="See routine flin_() for description of parameters. " alt="" coords="122,157,193,184"/>
+<area shape="rect" id="node22" href="$namespacemisc__math.html#aec7f47602289aaa6d529c299c20b04a8" title="misc_math::ftlin3" alt="" coords="451,5,573,32"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1003,152,1136,179"/>
+<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1185,152,1266,179"/>
+<area shape="rect" id="node6" href="$namespaceabsoru.html#a451eb695e6e4031e52eb944e5f6aba0b" title="Calculates the &quot;Gaunth factor&quot;: multiplicative correction to the continuous absorption (i..." alt="" coords="270,411,378,437"/>
+<area shape="rect" id="node7" href="$namespaceabsoru.html#a32c5710bd6e034085023fa0cb6958c72" title="absoru::tempa" alt="" coords="271,461,377,488"/>
+<area shape="rect" id="node8" href="$namespaceabsoru.html#a280466d16647432abda7b5eba4608c0f" title="SAHA&#39;s equation: ionization equilibrium: relative number of atoms in each ionization state..." alt="" coords="270,512,378,539"/>
+<area shape="rect" id="node9" href="$namespaceabsoru.html#a6e761f530c81b0694a30d934cb7fc5b2" title="CE SSP CALCULE LE COEFFICIENT D&#39;ABSORPTION PAR ATOME NEUTRE POUR L&#39;HYDROGENE ET L&#39;HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE DISCONTINUITE DE L&#39;UN DE CES ABSORBANTS. " alt="" coords="270,309,378,336"/>
+<area shape="rect" id="node10" href="$namespaceabsoru.html#a4e3b3c275ede61b17f48ca44f46dc8ef" title="Ionization degree by hydrogen atoms &amp; electrons (???; to be confirmed) ISSUE. " alt="" coords="273,360,375,387"/>
+<area shape="rect" id="node12" href="$namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="649,56,773,83"/>
+<area shape="rect" id="node13" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="825,56,953,83"/>
+<area shape="rect" id="node15" href="$namespaceflin.html#afa31a4c7d4e2d11e74bba60b2118e3c0" title="Generic routine, called by flin1() and flinh() " alt="" coords="289,157,359,184"/>
+<area shape="rect" id="node16" href="$namespacemisc__math.html#acc641d468cfa1851f7afb9fd3922ab6a" title="Numerical integration. " alt="" coords="445,157,579,184"/>
+<area shape="rect" id="node18" href="$misc__math_8f90.html#a41f897805296e8622dc522021f8021fe" title="Error verification, called twice. " alt="" coords="427,208,597,235"/>
+<area shape="rect" id="node21" href="$namespacemisc__math.html#aa738fbff4f329f7bb3ab3bd90f5bac46" title="interpolation @ todo ?doc? maybe will be found in BLB&#39;s book &quot;Numerical Recipes&quot; " alt="" coords="445,107,579,133"/>
+<area shape="rect" id="node17" href="$namespacemisc__math.html#aec017668df46e1f71bb72531bf49813f" title="Nouvelle subroutine naitk3, remplace aitk3 et aitk30. " alt="" coords="646,107,775,133"/>
+<area shape="rect" id="node19" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="842,171,937,197"/>
+<area shape="rect" id="node20" href="$namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="657,208,765,235"/>
+</map>

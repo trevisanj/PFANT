@@ -1,0 +1,6 @@
+<map id="validate_config" name="validate_config">
+<area shape="rect" id="node2" href="$namespacelogging.html#a5f475ebe6dd4c879b81a573c3ef3049c" title="Logs message as HALT. Logs unconditionally (independent of logging level). " alt="" coords="169,5,285,32"/>
+<area shape="rect" id="node5" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="163,56,291,83"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="339,31,472,57"/>
+<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="521,31,602,57"/>
+</map>

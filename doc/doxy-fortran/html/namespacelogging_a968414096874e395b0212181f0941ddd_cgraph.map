@@ -1,0 +1,7 @@
+<map id="logging::log_progress" name="logging::log_progress">
+<area shape="rect" id="node2" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="207,5,335,32"/>
+<area shape="rect" id="node5" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="213,56,329,83"/>
+<area shape="rect" id="node6" href="$namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="201,107,341,133"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="389,56,523,83"/>
+<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="571,56,653,83"/>
+</map>
