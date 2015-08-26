@@ -1,6 +1,6 @@
 /**
 
-@page ovewview Overview
+@page overview Overview
 
 @section Installation
 
@@ -11,6 +11,20 @@ git clone https://github.com/trevisanj/pfant
 @endcode
 
 or download <a href="https://github.com/trevisanj/pfant/archive/master.zip">this zip file</a>.
+
+@subsection required Required software
+
+PFANT is cross-platform.
+
+Please make sure the following is installed on your computer.
+
+@verbatim
+What                          Why?
+-------------------------------------------------------
+gfortran and make             Compile the Fortran code
+python 2.7                    run the Python scripts
+matplotlib (python package)   plotting with pypfant
+@endverbatim
 
 @section tree Directory
 
@@ -178,6 +192,13 @@ or
 
 This should create four executables in the bin directory.
 
+Also, individual makefiles are available for each (platform)x(executable),
+for example, the following will compile pfant on Linux:
+
+@code
+$ make -f makefile_linux_pfant
+@endcode
+
 @subsection test_bin Running with shipped data
 
 Now create a new directory somewhere *out of the "%" directory* and copy the whole
@@ -220,18 +241,18 @@ Try these ones as well:
 $ plot_mod_record.py modeles.mod      # plots interpolated atmospheric model
 $ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid
 $ plot_filetoh.py thalpha             # plots hydrogen lines
-
-@verbatim
+@endcode
 
 @section Operation using Python
-.
-.
-.
-<--------------------+
 
+@verbatim
+.
+.
+.
   to be continued ...
 
 +-------------------->
 @endverbatim
 
 */
+

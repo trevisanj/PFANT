@@ -6,6 +6,7 @@ from pypfant.exes.exes import *
 import os
 import logging
 from threading import Lock
+import sys
 
 class Combo(object):
   """
@@ -58,35 +59,38 @@ class Combo(object):
     self.__is_running = False
     self.__running_exe = None  # Executable object currently running
 
-    self.logger = None
+    # self.logger = None
 
   def configure(self):
     """
     Sets several properties of execonf and executables to achieve the expected
     synchronization.
+
+    Note: this routine messes with sys.stdout to log to screen and file
+    simultaneously.
     """
 
     c = self.execonf
 
+
     c.make_session_id()
     c.prepare_filenames_for_combo()
 
-    self.logger = logging.getLogger("combo") # % id(self))
-    add_file_handler(self.logger, c.full_path_w(c.add_session_dir("commands.log")))
+    # self.logger = logging.getLogger("combo") # % id(self))
+    # add_file_handler(self.logger, c.full_path_w(c.add_session_dir("commands.log")))
+
+    sys.stdout = LogTwo(c.full_path_w(c.add_session_dir("out.log")))
 
 
     # All files that will be created need to have the session directory added to their names
     for e in self.get_exes():
       # Propagates configuration
       e.execonf = c
-      e.logger = self.logger
-      # Sets exe output to log file
-      log_path = c.full_path_w(c.add_session_dir("stdout_%s.log" % e.__class__.__name__.lower()))
-      e.stdout = open(log_path, 'w')
+      # e.logger = self.logger
+
       # Fixes exe path
       exe_filename = os.path.split(e.exe_path)[-1]
       e.exe_path = os.path.join(self.exe_dir, exe_filename)
-
 
     c.create_data_files()
 
@@ -106,7 +110,7 @@ class Combo(object):
       for e in self.get_exes():
         e.run_from_combo()
         if e.popen.returncode != 0:
-          raise RuntimeError("%s failed" % e.__class__.__name__)
+          raise RuntimeError("%s failed" % e.__class__.__name__.lower())
     finally:
       self.is_running = False
 

@@ -110,7 +110,7 @@ contains
       p(nelemi) = 1.0e-20
     1400 continue
 
-    !> @todo issue ?what? ?doc? if atomic number 99 was already in dissoc.dat?
+    !> @todo issue ?doc? if atomic number 99 was already in dissoc.dat?
     p(Z_ELECTRON) = 1.0e-10
 
     !
@@ -633,7 +633,7 @@ contains
           ! Filters in a new spectral line!
           i_filtered = i_filtered+1
 
-          !#spill_check
+          ! spill check
           if (i_filtered .gt. MAX_KM_F_MBLEND) then
             call pfant_halt('filter_molecules(): number of filtered lines '//&
              'exceeded maximum of MAX_KM_F_MBLEND='//int2str(MAX_KM_F_MBLEND), .true.)
@@ -705,7 +705,7 @@ contains
         k = k+1
 
 
-        !#spill_check: checks if exceeds maximum number of elements allowed
+        ! spill check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMGRADE_NBLEND) then
           call pfant_halt('filter_atomgrade(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
            int2str(MAX_ATOMGRADE_NBLEND)//' spectral lines')
@@ -962,9 +962,7 @@ module synthesis
   use dissoc
   use filters
   use kapmol
-  use reader_filetoh
-  use reader_partit
-  use reader_absoru2
+  use readers
   use pfant_x
   implicit none
 
@@ -973,10 +971,8 @@ module synthesis
   public :: synthesis_ ! subroutine
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   !=====
   ! Subroutine outputs
@@ -1148,7 +1144,7 @@ contains
       ! Note: (lfin-lzero) is constant except in the last iteration where lfin may be corrected
       dtot = int((lfin-lzero)/main_pas + 1.0005)
 
-      !#spill_check
+      ! spill check
       if(dtot .gt. MAX_DTOT) then
         call pfant_halt('dtot = '//int2str(dtot)//' exceeds maximum of MAX_DTOT='//&
          int2str(MAX_DTOT))
@@ -1690,7 +1686,7 @@ contains
 
 
   !======================================================================================================================
-  !> @todo issue ?what? ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
+  !> @todo issue ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
 
   subroutine turbul()
     integer i, nt2, n

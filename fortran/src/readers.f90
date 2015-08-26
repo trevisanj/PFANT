@@ -108,7 +108,7 @@ contains
 
         dissoc_elems(i) = symbol
 
-        !#spill_check
+        ! spill check
         if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
           call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
            int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
@@ -142,14 +142,14 @@ contains
         go to 1014  ! means end-of-file
       end if
 
-      !#consistency_check:
+      ! consistency check:
       if (mmaxj .gt. 4) then
         write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
          '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
         call pfant_halt(lll)
       end if
 
-      !#consistency_check
+      ! consistency check
       do m = 1, mmaxj
         flag_found = .false.
         do i = 1, dissoc_nmetal
@@ -219,7 +219,7 @@ module reader_main
   !> convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
 
-  integer   main_ivtot, & !< affects turbul() issue ?what? ?doc?
+  integer   main_ivtot, & !< affects turbul() issue ?doc?
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
             main_inum     !< record id within modeles.mod
@@ -300,7 +300,7 @@ contains
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
       read(UNIT_, *) main_ivtot
-      ! ivtot, affects subroutine turbul() issue ?what? ?doc?
+      ! ivtot, affects subroutine turbul() issue ?doc?
       if (main_ivtot .gt. MAX_MODELES_NTOT) then
         write (lll, *) 'main_ivtot .gt. MAX_MODELES_NTOT (', &
          main_ivtot, ' .gt. ', MAX_MODELES_NTOT, ')'
@@ -355,7 +355,7 @@ contains
 
       if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
 
-      !#spill_check
+      ! spill check
       if (ih .gt. MAX_FILETOH_NUMFILES) then
         call pfant_halt('Too many filetoh files specified (maximum is '//&
          'MAX_FILETOH_NUMFILES='//int2str(MAX_FILETOH_NUMFILES)//')')
@@ -521,7 +521,7 @@ contains
       call pfant_halt('Le modele desire ne est pas sur le fichier')
     end if
 
-    !#spill_check: Checks if exceeds maximum number of elements allowed
+    ! spill check: Checks if exceeds maximum number of elements allowed
     if (record%ntot .gt. MAX_MODELES_NTOT) then
       call pfant_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
@@ -585,7 +585,7 @@ contains
 
     !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
 
-    !#consistency_check: these were already present in the 2015- code
+    ! consistency check: these were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
     ddg = abs(main_glog-r%glog)
     ddab = abs(main_asalog-r%asalog)
@@ -958,7 +958,7 @@ contains
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
     read (UNIT_,'(2i2,a8,a)') absoru2_nm, absoru2_nmeta, absoru2_iunite, absoru2_titre
 
-    !#spill_check: checks if exceeds maximum number of elements allowed
+    ! spill check: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. MAX_ABSORU2_NM) then
       call pfant_halt('read_absoru2(): nm='//int2str(absoru2_nm)//&
          ' exceeded maximum of MAX_ABSORU2_NM='//int2str(MAX_ABSORU2_NM))
@@ -1009,12 +1009,12 @@ contains
   !> @todo ISSUE: I am not sure if this last part is being read correcly. Perhaps I didn't de-spag right. Anyway, the test verbose is not good.
 
 
-    !#spill_check: Checks if exceeds maximum number of elements allowed
+    ! spill check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
       call pfant_halt('read_absoru2(): numset(1) = '//int2str(absoru2_numset(1))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
-    !#spill_check: Checks if exceeds maximum number of elements allowed
+    ! spill check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(2) .gt. MAX_ABSORU2_NUMSET_I) then
       call pfant_halt('read_absoru2(): numset(2) = '//int2str(absoru2_numset(2))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
@@ -1217,7 +1217,7 @@ contains
 
       if (finpar .ne. 1) then
 
-        !#spill_check: checks if exceeds maximum number of elements allowed
+        ! spill check: checks if exceeds maximum number of elements allowed
         if (j .gt. MAX_PARTIT_NPAR) then
           call pfant_halt('read_partit(): par exceeded maximum of MAX_PARTIT_NPAR='//&
            int2str(MAX_PARTIT_NPAR))
@@ -1227,7 +1227,7 @@ contains
 
         kmax = partit_jkmax(j)
 
-        !#spill_check: checks if exceeds maximum number of elements allowed
+        ! spill check: checks if exceeds maximum number of elements allowed
         if (kmax .gt. MAX_PARTIT_KMAX) then
           call pfant_halt('read_partit(): par number '//int2str(j)//'; kmax='//&
            int2str(kmax)//' exceeded maximum of MAX_PARTIT_KMAX='//int2str(MAX_PARTIT_KMAX))
@@ -1425,7 +1425,7 @@ contains
 
     k = 1
     do while (.true.)
-      !#spill_check: checks if exceeds maximum number of elements allowed
+      ! spill check: checks if exceeds maximum number of elements allowed
       if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
         call pfant_halt('read_atomgrade(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
          int2str(MAX_ATOMGRADE_R_NBLEND)//' spectral lines')
@@ -1596,7 +1596,7 @@ contains
 
     read(unit_,*) km_r_number
 
-    !#spill_check
+    ! spill check
     if (km_r_number .gt. NUM_MOL) then
       call pfant_halt("Number of molecules ("//int2str(km_r_number)// &
        ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
@@ -1623,7 +1623,7 @@ contains
     ! BLB:             NV(J) = 3 2
     read(unit_,*) (km_r_nv(molid), molid=1,km_r_number)
 
-    !#spill_check
+    ! spill check
     do molid = 1, km_r_number
       if (km_r_nv(molid) .gt. MAX_SOL_PER_MOL) then
           call pfant_halt('read_molecules(): molecule id '//int2str(molid)//&
@@ -1676,7 +1676,7 @@ contains
        km_r_a0(molid), km_r_a1(molid), km_r_a2(molid), &
        km_r_a3(molid), km_r_a4(molid), km_r_als(molid)
 
-      !> @todo issue ?what? ?doc? is S??
+      !> @todo issue ?doc? is S??
       read(unit_,*) km_r_s(molid)
 
       nnv = km_r_nv(molid)
@@ -1703,7 +1703,7 @@ contains
       do while (.true.)
         i_line = i_line+1
 
-        !#spill_check: checks if exceeds maximum number of elements allowed
+        ! spill check: checks if exceeds maximum number of elements allowed
         if (i_line .gt. MAX_KM_R_LINES_TOTAL) then
           call pfant_halt('read_molecules(): exceeded maximum number of total '//&
             'spectral lines  MAX_KM_R_LINES_TOTAL= '//int2str(MAX_KM_R_LINES_TOTAL)//&
@@ -1748,7 +1748,7 @@ contains
         if (numlin .eq. 9) exit
       end do
 
-      !#consistency_check: J_SET must match NNV
+      ! consistency check: J_SET must match NNV
       if(j_set .ne. nnv) then
         call pfant_halt('read_molecules():  incorrect number of set-of-lines: '//&
          int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&

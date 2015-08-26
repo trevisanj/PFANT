@@ -60,10 +60,8 @@ module absoru
   !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3. HYDRO2 uses this.
   real*8, public :: absoru_toc
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
@@ -90,11 +88,7 @@ module absoru
                                   !! @li au_AC1(2): DEGRE D'IONIZATION DE HE+
                                   !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
 
-
   real*8, dimension(MAX_ABSORU2_NM) :: au_znu
-
-
-
 contains
 
   !-------------------------------------------------------------------------------
@@ -435,7 +429,7 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> @todo issue ?what? ?doc?
+  !> @todo issue ?doc?
   !>
   !> @verbatim
   !> HCBKTM=(H*C/K*T)*1.0E8

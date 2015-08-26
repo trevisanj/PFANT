@@ -48,13 +48,12 @@ module logging
    LEAVING  = '<<<<<<<<<< LEAVING '
 
 
-
   !=====
   ! Configurable variables
   !=====
   !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
   !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
-  integer :: logging_level = LOGGING_DEBUG
+  integer :: logging_level = LOGGING_INFO
   !> Full path to file to record progress indication
   character*256 :: logging_path_progress = 'progress.txt'
   !> If set to .true., will display messages do standard output (usually the screen)
@@ -63,14 +62,11 @@ module logging
   !> besides logging to standard output.
   logical :: logging_dump = .false.
   !> Full path to file to record logging messages indication
-  character*256 :: logging_path_dump = 'logging_dump.log'
+  character*256 :: logging_path_dump = 'fortran_messages.log'
 
 
-
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   private :: do_logging
 

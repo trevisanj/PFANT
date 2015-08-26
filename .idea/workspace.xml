@@ -2,130 +2,46 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2859603f-0e1a-4397-a605-5df9caeddaa5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/add_paths.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/master.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/atomgrade.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/moleculagrade.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/index.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewm050.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewm100.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewm150.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewm200.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewp000.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/newmarcs/newnew/newnewp025.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/abonds.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/absoru2.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/dissoc.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/main.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/modeles.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/partit.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/th1" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/thalpha" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/thbeta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/thdelta" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/thepsilon" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/random/thgamma" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/sun_not_sure/sun_abonds.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/sun_not_sure/sun_dissoc.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/thmap_5_lines.dat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/absoru.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/absoru_data.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/ascii_canvas.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/config.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/dimensions.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/dissoc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/filters.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/flin.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/hydro2_calc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/hydro2_math.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/hydro2_x.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/innewmarcs_calc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/innewmarcs_x.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/kapmol.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/logging.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/max_.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/misc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/misc_math.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/molecules_ids.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/nulbad_calc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/options2.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/pfant_x.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/qsort.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_abonds.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_absoru2.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_atomgrade.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_dissoc.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_filetoh.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_gridsmap.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_hmap.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_main.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_modeles.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_molecules.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/reader_partit.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/readers.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/synthesis.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/obj-linux/welcome.mod" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/.name" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/codeStyleSettings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/encodings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/misc.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/modules.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/scopes/scope_settings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/src.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/vcs.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/.idea/workspace.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/Doxyfile" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT.layout" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_linux.cbp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_linux.depend" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_linux.layout" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_windows.cbp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_windows.depend" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/PFANT_windows.layout" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/make_linux.sh" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/make_windows.bat" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_linux_hydro2" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_linux_innewmarcs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_linux_nulbad" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_linux_pfant" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_windows_hydro2" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_windows_innewmarcs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_windows_nulbad" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/makefile_windows_pfant" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/mkdir.exe.stackdump" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/src.sublime-project" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/src.sublime-workspace" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/user.cpp" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/README.txt" afterPath="$PROJECT_DIR$/data/README.txt" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/fortran/src/developer.cpp" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/Doxyfile" afterPath="$PROJECT_DIR$/fortran/Doxyfile" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/absoru.f90" afterPath="$PROJECT_DIR$/fortran/src/absoru.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/plotters/assorted.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/plotters/assorted.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/codeblocks.cpp" afterPath="$PROJECT_DIR$/fortran/src/codeblocks.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/coding.cpp" afterPath="$PROJECT_DIR$/fortran/src/coding.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/coding_style.cpp" afterPath="$PROJECT_DIR$/fortran/src/coding_style.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/exes/combo.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/exes/combo.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/config.f90" afterPath="$PROJECT_DIR$/fortran/src/config.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/dimensions.f90" afterPath="$PROJECT_DIR$/fortran/src/dimensions.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/hydro2.f90" afterPath="$PROJECT_DIR$/fortran/src/hydro2.f90" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/config.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/config.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/dissoc.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/dissoc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/exes/execonf.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/exes/execonf.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/exes/exes.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/exes/exes.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/data/filehmap.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/data/filehmap.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/filters.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/filters.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/github.cpp" afterPath="$PROJECT_DIR$/fortran/src/github.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/hydro2_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/hydro2_x.mod" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/innewmarcs.f90" afterPath="$PROJECT_DIR$/fortran/src/innewmarcs.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/data/default/main.dat" afterPath="$PROJECT_DIR$/pypfant/pypfant/data/default/main.dat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/testing/read_spectrum_01/main.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/testing/read_spectrum_01/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/innewmarcs_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/innewmarcs_x.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/kapmol.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/kapmol.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/logging.f90" afterPath="$PROJECT_DIR$/fortran/src/logging.f90" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/main_page.cpp" afterPath="$PROJECT_DIR$/fortran/src/main_page.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/misc.f90" afterPath="$PROJECT_DIR$/fortran/src/misc.f90" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/misc.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/misc.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/misc_math.f90" afterPath="$PROJECT_DIR$/fortran/src/misc_math.f90" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/nulbad.f90" afterPath="$PROJECT_DIR$/fortran/src/nulbad.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/paula2003.f90" afterPath="$PROJECT_DIR$/fortran/src/paula2003.f90" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/options2.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/options2.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/overview.cpp" afterPath="$PROJECT_DIR$/fortran/src/overview.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/pfant.f90" afterPath="$PROJECT_DIR$/fortran/src/pfant.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/src/pfantgrade/pfantgrade.layout" afterPath="$PROJECT_DIR$/fortran-old/src/pfantgrade/pfantgrade.layout" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/testing/read_filetoh/read_thalpha.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/testing/read_filetoh/read_thalpha.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/pfant_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/pfant_x.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_abonds.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_abonds.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_atomgrade.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_atomgrade.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_filetoh.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_filetoh.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_gridsmap.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_gridsmap.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_hmap.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_hmap.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_main.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_main.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/reader_modeles.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/reader_modeles.mod" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/readers.f90" afterPath="$PROJECT_DIR$/fortran/src/readers.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/pypfant/data/spectrum.py" afterPath="$PROJECT_DIR$/pypfant/pypfant/data/spectrum.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-linux/src/readers.mod" afterPath="$PROJECT_DIR$/fortran/obj-linux/src/readers.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/.idea/workspace.xml" afterPath="$PROJECT_DIR$/fortran/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pypfant/.idea/workspace.xml" afterPath="$PROJECT_DIR$/pypfant/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/zreferences.cpp" afterPath="$PROJECT_DIR$/fortran/src/zreferences.cpp" />
     </list>
     <ignored path="master.iws" />
     <ignored path=".idea/workspace.xml" />

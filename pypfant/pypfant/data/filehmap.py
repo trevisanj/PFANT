@@ -6,8 +6,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-
 class HmapRow(object):
   """Same structure as reader_hmap.f90::hmap_row type."""
   def __init__(self):

@@ -424,10 +424,8 @@ module molecules_ids
 
   type(molid_list) :: molids
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   ! There is a calling order to be observed. These flags + assertions inforce that
   logical, private :: &
@@ -456,7 +454,7 @@ contains
       call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
     end if
 
-    !#spill_check
+    ! spill check
     if (i_mol .gt. molids%n_on) then
       write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
        i_mol, ') must be maximum ', molids%n_on
@@ -499,7 +497,7 @@ contains
       call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
     end if
 
-    !#spill_check
+    ! spill check
     if (molid .gt. NUM_MOL .or. molid .lt. 1) then
       call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
        int2str(NUM_MOL)//')')

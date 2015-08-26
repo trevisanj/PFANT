@@ -1,9 +1,7 @@
 /**
 @page codingStyle Coding style
 
-Sketch of a coding style manual
-
-@todo steps to create a new executable
+UNDER CONSTRUCTION
 
 Format
 ======
@@ -36,27 +34,20 @@ This is probably a good a compromise between
 
 
 
-
-
-Common blocks
+COMMON blocks
 =============
-Do NOT use common blocks! Use Fortran MODULE to declare globals!
+Do *not* use COMMON blocks (use Fortran module instead)!
 
 
 Data types
 ==========
-  REAL*4 vs. REAL*8
-  -----------------
-  Now all real variables must be REAL*8.
-  The routine that reads file dfile:modeles still has to declare REAL*4 to read this binary
-  file.
 
-  "If you must use floating point, use double precision unless you have reason
-  to be concerned about memory use (your program uses large arrays) and you do
-  not need much precision. Modern computers do not take significantly longer to
-  process double precision values than they do to process reals." @ref Uwm0
+real*8 is used throughout, except for reading the binary .mod files.
 
-  ISSUE the molecules part may break the rule, let us see when trying to run the thing.
+"If you must use floating point, use double precision unless you have reason
+to be concerned about memory use (your program uses large arrays) and you do
+not need much precision. Modern computers do not take significantly longer to
+process double precision values than they do to process reals." @ref Uwm0
 
 
 Programming
@@ -91,20 +82,18 @@ Name conventions
 
 @li Prefixes are now used extensively throughout the code to group variables according
     to some meaning, for example:
-    @code
-    main_ptdisk     ! variable comes from file main.dat
-    selekfh_fl      ! variable is calculated by subroutine synthesis::selekfh()
-    MAX_PARTIT_NPAR ! constant having maximum allowed value of variable partit_npar
-    ...
-    @endcode
-    Every module explains the meaning of its own prefixes.
+@code
+main_ptdisk     ! variable comes from file main.dat
+selekfh_fl      ! variable is calculated by subroutine synthesis::selekfh()
+MAX_PARTIT_NPAR ! constant having maximum allowed value of variable partit_npar
+...
+@endcode
 
-
-
+Every module should explain the meaning of its own prefixes.
 
 Variable declarations
 ---------------------
-@li Always use intent(in/out) for subroutine arguments. This will allow the reader to
+@li Always use intent(in/out) for subroutine/function arguments. This will allow the reader to
     know which arguments are inputs and which arguments are outputs for the subroutine.
 @li <b>Module globals and subroutine/function arguments</b>: declare *only one* variable per
     code line, and document the variable.
@@ -116,21 +105,25 @@ Write documentation explaining what the function/subroutine does and whenever po
 why it was created.
 
 Logging (i.e., printing things on the screen)
+---------------------------------------------
 For outputting messages on the screen, use the routines in the LOGGING
--------
 module (not just WRITE or PRINT). This may give a bit more work
 (may require one extra line of code if the string is formatted), but
-there are good reasons. for that.
+there are good reasons for that.
 There are different routines to be used, such as
-LOG_CRITICAL(), LOG_ERROR(), LOG_WARNING(), LOG_INFO(), LOG_DEBUG(), and
-logging can be silenced and/or sent to specific logging file using
+log_critical(), log_error(), log_warning(), log_info(), log_debug().
+
+Logging can be silenced and/or sent to specific logging file using
 command-line config options.
 
+For assertions, call log_halt("message", is_assertion=.true.).
 
-Documenting
-===========
+@note Assertions are checks against coding errors.
+Assertions serve both as documentation and error protection.
 
-@todo Doxygen Fortran section
+
+How to document the code
+------------------------
 
   Note that
   @code !> @endcode refers to what comes after, and
@@ -141,7 +134,7 @@ Tags
 ----
 Some tags used in comments throughout the source code:
 
-@note All tags, except "@@todo" are case-insensitive.
+@note All tags, except "@todo" are case-insensitive.
 
 @verbatim
 
@@ -160,30 +153,6 @@ issue                  Something that needs to be solved in the code. Similar to
 ask BLB
 ask PC
 ask MT                 Suggests the person who probably knows to solve the issue
-
-#assertion          Marks bit of code that is an assertion. Assertions serve both as
-                       documentation and error protection.
-
-#logging            Marks bit of code whose purpose is to output log messages.
-                       *deprecated*, I don't think it pays off
-
-#spill_check        Marks bit of code destinated to verify whether we are trying to assign
-                       an element beyond the size of a vector/matrix, commonly performed while
-                       reading files
-
-                       *Note*: it is recommended that the error message that accompanies this tag
-                               includes the name of the constant that has been violated (one will
-                               probably want to increase the size of this constant and recompile
-                               the program)
-                               
-#consistency_check  Marks bit of code destinated to verify whether we are trying to assign
-                       an element beyond the size of a vector/matrix, commonly performed while
-                       reading files
-
-
-__temporary__          Temporary code to keep going, but will require future action
-
-
 
 @endverbatim
 

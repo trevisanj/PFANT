@@ -31,7 +31,7 @@ Quick links
 
 @ref overview
 
-@ref developerguide
+@ref coding_guide
 
 */
 

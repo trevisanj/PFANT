@@ -80,10 +80,8 @@ module innewmarcs_calc
 
   private
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   ! Calculated by locatab()
   ! "Dans cette table les modeles entre lesquels on va interpoler ont les numeros:"

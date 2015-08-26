@@ -16,10 +16,8 @@ module nulbad_calc
 
   private
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function" (odd number)
   integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"

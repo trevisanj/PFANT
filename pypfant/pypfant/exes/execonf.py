@@ -11,6 +11,8 @@ import os
 import random
 import glob
 
+
+
 class ExeConf(object):
   """
   Class holds all command-line options.
@@ -18,6 +20,60 @@ class ExeConf(object):
   Most options are initialized do None. This means that they won't be added to the
   command line.
   """
+
+  # Used in run_4exes.py
+  # Futurely for GUIs
+  # todo parse config.f90 to get the list automatically
+  option_map = [
+  "wdir",
+  "logging_level",
+  "logging_screen",
+  "logging_dump",
+  "logging_fn_dump",
+  "fn_main",
+  "fn_modeles",
+  "teff",
+  "glog",
+  "asalog",
+  "inum",
+  "fn_absoru2",
+  "hmap",
+  "fn_hmap",
+  "open_status",
+  "fn_moddat",
+  "fn_gridslist",
+  "modcode",
+  "tirb",
+  "zph",
+  "ptdisk",
+  "kik",
+  "amores",
+  "kq",
+  "nomplot",
+  "vvt",
+  "na",
+  "nb",
+  "clam",
+  "kiex",
+  "c1",
+  "fn_dissoc",
+  "fn_partit",
+  "fn_abonds",
+  "fn_atomgrade",
+  "fn_moleculagrade",
+  "fn_lines",
+  "fn_log",
+  "fn_progress",
+  "flprefix",
+  "norm",
+  "flam",
+  "convol",
+  "fwhm",
+  "pat",
+  "fn_flux",
+  "fn_cv"
+  ]
+
 
   def __init__(self):
     # **
@@ -126,8 +182,8 @@ class ExeConf(object):
     mask = os.path.join(w, "*")
     i = 0
     while True:
-      #s = "%06d" % random.randint(0, 999999)
-      s = "%06d" % i
+      #s = "%04d" % random.randint(0, 999999)
+      s = "%04d" % i
       ff = glob.glob(mask)
       flag_exit = True
       for f in ff:

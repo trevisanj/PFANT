@@ -488,7 +488,7 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> @todo ?what? ?doc?
+  !> @todo ?doc?
   !>
   !> @todo This routine is very similar to filetoh::ftlin3h(). Explain why ftlin3h() exists, what the differences are, etc.
   !>
@@ -560,7 +560,7 @@ contains
 
   !---------------------------------------------------------------------------------------
   !> interpolation
-  !> @ todo ?what? ?doc? maybe will be found in BLB's book "Numerical Recipes"
+  !> @ todo ?doc? maybe will be found in BLB's book "Numerical Recipes"
 
   real*8 function faitk30(xx, x, y, n)
     integer, intent(in) :: n !< Size of vectors x and y
@@ -675,7 +675,7 @@ contains
 
   !---------------------------------------------------------------------------------------
   !> Nouvelle subroutine naitk3, remplace aitk3 et aitk30.
-  !> @todo issue ?what? ?doc?
+  !> @todo issue ?doc?
 
   subroutine naitk3(xdi, xdip1, xdip2, xdip3, ydi, ydip1, ydip2, ydip3, xx, fx)
     real*8, intent(in) :: &
@@ -766,10 +766,8 @@ module flin
   !> ?doc?
   real*8, public :: flin_f = 0
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   real*8 :: td2, td,tp, cd, cp, c1, c2, c3
   dimension td2(26),td(6),tp(7),cd(6),cp(7),c1(13),c2(12),c3(12)

@@ -8,6 +8,9 @@ import subprocess
 import logging
 from .execonf import ExeConf
 import os
+import sys
+from pypfant import print_noisy, X
+
 
 class Executable(object):
   """
@@ -15,15 +18,16 @@ class Executable(object):
   """
 
   def __init__(self):
-    self.logger = None
+    # self.logger = None
 
     # Full path to executable (including executable name)
     self.exe_path = "./none"
 
+    # File object to log executable stdout
+    self.logfile = None
+
     # ExeConf instance
     self.execonf = ExeConf()
-    # todo Not implemented properly
-    self.stdout = None
     # Created by _run()
     self.popen = None
 
@@ -33,10 +37,11 @@ class Executable(object):
     Blocking routine. Only returns when executable finishes running.
     """
     assert not self.is_running(), "Already running"
-    self.logger = logging.getLogger(self.__class__.__name__.lower())
+    # self.logger = logging.getLogger(self.__class__.__name__.lower())
     self.execonf.make_session_id()
     self.execonf.create_data_files()
     self._run()
+
 
   def run_from_combo(self):
     """Alternative to run executable (called from Combo class).
@@ -51,20 +56,25 @@ class Executable(object):
     args = self.execonf.get_args()
     cmd_line = [self.exe_path]+args
 
-    self.logger.debug("%s command-line:" % (self.__class__.__name__,))
-    self.logger.debug(" ".join(cmd_line))
+    s = "%s command-line:" % (self.__class__.__name__.lower(),)
+    print_noisy(s)
+    print " ".join(cmd_line)
+    print X*(len(s)+4)
+
 
     try:
-      self.popen = subprocess.Popen(cmd_line, stdout=self.stdout)
+      self.popen = subprocess.Popen(cmd_line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+      for line in self.popen.stdout:
+        sys.stdout.write(line)
     except OSError:
-      self.logger.error("Failed to execute $ "+(" ".join(cmd_line)))
+      print_noisy("Failed to execute command-line")
       raise
     self.popen.wait()  # Blocks execution until finished
     self.popen.poll()
-
-    self.logger.debug("%s finished with returncode=%s" %
-                 (self.__class__.__name__, self.popen.returncode))
-
+    print_noisy("%s %s (returncode=%s)" %
+                (self.__class__.__name__.lower(),
+                 'finished successfully' if self.popen.returncode == 0 else '*failed*',
+                 self.popen.returncode))
 
   def is_running(self):
     if self.popen is None:

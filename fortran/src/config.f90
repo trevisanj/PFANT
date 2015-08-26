@@ -70,10 +70,8 @@ module options2
   !> Configurable unit to output command-line parsing errors
   integer :: error_unit = 6
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+  !^^^^^ PUBLIC  ^^^^^
+  !vvvvv PRIVATE vvvvv
 
   private give_error  ! logs and halts
 
@@ -88,11 +86,11 @@ contains
   !> have the form "--XXXX..." where "X" is any character. Parsing can be
   !> stopped with the option '--'.
   !> The following code snippet illustrates the intended use:
-  !> \code
+  !> @code
   !> do
   !>   ! things changed
   !> end do
-  !> \endcode
+  !> @endcode
 
   subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
@@ -421,15 +419,12 @@ contains
     if (len(opt%chr) > 0) then
       if (len(opt%name) > 0) then
         res = '''-' // opt%chr // '''/''--' // trim(opt%name) // ''''
-        write(*,*) '11111111111111111111' // '''-' // opt%chr // '''/''--' // trim(opt%name) // ''''
       else
         res = '''-' // opt%chr // ''''
       end if
     else
       res = '''-' // trim(opt%name) // ''''
     end if
-
-    write (*,*) 'G#E#T#O#P#T#I#O#N#N#A#M#E #', res, '#'
   end
 
 
@@ -445,13 +440,6 @@ module config
   use molecules_ids
   implicit none
 
-  !> indentation string to be used in help text at will
-  character(3), parameter :: IND = '.. '
-
-  !> Message to be used in help text at will.
-  character(:), parameter :: FROM_MAIN = ' (read from main configuration file)'
-
-
   ! Possible return values of option handler
   integer, parameter ::    &
    HANDLER_OK = 0,         & !< option was handled successfully
@@ -462,7 +450,6 @@ module config
   !=====
   ! Executable-specific options that must be set programatically
   !=====
-
   !> Name of executable. Case doesn't matter. It will be converted to all uppercase or
   !> lowercave, depending on the use.
   character*16 :: execonf_name = '?'
@@ -474,13 +461,13 @@ module config
   ! Variable order is the roughly in the same sequence as that of running the executables.
   ! I.e., executables are run in this order: innewmarcs, hydro2, pfant, nulbad
 
-  !
+  !---
   ! all executables
-  !
+  !---
   character*192 :: config_wdir    = './'  !< command-line option --wdir
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
-  character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
+    character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
   logical :: config_logging_screen = .true., & !< option --logging_screen
              config_logging_dump   = .false.   !< option --logging_dump
 
@@ -591,10 +578,10 @@ module config
   !===== end of command-line variables declarations
 
 
-  ! 888b. 888b. 888 Yb    dP  db   88888 8888
-  ! 8  .8 8  .8  8   Yb  dP  dPYb    8   8www
-  ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
-  ! 8     8  Yb 888    YP  dP    Yb  8   8888  private symbols
+
+
+  !=========^ PUBLIC  ^==========
+   !=========v PRIVATE v==========
 
   !=====
   ! Command-line options definition
@@ -603,6 +590,15 @@ module config
   type(option), private :: options(MAX_NUM_OPTIONS)
   !> Maximum valid index of the options variable
   integer, private :: num_options = 0
+
+  !=====
+  ! Other stuff
+  !=====
+
+  !> indentation string to be used in help text at will
+  character(3), private, parameter :: IND = '.. '
+  !> Message to be used in help text at will.
+  character(:), private, parameter :: FROM_MAIN = ' (read from main configuration file)'
 
   character(len=:), private, allocatable :: &
    wdir_trim  !< Input directory without trailling spaces and ending with a "/"

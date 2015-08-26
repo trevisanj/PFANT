@@ -1,13 +1,14 @@
 
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
-       "add_file_handler"]
+       "LogTwo", "print_noisy", "X"]
 
 import os.path
 import glob
 import random
 from threading import Lock
 import logging
+import sys
 
 # Reads next line of file and makes it a vector of strings
 # Note that each str.split() already strips each resulting string of any whitespaces.
@@ -133,12 +134,42 @@ def chunk_string(string, length):
 
 
 
+#
+# def add_file_handler(logger, logFilename=None):
+#   """Adds file handler to logger."""
+#
+#   assert isinstance(logger, logging.Logger)
+#
+#   ch = logging.FileHandler(filename=logFilename)
+#   ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
+#   logger.addHandler(ch)
+#
 
-def add_file_handler(logger, logFilename=None):
-  """Adds file handler to logger."""
 
-  assert isinstance(logger, logging.Logger)
 
-  ch = logging.FileHandler(filename=logFilename)
-  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
-  logger.addHandler(ch)
+
+class LogTwo(object):
+  """Logs messages to both stdout and file."""
+  def __init__(self, filename):
+    self.terminal = sys.stdout
+    self.log = open(filename, "a")
+
+  def write(self, message):
+    self.terminal.write(message)
+    self.log.write(message)
+
+# character for boxing strings
+X = "*"
+HR = X*40
+
+def print_noisy(msg):
+  """Prints string message with box around.
+
+  This was designed to outstand in a long log dump.
+  """
+
+  xx = X*(len(msg)+4)
+  print ""
+  print xx
+  print X, msg, X
+  print xx
