@@ -4,14 +4,14 @@
 #
 # Downloaded from https://github.com/X1011/git-directory-deploy/
 
-git subtree push --prefix doxy-fortran origin gh-pages
+#git subtree push --prefix doxy-fortran origin gh-pages
 
 
 
 #!/usr/bin/env bash
 set -o errexit #abort if any command fails
 
-deploy_directory=doxy-fortran
+deploy_directory=gh-pages
 deploy_branch=gh-pages
 
 #if no user identity is already set in the current git environment, use this:

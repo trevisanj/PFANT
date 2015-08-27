@@ -1,7 +1,7 @@
 /**
-@page codingStyle Coding style
+@page coding_style Coding style
 
-UNDER CONSTRUCTION
+Sketch of a coding style manual
 
 Format
 ======

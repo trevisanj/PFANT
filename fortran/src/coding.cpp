@@ -2,48 +2,16 @@
 
 @page coding_guide Coding guide
 
-
-
 @section github Working with the GitHub repository
 
 @subsection github_clone Cloning the repository
-
-@subsubsection github_clone1 Most cases
 
 @code
 git clone https://github.com/trevisanj/pfant
 @endcode
 
-@subsection github_clone1 IF you want to run doxygen
 
-The repository has two branches:
-@li @c master All Python and Fortran source code
-@li @c gh-pages PFANT website, including Doxygen-generated documentation
-
-When working on your computer locally, in order to have Doxygen parsing files from the
-@c master branch while generating output directly into
-the @c gh-pages branch, it is necessary to work with the *two branches of the repository
-as parallel local directories*. This is achieved by invoking <code>git clone</code>
-<b>--single-branch</b></code> option twice.
-
-Here is a set of commands to fetch the two branches separately:
-
-@code
-# It is good to be inside a directory called "github" on your computer
-$ pwd
-/home/j/Documents/projects/pfant/github
-
-# This will clone the "master" branch into a directory called "master"
-$ git clone https://github.com/trevisanj/pfant --branch master --single-branch master
-
-# This will clone the "gh-pages" branch into a directory called "gh-pages"
-$ git clone https://github.com/trevisanj/pfant --branch gh-pages --single-branch gh-pages
-
-$ ls
-gh-pages  master
-@endcode
-
-Communicating with GitHub <i>via</i> SSH
+@subsection ssh_setup Communicating with GitHub <i>via</i> SSH
 ========================================
 
 To keep git from asking for your github username and password every time you execute a
@@ -80,35 +48,16 @@ tutorials referenced below.
   </li>
 </ol>
 
+@section cbfortran CodeBlocks Fortran (CBFortran)
 
+CBFortran is a customization of the "Code Blocks" IDE optimized for Fortran.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
-
-@page codeblocks CodeBlocks Fortran
-
-CodeBlocks Fortran is a great IDE for working with Fortran projects.
-
-@note Install "CodeBlocks Fortran", @b not "CodeBlocks".
+This tool is recommended to work with Fortran projects (such as PFANT) because
+it can generate Makefile's and compile the source code with little pain.
 
 Project site: http://cbfortran.sourceforge.net/
 
-Running on Linux
-================
+@subsection cbfortran_linux Running CBFortran on Linux
 
 CodeBlocks Fortran does not require installation. Just download the .taz.bz2 file from the
 downloads page http://cbfortran.sourceforge.net/downloads.html and extract it into your
@@ -120,18 +69,16 @@ directory <code>/home/user/CodeBLocks_Fortran_xxxxxxxx</code>).
 After extracted, enter directory <code>/home/user/CodeBLocks_Fortran_xxxxxxxx</code> and
 execute <code>codeblocks_run.sh</code>
 
-Working with the PFANT Project
-==============================
+@subsection cbfortran_work Using CBFortran
 
-In CodeBlocks Fortran, open file <code>main.cbp</code>, which is in the <code>main</code>
-directory of the master branch.
+The CBFortran project is the file %/fortran/PFANT.cbp.
 
-Some shortcuts
---------------
+Some shortcuts:
 @li Find in files: Ctrl+Shift+F
 @li Compile: Ctrl+F9
 @li Run: Ctrl+F10
 
+@subpage coding_style Coding style manual
 */
 
 
