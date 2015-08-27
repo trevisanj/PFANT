@@ -10,45 +10,63 @@ Note: only works with the bash shell.
 
 import os
 import argparse
+import sys
+
+def print2(s):
+  """function to standarde message lines."""
+  print '--> %s' % s
 
 
 if __name__ == "__main__":
   if os.name != "posix":
     print "OS is '"+os.name+"', this script is only for 'posix' OS's, sorry."
+    sys.exit()
 
   home = os.getenv("HOME")
-  t = os.path.join(home, '.bashrc')
 
+  DEF_TARGET = '(home)/.bashrc or (home)/.cshrc'
 
   parser = argparse.ArgumentParser(
     description='Adds lines to ~/.bashrc file or other specified',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('target', type=str, help='full path to destination',
-                      default=t, nargs='?')
+                      default=DEF_TARGET, nargs='?')
+  parser.add_argument('--bash', help='bash mode', action="store_true")
+  parser.add_argument('--tcsh', help='tcsh mode',action="store_true")
 
   args = parser.parse_args()
 
-  if args.target is not None:
-    t = args.target
+  # Validation additional to parse_args()
+  if not args.bash and not args.tcsh:
+    parser.error("Either set --bash or --tcsh.")
+  if args.bash and args.tcsh:
+    parser.error("Set either --bash or --tcsh, not both")
 
+  # Shell-dependent configuration
+  if args.bash:
+    print2("Running in bash mode")
+    path_var = "PATH"
+    fn_conf = ".bashrc"
+    get_cmd0 = lambda p: 'export PYTHONPATH="${PYTHONPATH}:%s"' % p
+    get_cmd1 = lambda p: 'export PATH="${PATH}:%s"' % p
+  else:
+    print2("Running in tcsh mode")
+    path_var = "path"
+    fn_conf = ".cshrc"
+    get_cmd0 = lambda p: 'setenv PYTHONPATH "{$PYTHONPATH}:%s"' % p
+    get_cmd1 = lambda p: 'set path = ($path %s)' % p
+
+  # file to be changed/created
+  t = args.target if args.target is not DEF_TARGET else os.path.join(home, fn_conf)
+  # directory containing this script ("root" directory of PFANT repository)
   p = os.path.dirname(os.path.realpath(__file__))
 
-
   map_ = [
-    ("PYTHONPATH", "%s/pypfant"% p),
-    ("PATH", "%s/pypfant/scripts" % p),
-    ("PATH", "%s/fortran/bin" % p)]
+    ("PYTHONPATH", "%s/pypfant"% p, get_cmd0),
+    (path_var, "%s/pypfant/scripts" % p, get_cmd1),
+    (path_var, "%s/fortran/bin" % p, get_cmd1)]
 
-  get_cmd = lambda v, p: 'export %s="${%s}:%s"' % (v, v, p)
-
-  ll = [get_cmd(v, p) for v, p in map_]
-
-  # ll = ["""export PYTHONPATH="${PYTHONPATH}:%s/pypfant" """ % p,
-  #       """export PATH="${PATH}:%s/pypfant/bin" """ % p,
-  #       """export PATH="${PATH}:%s/fortran/bin" """ % p,
-  #       ]
-
-  os.environ['APARA'] = 'qqqqqq'
+  ll = [f(p) for v, p, f in map_]  # list of commands
 
   if os.path.isfile(t):
     to_add = []
@@ -57,7 +75,7 @@ if __name__ == "__main__":
 
       for l in ll:
         if l not in orig:
-          print "Adding >", l
+          #print "Adding >", l
           to_add.append(l)
   else:
     orig = ""
@@ -68,32 +86,54 @@ if __name__ == "__main__":
       s = orig+("\n".join(["# added by add_paths.py (PFANT)\n"+x for x in to_add]))
       f.write(s)
 
-      print "File '%s' now contains:\n--- BEGIN ---" % t
-      print s
-      print "--- END ---"
+    print2("Adding the following lines to file '%s')" % t)
+    print "***BEGIN***"
+    for x in to_add:
+      print x
+    print "***END***"
+
+
+
+
+      # print "File '%s' now contains:\n--- BEGIN ---" % t
+      # print s
+      # print "--- END ---"
   else:
-    print "No changes made to file '%s'" % t
+    print2("No changes made to file '%s'" % t)
 
   # runs commands
   any_ = False
-  for v, p in map_:
-    goes = False
-    try:
-      e = os.environ[v]
+  get_cmd = lambda p: 'export PATH="${PATH}:%s"' % p # running python under "sh"
+  # for v, p, _ in map_:
+  #   goes = False
+  #   try:
+  #     e = os.environ[v]
+  #
+  #     if not p in e:
+  #       goes = True
+  #   except KeyError:
+  #     goes = True
+  #   if goes:
+  #
+  #     cmd = get_cmd(p)
+  #     print "running > "+cmd
+  #     os.system(cmd)
+  #     any_ = True
+  #
+  # if any_:
+  #   if args.bash:
+  #     print "Running another bash"
+  #     os.system("bash")
+  #   else:
+  #     print "Running another tcsh"
+  #     os.system("tcsh")
+  #
 
-      if not p in e:
-        goes = True
-    except KeyError:
-      print "Fffff"
-      goes = True
-
-    if goes:
-      cmd = get_cmd(v, p)
-      print "running > "+cmd
-      os.system(cmd)
-      any_ = True
-
-  if any_:
-    print "Running another bash"
+  # Runs another shell that will parse its new configuration file
+  if args.bash:
+    print2("Running another bash...")
     os.system("bash")
+  else:
+    print2("Running another tcsh")
+    os.system("tcsh")
 

@@ -19,11 +19,15 @@ PFANT is cross-platform.
 Please make sure the following is installed on your computer.
 
 @verbatim
-What                          Why?
--------------------------------------------------------
-gfortran and make             Compile the Fortran code
-python 2.7                    run the Python scripts
-matplotlib (python package)   plotting with pypfant
+What                          Why?                       How to install
+----------------------------------------------------------------------------------
+gfortran,                     Compile the Fortran code
+
+python 2.7                     run the Python scripts
+
+matplotlib (python package)    requirement for pypfant
+
+fortranformat (python package) requirement for pypfant   pip install fortranformat
 @endverbatim
 
 @section tree Directory
@@ -136,7 +140,7 @@ newnewp025.mod                         |            |              |         |
                                              flux.norm.nulbad
 @endverbatim
 
-@section paths Paths to executables and libraries
+@section paths Setting the system to find the executables and libraries
 
 If you run on Linux and the bash shell, you can run the script "add_paths.py"
 to update your PATH and PYTHONPATH variables. Otherwise, environment variables

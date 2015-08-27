@@ -1,4 +1,4 @@
 from pypfant import *
 
-class SpectrumElvis(spectrum):
+class SpectrumElvis(Spectrum):
   pass

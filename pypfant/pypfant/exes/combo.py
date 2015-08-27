@@ -110,7 +110,7 @@ class Combo(object):
       for e in self.get_exes():
         e.run_from_combo()
         if e.popen.returncode != 0:
-          raise RuntimeError("%s failed" % e.__class__.__name__.lower())
+          raise FailedError("%s failed" % e.__class__.__name__.lower())
     finally:
       self.is_running = False
 
