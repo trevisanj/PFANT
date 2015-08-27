@@ -14,7 +14,7 @@
 git clone https://github.com/trevisanj/pfant
 @endcode
 
-@subsubsection github_clone0 IF you want to run doxygen
+@subsection github_clone1 IF you want to run doxygen
 
 The repository has two branches:
 @li @c master All Python and Fortran source code
