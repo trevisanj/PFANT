@@ -15,11 +15,11 @@ deploy_directory=doxy-fortran
 deploy_branch=gh-pages
 
 #if no user identity is already set in the current git environment, use this:
-default_username=no-user
+default_username=trevisanj
 default_email=no-email
 
 #repository to deploy to. must be readable and writable.
-repo=pfant
+repo=origin
 
 # Parse arg flags
 while : ; do
