@@ -265,7 +265,6 @@ run_4exes.py --help
 .
   to be continued ...
 
-+-------------------->
 @endverbatim
 
 */
