@@ -1,0 +1,12 @@
+<map id="reader_modeles::read_modele" name="reader_modeles::read_modele">
+<area shape="rect" id="node2" href="$namespacereader__modeles.html#a9d5d25c9605940c3474e28c248293827" title="Opens existing models binary file. " alt="" coords="213,39,363,80"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="425,116,553,142"/>
+<area shape="rect" id="node6" href="$namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="215,222,361,263"/>
+<area shape="rect" id="node8" href="$namespacereader__modeles.html#a530daca27088cc43a087d0ed4815b456" title="Closes open file. " alt="" coords="211,104,365,146"/>
+<area shape="rect" id="node9" href="$namespacemisc.html#aab2ed1853219d82f31e3b5509107e362" title="Creates a logical vector indicating which rows should be skipped in a text file. " alt="" coords="201,170,375,197"/>
+<area shape="rect" id="node11" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="431,284,547,310"/>
+<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="603,229,736,256"/>
+<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="785,229,866,256"/>
+<area shape="rect" id="node7" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="424,229,555,256"/>
+<area shape="rect" id="node10" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="442,170,537,197"/>
+</map>

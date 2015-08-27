@@ -1,0 +1,17 @@
+<map id="config::full_path_w" name="config::full_path_w">
+<area shape="rect" id="node2" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="215,107,339,133"/>
+<area shape="rect" id="node3" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="708,157,769,184"/>
+<area shape="rect" id="node6" href="$pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="495,5,545,32"/>
+<area shape="rect" id="node7" href="$namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="419,478,621,519"/>
+<area shape="rect" id="node8" href="$namespacenulbad__calc.html#a08f8e56dc98436512aaeed06a726a91c" title="Reads spectrum file. " alt="" coords="185,376,370,403"/>
+<area shape="rect" id="node10" href="$namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="670,251,807,293"/>
+<area shape="rect" id="node11" href="$namespacesynthesis.html#af6dfd3c2d7d2be83e4bcc7e2472840c5" title="synthesis::synthesis_" alt="" coords="203,5,352,32"/>
+<area shape="rect" id="node12" href="$namespacereader__main.html#ab0340083926cd8b86e6a42dd62c7ee6b" title="Makes sure that read_main() has been called. " alt="" coords="207,310,347,351"/>
+<area shape="rect" id="node15" href="$namespacereader__modeles.html#a8d879e004ec98f0d3307f34ca59c932a" title="Reading routines and variable declarations for dfile:filetoh. " alt="" coords="204,478,351,519"/>
+<area shape="rect" id="node16" href="$namespacereader__gridsmap.html#a5e53f676bbb6b2b85b1ca556dfbf0f4a" title="Reads map of models: dfile:gridsmap. " alt="" coords="445,543,595,585"/>
+<area shape="rect" id="node4" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="693,427,785,453"/>
+<area shape="rect" id="node5" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="857,157,917,184"/>
+<area shape="rect" id="node9" href="$namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853" title="Initialization of this module. " alt="" coords="439,427,601,453"/>
+<area shape="rect" id="node13" href="$namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="440,309,600,336"/>
+<area shape="rect" id="node14" href="$namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28" title="Initializes x_* variables. " alt="" coords="428,361,612,402"/>
+</map>

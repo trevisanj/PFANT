@@ -1,0 +1,13 @@
+<map id="options2::get_option_name" name="options2::get_option_name">
+<area shape="rect" id="node2" href="$namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="244,5,412,32"/>
+<area shape="rect" id="node4" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="667,157,797,184"/>
+<area shape="rect" id="node10" href="$namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="237,56,419,83"/>
+<area shape="rect" id="node11" href="$namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="237,107,419,133"/>
+<area shape="rect" id="node12" href="$namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="233,157,423,184"/>
+<area shape="rect" id="node3" href="$namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="473,99,618,141"/>
+<area shape="rect" id="node5" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="846,157,970,184"/>
+<area shape="rect" id="node6" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="1035,81,1096,108"/>
+<area shape="rect" id="node7" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="1019,132,1111,159"/>
+<area shape="rect" id="node8" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="1035,183,1095,209"/>
+<area shape="rect" id="node9" href="$pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="1040,233,1091,260"/>
+</map>

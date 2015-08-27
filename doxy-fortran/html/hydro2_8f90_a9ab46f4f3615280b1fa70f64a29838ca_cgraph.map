@@ -1,0 +1,51 @@
+<map id="hydro2" name="hydro2">
+<area shape="rect" id="node2" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="129,453,253,480"/>
+<area shape="rect" id="node11" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="999,200,1094,226"/>
+<area shape="rect" id="node21" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="989,1276,1105,1302"/>
+<area shape="rect" id="node25" href="$namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="780,1124,911,1150"/>
+<area shape="rect" id="node27" href="$hydro2_8f90.html#a8fcca081078f5cb7bad9c68a3fc7c481" title="validate_config" alt="" coords="791,1326,900,1353"/>
+<area shape="rect" id="node29" href="$namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="319,1034,479,1061"/>
+<area shape="rect" id="node32" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="119,754,263,795"/>
+<area shape="rect" id="node34" href="$namespacereader__modeles.html#a3477f6189a0aa00668a08f2172a9a84a" title="Reads single record from file dfile:modeles into variables modeles_*. " alt="" coords="547,875,693,916"/>
+<area shape="rect" id="node39" href="$namespacemisc.html#a02066341895102d0ff6d93c9246efc2d" title="Checks if hydrogen line interval overlaps with calculation interval. " alt="" coords="115,1377,266,1404"/>
+<area shape="rect" id="node40" href="$namespacehydro2__calc.html#af937fb936f6b0b74bb98e231ba490497" title="hydro2_calc::hydro2\l_calc_" alt="" coords="551,1551,689,1592"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="983,765,1111,792"/>
+<area shape="rect" id="node6" href="$namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="566,757,674,784"/>
+<area shape="rect" id="node7" href="$namespacewelcome.html#a2d654e28efde010c95d6d170eebd671a" title="Returns string representing current PFANT version. " alt="" coords="319,184,479,210"/>
+<area shape="rect" id="node8" href="$namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="555,133,685,160"/>
+<area shape="rect" id="node14" href="$namespaceconfig.html#a0eb008a11cd2fbe82aebc2b603ad5151" title="Performs a series of checks to avoid programming errors while defining the command&#45;line options..." alt="" coords="319,504,478,530"/>
+<area shape="rect" id="node15" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="334,285,463,312"/>
+<area shape="rect" id="node19" href="$namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="792,352,899,378"/>
+<area shape="rect" id="node24" href="$namespacemisc.html#acacf3e482d34c5d8a914ac994d9e17be" title="Examples: " alt="" coords="331,336,467,378"/>
+<area shape="rect" id="node26" href="$namespacewelcome.html#a0693616351818b37cf0a907f31c87dc6" title="Displays welcome message. " alt="" coords="315,402,482,429"/>
+<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1160,1301,1293,1328"/>
+<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1342,1301,1423,1328"/>
+<area shape="rect" id="node9" href="$namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c" title="Creates option and adds to options variable. " alt="" coords="781,149,909,176"/>
+<area shape="rect" id="node10" href="$namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="787,250,904,277"/>
+<area shape="rect" id="node12" href="$namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="787,200,903,226"/>
+<area shape="rect" id="node13" href="$namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="791,98,899,125"/>
+<area shape="rect" id="node16" href="$namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="563,301,677,328"/>
+<area shape="rect" id="node17" href="$namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="556,352,684,378"/>
+<area shape="rect" id="node18" href="$namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="547,184,693,226"/>
+<area shape="rect" id="node22" href="$namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="531,250,709,277"/>
+<area shape="rect" id="node23" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="981,1529,1112,1556"/>
+<area shape="rect" id="node20" href="$namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="771,992,920,1034"/>
+<area shape="rect" id="node28" href="$namespacelogging.html#a5f475ebe6dd4c879b81a573c3ef3049c" title="Logs message as HALT. Logs unconditionally (independent of logging level). " alt="" coords="989,1326,1105,1353"/>
+<area shape="rect" id="node30" href="$namespacereader__main.html#ab0340083926cd8b86e6a42dd62c7ee6b" title="Makes sure that read_main() has been called. " alt="" coords="550,1058,690,1099"/>
+<area shape="rect" id="node31" href="$namespacereader__main.html#a87ee8d183d80f426edb100f777c0d687" title="Reads dfile:main to fill variables main_*. " alt="" coords="765,1225,926,1252"/>
+<area shape="rect" id="node33" href="$namespacemisc.html#a026e76068a6830c8c15aa1a58bd91c92" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="329,808,468,850"/>
+<area shape="rect" id="node35" href="$namespacereader__modeles.html#a9d5d25c9605940c3474e28c248293827" title="Opens existing models binary file. " alt="" coords="770,875,921,916"/>
+<area shape="rect" id="node36" href="$namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="772,1058,919,1099"/>
+<area shape="rect" id="node37" href="$namespacereader__modeles.html#a530daca27088cc43a087d0ed4815b456" title="Closes open file. " alt="" coords="769,758,922,799"/>
+<area shape="rect" id="node38" href="$namespacemisc.html#aab2ed1853219d82f31e3b5509107e362" title="Creates a logical vector indicating which rows should be skipped in a text file. " alt="" coords="758,504,933,530"/>
+<area shape="rect" id="node41" href="$namespacehydro2__calc.html#ae1406dc601b3453f707fd2785d9625e6" title="Calcule l&#39;abondance des elements en tenant compte d&#39;une eventuelle surabondance des elements alfa..." alt="" coords="776,1580,915,1606"/>
+<area shape="rect" id="node42" href="$namespaceabsoru.html#a2d60649af39c2775d4002eb8fda0a91b" title="Calculates the &quot;continuum absorption&quot;. " alt="" coords="788,1782,903,1809"/>
+<area shape="rect" id="node47" href="$namespacehydro2__calc.html#af683d02706524e0595d2db23e3caf1ab" title="L EST LE COEFFICIENT D&#39;ABSORPTION PAR PARTICULE ABSORBANTE. " alt="" coords="778,1630,913,1657"/>
+<area shape="rect" id="node48" href="$namespacehydro2__calc.html#a402b3a17eebbabf762db21134e3bd87d" title="CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR DANS LE MODELE,LAMB=LONGUEUR D&#39;ONDE. " alt="" coords="777,1681,913,1708"/>
+<area shape="rect" id="node49" href="$namespacehydro2__calc.html#a437fd693a710a21b692b8de60151afaf" title="CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL. modeles_nh VARIABLE DE PROFONDEUR ..." alt="" coords="778,1529,913,1556"/>
+<area shape="rect" id="node50" href="$namespacehydro2__calc.html#acd3a060dd8cf7abef8ffd5d75c1807f7" title="Calculates m_fl and m_fc. " alt="" coords="780,1428,911,1454"/>
+<area shape="rect" id="node43" href="$namespaceabsoru.html#a451eb695e6e4031e52eb944e5f6aba0b" title="Calculates the &quot;Gaunth factor&quot;: multiplicative correction to the continuous absorption (i..." alt="" coords="993,1808,1101,1834"/>
+<area shape="rect" id="node44" href="$namespaceabsoru.html#a32c5710bd6e034085023fa0cb6958c72" title="absoru::tempa" alt="" coords="994,1858,1099,1885"/>
+<area shape="rect" id="node45" href="$namespaceabsoru.html#a280466d16647432abda7b5eba4608c0f" title="SAHA&#39;s equation: ionization equilibrium: relative number of atoms in each ionization state..." alt="" coords="993,1706,1101,1733"/>
+<area shape="rect" id="node46" href="$namespaceabsoru.html#a6e761f530c81b0694a30d934cb7fc5b2" title="CE SSP CALCULE LE COEFFICIENT D&#39;ABSORPTION PAR ATOME NEUTRE POUR L&#39;HYDROGENE ET L&#39;HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE DISCONTINUITE DE L&#39;UN DE CES ABSORBANTS. " alt="" coords="993,1757,1101,1784"/>
+</map>
