@@ -1,9 +1,0 @@
-<map id="synthesis::turbul" name="synthesis::turbul">
-<area shape="rect" id="node2" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="344,5,475,32"/>
-<area shape="rect" id="node5" href="$namespacemisc__math.html#aec7f47602289aaa6d529c299c20b04a8" title="misc_math::ftlin3" alt="" coords="173,56,296,83"/>
-<area shape="rect" id="node8" href="$namespacemisc__math.html#af59e2205a43c5928894458e78ed02f9c" title="INTERPOLATION PARABOLIQUE DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT AUX TT (ITO..." alt="" coords="180,107,289,133"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="699,57,832,84"/>
-<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="881,57,962,84"/>
-<area shape="rect" id="node6" href="$namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="347,107,471,133"/>
-<area shape="rect" id="node7" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="523,95,651,121"/>
-</map>

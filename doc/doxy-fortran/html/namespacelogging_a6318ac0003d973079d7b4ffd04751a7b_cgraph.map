@@ -1,4 +1,0 @@
-<map id="logging::log_info" name="logging::log_info">
-<area shape="rect" id="node2" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="171,5,304,32"/>
-<area shape="rect" id="node3" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="353,5,434,32"/>
-</map>

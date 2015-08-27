@@ -1,6 +1,0 @@
-<map id="misc_math::fteta0" name="misc_math::fteta0">
-<area shape="rect" id="node2" href="$namespacehydro2__calc.html#a402b3a17eebbabf762db21134e3bd87d" title="CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR DANS LE MODELE,LAMB=LONGUEUR D&#39;ONDE. " alt="" coords="181,12,317,39"/>
-<area shape="rect" id="node5" href="$pfant_8f90.html#ae8ea663eb2f2f4bab667601f144f29b7" title="bk" alt="" coords="230,63,269,89"/>
-<area shape="rect" id="node3" href="$namespacehydro2__calc.html#af937fb936f6b0b74bb98e231ba490497" title="hydro2_calc::hydro2\l_calc_" alt="" coords="365,5,504,46"/>
-<area shape="rect" id="node4" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="552,12,613,39"/>
-</map>

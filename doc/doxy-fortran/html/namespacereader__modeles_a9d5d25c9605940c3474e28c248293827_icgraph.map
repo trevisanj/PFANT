@@ -1,8 +1,0 @@
-<map id="reader_modeles::open_mod_file" name="reader_modeles::open_mod_file">
-<area shape="rect" id="node2" href="$namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="427,19,629,60"/>
-<area shape="rect" id="node4" href="$namespaceinnewmarcs__calc.html#a985d3fc4a4e18ab847b2354c7622b58b" title="On cherche les numeros des 4 modeles de la table entre lesquels le programme devra interpoler..." alt="" coords="205,26,379,53"/>
-<area shape="rect" id="node5" href="$namespacereader__modeles.html#a3477f6189a0aa00668a08f2172a9a84a" title="Reads single record from file dfile:modeles into variables modeles_*. " alt="" coords="219,78,365,119"/>
-<area shape="rect" id="node7" href="$namespacereader__gridsmap.html#a5e53f676bbb6b2b85b1ca556dfbf0f4a" title="Reads map of models: dfile:gridsmap. " alt="" coords="453,136,603,178"/>
-<area shape="rect" id="node3" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="678,85,770,112"/>
-<area shape="rect" id="node6" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="497,85,559,112"/>
-</map>
