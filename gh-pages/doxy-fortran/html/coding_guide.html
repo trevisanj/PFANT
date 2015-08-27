@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo0.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">PFANT
-   &#160;<span id="projectnumber">version 15.07.17a</span>
+   &#160;<span id="projectnumber">version 15.08.27a</span>
    </div>
    <div id="projectbrief">Spectral synthesis software</div>
   </td>
@@ -105,12 +105,15 @@ $(document).ready(function(){initNavTree('coding_guide.html','');});
 <div class="title">Coding guide </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="github"></a>
+<div class="textblock"><p><a class="el" href="coding_style.html">Coding style</a> Coding style manual</p>
+<dl class="section note"><dt>Note</dt><dd>The symbol <code>%</code> refers to the root directory of the PFANT repository.</dd></dl>
+<h1><a class="anchor" id="github"></a>
 Working with the GitHub repository</h1>
 <h2><a class="anchor" id="github_clone"></a>
 Cloning the repository</h2>
 <div class="fragment"><div class="line">git clone https:<span class="comment">//github.com/trevisanj/pfant</span></div>
-</div><!-- fragment --><h1>ssh_setup Communicating with GitHub <em>via</em> SSH </h1>
+</div><!-- fragment --><h2><a class="anchor" id="ssh_setup"></a>
+Communicating with GitHub &lt;i&gt;via&lt;/i&gt; SSH</h2>
 <p>To keep git from asking for your github username and password every time you execute a <code>git push</code>, you have to configure git to use the SSH protocol to communicate with github.</p>
 <p>The steps involved are roughly summarized below. For full details, please follow the tutorials referenced below. </p><ol>
 <li>
@@ -146,13 +149,32 @@ Using CBFortran</h2>
 <li>Compile: Ctrl+F9 </li>
 <li>Run: Ctrl+F10</li>
 </ul>
-<p><a class="el" href="coding_style.html">Coding style</a> Coding style manual </p>
+<h1><a class="anchor" id="coding_doxygen"></a>
+Working with Doxygen</h1>
+<p>Doxygen is used to generate HTML documentation such as this.</p>
+<p>To recompile the HTMLs, run <code>doxygen</code> inside <code>%/fortran</code>. This will generate output inside <code>%/gh-pages/doxy-fortran</code></p>
+<p>To push this documentation online, simply run the script</p>
+<p><code>deploy_doxy-fortran.sh</code> inside directory <code>%</code></p>
+<h2><a class="anchor" id="doxy_troubleshooting"></a>
+Troubleshooting doxygen compilation</h2>
+<h2><a class="anchor" id="segfault_doxygen"></a>
+Segmentation fault running doxygen</h2>
+<p>Doxygen has got Fortran code parsing bugs*. I don't know the exact situation that causes doxygen to crash, but I have figured out things to be avoided.</p>
+<dl class="section user"><dt>Backslashes</dt><dd>Doxygen crashed because of the following line of code:</dd></dl>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespaceconfig.html#aba4e186e3245789edac49c1b47646548">wdir_trim</a>(i:i) .eq. <span class="charliteral">&#39;\&#39;</span>) <a class="code" href="namespaceconfig.html#aba4e186e3245789edac49c1b47646548">wdir_trim</a>(i:i) = <span class="charliteral">&#39;/&#39;</span></div>
+</div><!-- fragment --><p>Besides, the file %/fortran/Doxyfile must have</p>
+<div class="fragment"><div class="line">ENABLE_PREPROCESSING   = NO</div>
+</div><!-- fragment --><h1><a class="anchor" id="coding_ref"></a>
+References</h1>
+<p><a href="https://help.github.com/articles/generating-ssh-keys/">https://help.github.com/articles/generating-ssh-keys/</a></p>
+<p><a href="https://help.github.com/articles/changing-a-remote-s-url/">https://help.github.com/articles/changing-a-remote-s-url/</a></p>
+<p><a href="http://cbfortran.sourceforge.net/">http://cbfortran.sourceforge.net/</a> </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 27 2015 00:04:11 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 00:19:01 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -2,6 +2,10 @@
 
 @page coding_guide Coding guide
 
+@subpage coding_style Coding style manual
+
+@note The symbol @c % refers to the root directory of the PFANT repository.
+
 @section github Working with the GitHub repository
 
 @subsection github_clone Cloning the repository
@@ -12,7 +16,6 @@ git clone https://github.com/trevisanj/pfant
 
 
 @subsection ssh_setup Communicating with GitHub <i>via</i> SSH
-========================================
 
 To keep git from asking for your github username and password every time you execute a
 <code>git push</code>, you have to configure git to use the SSH protocol to communicate
@@ -78,54 +81,20 @@ Some shortcuts:
 @li Compile: Ctrl+F9
 @li Run: Ctrl+F10
 
-@subpage coding_style Coding style manual
-*/
 
 
+@section coding_doxygen Working with Doxygen
 
+Doxygen is used to generate HTML documentation such as this.
 
+To recompile the HTMLs, run @c doxygen inside <code>%/fortran</code>.
+This will generate output inside <code>%/gh-pages/doxy-fortran</code>
 
+To push this documentation online, simply run the script
 
+<code>deploy_doxy-fortran.sh</code> inside directory <code>%</code>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@subpage codingStyle
-
-@subpage github
-
-@subpage codeblocks
-
-@subpage doxygen
-
-/*
-@page troubleshooting Troubleshooting
+@subsection doxy_troubleshooting Troubleshooting doxygen compilation
 
 @subsection segfault_doxygen Segmentation fault running doxygen
 
@@ -149,11 +118,12 @@ ENABLE_PREPROCESSING   = NO
 
 
 
-References
-==========
+@section coding_ref References
 
 https://help.github.com/articles/generating-ssh-keys/
 
 https://help.github.com/articles/changing-a-remote-s-url/
+
+http://cbfortran.sourceforge.net/
 
 */

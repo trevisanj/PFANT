@@ -73,10 +73,14 @@ var NAVTREEINDEX0 =
 "coding_guide.html#cbfortran":[1,1],
 "coding_guide.html#cbfortran_linux":[1,1,0],
 "coding_guide.html#cbfortran_work":[1,1,1],
+"coding_guide.html#coding_doxygen":[1,2],
+"coding_guide.html#coding_ref":[1,3],
+"coding_guide.html#doxy_troubleshooting":[1,2,0],
 "coding_guide.html#github":[1,0],
 "coding_guide.html#github_clone":[1,0,0],
+"coding_guide.html#segfault_doxygen":[1,2,1],
 "coding_guide.html#ssh_setup":[1,0,1],
-"coding_style.html":[1,2],
+"coding_style.html":[1,4],
 "config_8f90.html":[7,0,0,4],
 "config_8f90.html#a00e58f4b9bf627688e079505321cad54":[7,0,0,4,29],
 "config_8f90.html#a00f9e5b4c1641f0dc4316782bd686c61":[7,0,0,4,17],
@@ -245,9 +249,5 @@ var NAVTREEINDEX0 =
 "hydro2_8f90.html#add1b3f63878b420c3a189a77d925ea5e":[7,0,0,6,22],
 "hydro2_8f90.html#ae1406dc601b3453f707fd2785d9625e6":[7,0,0,6,7],
 "hydro2_8f90.html#ae22c01508f2211b1c06b349590dbe4d0":[7,0,0,6,47],
-"hydro2_8f90.html#ae632753143d86aa739a508a03ccd8a94":[7,0,0,6,3],
-"hydro2_8f90.html#ae78244ce99661ececd5c33799a0573bd":[7,0,0,6,29],
-"hydro2_8f90.html#ae9253bf5ca4ba780e0ea871b480b58b3":[7,0,0,6,10],
-"hydro2_8f90.html#aee7b4c1c5ad5947f97d8f4811941a6e2":[7,0,0,6,38],
-"hydro2_8f90.html#af683d02706524e0595d2db23e3caf1ab":[7,0,0,6,8]
+"hydro2_8f90.html#ae632753143d86aa739a508a03ccd8a94":[7,0,0,6,3]
 };

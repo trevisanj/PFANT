@@ -243,7 +243,21 @@ $ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid
 $ plot_filetoh.py thalpha             # plots hydrogen lines
 @endcode
 
-@section Operation using Python
+@section more_python Operation using Python
+
+The four executables can be run in batch using this python script
+
+@code
+run_4exes.py
+@endcode
+
+For a list of available options, type:
+
+@code
+run_4exes.py --help
+@endcode
+
+-x-x-x-x-x
 
 @verbatim
 .

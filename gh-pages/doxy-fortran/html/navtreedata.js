@@ -15,7 +15,7 @@ var NAVTREE =
         [ "Running with shipped data", "overview.html#test_bin", null ],
         [ "Command-line plotting tools", "overview.html#cmd_plot", null ]
       ] ],
-      [ "using Python", "overview.html#Operation", null ]
+      [ "Operation using Python", "overview.html#more_python", null ]
     ] ],
     [ "References", "references.html", null ],
     [ "Todo List", "todo.html", null ],
@@ -49,9 +49,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "absoru_8f90.html",
-"hydro2_8f90.html#af8f3b160fd65b46d9ce2e432318b8341",
-"overview.html#Operation",
-"readers_8f90.html#adb6624e9b4329d1d2bce70b0f300f390"
+"hydro2_8f90.html#ae78244ce99661ececd5c33799a0573bd",
+"nulbad_8f90.html#afe20b72188924d0aeb2800f144768936",
+"readers_8f90.html#ad861070af0033a4176d55cc81fae76d8"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
