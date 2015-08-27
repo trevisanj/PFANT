@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/dimensions.f90
-MD5:571c8a4b55fac1d86fe675f7c6897a84 -- If you edit this, you'll get what you deserve.
+MD5:e9647f7124cae9c2c97c7956be47e852 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -64,7 +64,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 17 'max_filetoh_jmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
-18 'max_filetoh_numfiles' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+18 'max_filetoh_num_files' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '13') () 0 () () () 0 0)
 19 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -98,7 +98,7 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21') () 0 () () () 0 0)
 'max_absoru2_nrr' 0 8 'max_absoru2_numset_i' 0 9 'max_atomgrade_nblend'
 0 10 'max_atomgrade_r_nblend' 0 11 'max_dissoc_nmetal' 0 12
 'max_dissoc_nmol' 0 13 'max_dissoc_z' 0 14 'max_dtot' 0 15
-'max_filetoh_jjmax' 0 16 'max_filetoh_jmax' 0 17 'max_filetoh_numfiles'
+'max_filetoh_jjmax' 0 16 'max_filetoh_jmax' 0 17 'max_filetoh_num_files'
 0 18 'max_km_f_mblend' 0 19 'max_km_r_lines_total' 0 20 'max_modeles_ntot'
 0 21 'max_num_options' 0 22 'max_partit_kmax' 0 23 'max_partit_npar' 0
 24 'max_sol_per_mol' 0 25 'num_mol' 0 26)

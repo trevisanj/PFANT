@@ -36,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="execonf.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="execonf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pypfant/exes/execonf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2502" max-vertical-offset="5778">
-              <caret line="155" column="16" selection-start-line="155" selection-start-column="16" selection-end-line="155" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.25" vertical-offset="540" max-vertical-offset="5850">
+              <caret line="42" column="10" selection-start-line="42" selection-start-column="10" selection-end-line="42" selection-end-column="10" />
               <folding>
                 <element signature="e#130#182#0" expanded="true" />
               </folding>
@@ -48,10 +48,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pypfant/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.16419612" vertical-offset="0" max-vertical-offset="877">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
               <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
@@ -181,10 +181,10 @@
         <option value="$PROJECT_DIR$/pypfant/exes/combo.py" />
         <option value="$PROJECT_DIR$/pypfant/data/default/main.dat" />
         <option value="$PROJECT_DIR$/pypfant/data/default/hmap.dat" />
-        <option value="$PROJECT_DIR$/pypfant/exes/execonf.py" />
         <option value="$PROJECT_DIR$/pypfant/plotters/assorted.py" />
         <option value="$PROJECT_DIR$/pypfant2/__init__.py" />
         <option value="$PROJECT_DIR$/pypfant/__init__.py" />
+        <option value="$PROJECT_DIR$/pypfant/exes/execonf.py" />
       </list>
     </option>
   </component>
@@ -745,7 +745,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3" y="417" width="1286" height="1001" extended-state="6" />
+    <frame x="-3" y="417" width="1286" height="1001" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1171,16 +1171,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pypfant/exes/execonf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2502" max-vertical-offset="5778">
-          <caret line="155" column="16" selection-start-line="155" selection-start-column="16" selection-end-line="155" selection-end-column="16" />
-          <folding>
-            <element signature="e#130#182#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pypfant/plotters/assorted.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2237" max-vertical-offset="3186">
@@ -1209,10 +1199,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pypfant/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16419612" vertical-offset="0" max-vertical-offset="877">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
           <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pypfant/exes/execonf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25" vertical-offset="540" max-vertical-offset="5850">
+          <caret line="42" column="10" selection-start-line="42" selection-start-column="10" selection-end-line="42" selection-end-column="10" />
+          <folding>
+            <element signature="e#130#182#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -39,6 +39,8 @@ class ExeConf(object):
   "fn_absoru2",
   "hmap",
   "fn_hmap",
+  "llzero",
+  "llfin",
   "open_status",
   "fn_moddat",
   "fn_gridslist",
@@ -126,6 +128,8 @@ class ExeConf(object):
     self.opt_fn_absoru2 = None
     self.opt_hmap = True # Overriding default, which is .false.
     self.opt_fn_hmap = None
+    self.opt_llzero = None
+    self.opt_llfin = None
 
     # innewmarcs
     self.opt_open_status = None

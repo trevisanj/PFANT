@@ -742,9 +742,9 @@ contains
      'input file name - table containing table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
      !>@todo erplace "calculus interval" with "synthesis interval"
-    call add_option('ip', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
+    call add_option('hp', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
      'Lower boundary of calculation interval')
-    call add_option('ip', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
+    call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
      'Upper boundary of calculation interval')
 
     ! Here there is a slight difference on the description of this option depending
