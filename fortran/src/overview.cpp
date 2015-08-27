@@ -45,7 +45,7 @@ Here is an incomplete listing of the directory tree.
 │   │   └── pfant
 │   └── src                      Fortran and documentation source files
 └── pypfant                      Python layer
-    ├── bin                      command-line tools
+    ├── scripts                  command-line tools
     │   ├── plot_filetoh.py      plots hydrogen lines in 3D
     │   ├── plot_mod_record.py   plots atmospheric model
     │   ├── plot_mod_records.py  plots NEWMARCS grid in 3D
