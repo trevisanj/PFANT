@@ -59,8 +59,8 @@ class ExeConf(object):
   "fn_dissoc",
   "fn_partit",
   "fn_abonds",
-  "fn_atomgrade",
-  "fn_moleculagrade",
+  "fn_atoms",
+  "fn_molecules",
   "fn_lines",
   "fn_log",
   "fn_progress",
@@ -152,8 +152,8 @@ class ExeConf(object):
     self.opt_fn_dissoc    = None
     self.opt_fn_partit    = None
     self.opt_fn_abonds    = None
-    self.opt_fn_atomgrade   = None
-    self.opt_fn_moleculagrade = None
+    self.opt_fn_atoms   = None
+    self.opt_fn_molecules = None
     self.opt_fn_lines     = None
     self.opt_fn_log       = None
     self.opt_fn_progress = "progress.txt"

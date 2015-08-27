@@ -12,16 +12,30 @@ git clone https://github.com/trevisanj/pfant
 
 or download <a href="https://github.com/trevisanj/pfant/archive/master.zip">this zip file</a>.
 
+Henceforth, the symbol @c "%" denotes the directory created during installation.
+
+@subsection install_path Setting the system path
+
+Add the following directories to your system path:
+@li %/fortran/bin
+@li %/pypfant/scripts
+
+Add the following to your PYTHONPATH variable:
+@li %/pypfant
+
+@note If you run on Linux, the script %/add_paths.py can be handy.
+
+@code
+$ ./add_paths.py --tcsh  # if you use the tcsh shell
+$ ./add_paths.py --bash  # if you use the bash shell
+@endcode
+
 @subsection required Required software
-
-PFANT is cross-platform.
-
-Please make sure the following is installed on your computer.
 
 @verbatim
 What                          Why?                       How to install
 ----------------------------------------------------------------------------------
-gfortran,                     Compile the Fortran code
+gfortran, make                 Compile the Fortran code
 
 python 2.7                     run the Python scripts
 
@@ -29,6 +43,7 @@ matplotlib (python package)    requirement for pypfant
 
 fortranformat (python package) requirement for pypfant   pip install fortranformat
 @endverbatim
+
 
 @section tree Directory
 
@@ -139,44 +154,6 @@ newnewp025.mod                         |            |              |         |
                                                     v
                                              flux.norm.nulbad
 @endverbatim
-
-@section paths Setting the system to find the executables and libraries
-
-If you run on Linux and the bash shell, you can run the script "add_paths.py"
-to update your PATH and PYTHONPATH variables. Otherwise, environment variables
-should be set as follows:
-
-@verbatim
-% - directory created by "installation"
-
-environment variable     what to add
------------------------------------------
-PATH                     %/fortran/bin
-PATH                     %/pypfant/bin
-PYTHONPATH               %/pypfant
-@endverbatim
-
-Here is an example of add_paths.py running
-
-@code
-$ ./add_paths.py
-Adding > export PYTHONPATH="${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant"
-Adding > export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin"
-Adding > export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin"
-File '/home/j/.bashrc' now contains:
---- BEGIN ---
-# added by add_paths.py (PFANT)
-export PYTHONPATH="${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant"
-# added by add_paths.py (PFANT)
-export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin"
-# added by add_paths.py (PFANT)
-export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin"
---- END ---
-running > export PYTHONPATH="${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant"
-running > export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin"
-running > export PATH="${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin"
-Running another bash
-@endcode
 
 @section running Running innewmarcs, hydro2, pfant, nulbad
 

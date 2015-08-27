@@ -25,7 +25,7 @@ var namespaces =
     [ "qsort", "namespaceqsort.html", null ],
     [ "reader_abonds", "namespacereader__abonds.html", null ],
     [ "reader_absoru2", "namespacereader__absoru2.html", null ],
-    [ "reader_atomgrade", "namespacereader__atomgrade.html", null ],
+    [ "reader_atoms", "namespacereader__atoms.html", null ],
     [ "reader_dissoc", "namespacereader__dissoc.html", null ],
     [ "reader_gridsmap", "namespacereader__gridsmap.html", null ],
     [ "reader_main", "namespacereader__main.html", null ],

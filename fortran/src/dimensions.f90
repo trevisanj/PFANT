@@ -26,6 +26,8 @@ module dimensions
   !=====
 
   !> amount to stretch calculation interval (both to the left and to the right)
+  !>
+  !> @todo EC: use 20 only close to hydrogen lines; in other places it could be +-5 only
   real*8, parameter :: LAMBDA_STRETCH = 20.
   !> assumed width of a hydrogen line
   real*8, parameter :: H_LINE_WIDTH = 35.
@@ -36,7 +38,7 @@ module dimensions
   !=====
 
   !> Maximum number of "filetoh" files
-  integer, parameter :: MAX_FILETOH_NUMFILES=13
+  integer, parameter :: MAX_FILETOH_NUM_FILES=13
   !> ?doc?
   integer, parameter :: MAX_FILETOH_JMAX=50
   !> Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1 @endcode
@@ -95,11 +97,11 @@ module dimensions
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
   !=====
-  ! Dimensions related to dfile:atomgrade
+  ! Dimensions related to dfile:atoms
   !=====
 
   integer, parameter :: &
-   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in dfile:atomgrade
+   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in dfile:atoms
    MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====

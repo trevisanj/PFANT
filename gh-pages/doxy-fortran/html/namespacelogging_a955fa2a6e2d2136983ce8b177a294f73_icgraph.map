@@ -12,7 +12,7 @@
 <area shape="rect" id="node18" href="$namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473" title="Reads dissoc.dat to fill variables dissoc_*. " alt="" coords="197,676,333,717"/>
 <area shape="rect" id="node19" href="$namespacereader__main.html#a87ee8d183d80f426edb100f777c0d687" title="Reads dfile:main to fill variables main_*. " alt="" coords="185,152,346,179"/>
 <area shape="rect" id="node24" href="$namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="192,406,339,448"/>
-<area shape="rect" id="node30" href="$namespacereader__atomgrade.html#a7727d1a0a24c7fe2909996c9b4d71dc5" title="Reads file dfile:atomgrade to fill variables atomgrade_r_* (double underscore) " alt="" coords="186,741,345,782"/>
+<area shape="rect" id="node30" href="$namespacereader__atoms.html#a43ef0eeb69284dc2640ec524ab171cba" title="Reads file dfile:atoms to fill variables atoms_r_* (double underscore) " alt="" coords="198,741,333,782"/>
 <area shape="rect" id="node31" href="$namespacereader__molecules.html#ae2d7ee7399992acf79c21b83d0a3aa55" title="Reads file dfile:molecules to fill variables km_r_*. " alt="" coords="187,806,344,848"/>
 <area shape="rect" id="node3" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="663,523,787,550"/>
 <area shape="rect" id="node4" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="913,319,975,346"/>

@@ -35,7 +35,7 @@
 <area shape="rect" id="node47" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="859,462,1003,504"/>
 <area shape="rect" id="node48" href="$namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. " alt="" coords="199,1846,339,1888"/>
 <area shape="rect" id="node49" href="$namespacereader__partit.html#ad9ef9a189b1d976d6da2a77cd0ad6b13" title="Reads file dfile:partit to fill variables partit_*. " alt="" coords="206,1912,333,1953"/>
-<area shape="rect" id="node50" href="$namespacereader__atomgrade.html#a7727d1a0a24c7fe2909996c9b4d71dc5" title="Reads file dfile:atomgrade to fill variables atomgrade_r_* (double underscore) " alt="" coords="190,1977,349,2018"/>
+<area shape="rect" id="node50" href="$namespacereader__atoms.html#a43ef0eeb69284dc2640ec524ab171cba" title="Reads file dfile:atoms to fill variables atoms_r_* (double underscore) " alt="" coords="202,1977,337,2018"/>
 <area shape="rect" id="node3" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="1307,430,1368,456"/>
 <area shape="rect" id="node4" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="1291,1134,1383,1160"/>
 <area shape="rect" id="node5" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="1307,1042,1367,1068"/>

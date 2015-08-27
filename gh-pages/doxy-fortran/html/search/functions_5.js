@@ -3,7 +3,7 @@ var searchData=
   ['f_5fas',['f_as',['../hydro2_8f90.html#a49c3458fa69756a61c8b58e58ea5b404',1,'hydro2.f90']]],
   ['f_5fta',['f_ta',['../hydro2_8f90.html#ae632753143d86aa739a508a03ccd8a94',1,'hydro2.f90']]],
   ['faitk30',['faitk30',['../namespacemisc__math.html#aa738fbff4f329f7bb3ab3bd90f5bac46',1,'misc_math']]],
-  ['filter_5fatomgrade',['filter_atomgrade',['../namespacefilters.html#a767f80ef52fd6d34711f6680201e8b69',1,'filters']]],
+  ['filter_5fatoms',['filter_atoms',['../namespacefilters.html#a9d508c83d8b0d9208260a073d48348e4',1,'filters']]],
   ['filter_5fmolecules',['filter_molecules',['../namespacefilters.html#af84fba7e3d89b8a2112409dafd9bdc36',1,'filters']]],
   ['find_5ftwo_5fgrid_5ffiles',['find_two_grid_files',['../namespaceinnewmarcs__calc.html#a39c9287930f0af835e7bb86a0a46629a',1,'innewmarcs_calc']]],
   ['flin1',['flin1',['../namespaceflin.html#a85a052100ab8bbb29d5afe0d87c5e42b',1,'flin']]],

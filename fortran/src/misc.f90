@@ -16,7 +16,7 @@ contains
   !> @verbatim
   !> [clam-H_LINE_WIDTH, clam+H_LINE_WIDTH]  and
   !>
-  !> [llzero-LAMBDA_STRETCH, llfin+CLAMBDA_STRETCH]
+  !> [llzero-LAMBDA_STRETCH, llfin+LAMBDA_STRETCH]
   logical function h_line_is_inside(clam, llzero, llfin) result(res)
     real*8, intent(in) :: &
      clam,   & !< central lambda of a hydrogen line

@@ -483,6 +483,8 @@ module config
   character*64 :: &
    config_fn_hmap    = 'hmap.dat', &  !< option: --fn_hmap
    config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
+  real*8 :: config_llzero = -1 !< option: --llzero
+  real*8 :: config_llfin  = -1 !< option: --llfin
 
   !---
   ! innewmarcs-only
@@ -553,7 +555,7 @@ module config
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
-   config_fn_atomgrade     = 'atomgrade.dat',     & !< option: --fn_atomgrade
+   config_fn_atoms     = 'atomgrade.dat',     & !< option: --fn_atoms
    config_fn_molecules     = 'moleculagrade.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log',           & !< option: --fn_log
@@ -718,6 +720,7 @@ contains
     call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
      'Binary file containing information about atmospheric model (created by innewmarcs)')
 
+
     !
     ! innewmarcs, hydro2
     !
@@ -738,6 +741,11 @@ contains
     call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
      'input file name - table containing table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
+     !>@todo erplace "calculus interval" with "synthesis interval"
+    call add_option('ip', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
+     'Lower boundary of calculation interval')
+    call add_option('ip', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
+     'Upper boundary of calculation interval')
 
     ! Here there is a slight difference on the description of this option depending
     ! on the executable.
@@ -820,7 +828,7 @@ contains
      'input file name - partition functions')
     call add_option('p', 'fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
      'input file name - atomic abundances')
-    call add_option('p', 'fn_atomgrade',     ' ', .true., 'file name', config_fn_atomgrade, &
+    call add_option('p', 'fn_atoms',     ' ', .true., 'file name', config_fn_atoms, &
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
@@ -974,6 +982,13 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_absoru2, 'config_fn_absoru2')
       case ('fn_hmap')
         call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
+      case ('llzero')
+        config_llzero = parse_aux_str2real4(opt, o_arg)
+        call parse_aux_log_assignment('config_llzero', real82str(config_llzero, 1))
+      case ('llfin')
+        config_llfin = parse_aux_str2real4(opt, o_arg)
+        call parse_aux_log_assignment('config_llfin', real82str(config_llfin, 1))
+
       case ('na')
         config_na = parse_aux_str2int(opt, o_arg)
         if (config_na .eq. 0 .or. config_na .eq. 1) then !#validation
@@ -1015,8 +1030,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_partit, 'config_fn_partit')
       case ('fn_abonds')
         call parse_aux_assign_fn(o_arg, config_fn_abonds, 'config_fn_abonds')
-      case ('fn_atomgrade')
-        call parse_aux_assign_fn(o_arg, config_fn_atomgrade, 'config_fn_atomgrade')
+      case ('fn_atoms')
+        call parse_aux_assign_fn(o_arg, config_fn_atoms, 'config_fn_atoms')
       case ('fn_molecules')
         call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
 !            case ('fn_lines')

@@ -206,9 +206,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Subroutine d'equilibre dissociatif. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000052">Todo:</a></b></dt><dd>xxcor on the way. MT: Get rid of it. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000053">Todo:</a></b></dt><dd>issue ?doc? if atomic number 99 was already in dissoc.dat? </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000054">Todo:</a></b></dt><dd>issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): p,kp=0 should be avoided. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000054">Todo:</a></b></dt><dd>xxcor on the way. MT: Get rid of it. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000055">Todo:</a></b></dt><dd>issue ?doc? if atomic number 99 was already in dissoc.dat? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000056">Todo:</a></b></dt><dd>issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): p,kp=0 should be avoided. </dd></dl>
 
 <p>Definition at line <a class="el" href="pfant_8f90_source.html#l00070">70</a> of file <a class="el" href="pfant_8f90_source.html">pfant.f90</a>.</p>
 
@@ -266,12 +266,12 @@ Here is the caller graph for this function:</div>
 
 <p>DIE9. </p>
 <p>?doc? </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000055">Todo:</a></b></dt><dd>ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits). THe current dissoc.dat has no Z=100 (neither 99). Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000056">Todo:</a></b></dt><dd>ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000057">Todo:</a></b></dt><dd>ISSUE: overwriting P(1) </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000058">Todo:</a></b></dt><dd>ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright? </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000059">Todo:</a></b></dt><dd>log(p) called many times, should try to optimize </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000060">Todo:</a></b></dt><dd>ISSUE This bit suggests that Z=99 is allowed in the molecules part </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000057">Todo:</a></b></dt><dd>ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits). THe current dissoc.dat has no Z=100 (neither 99). Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000058">Todo:</a></b></dt><dd>ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000059">Todo:</a></b></dt><dd>ISSUE: overwriting P(1) </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000060">Todo:</a></b></dt><dd>ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000061">Todo:</a></b></dt><dd>log(p) called many times, should try to optimize </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000062">Todo:</a></b></dt><dd>ISSUE This bit suggests that Z=99 is allowed in the molecules part </dd></dl>
 
 <p>Definition at line <a class="el" href="pfant_8f90_source.html#l00259">259</a> of file <a class="el" href="pfant_8f90_source.html">pfant.f90</a>.</p>
 
@@ -629,7 +629,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedissoc.html">dissoc</a></li>
-    <li class="footer">Generated on Thu Aug 27 2015 10:43:15 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 19:57:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -30,9 +30,9 @@ tutorials referenced below.
   but the commands are roughly as follows:
   @code
   $ ls -al ~/.ssh  # Check existing SSH keys
-  $ sh-keygen -t rsa -C "your@email.com"
+  $ ssh-keygen -t rsa -C "your@email.com"
   $ ssh-add ~/.ssh/id_rsa
-  $ pluma  ~/.ssh/id_rsa.pub
+  $ <your_text_editor>  ~/.ssh/id_rsa.pub
   @endcode
   </li>
 

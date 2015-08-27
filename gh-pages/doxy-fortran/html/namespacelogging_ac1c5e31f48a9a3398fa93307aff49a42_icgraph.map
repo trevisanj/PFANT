@@ -43,7 +43,7 @@
 <area shape="rect" id="node37" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="400,778,544,819"/>
 <area shape="rect" id="node38" href="$namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. " alt="" coords="402,1351,542,1393"/>
 <area shape="rect" id="node39" href="$namespacereader__partit.html#ad9ef9a189b1d976d6da2a77cd0ad6b13" title="Reads file dfile:partit to fill variables partit_*. " alt="" coords="409,158,535,199"/>
-<area shape="rect" id="node40" href="$namespacereader__atomgrade.html#a7727d1a0a24c7fe2909996c9b4d71dc5" title="Reads file dfile:atomgrade to fill variables atomgrade_r_* (double underscore) " alt="" coords="393,1753,551,1794"/>
+<area shape="rect" id="node40" href="$namespacereader__atoms.html#a43ef0eeb69284dc2640ec524ab171cba" title="Reads file dfile:atoms to fill variables atoms_r_* (double underscore) " alt="" coords="405,1753,539,1794"/>
 <area shape="rect" id="node29" href="$namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="858,2475,995,2517"/>
 <area shape="rect" id="node43" href="$namespaceascii__canvas.html#ada32944c461e39f8ed95aaf8a1542760" title="prints to given unit " alt="" coords="398,1883,546,1925"/>
 <area shape="rect" id="node48" href="$namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="397,2254,547,2295"/>

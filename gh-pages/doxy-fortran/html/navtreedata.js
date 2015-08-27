@@ -5,11 +5,11 @@ var NAVTREE =
     [ "Coding guide", "coding_guide.html", "coding_guide" ],
     [ "Overview", "overview.html", [
       [ "Installation", "overview.html#Installation", [
+        [ "Setting the system path", "overview.html#install_path", null ],
         [ "Required software", "overview.html#required", null ]
       ] ],
       [ "Directory", "overview.html#tree", null ],
       [ "Input/output data files", "overview.html#datafiles", null ],
-      [ "Paths to executables and libraries", "overview.html#paths", null ],
       [ "Running innewmarcs, hydro2, pfant, nulbad", "overview.html#running", [
         [ "Building the binaries", "overview.html#building", null ],
         [ "Running with shipped data", "overview.html#test_bin", null ],
@@ -49,9 +49,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "absoru_8f90.html",
-"hydro2_8f90.html#ae78244ce99661ececd5c33799a0573bd",
-"nulbad_8f90.html#afe20b72188924d0aeb2800f144768936",
-"readers_8f90.html#ad861070af0033a4176d55cc81fae76d8"
+"hydro2_8f90.html#ae22c01508f2211b1c06b349590dbe4d0",
+"nulbad_8f90.html#af3353ef9f82c8dbdfec0d2f724db6691",
+"readers_8f90.html#ad4ff9c0cb779b6cc3e8c524a0a73e2df"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

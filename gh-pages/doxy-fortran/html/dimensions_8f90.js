@@ -2,7 +2,7 @@ var dimensions_8f90 =
 [
     [ "lambda_stretch", "dimensions_8f90.html#a4e4f6a517073c5a548af3b8bf2d3d826", null ],
     [ "h_line_width", "dimensions_8f90.html#a4621ff35597cc7ae958760480b77431f", null ],
-    [ "max_filetoh_numfiles", "dimensions_8f90.html#af810518d8f7e42950f15b6ea5178e63c", null ],
+    [ "max_filetoh_num_files", "dimensions_8f90.html#a4987e437758a0f729fb67e28aedb14e0", null ],
     [ "max_filetoh_jmax", "dimensions_8f90.html#a75ecc86baba2e74bf3cef5a84efe6c2e", null ],
     [ "max_filetoh_jjmax", "dimensions_8f90.html#a9fd7d97c55c5b79b8ddf31a1c2840d29", null ],
     [ "max_dissoc_nmetal", "dimensions_8f90.html#af68f57bc0b92464c661ad4a8c52f77ef", null ],

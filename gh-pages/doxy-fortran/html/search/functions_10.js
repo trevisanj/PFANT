@@ -4,7 +4,7 @@ var searchData=
   ['rangmod',['rangmod',['../namespaceinnewmarcs__calc.html#a618a39507c4e4598b8f56fab3669f337',1,'innewmarcs_calc']]],
   ['read_5fabonds',['read_abonds',['../namespacereader__abonds.html#aa63725d967690e14991d410ba4747219',1,'reader_abonds']]],
   ['read_5fabsoru2',['read_absoru2',['../namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d',1,'reader_absoru2']]],
-  ['read_5fatomgrade',['read_atomgrade',['../namespacereader__atomgrade.html#a7727d1a0a24c7fe2909996c9b4d71dc5',1,'reader_atomgrade']]],
+  ['read_5fatoms',['read_atoms',['../namespacereader__atoms.html#a43ef0eeb69284dc2640ec524ab171cba',1,'reader_atoms']]],
   ['read_5fdissoc',['read_dissoc',['../namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473',1,'reader_dissoc']]],
   ['read_5ffiletoh',['read_filetoh',['../namespacereader__modeles.html#a8d879e004ec98f0d3307f34ca59c932a',1,'reader_modeles']]],
   ['read_5fgridsmap',['read_gridsmap',['../namespacereader__gridsmap.html#a5e53f676bbb6b2b85b1ca556dfbf0f4a',1,'reader_gridsmap']]],

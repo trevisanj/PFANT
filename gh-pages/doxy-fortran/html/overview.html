@@ -110,15 +110,30 @@ Installation</h1>
 <p>Clone from github</p>
 <div class="fragment"><div class="line">git clone https:<span class="comment">//github.com/trevisanj/pfant</span></div>
 </div><!-- fragment --><p>or download <a href="https://github.com/trevisanj/pfant/archive/master.zip">this zip file</a>.</p>
-<h2><a class="anchor" id="required"></a>
+<p>Henceforth, the symbol <code>"%"</code> denotes the directory created during installation.</p>
+<h2><a class="anchor" id="install_path"></a>
+Setting the system path</h2>
+<p>Add the following directories to your system path: </p><ul>
+<li>%/fortran/bin </li>
+<li>%/pypfant/scripts</li>
+</ul>
+<p>Add the following to your PYTHONPATH variable: </p><ul>
+<li>%/pypfant</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>If you run on Linux, the script %/add_paths.py can be handy.</dd></dl>
+<div class="fragment"><div class="line">$ ./add_paths.py --tcsh  # <span class="keywordflow">if</span> you use <a class="code" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">the</a> tcsh shell</div>
+<div class="line">$ ./add_paths.py --bash  # <span class="keywordflow">if</span> you use <a class="code" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">the</a> bash shell</div>
+</div><!-- fragment --><h2><a class="anchor" id="required"></a>
 Required software</h2>
-<p>PFANT is cross-platform.</p>
-<p>Please make sure the following is installed on your computer.</p>
-<pre class="fragment">What                          Why?
--------------------------------------------------------
-gfortran and make             Compile the Fortran code
-python 2.7                    run the Python scripts
-matplotlib (python package)   plotting with pypfant
+<pre class="fragment">What                          Why?                       How to install
+----------------------------------------------------------------------------------
+gfortran, make                 Compile the Fortran code
+
+python 2.7                     run the Python scripts
+
+matplotlib (python package)    requirement for pypfant
+
+fortranformat (python package) requirement for pypfant   pip install fortranformat
 </pre><h1><a class="anchor" id="tree"></a>
 Directory</h1>
 <p>Here is an incomplete listing of the directory tree.</p>
@@ -216,35 +231,7 @@ newnewp025.mod                         |            |              |         |
                                                     |
                                                     v
                                              flux.norm.nulbad
-</pre><h1><a class="anchor" id="paths"></a>
-Paths to executables and libraries</h1>
-<p>If you run on Linux and the bash shell, you can run the script "add_paths.py" to update your PATH and PYTHONPATH variables. Otherwise, environment variables should be set as follows:</p>
-<pre class="fragment">% - directory created by "installation"
-
-environment variable     what to add
------------------------------------------
-PATH                     %/fortran/bin
-PATH                     %/pypfant/bin
-PYTHONPATH               %/pypfant
-</pre><p>Here is an example of add_paths.py running</p>
-<div class="fragment"><div class="line">$ ./add_paths.py</div>
-<div class="line">Adding &gt; export PYTHONPATH=<span class="stringliteral">&quot;${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant&quot;</span></div>
-<div class="line">Adding &gt; export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin&quot;</span></div>
-<div class="line">Adding &gt; export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin&quot;</span></div>
-<div class="line">File <span class="stringliteral">&#39;/home/j/.bashrc&#39;</span> now contains:</div>
-<div class="line">--- BEGIN ---</div>
-<div class="line"><span class="preprocessor"># added by add_paths.py (PFANT)</span></div>
-<div class="line">export PYTHONPATH=<span class="stringliteral">&quot;${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant&quot;</span></div>
-<div class="line"><span class="preprocessor"># added by add_paths.py (PFANT)</span></div>
-<div class="line">export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin&quot;</span></div>
-<div class="line"><span class="preprocessor"># added by add_paths.py (PFANT)</span></div>
-<div class="line">export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin&quot;</span></div>
-<div class="line">--- END ---</div>
-<div class="line">running &gt; export PYTHONPATH=<span class="stringliteral">&quot;${PYTHONPATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant&quot;</span></div>
-<div class="line">running &gt; export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/pypfant/bin&quot;</span></div>
-<div class="line">running &gt; export PATH=<span class="stringliteral">&quot;${PATH}:/home/j/Documents/projects/pfant/working/github/master/fortran/bin&quot;</span></div>
-<div class="line">Running another bash</div>
-</div><!-- fragment --><h1><a class="anchor" id="running"></a>
+</pre><h1><a class="anchor" id="running"></a>
 Running innewmarcs, hydro2, pfant, nulbad</h1>
 <h2><a class="anchor" id="building"></a>
 Building the binaries</h2>
@@ -290,7 +277,7 @@ Operation using Python</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 27 2015 10:43:15 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 19:57:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

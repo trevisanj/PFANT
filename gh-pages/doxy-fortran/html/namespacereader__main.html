@@ -180,9 +180,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a4db72a3881f4f24f18b3b26ef260dc77"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a4db72a3881f4f24f18b3b26ef260dc77">main_ivtot</a></td></tr>
 <tr class="memdesc:a4db72a3881f4f24f18b3b26ef260dc77"><td class="mdescLeft">&#160;</td><td class="mdescRight">affects <a class="el" href="namespacesynthesis.html#a12bc12626fb68b7d33ad7d2b77d99706">turbul()</a> issue ?doc?  <a href="#a4db72a3881f4f24f18b3b26ef260dc77">More...</a><br /></td></tr>
 <tr class="separator:a4db72a3881f4f24f18b3b26ef260dc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7aa1521b12e4321d16cb22a70943679"><td class="memItemLeft" align="right" valign="top">character *64, dimension(max_filetoh_numfiles)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#aa7aa1521b12e4321d16cb22a70943679">main_filetohy</a></td></tr>
-<tr class="memdesc:aa7aa1521b12e4321d16cb22a70943679"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? Names of ten outputs files that will contain ???  <a href="#aa7aa1521b12e4321d16cb22a70943679">More...</a><br /></td></tr>
-<tr class="separator:aa7aa1521b12e4321d16cb22a70943679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0393e0f9f44cd51a0ed1f5c011e77160"><td class="memItemLeft" align="right" valign="top">character *64, dimension(max_filetoh_num_files)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a0393e0f9f44cd51a0ed1f5c011e77160">main_filetohy</a></td></tr>
+<tr class="memdesc:a0393e0f9f44cd51a0ed1f5c011e77160"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? Names of ten outputs files that will contain ???  <a href="#a0393e0f9f44cd51a0ed1f5c011e77160">More...</a><br /></td></tr>
+<tr class="separator:a0393e0f9f44cd51a0ed1f5c011e77160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75557b043e86deee9ea38e2a0a81a8b7"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a75557b043e86deee9ea38e2a0a81a8b7">main_filetoh_numfiles</a></td></tr>
 <tr class="memdesc:a75557b043e86deee9ea38e2a0a81a8b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of valid elements within filetohy  <a href="#a75557b043e86deee9ea38e2a0a81a8b7">More...</a><br /></td></tr>
 <tr class="separator:a75557b043e86deee9ea38e2a0a81a8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -275,7 +275,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reads dfile:main to fill variables main_*. </p>
 <dl class="section note"><dt>Note</dt><dd>Must be called after <a class="el" href="namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473" title="Reads dissoc.dat to fill variables dissoc_*. ">read_dissoc()</a>. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000082">Todo:</a></b></dt><dd>ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., dfile:main will have MORE LINES (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000084">Todo:</a></b></dt><dd>ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., dfile:main will have MORE LINES (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">flag_care_about_dissoc</td><td>(=.true.) If .false., won't bother about reading dfile:dissoc first and will skip the xxcor line. Only pfant bother about the xxcor line; other executables want to use dfile:main without having to read dfile:dissoc first.</td></tr>
@@ -283,7 +283,7 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000083">Todo:</a></b></dt><dd>issue Carlos Silveira about relation between main_asalog and main_afstar: they are both the metallicity </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000085">Todo:</a></b></dt><dd>issue Carlos Silveira about relation between main_asalog and main_afstar: they are both the metallicity </dd></dl>
 
 <p>Definition at line <a class="el" href="readers_8f90_source.html#l00262">262</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
@@ -581,12 +581,12 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="aa7aa1521b12e4321d16cb22a70943679"></a>
+<a class="anchor" id="a0393e0f9f44cd51a0ed1f5c011e77160"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">character*64, dimension(max_filetoh_numfiles) reader_main::main_filetohy</td>
+          <td class="memname">character*64, dimension(max_filetoh_num_files) reader_main::main_filetohy</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -672,7 +672,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>This vector goes along with dissoc_ELEMS and dissoc_NELEMX. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000081">Todo:</a></b></dt><dd>would go better as a column in dissoc.dat or eliminated </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000083">Todo:</a></b></dt><dd>would go better as a column in dissoc.dat or eliminated </dd></dl>
 <p>?doc? </p>
 
 <p>Definition at line <a class="el" href="readers_8f90_source.html#l00234">234</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
@@ -685,7 +685,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacereader__main.html">reader_main</a></li>
-    <li class="footer">Generated on Thu Aug 27 2015 10:43:15 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 19:57:54 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

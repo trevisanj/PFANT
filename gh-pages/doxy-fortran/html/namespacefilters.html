@@ -115,7 +115,7 @@ $(document).ready(function(){initNavTree('namespacefilters.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Contains subroutines filter_molecules_() and filter_atomgrade_()  
+<p>Contains subroutines filter_molecules_() and filter_atoms_()  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -123,9 +123,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:af84fba7e3d89b8a2112409dafd9bdc36"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#af84fba7e3d89b8a2112409dafd9bdc36">filter_molecules</a> (lzero, lfin)</td></tr>
 <tr class="memdesc:af84fba7e3d89b8a2112409dafd9bdc36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN.  <a href="#af84fba7e3d89b8a2112409dafd9bdc36">More...</a><br /></td></tr>
 <tr class="separator:af84fba7e3d89b8a2112409dafd9bdc36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a767f80ef52fd6d34711f6680201e8b69"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a767f80ef52fd6d34711f6680201e8b69">filter_atomgrade</a> (lzero, lfin)</td></tr>
-<tr class="memdesc:a767f80ef52fd6d34711f6680201e8b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects only spectral lines within range lzero, lfin + performs "inner join".  <a href="#a767f80ef52fd6d34711f6680201e8b69">More...</a><br /></td></tr>
-<tr class="separator:a767f80ef52fd6d34711f6680201e8b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d508c83d8b0d9208260a073d48348e4"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a9d508c83d8b0d9208260a073d48348e4">filter_atoms</a> (lzero, lfin)</td></tr>
+<tr class="memdesc:a9d508c83d8b0d9208260a073d48348e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects only spectral lines within range lzero, lfin + performs "inner join".  <a href="#a9d508c83d8b0d9208260a073d48348e4">More...</a><br /></td></tr>
+<tr class="separator:a9d508c83d8b0d9208260a073d48348e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -149,49 +149,49 @@ Variables</h2></td></tr>
 <tr class="memitem:a6b2ad12fa883fdc457e6b1247e7cb117"><td class="memItemLeft" align="right" valign="top">integer, dimension(max_sol_per_mol+1, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a6b2ad12fa883fdc457e6b1247e7cb117">km_f_ln</a></td></tr>
 <tr class="memdesc:a6b2ad12fa883fdc457e6b1247e7cb117"><td class="mdescLeft">&#160;</td><td class="mdescRight">This has a use "similar" to km_f_mblenq, but is a "local" one, it contains the index of the last line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj <b>for the current molecule</b> I_MOL.  <a href="#a6b2ad12fa883fdc457e6b1247e7cb117">More...</a><br /></td></tr>
 <tr class="separator:a6b2ad12fa883fdc457e6b1247e7cb117"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a363dc4e2292bf0d2f3b3d11c8b83c8c6"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a363dc4e2292bf0d2f3b3d11c8b83c8c6">atomgrade_f_nblend</a></td></tr>
-<tr class="memdesc:a363dc4e2292bf0d2f3b3d11c8b83c8c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a363dc4e2292bf0d2f3b3d11c8b83c8c6">More...</a><br /></td></tr>
-<tr class="separator:a363dc4e2292bf0d2f3b3d11c8b83c8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a08e31d8db7ff4586f6a6709faca45d"><td class="memItemLeft" align="right" valign="top">character *2, dimension(max_atomgrade_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a7a08e31d8db7ff4586f6a6709faca45d">atomgrade_f_elem</a></td></tr>
-<tr class="memdesc:a7a08e31d8db7ff4586f6a6709faca45d"><td class="mdescLeft">&#160;</td><td class="mdescRight">atomic symbol (right-alignes, uppercase)  <a href="#a7a08e31d8db7ff4586f6a6709faca45d">More...</a><br /></td></tr>
-<tr class="separator:a7a08e31d8db7ff4586f6a6709faca45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10d00f7333f99c69f4b0c194395364ec"><td class="memItemLeft" align="right" valign="top">integer, dimension(max_atomgrade_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a10d00f7333f99c69f4b0c194395364ec">atomgrade_f_ioni</a></td></tr>
-<tr class="memdesc:a10d00f7333f99c69f4b0c194395364ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a10d00f7333f99c69f4b0c194395364ec">More...</a><br /></td></tr>
-<tr class="separator:a10d00f7333f99c69f4b0c194395364ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53279de1e8549e5cfae764cf2e3c1fb6"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a53279de1e8549e5cfae764cf2e3c1fb6">atomgrade_f_lambda</a></td></tr>
-<tr class="memdesc:a53279de1e8549e5cfae764cf2e3c1fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a53279de1e8549e5cfae764cf2e3c1fb6">More...</a><br /></td></tr>
-<tr class="separator:a53279de1e8549e5cfae764cf2e3c1fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a410323a18be1c39109a8afd30f8311b6"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a410323a18be1c39109a8afd30f8311b6">atomgrade_f_kiex</a></td></tr>
-<tr class="memdesc:a410323a18be1c39109a8afd30f8311b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a410323a18be1c39109a8afd30f8311b6">More...</a><br /></td></tr>
-<tr class="separator:a410323a18be1c39109a8afd30f8311b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d50d7bd2877d81c88e4809fd5df1845"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a4d50d7bd2877d81c88e4809fd5df1845">atomgrade_f_algf</a></td></tr>
-<tr class="memdesc:a4d50d7bd2877d81c88e4809fd5df1845"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a4d50d7bd2877d81c88e4809fd5df1845">More...</a><br /></td></tr>
-<tr class="separator:a4d50d7bd2877d81c88e4809fd5df1845"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a152b40def21c49cd28ed7ee514541646"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a152b40def21c49cd28ed7ee514541646">atomgrade_f_ch</a></td></tr>
-<tr class="memdesc:a152b40def21c49cd28ed7ee514541646"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a152b40def21c49cd28ed7ee514541646">More...</a><br /></td></tr>
-<tr class="separator:a152b40def21c49cd28ed7ee514541646"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afacda34397242f1b3d19b2e19573f9f7"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#afacda34397242f1b3d19b2e19573f9f7">atomgrade_f_gr</a></td></tr>
-<tr class="memdesc:afacda34397242f1b3d19b2e19573f9f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#afacda34397242f1b3d19b2e19573f9f7">More...</a><br /></td></tr>
-<tr class="separator:afacda34397242f1b3d19b2e19573f9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af87a268d511f86c5450c5cc944576598"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#af87a268d511f86c5450c5cc944576598">atomgrade_f_ge</a></td></tr>
-<tr class="memdesc:af87a268d511f86c5450c5cc944576598"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#af87a268d511f86c5450c5cc944576598">More...</a><br /></td></tr>
-<tr class="separator:af87a268d511f86c5450c5cc944576598"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e5a2f90c086325faa8db8f6dfe6411d"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a0e5a2f90c086325faa8db8f6dfe6411d">atomgrade_f_zinf</a></td></tr>
-<tr class="memdesc:a0e5a2f90c086325faa8db8f6dfe6411d"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a0e5a2f90c086325faa8db8f6dfe6411d">More...</a><br /></td></tr>
-<tr class="separator:a0e5a2f90c086325faa8db8f6dfe6411d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a722af0194ea5b035b25599d32b5ae7"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a1a722af0194ea5b035b25599d32b5ae7">atomgrade_f_abondr_dummy</a></td></tr>
-<tr class="memdesc:a1a722af0194ea5b035b25599d32b5ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a1a722af0194ea5b035b25599d32b5ae7">More...</a><br /></td></tr>
-<tr class="separator:a1a722af0194ea5b035b25599d32b5ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5827fdd9e9d3c57d01f48eda72c4c263"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a5827fdd9e9d3c57d01f48eda72c4c263">atomgrade_f_gf</a></td></tr>
-<tr class="memdesc:a5827fdd9e9d3c57d01f48eda72c4c263"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a5827fdd9e9d3c57d01f48eda72c4c263">More...</a><br /></td></tr>
-<tr class="separator:a5827fdd9e9d3c57d01f48eda72c4c263"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08ebde71f795f1c22692d0b1613a185e"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a08ebde71f795f1c22692d0b1613a185e">atomgrade_f_abonds_abo</a></td></tr>
-<tr class="memdesc:a08ebde71f795f1c22692d0b1613a185e"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a08ebde71f795f1c22692d0b1613a185e">More...</a><br /></td></tr>
-<tr class="separator:a08ebde71f795f1c22692d0b1613a185e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e514ca158cee4af37f1a842944087d4"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a7e514ca158cee4af37f1a842944087d4">atoms_f_nblend</a></td></tr>
+<tr class="memdesc:a7e514ca158cee4af37f1a842944087d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a7e514ca158cee4af37f1a842944087d4">More...</a><br /></td></tr>
+<tr class="separator:a7e514ca158cee4af37f1a842944087d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab9b7577b52854970df152a532dddda"><td class="memItemLeft" align="right" valign="top">character *2, dimension(max_atomgrade_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a5ab9b7577b52854970df152a532dddda">atoms_f_elem</a></td></tr>
+<tr class="memdesc:a5ab9b7577b52854970df152a532dddda"><td class="mdescLeft">&#160;</td><td class="mdescRight">atomic symbol (right-alignes, uppercase)  <a href="#a5ab9b7577b52854970df152a532dddda">More...</a><br /></td></tr>
+<tr class="separator:a5ab9b7577b52854970df152a532dddda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade72e4ee05444ea0d18d3b3db5923e08"><td class="memItemLeft" align="right" valign="top">integer, dimension(max_atomgrade_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#ade72e4ee05444ea0d18d3b3db5923e08">atoms_f_ioni</a></td></tr>
+<tr class="memdesc:ade72e4ee05444ea0d18d3b3db5923e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#ade72e4ee05444ea0d18d3b3db5923e08">More...</a><br /></td></tr>
+<tr class="separator:ade72e4ee05444ea0d18d3b3db5923e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b856d5d55cc5a0e1a266b27478f43c5"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a8b856d5d55cc5a0e1a266b27478f43c5">atoms_f_lambda</a></td></tr>
+<tr class="memdesc:a8b856d5d55cc5a0e1a266b27478f43c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a8b856d5d55cc5a0e1a266b27478f43c5">More...</a><br /></td></tr>
+<tr class="separator:a8b856d5d55cc5a0e1a266b27478f43c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad476fa1d385d11a94c9f4b44982af223"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#ad476fa1d385d11a94c9f4b44982af223">atoms_f_kiex</a></td></tr>
+<tr class="memdesc:ad476fa1d385d11a94c9f4b44982af223"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#ad476fa1d385d11a94c9f4b44982af223">More...</a><br /></td></tr>
+<tr class="separator:ad476fa1d385d11a94c9f4b44982af223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19cfda51de35969477addb4dc08d2d7a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a19cfda51de35969477addb4dc08d2d7a">atoms_f_algf</a></td></tr>
+<tr class="memdesc:a19cfda51de35969477addb4dc08d2d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a19cfda51de35969477addb4dc08d2d7a">More...</a><br /></td></tr>
+<tr class="separator:a19cfda51de35969477addb4dc08d2d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a089ec0e726e86c05a7cb00f4e293e6b1"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a089ec0e726e86c05a7cb00f4e293e6b1">atoms_f_ch</a></td></tr>
+<tr class="memdesc:a089ec0e726e86c05a7cb00f4e293e6b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a089ec0e726e86c05a7cb00f4e293e6b1">More...</a><br /></td></tr>
+<tr class="separator:a089ec0e726e86c05a7cb00f4e293e6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a982572337148f463f4768a8d6607ad4a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a982572337148f463f4768a8d6607ad4a">atoms_f_gr</a></td></tr>
+<tr class="memdesc:a982572337148f463f4768a8d6607ad4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a982572337148f463f4768a8d6607ad4a">More...</a><br /></td></tr>
+<tr class="separator:a982572337148f463f4768a8d6607ad4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95bc6ace5d347914b285ede9961a4e11"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a95bc6ace5d347914b285ede9961a4e11">atoms_f_ge</a></td></tr>
+<tr class="memdesc:a95bc6ace5d347914b285ede9961a4e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a95bc6ace5d347914b285ede9961a4e11">More...</a><br /></td></tr>
+<tr class="separator:a95bc6ace5d347914b285ede9961a4e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc5e6f0fd3ae74f630dc189416a6b054"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#abc5e6f0fd3ae74f630dc189416a6b054">atoms_f_zinf</a></td></tr>
+<tr class="memdesc:abc5e6f0fd3ae74f630dc189416a6b054"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#abc5e6f0fd3ae74f630dc189416a6b054">More...</a><br /></td></tr>
+<tr class="separator:abc5e6f0fd3ae74f630dc189416a6b054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a275302e9fe8adc70fba5c3e4e7cd1b8a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a275302e9fe8adc70fba5c3e4e7cd1b8a">atoms_f_abondr_dummy</a></td></tr>
+<tr class="memdesc:a275302e9fe8adc70fba5c3e4e7cd1b8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a275302e9fe8adc70fba5c3e4e7cd1b8a">More...</a><br /></td></tr>
+<tr class="separator:a275302e9fe8adc70fba5c3e4e7cd1b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe4dfca6aff1f47ea84fc238767812b"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#aefe4dfca6aff1f47ea84fc238767812b">atoms_f_gf</a></td></tr>
+<tr class="memdesc:aefe4dfca6aff1f47ea84fc238767812b"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#aefe4dfca6aff1f47ea84fc238767812b">More...</a><br /></td></tr>
+<tr class="separator:aefe4dfca6aff1f47ea84fc238767812b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a700113e5e7120ebc63ef2b86028b47db"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefilters.html#a700113e5e7120ebc63ef2b86028b47db">atoms_f_abonds_abo</a></td></tr>
+<tr class="memdesc:a700113e5e7120ebc63ef2b86028b47db"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a700113e5e7120ebc63ef2b86028b47db">More...</a><br /></td></tr>
+<tr class="separator:a700113e5e7120ebc63ef2b86028b47db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Contains subroutines filter_molecules_() and filter_atomgrade_() </p>
-<p>Variables calculated have prefixes km_f_ or atomgrade_f_ </p>
+<div class="textblock"><p>Contains subroutines filter_molecules_() and filter_atoms_() </p>
+<p>Variables calculated have prefixes km_f_ or atoms_f_ </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="af84fba7e3d89b8a2112409dafd9bdc36"></a>
 <div class="memitem">
@@ -218,7 +218,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000061">Todo:</a></b></dt><dd>test </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000063">Todo:</a></b></dt><dd>test </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">lzero</td><td>Lower edge of wavelength interval</td></tr>
@@ -226,7 +226,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000062">Todo:</a></b></dt><dd>issue test number of filtered items against original pfantgrade and write testing suite for this </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000064">Todo:</a></b></dt><dd>issue test number of filtered items against original pfantgrade and write testing suite for this </dd></dl>
 
 <p>Definition at line <a class="el" href="pfant_8f90_source.html#l00588">588</a> of file <a class="el" href="pfant_8f90_source.html">pfant.f90</a>.</p>
 
@@ -241,12 +241,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a767f80ef52fd6d34711f6680201e8b69"></a>
+<a class="anchor" id="a9d508c83d8b0d9208260a073d48348e4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">subroutine filters::filter_atomgrade </td>
+          <td class="memname">subroutine filters::filter_atoms </td>
           <td>(</td>
           <td class="paramtype">real*8, intent(in)&#160;</td>
           <td class="paramname"><em>lzero</em>, </td>
@@ -266,7 +266,7 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Selects only spectral lines within range lzero, lfin + performs "inner join". </p>
-<p>Populates variables atomgrade_f_*</p>
+<p>Populates variables atoms_f_*</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">lzero</td><td>Lower edge of wavelength interval</td></tr>
@@ -393,12 +393,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a363dc4e2292bf0d2f3b3d11c8b83c8c6"></a>
+<a class="anchor" id="a7e514ca158cee4af37f1a842944087d4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">integer filters::atomgrade_f_nblend</td>
+          <td class="memname">integer filters::atoms_f_nblend</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -409,12 +409,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a7a08e31d8db7ff4586f6a6709faca45d"></a>
+<a class="anchor" id="a5ab9b7577b52854970df152a532dddda"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">character*2, dimension(max_atomgrade_nblend) filters::atomgrade_f_elem</td>
+          <td class="memname">character*2, dimension(max_atomgrade_nblend) filters::atoms_f_elem</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -425,12 +425,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a10d00f7333f99c69f4b0c194395364ec"></a>
+<a class="anchor" id="ade72e4ee05444ea0d18d3b3db5923e08"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">integer, dimension(max_atomgrade_nblend) filters::atomgrade_f_ioni</td>
+          <td class="memname">integer, dimension(max_atomgrade_nblend) filters::atoms_f_ioni</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -441,12 +441,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a53279de1e8549e5cfae764cf2e3c1fb6"></a>
+<a class="anchor" id="a8b856d5d55cc5a0e1a266b27478f43c5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_lambda</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_lambda</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -457,12 +457,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a410323a18be1c39109a8afd30f8311b6"></a>
+<a class="anchor" id="ad476fa1d385d11a94c9f4b44982af223"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_kiex</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_kiex</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -473,12 +473,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a4d50d7bd2877d81c88e4809fd5df1845"></a>
+<a class="anchor" id="a19cfda51de35969477addb4dc08d2d7a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_algf</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_algf</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -489,12 +489,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a152b40def21c49cd28ed7ee514541646"></a>
+<a class="anchor" id="a089ec0e726e86c05a7cb00f4e293e6b1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_ch</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_ch</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -505,12 +505,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="afacda34397242f1b3d19b2e19573f9f7"></a>
+<a class="anchor" id="a982572337148f463f4768a8d6607ad4a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_gr</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_gr</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -521,12 +521,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="af87a268d511f86c5450c5cc944576598"></a>
+<a class="anchor" id="a95bc6ace5d347914b285ede9961a4e11"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_ge</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_ge</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -537,12 +537,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a0e5a2f90c086325faa8db8f6dfe6411d"></a>
+<a class="anchor" id="abc5e6f0fd3ae74f630dc189416a6b054"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_zinf</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_zinf</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -553,12 +553,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a1a722af0194ea5b035b25599d32b5ae7"></a>
+<a class="anchor" id="a275302e9fe8adc70fba5c3e4e7cd1b8a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_abondr_dummy</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_abondr_dummy</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -569,12 +569,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a5827fdd9e9d3c57d01f48eda72c4c263"></a>
+<a class="anchor" id="aefe4dfca6aff1f47ea84fc238767812b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_gf</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_gf</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -585,12 +585,12 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a08ebde71f795f1c22692d0b1613a185e"></a>
+<a class="anchor" id="a700113e5e7120ebc63ef2b86028b47db"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atomgrade_f_abonds_abo</td>
+          <td class="memname">real*8, dimension(max_atomgrade_r_nblend) filters::atoms_f_abonds_abo</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -607,7 +607,7 @@ Here is the call graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacefilters.html">filters</a></li>
-    <li class="footer">Generated on Thu Aug 27 2015 10:43:15 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 19:57:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

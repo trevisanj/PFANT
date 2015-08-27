@@ -2,7 +2,7 @@ var searchData=
 [
   ['reader_5fabonds',['reader_abonds',['../namespacereader__abonds.html',1,'']]],
   ['reader_5fabsoru2',['reader_absoru2',['../namespacereader__absoru2.html',1,'']]],
-  ['reader_5fatomgrade',['reader_atomgrade',['../namespacereader__atomgrade.html',1,'']]],
+  ['reader_5fatoms',['reader_atoms',['../namespacereader__atoms.html',1,'']]],
   ['reader_5fdissoc',['reader_dissoc',['../namespacereader__dissoc.html',1,'']]],
   ['reader_5fgridsmap',['reader_gridsmap',['../namespacereader__gridsmap.html',1,'']]],
   ['reader_5fmain',['reader_main',['../namespacereader__main.html',1,'']]],

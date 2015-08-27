@@ -125,9 +125,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a4621ff35597cc7ae958760480b77431f"><td class="memItemLeft" align="right" valign="top">real *8, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#a4621ff35597cc7ae958760480b77431f">h_line_width</a> = 35.</td></tr>
 <tr class="memdesc:a4621ff35597cc7ae958760480b77431f"><td class="mdescLeft">&#160;</td><td class="mdescRight">assumed width of a hydrogen line  <a href="#a4621ff35597cc7ae958760480b77431f">More...</a><br /></td></tr>
 <tr class="separator:a4621ff35597cc7ae958760480b77431f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af810518d8f7e42950f15b6ea5178e63c"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#af810518d8f7e42950f15b6ea5178e63c">max_filetoh_numfiles</a> =13</td></tr>
-<tr class="memdesc:af810518d8f7e42950f15b6ea5178e63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of "filetoh" files.  <a href="#af810518d8f7e42950f15b6ea5178e63c">More...</a><br /></td></tr>
-<tr class="separator:af810518d8f7e42950f15b6ea5178e63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4987e437758a0f729fb67e28aedb14e0"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#a4987e437758a0f729fb67e28aedb14e0">max_filetoh_num_files</a> =13</td></tr>
+<tr class="memdesc:a4987e437758a0f729fb67e28aedb14e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of "filetoh" files.  <a href="#a4987e437758a0f729fb67e28aedb14e0">More...</a><br /></td></tr>
+<tr class="separator:a4987e437758a0f729fb67e28aedb14e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75ecc86baba2e74bf3cef5a84efe6c2e"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#a75ecc86baba2e74bf3cef5a84efe6c2e">max_filetoh_jmax</a> =50</td></tr>
 <tr class="memdesc:a75ecc86baba2e74bf3cef5a84efe6c2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a75ecc86baba2e74bf3cef5a84efe6c2e">More...</a><br /></td></tr>
 <tr class="separator:a75ecc86baba2e74bf3cef5a84efe6c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,7 +178,7 @@ Variables</h2></td></tr>
 <tr class="memitem:abcd927b92d2d095badaf64be0a11298a"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#abcd927b92d2d095badaf64be0a11298a">max_absoru2_numset_i</a> =41</td></tr>
 <tr class="separator:abcd927b92d2d095badaf64be0a11298a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a740553bdf419b48ce4aa537f2b389a2c"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#a740553bdf419b48ce4aa537f2b389a2c">max_atomgrade_r_nblend</a> =14000</td></tr>
-<tr class="memdesc:a740553bdf419b48ce4aa537f2b389a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Half of the maximum the number of rows in dfile:atomgrade.  <a href="#a740553bdf419b48ce4aa537f2b389a2c">More...</a><br /></td></tr>
+<tr class="memdesc:a740553bdf419b48ce4aa537f2b389a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Half of the maximum the number of rows in dfile:atoms.  <a href="#a740553bdf419b48ce4aa537f2b389a2c">More...</a><br /></td></tr>
 <tr class="separator:a740553bdf419b48ce4aa537f2b389a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7c8f549f59ce35359e2768cde7ac047"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedimensions.html#ac7c8f549f59ce35359e2768cde7ac047">max_atomgrade_nblend</a> =8000</td></tr>
 <tr class="memdesc:ac7c8f549f59ce35359e2768cde7ac047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of spectral lines possible within the interval LZERO, LFIN.  <a href="#ac7c8f549f59ce35359e2768cde7ac047">More...</a><br /></td></tr>
@@ -214,8 +214,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>amount to stretch calculation interval (both to the left and to the right) </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000020">Todo:</a></b></dt><dd>EC: use 20 only close to hydrogen lines; in other places it could be +-5 only </dd></dl>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00029">29</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00031">31</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -231,23 +232,23 @@ Variables</h2></td></tr>
 
 <p>assumed width of a hydrogen line </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00031">31</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00033">33</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af810518d8f7e42950f15b6ea5178e63c"></a>
+<a class="anchor" id="a4987e437758a0f729fb67e28aedb14e0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">integer, parameter dimensions::max_filetoh_numfiles =13</td>
+          <td class="memname">integer, parameter dimensions::max_filetoh_num_files =13</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Maximum number of "filetoh" files. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00039">39</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00041">41</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -263,7 +264,7 @@ Variables</h2></td></tr>
 
 <p>?doc? </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00041">41</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00043">43</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -280,7 +281,7 @@ Variables</h2></td></tr>
 <p>Tied with other constant by relation: </p>
 <div class="fragment"><div class="line">max_filetoh_jjmax = max_filetoh_jmax*2-1 </div>
 </div><!-- fragment --> 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00043">43</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00045">45</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -296,7 +297,7 @@ Variables</h2></td></tr>
 
 <p>Maximum number of metal rows in dissoc.dat (number of elements actually used is specified by variable dissoc_nmetal &lt;= MAX_DISSOC_NMETAL) </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00052">52</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00054">54</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -311,9 +312,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maximum number of molecule rows in dissoc.dat. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000019">Todo:</a></b></dt><dd>ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules) </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000021">Todo:</a></b></dt><dd>ISSUE: bit overdimensioned?? (considering the file has only about 30 molecules) </dd></dl>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00056">56</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00058">58</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -329,7 +330,7 @@ Variables</h2></td></tr>
 
 <p>Maximum atomic number that can be found in dissoc.dat. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00059">59</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00061">61</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -345,7 +346,7 @@ Variables</h2></td></tr>
 
 <p>Maximum possible value of modeles_ntot. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00066">66</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00068">68</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -365,7 +366,7 @@ Variables</h2></td></tr>
 <li>Second dimension of partit_tabu </li>
 </ul>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00075">75</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00077">77</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -381,7 +382,7 @@ Variables</h2></td></tr>
 
 <p>Third dimension of partit_TABU. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00077">77</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00079">79</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -397,7 +398,7 @@ Variables</h2></td></tr>
 
 <p>Maximum number of abundances in abonds.dat. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00084">84</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00086">86</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -413,7 +414,7 @@ Variables</h2></td></tr>
 
 <p>Maximum value for absoru2_NM. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00091">91</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00093">93</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -429,7 +430,7 @@ Variables</h2></td></tr>
 
 <p>Maximum value for absoru2_NR(J) </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -443,7 +444,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -457,7 +458,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -471,7 +472,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -485,7 +486,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -499,7 +500,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -513,7 +514,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -527,7 +528,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00094">94</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00096">96</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -541,7 +542,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00095">95</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00097">97</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -555,9 +556,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Half of the maximum the number of rows in dfile:atomgrade. </p>
+<p>Half of the maximum the number of rows in dfile:atoms. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00101">101</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00103">103</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -573,7 +574,7 @@ Variables</h2></td></tr>
 
 <p>Maximum number of spectral lines possible within the interval LZERO, LFIN. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00101">101</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00103">103</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -589,7 +590,7 @@ Variables</h2></td></tr>
 
 <p>Number of molecules configured in the program. Conceptually, this should be defined in molecules.f, but there would be cyclic USEs. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00111">111</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00113">113</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -605,7 +606,7 @@ Variables</h2></td></tr>
 
 <p>Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR") </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00114">114</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00116">116</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -622,7 +623,7 @@ Variables</h2></td></tr>
 <p>Maximum number of spectral lines in dfile:molecules. </p>
 <p>pertaining all molecules Maximum number of spectral lines that can be filtered in at a filtering operation performed by <a class="el" href="namespacefilters.html#af84fba7e3d89b8a2112409dafd9bdc36" title="Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN. ">filter_molecules()</a> </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00116">116</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00118">118</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -638,7 +639,7 @@ Variables</h2></td></tr>
 
 <p>Maximum number of command-line options. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00126">126</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00128">128</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -654,7 +655,7 @@ Variables</h2></td></tr>
 
 <p>dtot maximum: maximum number of points in each calculation interval. </p>
 
-<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00129">129</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
+<p>Definition at line <a class="el" href="dimensions_8f90_source.html#l00131">131</a> of file <a class="el" href="dimensions_8f90_source.html">dimensions.f90</a>.</p>
 
 </div>
 </div>
@@ -664,7 +665,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedimensions.html">dimensions</a></li>
-    <li class="footer">Generated on Thu Aug 27 2015 10:43:15 for PFANT by
+    <li class="footer">Generated on Thu Aug 27 2015 19:57:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

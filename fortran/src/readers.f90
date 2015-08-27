@@ -223,7 +223,7 @@ module reader_main
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
             main_inum     !< record id within modeles.mod
-  character*64 main_filetohy(MAX_FILETOH_NUMFILES) !< ?doc? Names of ten outputs files that will contain ???
+  character*64 main_filetohy(MAX_FILETOH_NUM_FILES) !< ?doc? Names of ten outputs files that will contain ???
   integer   main_filetoh_numfiles !< number of valid elements within filetohy
 
   character*15 main_titrav                !< Title, e.g. "Sun"
@@ -356,9 +356,9 @@ contains
       if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
 
       ! spill check
-      if (ih .gt. MAX_FILETOH_NUMFILES) then
+      if (ih .gt. MAX_FILETOH_NUM_FILES) then
         call pfant_halt('Too many filetoh files specified (maximum is '//&
-         'MAX_FILETOH_NUMFILES='//int2str(MAX_FILETOH_NUMFILES)//')')
+         'MAX_FILETOH_NUM_FILES='//int2str(MAX_FILETOH_NUM_FILES)//')')
       end if
 
       main_filetohy(ih) = filetoh_temp
@@ -660,7 +660,7 @@ module reader_hmap
   end type
 
   !> Array to store all rows in dfile:hmap
-  type(hmap_row) :: hmap_rows(MAX_FILETOH_NUMFILES)
+  type(hmap_row) :: hmap_rows(MAX_FILETOH_NUM_FILES)
 
   !> Number of rows in dfile:hmap
   integer :: hmap_n
@@ -771,18 +771,18 @@ module reader_filetoh
   !=====
   ! These are read by read_filetoh() and processed by filetoh_auh()
   !> ?doc?
-  character*80 filetoh_titre(MAX_FILETOH_NUMFILES)
+  character*80 filetoh_titre(MAX_FILETOH_NUM_FILES)
   !> ?doc?
-  character*11 filetoh_ttt(MAX_FILETOH_NUMFILES)
+  character*11 filetoh_ttt(MAX_FILETOH_NUM_FILES)
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(MAX_FILETOH_NUMFILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
+  real*8, target, dimension(MAX_FILETOH_NUM_FILES, MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: &
    filetoh_th
   !> Will be pointer target
   !> ?doc?
-  real*8, target, dimension(MAX_FILETOH_NUMFILES, MAX_FILETOH_JMAX) :: filetoh_lambdh
+  real*8, target, dimension(MAX_FILETOH_NUM_FILES, MAX_FILETOH_JMAX) :: filetoh_lambdh
   !> ?doc?
-  integer filetoh_jmax(MAX_FILETOH_NUMFILES)
+  integer filetoh_jmax(MAX_FILETOH_NUM_FILES)
 
   !> This variable was a constant hard-coded as
   !> @code
@@ -790,11 +790,11 @@ module reader_filetoh
   !> @endcode
   !> Now it is opening the files and taking the initial lambda for each file instead
   !> @todo line is symmetric; check if left-side is assumed
-  real*8, dimension(MAX_FILETOH_NUMFILES) :: filetoh_llhy
+  real*8, dimension(MAX_FILETOH_NUM_FILES) :: filetoh_llhy
   !> Number of filetoh files that were actually found in disk
-  integer :: filetoh_numfiles = 0
+  integer :: filetoh_num_files = 0
   !> Names of filetoh files that were actually found in disk
-  character*64 filetoh_filenames(MAX_FILETOH_NUMFILES)
+  character*64 filetoh_filenames(MAX_FILETOH_NUM_FILES)
 
 contains
 
@@ -821,8 +821,8 @@ contains
     real*8 :: clam
     logical :: must_exist, flag_inside
 
-
     i = 0
+
     do i_file = 1, hmap_n
       file_now = full_path_w(hmap_rows(i_file)%fn)
       clam = hmap_rows(i_file)%clam
@@ -835,6 +835,7 @@ contains
         else
           flag_inside = .false.  ! hydrogen line if outside calculation interval, skips it
         end if
+
       else
         ! list of nydrogen line files came from dfile:man and we don't know their central lambda unless we open the file
       end if
@@ -880,6 +881,9 @@ contains
 
       112 continue
     end do
+
+    filetoh_num_files = i
+
 
     ! Note: when taking the "filetohy" from main configuration file, will not bother
     ! about hydrogen lines files not found, so bewhare (--hmap is the preferred mode anyway)
@@ -1346,47 +1350,47 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Reader and variable declarations for dfile:atomgrade
+!> Reader and variable declarations for dfile:atoms
 
-module reader_atomgrade
+module reader_atoms
   use dimensions
   use logging
   use reader_abonds
   implicit none
 
   !=====
-  ! Variables filled by read_atomgrade() (file dfile:atomgrade)
+  ! Variables filled by read_atoms() (file dfile:atoms)
   !=====
-  ! dfile:atomgrade, file originals
-  integer atomgrade_r_nblend !< ?doc?
+  ! dfile:atoms, file originals
+  integer atoms_r_nblend !< ?doc?
   !> atomic symbol. Must be right-aligned and uppercase
-  character*2 atomgrade_r_elem(MAX_ATOMGRADE_R_NBLEND)
+  character*2 atoms_r_elem(MAX_ATOMGRADE_R_NBLEND)
   integer, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
-   atomgrade_r_ioni !< ?doc?
+   atoms_r_ioni !< ?doc?
   real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
-   atomgrade_r_lambda,       & !< ?doc?
-   atomgrade_r_kiex,         & !< ?doc?
-   atomgrade_r_algf,         & !< ?doc?
-   atomgrade_r_ch,           & !< ?doc?
-   atomgrade_r_gr,           & !< ?doc?
-   atomgrade_r_ge,           & !< ?doc?
-   atomgrade_r_zinf,         & !< ?doc?
-   atomgrade_r_abondr_dummy, & !< ?doc?
-   atomgrade_r_abonds_abo  !< will be filled by "inner join" by searching
-                          !< atomgrade_r_elem through abonds_ele
+   atoms_r_lambda,       & !< ?doc?
+   atoms_r_kiex,         & !< ?doc?
+   atoms_r_algf,         & !< ?doc?
+   atoms_r_ch,           & !< ?doc?
+   atoms_r_gr,           & !< ?doc?
+   atoms_r_ge,           & !< ?doc?
+   atoms_r_zinf,         & !< ?doc?
+   atoms_r_abondr_dummy, & !< ?doc?
+   atoms_r_abonds_abo  !< will be filled by "inner join" by searching
+                          !< atoms_r_elem through abonds_ele
 
 contains
   !=======================================================================================
-  !> Reads file dfile:atomgrade to fill variables atomgrade_r_* (double underscore)
+  !> Reads file dfile:atoms to fill variables atoms_r_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
   !>
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atomgrade_r_elem(K) atomic symbol
-  !>     col 2 -- atomgrade_r_ioni(k) ?doc?
-  !>     col 3 -- atomgrade_r_lambda(K) ?doc?
+  !>     col 1 -- 2-letter atoms_r_elem(K) atomic symbol
+  !>     col 2 -- atoms_r_ioni(k) ?doc?
+  !>     col 3 -- atoms_r_lambda(K) ?doc?
   !>   even row
   !>     col 1 --
   !>     col 2 --
@@ -1409,7 +1413,7 @@ contains
   !> @todo Assertions in test to see if numbers match what they are supposed to
   !> @todo use READ()'s "END=" option
 
-  subroutine read_atomgrade(filename)
+  subroutine read_atoms(filename)
     implicit none
     integer unit_
     parameter(unit_=199)
@@ -1418,7 +1422,7 @@ contains
     logical flag_found
 
     if (.not. flag_read_abonds) then
-      call pfant_halt('read_abonds() must be called before read_atomgrade()')
+      call pfant_halt('read_abonds() must be called before read_atoms()')
     end if
 
     open(unit=unit_,file=filename, status='old')
@@ -1427,66 +1431,66 @@ contains
     do while (.true.)
       ! spill check: checks if exceeds maximum number of elements allowed
       if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
-        call pfant_halt('read_atomgrade(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
+        call pfant_halt('read_atoms(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
          int2str(MAX_ATOMGRADE_R_NBLEND)//' spectral lines')
       end if
 
-      read(unit_, '(a2, i1, 1x, f10.3)') atomgrade_r_elem(k), &
-                                         atomgrade_r_ioni(k), &
-                                         atomgrade_r_lambda(k)
-      atomgrade_r_elem(k) = adjust_atomic_symbol(atomgrade_r_elem(k))
+      read(unit_, '(a2, i1, 1x, f10.3)') atoms_r_elem(k), &
+                                         atoms_r_ioni(k), &
+                                         atoms_r_lambda(k)
+      atoms_r_elem(k) = adjust_atomic_symbol(atoms_r_elem(k))
 
-      read(unit_, *) atomgrade_r_kiex(k), &
-       atomgrade_r_algf(k), &
-       atomgrade_r_ch(k), &
-       atomgrade_r_gr(k), &
-       atomgrade_r_ge(k), &
-       atomgrade_r_zinf(k), &
-       atomgrade_r_abondr_dummy(k), finrai
+      read(unit_, *) atoms_r_kiex(k), &
+       atoms_r_algf(k), &
+       atoms_r_ch(k), &
+       atoms_r_gr(k), &
+       atoms_r_ge(k), &
+       atoms_r_zinf(k), &
+       atoms_r_abondr_dummy(k), finrai
 
       !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
       !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
       !>
       !> @todo issue ask BLB 2.21e15 stand for? + reference
-      if (atomgrade_r_gr(k) .lt. 1e-37) atomgrade_r_gr(k) = 2.21e15 / atomgrade_r_lambda(k)**2
+      if (atoms_r_gr(k) .lt. 1e-37) atoms_r_gr(k) = 2.21e15 / atoms_r_lambda(k)**2
 
 
-      !> Besides reading the file, this routine searches atomgrade's element within abonds'
+      !> Besides reading the file, this routine searches atoms's element within abonds'
       !> elements and copies corresponding
-      !> abonds_abo value into atomgrade_r_abonds_abo. Halts program if element not found.
+      !> abonds_abo value into atoms_r_abonds_abo. Halts program if element not found.
       !>
       !> In database terminology, this is sort of a "inner join".
       !>
       !> @note Historically, this corresponds to old routine "abondraih". The search was
       !>   being carried out every time (lzero, lfin) changed and only for the filtered
-      !>   atomgrade rows. I decided to perform this search for all atomgrade rows and
-      !>   then filter atomgrade_r_abonds_abo together with other variables in
-      !>   filter_atomgrade(), which is probably cheaper.
+      !>   atoms rows. I decided to perform this search for all atoms rows and
+      !>   then filter atoms_r_abonds_abo together with other variables in
+      !>   filter_atoms(), which is probably cheaper.
       !> @todo issue why name was "abondraih"?? did it mean "abundances of hydrogen lines"? i ask this because if it has really a physical meaning, i shouldn't bury this inside read_most_files.f
 
       flag_found = .false.
       do  j = 1, abonds_nabond
-        if (abonds_ele(j) .eq. atomgrade_r_elem(k)) then
+        if (abonds_ele(j) .eq. atoms_r_elem(k)) then
           flag_found = .true.
           exit
         end if
       end do
       if (.not. flag_found) then
-        write(lll,*)  'read_atomgrade(): element "', atomgrade_r_elem(k), &
+        write(lll,*)  'read_atoms(): element "', atoms_r_elem(k), &
          ' (spectral line number ', k, ') cannot be found in abundance file'
         call pfant_halt(lll)
       end if
-      atomgrade_r_abonds_abo(k) = abonds_abo(j)
+      atoms_r_abonds_abo(k) = abonds_abo(j)
 
       if (finrai .eq. 1) exit !__end-of-file__
 
       k = k+1
     end do
 
-    atomgrade_r_nblend = k
+    atoms_r_nblend = k
 
-    write(lll,*) 'read_atomgrade(): last line taken: element: "', atomgrade_r_elem(atomgrade_r_nblend), &
-      '"; lambda: ', atomgrade_r_lambda(atomgrade_r_nblend)
+    write(lll,*) 'read_atoms(): last line taken: element: "', atoms_r_elem(atoms_r_nblend), &
+      '"; lambda: ', atoms_r_lambda(atoms_r_nblend)
     call log_debug(lll)
 
 
@@ -1785,6 +1789,6 @@ module readers
   use reader_abonds
   use reader_partit
   use reader_gridsmap
-  use reader_atomgrade
+  use reader_atoms
   use reader_molecules
 end

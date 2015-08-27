@@ -504,14 +504,14 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Contains subroutines filter_molecules_() and filter_atomgrade_()
+!> Contains subroutines filter_molecules_() and filter_atoms_()
 !>
-!> Variables calculated have prefixes km_f_ or atomgrade_f_
+!> Variables calculated have prefixes km_f_ or atoms_f_
 
 module filters
   use molecules_ids
   use dimensions
-  use reader_atomgrade
+  use reader_atoms
   use reader_molecules
   implicit none
 
@@ -554,28 +554,28 @@ module filters
 
 
   !=====
-  ! atomgrade_f_*Variables filled by filter_atomgrade()
+  ! atoms_f_*Variables filled by filter_atoms()
   !=====
 
-  ! dfile:atomgrade, filtered variables
+  ! dfile:atoms, filtered variables
   ! Very similar to above; differences are
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
-  integer atomgrade_f_nblend !< ?doc?
-  character*2 atomgrade_f_elem(MAX_ATOMGRADE_NBLEND) !< atomic symbol (right-alignes, uppercase)
+  integer atoms_f_nblend !< ?doc?
+  character*2 atoms_f_elem(MAX_ATOMGRADE_NBLEND) !< atomic symbol (right-alignes, uppercase)
   integer, dimension(MAX_ATOMGRADE_NBLEND) :: &
-   atomgrade_f_ioni !< ?doc?
+   atoms_f_ioni !< ?doc?
   real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
-   atomgrade_f_lambda,       & !< ?doc?
-   atomgrade_f_kiex,         & !< ?doc?
-   atomgrade_f_algf,         & !< ?doc?
-   atomgrade_f_ch,           & !< ?doc?
-   atomgrade_f_gr,           & !< ?doc?
-   atomgrade_f_ge,           & !< ?doc?
-   atomgrade_f_zinf,         & !< ?doc?
-   atomgrade_f_abondr_dummy, & !< ?doc?
-   atomgrade_f_gf,           & !< ?doc?
-   atomgrade_f_abonds_abo      !< ?doc?
+   atoms_f_lambda,       & !< ?doc?
+   atoms_f_kiex,         & !< ?doc?
+   atoms_f_algf,         & !< ?doc?
+   atoms_f_ch,           & !< ?doc?
+   atoms_f_gr,           & !< ?doc?
+   atoms_f_ge,           & !< ?doc?
+   atoms_f_zinf,         & !< ?doc?
+   atoms_f_abondr_dummy, & !< ?doc?
+   atoms_f_gf,           & !< ?doc?
+   atoms_f_abonds_abo      !< ?doc?
 
 contains
 
@@ -690,9 +690,9 @@ contains
   !=======================================================================================
   !> Selects only spectral lines within range lzero, lfin + performs "inner join".
   !>
-  !> Populates variables atomgrade_f_*
+  !> Populates variables atoms_f_*
 
-  subroutine filter_atomgrade(lzero, lfin)
+  subroutine filter_atoms(lzero, lfin)
     !> Lower edge of wavelength interval
     real*8, intent(in) :: lzero
     !> Upper edge of wavelength interval
@@ -700,37 +700,37 @@ contains
     integer j, k
 
     k = 0
-    do j = 1, atomgrade_r_nblend
-      if((atomgrade_r_lambda(j).le.lfin) .and. (atomgrade_r_lambda(j) .ge. lzero)) then
+    do j = 1, atoms_r_nblend
+      if((atoms_r_lambda(j).le.lfin) .and. (atoms_r_lambda(j) .ge. lzero)) then
         k = k+1
 
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMGRADE_NBLEND) then
-          call pfant_halt('filter_atomgrade(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
+          call pfant_halt('filter_atoms(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
            int2str(MAX_ATOMGRADE_NBLEND)//' spectral lines')
         end if
 
         !Filters in
-        atomgrade_f_elem(k)   = atomgrade_r_elem(j)
-        atomgrade_f_ioni(k)   = atomgrade_r_ioni(j)
-        atomgrade_f_lambda(k) = atomgrade_r_lambda(j)
-        atomgrade_f_kiex(k)   = atomgrade_r_kiex(j)
-        atomgrade_f_algf(k)   = atomgrade_r_algf(j)
-        atomgrade_f_gf(k)     = 10.**atomgrade_r_algf(j)
-        atomgrade_f_ch(k)     = atomgrade_r_ch(j)
-        atomgrade_f_gr(k)     = atomgrade_r_gr(j)
-        atomgrade_f_ge(k)     = atomgrade_r_ge(j)
-        atomgrade_f_zinf(k)   = atomgrade_r_zinf(j)
+        atoms_f_elem(k)   = atoms_r_elem(j)
+        atoms_f_ioni(k)   = atoms_r_ioni(j)
+        atoms_f_lambda(k) = atoms_r_lambda(j)
+        atoms_f_kiex(k)   = atoms_r_kiex(j)
+        atoms_f_algf(k)   = atoms_r_algf(j)
+        atoms_f_gf(k)     = 10.**atoms_r_algf(j)
+        atoms_f_ch(k)     = atoms_r_ch(j)
+        atoms_f_gr(k)     = atoms_r_gr(j)
+        atoms_f_ge(k)     = atoms_r_ge(j)
+        atoms_f_zinf(k)   = atoms_r_zinf(j)
 
-        atomgrade_f_abonds_abo(k) = atomgrade_r_abonds_abo(j)
+        atoms_f_abonds_abo(k) = atoms_r_abonds_abo(j)
 
-        atomgrade_f_abondr_dummy(k) = atomgrade_r_abondr_dummy(j)
+        atoms_f_abondr_dummy(k) = atoms_r_abondr_dummy(j)
 
       end if
     end do
 
-    atomgrade_f_nblend = k
+    atoms_f_nblend = k
   end
 end
 
@@ -912,6 +912,7 @@ module pfant_x
   implicit none
 
   character*64 :: x_flprefix
+  real*8 :: x_llzero, x_llfin
 
 contains
 
@@ -925,6 +926,18 @@ contains
       call parse_aux_log_assignment('x_flprefix', x_flprefix)
     else
       x_flprefix = config_flprefix
+    end if
+    if (config_llzero .eq. -1) then
+      x_llzero = main_llzero
+      call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
+    else
+      x_llzero = config_llzero
+    end if
+    if (config_llfin .eq. -1) then
+      x_llfin = main_llfin
+      call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
+    else
+      x_llfin = config_llfin
     end if
   end
 end
@@ -1046,8 +1059,8 @@ contains
     integer :: &
      d,        &
      dtot,     & ! number of different wavelenghts for which flux will be calculated at each ikey-iteration
-     dhmy(MAX_FILETOH_NUMFILES), &
-     dhpy(MAX_FILETOH_NUMFILES)
+     dhmy(MAX_FILETOH_NUM_FILES), &
+     dhpy(MAX_FILETOH_NUM_FILES)
     integer dhm,dhp
 
     real*8 gfal(MAX_ATOMGRADE_NBLEND), &
@@ -1057,7 +1070,7 @@ contains
     real*8 ttd(MAX_DTOT), &
            fn(MAX_DTOT), &
            tauh(MAX_DTOT, MAX_MODELES_NTOT), &
-           tauhy(MAX_FILETOH_NUMFILES, MAX_DTOT, MAX_MODELES_NTOT)
+           tauhy(MAX_FILETOH_NUM_FILES, MAX_DTOT, MAX_MODELES_NTOT)
 
     integer i, i1, i2, ih, &
      ikey,    & ! ikey-th main_aint-large calculation interval
@@ -1107,29 +1120,29 @@ contains
 
 
     ! initial calculation sub-interval
-    xlzero = main_llzero-LAMBDA_STRETCH
+    xlzero = x_llzero-LAMBDA_STRETCH
     xlfin = xlzero+main_aint+LAMBDA_STRETCH
 
     ! discovers the number of iterations
-    if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) then
+    if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
       do i = 2,250
         xlfin = xlfin+main_aint
-        if(xlfin .ge. (main_llfin+LAMBDA_STRETCH)) exit
+        if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
-    lzero = main_llzero-LAMBDA_STRETCH
+    lzero = x_llzero-LAMBDA_STRETCH
     lfin = lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
 
     !> @todo check if 10 is LAMBDA_STRETCH/2.
     !
     !> @todo This is used by nulbad. Gotta plot non-convolved on top of convolved and see if the lambdas are right
-    l0 = main_llzero-10.
-    lf = main_llfin+10.
+    l0 = x_llzero-10.
+    lf = x_llfin+10.
 
 
 
@@ -1167,16 +1180,17 @@ contains
 
       !#logging
       501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3,  2x,'lzero=',f10.3,2x,'lfin=',f10.3,2x,'lambd 1/2=',f10.3)
-      write(lll,501) main_llzero,main_llfin,lzero,lfin,lambd
+      write(lll,501) x_llzero,x_llfin,lzero,lfin,lambd
       call log_info(lll)
 
 
       im = 0
-      do ih = 1,filetoh_numfiles
+      do ih = 1,filetoh_num_files
         allhy = filetoh_llhy(ih)-lzero
 
         if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
             ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
+
 
           im = im+1
           irh = 1
@@ -1186,6 +1200,7 @@ contains
           712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,'filename=',a,2x,'ih=',i5)
           write(lll,712) im, filetoh_llhy(ih), ''''//trim(filetoh_filenames(iht))//'''', iht
           call log_info(lll)
+
 
           ! Lecture tau raie hydrogene et interpolation de tauh
           ! Type *,' nom des fichiers TAU raies Hydrogene'
@@ -1235,16 +1250,16 @@ contains
 
       ! -- V --
       ! Quantites dependant de la raie et du modele
-      call filter_atomgrade(lzero, lfin)
+      call filter_atoms(lzero, lfin)
 
-      if(atomgrade_f_nblend .gt. 0) then
+      if(atoms_f_nblend .gt. 0) then
         call popadelh()
 
         ! -- VI --
         ! Calcul du coefficient d absorption selectif et calcul du spectre
-        do k = 1, atomgrade_f_nblend
-          gfal(k) = atomgrade_f_gf(k)*C2*(atomgrade_f_lambda(k)*1.e-8)**2
-          ecart(k) = atomgrade_f_lambda(k)-lzero+main_pas
+        do k = 1, atoms_f_nblend
+          gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
+          ecart(k) = atoms_f_lambda(k)-lzero+main_pas
         end do
       end if
 
@@ -1267,8 +1282,8 @@ contains
       li = int(10./main_pas)
       i1 = li+1
       i2 = dtot - li
-      if (lfin .ge. (main_llfin+LAMBDA_STRETCH)) then
-        i2 = int((main_llfin+10.-lzero)/main_pas + 1.0005)
+      if (lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
+        i2 = int((x_llfin+10.-lzero)/main_pas + 1.0005)
       end if
       itot = i2-i1+1
       do d = i1,i2
@@ -1303,7 +1318,7 @@ contains
 
       lzero = lzero+main_aint
       lfin = lfin+main_aint
-      if(lfin .gt. (main_llfin+LAMBDA_STRETCH)) lfin = main_llfin+LAMBDA_STRETCH
+      if(lfin .gt. (x_llfin+LAMBDA_STRETCH)) lfin = x_llfin+LAMBDA_STRETCH
 
     end do  ! main loop
 
@@ -1399,36 +1414,36 @@ contains
 !      real*8 log_abond
 !      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
 !      write(UNIT_LINES, 122)
-!      do k=1,atomgrade_f_nblend
-!        log_abond = log10(atomgrade_f_abonds_abo(k))
+!      do k=1,atoms_f_nblend
+!        log_abond = log10(atoms_f_abonds_abo(k))
 !
 !        125 format(a2,1x,i1,1x,f08.3,1x,f6.3,f09.3,f09.3,1x,3e12.3,f5.1, f7.1)
 !        write(UNIT_LINES, 125)     &
-!         atomgrade_f_elem(k),        &
-!         atomgrade_f_ioni(k),        &
-!         atomgrade_f_lambda(k),      &
-!         atomgrade_f_kiex(k),        &
-!         atomgrade_f_algf(k),        &
+!         atoms_f_elem(k),        &
+!         atoms_f_ioni(k),        &
+!         atoms_f_lambda(k),      &
+!         atoms_f_kiex(k),        &
+!         atoms_f_algf(k),        &
 !         log_abond-main_afstar+12, &
-!         atomgrade_f_ch(k),          &
-!         atomgrade_f_gr(k),          &
-!         atomgrade_f_ge(k),          &
-!         atomgrade_f_zinf(k),        &
+!         atoms_f_ch(k),          &
+!         atoms_f_gr(k),          &
+!         atoms_f_ge(k),          &
+!         atoms_f_zinf(k),        &
 !         popadelh_corch(k)
 !
 ! MT: fort.91 is not necessary to me.
 !       121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
 !        write(91,121)              &
-!         atomgrade_f_elem(k),        &
-!         atomgrade_f_ioni(k),        &
-!         atomgrade_f_lambda(k),      &
-!         atomgrade_f_kiex(k),        &
-!         atomgrade_f_algf(k),        &
+!         atoms_f_elem(k),        &
+!         atoms_f_ioni(k),        &
+!         atoms_f_lambda(k),      &
+!         atoms_f_kiex(k),        &
+!         atoms_f_algf(k),        &
 !         log_abond-main_afstar+12, &
-!         atomgrade_f_ch(k),          &
-!         atomgrade_f_gr(k),          &
-!         atomgrade_f_ge(k),          &
-!         atomgrade_f_zinf(k),        &
+!         atoms_f_ch(k),          &
+!         atoms_f_gr(k),          &
+!         atoms_f_ge(k),          &
+!         atoms_f_zinf(k),        &
 !         popadelh_corch(k)
 !      end do
 !    end
@@ -1465,8 +1480,8 @@ contains
        phi, t, v, vm, lambi
 
 
-      if (atomgrade_f_nblend .ne. 0) then
-        do k = 1,atomgrade_f_nblend
+      if (atoms_f_nblend .ne. 0) then
+        do k = 1,atoms_f_nblend
           ecar(k) = ecart(k)
         end do
       end if
@@ -1480,8 +1495,8 @@ contains
 
       do d = 1, dtot
         lambi = (6270+(d-1)*0.02)
-        if (atomgrade_f_nblend .ne. 0) then
-          do k=1,atomgrade_f_nblend
+        if (atoms_f_nblend .ne. 0) then
+          do k=1,atoms_f_nblend
             ecar(k)=ecar(k)-main_pas
             ecartl(k)=ecar(k)
           end do
@@ -1500,20 +1515,20 @@ contains
           t = 5040./modeles_teta(n)
 
           ! atomes
-          if(atomgrade_f_nblend .eq. 0) go to 260
+          if(atoms_f_nblend .eq. 0) go to 260
 
-          do  k=1,atomgrade_f_nblend
-            if(abs(ecartl(k)) .gt. atomgrade_f_zinf(k)) then
+          do  k=1,atoms_f_nblend
+            if(abs(ecartl(k)) .gt. atoms_f_zinf(k)) then
               ka(k) = 0.
             else
               v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
               call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
 
-              if(atomgrade_f_elem(k) .eq. ' O') then
+              if(atoms_f_elem(k) .eq. ' O') then
                 ! #NOXIG: oxygen is a particular case here
                 ka(k) = phi * popadelh_pop(k,n) * gfal(k)
               else
-                ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atomgrade_f_abonds_abo(k)
+                ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atoms_f_abonds_abo(k)
               end if
 
             end if
@@ -1810,49 +1825,49 @@ contains
     real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel
     data isi/' '/, iss/' '/
 
-    do k = 1, atomgrade_f_nblend
-      ! Search: finds j-th atomic symbol in partit_el matching atomgrade_f_elem(k)
+    do k = 1, atoms_f_nblend
+      ! Search: finds j-th atomic symbol in partit_el matching atoms_f_elem(k)
       ! This is a "inner join"
       do j = 1,partit_npar
-        if(partit_el(j) .eq. atomgrade_f_elem(k)) go to 15
+        if(partit_el(j) .eq. atoms_f_elem(k)) go to 15
       end do
 
       104 format('Manque les fcts de partition du ', a2)
-      write(lll,104) atomgrade_f_elem(k)
+      write(lll,104) atoms_f_elem(k)
       call pfant_halt(lll)
 
       15 continue
 
       popadelh_corch(k) = 0.
       popadelh_cvdw(k) = 0
-      ioo = atomgrade_f_ioni(k)
+      ioo = atoms_f_ioni(k)
 
       ! fort.77 disabled until someone misses it.
-      ! write (77,*) atomgrade_f_elem(k),atomgrade_f_lambda(k)
+      ! write (77,*) atoms_f_elem(k),atoms_f_lambda(k)
 
       ! ?doc?
-      ! If "ch" variable from dfile:atomgrade is zero, overwrites it with a calculated value.
-      ! See also read_atomgrade(), variable atomgrade_r_gr, which is also overwritten.
-      if(atomgrade_f_ch(k).lt.1.e-37)  then
-        !> @todo optimize create atomgrade_partit_ki1, atomgrade_partit_ki2 to be filled by inner join upon reading atomgrade
+      ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
+      ! See also read_atoms(), variable atoms_r_gr, which is also overwritten.
+      if(atoms_f_ch(k).lt.1.e-37)  then
+        !> @todo optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
 
-        kies = (12398.54/atomgrade_f_lambda(k)) + atomgrade_f_kiex(k)
+        kies = (12398.54/atoms_f_lambda(k)) + atoms_f_kiex(k)
         if(ioo.eq.1) kii = partit_ki1(j)
         if(ioo.eq.2) kii = partit_ki2(j)
 
         if(popadelh_corch(k).lt.1.e-37)   then
-          popadelh_corch(k) = 0.67 * atomgrade_f_kiex(k) +1
+          popadelh_corch(k) = 0.67 * atoms_f_kiex(k) +1
         end if
 
         ! 125 format(3x ,' pour',f9.3,'   on calcule ch ', 'van der waals et on multiplie par ',f7.1)
-        ! write(6,125)  atomgrade_f_lambda(k), popadelh_corch(k)
-        popadelh_cvdw(k)= calch(kii,ioo,atomgrade_f_kiex(k),isi,kies,iss)
+        ! write(6,125)  atoms_f_lambda(k), popadelh_corch(k)
+        popadelh_cvdw(k)= calch(kii,ioo,atoms_f_kiex(k),isi,kies,iss)
 
-        atomgrade_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
+        atoms_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
       end if
 
 !
-      if(atomgrade_f_ch(k) .lt. 1.e-20) then
+      if(atoms_f_ch(k) .lt. 1.e-20) then
         iopi=1
       else
         iopi=2
@@ -1860,29 +1875,29 @@ contains
 
       do n = 1, modeles_ntot
         t=5040./modeles_teta(n)
-        nul= C* 1.e+8 /atomgrade_f_lambda(k)
+        nul= C* 1.e+8 /atoms_f_lambda(k)
         ahnul= H*nul
         alphl(n)=exp(-ahnul/(KB*t))
 
         tap = 1.-alphl(n)
-        top = 10.**(-atomgrade_f_kiex(k)*modeles_teta(n))
+        top = 10.**(-atoms_f_kiex(k)*modeles_teta(n))
 
-        if(atomgrade_f_elem(k) .eq. ' O') then
+        if(atoms_f_elem(k) .eq. ' O') then
           ! #NOXIG: oxygen is treated differently
           popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
         else
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
-        popadelh_delta(k,n) =(1.e-8*atomgrade_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
+        popadelh_delta(k,n) =(1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
         if (iopi .eq. 1) then
-          gh = C5*atomgrade_f_ch(k)**0.4*vrel**0.6
+          gh = C5*atoms_f_ch(k)**0.4*vrel**0.6
         else
-          gh = atomgrade_f_ch(k) + popadelh_corch(k)*t
+          gh = atoms_f_ch(k) + popadelh_corch(k)*t
         end if
-        gamma = atomgrade_f_gr(k)+(atomgrade_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
-        popadelh_a(k,n) = gamma*(1.e-8*atomgrade_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
+        gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
+        popadelh_a(k,n) = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
       end do
     end do
   end
@@ -2096,12 +2111,21 @@ program pfant
   !=====
   call read_dissoc(full_path_w(config_fn_dissoc))
   call read_main(full_path_w(config_fn_main))
+
+  !---
+  ! (intermission)
+  ! Initializes variables whose values may come either from dfile:main or
+  ! command-line argument as soon as it reads the main file
+  !---
+  call pfant_init_x()
+
+  ! continues file reading
   call read_dissoc(full_path_w(config_fn_dissoc))
   call read_partit(full_path_w(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
   call read_absoru2(full_path_w(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(full_path_w(config_fn_modeles))  ! LECTURE DU MODELE
   call read_abonds(full_path_w(config_fn_abonds))
-  call read_atomgrade(full_path_w(config_fn_atomgrade))
+  call read_atoms(full_path_w(config_fn_atoms))
   ! Gets list of hydrogen lines filenames either from dfile:main or dfile:hmap.
   ! The latter is not the preferred way.
   if (config_hmap) then
@@ -2110,16 +2134,13 @@ program pfant
     call hmap_copy_from_main()
   end if
 
-  call read_filetoh(main_llzero, main_llfin)
+  call read_filetoh(x_llzero, x_llfin)
   call read_molecules(full_path_w(config_fn_molecules))
 
 
   !=====
   ! Spectral synthesis
   !=====
-  ! Initializes variables whose values may come either from dfile:main or
-  ! command-line argument
-  call pfant_init_x()
   ! Does the calculus
   call synthesis_()
 

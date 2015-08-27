@@ -13,7 +13,7 @@
 !     Passos realizados (nov/2003):
 !     1) copiei todos os fontes que estavam em /home1/barbuy/pfant03
 !
-!     2) troquei nome do arquivo de atomos para 'dfile:atomgrade' e o de
+!     2) troquei nome do arquivo de atomos para 'dfile:atoms' e o de
 !     moleculas para 'dfile:molecules'
 !
 !     3) examinei os codigos pabsor.f pcalr98bht.f, pncalr98.f e

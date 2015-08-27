@@ -151,6 +151,10 @@ def plot_spectra(ss, title=None):
     ax.set_ylim([mi, mi+(ma-mi)*(1+T)])  # prevents top of line from being hidden by plot box
     ax.set_ylabel(s.filename)
 
+    mi,ma = min(s.x), max(s.x)
+    span = ma-mi
+    ax.set_xlim([mi-span*T, ma+span*T])
+
     if i == n-1:
       ax.set_xlabel('Wavelength')
   plt.tight_layout()
