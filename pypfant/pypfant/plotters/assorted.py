@@ -11,6 +11,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 
+__all__ = ["plot_mod_records", "plot_filetoh", "plot_mod_record", "plot_spectra"]
 
 
 def plot_filetoh(fig, r, title):
@@ -35,7 +36,7 @@ def plot_filetoh(fig, r, title):
 
   ax.set_xlabel('Wavelength (A)')
   ax.set_ylabel('Atmospheric layer')
-  ax.set_zlabel('th (?)')
+  ax.set_zlabel('Intensity (?)')
 
 
 def plot_mod_record(r, title):
@@ -117,3 +118,50 @@ def plot_mod_records(m, title):
     ax.set_xlabel('Atmospheric layer')
     ax.set_ylabel('Record number')
     ax.set_zlabel(var)
+
+def plot_spectra(ss, title=None):
+  """
+  Plots one or more stacked in subplots sharing same x-axis.
+
+  Arguments:
+    ss -- list of Spectrum objects
+    title=None -- window title
+  """
+
+  n = len(ss)
+
+  def plot1(x, y):
+    pass
+
+  if n == 1:
+    f = plt.figure()
+  else:
+    f, axarr = plt.subplots(n, sharex=True)
+
+  for i, s in enumerate(ss):
+    assert isinstance(s, Spectrum)
+    if n == 1:
+      ax = plt.gca()
+    else:
+      ax = axarr[i]
+
+    ax.plot(s.x, s.y)
+    mi,ma = ax.get_ylim()
+    T = 0.02
+    ax.set_ylim([mi, mi+(ma-mi)*(1+T)])  # prevents top of line from being hidden by plot box
+    ax.set_ylabel(s.filename)
+
+    if i == n-1:
+      ax.set_xlabel('Wavelength')
+  plt.tight_layout()
+  if title is not None:
+    f.canvas.set_window_title(title)
+
+
+
+
+
+
+
+
+

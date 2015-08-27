@@ -1,20 +1,24 @@
 #!/usr/bin/python
 """
-Runs the 4 exes
+Opens several windows to show what is inside a NEWMARCS grid file.
 """
 
 import argparse
 from pypfant import *
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description='',
+    description=plot_mod_records.__doc__,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
   )
 
-  parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                   help='an integer for the accumulator')
+  parser.add_argument('fn', type=str, help='NEWMARCS grid file name')
 
   args = parser.parse_args()
 
-  print args
+  m = FileMod()
+  m.load(args.fn)
+
+  plot_mod_records(m, args.fn)
+  plt.show()

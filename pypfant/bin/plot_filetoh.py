@@ -1,20 +1,26 @@
 #!/usr/bin/python
 """
-Runs the 4 exes
+Plots hydrogen lines
 """
 
 import argparse
 from pypfant import *
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description='',
+    description=plot_filetoh.__doc__,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
   )
 
-  parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                   help='an integer for the accumulator')
+  parser.add_argument('fn', type=str, help='hydrogen lines file name')
 
   args = parser.parse_args()
 
-  print args
+  r = FileToH()
+  r.load(args.fn)
+
+  f = plt.figure()
+  plot_filetoh(f, r, args.fn)
+  plt.tight_layout()
+  plt.show()

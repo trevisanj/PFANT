@@ -111,9 +111,11 @@
       <file leaf-file-name="assorted.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pypfant/plotters/assorted.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7156398" vertical-offset="822" max-vertical-offset="2178">
-              <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.8436019" vertical-offset="1848" max-vertical-offset="3114">
+              <caret line="162" column="0" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
+              <folding>
+                <element signature="e#135#156#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -137,7 +139,6 @@
         <option value="$PROJECT_DIR$/bin/README.txt" />
         <option value="$PROJECT_DIR$/pypfant/data/inputfile.py" />
         <option value="$PROJECT_DIR$/pypfant/data/filemod.py" />
-        <option value="$PROJECT_DIR$/pypfant/plotters/assorted.py" />
         <option value="$PROJECT_DIR$/bin/plot_mod_records.py" />
         <option value="$PROJECT_DIR$/bin/plot_mod_record.py" />
         <option value="$PROJECT_DIR$/bin/plot_filetoh.py" />
@@ -167,6 +168,7 @@
         <option value="$PROJECT_DIR$/pypfant/exes/combo.py" />
         <option value="$PROJECT_DIR$/pypfant/misc.py" />
         <option value="$PROJECT_DIR$/pypfant/exes/exes.py" />
+        <option value="$PROJECT_DIR$/pypfant/plotters/assorted.py" />
       </list>
     </option>
   </component>
@@ -1169,9 +1171,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pypfant/plotters/assorted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7156398" vertical-offset="822" max-vertical-offset="2178">
-          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.8436019" vertical-offset="1848" max-vertical-offset="3114">
+          <caret line="162" column="0" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
+          <folding>
+            <element signature="e#135#156#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

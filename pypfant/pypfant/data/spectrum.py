@@ -29,6 +29,8 @@ class Spectrum(object):
         self.x = None  # x-values
         self.y = None  # y-values
 
+        self.filename = None  # Filename is registered by read_nulbad() or read_pfant()
+
     def __len__(self):
         """Corresponds to nulbad "ktot"."""
         return len(self.x) if self.x is not None else 0
@@ -126,6 +128,7 @@ class Spectrum(object):
         # Lambdas
         self.x = np.array([self.l0+k*self.pas for k in range(0, len(y))])
         self.y = np.array(y)
+        self.filename = filename
 
         logging.debug("Just read PFANT Spectrum '%s'" % filename)
 
@@ -185,5 +188,6 @@ class Spectrum(object):
 
         self.x = np.array(x)
         self.y = np.array(y)
+        self.filename = filename
         logging.debug("Just read NULBAD Spectrum '%s'" % filename)
 
