@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
   map_ = [
     ("PYTHONPATH", "%s/pypfant"% p),
-    ("PATH", "%s/pypfant/bin" % p),
+    ("PATH", "%s/pypfant/scripts" % p),
     ("PATH", "%s/fortran/bin" % p)]
 
   get_cmd = lambda v, p: 'export %s="${%s}:%s"' % (v, v, p)
