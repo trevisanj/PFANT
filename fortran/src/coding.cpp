@@ -8,7 +8,7 @@
 
 @subsection github_clone Cloning the repository
 
-@subsubsection github_clone0 Most cases
+@subsubsection github_clone1 Most cases
 
 @code
 git clone https://github.com/trevisanj/pfant
