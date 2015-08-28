@@ -1,4 +1,4 @@
-GFORTRAN module version '10' created from logging.f90
+GFORTRAN module version '10' created from C:\Users\j\Documents\projects\pfant\github\fortran\src\logging.f90
 MD5:495e68fd7cfd45af0d70ea508eb40fb6 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()

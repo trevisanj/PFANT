@@ -1,4 +1,4 @@
-GFORTRAN module version '10' created from absoru.f90
+GFORTRAN module version '10' created from C:\Users\j\Documents\projects\pfant\github\fortran\src\absoru.f90
 MD5:727f92d25b6792919ceaabcd35fecbc7 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
