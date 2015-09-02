@@ -2,8 +2,54 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2859603f-0e1a-4397-a605-5df9caeddaa5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/src/hydro2.f90" afterPath="$PROJECT_DIR$/fortran/src/hydro2.f90" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/.idea/workspace.xml" afterPath="$PROJECT_DIR$/fortran/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\bin\hydro2" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\bin\innewmarcs" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\bin\nulbad" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\bin\pfant" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\obj-windows\max_.mod" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\j\Documents\projects\pfant\github\fortran\obj-windows\reader_atomgrade.mod" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/pabsor12.o" afterPath="$PROJECT_DIR$/fortran-old/obj/pabsor12.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/pcalr98bht.o" afterPath="$PROJECT_DIR$/fortran-old/obj/pcalr98bht.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/pfant06new.o" afterPath="$PROJECT_DIR$/fortran-old/obj/pfant06new.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/pkapgeralbt03.o" afterPath="$PROJECT_DIR$/fortran-old/obj/pkapgeralbt03.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/pncalr98.o" afterPath="$PROJECT_DIR$/fortran-old/obj/pncalr98.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran-old/obj/psatox95t.o" afterPath="$PROJECT_DIR$/fortran-old/obj/psatox95t.o" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/PFANT_windows.depend" afterPath="$PROJECT_DIR$/fortran/PFANT_windows.depend" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/absoru.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/absoru.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/absoru_data.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/absoru_data.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/ascii_canvas.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/ascii_canvas.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/config.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/config.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/dissoc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/dissoc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/filters.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/filters.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/flin.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/flin.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/hydro2_calc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/hydro2_calc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/hydro2_math.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/hydro2_math.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/hydro2_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/hydro2_x.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/innewmarcs_calc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/innewmarcs_calc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/innewmarcs_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/innewmarcs_x.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/kapmol.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/kapmol.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/logging.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/logging.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/misc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/misc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/misc_math.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/misc_math.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/molecules_ids.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/molecules_ids.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/nulbad_calc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/nulbad_calc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/options2.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/options2.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/pfant_x.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/pfant_x.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/qsort.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/qsort.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_abonds.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_abonds.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_absoru2.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_absoru2.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_dissoc.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_dissoc.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_filetoh.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_filetoh.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_gridsmap.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_gridsmap.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_hmap.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_hmap.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_main.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_main.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_modeles.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_modeles.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_molecules.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_molecules.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/reader_partit.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/reader_partit.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/readers.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/readers.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/synthesis.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/synthesis.mod" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fortran/obj-windows/welcome.mod" afterPath="$PROJECT_DIR$/fortran/obj-windows/welcome.mod" />
     </list>
     <ignored path="master.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -18,9 +64,6 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="DaemonCodeAnalyzer">
-    <disable_hints />
-  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="master" />
@@ -30,7 +73,7 @@
       <file leaf-file-name="absoru.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/absoru.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1568" max-vertical-offset="20772">
+            <state vertical-scroll-proportion="0.0">
               <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
               <folding />
             </state>
@@ -40,18 +83,18 @@
       <file leaf-file-name="readers.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/readers.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="13715" max-vertical-offset="32400">
+            <state vertical-scroll-proportion="0.0">
               <caret line="785" column="0" selection-start-line="785" selection-start-column="0" selection-end-line="785" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pfantgrade.f" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pfantgrade.f" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran-old/src/pfantgrade/pfantgrade.f">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37625417" vertical-offset="0" max-vertical-offset="63864">
-              <caret line="25" column="33" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -60,17 +103,17 @@
       <file leaf-file-name="dimensions.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/dimensions.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="143" max-vertical-offset="2502">
+            <state vertical-scroll-proportion="0.0">
               <caret line="41" column="10" selection-start-line="41" selection-start-column="10" selection-end-line="41" selection-end-column="10" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="hmap.dat" pinned="false" current-in-tab="false">
+      <file leaf-file-name="hmap.dat" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pypfant/pypfant/data/default/hmap.dat">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="324">
+            <state vertical-scroll-proportion="0.32025117">
               <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding />
             </state>
@@ -80,7 +123,7 @@
       <file leaf-file-name="coding.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/coding.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="95" max-vertical-offset="2412">
+            <state vertical-scroll-proportion="0.0">
               <caret line="46" column="59" selection-start-line="46" selection-start-column="59" selection-end-line="46" selection-end-column="59" />
               <folding />
             </state>
@@ -90,7 +133,7 @@
       <file leaf-file-name="pfant.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/pfant.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="18629" max-vertical-offset="38772">
+            <state vertical-scroll-proportion="0.0">
               <caret line="1068" column="0" selection-start-line="1068" selection-start-column="0" selection-end-line="1068" selection-end-column="0" />
               <folding />
             </state>
@@ -100,7 +143,7 @@
       <file leaf-file-name="overview.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/overview.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4644">
+            <state vertical-scroll-proportion="0.0">
               <caret line="22" column="28" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="28" />
               <folding />
             </state>
@@ -110,7 +153,7 @@
       <file leaf-file-name="config.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/config.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="8794" max-vertical-offset="23760">
+            <state vertical-scroll-proportion="0.0">
               <caret line="512" column="20" selection-start-line="512" selection-start-column="20" selection-end-line="512" selection-end-column="20" />
               <folding />
             </state>
@@ -120,7 +163,7 @@
       <file leaf-file-name="misc_math.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fortran/src/misc_math.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-28.75" vertical-offset="16187" max-vertical-offset="17496">
+            <state vertical-scroll-proportion="0.0">
               <caret line="944" column="49" selection-start-line="944" selection-start-column="49" selection-end-line="944" selection-end-column="49" />
               <folding />
             </state>
@@ -149,10 +192,14 @@
       </list>
     </option>
   </component>
+  <component name="NamedScopeManager">
+    <order />
+  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1277" />
-    <option name="width" value="1086" />
-    <option name="height" value="1922" />
+    <option name="x" value="-4" />
+    <option name="y" value="-4" />
+    <option name="width" value="1227" />
+    <option name="height" value="776" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -177,6 +224,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -313,7 +361,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/fortran" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="recentsLimit" value="5" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -341,15 +389,102 @@
       <ConfigurationWrapper RunnerId="PyDebugRunner" />
       <method />
     </configuration>
-    <configuration default="true" type="BashConfigurationType" factoryName="Bash">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="INTERPRETER_PATH" value="/bin/bash" />
-      <option name="WORKING_DIRECTORY" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="master" />
       <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="" />
-      <module name="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
       <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="master" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="master" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="master" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="master" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="tests" factoryName="py.test">
@@ -376,104 +511,6 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <configuration default="true" type="tests" factoryName="Nosetests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="master" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="master" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="master" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PUREUNITTEST" value="true" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="master" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Attests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="master" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method />
-    </configuration>
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="Python.add_paths" />
     </list>
@@ -494,28 +531,28 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1277" y="0" width="1086" height="1922" extended-state="6" />
+    <frame x="-4" y="-4" width="1227" height="776" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.329863" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25534245" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29696473" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29722223" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.329863" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25534245" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -528,11 +565,6 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="myTodoPanelSettings">
-      <TodoPanelSettings />
-    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -547,9 +579,89 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/fortran/src/absoru.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/readers.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="785" column="0" selection-start-line="785" selection-start-column="0" selection-end-line="785" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran-old/src/pfantgrade/pfantgrade.f">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/dimensions.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="41" column="10" selection-start-line="41" selection-start-column="10" selection-end-line="41" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pypfant/pypfant/data/default/hmap.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/coding.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="46" column="59" selection-start-line="46" selection-start-column="59" selection-end-line="46" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/pfant.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1068" column="0" selection-start-line="1068" selection-start-column="0" selection-end-line="1068" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/overview.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="22" column="28" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/config.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="512" column="20" selection-start-line="512" selection-start-column="20" selection-end-line="512" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fortran/src/misc_math.f90">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="944" column="49" selection-start-line="944" selection-start-column="49" selection-end-line="944" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/add_paths.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="92" max-vertical-offset="1890">
+        <state vertical-scroll-proportion="0.0">
           <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
           <folding>
             <element signature="e#197#206#0" expanded="true" />
@@ -559,7 +671,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/absoru.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="522" max-vertical-offset="21186">
+        <state vertical-scroll-proportion="0.0">
           <caret line="29" column="22" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
           <folding />
         </state>
@@ -567,7 +679,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/coding.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
+        <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -575,7 +687,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/add_paths.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1890">
+        <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#197#206#0" expanded="true" />
@@ -585,15 +697,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/deploy_doxy-fortran.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2646">
+        <state vertical-scroll-proportion="0.0">
           <caret line="29" column="14" selection-start-line="29" selection-start-column="14" selection-end-line="29" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/add_paths.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2610">
+        <state vertical-scroll-proportion="0.0">
           <caret line="16" column="11" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="11" />
           <folding>
             <element signature="e#197#206#0" expanded="true" />
@@ -603,23 +714,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/Doxyfile">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="41922">
+        <state vertical-scroll-proportion="0.0">
           <caret line="46" column="42" selection-start-line="46" selection-start-column="42" selection-end-line="46" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/coding_style.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3006">
+        <state vertical-scroll-proportion="0.0">
           <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/absoru.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1568" max-vertical-offset="20772">
+        <state vertical-scroll-proportion="0.0">
           <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
           <folding />
         </state>
@@ -627,7 +736,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/config.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="8794" max-vertical-offset="23760">
+        <state vertical-scroll-proportion="0.0">
           <caret line="512" column="20" selection-start-line="512" selection-start-column="20" selection-end-line="512" selection-end-column="20" />
           <folding />
         </state>
@@ -635,23 +744,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/misc_math.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-28.75" vertical-offset="16187" max-vertical-offset="17496">
+        <state vertical-scroll-proportion="0.0">
           <caret line="944" column="49" selection-start-line="944" selection-start-column="49" selection-end-line="944" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pypfant/pypfant/data/default/hmap.dat">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="324">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/overview.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4644">
+        <state vertical-scroll-proportion="0.0">
           <caret line="22" column="28" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="28" />
           <folding />
         </state>
@@ -659,7 +760,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/coding.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="95" max-vertical-offset="2412">
+        <state vertical-scroll-proportion="0.0">
           <caret line="46" column="59" selection-start-line="46" selection-start-column="59" selection-end-line="46" selection-end-column="59" />
           <folding />
         </state>
@@ -667,7 +768,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/dimensions.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="143" max-vertical-offset="2502">
+        <state vertical-scroll-proportion="0.0">
           <caret line="41" column="10" selection-start-line="41" selection-start-column="10" selection-end-line="41" selection-end-column="10" />
           <folding />
         </state>
@@ -675,7 +776,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/pfant.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="18629" max-vertical-offset="38772">
+        <state vertical-scroll-proportion="0.0">
           <caret line="1068" column="0" selection-start-line="1068" selection-start-column="0" selection-end-line="1068" selection-end-column="0" />
           <folding />
         </state>
@@ -683,7 +784,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran/src/readers.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="13715" max-vertical-offset="32832">
+        <state vertical-scroll-proportion="0.0">
           <caret line="785" column="0" selection-start-line="785" selection-start-column="0" selection-end-line="785" selection-end-column="0" />
           <folding />
         </state>
@@ -691,8 +792,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fortran-old/src/pfantgrade/pfantgrade.f">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37625417" vertical-offset="0" max-vertical-offset="63864">
-          <caret line="25" column="33" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="42" selection-start-line="34" selection-start-column="42" selection-end-line="34" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pypfant/pypfant/data/default/hmap.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32025117">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding />
         </state>
       </provider>

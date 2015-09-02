@@ -1,5 +1,5 @@
-GFORTRAN module version '10' created from config.f90
-MD5:3f237642f262fc119689033739f17280 -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '10' created from C:\Users\j\Documents\projects\pfant\github\fortran\src\config.f90
+MD5:177c97005fe0600e2c6eb3c140417fa6 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -38,9 +38,9 @@ UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) UNKNOWN-ACCESS ())) PUBLIC (() () () ())
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
 () 0 0)
 11 'get_option_name' 'options2' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION ALWAYS_EXPLICIT) (
-CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 12 0 (13) () 14 () () () 0
-0)
+MODULE-PROC DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION IMPLICIT_PURE
+ALWAYS_EXPLICIT) (CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 12 0 (
+13) () 14 () () () 0 0)
 15 'getopt' 'options2' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 SUBROUTINE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0 0 UNKNOWN ()) 16
 0 (17 18 19 20 21 22 23) () 0 () () () 0 0)
