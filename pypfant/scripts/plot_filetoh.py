@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description=plot_filetoh.__doc__,
+    description=VisFileToH.__doc__,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
   )
 
@@ -20,7 +20,6 @@ if __name__ == "__main__":
   r = FileToH()
   r.load(args.fn)
 
-  f = plt.figure()
-  plot_filetoh(f, r, args.fn)
-  plt.tight_layout()
-  plt.show()
+  v = VisFileToH()
+  v.title = args.fn
+  v.use(r)

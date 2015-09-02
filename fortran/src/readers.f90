@@ -647,13 +647,13 @@ module reader_hmap
   type hmap_row
     !> file name
     character*64 fn
-    !> NIV INF
+    !> lower level
     integer na
-    !> NIV SUP
+    !> upper level
     integer nb
     !> Central lambda
     real*8 clam
-    !> KIEX ?doc?
+    !> excitation potential for the lower level of transition
     real*8 kiex
     !> C1 ?doc?
     real*8 c1
@@ -1369,7 +1369,7 @@ module reader_atoms
    atoms_r_ioni !< ?doc?
   real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
    atoms_r_lambda,       & !< ?doc?
-   atoms_r_kiex,         & !< ?doc?
+   atoms_r_kiex,         & !< ?doc? excitation potential for the lower level?
    atoms_r_algf,         & !< ?doc?
    atoms_r_ch,           & !< ?doc?
    atoms_r_gr,           & !< ?doc?

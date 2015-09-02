@@ -20,5 +20,7 @@ if __name__ == "__main__":
   m = FileMod()
   m.load(args.fn)
 
-  plot_mod_records(m, args.fn)
-  plt.show()
+
+  v = VisModRecords()
+  v.title = args.fn
+  v.use(m)

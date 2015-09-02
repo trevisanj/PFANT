@@ -10,6 +10,8 @@ from threading import Lock
 import logging
 import sys
 
+logger = logging.getLogger(__name__)
+
 # Reads next line of file and makes it a vector of strings
 # Note that each str.split() already strips each resulting string of any whitespaces.
 str_vector = lambda f: f.readline().split()

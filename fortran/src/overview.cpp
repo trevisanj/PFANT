@@ -82,7 +82,7 @@ Default name      | Description
 ------------------+-----------------------------------------------------------
 *** star-specific files ***
 main.dat          | main configuration file
-abonds.dat        | abondances
+abonds.dat        | abundances
 dissoc.dat        | dissociation equilibrium data
 
 *** "constant" data files ***
@@ -109,9 +109,9 @@ thdelta           | "
 thepsilon         | "
 
 *** created by pfant ***
-flux.norm         | normalized flux (note: multiplied by 10**5)
-flux.spec         | un-normalized flux (note: multiplied by 10**5)
-flux.cont         | continuum flux (note: multiplied by 10**5)
+flux.norm         | normalized flux
+flux.spec         | un-normalized flux (multiplied by 10**5)
+flux.cont         | continuum flux (multiplied by 10**5)
 
 *** created by nulbad ***
 flux.norm.nulbad  | convolved flux

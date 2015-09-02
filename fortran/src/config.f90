@@ -804,13 +804,13 @@ contains
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
 
     call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
-      'NIV INF')
+      'lower level')
     call add_option('h', 'nb', ' ', .true., 'integer', '(no default)', &
-      'NIV SUP')
+      'upper level')
     call add_option('h', 'clam', ' ', .true., 'real', '(no default)', &
       'Central wavelength')
     call add_option('h', 'kiex', ' ', .true., 'real', '(no default)', &
-      'KIEX ?doc?')
+      'excitation potential for the lower level of a given transition')
     call add_option('h', 'c1', ' ', .true., 'real', '(no default)', &
       'C1 ?doc?')
 

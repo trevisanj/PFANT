@@ -9,3 +9,5 @@ this sub-package structure, which is likely to remain disorganized.
 
 """
 from .assorted import *
+from .vis import *
+from .load import *
