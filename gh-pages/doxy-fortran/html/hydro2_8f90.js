@@ -30,6 +30,8 @@ var hydro2_8f90 =
     [ "x_inum", "hydro2_8f90.html#a364eb0fc4196fddea2328bf03fe76efe", null ],
     [ "x_vvt", "hydro2_8f90.html#a5246ff41e72edb63726453f512b32874", null ],
     [ "x_amores", "hydro2_8f90.html#ae78244ce99661ececd5c33799a0573bd", null ],
+    [ "x_llzero", "hydro2_8f90.html#a17a723d5af54f9179e786bab30c3a30e", null ],
+    [ "x_llfin", "hydro2_8f90.html#ad2a4b05c8ff88231063c32b5cc634c70", null ],
     [ "cste", "hydro2_8f90.html#ab55538726d5b54d6330dd2af545ebcfe", null ],
     [ "ll", "hydro2_8f90.html#a0ae4308887dfb4e6060f0ddc3e7344e8", null ],
     [ "j1", "hydro2_8f90.html#a71dbee3d5a879028c54e264f61c8b6f2", null ],

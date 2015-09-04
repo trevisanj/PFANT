@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/hydro2.f90
-MD5:71e3d595892840c0e642210964ddd4e0 -- If you edit this, you'll get what you deserve.
+MD5:164fad4e1fc9889309a59bd57106229f -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -673,13 +673,19 @@ UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 342 'x_inum' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
 () 0 0)
-343 'x_ptdisk' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () ()
-() 0 0)
-344 'x_teff' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+343 'x_llfin' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
-345 'x_vvt' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+344 'x_llzero' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+345 'x_ptdisk' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () ()
+() 0 0)
+346 'x_teff' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
+0)
+347 'x_vvt' 'hydro2_x' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0
 0)
 19 'molid' '' '' 18 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -954,5 +960,5 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 296 'print_opt' 0 301 'read_dissoc' 0 305 'read_main' 0 308
 'reader_dissoc' 0 313 'reader_main' 0 314 'real42str' 0 315 'real82str'
 0 320 'to_lower' 0 325 'to_upper' 0 330 'trim_and_add_slash' 0 335
-'x_amores' 0 339 'x_asalog' 0 340 'x_glog' 0 341 'x_inum' 0 342 'x_ptdisk'
-0 343 'x_teff' 0 344 'x_vvt' 0 345)
+'x_amores' 0 339 'x_asalog' 0 340 'x_glog' 0 341 'x_inum' 0 342 'x_llfin'
+0 343 'x_llzero' 0 344 'x_ptdisk' 0 345 'x_teff' 0 346 'x_vvt' 0 347)

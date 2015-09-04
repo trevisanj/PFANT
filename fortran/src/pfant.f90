@@ -491,7 +491,7 @@ contains
     if (niter-dissoc_nimax) 1040,1040,1054
 
     1054 continue
-    6055 format(1h0,39h *Does not converge after iterations of,i4/////)
+    6055 format(1h0,39h *Does not converge after iterations of,i4)
     write(lll,6055) dissoc_nimax
     call log_warning(lll)
 

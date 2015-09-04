@@ -1,7 +1,7 @@
 
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
-       "LogTwo", "print_noisy", "X"]
+       "LogTwo", "print_noisy", "X", "adjust_atomic_symbol"]
 
 import os.path
 import glob
@@ -77,8 +77,7 @@ def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
   Returns:
     option -- an integer: None; 0-Back/Cancel/etc; 1, 2, ...
 
-  Adapted from irootlab menu.m
-  """
+  Adapted from irootlab menu.m"""
 
   no_options, flag_ok, ch, lt = len(options), 0, 'p', len(title)
   option = None  # result
@@ -175,3 +174,10 @@ def print_noisy(msg):
   print xx
   print X, msg, X
   print xx
+
+
+
+def adjust_atomic_symbol(x):
+    """Makes sure atomic symbol is right-aligned and upper case (PFANT convention)."""
+    assert isinstance(x, str)
+    return "%2s" % (x.upper())
