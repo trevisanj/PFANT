@@ -60,7 +60,7 @@ class FileDissoc(DataFile):
                 self.cclog.append(cclog)
 
             # molecules part (remaining lines)
-            self.nmol, self.mol, self.c, self.mmax, self.nelem, self.natom = [], [], [], [], [], []
+            self.mol, self.c, self.mmax, self.nelem, self.natom = [], [], [], [], []
             fr = ff.FortranRecordReader('(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))')
             for line in h:
                 if not line.strip():
@@ -74,15 +74,36 @@ class FileDissoc(DataFile):
                 self.mmax.append(mmax)
                 self.nelem.append(vars[7::2][:mmax])
                 self.natom.append(vars[8::2][:mmax])
+            self.nmol = len(self.mol)
 
 
-# ['AN ', 12.8051, -8.27934, 0.0641622, -0.00736267, 0.000346663, 2, 9, 1, 7, 1, None, None, None, None]
-# ['CN ', 12.8051, -8.27934, 0.0641622, -0.00736267, 0.000346663, 2, 6, 1, 7, 1, None, None, None, None]
-# ['CAH', 11.3401, -3.01442, 0.423487, -0.0614674, 0.00316392, 2, 20, 1, 1, 1, None, None, None, None]
-# ['MGO', 11.7018, -5.03261, 0.296408, -0.0428111, 0.00220232, 2, 12, 1, 8, 1, None, None, None, None]
-# ['TIO', 13.3981, -8.59562, 0.408726, -0.0579369, 0.00292873, 2, 22, 1, 8, 1, None, None, None, None]
-# ['MGH', 11.2853, -2.71637, 0.196585, -0.0273103, 0.00138164, 2, 12, 1, 1, 1, None, None, None, None]
-# ['AC ', 12.8038, -6.5178, 0.0977186, -0.0127393, 0.000626035, 2, 9, 1, 6, 1, None, None, None, None]
-# ['AA ', 12.8038, -6.5178, 0.0977186, -0.0127393, 0.000626035, 1, 9, 2, None, None, None, None, None, None]
 
-                print vars
+    def save(self, filename):
+        with open(filename, "w") as h:
+            # h.writelines([' %-2s%6.2f\n' % (self.ele[i], self.abol[i])
+            #               for i in xrange(len(self))])
+            # h.writelines(['1\n', '1\n'])
+
+            write_lf(h, "%5d%5d%10.5f%10.5f" % (self.nmetal, self.nimax, self.eps, self.switer))
+
+            # atoms part
+            fr = ff.FortranRecordReader('(a2, 2x, i6, f10.3, 2i5, f10.5)')
+            for elems, nelemx, ip, ig0, ig1, cclog in \
+                    zip(self.elems, self.nelemx, self.ip, self.ig0, self.ig1, self.cclog):
+                elems = elems.upper().strip()  # to follow convention: right-aligned upper case
+                write_lf(h, '%2s  %6d%10.3f%5d%5d%10.5f' % (elems, nelemx, ip, ig0, ig1, cclog))
+
+
+            for mol, c, mmax, nelem, natom in \
+                    zip(self.mol, self.c, self.mmax, self.nelem, self.natom):
+                mol = mol.upper().strip()  # to follow convention: right-aligned upper case
+                l = ["%3s     %11.5e%12.5e%12.5e%12.5e%12.5e%1d" % tuple([mol]+c+[mmax])]
+                for nelemm, natomm in zip(nelem, natom):
+                    l.append("%2d%1d" % (nelemm, natomm))
+                s = "".join(l)
+                write_lf(h, s)
+
+            write_lf(h, "")
+            write_lf(h, "")  # two blank lines to signal end-of-file
+
+

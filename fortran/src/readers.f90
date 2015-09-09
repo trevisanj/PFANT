@@ -89,89 +89,94 @@ contains
        symbol_, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
 
-       symbol = adjust_atomic_symbol(symbol_)
+      symbol = adjust_atomic_symbol(symbol_)
 
-        ! makes sure that elements first and second are h and he, respectively,
-        ! because sat4() and die() count on this
-        select case (i)
-          case (1)
-            if (symbol .ne. ' H') then
-              write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
-              call pfant_halt(lll)
-            end if
-          case (2)
-            if (symbol .ne. 'HE') then
-              write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
-              call pfant_halt(lll)
-            end if
-        end select
+      ! makes sure that elements first and second are h and he, respectively,
+      ! because sat4() and die() count on this
+      select case (i)
+        case (1)
+          if (symbol .ne. ' H') then
+            write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
+            call pfant_halt(lll)
+          end if
+        case (2)
+          if (symbol .ne. 'HE') then
+            write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
+            call pfant_halt(lll)
+          end if
+      end select
 
-        dissoc_elems(i) = symbol
+      dissoc_elems(i) = symbol
 
-        ! spill check
-        if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
-          call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
-           int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
+      ! spill check
+      if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
+        call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
+         int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
+      end if
+    end do
+
+
+
+    ! rows NMETAL+2 till end-of-file
+    !   col  1     -- "name" of molecule
+    !   cols 2-6   -- c(J, 1-5)
+    !   col  7     -- mmax(j) (number of subsequent columns)/2
+    !   cols 8-... -- maximum of 8 columns here.
+    !                 pairs (nelem(m), natom(m)), m = 1 to mmax(j)
+    j = 0
+
+    1010 continue
+    j = j+1
+
+    read(UNIT_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
+                 dissoc_mol(j), &
+                 (dissoc_c(j, k), k=1,5), &
+                 dissoc_mmax(j), &
+                 (nelemm(m), natomm(m), m=1,4)
+
+    write(lll,*) dissoc_mol(j), &
+                 (dissoc_c(j, k), k=1,5), &
+                 dissoc_mmax(j), &
+                 (nelemm(m), natomm(m), m=1,4)
+    call log_debug(lll)
+
+    mmaxj = dissoc_mmax(j)
+    if(mmaxj .eq. 0) then
+      ! note: interesting that Fortran accepts a blank line and reads everything blank or zero
+
+      go to 1014  ! means end-of-file
+    end if
+
+    ! consistency check:
+    if (mmaxj .gt. 4) then
+      write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
+       '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
+      call pfant_halt(lll)
+    end if
+
+    ! consistency check
+    do m = 1, mmaxj
+      flag_found = .false.
+      do i = 1, dissoc_nmetal
+        if (nelemm(m) .eq. dissoc_nelemx(i)) then
+          flag_found = .true.
+          exit
         end if
-
       end do
 
-
-
-      ! rows NMETAL+2 till end-of-file
-      !   col  1     -- "name" of molecule
-      !   cols 2-6   -- c(J, 1-5)
-      !   col  7     -- mmax(j) (number of subsequent columns)/2
-      !   cols 8-... -- maximum of 8 columns here.
-      !                 pairs (nelem(m), natom(m)), m = 1 to mmax(j)
-      j = 0
-
-      1010 continue
-      j = j+1
-
-      read(UNIT_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
-                   dissoc_mol(j), &
-                   (dissoc_c(j, k), k=1,5), &
-                   dissoc_mmax(j), &
-                   (nelemm(m), natomm(m), m=1,4)
-
-      mmaxj = dissoc_mmax(j)
-      if(mmaxj .eq. 0) then
-        ! note: interesting that Fortran accepts a blank line and reads everything blank or zero
-
-        go to 1014  ! means end-of-file
-      end if
-
-      ! consistency check:
-      if (mmaxj .gt. 4) then
+      if (.not. flag_found) then
         write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
-         '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
+         '" atomic number ', nelemm(m), 'not in atoms list above'
         call pfant_halt(lll)
       end if
+    end do
 
-      ! consistency check
-      do m = 1, mmaxj
-        flag_found = .false.
-        do i = 1, dissoc_nmetal
-          if (nelemm(m) .eq. dissoc_nelemx(i)) then
-            flag_found = .true.
-            exit
-          end if
-        end do
+    do m = 1, mmaxj
+        dissoc_nelem(m,j) = nelemm(m)
+        dissoc_natom(m,j) = natomm(m)
+    end do
 
-        if (.not. flag_found) then
-          write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
-           '" atomic number ', nelemm(m), 'not in atoms list above'
-          call pfant_halt(lll)
-        end if
-      end do
-
-      do m = 1, mmaxj
-          dissoc_nelem(m,j) = nelemm(m)
-          dissoc_natom(m,j) = natomm(m)
-      end do
-
-      go to 1010
+    go to 1010
 
     1014 dissoc_nmol = j-1
 

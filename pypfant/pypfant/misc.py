@@ -1,7 +1,8 @@
 
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
-       "LogTwo", "print_noisy", "X", "adjust_atomic_symbol"]
+       "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
+       "format_BLB"]
 
 import os.path
 import glob
@@ -9,6 +10,7 @@ import random
 from threading import Lock
 import logging
 import sys
+from matplotlib import rc
 
 logger = logging.getLogger(__name__)
 
@@ -135,16 +137,16 @@ def chunk_string(string, length):
 
 
 
-#
-# def add_file_handler(logger, logFilename=None):
-#   """Adds file handler to logger."""
-#
-#   assert isinstance(logger, logging.Logger)
-#
-#   ch = logging.FileHandler(filename=logFilename)
-#   ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
-#   logger.addHandler(ch)
-#
+
+def add_file_handler(logger, logFilename=None):
+  """Adds file handler to logger."""
+
+  assert isinstance(logger, logging.Logger)
+
+  ch = logging.FileHandler(filename=logFilename)
+  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
+  logger.addHandler(ch)
+
 
 
 
@@ -163,17 +165,17 @@ class LogTwo(object):
 X = "*"
 HR = X*40
 
-def print_noisy(msg):
+def print_noisy(logger, msg):
   """Prints string message with box around.
 
   This was designed to outstand in a long log dump.
   """
 
   xx = X*(len(msg)+4)
-  print ""
-  print xx
-  print X, msg, X
-  print xx
+  logger.info("")
+  logger.info(xx)
+  logger.info("%s %s %s" % (X, msg, X))
+  logger.info(xx)
 
 
 
@@ -181,3 +183,64 @@ def adjust_atomic_symbol(x):
     """Makes sure atomic symbol is right-aligned and upper case (PFANT convention)."""
     assert isinstance(x, str)
     return "%2s" % (x.upper())
+
+
+
+
+_forenames = ["Solomon", "John", "Loretta", "Stephen", "Harry", "Nancy", "Tracy", "Maggie", "Lafanda", "Napoleon", "Joe",
+        "Ana", "Olivia", "Lucia", "Julien", "June", "Ada", "Blaise", "Platypus", "R2D2", "Obi-Wan",
+        "Yoda", "Lancelot", "Shaun", "C3PO", "Luke", "George", "Martin", "Elvira", "Galileo", "Elizabeth",
+        "Genie", "Mark", "Karl", "Henry-David", "Ludmilla", "Darth", "Bayden", "Plamen", "Margareth", "Javier",
+        "Pouria", "Klen", "Lydiane", "Charlotte", "Edna", "Ricardo", "Francis", "Jemma", "Valon", "Imran", "Sian",
+        "Hayat", "Taghreed", "Orla", "Michael", "Lourdes", "Weiyi", "Thomas", "Willian", "Miguel", "Rui",
+        "Abdullah", "Angus", "Malcolm", "Donald", "Mickey", "Polona", "Rashmi", "Xiaowei", "Sasha", "Luciano",
+        "Avinash", "Anthony", "Karen", "Matthew", "Tatiana", "Mariana", "Antonio", "Hamilton", "Pauderney"]
+_surnames = ["Northupp", "Kanobi", "de Morgan", "de Vries", "van Halen", "McFly", "Wallace", "McLeod", "Skywalker", "Smith",
+       "Silva", "da Silva", "Sexy", "Coupat", "Coupable", "Byron", "Lovelace", "Pascal", "Kareninski", "Dynamite",
+       "Souza", "Ha", "Balboa", "Durden", "V.", "Li", "Manco", "Kelly", "Torquato", "Sampaio", "Bittencourt", "Parisi",
+       "Oliveira", "Crap", "Copppercup", "Motherfucker", "Firehead", "Martin", "Papanicolau", "Galilei", "Stuart",
+       "Bitch", "King", "Cleese", "Thoreau", "Twain", "Marx", "Yankovicz", "Vader", "Prado", "Teixeira", "Oliveira",
+       "Nogueira", "Pereira", "Sant'anna", "Kerns", "Patel", "Ahmadzai", "Riding", "Llabjani", "Maus",
+       "Liger", "Byrne", "Wood", "Angelov", "Andreu", "Sadeghi", "Gajjar", "Kara", "Wolstenholme", "Alghaith",
+       "Young", "Scott", "Luz", "Copic", "Pucihar", "Zhou", "Dutta", "Baruah", "Singh", "Sauro", "do Nascimento",
+       "Lee", "Trevisan", "Travisani", "Pereira", "Nandwani", "Moura", "Senna"]
+_prefixes = ["Dr.", "Prof.", "Sir", "Ven."]
+_suffixes = ["The 3rd", "Jr.", "Sobrinho", "Neto", "VIII", "XVI", "I", "II", "III", "IV"]
+PROB_PREF = 0.1
+PROB_SUFF = 0.1
+def random_name():
+  a = []
+
+  # Prefix
+  if random.random() < PROB_PREF:
+    a.append(_prefixes[random.randint(0, len(_prefixes)-1)])
+
+  # Forename
+  a.append(_forenames[random.randint(0, len(_forenames)-1)])
+
+  # Surnames
+  n = 2  # Number of surnames
+  for i in range(n):
+    a.append(_surnames[random.randint(0, len(_surnames)-1)])
+
+  # Suffix
+  if random.random() < PROB_SUFF:
+    a.append(_suffixes[random.randint(0, len(_suffixes)-1)])
+
+  return " ".join(a)
+
+
+
+
+
+
+
+
+
+
+def format_BLB():
+    """Sets some formatting options in Matplotlib."""
+    rc('font', family = 'serif', serif = 'cmr10')
+    rc('xtick', labelsize=14)
+    rc('ytick', labelsize=14)
+    #rc('text', usetex=True)

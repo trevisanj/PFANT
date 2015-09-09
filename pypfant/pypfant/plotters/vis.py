@@ -19,6 +19,11 @@ def get_classes(obj):
     return ret
 
 class Vis(object):
+    """
+    Base class for visualizations.
+
+    Those who open multiple figures must call plt.show(), otherwise not.
+    """
 
     # Set the classes accepted by the use() method
     input_classes = ()
@@ -86,7 +91,7 @@ class VisModRecord(Vis):
         axarr[4].set_ylabel('t5l')
         axarr[4].set_xlabel("Atmospheric layer #")
         plt.tight_layout()
-        plt.show()
+        # plt.show()
 
 
 
@@ -156,18 +161,20 @@ class VisSpectrum(Vis):
         T = 0.02  # amount of extra space on both left and right of graphics
         f = plt.figure()
         ax = plt.gca()
-        ax.plot(s.x, s.y)
+        ax.plot(s.x, s.y, color="#800000")
         ymi, yma = ax.get_ylim()
         ax.set_ylim([ymi, ymi + (yma - ymi) * (1 + T)])  # prevents top of line from being hidden by plot box
-        ax.set_ylabel(s.filename)
+        # ax.set_ylabel(s.filename)
+        ax.set_ylabel("Flux (a.u.)")
         mi, ma = min(s.x), max(s.x)
-        ax.set_xlabel('Wavelength')
+        ax.set_xlabel('Wavelength ($\AA$)')
         span = ma - mi
         ax.set_xlim([mi - span * T, ma + span * T])
-        plt.tight_layout()
         if self.title is not None:
-            f.canvas.set_window_title(self.title)
-        plt.show()
+            plt.title(self.title) #canvas.set_window_title(self.title)
+        plt.tight_layout()
+
+        # plt.show()
 
 
 class VisFileToH(Vis):
@@ -194,4 +201,4 @@ class VisFileToH(Vis):
         ax.set_ylabel('Atmospheric layer')
         ax.set_zlabel('Intensity (?)')
         plt.tight_layout()
-        plt.show()
+        # plt.show()

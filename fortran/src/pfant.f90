@@ -1098,8 +1098,8 @@ contains
     open(unit=UNIT_SPEC, file=full_path_w(trim(x_flprefix)//'.spec'), status='replace')  ! spectrum
     open(unit=UNIT_CONT, file=full_path_w(trim(x_flprefix)//'.cont'), status='replace')  ! continuum
     open(unit=UNIT_NORM, file=full_path_w(trim(x_flprefix)//'.norm'), status='replace')  ! normalized
-    open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
-    open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
+    !--- open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
+    !--- open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
 
 
     !=====
@@ -1325,8 +1325,8 @@ contains
     close(UNIT_SPEC)
     close(UNIT_CONT)
     close(UNIT_NORM)
-    close(UNIT_LOG)
-    close(UNIT_LINES)
+    !--- close(UNIT_LOG)
+    !--- close(UNIT_LINES)
 
     !#logging
     call log_info('Flux sortant est en nu: Fnu x lambda')

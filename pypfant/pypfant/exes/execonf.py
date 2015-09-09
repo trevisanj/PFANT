@@ -3,7 +3,7 @@ Class to store all command-line options & DataFile instances used to run one or 
 executables.
 """
 
-__all__ = ["ExeConf"]
+__all__ = ["ExeConf", "i_innewmarcs", "i_hydro2", "i_pfant", "i_nulbad"]
 
 from pypfant.data import DataFile, FileHmap, FileMod
 import shutil
@@ -11,7 +11,11 @@ import os
 import random
 import glob
 
-
+# Indexes in workflow sequence
+i_innewmarcs = 0
+i_hydro2 = 1
+i_pfant = 2
+i_nulbad = 3
 
 class ExeConf(object):
   """
@@ -97,6 +101,8 @@ class ExeConf(object):
     self.fo_main = None
     # FileAbonds instance
     self.fo_abonds = None
+    # FileAbonds instance
+    self.fo_dissoc = None
     # FileHmap instance
     self.fo_hmap = None
 
@@ -179,7 +185,11 @@ class ExeConf(object):
 
   def make_session_id(self):
     """Makes new session id."""
-    assert self.session_id is None, "Session id already made"
+
+    # assert self.session_id is None, "Session id already made"
+
+    if self.session_id is not None:
+        return
 
     # Finds a 6-digit integer that is not part of any file in directory.
     w = self.get_wdir()
@@ -276,10 +286,13 @@ class ExeConf(object):
           # Overwrites config option
           self.__setattr__("opt_fn_"+attr_name[3:], new_fn)
 
-  def prepare_filenames_for_combo(self):
+  def prepare_filenames_for_combo(self, sequence):
     """
     Adds session dir to names of files that will be created by any of the
     executables. To be called *before* create_data_files
+
+    Arguments:
+      sequence: list containing one or more i_* values such as i_innewmarcs etc
 
     Restrictions:
     - flux prefix will be always "flux"
@@ -287,33 +300,41 @@ class ExeConf(object):
     """
 
 
-    # ** innewmarcs -> hydro2
-    # **            -> pfant
-    # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
-    self.opt_fn_modeles = self.add_session_dir(self.opt_fn_modeles if self.opt_fn_modeles is not None else FileMod.default_filename)
+    if i_innewmarcs in sequence:
+        # ** innewmarcs -> hydro2
+        # **            -> pfant
+        # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
+        self.opt_fn_modeles = self.add_session_dir(self.opt_fn_modeles if self.opt_fn_modeles is not None else FileMod.default_filename)
 
-    # ** hydro2 -> pfant
-    # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
-    # ** if it was "thalpha" it will be something like "session123456/thalpha"
-    if not self.fo_hmap:
-      # if self doesn't have a Hmap object, will load from file
-      o = self.fo_hmap = FileHmap()
-      fn = self.opt_fn_hmap if self.opt_fn_hmap is not None else FileHmap.default_filename
-      o.load(self.full_path_w(fn))
-    else:
-      o = self.fo_hmap
-    for row in o.rows:
-      # directory/filename is put between single quotes.
-      #
-      # Fortran reads this correctly. If not put between quotes, Fortran thinks that the "/"
-      # denotes the end of the string.
-      row.fn = "'"+self.add_session_dir(row.fn)+"'"
-    # Done! new hmap file will be created by create_data_files
+    if i_hydro2 in sequence:
+        # ** hydro2 -> pfant
+        # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
+        # ** if it was "thalpha" it will be something like "session123456/thalpha"
+        if not self.fo_hmap:
+          # if self doesn't have a Hmap object, will load from file
+          o = self.fo_hmap = FileHmap()
+          fn = self.opt_fn_hmap if self.opt_fn_hmap is not None else FileHmap.default_filename
+          o.load(self.full_path_w(fn))
+        else:
+          o = self.fo_hmap
+        for row in o.rows:
+          # directory/filename is put between single quotes.
+          #
+          # Fortran reads this correctly. If not put between quotes, Fortran thinks that the "/"
+          # denotes the end of the string.
+          row.fn = "'"+self.add_session_dir(row.fn)+"'"
+        # Done! new hmap file will be created by create_data_files
 
     # ** pfant -> nulbad
     # ** Restriction: flux prefix will be always "flux"
-    self.opt_flprefix = self.add_session_dir("flux")  # this is for pfant
-    # ** these two are options for nulbad
-    self.opt_norm = True
-    # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
-    self.opt_fn_flux = self.add_session_dir("flux.norm")
+    if i_pfant in sequence:
+        self.opt_flprefix = self.add_session_dir("flux")  # this is for pfant
+        self.opt_fn_progress = self.add_session_dir("progress.txt")  # this is for pfant
+
+
+    if i_nulbad in sequence:
+        # ** these two are options for nulbad
+        self.opt_norm = True
+        # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
+        self.opt_fn_flux = self.add_session_dir("flux.norm")
+
