@@ -27,21 +27,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pfant.f90" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pfant.f90" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pfant.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.34642357" vertical-offset="24814" max-vertical-offset="38772">
+            <state vertical-scroll-proportion="0.0" vertical-offset="24814" max-vertical-offset="38772">
               <caret line="1406" column="23" selection-start-line="1406" selection-start-column="23" selection-end-line="1406" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="readers.f90" pinned="false" current-in-tab="false">
+      <file leaf-file-name="readers.f90" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/readers.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1940" max-vertical-offset="32490">
-              <caret line="140" column="23" selection-start-line="140" selection-start-column="23" selection-end-line="140" selection-end-column="23" />
+            <state vertical-scroll-proportion="0.4670407" vertical-offset="0" max-vertical-offset="32490">
+              <caret line="37" column="47" selection-start-line="37" selection-start-column="47" selection-end-line="37" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -156,8 +156,8 @@
         <option value="$PROJECT_DIR$/src/hydro2.f90" />
         <option value="$PROJECT_DIR$/src/overview.cpp" />
         <option value="$PROJECT_DIR$/src/config.f90" />
-        <option value="$PROJECT_DIR$/src/readers.f90" />
         <option value="$PROJECT_DIR$/src/pfant.f90" />
+        <option value="$PROJECT_DIR$/src/readers.f90" />
       </list>
     </option>
   </component>
@@ -675,18 +675,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/readers.f90">
+    <entry file="file://$PROJECT_DIR$/src/pfant.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1940" max-vertical-offset="32490">
-          <caret line="140" column="23" selection-start-line="140" selection-start-column="23" selection-end-line="140" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="24814" max-vertical-offset="38772">
+          <caret line="1406" column="23" selection-start-line="1406" selection-start-column="23" selection-end-line="1406" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pfant.f90">
+    <entry file="file://$PROJECT_DIR$/src/readers.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34642357" vertical-offset="24814" max-vertical-offset="38772">
-          <caret line="1406" column="23" selection-start-line="1406" selection-start-column="23" selection-end-line="1406" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.4670407" vertical-offset="0" max-vertical-offset="32490">
+          <caret line="37" column="47" selection-start-line="37" selection-start-column="47" selection-end-line="37" selection-end-column="47" />
           <folding />
         </state>
       </provider>

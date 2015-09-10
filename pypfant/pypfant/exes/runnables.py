@@ -180,12 +180,16 @@ class Pfant(Executable):
 
         """
         p = self.execonf.full_path_w(self.execonf.opt_fn_progress)
+        ret = Progress(exe_name="pfant")
         if os.path.isfile(p):
             with open(p) as h:
-                t = map(int, h.readline().split("/"))
-            return Progress(exe_name="pfant", ikey=t[0], ikeytot=t[1])
-        else:
-            return Progress(exe_name="pfant")
+                try:
+                    t = map(int, h.readline().split("/"))
+                    ret = Progress(exe_name="pfant", ikey=t[0], ikeytot=t[1])
+                except ValueError:
+                    # Ignores conversion errors
+                    pass
+        return ret
 
 
 class Nulbad(Executable):

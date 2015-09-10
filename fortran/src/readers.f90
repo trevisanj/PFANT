@@ -42,8 +42,8 @@ module reader_dissoc
   character*3 dissoc_mol(MAX_DISSOC_NMOL)     !< Molecules table field 01: molecule name
   real*8 dissoc_c(MAX_DISSOC_NMOL, 5)         !< Molecules table fields 02-06
   integer dissoc_mmax(MAX_DISSOC_NMOL), &     !< Molecules table field 07
-          dissoc_nelem(5, MAX_DISSOC_NMOL), & !< Molecules table fields 08, 10, ...
-          dissoc_natom(5, MAX_DISSOC_NMOL)    !< Molecules table fields 09, 11, ...
+          dissoc_nelem(5, MAX_DISSOC_NMOL), & !< Molecules table fields 08, 10, ... (atomic number)
+          dissoc_natom(5, MAX_DISSOC_NMOL)    !< Molecules table fields 09, 11, ... (number of atoms)
   integer dissoc_nmol
   real*8 dissoc_eps,   & !< if abs((x(i+1)-x(i))/x(i)) .le. eps: converged
          dissoc_switer   !< flag affecting x(i+1)
