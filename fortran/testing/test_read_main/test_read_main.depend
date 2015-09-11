@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1426098234 source:c:\users\j\documents\projects\pypfant\pfant\trunk\main\commons.f
+1426098234 source:c:\users\j\documents\projects\pyfant\pfant\trunk\main\commons.f
 
-1385313280 source:c:\users\j\documents\projects\pypfant\pfant\trunk\test\test_read_main\main.f95
+1385313280 source:c:\users\j\documents\projects\pyfant\pfant\trunk\test\test_read_main\main.f95
 
-1426098534 source:c:\users\j\documents\projects\pypfant\pfant\trunk\main\read_main.f
+1426098534 source:c:\users\j\documents\projects\pyfant\pfant\trunk\main\read_main.f
 
-1426035524 source:c:\users\j\documents\projects\pypfant\pfant\trunk\test\test_read_main\test_read_main.f
+1426035524 source:c:\users\j\documents\projects\pyfant\pfant\trunk\test\test_read_main\test_read_main.f
 
-1426807845 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\read_files.f
+1426807845 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\read_files.f
 
-1426806990 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\test\test_read_main\test_read_main.f
+1426806990 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\test\test_read_main\test_read_main.f
 

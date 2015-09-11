@@ -209,17 +209,17 @@ module reader_main
   logical   main_ptdisk    !< ?doc?
   real*8 :: &
    main_pas,    & !< calculation step within each calculation sub-interval; this is a "delta lambda"
-   main_echx,   & !< ?doc?
-   main_echy,   & !< ?doc?
+   main_echx,   & !< not used in calculation, only written to flux file
+   main_echy,   & !< not used in calculation, only written to flux file
    main_mu,     & !< ?doc?
-   main_afstar, & !< ?doc?
+   main_afstar, & !< ?doc? metallicity of the star (in log scale)
    main_llzero, & !< lower boundary of calculation interval
    main_llfin,  & !< upper boundary of calculation interval
    main_aint,   & !< length of each calculation sub-interval (llfin-llzero) is divided into intervals of roughly aint
    main_teff,   & !< effective temperature of the star
    main_glog,   & !< log10 of gravity
    main_asalog, & !< log10 of metallicity
-   main_nhe       !< ?doc? I think this is not used, overwritten by sth that comes from dfile:modeles
+   main_nhe       !< only used to check if matches with modeles_nhe
   !> "Full-width-half-maximum" of Gaussian function for
   !> convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
@@ -299,7 +299,7 @@ contains
     read(UNIT_, *) ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
 
     ! row 03
-    read(UNIT_, *) main_vvt(1)
+    read(UNIT_\, *) main_vvt(1)
     main_ivtot = 1
 
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
@@ -325,7 +325,7 @@ contains
     read(UNIT_, *) main_ptdisk, main_mu
 
     ! row 06
-    read(UNIT_, *) main_afstar  ! metallicity of the star (in log scale)
+    read(UNIT_, *) main_afstar
 
     ! row 07: XXCOR(i)
     ! @todo ISSUE: Should be a column in dissoc.dat !!!!!

@@ -18,10 +18,10 @@ Henceforth, the symbol @c "%" denotes the directory created during installation.
 
 Add the following directories to your system path:
 @li %/fortran/bin
-@li %/pypfant/scripts
+@li %/pyfant/scripts
 
 Add the following to your PYTHONPATH variable:
-@li %/pypfant
+@li %/pyfant
 
 @note If you run on Linux, the script %/add_paths.py can be handy.
 
@@ -39,9 +39,9 @@ gfortran, make                 Compile the Fortran code
 
 python 2.7                     run the Python scripts
 
-matplotlib (python package)    requirement for pypfant
+matplotlib (python package)    requirement for pyfant
 
-fortranformat (python package) requirement for pypfant   pip install fortranformat
+fortranformat (python package) requirement for pyfant   pip install fortranformat
 @endverbatim
 
 
@@ -63,7 +63,7 @@ Here is an incomplete listing of the directory tree.
 │   │   ├── nulbad
 │   │   └── pfant
 │   └── src                      Fortran and documentation source files
-└── pypfant                      Python layer
+└── pyfant                       Python layer
     ├── scripts                  command-line tools
     │   ├── plot_filetoh.py      plots hydrogen lines in 3D
     │   ├── plot_mod_record.py   plots atmospheric model
@@ -71,7 +71,7 @@ Here is an incomplete listing of the directory tree.
     │   ├── plot_spectrum.py     plots synthetic spectra
     │   └── run_4exes.py         combo-runs innewmarcs, hydro2, pfant, nulbad
     │
-    └── pypfant         package to operate PFANT using Python
+    └── pyfant         package to operate PFANT using Python
 @endverbatim
 
 @section datafiles Input/output data files

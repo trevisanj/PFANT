@@ -875,11 +875,11 @@ contains
     if (kik .eq. 0) then
       ! Formule a 6 ou 7 pts
       if(ptdisk) then
-        ipoint=7
-        tolim=4.0
+        ipoint = 7
+        tolim = 4.0
       else
         ipoint = 6
-        tolim=3.89
+        tolim = 3.89
       end if
 
       call check_modele_trop_court(1)

@@ -258,6 +258,69 @@ contains
     n = n_temp
     close(UNIT_)
   end
+
+
+  !> Parses string into array of integers
+  !>
+  !> Examples of valid strings:
+  !> @verbatim
+  !> '[1, 2, 3, 4]'
+  !> '1, 2, 3, 4'
+  !> '1  2 3     4'
+  !> 'kdjd1sdkljfsd2shjdfkl3sdfklsdfjkl4sdlk'
+  !> @endverbatim
+  !> The examples above all result in <code>(1, 2, 3, 4)</code>.
+  !>
+  !> Very tolerant: everything that is not 0-9 is considered a separator
+
+
+  subroutine parse_int_array(str, molids, n)
+    use logging
+    !> String to be parsed, e.g. '[3, 4, 5]'
+    character(*), intent(in) :: str
+    !> Integer numbers found in string
+    integer, intent(out) :: molids(:)
+    !> Number of integer numbers found
+    integer, intent(out) :: n
+    integer, parameter :: UNINIT=-1, SEP=0, NUM=1
+    integer i_len, i, state, break_point, ascii
+    logical flag_digit
+
+    i_len = len(str)
+
+    state = UNINIT
+    flag_digit = .false.
+    n = 0
+    break_point = -1
+    do i = 1, i_len+1
+      ! only two possibilities: character is either a digit or not
+      if (i .eq. i_len+1) then
+        flag_digit = .false.
+      else
+        ascii = ichar(str(i:i))
+        flag_digit = ascii .ge. 48 .and. ascii .le. 57  ! 48:0; 57: 9
+      end if
+
+      if (.not. flag_digit) then
+        if (state .eq. NUM) then
+          ! end-of-number
+          n = n+1
+          call assert_le(n, size(molids), 'parse_int_array()', 'n', 'size(molids)')
+          read(str(break_point:i-1), *) molids(n)
+        else
+          ! does nothing until finds a digit
+        end if
+        state = SEP
+      else
+        if (state .ne. NUM) then
+          ! beginning-of-number
+          state = NUM
+          break_point = i
+        end if
+      end if
+    end do
+  end
+
 end module misc
 
 
@@ -484,6 +547,21 @@ contains
         molecule_is_on = .false.
         exit
       end if
+    end do
+  end
+
+  !=======================================================================================
+  !> Parses string into integer array and adds molecule ids to list of "off" molecules
+
+  subroutine set_molids_off(str)
+    character(*), intent(in) :: str
+
+    integer :: molids(NUM_MOL), n, i
+
+    call parse_int_array(str, molids, n)
+
+    do i = 1, n
+      call add_molid_off(molids(i))
     end do
   end
 

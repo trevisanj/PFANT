@@ -962,6 +962,8 @@ end
 !> @note Flux absolu sortant a ete multiplie par 10**5
 !>
 !> @note Existing files are replaced
+!>
+!> 
 
 !>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
@@ -1087,7 +1089,7 @@ contains
 
     ! @todo ?doc? The reason why values read from file are being overwritten should be explained.
     absoru2_abhel = modeles_nhe
-    absoru2_abmet = absoru2_abmet*10.**main_asalog
+    absoru2_abmet = absoru2_abmet*10.**modeles_asalog
 
     tetaef = 5040/main_teff
 

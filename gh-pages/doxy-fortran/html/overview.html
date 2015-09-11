@@ -115,10 +115,10 @@ Installation</h1>
 Setting the system path</h2>
 <p>Add the following directories to your system path: </p><ul>
 <li>%/fortran/bin </li>
-<li>%/pypfant/scripts</li>
+<li>%/pyfant/scripts</li>
 </ul>
 <p>Add the following to your PYTHONPATH variable: </p><ul>
-<li>%/pypfant</li>
+<li>%/pyfant</li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>If you run on Linux, the script %/add_paths.py can be handy.</dd></dl>
 <div class="fragment"><div class="line">$ ./add_paths.py --tcsh  # <span class="keywordflow">if</span> you use <a class="code" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">the</a> tcsh shell</div>
@@ -131,9 +131,9 @@ gfortran, make                 Compile the Fortran code
 
 python 2.7                     run the Python scripts
 
-matplotlib (python package)    requirement for pypfant
+matplotlib (python package)    requirement for pyfant
 
-fortranformat (python package) requirement for pypfant   pip install fortranformat
+fortranformat (python package) requirement for pyfant   pip install fortranformat
 </pre><h1><a class="anchor" id="tree"></a>
 Directory</h1>
 <p>Here is an incomplete listing of the directory tree.</p>
@@ -150,7 +150,7 @@ Directory</h1>
 │   │   ├── nulbad
 │   │   └── pfant
 │   └── src                      Fortran and documentation source files
-└── pypfant                      Python layer
+└── pyfant                      Python layer
     ├── scripts                  command-line tools
     │   ├── plot_filetoh.py      plots hydrogen lines in 3D
     │   ├── plot_mod_record.py   plots atmospheric model
@@ -158,7 +158,7 @@ Directory</h1>
     │   ├── plot_spectrum.py     plots synthetic spectra
     │   └── run_4exes.py         combo-runs innewmarcs, hydro2, pfant, nulbad
     │
-    └── pypfant         package to operate PFANT using Python
+    └── pyfant         package to operate PFANT using Python
 </pre><h1><a class="anchor" id="datafiles"></a>
 Input/output data files</h1>
 <p>Here is a list of files used, and their default names. </p><pre class="fragment">Default name      | Description

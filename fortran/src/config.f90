@@ -28,7 +28,7 @@
 !>       @li a) view the source code for subroutine config::init_options()
 !>       @li b) execute the program with the --help option
 !>
-!> @todo explain how to create new option, including that flag options (argumentless) are forbidden bcz pypfant is not prepared for them (for simplicity)
+!> @todo explain how to create new option, including that flag options (argumentless) are forbidden bcz pyfant is not prepared for them (for simplicity)
 
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -832,9 +832,8 @@ contains
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
-    call add_option('p', 'molid_off',        ' ', .true., 'molecule id', '', &
-     'id of molecule to be "turned off" (1 to '//int2str(NUM_MOL)//').<br>'//&
-     '*Note*: This option may be repeated as many times as necessary.')
+    call add_option('p', 'molids_off',        ' ', .true., 'molecule ids', '', &
+     'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'flprefix',        ' ', .true., 'filename prefix', &
                     '<"main_flprefix" variable> (taken from main configuration file)', &
      'pfant output - prefix for flux output files.<br>'//&
@@ -1038,9 +1037,8 @@ contains
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
 !              call parse_aux_assign_fn(o_arg, config_fn_log)
-      case ('molid_off')
-        iTemp = parse_aux_str2int(opt, o_arg)
-        call add_molid_off(iTemp)
+      case ('molids_off')
+        call set_molids_off(o_arg)
       case ('flprefix')
         call parse_aux_assign_fn(o_arg, config_flprefix, 'config_flprefix')
 

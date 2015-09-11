@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1427835109 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\molecula.f
+1427835109 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\molecula.f
 
-1427476753 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\test\test_read_moleculagrade\test_read_moleculagrade.f
+1427476753 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\test\test_read_moleculagrade\test_read_moleculagrade.f
 
-1427834978 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\config.f
+1427834978 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\config.f
 
-1427804743 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\errors.f
+1427804743 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\errors.f
 
-1427469964 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\read_files.f
+1427469964 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\read_files.f
 
-1427829350 source:c:\users\j\documents\projects\pypfant\pfant\github\pfant\trunk\main\sat4_die.f
+1427829350 source:c:\users\j\documents\projects\pyfant\pfant\github\pfant\trunk\main\sat4_die.f
 

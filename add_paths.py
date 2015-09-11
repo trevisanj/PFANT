@@ -62,8 +62,8 @@ if __name__ == "__main__":
   p = os.path.dirname(os.path.realpath(__file__))
 
   map_ = [
-    ("PYTHONPATH", "%s/pypfant"% p, get_cmd0),
-    (path_var, "%s/pypfant/scripts" % p, get_cmd1),
+    ("PYTHONPATH", "%s/pyfant"% p, get_cmd0),
+    (path_var, "%s/pyfant/scripts" % p, get_cmd1),
     (path_var, "%s/fortran/bin" % p, get_cmd1)]
 
   ll = [f(p) for v, p, f in map_]  # list of commands

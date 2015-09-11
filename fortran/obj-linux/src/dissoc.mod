@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/pfant.f90
-MD5:0c1209be9cb41bc3745012c14a808adc -- If you edit this, you'll get what you deserve.
+MD5:65b0b55964cac565a465209d68f43d92 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -1062,184 +1062,190 @@ MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (REAL 4 0 0 0 REAL ()) 411 0 (
 414 'parse_aux_str2real8' 'config' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (REAL 8 0 0 0 REAL ()) 415 0 (
 416 417) () 414 () () () 0 0)
-418 'partit_el' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+418 'parse_int_array' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN 0 0 SUBROUTINE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0 0 UNKNOWN ())
+419 0 (420 421 422) () 0 () () () 0 0)
+423 'partit_el' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (CHARACTER 1 0 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-419 'partit_jkmax' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+424 'partit_jkmax' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-420 'partit_ki1' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+425 'partit_ki1' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-421 'partit_ki2' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+426 'partit_ki2' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-422 'partit_m' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+427 'partit_m' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-423 'partit_npar' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+428 'partit_npar' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
 0 () () () 0 0)
-424 'partit_pa' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+429 'partit_pa' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-425 'partit_tabu' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+430 'partit_tabu' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (3 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '63')) 0 () () () 0 0)
-426 'partit_tini' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
+431 'partit_tini' 'reader_partit' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85')) 0 () () () 0 0)
-427 'pfant_halt' 'logging' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+432 'pfant_halt' 'logging' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
 DECL UNKNOWN 0 0 SUBROUTINE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0 0 UNKNOWN ())
-428 0 (429 430 431) () 0 () () () 0 0)
-432 'print_opt' 'options2' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
-DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 433 0 (434 435)
+433 0 (434 435 436) () 0 () () () 0 0)
+437 'print_opt' 'options2' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 438 0 (439 440)
 () 0 () () () 0 0)
-436 'qsort' 'qsort' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+441 'qsort' 'qsort' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
-437 'quick_sort' 'qsort' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+442 'quick_sort' 'qsort' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
 DECL UNKNOWN 0 0 SUBROUTINE RECURSIVE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0 0
-UNKNOWN ()) 438 0 (439 440 441) () 0 () () () 0 0)
-442 'read_abonds' 'reader_abonds' '' 1 ((PROCEDURE UNKNOWN-INTENT
+UNKNOWN ()) 443 0 (444 445 446) () 0 () () () 0 0)
+447 'read_abonds' 'reader_abonds' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-443 0 (444) () 0 () () () 0 0)
-445 'read_absoru2' 'reader_absoru2' '' 1 ((PROCEDURE UNKNOWN-INTENT
+448 0 (449) () 0 () () () 0 0)
+450 'read_absoru2' 'reader_absoru2' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-446 0 (447) () 0 () () () 0 0)
-448 'read_atoms' 'reader_atoms' '' 1 ((PROCEDURE UNKNOWN-INTENT
+451 0 (452) () 0 () () () 0 0)
+453 'read_atoms' 'reader_atoms' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-449 0 (450) () 0 () () () 0 0)
-451 'read_dissoc' 'reader_dissoc' '' 1 ((PROCEDURE UNKNOWN-INTENT
+454 0 (455) () 0 () () () 0 0)
+456 'read_dissoc' 'reader_dissoc' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-452 0 (453) () 0 () () () 0 0)
-454 'read_filetoh' 'reader_filetoh' '' 1 ((PROCEDURE UNKNOWN-INTENT
+457 0 (458) () 0 () () () 0 0)
+459 'read_filetoh' 'reader_filetoh' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-455 0 (456 457) () 0 () () () 0 0)
-458 'read_gridsmap' 'reader_gridsmap' '' 1 ((PROCEDURE UNKNOWN-INTENT
+460 0 (461 462) () 0 () () () 0 0)
+463 'read_gridsmap' 'reader_gridsmap' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0
 0 () () 0 () () () 0 0)
-459 'read_hmap' 'reader_hmap' '' 1 ((PROCEDURE UNKNOWN-INTENT
+464 'read_hmap' 'reader_hmap' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-460 0 (461) () 0 () () () 0 0)
-462 'read_main' 'reader_main' '' 1 ((PROCEDURE UNKNOWN-INTENT
+465 0 (466) () 0 () () () 0 0)
+467 'read_main' 'reader_main' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0
-0 UNKNOWN ()) 463 0 (464 465 466) () 0 () () () 0 0)
-467 'read_mod_record' 'reader_modeles' '' 1 ((PROCEDURE UNKNOWN-INTENT
+0 UNKNOWN ()) 468 0 (469 470 471) () 0 () () () 0 0)
+472 'read_mod_record' 'reader_modeles' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-468 0 (469 470) () 0 () () () 0 0)
-471 'read_modele' 'reader_modeles' '' 1 ((PROCEDURE UNKNOWN-INTENT
+473 0 (474 475) () 0 () () () 0 0)
+476 'read_modele' 'reader_modeles' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-472 0 (473) () 0 () () () 0 0)
-474 'read_molecules' 'reader_molecules' '' 1 ((PROCEDURE UNKNOWN-INTENT
+477 0 (478) () 0 () () () 0 0)
+479 'read_molecules' 'reader_molecules' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-475 0 (476) () 0 () () () 0 0)
-477 'read_partit' 'reader_partit' '' 1 ((PROCEDURE UNKNOWN-INTENT
+480 0 (481) () 0 () () () 0 0)
+482 'read_partit' 'reader_partit' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
-478 0 (479) () 0 () () () 0 0)
-480 'reader_abonds' 'reader_abonds' '' 1 ((MODULE UNKNOWN-INTENT
+483 0 (484) () 0 () () () 0 0)
+485 'reader_abonds' 'reader_abonds' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-481 'reader_absoru2' 'reader_absoru2' '' 1 ((MODULE UNKNOWN-INTENT
+486 'reader_absoru2' 'reader_absoru2' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-482 'reader_atoms' 'reader_atoms' '' 1 ((MODULE UNKNOWN-INTENT
+487 'reader_atoms' 'reader_atoms' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-483 'reader_dissoc' 'reader_dissoc' '' 1 ((MODULE UNKNOWN-INTENT
+488 'reader_dissoc' 'reader_dissoc' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-484 'reader_filetoh' 'reader_filetoh' '' 1 ((MODULE UNKNOWN-INTENT
+489 'reader_filetoh' 'reader_filetoh' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-485 'reader_gridsmap' 'reader_gridsmap' '' 1 ((MODULE UNKNOWN-INTENT
+490 'reader_gridsmap' 'reader_gridsmap' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-486 'reader_hmap' 'reader_hmap' '' 1 ((MODULE UNKNOWN-INTENT
+491 'reader_hmap' 'reader_hmap' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-487 'reader_main' 'reader_main' '' 1 ((MODULE UNKNOWN-INTENT
+492 'reader_main' 'reader_main' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-488 'reader_modeles' 'reader_modeles' '' 1 ((MODULE UNKNOWN-INTENT
+493 'reader_modeles' 'reader_modeles' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-489 'reader_molecules' 'reader_molecules' '' 1 ((MODULE UNKNOWN-INTENT
+494 'reader_molecules' 'reader_molecules' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-490 'reader_partit' 'reader_partit' '' 1 ((MODULE UNKNOWN-INTENT
+495 'reader_partit' 'reader_partit' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-491 'readers' 'readers' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+496 'readers' 'readers' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
 0)
-492 'real42str' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
-UNKNOWN 0 0 ALLOCATABLE FUNCTION PURE ALWAYS_EXPLICIT) (CHARACTER 1 0 0
-0 CHARACTER (()) DEFERRED_CL) 493 0 (494 495) () 496 () () () 0 0)
-497 'real82str' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+497 'real42str' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 ALLOCATABLE FUNCTION PURE ALWAYS_EXPLICIT) (CHARACTER 1 0 0
 0 CHARACTER (()) DEFERRED_CL) 498 0 (499 500) () 501 () () () 0 0)
-502 'sat4' 'dissoc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+502 'real82str' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+UNKNOWN 0 0 ALLOCATABLE FUNCTION PURE ALWAYS_EXPLICIT) (CHARACTER 1 0 0
+0 CHARACTER (()) DEFERRED_CL) 503 0 (504 505) () 506 () () () 0 0)
+507 'sat4' 'dissoc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () ()
 0 0)
-503 'sat4_pc13' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+508 'sat4_pc13' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-504 'sat4_pfe' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+509 'sat4_pfe' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-505 'sat4_pmg' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+510 'sat4_pmg' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-506 'sat4_pn' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+511 'sat4_pn' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-507 'sat4_po' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+512 'sat4_po' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-508 'sat4_ppc2' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+513 'sat4_ppc2' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-509 'sat4_pph' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+514 'sat4_pph' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-510 'sat4_pti' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+515 'sat4_pti' 'dissoc' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION TARGET) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 () () () 0 0)
-511 'to_lower' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+516 'set_molids_off' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
+517 0 (518) () 0 () () () 0 0)
+519 'to_lower' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 FUNCTION PURE) (CHARACTER 1 0 0 0 CHARACTER ((FUNCTION (
-INTEGER 4 0 0 0 INTEGER ()) 0 512 (('' (VARIABLE (CHARACTER 1 0 0 0
-CHARACTER (())) 0 513 ())) ('' ())) '__len_1_i4' 0 'len'))) 514 0 (513)
-() 515 () () () 0 0)
-516 'to_upper' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+INTEGER 4 0 0 0 INTEGER ()) 0 520 (('' (VARIABLE (CHARACTER 1 0 0 0
+CHARACTER (())) 0 521 ())) ('' ())) '__len_1_i4' 0 'len'))) 522 0 (521)
+() 523 () () () 0 0)
+524 'to_upper' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 FUNCTION PURE) (CHARACTER 1 0 0 0 CHARACTER ((FUNCTION (
-INTEGER 4 0 0 0 INTEGER ()) 0 517 (('' (VARIABLE (CHARACTER 1 0 0 0
-CHARACTER (())) 0 518 ())) ('' ())) '__len_1_i4' 0 'len'))) 519 0 (518)
-() 520 () () () 0 0)
-521 'trim_and_add_slash' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT
+INTEGER 4 0 0 0 INTEGER ()) 0 525 (('' (VARIABLE (CHARACTER 1 0 0 0
+CHARACTER (())) 0 526 ())) ('' ())) '__len_1_i4' 0 'len'))) 527 0 (526)
+() 528 () () () 0 0)
+529 'trim_and_add_slash' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION ALWAYS_EXPLICIT) (
-CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 522 0 (523) () 524 () () ()
+CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 530 0 (531) () 532 () () ()
 0 0)
-525 'unit_mod' 'reader_modeles' '' 1 ((PARAMETER UNKNOWN-INTENT
+533 'unit_mod' 'reader_modeles' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '198') () 0 () () () 0 0)
 58 'molid' '' '' 57 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -1398,99 +1404,108 @@ DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 (DERIVED 5 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
 417 's' '' '' 415 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-429 's' '' '' 428 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+420 'str' '' '' 419 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-430 'is_bug' '' '' 428 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
-OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () () () 0 0)
-431 'is_assertion' '' '' 428 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
-0 0 OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () () () 0
-0)
-434 'opt' '' '' 433 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(DERIVED 5 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
-435 'unit' '' '' 433 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
-DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-439 'list' '' '' 438 ((VARIABLE INOUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
-DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
-440 'order' '' '' 438 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+421 'molids' '' '' 419 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
-441 'n' '' '' 438 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+422 'n' '' '' 419 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-444 'path_to_file' '' '' 443 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+434 's' '' '' 433 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+(CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
+435 'is_bug' '' '' 433 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () () () 0 0)
+436 'is_assertion' '' '' 433 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
+0 0 OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 () () () 0
+0)
+439 'opt' '' '' 438 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+(DERIVED 5 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
+440 'unit' '' '' 438 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+444 'list' '' '' 443 ((VARIABLE INOUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
+445 'order' '' '' 443 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+DIMENSION DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE
+(CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
+446 'n' '' '' 443 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+(INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+449 'path_to_file' '' '' 448 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () ()
 0 () () () 0 0)
-447 'path_to_file' '' '' 446 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+452 'path_to_file' '' '' 451 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () ()
 0 () () () 0 0)
-450 'filename' '' '' 449 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+455 'filename' '' '' 454 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-453 'path_to_file' '' '' 452 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+458 'path_to_file' '' '' 457 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () ()
 0 () () () 0 0)
-456 'llzero' '' '' 455 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+461 'llzero' '' '' 460 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-457 'llfin' '' '' 455 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+462 'llfin' '' '' 460 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-461 'path_to_file' '' '' 460 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
+466 'path_to_file' '' '' 465 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-464 'path_to_file' '' '' 463 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
+469 'path_to_file' '' '' 468 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-465 'flag_care_about_dissoc' '' '' 463 ((VARIABLE IN UNKNOWN-PROC
+470 'flag_care_about_dissoc' '' '' 468 ((VARIABLE IN UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 ()
 () 0 () () () 0 0)
-466 'flag_read_filetoh' '' '' 463 ((VARIABLE IN UNKNOWN-PROC UNKNOWN
+471 'flag_read_filetoh' '' '' 468 ((VARIABLE IN UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 OPTIONAL DUMMY) (LOGICAL 4 0 0 0 LOGICAL ()) 0 0 () () 0 ()
 () () 0 0)
-469 'rec_id' '' '' 468 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+474 'rec_id' '' '' 473 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-470 'record' '' '' 468 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+475 'record' '' '' 473 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DUMMY) (DERIVED 3 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
-473 'path_to_file' '' '' 472 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+478 'path_to_file' '' '' 477 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () ()
 0 () () () 0 0)
-476 'filename' '' '' 475 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+481 'filename' '' '' 480 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () ()
 () 0 0)
-479 'path_to_file' '' '' 478 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+484 'path_to_file' '' '' 483 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () ()
 0 () () () 0 0)
-494 'x' '' '' 493 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(REAL 4 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-495 'dec' '' '' 493 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
-OPTIONAL DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-496 'string' '' '' 493 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
-UNKNOWN 0 0 ALLOCATABLE RESULT ALWAYS_EXPLICIT) (CHARACTER 1 0 0 0
-CHARACTER (()) DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 499 'x' '' '' 498 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+(REAL 4 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 500 'dec' '' '' 498 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 OPTIONAL DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 501 'string' '' '' 498 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 ALLOCATABLE RESULT ALWAYS_EXPLICIT) (CHARACTER 1 0 0 0
 CHARACTER (()) DEFERRED_CL) 0 0 () () 0 () () () 0 0)
-512 'len' '(intrinsic)' '' 514 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 512
+504 'x' '' '' 503 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+(REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+505 'dec' '' '' 503 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+OPTIONAL DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+506 'string' '' '' 503 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN 0 0 ALLOCATABLE RESULT ALWAYS_EXPLICIT) (CHARACTER 1 0 0 0
+CHARACTER (()) DEFERRED_CL) 0 0 () () 0 () () () 0 0)
+518 'str' '' '' 517 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+(CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
+520 'len' '(intrinsic)' '' 522 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 520
 () () () 0 0)
-513 'x' '' '' 514 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+521 'x' '' '' 522 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-515 'string' '' '' 514 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+523 'string' '' '' 522 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((FUNCTION (INTEGER 4 0
-0 0 INTEGER ()) 0 512 (('' (VARIABLE (CHARACTER 1 0 0 0 CHARACTER (()))
-0 513 ())) ('' ())) '__len_1_i4' 0 'len'))) 0 0 () () 0 () () () 0 0)
-517 'len' '(intrinsic)' '' 519 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 517
+0 0 INTEGER ()) 0 520 (('' (VARIABLE (CHARACTER 1 0 0 0 CHARACTER (()))
+0 521 ())) ('' ())) '__len_1_i4' 0 'len'))) 0 0 () () 0 () () () 0 0)
+525 'len' '(intrinsic)' '' 527 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 525
 () () () 0 0)
-518 'x' '' '' 519 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+526 'x' '' '' 527 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-520 'string' '' '' 519 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+528 'string' '' '' 527 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((FUNCTION (INTEGER 4 0
-0 0 INTEGER ()) 0 517 (('' (VARIABLE (CHARACTER 1 0 0 0 CHARACTER (()))
-0 518 ())) ('' ())) '__len_1_i4' 0 'len'))) 0 0 () () 0 () () () 0 0)
-523 'x' '' '' 522 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
+0 0 INTEGER ()) 0 525 (('' (VARIABLE (CHARACTER 1 0 0 0 CHARACTER (()))
+0 526 ())) ('' ())) '__len_1_i4' 0 'len'))) 0 0 () () 0 () () () 0 0)
+531 'x' '' '' 530 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-524 'y' '' '' 522 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+532 'y' '' '' 530 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
 0 0 ALLOCATABLE RESULT ALWAYS_EXPLICIT) (CHARACTER 1 0 0 0 CHARACTER (())
 DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 )
@@ -1581,19 +1596,19 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'option' 0 391 'options2' 0 392 'parse_aux_assign_fn' 0 393
 'parse_aux_log_assignment' 0 398 'parse_aux_str2int' 0 402
 'parse_aux_str2logical' 0 406 'parse_aux_str2real4' 0 410
-'parse_aux_str2real8' 0 414 'partit_el' 0 418 'partit_jkmax' 0 419
-'partit_ki1' 0 420 'partit_ki2' 0 421 'partit_m' 0 422 'partit_npar' 0
-423 'partit_pa' 0 424 'partit_tabu' 0 425 'partit_tini' 0 426 'pfant_halt'
-0 427 'print_opt' 0 432 'qsort' 0 436 'quick_sort' 0 437 'read_abonds' 0
-442 'read_absoru2' 0 445 'read_atoms' 0 448 'read_dissoc' 0 451
-'read_filetoh' 0 454 'read_gridsmap' 0 458 'read_hmap' 0 459 'read_main'
-0 462 'read_mod_record' 0 467 'read_modele' 0 471 'read_molecules' 0 474
-'read_partit' 0 477 'reader_abonds' 0 480 'reader_absoru2' 0 481
-'reader_atoms' 0 482 'reader_dissoc' 0 483 'reader_filetoh' 0 484
-'reader_gridsmap' 0 485 'reader_hmap' 0 486 'reader_main' 0 487
-'reader_modeles' 0 488 'reader_molecules' 0 489 'reader_partit' 0 490
-'readers' 0 491 'real42str' 0 492 'real82str' 0 497 'sat4' 0 502
-'sat4_pc13' 0 503 'sat4_pfe' 0 504 'sat4_pmg' 0 505 'sat4_pn' 0 506
-'sat4_po' 0 507 'sat4_ppc2' 0 508 'sat4_pph' 0 509 'sat4_pti' 0 510
-'to_lower' 0 511 'to_upper' 0 516 'trim_and_add_slash' 0 521 'unit_mod'
-0 525)
+'parse_aux_str2real8' 0 414 'parse_int_array' 0 418 'partit_el' 0 423
+'partit_jkmax' 0 424 'partit_ki1' 0 425 'partit_ki2' 0 426 'partit_m' 0
+427 'partit_npar' 0 428 'partit_pa' 0 429 'partit_tabu' 0 430
+'partit_tini' 0 431 'pfant_halt' 0 432 'print_opt' 0 437 'qsort' 0 441
+'quick_sort' 0 442 'read_abonds' 0 447 'read_absoru2' 0 450 'read_atoms'
+0 453 'read_dissoc' 0 456 'read_filetoh' 0 459 'read_gridsmap' 0 463
+'read_hmap' 0 464 'read_main' 0 467 'read_mod_record' 0 472 'read_modele'
+0 476 'read_molecules' 0 479 'read_partit' 0 482 'reader_abonds' 0 485
+'reader_absoru2' 0 486 'reader_atoms' 0 487 'reader_dissoc' 0 488
+'reader_filetoh' 0 489 'reader_gridsmap' 0 490 'reader_hmap' 0 491
+'reader_main' 0 492 'reader_modeles' 0 493 'reader_molecules' 0 494
+'reader_partit' 0 495 'readers' 0 496 'real42str' 0 497 'real82str' 0
+502 'sat4' 0 507 'sat4_pc13' 0 508 'sat4_pfe' 0 509 'sat4_pmg' 0 510
+'sat4_pn' 0 511 'sat4_po' 0 512 'sat4_ppc2' 0 513 'sat4_pph' 0 514
+'sat4_pti' 0 515 'set_molids_off' 0 516 'to_lower' 0 519 'to_upper' 0
+524 'trim_and_add_slash' 0 529 'unit_mod' 0 533)
