@@ -299,7 +299,7 @@ contains
     read(UNIT_, *) ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
 
     ! row 03
-    read(UNIT_\, *) main_vvt(1)
+    read(UNIT_, *) main_vvt(1)
     main_ivtot = 1
 
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900) ?doc?
