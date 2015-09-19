@@ -14,16 +14,14 @@ class XFileMolecules(QMainWindow):
         QMainWindow.__init__(self)
 
         self.f = None  # FileMolecules object
-        self.is_sj = True
+        self.flag_sj = True
+        self.flag_jj = False
         self.flag_sort = False
         self.mol_index = None
         self.SOL_index = None
 
         MONO_FONT = QFont("not_a_font_name")
         MONO_FONT.setStyleHint(QFont.TypeWriter)
-
-        self.setWindowIcon(QIcon('c:/python26_/repy26/icons/iqor1.ico'))
-
 
         # ** tab "General file info"
         a = self.plainTextEditFileInfo = QPlainTextEdit()
@@ -85,10 +83,18 @@ class XFileMolecules(QMainWindow):
         am = self.buttonSort = QPushButton("Sort wavelengths (Alt+&W)")
         am.clicked.connect(self.on_buttonSort_clicked)
         am.setCheckable(True)
+        if self.flag_sort:
+            am.setChecked(True)
         a0 = self.buttonSJ = QPushButton("SJ (Alt+&S)")
         a0.clicked.connect(self.on_buttonSJ_clicked)
+        a0.setCheckable(True)
+        if self.flag_sj:
+            a0.setChecked(True)
         a1 = self.buttonJJ = QPushButton("JJ (Alt+&J)")
         a1.clicked.connect(self.on_buttonJJ_clicked)
+        a1.setCheckable(True)
+        if self.flag_jj:
+            a1.setChecked(True)
         a2 = self.labelNumLines = QLabel("--")
         a3 = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -181,18 +187,17 @@ class XFileMolecules(QMainWindow):
         self.set_SOL(row)
 
     def on_buttonSJ_clicked(self):
-        self.is_sj = True
+        self.flag_sj = self.buttonSJ.isChecked()
         self.plot_lines()
 
 
     def on_buttonJJ_clicked(self):
-        self.is_sj = False
+        self.flag_jj = self.buttonJJ.isChecked()
         self.plot_lines()
 
     def on_buttonSort_clicked(self):
         self.flag_sort = self.buttonSort.isChecked()
         self.plot_lines()
-
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
@@ -235,36 +240,50 @@ class XFileMolecules(QMainWindow):
     def plot_lines(self):
         j = self.SOL_index
         if j is not None:
+            self.figure.clear()
             m = self.f.molecules[self.mol_index]
 
-            if not self.flag_sort:
-                x = m.lmbdam[j]
-                y = m.sj[j] if self.is_sj else m.jj[j]
-            else:
-                _x = np.array(m.lmbdam[j])
-                _y = np.array(m.sj[j] if self.is_sj else m.jj[j])
-                ii = np.argsort(_x)
-                x = _x[ii]
-                y = _y[ii]
+            n = self.flag_sj + self.flag_jj  # number of subplots (0, 1 or 2)
+            map_ = []  # map to reuse plotting routine, contains what differs between each plot
+            i = 1
+            if self.flag_sj:
+                map_.append(('SJ', m.sj[j], n*100+10+i))
+                i += 1
+            if self.flag_jj:
+                map_.append(('JJ', m.jj[j], n*100+10+i))
+                i += 1
 
-            y_label = 'SJ' if self.is_sj else 'JJ'
+            for y_label, _y, subp in map_:
 
-            format_BLB()
-            ax = self.figure.gca()
-            ax.clear()
-            ax.plot(x, y, 'k'+('' if len(x) > 1 else 'x'))
-            ax.set_xlabel('WaveLength ($\AA$)')
-            ax.set_ylabel(y_label)
+                if not self.flag_sort:
+                    x = m.lmbdam[j]
+                    y = _y
+                else:
+                    _x = np.array(m.lmbdam[j])
+                    _y = np.array(_y)
+                    ii = np.argsort(_x)
+                    x = _x[ii]
+                    y = _y[ii]
 
-            # x-limits
-            xmin, xmax = min(x), max(x)
-            K = .02*(xmax-xmin)
-            ax.set_xlim([xmin-K, xmax+K])
+                format_BLB()
 
-            # y-limits
-            ymin, ymax = min(y), max(y)
-            K = .02*(ymax-ymin)
-            ax.set_ylim([ymin-K, ymax+K])
+                self.figure.add_subplot(subp)
+                ax = self.figure.gca()
+                ax.clear()
+                ax.plot(x, y, 'k'+('' if len(x) > 1 else 'x'))
+                ax.set_xlabel('WaveLength ($\AA$)')
+                ax.set_ylabel(y_label)
 
-            plt.tight_layout()
+                # x-limits
+                xmin, xmax = min(x), max(x)
+                K = .02*(xmax-xmin)
+                ax.set_xlim([xmin-K, xmax+K])
+
+                # y-limits
+                ymin, ymax = min(y), max(y)
+                K = .02*(ymax-ymin)
+                ax.set_ylim([ymin-K, ymax+K])
+
+                plt.tight_layout()
+
             self.canvas.draw()

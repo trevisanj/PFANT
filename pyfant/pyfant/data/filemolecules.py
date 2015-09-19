@@ -163,7 +163,14 @@ class FileMolecules(DataFile):
                     i_sol = 0  # index of current set-of-lines, must go from 0 to nvi-1
                     v_lmbdam, v_sj, v_jj = [], [], []
                     while True:
-                        lmbdam, sj, jj, iz, numlin = float_vector(h)
+                        # Someone added "*" signs as a 6th column of some lines
+                        # which was causing my reading to crash.
+                        # Therefore I read the line and discard beyond the 5th column before
+                        # converting to float
+                        temp = str_vector(h)
+                        temp = temp[:5]
+
+                        lmbdam, sj, jj, iz, numlin = map(float, temp)
                         r += 1
 
                         v_lmbdam.append(lmbdam)
