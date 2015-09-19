@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/hydro2.f90
-MD5:7018c989758e45e8fc332c26ce3fadfe -- If you edit this, you'll get what you deserve.
+MD5:749a045ba669c4c84e88f807261d384f -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -185,13 +185,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 180 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-181 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+181 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-182 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+182 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 183 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -222,7 +221,7 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '20') () 0 () () () 0 0)
 192 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-193 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+193 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 194 'max_m' 'hydro2_math' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
@@ -634,14 +633,14 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 155 'logical2int' 0 156 'logical2str' 0 160 'malt' 0 164
 'map_file_comments' 0 172 'max_abonds_nabond' 0 177 'max_absoru2_nm' 0
 178 'max_absoru2_nrr' 0 179 'max_absoru2_numset_i' 0 180
-'max_atomgrade_nblend' 0 181 'max_atomgrade_r_nblend' 0 182
-'max_dissoc_nmetal' 0 183 'max_dissoc_nmol' 0 184 'max_dissoc_z' 0 185
-'max_dtot' 0 186 'max_file_rows' 0 187 'max_filetoh_jjmax' 0 188
-'max_filetoh_jmax' 0 189 'max_filetoh_num_files' 0 190 'max_il' 0 191
-'max_km_f_mblend' 0 192 'max_km_r_lines_total' 0 193 'max_m' 0 194
-'max_modeles_ntot' 0 195 'max_modif_ih' 0 196 'max_modif_ii' 0 197
-'max_num_options' 0 198 'max_partit_kmax' 0 199 'max_partit_npar' 0 200
-'max_sol_per_mol' 0 201 'maxi' 0 202 'mini' 0 208 'misc' 0 214 'misc_math'
-0 215 'naitk3' 0 216 'num_mol' 0 228 'parse_int_array' 0 229 'pfant_halt'
-0 234 'pi' 0 239 'real42str' 0 240 'real82str' 0 245 'rpi' 0 250 'sqrt'
-0 251 'to_lower' 0 252 'to_upper' 0 257 'trim_and_add_slash' 0 262)
+'max_atoms_f_nblend' 0 181 'max_atoms_nblend' 0 182 'max_dissoc_nmetal'
+0 183 'max_dissoc_nmol' 0 184 'max_dissoc_z' 0 185 'max_dtot' 0 186
+'max_file_rows' 0 187 'max_filetoh_jjmax' 0 188 'max_filetoh_jmax' 0 189
+'max_filetoh_num_files' 0 190 'max_il' 0 191 'max_km_f_mblend' 0 192
+'max_km_lines_total' 0 193 'max_m' 0 194 'max_modeles_ntot' 0 195
+'max_modif_ih' 0 196 'max_modif_ii' 0 197 'max_num_options' 0 198
+'max_partit_kmax' 0 199 'max_partit_npar' 0 200 'max_sol_per_mol' 0 201
+'maxi' 0 202 'mini' 0 208 'misc' 0 214 'misc_math' 0 215 'naitk3' 0 216
+'num_mol' 0 228 'parse_int_array' 0 229 'pfant_halt' 0 234 'pi' 0 239
+'real42str' 0 240 'real82str' 0 245 'rpi' 0 250 'sqrt' 0 251 'to_lower'
+0 252 'to_upper' 0 257 'trim_and_add_slash' 0 262)

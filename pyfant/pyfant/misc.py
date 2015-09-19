@@ -2,7 +2,7 @@
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
        "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
-       "format_BLB"]
+       "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix"]
 
 import os.path
 import glob
@@ -11,8 +11,10 @@ from threading import Lock
 import logging
 import sys
 from matplotlib import rc
+from .errors import *
 
 logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 # Reads next line of file and makes it a vector of strings
 # Note that each str.split() already strips each resulting string of any whitespaces.
@@ -21,8 +23,54 @@ str_vector = lambda f: f.readline().split()
 # Reads next line of file and makes it a vector of floats
 float_vector = lambda f: [float(s) for s in str_vector(f)]
 
+# Reads next line of file and makes it a vector of floats
+int_vector = lambda f: [int(s) for s in str_vector(f)]
+
 # reads next line of file and strips the newline
 readline_strip = lambda f: f.readline().strip('\n')
+
+def multirow_str_vector(f, n, r=0):
+    """
+    Assembles a vector that spans several rows in a text file.
+
+    Arguments:
+      f -- file-like object
+      n -- number of values expected
+      r (optional) -- Index of last row read in file (to tell which file row in
+                      case of error)
+
+    Returns:
+      (list-of-strings, number-of-rows-read-from-file)
+    """
+
+    so_far = 0
+    n_rows = 0
+    v = []
+    while True:
+        temp = str_vector(f)
+        n_rows += 1
+        n_now = len(temp)
+
+        if n_now+so_far > n:
+            logger.warning(('Reading multi-row vector: '
+                'row %d should have %d values (has %d)') %
+                (r+n_rows, n-so_far, n_now))
+
+            v.extend(temp[:n-so_far])
+            so_far = n
+
+        elif n_now+so_far <= n:
+            so_far += n_now
+            v.extend(temp)
+
+        if so_far == n:
+            break
+
+    return v, n_rows
+
+def ordinal_suffix(i):
+    """Returns 'st', 'nd', or 'rd'."""
+    return 'st' if i == 1 else 'nd' if i == 2 else 'rd' if i == 3 else 'th'
 
 def path_to_default(fn):
   """Returns full path to default data file."""

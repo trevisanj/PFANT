@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/readers.f90
-MD5:432506c6e25e1c4fb6a57094eb73137e -- If you edit this, you'll get what you deserve.
+MD5:7ae3bee8ccd96117247010438d4e2d36 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -537,13 +537,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 244 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-245 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+245 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-246 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+246 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 247 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -571,7 +570,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 255 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-256 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+256 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 257 'max_len_descr' 'options2' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -956,17 +955,17 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'main_ptdisk' 0 230 'main_teff' 0 231 'main_titrav' 0 232 'main_tolv' 0
 233 'main_vvt' 0 234 'main_xxcor' 0 235 'map_file_comments' 0 236
 'max_abonds_nabond' 0 241 'max_absoru2_nm' 0 242 'max_absoru2_nrr' 0 243
-'max_absoru2_numset_i' 0 244 'max_atomgrade_nblend' 0 245
-'max_atomgrade_r_nblend' 0 246 'max_dissoc_nmetal' 0 247 'max_dissoc_nmol'
-0 248 'max_dissoc_z' 0 249 'max_dtot' 0 250 'max_file_rows' 0 251
-'max_filetoh_jjmax' 0 252 'max_filetoh_jmax' 0 253 'max_filetoh_num_files'
-0 254 'max_km_f_mblend' 0 255 'max_km_r_lines_total' 0 256 'max_len_descr'
-0 257 'max_modeles_ntot' 0 258 'max_num_options' 0 259 'max_partit_kmax'
-0 260 'max_partit_npar' 0 261 'max_sol_per_mol' 0 262 'misc' 0 263
-'molecule_is_on' 0 264 'molecules_ids' 0 267 'molecules_ids_init' 0 268
-'molid_list' 0 269 'molids' 0 270 'num_mol' 0 271 'option' 0 272
-'options2' 0 273 'parse_aux_assign_fn' 0 274 'parse_aux_log_assignment'
-0 279 'parse_aux_str2int' 0 283 'parse_aux_str2logical' 0 287
+'max_absoru2_numset_i' 0 244 'max_atoms_f_nblend' 0 245 'max_atoms_nblend'
+0 246 'max_dissoc_nmetal' 0 247 'max_dissoc_nmol' 0 248 'max_dissoc_z' 0
+249 'max_dtot' 0 250 'max_file_rows' 0 251 'max_filetoh_jjmax' 0 252
+'max_filetoh_jmax' 0 253 'max_filetoh_num_files' 0 254 'max_km_f_mblend'
+0 255 'max_km_lines_total' 0 256 'max_len_descr' 0 257 'max_modeles_ntot'
+0 258 'max_num_options' 0 259 'max_partit_kmax' 0 260 'max_partit_npar'
+0 261 'max_sol_per_mol' 0 262 'misc' 0 263 'molecule_is_on' 0 264
+'molecules_ids' 0 267 'molecules_ids_init' 0 268 'molid_list' 0 269
+'molids' 0 270 'num_mol' 0 271 'option' 0 272 'options2' 0 273
+'parse_aux_assign_fn' 0 274 'parse_aux_log_assignment' 0 279
+'parse_aux_str2int' 0 283 'parse_aux_str2logical' 0 287
 'parse_aux_str2real4' 0 291 'parse_aux_str2real8' 0 295 'parse_int_array'
 0 299 'pfant_halt' 0 304 'print_opt' 0 309 'read_abonds' 0 313
 'read_dissoc' 0 316 'read_main' 0 319 'reader_abonds' 0 324

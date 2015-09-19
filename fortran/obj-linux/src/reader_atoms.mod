@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/readers.f90
-MD5:81a7e3a07f4d9c3760e2520f12f1920f -- If you edit this, you'll get what you deserve.
+MD5:7047bc19ceb6d7bb9e9dc5c8aea5a91b -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -85,51 +85,51 @@ DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 38 0 (39 40 41
 44 'assure_read_main' 'reader_main' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0
 0 () () 0 () () () 0 0)
-45 'atoms_r_abondr_dummy' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+45 'atoms_abondr_dummy' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-46 'atoms_r_abonds_abo' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+46 'atoms_abonds_abo' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-47 'atoms_r_algf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+47 'atoms_algf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-48 'atoms_r_ch' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-49 'atoms_r_elem' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+48 'atoms_ch' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+49 'atoms_elem' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-50 'atoms_r_ge' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-51 'atoms_r_gr' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-52 'atoms_r_ioni' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+50 'atoms_ge' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+51 'atoms_gr' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+52 'atoms_ioni' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-53 'atoms_r_kiex' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+53 'atoms_kiex' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-54 'atoms_r_lambda' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+54 'atoms_lambda' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-55 'atoms_r_nblend' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+55 'atoms_nblend' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
 0 () () () 0 0)
-56 'atoms_r_zinf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+56 'atoms_zinf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
@@ -585,13 +585,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 256 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-257 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+257 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-258 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+258 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 259 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -619,7 +618,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 267 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-268 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+268 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 269 'max_len_descr' 'options2' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -971,66 +970,66 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 0 16 'abonds_abo' 0 17 'abonds_abol' 0 18 'abonds_ele' 0 19
 'abonds_nabond' 0 20 'add_molid_off' 0 21 'add_option' 0 24
 'adjust_atomic_symbol' 0 33 'assert_le' 0 37 'assure_read_main' 0 44
-'atoms_r_abondr_dummy' 0 45 'atoms_r_abonds_abo' 0 46 'atoms_r_algf' 0
-47 'atoms_r_ch' 0 48 'atoms_r_elem' 0 49 'atoms_r_ge' 0 50 'atoms_r_gr'
-0 51 'atoms_r_ioni' 0 52 'atoms_r_kiex' 0 53 'atoms_r_lambda' 0 54
-'atoms_r_nblend' 0 55 'atoms_r_zinf' 0 56 'config' 0 57 'config_amores'
-0 58 'config_asalog' 0 59 'config_c1' 0 60 'config_clam' 0 61
-'config_convol' 0 62 'config_flam' 0 63 'config_flprefix' 0 64
-'config_fn_abonds' 0 65 'config_fn_absoru2' 0 66 'config_fn_atoms' 0 67
-'config_fn_cv' 0 68 'config_fn_dissoc' 0 69 'config_fn_flux' 0 70
-'config_fn_gridslist' 0 71 'config_fn_hmap' 0 72 'config_fn_lines' 0 73
-'config_fn_log' 0 74 'config_fn_main' 0 75 'config_fn_moddat' 0 76
-'config_fn_modeles' 0 77 'config_fn_molecules' 0 78 'config_fn_partit' 0
-79 'config_fn_progress' 0 80 'config_fwhm' 0 81 'config_glog' 0 82
-'config_handle_option' 0 83 'config_hmap' 0 88 'config_init' 0 89
-'config_interp' 0 90 'config_inum' 0 91 'config_kiex' 0 92 'config_kik'
-0 93 'config_kq' 0 94 'config_llfin' 0 95 'config_llzero' 0 96
-'config_logging_dump' 0 97 'config_logging_fn_dump' 0 98
-'config_logging_screen' 0 99 'config_modcode' 0 100 'config_na' 0 101
-'config_nb' 0 102 'config_nomplot' 0 103 'config_norm' 0 104
-'config_open_status' 0 105 'config_pat' 0 106 'config_ptdisk' 0 107
-'config_teff' 0 108 'config_tirb' 0 109 'config_vvt' 0 110 'config_wdir'
-0 111 'config_zph' 0 112 'dimensions' 0 113 'dissoc_c' 0 114
-'dissoc_cclog' 0 115 'dissoc_elems' 0 116 'dissoc_eps' 0 117 'dissoc_ig0'
-0 118 'dissoc_ig1' 0 119 'dissoc_ip' 0 120 'dissoc_mmax' 0 121
-'dissoc_mol' 0 122 'dissoc_natom' 0 123 'dissoc_nelem' 0 124
-'dissoc_nelemx' 0 125 'dissoc_nimax' 0 126 'dissoc_nmetal' 0 127
-'dissoc_nmol' 0 128 'dissoc_switer' 0 129 'entering' 0 130 'error_unit'
-0 131 'execonf_name' 0 132 'flag_read_abonds' 0 133 'flag_read_dissoc' 0
-134 'flag_read_main' 0 135 'full_path_w' 0 136 'get_molid' 0 140
-'get_option_name' 0 143 'getopt' 0 147 'h_line_is_inside' 0 156
-'h_line_width' 0 162 'handler_dont_care' 0 163 'handler_error' 0 164
-'handler_ok' 0 165 'int2logical' 0 166 'int2str' 0 170 'lambda_stretch'
-0 174 'leaving' 0 175 'len_tirb' 0 176 'lll' 0 177 'log_any' 0 178
-'log_critical' 0 183 'log_debug' 0 186 'log_error' 0 189 'log_halt' 0
-192 'log_info' 0 195 'log_progress' 0 198 'log_warning' 0 202 'logging'
-0 205 'logging_critical' 0 206 'logging_debug' 0 207 'logging_dump' 0
-208 'logging_error' 0 209 'logging_halt' 0 210 'logging_info' 0 211
-'logging_level' 0 212 'logging_path_dump' 0 213 'logging_path_progress'
-0 214 'logging_screen' 0 215 'logging_warning' 0 216 'logical2int' 0 217
-'logical2str' 0 221 'main_afstar' 0 225 'main_aint' 0 226 'main_asalog'
-0 227 'main_echx' 0 228 'main_echy' 0 229 'main_filetoh_numfiles' 0 230
-'main_filetohy' 0 231 'main_flprefix' 0 232 'main_fwhm' 0 233 'main_glog'
-0 234 'main_inum' 0 235 'main_ivtot' 0 236 'main_llfin' 0 237
-'main_llzero' 0 238 'main_mu' 0 239 'main_nhe' 0 240 'main_pas' 0 241
-'main_ptdisk' 0 242 'main_teff' 0 243 'main_titrav' 0 244 'main_tolv' 0
-245 'main_vvt' 0 246 'main_xxcor' 0 247 'map_file_comments' 0 248
-'max_abonds_nabond' 0 253 'max_absoru2_nm' 0 254 'max_absoru2_nrr' 0 255
-'max_absoru2_numset_i' 0 256 'max_atomgrade_nblend' 0 257
-'max_atomgrade_r_nblend' 0 258 'max_dissoc_nmetal' 0 259 'max_dissoc_nmol'
-0 260 'max_dissoc_z' 0 261 'max_dtot' 0 262 'max_file_rows' 0 263
-'max_filetoh_jjmax' 0 264 'max_filetoh_jmax' 0 265 'max_filetoh_num_files'
-0 266 'max_km_f_mblend' 0 267 'max_km_r_lines_total' 0 268 'max_len_descr'
-0 269 'max_modeles_ntot' 0 270 'max_num_options' 0 271 'max_partit_kmax'
-0 272 'max_partit_npar' 0 273 'max_sol_per_mol' 0 274 'misc' 0 275
-'molecule_is_on' 0 276 'molecules_ids' 0 279 'molecules_ids_init' 0 280
-'molid_list' 0 281 'molids' 0 282 'num_mol' 0 283 'option' 0 284
-'options2' 0 285 'parse_aux_assign_fn' 0 286 'parse_aux_log_assignment'
-0 291 'parse_aux_str2int' 0 295 'parse_aux_str2logical' 0 299
-'parse_aux_str2real4' 0 303 'parse_aux_str2real8' 0 307 'parse_int_array'
-0 311 'pfant_halt' 0 316 'print_opt' 0 321 'read_abonds' 0 325
-'read_atoms' 0 328 'read_dissoc' 0 331 'read_main' 0 334 'reader_abonds'
-0 339 'reader_atoms' 0 340 'reader_dissoc' 0 341 'reader_main' 0 342
-'real42str' 0 343 'real82str' 0 348 'set_molids_off' 0 353 'to_lower' 0
-356 'to_upper' 0 361 'trim_and_add_slash' 0 366)
+'atoms_abondr_dummy' 0 45 'atoms_abonds_abo' 0 46 'atoms_algf' 0 47
+'atoms_ch' 0 48 'atoms_elem' 0 49 'atoms_ge' 0 50 'atoms_gr' 0 51
+'atoms_ioni' 0 52 'atoms_kiex' 0 53 'atoms_lambda' 0 54 'atoms_nblend' 0
+55 'atoms_zinf' 0 56 'config' 0 57 'config_amores' 0 58 'config_asalog'
+0 59 'config_c1' 0 60 'config_clam' 0 61 'config_convol' 0 62
+'config_flam' 0 63 'config_flprefix' 0 64 'config_fn_abonds' 0 65
+'config_fn_absoru2' 0 66 'config_fn_atoms' 0 67 'config_fn_cv' 0 68
+'config_fn_dissoc' 0 69 'config_fn_flux' 0 70 'config_fn_gridslist' 0 71
+'config_fn_hmap' 0 72 'config_fn_lines' 0 73 'config_fn_log' 0 74
+'config_fn_main' 0 75 'config_fn_moddat' 0 76 'config_fn_modeles' 0 77
+'config_fn_molecules' 0 78 'config_fn_partit' 0 79 'config_fn_progress'
+0 80 'config_fwhm' 0 81 'config_glog' 0 82 'config_handle_option' 0 83
+'config_hmap' 0 88 'config_init' 0 89 'config_interp' 0 90 'config_inum'
+0 91 'config_kiex' 0 92 'config_kik' 0 93 'config_kq' 0 94 'config_llfin'
+0 95 'config_llzero' 0 96 'config_logging_dump' 0 97
+'config_logging_fn_dump' 0 98 'config_logging_screen' 0 99
+'config_modcode' 0 100 'config_na' 0 101 'config_nb' 0 102
+'config_nomplot' 0 103 'config_norm' 0 104 'config_open_status' 0 105
+'config_pat' 0 106 'config_ptdisk' 0 107 'config_teff' 0 108 'config_tirb'
+0 109 'config_vvt' 0 110 'config_wdir' 0 111 'config_zph' 0 112
+'dimensions' 0 113 'dissoc_c' 0 114 'dissoc_cclog' 0 115 'dissoc_elems'
+0 116 'dissoc_eps' 0 117 'dissoc_ig0' 0 118 'dissoc_ig1' 0 119 'dissoc_ip'
+0 120 'dissoc_mmax' 0 121 'dissoc_mol' 0 122 'dissoc_natom' 0 123
+'dissoc_nelem' 0 124 'dissoc_nelemx' 0 125 'dissoc_nimax' 0 126
+'dissoc_nmetal' 0 127 'dissoc_nmol' 0 128 'dissoc_switer' 0 129 'entering'
+0 130 'error_unit' 0 131 'execonf_name' 0 132 'flag_read_abonds' 0 133
+'flag_read_dissoc' 0 134 'flag_read_main' 0 135 'full_path_w' 0 136
+'get_molid' 0 140 'get_option_name' 0 143 'getopt' 0 147
+'h_line_is_inside' 0 156 'h_line_width' 0 162 'handler_dont_care' 0 163
+'handler_error' 0 164 'handler_ok' 0 165 'int2logical' 0 166 'int2str' 0
+170 'lambda_stretch' 0 174 'leaving' 0 175 'len_tirb' 0 176 'lll' 0 177
+'log_any' 0 178 'log_critical' 0 183 'log_debug' 0 186 'log_error' 0 189
+'log_halt' 0 192 'log_info' 0 195 'log_progress' 0 198 'log_warning' 0
+202 'logging' 0 205 'logging_critical' 0 206 'logging_debug' 0 207
+'logging_dump' 0 208 'logging_error' 0 209 'logging_halt' 0 210
+'logging_info' 0 211 'logging_level' 0 212 'logging_path_dump' 0 213
+'logging_path_progress' 0 214 'logging_screen' 0 215 'logging_warning' 0
+216 'logical2int' 0 217 'logical2str' 0 221 'main_afstar' 0 225
+'main_aint' 0 226 'main_asalog' 0 227 'main_echx' 0 228 'main_echy' 0
+229 'main_filetoh_numfiles' 0 230 'main_filetohy' 0 231 'main_flprefix'
+0 232 'main_fwhm' 0 233 'main_glog' 0 234 'main_inum' 0 235 'main_ivtot'
+0 236 'main_llfin' 0 237 'main_llzero' 0 238 'main_mu' 0 239 'main_nhe'
+0 240 'main_pas' 0 241 'main_ptdisk' 0 242 'main_teff' 0 243 'main_titrav'
+0 244 'main_tolv' 0 245 'main_vvt' 0 246 'main_xxcor' 0 247
+'map_file_comments' 0 248 'max_abonds_nabond' 0 253 'max_absoru2_nm' 0
+254 'max_absoru2_nrr' 0 255 'max_absoru2_numset_i' 0 256
+'max_atoms_f_nblend' 0 257 'max_atoms_nblend' 0 258 'max_dissoc_nmetal'
+0 259 'max_dissoc_nmol' 0 260 'max_dissoc_z' 0 261 'max_dtot' 0 262
+'max_file_rows' 0 263 'max_filetoh_jjmax' 0 264 'max_filetoh_jmax' 0 265
+'max_filetoh_num_files' 0 266 'max_km_f_mblend' 0 267 'max_km_lines_total'
+0 268 'max_len_descr' 0 269 'max_modeles_ntot' 0 270 'max_num_options' 0
+271 'max_partit_kmax' 0 272 'max_partit_npar' 0 273 'max_sol_per_mol' 0
+274 'misc' 0 275 'molecule_is_on' 0 276 'molecules_ids' 0 279
+'molecules_ids_init' 0 280 'molid_list' 0 281 'molids' 0 282 'num_mol' 0
+283 'option' 0 284 'options2' 0 285 'parse_aux_assign_fn' 0 286
+'parse_aux_log_assignment' 0 291 'parse_aux_str2int' 0 295
+'parse_aux_str2logical' 0 299 'parse_aux_str2real4' 0 303
+'parse_aux_str2real8' 0 307 'parse_int_array' 0 311 'pfant_halt' 0 316
+'print_opt' 0 321 'read_abonds' 0 325 'read_atoms' 0 328 'read_dissoc' 0
+331 'read_main' 0 334 'reader_abonds' 0 339 'reader_atoms' 0 340
+'reader_dissoc' 0 341 'reader_main' 0 342 'real42str' 0 343 'real82str'
+0 348 'set_molids_off' 0 353 'to_lower' 0 356 'to_upper' 0 361
+'trim_and_add_slash' 0 366)

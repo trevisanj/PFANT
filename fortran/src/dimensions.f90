@@ -101,8 +101,8 @@ module dimensions
   !=====
 
   integer, parameter :: &
-   MAX_ATOMGRADE_R_NBLEND=14000, & !< Half of the maximum the number of rows in dfile:atoms
-   MAX_ATOMGRADE_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
+   MAX_ATOMS_NBLEND=14000, & !< Half of the maximum the number of rows in dfile:atoms
+   MAX_ATOMS_F_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
   ! Dimensions related to dfile:molecules
@@ -113,10 +113,10 @@ module dimensions
   integer, parameter :: NUM_MOL=21
 
   !> Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
-  integer, parameter :: MAX_SOL_PER_MOL=200
+  integer, parameter :: MAX_NV_PER_MOL=200
 
   integer, parameter :: &
-   MAX_KM_R_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in dfile:molecules
+   MAX_KM_LINES_TOTAL=1400000, & !< Maximum number of spectral lines in dfile:molecules
                                    !< pertaining all molecules
    MAX_KM_F_MBLEND=200000 !< Maximum number of spectral lines that can be filtered in at a
                         !< filtering operation performed by filter_molecules()

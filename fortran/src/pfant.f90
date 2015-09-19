@@ -527,11 +527,11 @@ module filters
     km_f_lmbdam, & !< ?doc?
     km_f_sj,     & !< ?doc?
     km_f_jj,     & !< ?doc?
-    km_f_mm        !< Replicates km_f_mm(molid) for all selected lines of molecule molid.
+    km_f_mm        !< Replicates km_mm(molid) for all selected lines of molecule molid.
                    !< Redundant information but simplifies use. Used in synthesis::selekfh()
 
   !------
-  ! These two arrays contain indexes pointing at km_LMBDAM, km_SJ, and km_JJ
+  ! These two arrays contain indexes pointing at km_f_lmbdam, km_f_sj, km_f_jj, km_f_mm
   !------
 
   !> This one points to the last index of each molecule within
@@ -550,7 +550,7 @@ module filters
   !> @par Augmented
   !> First column is 0 (ZERO) -- facilitates the algorithm
   !> (second column of matrix corresponds to first molecule)
-  integer :: km_f_ln(MAX_SOL_PER_MOL+1, NUM_MOL)
+  integer :: km_f_ln(MAX_NV_PER_MOL+1, NUM_MOL)
 
 
   !=====
@@ -562,10 +562,10 @@ module filters
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
   integer atoms_f_nblend !< ?doc?
-  character*2 atoms_f_elem(MAX_ATOMGRADE_NBLEND) !< atomic symbol (right-alignes, uppercase)
-  integer, dimension(MAX_ATOMGRADE_NBLEND) :: &
+  character*2 atoms_f_elem(MAX_ATOMS_F_NBLEND) !< atomic symbol (right-alignes, uppercase)
+  integer, dimension(MAX_ATOMS_F_NBLEND) :: &
    atoms_f_ioni !< ?doc?
-  real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
+  real*8, dimension(MAX_ATOMS_NBLEND) :: &
    atoms_f_lambda,       & !< ?doc?
    atoms_f_kiex,         & !< ?doc?
    atoms_f_algf,         & !< ?doc?
@@ -580,7 +580,7 @@ module filters
 contains
 
   !=======================================================================================
-  !> Sweeps km_r_* to populate a few km_* depending on the interval LZERO-LFIN
+  !> Sweeps km_* to populate a few km_* depending on the interval LZERO-LFIN
   !>
   !> @todo test
 
@@ -594,7 +594,7 @@ contains
             molid,          &  ! Counts molecule id, from 1 to NUM_MOL
             i_mol,          &  ! Counts molecules that are "switched on"
             j_dummy, j_set, &
-            i_line,         &  ! Index of km_r_lmbdam, km_r_sj, km_r_jj
+            i_line,         &  ! Index of km_lmbdam, km_sj, km_jj
             i_filtered         ! Counts number of filtered lines (molecule-independent);
                                !  index of km_f_lmbdam, km_f_sj, km_f_jj
     logical flag_in
@@ -611,23 +611,23 @@ contains
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     i_line = 1
     i_mol = 0
-    do molid = 1, km_r_number
+    do molid = 1, km_number
       if (.not. molecule_is_on(molid)) cycle
 
       i_mol = i_mol+1
 
       !#logging
-      write(lll, *) 'molecule id', molid, ': ',  km_r_titulo(molid)
+      write(lll, *) 'molecule id', molid, ': ',  km_titulo(molid)
       call log_debug(lll)
-      write(lll, *) 'number of prospective lambdas ------>', km_r_lines_per_mol(molid)
+      write(lll, *) 'number of prospective lambdas ------>', km_lines_per_mol(molid)
       call log_debug(lll)
 
 
       ! Counters starting with "J_" restart at each molecule
       j_set = 1   ! Current "set-of-lines"
       flag_in = .FALSE.  ! Whether has filtered in at least one line
-      do j_dummy = 1, km_r_lines_per_mol(molid)
-        lambda = km_r_lmbdam(i_line)
+      do j_dummy = 1, km_lines_per_mol(molid)
+        lambda = km_lmbdam(i_line)
 
         if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
           ! Filters in a new spectral line!
@@ -642,16 +642,16 @@ contains
 
 
           km_f_lmbdam(i_filtered) = lambda
-          km_f_sj(i_filtered) = km_r_sj(i_line)
-          km_f_jj(i_filtered) = km_r_jj(i_line)
+          km_f_sj(i_filtered) = km_sj(i_line)
+          km_f_jj(i_filtered) = km_jj(i_line)
 
-          km_f_mm(i_filtered) = km_r_mm(molid)
+          km_f_mm(i_filtered) = km_mm(molid)
 
           flag_in = .true.
 
         end if
 
-        if (i_line .eq. km_r_iollosol(j_set, molid)) then
+        if (i_line .eq. km_iollosol(j_set, molid)) then
           ! Reached last line of current set of lines
 
 
@@ -663,7 +663,7 @@ contains
 !             !--error checking--!
 !             !> @todo test this error
 !             WRITE (*, *) 'FILTER_molecules(): Molecule ID ',MOLID,
-!    +            ' titled  "', km_r_TITULO(MOLID), '"'
+!    +            ' titled  "', km_TITULO(MOLID), '"'
 !             WRITE (*, *) 'Set of lines ', (J_SET), 'has no lambda '
 !    +            //'within ', LZERO, ' <= lambda <= ', LFIN
 !             WRITE (*, *) 'The algorithm is not prepared for this, '
@@ -673,14 +673,14 @@ contains
 
           !> @todo issue test number of filtered items against original pfantgrade and write testing suite for this
 
-          km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, J_SET+1, not J_SET, remember km_LN first row is all ZEROes.
+          km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is all ZEROes.
           j_set = j_set+1
         end if
 
         i_line = i_line+1
       end do
 
-      km_f_mblenq(i_mol+1) = i_filtered  ! Yes, I_MOL+1, not I_MOL, remember km_MBLENQ(1) is ZERO.
+      km_f_mblenq(i_mol+1) = i_filtered  ! Yes, i_mol+1, not i_mol, remember km_f_mblenq(1) is ZERO.
     end do !--end of MOLID loop--!
 
     km_f_mblend = i_filtered
@@ -700,32 +700,32 @@ contains
     integer j, k
 
     k = 0
-    do j = 1, atoms_r_nblend
-      if((atoms_r_lambda(j).le.lfin) .and. (atoms_r_lambda(j) .ge. lzero)) then
+    do j = 1, atoms_nblend
+      if((atoms_lambda(j).le.lfin) .and. (atoms_lambda(j) .ge. lzero)) then
         k = k+1
 
 
         ! spill check: checks if exceeds maximum number of elements allowed
-        if (k .gt. MAX_ATOMGRADE_NBLEND) then
-          call pfant_halt('filter_atoms(): exceeded maximum of MAX_ATOMGRADE_NBLEND='//&
-           int2str(MAX_ATOMGRADE_NBLEND)//' spectral lines')
+        if (k .gt. MAX_ATOMS_F_NBLEND) then
+          call pfant_halt('filter_atoms(): exceeded maximum of MAX_ATOMS_F_NBLEND='//&
+           int2str(MAX_ATOMS_F_NBLEND)//' spectral lines')
         end if
 
         !Filters in
-        atoms_f_elem(k)   = atoms_r_elem(j)
-        atoms_f_ioni(k)   = atoms_r_ioni(j)
-        atoms_f_lambda(k) = atoms_r_lambda(j)
-        atoms_f_kiex(k)   = atoms_r_kiex(j)
-        atoms_f_algf(k)   = atoms_r_algf(j)
-        atoms_f_gf(k)     = 10.**atoms_r_algf(j)
-        atoms_f_ch(k)     = atoms_r_ch(j)
-        atoms_f_gr(k)     = atoms_r_gr(j)
-        atoms_f_ge(k)     = atoms_r_ge(j)
-        atoms_f_zinf(k)   = atoms_r_zinf(j)
+        atoms_f_elem(k)   = atoms_elem(j)
+        atoms_f_ioni(k)   = atoms_ioni(j)
+        atoms_f_lambda(k) = atoms_lambda(j)
+        atoms_f_kiex(k)   = atoms_kiex(j)
+        atoms_f_algf(k)   = atoms_algf(j)
+        atoms_f_gf(k)     = 10.**atoms_algf(j)
+        atoms_f_ch(k)     = atoms_ch(j)
+        atoms_f_gr(k)     = atoms_gr(j)
+        atoms_f_ge(k)     = atoms_ge(j)
+        atoms_f_zinf(k)   = atoms_zinf(j)
 
-        atoms_f_abonds_abo(k) = atoms_r_abonds_abo(j)
+        atoms_f_abonds_abo(k) = atoms_abonds_abo(j)
 
-        atoms_f_abondr_dummy(k) = atoms_r_abondr_dummy(j)
+        atoms_f_abondr_dummy(k) = atoms_abondr_dummy(j)
 
       end if
     end do
@@ -756,7 +756,7 @@ module kapmol
     km_c_gfm,    & !< ?doc?
     km_c_alargm    !< ?doc?
 
-  real*8, dimension(MAX_KM_R_LINES_TOTAL, MAX_MODELES_NTOT) :: km_c_pnvj
+  real*8, dimension(MAX_KM_LINES_TOTAL, MAX_MODELES_NTOT) :: km_c_pnvj
 
   real*8, private, pointer, dimension(:) :: ppa, pb
   private point_ppa_pb
@@ -765,8 +765,6 @@ contains
 
   !=======================================================================================
   !> Calculates the molecular absorption coefficient.
-  !>
-  !> Uses km_* filled by FILTER_molecules()
 
   subroutine kapmol_()
     real*8 t5040, psi
@@ -785,17 +783,17 @@ contains
 
       call point_ppa_pb(molid)
 
-      nnv = km_r_nv(molid)
+      nnv = km_nv(molid)
 
-      fe  = km_r_fe(molid)
-      do_ = km_r_do(molid)
-      mm  = km_r_mm(molid)
-      am  = km_r_am(molid)
-      bm  = km_r_bm(molid)
-      ua  = km_r_ua(molid)
-      ub  = km_r_ub(molid)
-      te  = km_r_te(molid)
-      cro = km_r_cro(molid)
+      fe  = km_fe(molid)
+      do_ = km_do(molid)
+      mm  = km_mm(molid)
+      am  = km_am(molid)
+      bm  = km_bm(molid)
+      ua  = km_ua(molid)
+      ub  = km_ub(molid)
+      te  = km_te(molid)
+      cro = km_cro(molid)
 
 
       !======
@@ -808,10 +806,10 @@ contains
         psi = 10.**psi
 
         do j_set = 1,nnv
-          qv = km_r_qqv(j_set, molid)
-          gv = km_r_ggv(j_set, molid)
-          bv = km_r_bbv(j_set, molid)
-          dv = km_r_ddv(j_set, molid)
+          qv = km_qqv(j_set, molid)
+          gv = km_ggv(j_set, molid)
+          bv = km_bbv(j_set, molid)
+          dv = km_ddv(j_set, molid)
 
           l_ini = km_f_ln(j_set, molid)+1
           l_fin = km_f_ln(j_set+1, molid)
@@ -831,7 +829,7 @@ contains
           ! another double loop as in the original KAPMOL() to calculate km_c_gfm
           if (n .eq. 1) then
             ! Because gfm does not depend on n, runs this part just once, when n is 1.
-            facto = km_r_fact(j_set, molid)
+            facto = km_fact(j_set, molid)
             km_c_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
           end if
         end do
@@ -1001,9 +999,9 @@ module synthesis
   real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 
   !> calculated by subroutine popadelh
-  real*8, dimension(MAX_ATOMGRADE_NBLEND) :: popadelh_corch, popadelh_cvdw
+  real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw
   !> Calculated by subroutine popadelh
-  real*8, dimension(MAX_ATOMGRADE_NBLEND,MAX_MODELES_NTOT) :: &
+  real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
    popadelh_pop, popadelh_a, popadelh_delta
 
   !> Calculated by subroutine selekfh
@@ -1065,8 +1063,8 @@ contains
      dhpy(MAX_FILETOH_NUM_FILES)
     integer dhm,dhp
 
-    real*8 gfal(MAX_ATOMGRADE_NBLEND), &
-           ecart(MAX_ATOMGRADE_NBLEND), &  ! MT: some sort of delta lambda
+    real*8 gfal(MAX_ATOMS_F_NBLEND), &
+           ecart(MAX_ATOMS_F_NBLEND), &  ! MT: some sort of delta lambda
            ecartm(MAX_KM_F_MBLEND)
 
     real*8 ttd(MAX_DTOT), &
@@ -1462,7 +1460,7 @@ contains
     subroutine selekfh()
       integer d
       real*8 :: bi(0:MAX_MODELES_NTOT)
-      real*8, dimension(MAX_ATOMGRADE_NBLEND) :: &
+      real*8, dimension(MAX_ATOMS_F_NBLEND) :: &
        ecar, &
        ecartl, &
        ka
@@ -1849,7 +1847,7 @@ contains
 
       ! ?doc?
       ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
-      ! See also read_atoms(), variable atoms_r_gr, which is also overwritten.
+      ! See also read_atoms(), variable atoms_gr, which is also overwritten.
       if(atoms_f_ch(k).lt.1.e-37)  then
         !> @todo optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
 

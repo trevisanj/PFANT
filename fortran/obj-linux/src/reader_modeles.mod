@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/readers.f90
-MD5:8cec2b0d54480da02aa575073312f747 -- If you edit this, you'll get what you deserve.
+MD5:2e41490f2b5fd81e20ae5f9db04ec093 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -564,13 +564,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 258 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-259 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+259 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-260 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+260 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 261 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -598,7 +597,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 269 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-270 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+270 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 271 'max_len_descr' 'options2' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -1050,22 +1049,21 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 0 246 'main_tolv' 0 247 'main_vvt' 0 248 'main_xxcor' 0 249
 'map_file_comments' 0 250 'max_abonds_nabond' 0 255 'max_absoru2_nm' 0
 256 'max_absoru2_nrr' 0 257 'max_absoru2_numset_i' 0 258
-'max_atomgrade_nblend' 0 259 'max_atomgrade_r_nblend' 0 260
-'max_dissoc_nmetal' 0 261 'max_dissoc_nmol' 0 262 'max_dissoc_z' 0 263
-'max_dtot' 0 264 'max_file_rows' 0 265 'max_filetoh_jjmax' 0 266
-'max_filetoh_jmax' 0 267 'max_filetoh_num_files' 0 268 'max_km_f_mblend'
-0 269 'max_km_r_lines_total' 0 270 'max_len_descr' 0 271
-'max_modeles_ntot' 0 272 'max_num_options' 0 273 'max_partit_kmax' 0 274
-'max_partit_npar' 0 275 'max_sol_per_mol' 0 276 'misc' 0 277 'mod_recl'
-0 278 'modele_record' 0 279 'modeles_asalalf' 0 280 'modeles_asalog' 0
-281 'modeles_glog' 0 282 'modeles_nh' 0 283 'modeles_nhe' 0 284
-'modeles_ntot' 0 285 'modeles_pe' 0 286 'modeles_pg' 0 287 'modeles_t5l'
-0 288 'modeles_teff' 0 289 'modeles_teta' 0 290 'modeles_tiabs' 0 291
-'modeles_tit' 0 292 'molecule_is_on' 0 293 'molecules_ids' 0 296
-'molecules_ids_init' 0 297 'molid_list' 0 298 'molids' 0 299 'num_mol' 0
-300 'open_mod_file' 0 301 'option' 0 304 'options2' 0 305
-'parse_aux_assign_fn' 0 306 'parse_aux_log_assignment' 0 311
-'parse_aux_str2int' 0 315 'parse_aux_str2logical' 0 319
+'max_atoms_f_nblend' 0 259 'max_atoms_nblend' 0 260 'max_dissoc_nmetal'
+0 261 'max_dissoc_nmol' 0 262 'max_dissoc_z' 0 263 'max_dtot' 0 264
+'max_file_rows' 0 265 'max_filetoh_jjmax' 0 266 'max_filetoh_jmax' 0 267
+'max_filetoh_num_files' 0 268 'max_km_f_mblend' 0 269 'max_km_lines_total'
+0 270 'max_len_descr' 0 271 'max_modeles_ntot' 0 272 'max_num_options' 0
+273 'max_partit_kmax' 0 274 'max_partit_npar' 0 275 'max_sol_per_mol' 0
+276 'misc' 0 277 'mod_recl' 0 278 'modele_record' 0 279 'modeles_asalalf'
+0 280 'modeles_asalog' 0 281 'modeles_glog' 0 282 'modeles_nh' 0 283
+'modeles_nhe' 0 284 'modeles_ntot' 0 285 'modeles_pe' 0 286 'modeles_pg'
+0 287 'modeles_t5l' 0 288 'modeles_teff' 0 289 'modeles_teta' 0 290
+'modeles_tiabs' 0 291 'modeles_tit' 0 292 'molecule_is_on' 0 293
+'molecules_ids' 0 296 'molecules_ids_init' 0 297 'molid_list' 0 298
+'molids' 0 299 'num_mol' 0 300 'open_mod_file' 0 301 'option' 0 304
+'options2' 0 305 'parse_aux_assign_fn' 0 306 'parse_aux_log_assignment'
+0 311 'parse_aux_str2int' 0 315 'parse_aux_str2logical' 0 319
 'parse_aux_str2real4' 0 323 'parse_aux_str2real8' 0 327 'parse_int_array'
 0 331 'pfant_halt' 0 336 'print_opt' 0 341 'read_dissoc' 0 345 'read_main'
 0 348 'read_mod_record' 0 353 'read_modele' 0 357 'reader_dissoc' 0 360

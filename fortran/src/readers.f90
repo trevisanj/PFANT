@@ -1367,35 +1367,35 @@ module reader_atoms
   ! Variables filled by read_atoms() (file dfile:atoms)
   !=====
   ! dfile:atoms, file originals
-  integer atoms_r_nblend !< ?doc?
+  integer atoms_nblend !< ?doc?
   !> atomic symbol. Must be right-aligned and uppercase
-  character*2 atoms_r_elem(MAX_ATOMGRADE_R_NBLEND)
-  integer, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
-   atoms_r_ioni !< ?doc?
-  real*8, dimension(MAX_ATOMGRADE_R_NBLEND) :: &
-   atoms_r_lambda,       & !< ?doc?
-   atoms_r_kiex,         & !< ?doc? excitation potential for the lower level?
-   atoms_r_algf,         & !< ?doc?
-   atoms_r_ch,           & !< ?doc?
-   atoms_r_gr,           & !< ?doc?
-   atoms_r_ge,           & !< ?doc?
-   atoms_r_zinf,         & !< ?doc?
-   atoms_r_abondr_dummy, & !< ?doc?
-   atoms_r_abonds_abo  !< will be filled by "inner join" by searching
-                          !< atoms_r_elem through abonds_ele
+  character*2 atoms_elem(MAX_ATOMS_NBLEND)
+  integer, dimension(MAX_ATOMS_NBLEND) :: &
+   atoms_ioni !< ?doc?
+  real*8, dimension(MAX_ATOMS_NBLEND) :: &
+   atoms_lambda,       & !< ?doc?
+   atoms_kiex,         & !< ?doc? excitation potential for the lower level?
+   atoms_algf,         & !< ?doc?
+   atoms_ch,           & !< ?doc?
+   atoms_gr,           & !< ?doc?
+   atoms_ge,           & !< ?doc?
+   atoms_zinf,         & !< ?doc?
+   atoms_abondr_dummy, & !< ?doc?
+   atoms_abonds_abo  !< will be filled by "inner join" by searching
+                          !< atoms_elem through abonds_ele
 
 contains
   !=======================================================================================
-  !> Reads file dfile:atoms to fill variables atoms_r_* (double underscore)
+  !> Reads file dfile:atoms to fill variables atoms_* (double underscore)
   !>
   !> Depends on abonds_*, so must be called after READ_ABONDS()
   !>
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atoms_r_elem(K) atomic symbol
-  !>     col 2 -- atoms_r_ioni(k) ?doc?
-  !>     col 3 -- atoms_r_lambda(K) ?doc?
+  !>     col 1 -- 2-letter atoms_elem(K) atomic symbol
+  !>     col 2 -- atoms_ioni(k) ?doc?
+  !>     col 3 -- atoms_lambda(K) ?doc?
   !>   even row
   !>     col 1 --
   !>     col 2 --
@@ -1435,67 +1435,67 @@ contains
     k = 1
     do while (.true.)
       ! spill check: checks if exceeds maximum number of elements allowed
-      if (k .gt. MAX_ATOMGRADE_R_NBLEND) then
-        call pfant_halt('read_atoms(): exceeded maximum of MAX_ATOMGRADE_R_NBLEND='//&
-         int2str(MAX_ATOMGRADE_R_NBLEND)//' spectral lines')
+      if (k .gt. MAX_ATOMS_NBLEND) then
+        call pfant_halt('read_atoms(): exceeded maximum of MAX_ATOMS_NBLEND='//&
+         int2str(MAX_ATOMS_NBLEND)//' spectral lines')
       end if
 
-      read(unit_, '(a2, i1, 1x, f10.3)') atoms_r_elem(k), &
-                                         atoms_r_ioni(k), &
-                                         atoms_r_lambda(k)
-      atoms_r_elem(k) = adjust_atomic_symbol(atoms_r_elem(k))
+      read(unit_, '(a2, i1, 1x, f10.3)') atoms_elem(k), &
+                                         atoms_ioni(k), &
+                                         atoms_lambda(k)
+      atoms_elem(k) = adjust_atomic_symbol(atoms_elem(k))
 
-      read(unit_, *) atoms_r_kiex(k), &
-       atoms_r_algf(k), &
-       atoms_r_ch(k), &
-       atoms_r_gr(k), &
-       atoms_r_ge(k), &
-       atoms_r_zinf(k), &
-       atoms_r_abondr_dummy(k), finrai
+      read(unit_, *) atoms_kiex(k), &
+       atoms_algf(k), &
+       atoms_ch(k), &
+       atoms_gr(k), &
+       atoms_ge(k), &
+       atoms_zinf(k), &
+       atoms_abondr_dummy(k), finrai
 
       !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
       !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
       !>
       !> @todo issue ask BLB 2.21e15 stand for? + reference
-      if (atoms_r_gr(k) .lt. 1e-37) atoms_r_gr(k) = 2.21e15 / atoms_r_lambda(k)**2
+      if (atoms_gr(k) .lt. 1e-37) atoms_gr(k) = 2.21e15 / atoms_lambda(k)**2
 
 
       !> Besides reading the file, this routine searches atoms's element within abonds'
       !> elements and copies corresponding
-      !> abonds_abo value into atoms_r_abonds_abo. Halts program if element not found.
+      !> abonds_abo value into atoms_abonds_abo. Halts program if element not found.
       !>
       !> In database terminology, this is sort of a "inner join".
       !>
       !> @note Historically, this corresponds to old routine "abondraih". The search was
       !>   being carried out every time (lzero, lfin) changed and only for the filtered
       !>   atoms rows. I decided to perform this search for all atoms rows and
-      !>   then filter atoms_r_abonds_abo together with other variables in
+      !>   then filter atoms_abonds_abo together with other variables in
       !>   filter_atoms(), which is probably cheaper.
       !> @todo issue why name was "abondraih"?? did it mean "abundances of hydrogen lines"? i ask this because if it has really a physical meaning, i shouldn't bury this inside read_most_files.f
 
       flag_found = .false.
       do  j = 1, abonds_nabond
-        if (abonds_ele(j) .eq. atoms_r_elem(k)) then
+        if (abonds_ele(j) .eq. atoms_elem(k)) then
           flag_found = .true.
           exit
         end if
       end do
       if (.not. flag_found) then
-        write(lll,*)  'read_atoms(): element "', atoms_r_elem(k), &
+        write(lll,*)  'read_atoms(): element "', atoms_elem(k), &
          ' (spectral line number ', k, ') cannot be found in abundance file'
         call pfant_halt(lll)
       end if
-      atoms_r_abonds_abo(k) = abonds_abo(j)
+      atoms_abonds_abo(k) = abonds_abo(j)
 
       if (finrai .eq. 1) exit !__end-of-file__
 
       k = k+1
     end do
 
-    atoms_r_nblend = k
+    atoms_nblend = k
 
-    write(lll,*) 'read_atoms(): last line taken: element: "', atoms_r_elem(atoms_r_nblend), &
-      '"; lambda: ', atoms_r_lambda(atoms_r_nblend)
+    write(lll,*) 'read_atoms(): last line taken: element: "', atoms_elem(atoms_nblend), &
+      '"; lambda: ', atoms_lambda(atoms_nblend)
     call log_debug(lll)
 
 
@@ -1526,6 +1526,7 @@ end
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Reading routines and variable declarations for dfile:molecules
+!>
 
 module reader_molecules
   use logging
@@ -1536,38 +1537,38 @@ module reader_molecules
 
 
   ! Specifies how many molecules to read
-  integer km_r_number
+  integer km_number
 
-  integer km_r_lines_total  ! Total number of spectral line, counting all molecules
+  integer km_lines_total  ! Total number of spectral line, counting all molecules
 
-  character*80 km_r_titm, km_r_titulo
+  character*80 km_titm, km_titulo
 
-  dimension km_r_titulo(NUM_MOL)
+  dimension km_titulo(NUM_MOL)
 
-  real*8, dimension(NUM_MOL) :: km_r_fe, km_r_do, &
-   km_r_mm, km_r_am, km_r_bm, km_r_ua, km_r_ub, km_r_te, km_r_cro, &
-   km_r_a0, km_r_a1, km_r_a2, km_r_a3, km_r_a4, km_r_als, km_r_s
+  real*8, dimension(NUM_MOL) :: km_fe, km_do, &
+   km_mm, km_am, km_bm, km_ua, km_ub, km_te, km_cro, &
+   km_a0, km_a1, km_a2, km_a3, km_a4, km_als, km_s
 
-  integer, dimension(NUM_MOL)  :: km_r_ise, km_r_nv, &
-   km_r_lines_per_mol  !> This stores the number of spectral lines for each molecule
+  integer, dimension(NUM_MOL)  :: km_ise, km_nv, &
+   km_lines_per_mol  !> This stores the number of spectral lines for each molecule
 
-  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km_r_qqv, km_r_ggv, km_r_bbv, km_r_ddv, km_r_fact
+  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
 
 
   !> "Index of Last Lambda Of Set-Of-Lines"
-  !> Points to km_r_lmbdam, km_r_sj, km_r_jj; km_r_last
+  !> Points to km_lmbdam, km_sj, km_jj.
   !> This is mounted at reading to help with the filtering and avoid
-  !> allocating 2 dimensions for (lm__lmbdam, km_r_sj, km_r_jj)
-  real*8, dimension(MAX_SOL_PER_MOL, NUM_MOL) :: km_r_iollosol
+  !> allocating 2 dimensions for (lm__lmbdam, km_sj, km_jj)
+  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_iollosol
 
-  real*8,  dimension(MAX_KM_R_LINES_TOTAL) :: &
-   km_r_lmbdam, &
-   km_r_sj,     &
-   km_r_jj
+  real*8,  dimension(MAX_KM_LINES_TOTAL) :: &
+   km_lmbdam, &
+   km_sj,     &
+   km_jj
 
 contains
   !=======================================================================================
-  !> Reads file dfile:molecules to fill variables km_r_*
+  !> Reads file dfile:molecules to fill variables km_*
   !>
   !> Reads molecular lines
   !>
@@ -1577,7 +1578,7 @@ contains
   !>       programming-wise (and not time-costly either) to filter
   !>       molecules in filter_molecules() when they are already in memory.
   !>
-  !> @todo TOP PRIORITY Number of molecules ON: consider km_r_number; search for km_r_number; also wrong references to NUM_MOL, search for NUM_MOL
+  !> @todo TOP PRIORITY Number of molecules ON: consider km_number; search for km_number; also wrong references to NUM_MOL, search for NUM_MOL
 
   subroutine read_molecules(filename)
     character(len=*) :: filename
@@ -1595,7 +1596,7 @@ contains
 
 
     !#logging
-    write (lll,*) 'MAX_KM_R_LINES_TOTAL = ', MAX_KM_R_LINES_TOTAL
+    write (lll,*) 'MAX_KM_LINES_TOTAL = ', MAX_KM_LINES_TOTAL
     call log_debug(lll)
 
 
@@ -1603,58 +1604,58 @@ contains
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured
 
-    read(unit_,*) km_r_number
+    read(unit_,*) km_number
 
     ! spill check
-    if (km_r_number .gt. NUM_MOL) then
-      call pfant_halt("Number of molecules ("//int2str(km_r_number)// &
+    if (km_number .gt. NUM_MOL) then
+      call pfant_halt("Number of molecules ("//int2str(km_number)// &
        ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
     end if
 
     ! Deactivates molecules not wanted or not present in the file
-    do molid = km_r_number+1, NUM_MOL
+    do molid = km_number+1, NUM_MOL
       call add_molid_off(molid)
     end do
 
 
     ! row 02: string containing list of names of all molecules
-    read(unit_,'(a)') km_r_titm
-    !~READ(UNIT_,'(20A4)') km_r_TITM
+    read(unit_,'(a)') km_titm
+    !~READ(UNIT_,'(20A4)') km_TITM
 
     !#logging
-    write(lll, *) 'titm--------------', km_r_titm
+    write(lll, *) 'titm--------------', km_titm
     call log_debug(lll)
 
     ! BLB:
-    ! BLB: km_r_NV -- number of transitions (v', v'') for each molecule
+    ! BLB: km_NV -- number of transitions (v', v'') for each molecule
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(unit_,*) (km_r_nv(molid), molid=1,km_r_number)
+    read(unit_,*) (km_nv(molid), molid=1,km_number)
 
     ! spill check
-    do molid = 1, km_r_number
-      if (km_r_nv(molid) .gt. MAX_SOL_PER_MOL) then
+    do molid = 1, km_number
+      if (km_nv(molid) .gt. MAX_NV_PER_MOL) then
           call pfant_halt('read_molecules(): molecule id '//int2str(molid)//&
-           ' has nv = '//int2str(km_r_nv(molid))//' (maximum is MAX_SOL_PER_MOL='//&
-           int2str(MAX_SOL_PER_MOL)//')')
+           ' has nv = '//int2str(km_nv(molid))//' (maximum is MAX_NV_PER_MOL='//&
+           int2str(MAX_NV_PER_MOL)//')')
         end if
     end do
 
     i_line = 0
-    do molid = 1, km_r_number
+    do molid = 1, km_number
 
-      !> @todo check spill in each element in km_r_NV
+      !> @todo check spill in each element in km_NV
 
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
-      read(unit_,'(a)') km_r_titulo(molid)
+      read(unit_,'(a)') km_titulo(molid)
 
       !#logging
       write(lll,*) 'molecule id ', molid
       call log_debug(lll)
-      write(lll,*) 'titulo:  ', km_r_titulo(molid)
+      write(lll,*) 'titulo:  ', km_titulo(molid)
       call log_debug(lll)
 
       ! BLB: FE, DO, MM, AM, BM, UA, UB, Te, CRO
@@ -1674,35 +1675,35 @@ contains
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
 
-      read(unit_,*) km_r_fe(molid), km_r_do(molid), km_r_mm(molid), &
-       km_r_am(molid), km_r_bm(molid), km_r_ua(molid), &
-       km_r_ub(molid), km_r_te(molid), km_r_cro(molid)
+      read(unit_,*) km_fe(molid), km_do(molid), km_mm(molid), &
+       km_am(molid), km_bm(molid), km_ua(molid), &
+       km_ub(molid), km_te(molid), km_cro(molid)
 
 
       !> @todo ISSUE Documentation
       !> @todo ISSUE !P! My sample file is blank here
-      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km_r_ise(molid), &
-       km_r_a0(molid), km_r_a1(molid), km_r_a2(molid), &
-       km_r_a3(molid), km_r_a4(molid), km_r_als(molid)
+      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km_ise(molid), &
+       km_a0(molid), km_a1(molid), km_a2(molid), &
+       km_a3(molid), km_a4(molid), km_als(molid)
 
       !> @todo issue ?doc? is S??
-      read(unit_,*) km_r_s(molid)
+      read(unit_,*) km_s(molid)
 
-      nnv = km_r_nv(molid)
+      nnv = km_nv(molid)
 
       !#logging
       write(lll,*) 'nv=', nnv
       call log_debug(lll)
 
       !> @todo type in documentation
-      read(unit_,*) (km_r_qqv(i, molid), i=1,nnv)
-      read(unit_,*) (km_r_ggv(i, molid), i=1,nnv)
-      read(unit_,*) (km_r_bbv(i, molid), i=1,nnv)
-      read(unit_,*) (km_r_ddv(i, molid), i=1,nnv)
-      read(unit_,*) (km_r_fact(i, molid),i=1,nnv)
+      read(unit_,*) (km_qqv(i, molid), i=1,nnv)
+      read(unit_,*) (km_ggv(i, molid), i=1,nnv)
+      read(unit_,*) (km_bbv(i, molid), i=1,nnv)
+      read(unit_,*) (km_ddv(i, molid), i=1,nnv)
+      read(unit_,*) (km_fact(i, molid),i=1,nnv)
 
       do i = 1,nnv
-        km_r_ddv(i, molid)=1.e-6*km_r_ddv(i, molid)
+        km_ddv(i, molid)=1.e-6*km_ddv(i, molid)
       end do
 
 
@@ -1713,9 +1714,9 @@ contains
         i_line = i_line+1
 
         ! spill check: checks if exceeds maximum number of elements allowed
-        if (i_line .gt. MAX_KM_R_LINES_TOTAL) then
+        if (i_line .gt. MAX_KM_LINES_TOTAL) then
           call pfant_halt('read_molecules(): exceeded maximum number of total '//&
-            'spectral lines  MAX_KM_R_LINES_TOTAL= '//int2str(MAX_KM_R_LINES_TOTAL)//&
+            'spectral lines  MAX_KM_LINES_TOTAL= '//int2str(MAX_KM_LINES_TOTAL)//&
             ' (at molecule id '//int2str(molid)//')')
         end if
 
@@ -1743,13 +1744,13 @@ contains
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule
-        read(unit_,*) km_r_lmbdam(i_line), km_r_sj(i_line), km_r_jj(i_line), iz, numlin
+        read(unit_,*) km_lmbdam(i_line), km_sj(i_line), km_jj(i_line), iz, numlin
 
-        !~km_r_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
+        !~km_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
 
         if (numlin .ne. 0) then
           j_set = j_set+1
-          km_r_iollosol(j_set, molid) = i_line
+          km_iollosol(j_set, molid) = i_line
         end if
 
         j_line = j_line+1
@@ -1764,14 +1765,14 @@ contains
          int2str(molid)//')')
       end if
 
-      km_r_lines_per_mol(molid) = j_line
+      km_lines_per_mol(molid) = j_line
 
       !#logging
       write(lll,*) 'This molecule has ', j_line, ' lines'
       call log_debug(lll)
     end do
 
-    km_r_lines_total = i_line
+    km_lines_total = i_line
 
     close(unit_)
   end

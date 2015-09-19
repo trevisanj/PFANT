@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/config.f90
-MD5:863b476088bdf8f1fe730710ed42b943 -- If you edit this, you'll get what you deserve.
+MD5:7f3f1b72d6f5a75635ff4ff3445e3b5a -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -369,13 +369,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 197 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-198 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+198 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-199 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+199 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 200 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -403,7 +402,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 208 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-209 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+209 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 210 'max_len_descr' 'options2' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -742,17 +741,17 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 0 178 'logging_screen' 0 179 'logging_warning' 0 180 'logical2int' 0 181
 'logical2str' 0 185 'map_file_comments' 0 189 'max_abonds_nabond' 0 194
 'max_absoru2_nm' 0 195 'max_absoru2_nrr' 0 196 'max_absoru2_numset_i' 0
-197 'max_atomgrade_nblend' 0 198 'max_atomgrade_r_nblend' 0 199
+197 'max_atoms_f_nblend' 0 198 'max_atoms_nblend' 0 199
 'max_dissoc_nmetal' 0 200 'max_dissoc_nmol' 0 201 'max_dissoc_z' 0 202
 'max_dtot' 0 203 'max_file_rows' 0 204 'max_filetoh_jjmax' 0 205
 'max_filetoh_jmax' 0 206 'max_filetoh_num_files' 0 207 'max_km_f_mblend'
-0 208 'max_km_r_lines_total' 0 209 'max_len_descr' 0 210
-'max_modeles_ntot' 0 211 'max_num_options' 0 212 'max_partit_kmax' 0 213
-'max_partit_npar' 0 214 'max_sol_per_mol' 0 215 'misc' 0 216
-'molecule_is_on' 0 217 'molecules_ids' 0 220 'molecules_ids_init' 0 221
-'molid_list' 0 222 'molids' 0 223 'num_mol' 0 224 'option' 0 225
-'options2' 0 226 'parse_aux_assign_fn' 0 227 'parse_aux_log_assignment'
-0 232 'parse_aux_str2int' 0 236 'parse_aux_str2logical' 0 240
+0 208 'max_km_lines_total' 0 209 'max_len_descr' 0 210 'max_modeles_ntot'
+0 211 'max_num_options' 0 212 'max_partit_kmax' 0 213 'max_partit_npar'
+0 214 'max_sol_per_mol' 0 215 'misc' 0 216 'molecule_is_on' 0 217
+'molecules_ids' 0 220 'molecules_ids_init' 0 221 'molid_list' 0 222
+'molids' 0 223 'num_mol' 0 224 'option' 0 225 'options2' 0 226
+'parse_aux_assign_fn' 0 227 'parse_aux_log_assignment' 0 232
+'parse_aux_str2int' 0 236 'parse_aux_str2logical' 0 240
 'parse_aux_str2real4' 0 244 'parse_aux_str2real8' 0 248 'parse_int_array'
 0 252 'pfant_halt' 0 257 'print_opt' 0 262 'real42str' 0 266 'real82str'
 0 271 'set_molids_off' 0 276 'to_lower' 0 279 'to_upper' 0 284

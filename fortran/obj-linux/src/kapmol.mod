@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/pfant.f90
-MD5:e99ca329835499fa1c1111e0cca179b5 -- If you edit this, you'll get what you deserve.
+MD5:5c8ad88102cb752bdb7f54ba3eeb719d -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -192,103 +192,103 @@ DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 73 0 (74 75 76
 79 'assure_read_main' 'reader_main' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0
 0 () () 0 () () () 0 0)
-80 'atoms_f_abondr_dummy' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
+80 'atoms_abondr_dummy' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-81 'atoms_f_abonds_abo' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
+81 'atoms_abonds_abo' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-82 'atoms_f_algf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-83 'atoms_f_ch' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-84 'atoms_f_elem' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0 EXPLICIT (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
-0 '8000')) 0 () () () 0 0)
-85 'atoms_f_ge' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-86 'atoms_f_gf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-87 'atoms_f_gr' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-88 'atoms_f_ioni' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
-(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '8000')) 0 () () () 0 0)
-89 'atoms_f_kiex' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
-INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-90 'atoms_f_lambda' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
+82 'atoms_algf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-91 'atoms_f_nblend' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
-0 () () () 0 0)
-92 'atoms_f_zinf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+83 'atoms_ch' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-93 'atoms_r_abondr_dummy' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-94 'atoms_r_abonds_abo' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-95 'atoms_r_algf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-96 'atoms_r_ch' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-97 'atoms_r_elem' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+84 'atoms_elem' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-98 'atoms_r_ge' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+85 'atoms_f_abondr_dummy' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-99 'atoms_r_gr' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+86 'atoms_f_abonds_abo' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-100 'atoms_r_ioni' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+87 'atoms_f_algf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+88 'atoms_f_ch' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+89 'atoms_f_elem' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 0 0 () (1 0 EXPLICIT (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
+0 '8000')) 0 () () () 0 0)
+90 'atoms_f_ge' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+91 'atoms_f_gf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+92 'atoms_f_gr' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+93 'atoms_f_ioni' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
+(1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '8000')) 0 () () () 0 0)
+94 'atoms_f_kiex' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+95 'atoms_f_lambda' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+96 'atoms_f_nblend' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
+0 () () () 0 0)
+97 'atoms_f_zinf' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+98 'atoms_ge' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+99 'atoms_gr' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
+EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
+100 'atoms_ioni' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-101 'atoms_r_kiex' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+101 'atoms_kiex' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-102 'atoms_r_lambda' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+102 'atoms_lambda' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
-103 'atoms_r_nblend' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+103 'atoms_nblend' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
 0 () () () 0 0)
-104 'atoms_r_zinf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
+104 'atoms_zinf' 'reader_atoms' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000')) 0 () () () 0 0)
@@ -661,185 +661,184 @@ UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
 253 'kapmol_' 'kapmol' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () ()
 0 0)
-254 'km_c_alargm' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+254 'km_a0' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+255 'km_a1' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+256 'km_a2' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+257 'km_a3' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+258 'km_a4' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+259 'km_als' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+260 'km_am' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+261 'km_bbv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
+0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
+() () 0 0)
+262 'km_bm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+263 'km_c_alargm' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-255 'km_c_gfm' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+264 'km_c_gfm' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-256 'km_c_pnvj' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+265 'km_c_pnvj' 'kapmol' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (2 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50')) 0 ()
 () () 0 0)
-257 'km_f_jj' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+266 'km_cro' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+267 'km_ddv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
+0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
+() () 0 0)
+268 'km_do' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+269 'km_f_jj' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-258 'km_f_lmbdam' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+270 'km_f_lmbdam' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-259 'km_f_ln' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+271 'km_f_ln' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
 (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '201') (CONSTANT (INTEGER 4 0 0 0 INTEGER
 ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0
 0)
-260 'km_f_mblend' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+272 'km_f_mblend' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0
 0)
-261 'km_f_mblenq' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+273 'km_f_mblenq' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 ()
 (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '22')) 0 () () () 0 0)
-262 'km_f_mm' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+274 'km_f_mm' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-263 'km_f_sj' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+275 'km_f_sj' 'filters' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '200000')) 0 () () () 0 0)
-264 'km_r_a0' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-265 'km_r_a1' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-266 'km_r_a2' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-267 'km_r_a3' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-268 'km_r_a4' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-269 'km_r_als' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-270 'km_r_am' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-271 'km_r_bbv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+276 'km_fact' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
 () () 0 0)
-272 'km_r_bm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+277 'km_fe' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-273 'km_r_cro' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-274 'km_r_ddv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+278 'km_ggv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
 () () 0 0)
-275 'km_r_do' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-276 'km_r_fact' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+279 'km_iollosol' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
 () () 0 0)
-277 'km_r_fe' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-278 'km_r_ggv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
-0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
-() () 0 0)
-279 'km_r_iollosol' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
-0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
-() () 0 0)
-280 'km_r_ise' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+280 'km_ise' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-281 'km_r_jj' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+281 'km_jj' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000')) 0 () () () 0 0)
-282 'km_r_lines_per_mol' 'reader_molecules' '' 1 ((VARIABLE
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (
-INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0
-0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0
-() () () 0 0)
-283 'km_r_lines_total' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
-0 () () () 0 0)
-284 'km_r_lmbdam' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000')) 0 () () () 0 0)
-285 'km_r_mm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
-0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-286 'km_r_number' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
-0 () () () 0 0)
-287 'km_r_nv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+282 'km_lines_per_mol' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
 INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-288 'km_r_qqv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+283 'km_lines_total' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
+0 () () () 0 0)
+284 'km_lmbdam' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000')) 0 () () () 0 0)
+285 'km_mm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
+0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+286 'km_number' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
+0 () () () 0 0)
+287 'km_nv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (INTEGER 4 0 0 0
+INTEGER ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
+0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
+288 'km_qqv' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') (CONSTANT (INTEGER 4 0 0
 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 ()
 () () 0 0)
-289 'km_r_s' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+289 'km_s' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-290 'km_r_sj' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+290 'km_sj' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000')) 0 () () () 0 0)
-291 'km_r_te' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+291 'km_te' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-292 'km_r_titm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+292 'km_titm' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (CHARACTER 1 0 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '80'))) 0 0 () () 0 () () () 0 0)
-293 'km_r_titulo' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+293 'km_titulo' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) (CHARACTER 1 0 0 0 CHARACTER
 ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '80'))) 0 0 () (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '21')) 0 () () () 0 0)
-294 'km_r_ua' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+294 'km_ua' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
-295 'km_r_ub' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
+295 'km_ub' 'reader_molecules' '' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION) (REAL 8 0 0 0 REAL ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) 0 () () () 0 0)
@@ -1015,13 +1014,12 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 378 'max_absoru2_numset_i' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '41') () 0 () () () 0 0)
-379 'max_atomgrade_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+379 'max_atoms_f_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8000') () 0 () () () 0 0)
-380 'max_atomgrade_r_nblend' 'dimensions' '' 1 ((PARAMETER
-UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0
-INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') ()
-0 () () () 0 0)
+380 'max_atoms_nblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '14000') () 0 () () () 0 0)
 381 'max_dissoc_nmetal' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50') () 0 () () () 0 0)
@@ -1053,7 +1051,7 @@ INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 ()
 390 'max_km_f_mblend' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200000') () 0 () () () 0 0)
-391 'max_km_r_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+391 'max_km_lines_total' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1400000') () 0 () () () 0 0)
 392 'max_len_descr' 'options2' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -1635,28 +1633,27 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'absoru2_numset' 0 49 'absoru2_pf' 0 50 'absoru2_titre' 0 51 'absoru2_wi'
 0 52 'absoru2_xi' 0 53 'absoru2_zm' 0 54 'absoru2_zp' 0 55 'add_molid_off'
 0 56 'add_option' 0 59 'adjust_atomic_symbol' 0 68 'assert_le' 0 72
-'assure_read_main' 0 79 'atoms_f_abondr_dummy' 0 80 'atoms_f_abonds_abo'
-0 81 'atoms_f_algf' 0 82 'atoms_f_ch' 0 83 'atoms_f_elem' 0 84
-'atoms_f_ge' 0 85 'atoms_f_gf' 0 86 'atoms_f_gr' 0 87 'atoms_f_ioni' 0
-88 'atoms_f_kiex' 0 89 'atoms_f_lambda' 0 90 'atoms_f_nblend' 0 91
-'atoms_f_zinf' 0 92 'atoms_r_abondr_dummy' 0 93 'atoms_r_abonds_abo' 0
-94 'atoms_r_algf' 0 95 'atoms_r_ch' 0 96 'atoms_r_elem' 0 97 'atoms_r_ge'
-0 98 'atoms_r_gr' 0 99 'atoms_r_ioni' 0 100 'atoms_r_kiex' 0 101
-'atoms_r_lambda' 0 102 'atoms_r_nblend' 0 103 'atoms_r_zinf' 0 104
-'close_mod_file' 0 105 'config' 0 106 'config_amores' 0 107
-'config_asalog' 0 108 'config_c1' 0 109 'config_clam' 0 110
-'config_convol' 0 111 'config_flam' 0 112 'config_flprefix' 0 113
-'config_fn_abonds' 0 114 'config_fn_absoru2' 0 115 'config_fn_atoms' 0
-116 'config_fn_cv' 0 117 'config_fn_dissoc' 0 118 'config_fn_flux' 0 119
-'config_fn_gridslist' 0 120 'config_fn_hmap' 0 121 'config_fn_lines' 0
-122 'config_fn_log' 0 123 'config_fn_main' 0 124 'config_fn_moddat' 0
-125 'config_fn_modeles' 0 126 'config_fn_molecules' 0 127
-'config_fn_partit' 0 128 'config_fn_progress' 0 129 'config_fwhm' 0 130
-'config_glog' 0 131 'config_handle_option' 0 132 'config_hmap' 0 137
-'config_init' 0 138 'config_interp' 0 139 'config_inum' 0 140
-'config_kiex' 0 141 'config_kik' 0 142 'config_kq' 0 143 'config_llfin'
-0 144 'config_llzero' 0 145 'config_logging_dump' 0 146
-'config_logging_fn_dump' 0 147 'config_logging_screen' 0 148
+'assure_read_main' 0 79 'atoms_abondr_dummy' 0 80 'atoms_abonds_abo' 0
+81 'atoms_algf' 0 82 'atoms_ch' 0 83 'atoms_elem' 0 84
+'atoms_f_abondr_dummy' 0 85 'atoms_f_abonds_abo' 0 86 'atoms_f_algf' 0
+87 'atoms_f_ch' 0 88 'atoms_f_elem' 0 89 'atoms_f_ge' 0 90 'atoms_f_gf'
+0 91 'atoms_f_gr' 0 92 'atoms_f_ioni' 0 93 'atoms_f_kiex' 0 94
+'atoms_f_lambda' 0 95 'atoms_f_nblend' 0 96 'atoms_f_zinf' 0 97 'atoms_ge'
+0 98 'atoms_gr' 0 99 'atoms_ioni' 0 100 'atoms_kiex' 0 101 'atoms_lambda'
+0 102 'atoms_nblend' 0 103 'atoms_zinf' 0 104 'close_mod_file' 0 105
+'config' 0 106 'config_amores' 0 107 'config_asalog' 0 108 'config_c1' 0
+109 'config_clam' 0 110 'config_convol' 0 111 'config_flam' 0 112
+'config_flprefix' 0 113 'config_fn_abonds' 0 114 'config_fn_absoru2' 0
+115 'config_fn_atoms' 0 116 'config_fn_cv' 0 117 'config_fn_dissoc' 0
+118 'config_fn_flux' 0 119 'config_fn_gridslist' 0 120 'config_fn_hmap'
+0 121 'config_fn_lines' 0 122 'config_fn_log' 0 123 'config_fn_main' 0
+124 'config_fn_moddat' 0 125 'config_fn_modeles' 0 126
+'config_fn_molecules' 0 127 'config_fn_partit' 0 128 'config_fn_progress'
+0 129 'config_fwhm' 0 130 'config_glog' 0 131 'config_handle_option' 0
+132 'config_hmap' 0 137 'config_init' 0 138 'config_interp' 0 139
+'config_inum' 0 140 'config_kiex' 0 141 'config_kik' 0 142 'config_kq' 0
+143 'config_llfin' 0 144 'config_llzero' 0 145 'config_logging_dump' 0
+146 'config_logging_fn_dump' 0 147 'config_logging_screen' 0 148
 'config_modcode' 0 149 'config_na' 0 150 'config_nb' 0 151
 'config_nomplot' 0 152 'config_norm' 0 153 'config_open_status' 0 154
 'config_pat' 0 155 'config_ptdisk' 0 156 'config_teff' 0 157 'config_tirb'
@@ -1678,62 +1675,62 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'h_line_width' 0 236 'handler_dont_care' 0 237 'handler_error' 0 238
 'handler_ok' 0 239 'hmap_copy_from_main' 0 240 'hmap_n' 0 241 'hmap_row'
 0 242 'hmap_rows' 0 243 'int2logical' 0 244 'int2str' 0 248 'kapmol' 0
-252 'kapmol_' 0 253 'km_c_alargm' 0 254 'km_c_gfm' 0 255 'km_c_pnvj' 0
-256 'km_f_jj' 0 257 'km_f_lmbdam' 0 258 'km_f_ln' 0 259 'km_f_mblend' 0
-260 'km_f_mblenq' 0 261 'km_f_mm' 0 262 'km_f_sj' 0 263 'km_r_a0' 0 264
-'km_r_a1' 0 265 'km_r_a2' 0 266 'km_r_a3' 0 267 'km_r_a4' 0 268 'km_r_als'
-0 269 'km_r_am' 0 270 'km_r_bbv' 0 271 'km_r_bm' 0 272 'km_r_cro' 0 273
-'km_r_ddv' 0 274 'km_r_do' 0 275 'km_r_fact' 0 276 'km_r_fe' 0 277
-'km_r_ggv' 0 278 'km_r_iollosol' 0 279 'km_r_ise' 0 280 'km_r_jj' 0 281
-'km_r_lines_per_mol' 0 282 'km_r_lines_total' 0 283 'km_r_lmbdam' 0 284
-'km_r_mm' 0 285 'km_r_number' 0 286 'km_r_nv' 0 287 'km_r_qqv' 0 288
-'km_r_s' 0 289 'km_r_sj' 0 290 'km_r_te' 0 291 'km_r_titm' 0 292
-'km_r_titulo' 0 293 'km_r_ua' 0 294 'km_r_ub' 0 295 'lambda_stretch' 0
-296 'leaving' 0 297 'len_tirb' 0 298 'lll' 0 299 'log_any' 0 300
-'log_critical' 0 305 'log_debug' 0 308 'log_error' 0 311 'log_halt' 0
-314 'log_info' 0 317 'log_progress' 0 320 'log_warning' 0 324 'logging'
-0 327 'logging_critical' 0 328 'logging_debug' 0 329 'logging_dump' 0
-330 'logging_error' 0 331 'logging_halt' 0 332 'logging_info' 0 333
-'logging_level' 0 334 'logging_path_dump' 0 335 'logging_path_progress'
-0 336 'logging_screen' 0 337 'logging_warning' 0 338 'logical2int' 0 339
-'logical2str' 0 343 'main_afstar' 0 347 'main_aint' 0 348 'main_asalog'
-0 349 'main_echx' 0 350 'main_echy' 0 351 'main_filetoh_numfiles' 0 352
-'main_filetohy' 0 353 'main_flprefix' 0 354 'main_fwhm' 0 355 'main_glog'
-0 356 'main_inum' 0 357 'main_ivtot' 0 358 'main_llfin' 0 359
-'main_llzero' 0 360 'main_mu' 0 361 'main_nhe' 0 362 'main_pas' 0 363
-'main_ptdisk' 0 364 'main_teff' 0 365 'main_titrav' 0 366 'main_tolv' 0
-367 'main_vvt' 0 368 'main_xxcor' 0 369 'map_file_comments' 0 370
-'max_abonds_nabond' 0 375 'max_absoru2_nm' 0 376 'max_absoru2_nrr' 0 377
-'max_absoru2_numset_i' 0 378 'max_atomgrade_nblend' 0 379
-'max_atomgrade_r_nblend' 0 380 'max_dissoc_nmetal' 0 381 'max_dissoc_nmol'
-0 382 'max_dissoc_z' 0 383 'max_dtot' 0 384 'max_file_rows' 0 385
-'max_filetoh_jjmax' 0 386 'max_filetoh_jmax' 0 387 'max_filetoh_num_files'
-0 388 'max_gridsmap_num_files' 0 389 'max_km_f_mblend' 0 390
-'max_km_r_lines_total' 0 391 'max_len_descr' 0 392 'max_modeles_ntot' 0
-393 'max_num_options' 0 394 'max_partit_kmax' 0 395 'max_partit_npar' 0
-396 'max_sol_per_mol' 0 397 'misc' 0 398 'mod_recl' 0 399 'modele_record'
-0 400 'modeles_asalalf' 0 401 'modeles_asalog' 0 402 'modeles_glog' 0
-403 'modeles_nh' 0 404 'modeles_nhe' 0 405 'modeles_ntot' 0 406
-'modeles_pe' 0 407 'modeles_pg' 0 408 'modeles_t5l' 0 409 'modeles_teff'
-0 410 'modeles_teta' 0 411 'modeles_tiabs' 0 412 'modeles_tit' 0 413
-'molecule_is_on' 0 414 'molecules_ids' 0 417 'molecules_ids_init' 0 418
-'molid_list' 0 419 'molids' 0 420 'num_mol' 0 421 'open_mod_file' 0 422
-'option' 0 425 'options2' 0 426 'parse_aux_assign_fn' 0 427
-'parse_aux_log_assignment' 0 432 'parse_aux_str2int' 0 436
-'parse_aux_str2logical' 0 440 'parse_aux_str2real4' 0 444
-'parse_aux_str2real8' 0 448 'parse_int_array' 0 452 'partit_el' 0 457
-'partit_jkmax' 0 458 'partit_ki1' 0 459 'partit_ki2' 0 460 'partit_m' 0
-461 'partit_npar' 0 462 'partit_pa' 0 463 'partit_tabu' 0 464
-'partit_tini' 0 465 'pfant_halt' 0 466 'print_opt' 0 471 'qsort' 0 475
-'quick_sort' 0 476 'read_abonds' 0 481 'read_absoru2' 0 484 'read_atoms'
-0 487 'read_dissoc' 0 490 'read_filetoh' 0 493 'read_gridsmap' 0 497
-'read_hmap' 0 498 'read_main' 0 501 'read_mod_record' 0 506 'read_modele'
-0 510 'read_molecules' 0 513 'read_partit' 0 516 'reader_abonds' 0 519
-'reader_absoru2' 0 520 'reader_atoms' 0 521 'reader_dissoc' 0 522
-'reader_filetoh' 0 523 'reader_gridsmap' 0 524 'reader_hmap' 0 525
-'reader_main' 0 526 'reader_modeles' 0 527 'reader_molecules' 0 528
-'reader_partit' 0 529 'readers' 0 530 'real42str' 0 531 'real82str' 0
-536 'sat4' 0 541 'sat4_pc13' 0 542 'sat4_pfe' 0 543 'sat4_pmg' 0 544
-'sat4_pn' 0 545 'sat4_po' 0 546 'sat4_ppc2' 0 547 'sat4_pph' 0 548
-'sat4_pti' 0 549 'set_molids_off' 0 550 'to_lower' 0 553 'to_upper' 0
-558 'trim_and_add_slash' 0 563 'unit_mod' 0 567)
+252 'kapmol_' 0 253 'km_a0' 0 254 'km_a1' 0 255 'km_a2' 0 256 'km_a3' 0
+257 'km_a4' 0 258 'km_als' 0 259 'km_am' 0 260 'km_bbv' 0 261 'km_bm' 0
+262 'km_c_alargm' 0 263 'km_c_gfm' 0 264 'km_c_pnvj' 0 265 'km_cro' 0
+266 'km_ddv' 0 267 'km_do' 0 268 'km_f_jj' 0 269 'km_f_lmbdam' 0 270
+'km_f_ln' 0 271 'km_f_mblend' 0 272 'km_f_mblenq' 0 273 'km_f_mm' 0 274
+'km_f_sj' 0 275 'km_fact' 0 276 'km_fe' 0 277 'km_ggv' 0 278 'km_iollosol'
+0 279 'km_ise' 0 280 'km_jj' 0 281 'km_lines_per_mol' 0 282
+'km_lines_total' 0 283 'km_lmbdam' 0 284 'km_mm' 0 285 'km_number' 0 286
+'km_nv' 0 287 'km_qqv' 0 288 'km_s' 0 289 'km_sj' 0 290 'km_te' 0 291
+'km_titm' 0 292 'km_titulo' 0 293 'km_ua' 0 294 'km_ub' 0 295
+'lambda_stretch' 0 296 'leaving' 0 297 'len_tirb' 0 298 'lll' 0 299
+'log_any' 0 300 'log_critical' 0 305 'log_debug' 0 308 'log_error' 0 311
+'log_halt' 0 314 'log_info' 0 317 'log_progress' 0 320 'log_warning' 0
+324 'logging' 0 327 'logging_critical' 0 328 'logging_debug' 0 329
+'logging_dump' 0 330 'logging_error' 0 331 'logging_halt' 0 332
+'logging_info' 0 333 'logging_level' 0 334 'logging_path_dump' 0 335
+'logging_path_progress' 0 336 'logging_screen' 0 337 'logging_warning' 0
+338 'logical2int' 0 339 'logical2str' 0 343 'main_afstar' 0 347
+'main_aint' 0 348 'main_asalog' 0 349 'main_echx' 0 350 'main_echy' 0
+351 'main_filetoh_numfiles' 0 352 'main_filetohy' 0 353 'main_flprefix'
+0 354 'main_fwhm' 0 355 'main_glog' 0 356 'main_inum' 0 357 'main_ivtot'
+0 358 'main_llfin' 0 359 'main_llzero' 0 360 'main_mu' 0 361 'main_nhe'
+0 362 'main_pas' 0 363 'main_ptdisk' 0 364 'main_teff' 0 365 'main_titrav'
+0 366 'main_tolv' 0 367 'main_vvt' 0 368 'main_xxcor' 0 369
+'map_file_comments' 0 370 'max_abonds_nabond' 0 375 'max_absoru2_nm' 0
+376 'max_absoru2_nrr' 0 377 'max_absoru2_numset_i' 0 378
+'max_atoms_f_nblend' 0 379 'max_atoms_nblend' 0 380 'max_dissoc_nmetal'
+0 381 'max_dissoc_nmol' 0 382 'max_dissoc_z' 0 383 'max_dtot' 0 384
+'max_file_rows' 0 385 'max_filetoh_jjmax' 0 386 'max_filetoh_jmax' 0 387
+'max_filetoh_num_files' 0 388 'max_gridsmap_num_files' 0 389
+'max_km_f_mblend' 0 390 'max_km_lines_total' 0 391 'max_len_descr' 0 392
+'max_modeles_ntot' 0 393 'max_num_options' 0 394 'max_partit_kmax' 0 395
+'max_partit_npar' 0 396 'max_sol_per_mol' 0 397 'misc' 0 398 'mod_recl'
+0 399 'modele_record' 0 400 'modeles_asalalf' 0 401 'modeles_asalog' 0
+402 'modeles_glog' 0 403 'modeles_nh' 0 404 'modeles_nhe' 0 405
+'modeles_ntot' 0 406 'modeles_pe' 0 407 'modeles_pg' 0 408 'modeles_t5l'
+0 409 'modeles_teff' 0 410 'modeles_teta' 0 411 'modeles_tiabs' 0 412
+'modeles_tit' 0 413 'molecule_is_on' 0 414 'molecules_ids' 0 417
+'molecules_ids_init' 0 418 'molid_list' 0 419 'molids' 0 420 'num_mol' 0
+421 'open_mod_file' 0 422 'option' 0 425 'options2' 0 426
+'parse_aux_assign_fn' 0 427 'parse_aux_log_assignment' 0 432
+'parse_aux_str2int' 0 436 'parse_aux_str2logical' 0 440
+'parse_aux_str2real4' 0 444 'parse_aux_str2real8' 0 448 'parse_int_array'
+0 452 'partit_el' 0 457 'partit_jkmax' 0 458 'partit_ki1' 0 459
+'partit_ki2' 0 460 'partit_m' 0 461 'partit_npar' 0 462 'partit_pa' 0
+463 'partit_tabu' 0 464 'partit_tini' 0 465 'pfant_halt' 0 466 'print_opt'
+0 471 'qsort' 0 475 'quick_sort' 0 476 'read_abonds' 0 481 'read_absoru2'
+0 484 'read_atoms' 0 487 'read_dissoc' 0 490 'read_filetoh' 0 493
+'read_gridsmap' 0 497 'read_hmap' 0 498 'read_main' 0 501
+'read_mod_record' 0 506 'read_modele' 0 510 'read_molecules' 0 513
+'read_partit' 0 516 'reader_abonds' 0 519 'reader_absoru2' 0 520
+'reader_atoms' 0 521 'reader_dissoc' 0 522 'reader_filetoh' 0 523
+'reader_gridsmap' 0 524 'reader_hmap' 0 525 'reader_main' 0 526
+'reader_modeles' 0 527 'reader_molecules' 0 528 'reader_partit' 0 529
+'readers' 0 530 'real42str' 0 531 'real82str' 0 536 'sat4' 0 541
+'sat4_pc13' 0 542 'sat4_pfe' 0 543 'sat4_pmg' 0 544 'sat4_pn' 0 545
+'sat4_po' 0 546 'sat4_ppc2' 0 547 'sat4_pph' 0 548 'sat4_pti' 0 549
+'set_molids_off' 0 550 'to_lower' 0 553 'to_upper' 0 558
+'trim_and_add_slash' 0 563 'unit_mod' 0 567)
