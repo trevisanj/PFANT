@@ -627,8 +627,8 @@ contains
 
     logical flag_in
 
-    !write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
-    !call log_debug(lll)
+    write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
+    call log_debug(lll)
 
     ! Initializes the zero elements of the augmented matrices
     km_f_mblenq(1) = 0
@@ -640,7 +640,10 @@ contains
     i_line = 1
     i_mol = 0
     do molidx = 1, km_number
-      if (.not. molecule_is_on(molidx)) cycle
+      if (.not. molecule_is_on(molidx)) then
+        i_line = i_line+km_lines_per_mol(molidx)
+        cycle
+      end if
 
       i_mol = i_mol+1
 
