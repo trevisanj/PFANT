@@ -2,7 +2,8 @@
 __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
        "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
-       "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix"]
+       "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix",
+       "slugify"]
 
 import os.path
 import glob
@@ -12,6 +13,7 @@ import logging
 import sys
 from matplotlib import rc
 from .errors import *
+import re
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -292,3 +294,20 @@ def format_BLB():
     rc('xtick', labelsize=14)
     rc('ytick', labelsize=14)
     #rc('text', usetex=True)
+
+
+
+def slugify(value, flagLower=True):
+  """
+  Converts to lowercase, removes non-alpha characters,
+  and converts spaces to hyphens.
+
+  Used for making file names.
+
+  TODO: cite base work.
+  """
+  value = re.sub('[^\w\s.]', '', value).strip()
+  if flagLower:
+    value = value.lower()
+  value = re.sub('[-\s]+', '-', value)
+  return value

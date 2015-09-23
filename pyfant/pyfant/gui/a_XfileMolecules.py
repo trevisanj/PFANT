@@ -1,3 +1,7 @@
+# todo plot "X" instead of line
+# find line in editor by clicking
+# rename molecule
+
 __all__ = ["XFileMolecules"]
 
 from PyQt4.QtCore import *
@@ -32,8 +36,11 @@ class XFileMolecules(QMainWindow):
 
         # ** ** left of splitter
         self.labelMol = QLabel('Molecules list (Alt+&1)')
-        self.listWidgetMol = QListWidget()
-        self.listWidgetMol.currentRowChanged.connect(self.on_listWidgetMol_currentRowChanged)
+        a = self.listWidgetMol = QListWidget()
+        a.currentRowChanged.connect(self.on_listWidgetMol_currentRowChanged)
+        # a.setEditTriggers(QAbstractItemView.DoubleClicked)
+        a.setEditTriggers(QAbstractItemView.AllEditTriggers)
+
         self.labelMol.setBuddy(self.listWidgetMol)
 
         l = self.layoutMol = QVBoxLayout()
@@ -172,6 +179,7 @@ class XFileMolecules(QMainWindow):
         for m in f.molecules:
             assert isinstance(m, Molecule)
             item = QListWidgetItem(m.titulo)
+            # not going to allow editing yet item.setFlags(item.flags() | Qt.ItemIsEditable)
             self.listWidgetMol.addItem(item)
 
         if len(f.molecules) > 0:
@@ -287,3 +295,14 @@ class XFileMolecules(QMainWindow):
                 plt.tight_layout()
 
             self.canvas.draw()
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+
+    # def edit_molecule_name(self):
+    #     """Edits current item from listWidgetMol."""
+    #
+    #     a = self.listWidgetMol
+    #     item = a.currentItem()
+    #     item.setFlags(item.flags() | Qt.ItemIsEditable)
+    #     a.editItem(item)
+

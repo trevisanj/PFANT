@@ -46,6 +46,8 @@ module dissoc
    Z_H        = 1,   &  !< Atomic number of Hydrogen
    Z_HE       = 2       !< Atomic number of Helium
 
+  ! Note that indexes of these arrays are atomic numbers
+  ! For example: ip(z) contains information related to atomic number z
   real*8, private, dimension(MAX_DISSOC_Z) :: &
    ip,     & ! ?doc?
    ccomp,  & ! ?doc?
@@ -72,7 +74,7 @@ contains
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
     integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
-     nelemi, nelemxi, k1, k2, k3, kd, kf
+     nelemi, nelemxi, k1, k2, k3, kd, kf, iz
 
     !
     !*****INPUT A
@@ -237,16 +239,34 @@ contains
     !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
     !end do
 
-    do 51 itx=1,modeles_ntot
-      sat4_pph(itx)=xp(itx,1)
-      sat4_ppc2(itx)=xp(itx,3)
-      sat4_pn(itx)=xp(itx,4)
-      sat4_po(itx)=xp(itx,5)
-      sat4_pc13(itx)=xp(itx,6)
-      sat4_pti(itx)=xp(itx,15)
-      sat4_pmg(itx)=xp(itx,8)
-      sat4_pfe(itx)=xp(itx,16)
-    51 continue
+    iz = find_atomic_symbol_dissoc('H ')
+    sat4_pph = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('C ')
+    sat4_ppc2 = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('N ')
+    sat4_pn = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('O ')
+    sat4_po = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('A ')  ! @todo issue taking fluorine ('A') instead of 13C
+    sat4_pc13 = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('TI')
+    sat4_pti = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('MG')
+    sat4_pmg = xp(:, iz)
+    iz = find_atomic_symbol_dissoc('FE')
+    sat4_pfe = xp(:, iz)
+
+
+!original      do itx = 1,modeles_ntot
+!original        sat4_pph(itx)=xp(itx,1)
+!original        sat4_ppc2(itx)=xp(itx,3)
+!original        sat4_pn(itx)=xp(itx,4)
+!original        sat4_po(itx)=xp(itx,5)
+!original        sat4_pc13(itx)=xp(itx,6)
+!original        sat4_pti(itx)=xp(itx,15)
+!original        sat4_pmg(itx)=xp(itx,8)
+!original        sat4_pfe(itx)=xp(itx,16)
+!original      end do
   end
 
 
@@ -509,7 +529,7 @@ end
 !> Variables calculated have prefixes km_f_ or atoms_f_
 
 module filters
-  use molecules_ids
+  use molecules_idxs
   use dimensions
   use reader_atoms
   use reader_molecules
@@ -527,7 +547,7 @@ module filters
     km_f_lmbdam, & !< ?doc?
     km_f_sj,     & !< ?doc?
     km_f_jj,     & !< ?doc?
-    km_f_mm        !< Replicates km_mm(molid) for all selected lines of molecule molid.
+    km_f_mm        !< Replicates km_mm(molidx) for all selected lines of molecule molidx.
                    !< Redundant information but simplifies use. Used in synthesis::selekfh()
 
   !------
@@ -539,7 +559,10 @@ module filters
   !>
   !> @par Augmented vectors
   !> First element is 0 (ZERO) -- facilitates the algorithm implementation
-  !> (first molecule corresponds to 2nd element).
+  !> (first switched-on molecule corresponds to 2nd element).
+  !>
+  !> @attention index is not molidx! The 2nd element corresponds to the first switched-on molecule,
+  !>            not to MgH!
   integer :: km_f_mblenq(NUM_MOL+1)
 
   !> This has a use "similar" to km_f_mblenq, but is a "local" one, it contains
@@ -550,6 +573,9 @@ module filters
   !> @par Augmented
   !> First column is 0 (ZERO) -- facilitates the algorithm
   !> (second column of matrix corresponds to first molecule)
+  !>
+  !> @attention column index is not molidx! The 2nd column corresponds to the first switched-on molecule,
+  !>            not to MgH!
   integer :: km_f_ln(MAX_NV_PER_MOL+1, NUM_MOL)
 
 
@@ -591,16 +617,18 @@ contains
     real*8, intent(in) :: lfin
     real*8 :: lambda
     integer i, &
-            molid,          &  ! Counts molecule id, from 1 to NUM_MOL
-            i_mol,          &  ! Counts molecules that are "switched on"
-            j_dummy, j_set, &
-            i_line,         &  ! Index of km_lmbdam, km_sj, km_jj
-            i_filtered         ! Counts number of filtered lines (molecule-independent);
-                               !  index of km_f_lmbdam, km_f_sj, km_f_jj
+            molidx,          &  ! Counts molecule id, from 1 to NUM_MOL
+            i_mol,           &  ! Counts molecules that are "switched on"
+            j_dummy, j_set,  &
+            i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
+            i_filtered          ! Counts number of filtered lines (molecule-independent);
+                                ! index of km_f_lmbdam, km_f_sj, km_f_jj
+
+
     logical flag_in
 
-    write(lll, *) 'molids%n_on = ', molids%n_on
-    call log_debug(lll)
+    !write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
+    !call log_debug(lll)
 
     ! Initializes the zero elements of the augmented matrices
     km_f_mblenq(1) = 0
@@ -611,22 +639,21 @@ contains
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     i_line = 1
     i_mol = 0
-    do molid = 1, km_number
-      if (.not. molecule_is_on(molid)) cycle
+    do molidx = 1, km_number
+      if (.not. molecule_is_on(molidx)) cycle
 
       i_mol = i_mol+1
 
-      !#logging
-      write(lll, *) 'molecule id', molid, ': ',  km_titulo(molid)
-      call log_debug(lll)
-      write(lll, *) 'number of prospective lambdas ------>', km_lines_per_mol(molid)
-      call log_debug(lll)
+      !write(lll, *) 'molecule idx', molidx, ': ',  km_titulo(molidx)
+      !call log_debug(lll)
+      !write(lll, *) 'number of prospective lambdas ------>', km_lines_per_mol(molidx)
+      !call log_debug(lll)
 
 
       ! Counters starting with "J_" restart at each molecule
       j_set = 1   ! Current "set-of-lines"
       flag_in = .FALSE.  ! Whether has filtered in at least one line
-      do j_dummy = 1, km_lines_per_mol(molid)
+      do j_dummy = 1, km_lines_per_mol(molidx)
         lambda = km_lmbdam(i_line)
 
         if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
@@ -645,13 +672,13 @@ contains
           km_f_sj(i_filtered) = km_sj(i_line)
           km_f_jj(i_filtered) = km_jj(i_line)
 
-          km_f_mm(i_filtered) = km_mm(molid)
+          km_f_mm(i_filtered) = km_mm(molidx)
 
           flag_in = .true.
 
         end if
 
-        if (i_line .eq. km_iollosol(j_set, molid)) then
+        if (i_line .eq. km_iollosol(j_set, molidx)) then
           ! Reached last line of current set of lines
 
 
@@ -679,11 +706,19 @@ contains
 
         i_line = i_line+1
       end do
-
       km_f_mblenq(i_mol+1) = i_filtered  ! Yes, i_mol+1, not i_mol, remember km_f_mblenq(1) is ZERO.
     end do !--end of MOLID loop--!
 
+
     km_f_mblend = i_filtered
+
+    !print *, '*****************************************************************'
+    !do i = 1,21
+    !print *, km_f_ln(:,i)
+    !end do
+    !print *, '*****************************************************************'
+    write(lll, *) LEAVING, 'filter_molecules() summary: [', lzero, ', ', lfin, '] --> ', i_filtered, '/', km_lines_total
+    call log_debug(lll)
   end
 
 
@@ -745,7 +780,7 @@ end
 !> Calculated variables have prefix "km_c_"
 
 module kapmol
-  use molecules_ids
+  use molecules_idxs
   use dimensions
   use dissoc
   use reader_molecules
@@ -771,30 +806,34 @@ contains
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
-    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molid
+    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx
 
     real*8, parameter :: H  = 6.6252E-27,   &
                          C  = 2.997929E+10, &
                          KB = 1.38046E-16,  &
                          C2 = 8.8525E-13
 
-    do i_mol = 1, molids%n_on
-      molid = get_molid(i_mol)
+    call log_debug(ENTERING//' kapmol()')
 
-      call point_ppa_pb(molid)
+    do i_mol = 1, molidxs%n_on
+      molidx = get_molidx(i_mol)
 
-      nnv = km_nv(molid)
+      call point_ppa_pb(km_formula_id(molidx))
 
-      fe  = km_fe(molid)
-      do_ = km_do(molid)
-      mm  = km_mm(molid)
-      am  = km_am(molid)
-      bm  = km_bm(molid)
-      ua  = km_ua(molid)
-      ub  = km_ub(molid)
-      te  = km_te(molid)
-      cro = km_cro(molid)
+      ! print *, 'molidx', molidx, '; formula_id', km_formula_id(molidx), '; nnv'
 
+
+      nnv = km_nv(molidx)
+
+      fe  = km_fe(molidx)
+      do_ = km_do(molidx)
+      mm  = km_mm(molidx)
+      am  = km_am(molidx)
+      bm  = km_bm(molidx)
+      ua  = km_ua(molidx)
+      ub  = km_ub(molidx)
+      te  = km_te(molidx)
+      cro = km_cro(molidx)
 
       !======
       ! This part of the code calculates km_PNVL
@@ -806,13 +845,15 @@ contains
         psi = 10.**psi
 
         do j_set = 1,nnv
-          qv = km_qqv(j_set, molid)
-          gv = km_ggv(j_set, molid)
-          bv = km_bbv(j_set, molid)
-          dv = km_ddv(j_set, molid)
+          qv = km_qqv(j_set, molidx)
+          gv = km_ggv(j_set, molidx)
+          bv = km_bbv(j_set, molidx)
+          dv = km_ddv(j_set, molidx)
 
-          l_ini = km_f_ln(j_set, molid)+1
-          l_fin = km_f_ln(j_set+1, molid)
+          l_ini = km_f_ln(j_set, i_mol)+1
+          l_fin = km_f_ln(j_set+1, i_mol)
+
+          ! print *, 'j_set', j_set, '; l_fin', l_fin, '; l_ini', l_ini
 
           ! l is index within km_f_lmbdam, km_f_sj and km_f_jj
           do l= l_ini, l_fin
@@ -829,7 +870,7 @@ contains
           ! another double loop as in the original KAPMOL() to calculate km_c_gfm
           if (n .eq. 1) then
             ! Because gfm does not depend on n, runs this part just once, when n is 1.
-            facto = km_fact(j_set, molid)
+            facto = km_fact(j_set, molidx)
             km_c_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
           end if
         end do
@@ -839,58 +880,62 @@ contains
     do l = 1, km_f_mblend
       km_c_alargm(l) = 0.1
     end do
+
+    call log_debug(LEAVING//' kapmol()')
   end
 
 
 
   !=======================================================================================
-  !> Private subroutine; pointer operation; assigns address of variable PPA and PB depending on the molecule ID.
+  !> Assigns address of variable PPA and PB depending on the molecule formula ID
   !>
   !> This was originally a vector copy element-by-element in old routine KAPMOL. However, as
   !> PPA and PB contents are not changed after the assignment, it is reasonable to just point
   !> to the source vectors (way faster).
+  !>
+  !> @sa reader_molecules::find_formula_id, reader_molecules::read_molecules
 
-  subroutine point_ppa_pb(molid)
-    implicit none
-    integer molid
-    character*192 s
+  subroutine point_ppa_pb(formula_id)
+    integer, intent(in) :: formula_id
 
-    if (molid .gt. num_mol) then
-      write (s, *) 'point_ppa_pb(): invalid molecule id (', molid, ') must be maximum ', num_mol
-      call pfant_halt(s)
+    if (formula_id .gt. NUM_FORMULAE) then
+      write (lll, *) 'point_ppa_pb(): invalid formula id (', formula_id, ') must be maximum ', NUM_FORMULAE
+      call pfant_halt(lll)
     end if
 
-    select case (molid)
-      case (1)  ! MgH
+    select case (formula_id)
+      case (1)            ! MgH
         ppa => sat4_pmg
         pb  => sat4_pph
-      case (2)  ! C2
+      case (2)            ! C2
         ppa => sat4_ppc2
         pb  => sat4_ppc2
-      case (3, 4, 5)  ! CN blue,red, nir
+      case (3)            ! CN
         ppa => sat4_ppc2
         pb  => sat4_pn
-      case (6, 7, 8)  ! CH AX, BX, CX
+      case (4)            ! CH
         ppa => sat4_ppc2
         pb  => sat4_pph
-      case (9)  ! 13
+      case (5)            ! 13CH
         ppa => sat4_pc13
         pb  => sat4_pph
-      case (10)  ! CO nir
+      case (6)            ! CO
         ppa => sat4_ppc2
         pb  => sat4_po
-      case (11)  ! NH blue
+      case (7)            ! NH
         ppa => sat4_pn
         pb  => sat4_pph
-      case (12, 13)  ! OH blue,nir
+      case (8)            ! OH
         ppa => sat4_po
         pb  => sat4_pph
-      case (14)  ! FeH
+      case (9)            ! FeH
         ppa => sat4_pfe
         pb  => sat4_pph
-      case (15, 16, 17, 18, 19, 20, 21)  ! Tio Gama,Gama linha,alfa,beta,delta,epsilon,phi
+      case (10)           ! TiO
         ppa => sat4_pti
         pb  => sat4_po
+      case default
+        call pfant_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
     end select
   end
 end
@@ -961,7 +1006,7 @@ end
 !>
 !> @note Existing files are replaced
 !>
-!> 
+!>
 
 !>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
@@ -1107,16 +1152,19 @@ contains
     !=====
 
     call turbul()
+    call log_debug('turbul() OK!')
 
     ! -- III --
     ! Calcul de quant  ne dependant que du metal et du modele
     ! Population du niv fond des ions
     call popul()
+    call log_debug('popul() OK!')
 
     ! -- IV --
     ! Calcul des quantites ne dependant que du
     ! Modele et de lambda : bk_b(n)   bk_kc(n)   bk_fc ISSUE probably wrong comment
     call sat4()
+    call log_debug('sat4() OK!')
 
 
     ! initial calculation sub-interval
@@ -1266,18 +1314,11 @@ contains
       call filter_molecules(lzero, lfin)
       call kapmol_()
 
-      !--debugging--!
-      704 format(1x,'mblend=',i10)
-      write(lll, 704) km_f_mblend
-      call log_debug(lll)
-
       do l = 1, km_f_mblend
         ecartm(l) = km_f_lmbdam(l)-lzero + main_pas
       end do
 
       call selekfh()
-
-
 
       li = int(10./main_pas)
       i1 = li+1
@@ -1539,7 +1580,7 @@ contains
 
           ! molecule
           if(km_f_mblend.eq.0) go to 250
-          do l=1,km_f_mblend
+          do l = 1,km_f_mblend
             if( abs(ecartlm(l)) .gt. km_c_alargm(l) )  then
               kam(l)=0.
             else
@@ -1745,11 +1786,11 @@ contains
 
 
     if(main_ivtot .eq. 1) then
-      131 format(' v micro constante  =',f6.1,'km/s')
+      131 format(' v microturbulence constante  =',f6.1,'km/s')
       write(lll,131) main_vvt(1)
       call log_debug(lll)
     else
-      call log_debug('v micro variable avec profondeur')
+      call log_debug('v microturbulence variable avec profondeur')
     end if
 
     return
@@ -2075,12 +2116,6 @@ contains
   end
 end module
 
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
-module pfant_lib
-end
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -2103,7 +2138,7 @@ program pfant
   ! Startup
   !=====
   execonf_name = 'pfant'
-  call molecules_ids_init()
+  call molecules_idxs_init()
   call config_init()
 
   !=====
@@ -2120,7 +2155,6 @@ program pfant
   call pfant_init_x()
 
   ! continues file reading
-  call read_dissoc(full_path_w(config_fn_dissoc))
   call read_partit(full_path_w(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
   call read_absoru2(full_path_w(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(full_path_w(config_fn_modeles))  ! LECTURE DU MODELE

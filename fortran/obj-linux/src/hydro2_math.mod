@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/hydro2.f90
-MD5:749a045ba669c4c84e88f807261d384f -- If you edit this, you'll get what you deserve.
+MD5:bd7f05bc8a2df91774b116ba78a517ad -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -21,9 +21,8 @@ REAL ()) 0 0 () () 2 () () () 0 0)
 UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 3 ()
 () () 0 0)
 4 'adjust_atomic_symbol' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 FUNCTION PURE) (CHARACTER 1 0 0 0 CHARACTER
-((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 5 0 (6) () 7 () () () 0
-0)
+MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (CHARACTER 1 0 0 0 CHARACTER ((
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 5 0 (6) () 7 () () () 0 0)
 8 'assert_le' 'logging' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 9 0 (10 11 12 13 14)
 () 0 () () () 0 0)
@@ -239,15 +238,15 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 198 'max_num_options' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
-199 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
-200 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
-201 'max_sol_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+199 'max_nv_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') () 0 () () () 0 0)
+200 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
+201 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
 202 'maxi' 'misc_math' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 FUNCTION ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ()) 203 0
 (204 205 206 207) () 202 () () () 0 0)
@@ -301,8 +300,7 @@ MODULE-PROC DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION ALWAYS_EXPLICIT) (
 CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 263 0 (264) () 265 () () ()
 0 0)
 6 'elem' '' '' 5 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
-CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2')))
-0 0 () () 0 () () () 0 0)
+CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 7 'res' '' '' 5 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0
 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '2'))) 0 0 () () 0 () () () 0 0)
@@ -567,7 +565,7 @@ DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 (REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 231 'str' '' '' 230 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-232 'molids' '' '' 230 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+232 'molidxs' '' '' 230 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
 233 'n' '' '' 230 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -639,7 +637,7 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'max_filetoh_num_files' 0 190 'max_il' 0 191 'max_km_f_mblend' 0 192
 'max_km_lines_total' 0 193 'max_m' 0 194 'max_modeles_ntot' 0 195
 'max_modif_ih' 0 196 'max_modif_ii' 0 197 'max_num_options' 0 198
-'max_partit_kmax' 0 199 'max_partit_npar' 0 200 'max_sol_per_mol' 0 201
+'max_nv_per_mol' 0 199 'max_partit_kmax' 0 200 'max_partit_npar' 0 201
 'maxi' 0 202 'mini' 0 208 'misc' 0 214 'misc_math' 0 215 'naitk3' 0 216
 'num_mol' 0 228 'parse_int_array' 0 229 'pfant_halt' 0 234 'pi' 0 239
 'real42str' 0 240 'real82str' 0 245 'rpi' 0 250 'sqrt' 0 251 'to_lower'

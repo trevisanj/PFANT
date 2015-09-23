@@ -8,8 +8,9 @@ import sys
 from ..misc import *
 from threading import Lock
 from ..errors import *
+from ..parts import *
 
-class Progress(object):
+class Progress(PyfantObject):
     """Data class, stores progress information."""
 
     def __init__(self, ikey=None, ikeytot=None, exe_name=None):
@@ -28,7 +29,7 @@ class Progress(object):
         return "?"
 
 
-class Runnable(object):
+class Runnable(PyfantObject):
     """
     Object with a run() method.
 

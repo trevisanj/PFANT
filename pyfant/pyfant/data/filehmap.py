@@ -3,10 +3,11 @@ __all__ = ["FileHmap", "HmapRow"]
 from .datafile import *
 from ..misc import *
 import logging
+from ..parts import *
 
 logger = logging.getLogger(__name__)
 
-class HmapRow(object):
+class HmapRow(PyfantObject):
   """Same structure as reader_hmap.f90::hmap_row type."""
   def __init__(self):
     self.fn = None

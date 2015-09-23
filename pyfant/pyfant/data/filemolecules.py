@@ -66,6 +66,20 @@ class Molecule(AttrsPart):
         """Returns number of set-of-lines."""
         return len(self.lmbdam)
 
+    def filter(self, lzero, lfin):
+        """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
+        l_new, s_new, j_new  = [], [], []
+        for _ll, _ss, _jj in zip(self.lmbdam, self.sj, self.jj):
+            l, s, j = [], [], []
+            for _l, _s, _j in zip(_ll, _ss, _jj):
+                if lzero <= _l <= lfin:
+                    l.append(_l)
+                    s.append(_s)
+                    j.append(_j)
+            l_new.append(l)
+            s_new.append(s)
+            j_new.append(j)
+        self.lmbdam, self.sj, self.jj = l_new, s_new, j_new
 
 
 class FileMolecules(DataFile):
@@ -194,3 +208,9 @@ class FileMolecules(DataFile):
                     im += 1
             except Exception as e:
                 raise type(e)(("Error around %d%s row of file '%s'" % (r+1, ordinal_suffix(r+1), filename))+": "+str(e)), None, sys.exc_info()[2]
+
+    def filter(self, lzero, lfin):
+        """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
+
+        for m in self.molecules:
+            m.filter(lzero, lfin)

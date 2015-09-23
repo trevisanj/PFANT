@@ -437,7 +437,7 @@ module config
   use logging
   use options2
   use misc
-  use molecules_ids
+  use molecules_idxs
   implicit none
 
   ! Possible return values of option handler
@@ -832,7 +832,7 @@ contains
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
-    call add_option('p', 'molids_off',        ' ', .true., 'molecule ids', '', &
+    call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'flprefix',        ' ', .true., 'filename prefix', &
                     '<"main_flprefix" variable> (taken from main configuration file)', &
@@ -1037,8 +1037,8 @@ contains
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
 !              call parse_aux_assign_fn(o_arg, config_fn_log)
-      case ('molids_off')
-        call set_molids_off(o_arg)
+      case ('molidxs_off')
+        call set_molidxs_off(o_arg)
       case ('flprefix')
         call parse_aux_assign_fn(o_arg, config_flprefix, 'config_flprefix')
 

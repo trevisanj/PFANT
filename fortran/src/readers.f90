@@ -186,6 +186,35 @@ contains
     close(unit=UNIT_)
     flag_read_dissoc = .true.
   end
+
+  !> Searches for atomic symbol inside dissoc_elems
+
+  integer function find_atomic_symbol_dissoc(symbol, flag_ignore)
+    !> Atomic symbol, case-insensitive
+    character(*), intent(in) :: symbol
+    !> (optional, defaults to .false.) If set, will return ZERO if symbol is not found.
+    !> The default behaviour is to halt the program.
+    logical, intent(in), optional :: flag_ignore
+    character(:), allocatable :: symbol_ ! formatted symbol
+    integer :: i
+    logical :: flag_ignore_
+
+    flag_ignore_ = .false.
+    if (present(flag_ignore)) flag_ignore_ = flag_ignore
+    symbol_ = adjust_atomic_symbol(symbol)
+
+    do i = 1, dissoc_nmetal
+      if (dissoc_elems(i) .eq. symbol_) then
+        find_atomic_symbol_dissoc = i
+        return
+      end if
+    end do
+
+    if (.not. flag_ignore_) then
+      call pfant_halt('Atomic symbol "'//symbol_//'" not found in dissoc metals table')
+    end if
+    find_atomic_symbol_dissoc = 0
+  end
 end
 
 
@@ -1118,19 +1147,8 @@ contains
         !> @todo ISSUE: lot of effort to keep dubious feature
         !> @todo ISSUE: This is the thing that Beatriz mentioned that is not used anymore
 
-        flag_found = .false.
-        do k = 1, dissoc_nmetal
-          if(abonds_ele(j) .eq. dissoc_elems(k)) then
-            flag_found = .true.
-            exit
-          end if
-        end do
-
-        if (flag_found) then
-          abonds_abol(j) = abonds_abol(j)+main_xxcor(k)
-        else
-          ! if not found, doesn't bother
-        end if
+        k = find_atomic_symbol_dissoc(abonds_ele(j), .true.)
+        abonds_abol(j) = abonds_abol(j)+main_xxcor(k)
 
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
@@ -1532,16 +1550,32 @@ module reader_molecules
   use logging
   use dimensions
   use misc
-  use molecules_ids
+  use molecules_idxs
   implicit none
 
+  !> Number of different "chemical molecules" that the system supports. Differs from number of
+  !> molecules listes in dfile:molecules because in the latter the same molecule is
+  !> repeated, such as "CN AZUL, CN AX, CN BX", but in this case the formula is always CN
+  integer, parameter :: NUM_FORMULAE = 10
+  !> Molecule formulae
+  character*6, parameter :: FORMULAE(NUM_FORMULAE) = &
+   (/'MgH   ', &
+     'C2    ', &
+     'CN    ', &
+     'CH    ', &
+     '13CH  ', &
+     '12C16O', &
+     'NH    ', &
+     'OH    ', &
+     'FeH   ', &
+     'TiO   '/)
 
   ! Specifies how many molecules to read
   integer km_number
 
   integer km_lines_total  ! Total number of spectral line, counting all molecules
 
-  character*80 km_titm, km_titulo
+  character*160 km_titm, km_titulo
 
   dimension km_titulo(NUM_MOL)
 
@@ -1550,7 +1584,9 @@ module reader_molecules
    km_a0, km_a1, km_a2, km_a3, km_a4, km_als, km_s
 
   integer, dimension(NUM_MOL)  :: km_ise, km_nv, &
-   km_lines_per_mol  !> This stores the number of spectral lines for each molecule
+   km_lines_per_mol, & !< This stores the number of spectral lines for each molecule
+   km_formula_id       !< Formula ID of molecule (between 1 and NUM_FORMULAE)
+
 
   real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
 
@@ -1584,7 +1620,7 @@ contains
     character(len=*) :: filename
 
     integer unit_, i, &
-     molid,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
+     molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
      i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
      nnv, iz, &
      numlin , &  ! Temporary variable
@@ -1613,8 +1649,8 @@ contains
     end if
 
     ! Deactivates molecules not wanted or not present in the file
-    do molid = km_number+1, NUM_MOL
-      call add_molid_off(molid)
+    do molidx = km_number+1, NUM_MOL
+      call add_molidx_off(molidx)
     end do
 
 
@@ -1622,41 +1658,40 @@ contains
     read(unit_,'(a)') km_titm
     !~READ(UNIT_,'(20A4)') km_TITM
 
-    !#logging
-    write(lll, *) 'titm--------------', km_titm
-    call log_debug(lll)
+    !write(lll, *) 'titm--------------', km_titm
+    !call log_debug(lll)
 
     ! BLB:
     ! BLB: km_NV -- number of transitions (v', v'') for each molecule
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(unit_,*) (km_nv(molid), molid=1,km_number)
+    read(unit_,*) (km_nv(molidx), molidx=1,km_number)
 
     ! spill check
-    do molid = 1, km_number
-      if (km_nv(molid) .gt. MAX_NV_PER_MOL) then
-          call pfant_halt('read_molecules(): molecule id '//int2str(molid)//&
-           ' has nv = '//int2str(km_nv(molid))//' (maximum is MAX_NV_PER_MOL='//&
+    do molidx = 1, km_number
+      if (km_nv(molidx) .gt. MAX_NV_PER_MOL) then
+          call pfant_halt('read_molecules(): molecule id '//int2str(molidx)//&
+           ' has nv = '//int2str(km_nv(molidx))//' (maximum is MAX_NV_PER_MOL='//&
            int2str(MAX_NV_PER_MOL)//')')
         end if
     end do
 
     i_line = 0
-    do molid = 1, km_number
+    do molidx = 1, km_number
 
       !> @todo check spill in each element in km_NV
 
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
-      read(unit_,'(a)') km_titulo(molid)
+      read(unit_,'(a)') km_titulo(molidx)
+      km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
 
-      !#logging
-      write(lll,*) 'molecule id ', molid
-      call log_debug(lll)
-      write(lll,*) 'titulo:  ', km_titulo(molid)
-      call log_debug(lll)
+      !write(lll,*) 'molecule index ', molidx
+      !call log_debug(lll)
+      !write(lll,*) 'titulo:  ', km_titulo(molidx)
+      !call log_debug(lll)
 
       ! BLB: FE, DO, MM, AM, BM, UA, UB, Te, CRO
       ! BLB: Format: free
@@ -1675,35 +1710,35 @@ contains
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
 
-      read(unit_,*) km_fe(molid), km_do(molid), km_mm(molid), &
-       km_am(molid), km_bm(molid), km_ua(molid), &
-       km_ub(molid), km_te(molid), km_cro(molid)
+      read(unit_,*) km_fe(molidx), km_do(molidx), km_mm(molidx), &
+       km_am(molidx), km_bm(molidx), km_ua(molidx), &
+       km_ub(molidx), km_te(molidx), km_cro(molidx)
 
 
       !> @todo ISSUE Documentation
       !> @todo ISSUE !P! My sample file is blank here
-      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km_ise(molid), &
-       km_a0(molid), km_a1(molid), km_a2(molid), &
-       km_a3(molid), km_a4(molid), km_als(molid)
+      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km_ise(molidx), &
+       km_a0(molidx), km_a1(molidx), km_a2(molidx), &
+       km_a3(molidx), km_a4(molidx), km_als(molidx)
 
       !> @todo issue ?doc? is S??
-      read(unit_,*) km_s(molid)
+      read(unit_,*) km_s(molidx)
 
-      nnv = km_nv(molid)
+      nnv = km_nv(molidx)
 
       !#logging
-      write(lll,*) 'nv=', nnv
-      call log_debug(lll)
+      !write(lll,*) 'nv=', nnv
+      !call log_debug(lll)
 
       !> @todo type in documentation
-      read(unit_,*) (km_qqv(i, molid), i=1,nnv)
-      read(unit_,*) (km_ggv(i, molid), i=1,nnv)
-      read(unit_,*) (km_bbv(i, molid), i=1,nnv)
-      read(unit_,*) (km_ddv(i, molid), i=1,nnv)
-      read(unit_,*) (km_fact(i, molid),i=1,nnv)
+      read(unit_,*) (km_qqv(i, molidx), i=1,nnv)
+      read(unit_,*) (km_ggv(i, molidx), i=1,nnv)
+      read(unit_,*) (km_bbv(i, molidx), i=1,nnv)
+      read(unit_,*) (km_ddv(i, molidx), i=1,nnv)
+      read(unit_,*) (km_fact(i, molidx),i=1,nnv)
 
       do i = 1,nnv
-        km_ddv(i, molid)=1.e-6*km_ddv(i, molid)
+        km_ddv(i, molidx)=1.e-6*km_ddv(i, molidx)
       end do
 
 
@@ -1717,7 +1752,7 @@ contains
         if (i_line .gt. MAX_KM_LINES_TOTAL) then
           call pfant_halt('read_molecules(): exceeded maximum number of total '//&
             'spectral lines  MAX_KM_LINES_TOTAL= '//int2str(MAX_KM_LINES_TOTAL)//&
-            ' (at molecule id '//int2str(molid)//')')
+            ' (at molecule id '//int2str(molidx)//')')
         end if
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
@@ -1750,7 +1785,7 @@ contains
 
         if (numlin .ne. 0) then
           j_set = j_set+1
-          km_iollosol(j_set, molid) = i_line
+          km_iollosol(j_set, molidx) = i_line
         end if
 
         j_line = j_line+1
@@ -1762,10 +1797,10 @@ contains
       if(j_set .ne. nnv) then
         call pfant_halt('read_molecules():  incorrect number of set-of-lines: '//&
          int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&
-         int2str(molid)//')')
+         int2str(molidx)//')')
       end if
 
-      km_lines_per_mol(molid) = j_line
+      km_lines_per_mol(molidx) = j_line
 
       !#logging
       write(lll,*) 'This molecule has ', j_line, ' lines'
@@ -1775,6 +1810,60 @@ contains
     km_lines_total = i_line
 
     close(unit_)
+  end
+
+  !> Finds formula id given title of molecule
+  !>
+  !> The title is exists inside the dfile:molecules as the first row of a new molecule.
+  !> The title must contain one of the formula listed in the FORMULAE constant, otherwise
+  !> the program will crash.
+  !>
+  !> Case-insensitive: both title and formulae are converted to all uppercase for comparison.
+
+  integer function find_formula_id(title)
+    character(len=*), intent(in) :: title
+    character(len=:), allocatable :: formula, title_upper
+    integer :: idx_found(NUM_FORMULAE), num_found, i, n, idx
+    character(len=7*NUM_FORMULAE) :: s_matches, s_matches2  ! logging buffer
+    integer :: i_ch
+
+    title_upper = to_upper(trim(adjustl(title)))
+
+    num_found = 0
+    do i = 1, NUM_FORMULAE
+      formula = to_upper(trim(adjustl(FORMULAE(i))))
+
+      idx = index(title_upper, formula)
+      if (idx .gt. 0) then
+        if (idx .eq. 1) go to 1  ! found in beginning of title
+        i_ch = ichar(title_upper(idx-1:idx-1))
+        ! compares with space or tab
+        if (i_ch .eq. 32 .or. i_ch .eq. 9) goto 1  ! found in beginning of word
+        goto 2  ! found in middle of word, not condidered
+
+        1 continue
+        num_found = num_found+1
+        idx_found(num_found) = i
+
+        2 continue
+      end if
+    end do
+
+    if (num_found .eq. 0) then
+      call pfant_halt('No valid molecule formula was found in "'//title_upper//'"')
+    elseif (num_found .gt. 1) then
+      ! joins molecule names separated by comma
+      ! Fortran formatting does most of the job, ...
+      write(s_matches, '('//int2str(num_found)//'(A,2H, ))') &
+       (to_upper(trim(adjustl(FORMULAE(idx_found(i))))), i=1, num_found)
+      ! ... but there is one extra comma that needs to be removed
+      n = len(trim(s_matches))
+      s_matches2 = s_matches(1:n-1)
+
+      call pfant_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
+    end if
+
+    find_formula_id = idx_found(1)
   end
 end
 

@@ -1,12 +1,12 @@
 GFORTRAN module version '10' created from src/config.f90
-MD5:7f3f1b72d6f5a75635ff4ff3445e3b5a -- If you edit this, you'll get what you deserve.
+MD5:654e0432f7d066c97d80cc27662ae509 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
 
 ()
 
-(('molid_list' 'molecules_ids' 2) ('option' 'options2' 3))
+(('molidx_list' 'molecules_idxs' 2) ('option' 'options2' 3))
 
 ()
 
@@ -14,7 +14,7 @@ MD5:7f3f1b72d6f5a75635ff4ff3445e3b5a -- If you edit this, you'll get what you de
 
 ()
 
-(2 'Molid_list' 'molecules_ids' '' 1 ((DERIVED UNKNOWN-INTENT
+(2 'Molidx_list' 'molecules_idxs' '' 1 ((DERIVED UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 ((4 'n_off' (INTEGER 4 0 0 0 INTEGER ()) () (UNKNOWN-FL UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) UNKNOWN-ACCESS ()) (5 'n_on' (INTEGER
@@ -26,7 +26,7 @@ UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION) UNKNOWN-ACCESS ()) (7 'off'
 (INTEGER 4 0 0 0 INTEGER ()) (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21')) (
 UNKNOWN-FL UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION)
-UNKNOWN-ACCESS ())) PUBLIC (() () () ()) () 0 0 9497521)
+UNKNOWN-ACCESS ())) PUBLIC (() () () ()) () 0 0 35242675)
 3 'Option' 'options2' '' 1 ((DERIVED UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 ((8 'ihpn' (
 CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '4')))
@@ -53,15 +53,15 @@ REAL ()) 0 0 () () 15 () () () 0 0)
 16 '__convert_r4_r8' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 FUNCTION ELEMENTAL PURE) (REAL 8 0 0 0
 REAL ()) 0 0 () () 16 () () () 0 0)
-17 'add_molid_off' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+17 'add_molidx_off' 'molecules_idxs' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 18
 0 (19) () 0 () () () 0 0)
 20 'add_option' 'config' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
 DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 21 0 (22 23 24
 25 26 27 28) () 0 () () () 0 0)
 29 'adjust_atomic_symbol' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 FUNCTION PURE) (CHARACTER 1 0 0 0 CHARACTER
-((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 30 0 (31) () 32 () () ()
+MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (CHARACTER 1 0 0 0 CHARACTER ((
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 30 0 (31) () 32 () () ()
 0 0)
 33 'assert_le' 'logging' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
 DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 34 0 (35 36 37
@@ -239,7 +239,7 @@ INTEGER 4 0 0 0 INTEGER ()) 0 '16'))) 0 0 () () 0 () () () 0 0)
 DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION IMPLICIT_PURE ALWAYS_EXPLICIT) (
 CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 101 0 (102) () 103 () () ()
 0 0)
-104 'get_molid' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+104 'get_molidx' 'molecules_idxs' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 105
 0 (106) () 104 () () () 0 0)
 107 'get_option_name' 'options2' '' 1 ((PROCEDURE UNKNOWN-INTENT
@@ -414,32 +414,32 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 212 'max_num_options' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
-213 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
-214 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
-215 'max_sol_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+213 'max_nv_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') () 0 () () () 0 0)
+214 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
+215 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
 216 'misc' 'misc' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
-217 'molecule_is_on' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+217 'molecule_is_on' 'molecules_idxs' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (LOGICAL 4 0 0 0 LOGICAL ()) 218
 0 (219) () 217 () () () 0 0)
-220 'molecules_ids' 'molecules_ids' '' 1 ((MODULE UNKNOWN-INTENT
+220 'molecules_idxs' 'molecules_idxs' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-221 'molecules_ids_init' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0
-0 () () 0 () () () 0 0)
-222 'molid_list' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+221 'molecules_idxs_init' 'molecules_idxs' '' 1 ((PROCEDURE
+UNKNOWN-INTENT MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0
+UNKNOWN ()) 0 0 () () 0 () () () 0 0)
+222 'molidx_list' 'molecules_idxs' '' 1 ((PROCEDURE UNKNOWN-INTENT
 UNKNOWN-PROC DECL UNKNOWN 0 0 FUNCTION GENERIC) (UNKNOWN 0 0 0 0 UNKNOWN
 ()) 0 0 () () 0 () () () 0 0)
-223 'molids' 'molecules_ids' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN IMPLICIT-SAVE 0 0) (DERIVED 2 0 0 0 DERIVED ()) 0 0 () () 0 () ()
-() 0 0)
+223 'molidxs' 'molecules_idxs' '' 1 ((VARIABLE UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (DERIVED 2 0 0 0 DERIVED ()) 0 0
+() () 0 () () () 0 0)
 224 'num_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '21') () 0 () () () 0 0)
@@ -482,7 +482,7 @@ UNKNOWN 0 0 ALLOCATABLE FUNCTION PURE ALWAYS_EXPLICIT) (CHARACTER 1 0 0
 271 'real82str' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 ALLOCATABLE FUNCTION PURE ALWAYS_EXPLICIT) (CHARACTER 1 0 0
 0 CHARACTER (()) DEFERRED_CL) 272 0 (273 274) () 275 () () () 0 0)
-276 'set_molids_off' 'molecules_ids' '' 1 ((PROCEDURE UNKNOWN-INTENT
+276 'set_molidxs_off' 'molecules_idxs' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ())
 277 0 (278) () 0 () () () 0 0)
 279 'to_lower' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
@@ -499,8 +499,8 @@ CHARACTER (())) 0 286 ())) ('' ())) '__len_1_i4' 0 'len'))) 287 0 (286)
 MODULE-PROC DECL UNKNOWN 0 0 ALLOCATABLE FUNCTION ALWAYS_EXPLICIT) (
 CHARACTER 1 0 0 0 CHARACTER (()) DEFERRED_CL) 290 0 (291) () 292 () () ()
 0 0)
-19 'molid' '' '' 18 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+19 'molidx' '' '' 18 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 22 'ihpn' '' '' 21 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 23 'name' '' '' 21 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -517,8 +517,7 @@ DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 28 'descr' '' '' 21 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 31 'elem' '' '' 30 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2')))
-0 0 () () 0 () () () 0 0)
+(CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 32 'res' '' '' 30 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
 0 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '2'))) 0 0 () () 0 () () () 0 0)
@@ -622,7 +621,7 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '1000')) 0 () () () 0 0)
 193 'n' '' '' 190 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-219 'molid' '' '' 218 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+219 'molidx' '' '' 218 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 229 'arg' '' '' 228 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
@@ -652,7 +651,7 @@ DUMMY) (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 254 'str' '' '' 253 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-255 'molids' '' '' 253 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+255 'molidxs' '' '' 253 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
 256 'n' '' '' 253 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -709,8 +708,8 @@ UNKNOWN 0 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((FUNCTION (INTEGER 4 0
 DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 )
 
-('Molid_list' 0 2 'Option' 0 3 '__convert_i4_r8' 0 15 '__convert_r4_r8'
-0 16 'add_molid_off' 0 17 'add_option' 0 20 'adjust_atomic_symbol' 0 29
+('Molidx_list' 0 2 'Option' 0 3 '__convert_i4_r8' 0 15 '__convert_r4_r8'
+0 16 'add_molidx_off' 0 17 'add_option' 0 20 'adjust_atomic_symbol' 0 29
 'assert_le' 0 33 'config' 0 40 'config_amores' 0 41 'config_asalog' 0 42
 'config_c1' 0 43 'config_clam' 0 44 'config_convol' 0 45 'config_flam' 0
 46 'config_flprefix' 0 47 'config_fn_abonds' 0 48 'config_fn_absoru2' 0
@@ -728,7 +727,7 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'config_open_status' 0 88 'config_pat' 0 89 'config_ptdisk' 0 90
 'config_teff' 0 91 'config_tirb' 0 92 'config_vvt' 0 93 'config_wdir' 0
 94 'config_zph' 0 95 'dimensions' 0 96 'entering' 0 97 'error_unit' 0 98
-'execonf_name' 0 99 'full_path_w' 0 100 'get_molid' 0 104
+'execonf_name' 0 99 'full_path_w' 0 100 'get_molidx' 0 104
 'get_option_name' 0 107 'getopt' 0 111 'h_line_is_inside' 0 120
 'h_line_width' 0 126 'handler_dont_care' 0 127 'handler_error' 0 128
 'handler_ok' 0 129 'int2logical' 0 130 'int2str' 0 134 'lambda_stretch'
@@ -746,13 +745,13 @@ DEFERRED_CL) 0 0 () () 0 () () () 0 0)
 'max_dtot' 0 203 'max_file_rows' 0 204 'max_filetoh_jjmax' 0 205
 'max_filetoh_jmax' 0 206 'max_filetoh_num_files' 0 207 'max_km_f_mblend'
 0 208 'max_km_lines_total' 0 209 'max_len_descr' 0 210 'max_modeles_ntot'
-0 211 'max_num_options' 0 212 'max_partit_kmax' 0 213 'max_partit_npar'
-0 214 'max_sol_per_mol' 0 215 'misc' 0 216 'molecule_is_on' 0 217
-'molecules_ids' 0 220 'molecules_ids_init' 0 221 'molid_list' 0 222
-'molids' 0 223 'num_mol' 0 224 'option' 0 225 'options2' 0 226
+0 211 'max_num_options' 0 212 'max_nv_per_mol' 0 213 'max_partit_kmax' 0
+214 'max_partit_npar' 0 215 'misc' 0 216 'molecule_is_on' 0 217
+'molecules_idxs' 0 220 'molecules_idxs_init' 0 221 'molidx_list' 0 222
+'molidxs' 0 223 'num_mol' 0 224 'option' 0 225 'options2' 0 226
 'parse_aux_assign_fn' 0 227 'parse_aux_log_assignment' 0 232
 'parse_aux_str2int' 0 236 'parse_aux_str2logical' 0 240
 'parse_aux_str2real4' 0 244 'parse_aux_str2real8' 0 248 'parse_int_array'
 0 252 'pfant_halt' 0 257 'print_opt' 0 262 'real42str' 0 266 'real82str'
-0 271 'set_molids_off' 0 276 'to_lower' 0 279 'to_upper' 0 284
+0 271 'set_molidxs_off' 0 276 'to_lower' 0 279 'to_upper' 0 284
 'trim_and_add_slash' 0 289)

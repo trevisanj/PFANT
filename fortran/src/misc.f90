@@ -37,9 +37,12 @@ contains
   !>
   !> ExampleL: "O ", " o", "o ", all will result in " O"
 
-  pure function adjust_atomic_symbol(elem) result(res)
-    character(len=2), intent(in) :: elem
+  function adjust_atomic_symbol(elem) result(res)
+    character(len=*), intent(in) :: elem
     character(len=2) :: res
+    if (len(elem) .ne. 2) &
+      call pfant_halt('adjust_atomic_symbol(): got '//int2str(len(elem))//&
+       '-char string (wants 2-char string)', is_assertion=.true.)
     res = to_upper(adjustr(elem))
   end
 
@@ -274,12 +277,12 @@ contains
   !> Very tolerant: everything that is not 0-9 is considered a separator
 
 
-  subroutine parse_int_array(str, molids, n)
+  subroutine parse_int_array(str, molidxs, n)
     use logging
     !> String to be parsed, e.g. '[3, 4, 5]'
     character(*), intent(in) :: str
     !> Integer numbers found in string
-    integer, intent(out) :: molids(:)
+    integer, intent(out) :: molidxs(:)
     !> Number of integer numbers found
     integer, intent(out) :: n
     integer, parameter :: UNINIT=-1, SEP=0, NUM=1
@@ -305,8 +308,8 @@ contains
         if (state .eq. NUM) then
           ! end-of-number
           n = n+1
-          call assert_le(n, size(molids), 'parse_int_array()', 'n', 'size(molids)')
-          read(str(break_point:i-1), *) molids(n)
+          call assert_le(n, size(molidxs), 'parse_int_array()', 'n', 'size(molidxs)')
+          read(str(break_point:i-1), *) molidxs(n)
         else
           ! does nothing until finds a digit
         end if
@@ -470,13 +473,13 @@ end
 !>
 !> Has routines to maintain the list and retrieve information.
 
-module molecules_ids
+module molecules_idxs
   use logging
   use misc
   use dimensions
   implicit none
 
-  type molid_list
+  type molidx_list
     integer :: n_off, & !< number "off"
                n_on     !< number "on"
 
@@ -485,24 +488,24 @@ module molecules_ids
       off    !< molecule ids "off"
   end type
 
-  type(molid_list) :: molids
+  type(molidx_list) :: molidxs
 
   !^^^^^ PUBLIC  ^^^^^
   !vvvvv PRIVATE vvvvv
 
   ! There is a calling order to be observed. These flags + assertions inforce that
   logical, private :: &
-   flag_molecules_ids_init = .false.   !< molecules_ids_init() has been called?
+   flag_molecules_idxs_init = .false.   !< molecules_idxs_init() has been called?
 
-  private make_molids_on
+  private make_molidxs_on
 contains
 
   !> Module initialization:
   !> Must be called at some point of system startup.
 
-  subroutine molecules_ids_init()
-    call make_molids_on()
-    flag_molecules_ids_init = .true.
+  subroutine molecules_idxs_init()
+    call make_molidxs_on()
+    flag_molecules_idxs_init = .true.
   end
 
   !=======================================================================================
@@ -510,40 +513,40 @@ contains
   !>
   !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
 
-  function get_molid(i_mol)
-    integer i_mol, get_molid
+  function get_molidx(i_mol)
+    integer i_mol, get_molidx
 
-    if (.not. flag_molecules_ids_init) then
-      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    if (.not. flag_molecules_idxs_init) then
+      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     ! spill check
-    if (i_mol .gt. molids%n_on) then
-      write (lll, *) 'get_molid(): invalid molecule index i_mol (', &
-       i_mol, ') must be maximum ', molids%n_on
+    if (i_mol .gt. molidxs%n_on) then
+      write (lll, *) 'get_molidx(): invalid molecule index i_mol (', &
+       i_mol, ') must be maximum ', molidxs%n_on
       call pfant_halt(lll)
     end if
 
-    get_molid = molids%on(i_mol)
+    get_molidx = molidxs%on(i_mol)
   end
 
   !=======================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is "on"
+  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is "on"
   !> or "off"
   !>
   !> Can be called anytime
 
-  function molecule_is_on(molid)
-    integer molid, j
+  function molecule_is_on(molidx)
+    integer molidx, j
     logical molecule_is_on
 
-    if (.not. flag_molecules_ids_init) then
-      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    if (.not. flag_molecules_idxs_init) then
+      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     molecule_is_on = .true.
-    do j = 1, molids%n_off
-      if (molid .eq. molids%off(j)) then
+    do j = 1, molidxs%n_off
+      if (molidx .eq. molidxs%off(j)) then
         molecule_is_on = .false.
         exit
       end if
@@ -553,68 +556,68 @@ contains
   !=======================================================================================
   !> Parses string into integer array and adds molecule ids to list of "off" molecules
 
-  subroutine set_molids_off(str)
+  subroutine set_molidxs_off(str)
     character(*), intent(in) :: str
 
-    integer :: molids(NUM_MOL), n, i
+    integer :: molidxs(NUM_MOL), n, i
 
-    call parse_int_array(str, molids, n)
+    call parse_int_array(str, molidxs, n)
 
     do i = 1, n
-      call add_molid_off(molids(i))
+      call add_molidx_off(molidxs(i))
     end do
   end
 
   !=======================================================================================
   !> Adds molecule id to list of "off" molecules
 
-  subroutine add_molid_off(molid)
-    integer, intent(in) :: molid !< molecule id
+  subroutine add_molidx_off(molidx)
+    integer, intent(in) :: molidx !< molecule id
 
-    if (.not. flag_molecules_ids_init) then
-      call pfant_halt('get_molid(): forgot to call molecules_ids_init()', is_assertion=.true.)
+    if (.not. flag_molecules_idxs_init) then
+      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     ! spill check
-    if (molid .gt. NUM_MOL .or. molid .lt. 1) then
-      call pfant_halt('Invalid molecule id: '//int2str(molid)//' (valid: 1 to '//&
+    if (molidx .gt. NUM_MOL .or. molidx .lt. 1) then
+      call pfant_halt('Invalid molecule id: '//int2str(molidx)//' (valid: 1 to '//&
        int2str(NUM_MOL)//')')
     end if
 
-    if (molecule_is_on(molid)) then
+    if (molecule_is_on(molidx)) then
       ! The condition we-re in prevents duplication
-      molids%n_off = molids%n_off+1
-      molids%off(molids%n_off) = molid
-      call log_info('molecule id '//int2str(molid)//' added to molids%off')
+      molidxs%n_off = molidxs%n_off+1
+      molidxs%off(molidxs%n_off) = molidx
+      call log_info('molecule id '//int2str(molidx)//' added to molidxs%off')
     else
-      call log_warning('molecule id '//int2str(molid)//' *already turned off*')
+      call log_warning('molecule id '//int2str(molidx)//' *already turned off*')
     end if
 
-    call make_molids_on()
+    call make_molidxs_on()
   end
 
   !=======================================================================================
-  !> Fills molids%on and molids%n_on based on their complements.
+  !> Fills molidxs%on and molidxs%n_on based on their complements.
 
-  subroutine make_molids_on()
-    integer i_mol, j, molid
+  subroutine make_molidxs_on()
+    integer i_mol, j, molidx
     logical is_off
 
     i_mol = 0
-    do molid = 1, NUM_MOL
+    do molidx = 1, NUM_MOL
       is_off = .false.  ! Whether molecule I_MOL is off
-      do j = 1, molids%n_off
-        if (molid .eq. molids%off(j)) then
+      do j = 1, molidxs%n_off
+        if (molidx .eq. molidxs%off(j)) then
           is_off = .true.
           exit
         end if
       end do
       if (.not. is_off) then
         i_mol = i_mol+1
-        molids%on(i_mol) = molid
+        molidxs%on(i_mol) = molidx
       end if
     end do
-    molids%n_on = i_mol
+    molidxs%n_on = i_mol
   end
 end
 

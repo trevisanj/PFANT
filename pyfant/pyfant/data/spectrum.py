@@ -7,9 +7,9 @@ import logging
 import numpy as np
 from pyfant.errors import *
 from .datafile import DataFile
+from ..parts import *
 
-
-class Spectrum(object):
+class Spectrum(PyfantObject):
     def __init__(self):
         self.ikeytot = None
         self.tit = None

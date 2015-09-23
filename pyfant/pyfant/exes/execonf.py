@@ -10,6 +10,7 @@ import shutil
 import os
 import random
 import glob
+from ..parts import *
 
 # Indexes in workflow sequence
 i_innewmarcs = 0
@@ -17,6 +18,7 @@ i_hydro2 = 1
 i_pfant = 2
 i_nulbad = 3
 
+@froze_it
 class ExeConf(object):
   """
   Class holds all command-line options.
@@ -168,7 +170,7 @@ class ExeConf(object):
     self.opt_fn_log       = None
     self.opt_fn_progress = "progress.txt"
     self.opt_flprefix = None
-    self.opt_molids_off = None
+    self.opt_molidxs_off = None
 
     # nulbad
     self.opt_norm = None

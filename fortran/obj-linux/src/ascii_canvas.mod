@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/misc.f90
-MD5:1896df642a7bd0262de5e2949b9278f7 -- If you edit this, you'll get what you deserve.
+MD5:16d9602335943a5a93b7e43f1aee08cd -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -67,8 +67,8 @@ UNKNOWN ()) () (PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC BODY UNKNOWN 0 0
 EXTERNAL SUBROUTINE PROCEDURE PROC_POINTER) PRIVATE (PUBLIC OVERRIDABLE
 PASS SPECIFIC PPC '' 0))) UNKNOWN-ACCESS () () 0 0 0)
 25 'adjust_atomic_symbol' 'misc' '' 1 ((PROCEDURE UNKNOWN-INTENT
-MODULE-PROC DECL UNKNOWN 0 0 FUNCTION PURE) (CHARACTER 1 0 0 0 CHARACTER
-((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 26 0 (27) () 28 () () ()
+MODULE-PROC DECL UNKNOWN 0 0 FUNCTION) (CHARACTER 1 0 0 0 CHARACTER ((
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2'))) 26 0 (27) () 28 () () ()
 0 0)
 29 'ascii_canvas' 'ascii_canvas' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
@@ -245,15 +245,15 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 140 'max_num_options' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
-141 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
-142 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
-() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
-143 'max_sol_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+141 'max_nv_per_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '200') () 0 () () () 0 0)
+142 'max_partit_kmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '63') () 0 () () () 0 0)
+143 'max_partit_npar' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '85') () 0 () () () 0 0)
 144 'misc' 'misc' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
 145 'num_mol' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
@@ -290,8 +290,7 @@ UNKNOWN-INTENT UNKNOWN-PROC DECL UNKNOWN 0 0 ARTIFICIAL SUBROUTINE
 ELEMENTAL PURE ALWAYS_EXPLICIT) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 (181
 182) () 0 () () () 0 0)
 27 'elem' '' '' 26 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2')))
-0 0 () () 0 () () () 0 0)
+(CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
 28 'res' '' '' 26 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
 0 0 RESULT) (CHARACTER 1 0 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 0
 INTEGER ()) 0 '2'))) 0 0 () () 0 () () () 0 0)
@@ -383,7 +382,7 @@ INTEGER ()) 0 '1000')) 0 () () () 0 0)
 (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 148 'str' '' '' 147 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
 (CHARACTER 1 0 0 0 CHARACTER (())) 0 0 () () 0 () () () 0 0)
-149 'molids' '' '' 147 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+149 'molidxs' '' '' 147 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE
 (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
 150 'n' '' '' 147 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
@@ -458,7 +457,7 @@ ARTIFICIAL DUMMY) (DERIVED 2 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
 'max_dtot' 0 132 'max_file_rows' 0 133 'max_filetoh_jjmax' 0 134
 'max_filetoh_jmax' 0 135 'max_filetoh_num_files' 0 136 'max_km_f_mblend'
 0 137 'max_km_lines_total' 0 138 'max_modeles_ntot' 0 139
-'max_num_options' 0 140 'max_partit_kmax' 0 141 'max_partit_npar' 0 142
-'max_sol_per_mol' 0 143 'misc' 0 144 'num_mol' 0 145 'parse_int_array' 0
+'max_num_options' 0 140 'max_nv_per_mol' 0 141 'max_partit_kmax' 0 142
+'max_partit_npar' 0 143 'misc' 0 144 'num_mol' 0 145 'parse_int_array' 0
 146 'pfant_halt' 0 151 'real42str' 0 156 'real82str' 0 161 'to_lower' 0
 166 'to_upper' 0 171 'trim_and_add_slash' 0 176)
