@@ -28,7 +28,7 @@ class FileAbonds(DataFile):
                     if s[0] == "1":  # sign to stop reading file
                         break
                 [ele, abol] = ostr.unpack_from(s)
-                self.ele.append(ele)
+                self.ele.append(adjust_atomic_symbol(ele))
                 self.abol.append(float(abol))
 
     def save(self, filename):

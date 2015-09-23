@@ -128,6 +128,6 @@ module dimensions
   integer, parameter :: MAX_NUM_OPTIONS = 100
 
   !> dtot maximum: maximum number of points in each calculation interval.
-  integer, parameter :: MAX_DTOT=7000
+  integer, parameter :: MAX_DTOT=10000
 end
 

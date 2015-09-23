@@ -1595,7 +1595,7 @@ module reader_molecules
   !> Points to km_lmbdam, km_sj, km_jj.
   !> This is mounted at reading to help with the filtering and avoid
   !> allocating 2 dimensions for (lm__lmbdam, km_sj, km_jj)
-  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_iollosol
+  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_ln
 
   real*8,  dimension(MAX_KM_LINES_TOTAL) :: &
    km_lmbdam, &
@@ -1785,7 +1785,7 @@ contains
 
         if (numlin .ne. 0) then
           j_set = j_set+1
-          km_iollosol(j_set, molidx) = i_line
+          km_ln(j_set, molidx) = i_line
         end if
 
         j_line = j_line+1

@@ -23,3 +23,4 @@ if __name__ == "__main__":
   v = VisFileToH()
   v.title = args.fn
   v.use(r)
+  plt.show()

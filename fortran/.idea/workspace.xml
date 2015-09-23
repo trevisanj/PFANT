@@ -30,8 +30,8 @@
       <file leaf-file-name="pfant.f90" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pfant.f90">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334" vertical-offset="12413" max-vertical-offset="39438">
-              <caret line="716" column="0" selection-start-line="716" selection-start-column="0" selection-end-line="716" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.33333334" vertical-offset="12017" max-vertical-offset="39906">
+              <caret line="694" column="0" selection-start-line="694" selection-start-column="0" selection-end-line="694" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -227,7 +227,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../other/debugging/hydrogen_lines" />
     <property name="FullScreen" value="false" />
   </component>
   <component name="RecentsManager">
@@ -255,7 +255,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="0" width="1080" height="1920" extended-state="1" />
+    <frame x="1280" y="0" width="1080" height="1920" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -692,8 +692,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pfant.f90">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="12413" max-vertical-offset="39438">
-          <caret line="716" column="0" selection-start-line="716" selection-start-column="0" selection-end-line="716" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="12017" max-vertical-offset="39906">
+          <caret line="694" column="0" selection-start-line="694" selection-start-column="0" selection-end-line="694" selection-end-column="0" />
           <folding />
         </state>
       </provider>
