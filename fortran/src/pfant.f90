@@ -22,6 +22,8 @@
 !> Prefix "sat4_" denotes variables filled by sat4() (or indirectly, die())
 !>
 
+!> @todo hydrogen line plotted alone suggest that some interpolation is adding parabolic term with wrong signal
+
 module dissoc
   use config
   use readers
@@ -73,7 +75,7 @@ contains
     real*8  kplog, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
-    integer i, ig0i, ig1i, iq, ir, irl, irr, ito, itx, j, jcount, nbl, &
+    integer i, ig0i, ig1i, iq, ir, irl, irr, ito, j, jcount, nbl, &
      nelemi, nelemxi, k1, k2, k3, kd, kf, iz
 
     !
@@ -601,8 +603,7 @@ contains
     !> Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     real*8 :: lambda
-    integer i, &
-            molidx,          &  ! Counts molecule id, from 1 to NUM_MOL
+    integer molidx,          &  ! Counts molecule id, from 1 to NUM_MOL
             i_mol,           &  ! Counts molecules that are "switched on"
             j_dummy, j_set,  &
             i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
@@ -676,11 +677,11 @@ contains
 
     km_f_mblend = i_filtered
 
-    print *, '*****************************************************************'
-    do i = 1, i_mol
-      print *, '#', get_molidx(i), ' == ', km_f_ln(1:km_nv(get_molidx(i_mol)),i)
-    end do
-    print *, '*****************************************************************'
+    !print *, '*****************************************************************'
+    !do i = 1, i_mol
+    !  print *, '#', get_molidx(i), ' == ', km_f_ln(1:km_nv(get_molidx(i_mol)),i)
+    !end do
+    !print *, '*****************************************************************'
     write(lll, *) LEAVING, 'filter_molecules() summary: [', lzero, ', ', lfin, '] --> ', i_filtered, '/', km_lines_total
     call log_debug(lll)
   end
@@ -909,225 +910,6 @@ contains
   end
 end
 
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
-! @todo implement "variable patterns" documentation
-
-!> hydroasm - "HYDROgen contribution ASseMbler"
-!>
-!> Deals with the hydrogen lines
-!>
-!> @par Variable patterns
-!> @li hy_* - variables calculated by calc_tauh()
-
-module hydroasm
-  private
-
-
-
-contains
-  !> Calculates hy_tauh, hy_dhp, hy_dhm
-  subroutine calc_tauh()
-
-      im = 0
-      do ih = 1,filetoh_num_files
-        allhy = filetoh_llhy(ih)-m_lzero
-
-        if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
-            ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
-          im = im+1
-          irh = 1
-          iht = ih
-
-          !#logging
-          712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,'filename=',a,2x,'ih=',i5)
-          write(lll,712) im, filetoh_llhy(ih), ''''//trim(filetoh_filenames(iht))//'''', iht
-          call log_info(lll)
-
-          ! Lecture tau raie hydrogene et interpolation de tauh
-          ! Type *,' nom des fichiers TAU raies Hydrogene'
-          !
-          ! Old "LECTAUH()". Calculates ct_tauh, ct_dhmi and ct_dhpi for file identified by ih.
-          call calc_tauh(ih, dtot, ttd, ilzero)
-
-          dhmy(im) = ct_dhmi
-          dhpy(im) = ct_dhpi
-          do n = 1,modeles_ntot
-            do d = 1,dtot
-              tauhy(im, d, n) = ct_tauhi(d,n)
-            end do
-          end do
-        end if
-      end do
-
-      imy = im
-      if(imy .ne. 0) then
-        write(lll,*) (dhmy(im), im=1,imy)
-        call log_debug('DHMY ==> '//lll)
-        write(lll,*) (dhpy(im), im=1,imy)
-        call log_debug('DHPY ==> '//lll)
-
-        dhp = maxi(dhpy, imy, 1, imy)
-        dhm = mini(dhmy, imy, 1, imy)
-
-        do n = 1,modeles_ntot
-          do d = 1,dtot
-            tauh(n, d) = 0.0
-            do im = 1,imy
-              tauh(n, d) = tauh(d,n)+tauhy(im,d,n)
-            end do
-          end do
-        end do
-      else
-        irh=0
-        dhm=0
-        dhp=0
-      end if
-
-
-  !=======================================================================================
-  !> Calculates tauhi, dhmi and dhpi for file specified
-  !>
-  !> @note this is originally subroutine "LECTAUH" without the file reading part
-  !>
-  !> @todo top test the pointers
-
-
-  subroutine calc_tauhi(i_file)
-    integer, intent(in) :: i_file !< index pointing to element of the filetoh_* arrays
-    integer d, j, jj, jma1, n, &
-     jjmax, &
-     now_jmax ! jmax of file i_file
-
-    real*8, dimension(MAX_FILETOH_JJMAX) :: llambdh, allh, tauhn
-    real*8 :: tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
-    real*8 :: ftth(MAX_DTOT)
-
-    real*8 del
-    ! pointers, point to information within filetoh_* matrices at the beginning of
-    ! a specific file.
-    ! This simplifies the notation within the loop below and is probably faster than
-    ! accessing the variables filetoh_* directly
-    real*8, pointer, dimension(:,:) :: now_th
-    real*8, pointer, dimension(:)   :: now_lambdh
-
-    now_jmax   = filetoh_jmax(i_file)
-    now_th     => filetoh_th(i_file, :, :)
-    now_lambdh => filetoh_lambdh(i_file, :)
-
-    jjmax = 2*now_jmax-1
-    jma1 = now_jmax-1
-    do jj = 1, now_jmax
-      del = now_lambdh(now_jmax+1-jj)-now_lambdh(1)
-      llambdh(jj) = now_lambdh(now_jmax+1-jj)-2*del
-    end do
-    do jj = now_jmax+1, jjmax
-      llambdh(jj) = now_lambdh(jj-jma1)
-    end do
-    do n = 1, modeles_ntot
-      do jj = 1, now_jmax
-        tth(jj, n) = now_th(now_jmax+1-jj, n)
-      end do
-      do jj = now_jmax+1, jjmax
-        tth(jj, n) = now_th(jj-jma1, n)
-      end do
-    end do
-
-    do j = 1,jjmax
-      allh(j) = llambdh(j)-m_ilzero
-    end do
-
-    do n = 1,modeles_ntot
-      do j = 1,jjmax
-        tauhn(j) = tth(j,n)
-      end do
-
-      call ftlin3h()
-
-      do d = 1,m_dtot
-        ct_tauhi(d, n) = ftth(d)
-      end do
-    end do
-  contains
-    !-------------------------------------------------------------------------------
-    !> ?doc?
-    !>
-    !> @note This routine is very similar to misc_math::ftlin3()*.
-    !>
-    !> Uses variables from parent filetoh_auh():
-    !> @li m_dtot
-    !> @li m_ttd
-    !> @li jjmax
-    !>
-    subroutine ftlin3h()
-      real*8 dy, ft, t, t0, t1, t2, u0
-      integer j, k, kk, jj, kk1, kq
-
-      j = 2
-      kk = 1
-      24 continue
-      do 4 k = kk,m_dtot
-        kq = k
-        t = m_ttd(k)
-
-        jj = j-1
-        do 1  j = jj,jjmax
-          if (t-allh(j)) 3,2,1
-          1 continue
-          go to 10
-          2 ft=tauhn(j)
-        if (j .eq. 1) j = j+1
-        go to 4
-
-        3 if (j .eq. 1) go to 10
-        u0 = tauhn(j)-tauhn(j-1)
-        t0 = allh(j)-allh(j-1)
-        t1 = t-allh(j-1)
-
-        t2 = t1/t0
-        dy = u0*t2
-        ft = tauhn(j-1) + dy
-        ftth(k) = ft
-      4 continue
-
-      14 continue
-
-      do k = 1,m_dtot
-        if(ftth(k).ne.0.0) go to 20
-      end do
-
-      20 ct_dhmi = k
-
-      ! ?doc?
-      if (ct_dhmi .eq. m_dtot) ct_dhmi = 1
-
-
-      kk1 = ct_dhmi+1
-      do k = kk1,m_dtot
-        if (ftth(k) .eq. 0.0) go to 30
-      end do
-
-      30 ct_dhpi = k
-
-      ! (Paula Coelho 21/11/04) instrucao da Marie Noel
-      ! ?doc?
-      if (ftth(m_dtot) .ne. 0.0) ct_dhpi = m_dtot
-
-      return
-
-      10 ftth(k) = 0.
-      j = j+1
-
-      kk = kq
-      kk = kk+1
-      if (kq .gt. m_dtot) go to 14
-      go to 24
-    end
-  end
-
-end
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -1197,6 +979,16 @@ end
 
 !>
 !> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
+!>
+!> Variable patterns
+!> @verbatim
+!>        m_* module internal variables shared among routines
+!>       hy_* hydrogen line-related, calculated by calc_tauh()
+!> popadelh_* calculated by popadelh()
+!>   turbul_* calculated by turbul()
+!>  selekfh_* calculated by selekfh()
+!>       bk_* calculated by bk()
+!>    popul_* calculated by popul()
 
 module synthesis
   use logging
@@ -1211,7 +1003,7 @@ module synthesis
   use pfant_x
   implicit none
 
-  private  ! This statement makes all symbols private by default
+  !private  ! This statement makes all symbols private by default
 
   public :: synthesis_ ! subroutine
 
@@ -1248,6 +1040,16 @@ module synthesis
   !> Calculated by subroutine bk
   real*8, dimension(MAX_DTOT) :: bk_fc
 
+  ! Calculated by calc_tauh(), hydrogen lines-related
+  real*8, public :: hy_tauh(MAX_MODELES_NTOT, MAX_DTOT)
+  integer, public :: &
+   hy_dhp, & !< maximum value of dhpy
+   hy_dhm    !< minimum value of dhmy
+
+  ! Calculated by calc_tauhi(), auxiliary of calc_tauh()
+  integer :: &
+   m_dhmi, & !< Calculated by subroutine calc_tauhi
+   m_dhpi    !< Calculated by subroutine calc_tauhi
 
   !=====
   ! Constants available to all subroutines within this module
@@ -1271,13 +1073,18 @@ module synthesis
   !=====
   ! Module variables initialized in subroutine synthesis_() and shared among other routines.
   !=====
-  real*8 ::    &
-    m_lzero,   &  !< initial lambda of current ikey-th iteration
-    m_lfin,    &  !< final lambda of current ikey-th iteration
-    m_dtot,    &  !< number of different wavelenghts for which flux will be calculated at each ikey-iteration
+  real*8 :: &
+   m_lzero, &                 !< initial lambda of current ikey-th iteration
+   m_lfin, &                  !< final lambda of current ikey-th iteration
+   m_lambd, &                 !< lambda 1/2
+   m_ttd(MAX_DTOT), &
+   m_ecart(MAX_ATOMS_F_NBLEND), & !< MT: some sort of delta lambda
+   m_gfal(MAX_ATOMS_F_NBLEND), &
+   m_ecartm(MAX_KM_F_MBLEND), &
+   m_ilzero
   integer :: &
-    m_ilzero,  &  !< closest integer multiple of 100 that is <= m_lzero
-  real*8 m_ttd(MAX_DTOT)
+    m_dtot!,    &  !< number of different wavelenghts for which flux will be calculated at each ikey-iteration
+    !m_ilzero      !< closest integer multiple of 100 that is <= m_lzero
 
 contains
 
@@ -1293,28 +1100,18 @@ contains
      UNIT_LINES = 32, &
      UNIT_LOG   = 31
 
+    real*8 fn(MAX_DTOT)
 
-    integer :: &
-     d,        &
-     dhmy(MAX_FILETOH_NUM_FILES), &
-     dhpy(MAX_FILETOH_NUM_FILES)
-    integer dhm,dhp
-
-    real*8 gfal(MAX_ATOMS_F_NBLEND), &
-           ecart(MAX_ATOMS_F_NBLEND), &  ! MT: some sort of delta lambda
-           ecartm(MAX_KM_F_MBLEND)
-
-    real*8 fn(MAX_DTOT), &
-           hy_tauh(MAX_MODELES_NTOT, MAX_DTOT), &
-           tauhy(MAX_FILETOH_NUM_FILES, MAX_DTOT, MAX_MODELES_NTOT)
-
-    integer i, i1, i2, ih, &
+    integer i, i1, i2, itot, k, l, li, d, &
      ikey,    & ! ikey-th main_aint-large calculation interval
-     ikeytot, & ! total number of main_aint-large calculation intervals
-     iht, im, imy, irh, itot, k, l, li,&
-     n
-    real*8 lambd, l0, lf, allhy, alzero, tetaef, xlfin, xlzero
+     ikeytot    ! total number of main_aint-large calculation intervals
 
+    real*8 l0, lf, alzero, tetaef, xlfin, xlzero
+
+
+    real :: start, finish, start0, finish0
+
+    call cpu_time(start0)
 
     !=====
     ! Setup
@@ -1341,20 +1138,34 @@ contains
     ! Calculation begins!
     !=====
 
+    call cpu_time(start)
+
     call turbul()
+
     call log_debug('turbul() OK!')
+    call cpu_time(finish)
+    print '("TURBUL() Time = ",f6.3," seconds.")',finish-start
 
     ! -- III --
     ! Calcul de quant  ne dependant que du metal et du modele
     ! Population du niv fond des ions
+    call cpu_time(start)
+
     call popul()
-    call log_debug('popul() OK!')
+
+    call cpu_time(finish)
+    print '("POPUL() Time = ",f6.3," seconds.")',finish-start
 
     ! -- IV --
     ! Calcul des quantites ne dependant que du
     ! Modele et de lambda : bk_b(n)   bk_kc(n)   bk_fc ISSUE probably wrong comment
+    call cpu_time(start)
+
     call sat4()
     call log_debug('sat4() OK!')
+
+    call cpu_time(finish)
+    print '("SAT4() Time = ",f6.3," seconds.")',finish-start
 
 
     ! initial calculation sub-interval
@@ -1397,11 +1208,11 @@ contains
 
       ! spill check
       if(m_dtot .gt. MAX_DTOT) then
-        call pfant_halt('m_dtot = '//int2str(m_dtot)//' exceeds maximum of MAX_DTOT='//&
+        call pfant_halt('dtot = '//int2str(m_dtot)//' exceeds maximum of MAX_DTOT='//&
          int2str(MAX_DTOT))
       end if
 
-      lambd = (m_lzero+m_lfin)/2
+      m_lambd = (m_lzero+m_lfin)/2
       m_ilzero = int(m_lzero/100.)*100
       alzero = m_lzero-m_ilzero
       do d = 1,m_dtot
@@ -1411,46 +1222,93 @@ contains
       !#logging
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
-      501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3, 2x,'lzero=',f10.3,2x,'lfin=',&
-       f10.3,2x,'dtot=',i7,'lambd 1/2=',f10.3)
-      write(lll,501) x_llzero, x_llfin, m_lzero, m_lfin, m_dtot, lambd
+      501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3, 2x,'m_lzero=',f10.3,2x,'m_lfin=',&
+       f10.3,2x,'m_dtot=',i7,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',f10.3)
+      write(lll,501) x_llzero, x_llfin, m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
       call log_info(lll)
 
       !=====
       ! Beginning of iteration
       !=====
 
-
       ! ????????????????
+      call cpu_time(start)
+
       call bk()
 
+      call cpu_time(finish)
+      print '("BK() Time = ",f6.3," seconds.")',finish-start
+
+
       ! hydrogen lines
+      call cpu_time(start)
+
       call calc_tauh()
 
+      call cpu_time(finish)
+      print '("CALC_TAUH() Time = ",f6.3," seconds.")',finish-start
 
       ! -- V --
       ! Quantites dependant de la raie et du modele
+      call cpu_time(start)
+
       call filter_atoms(m_lzero, m_lfin)
 
+      call cpu_time(finish)
+      print '("FILTER_ATOMS() Time = ",f6.3," seconds.")',finish-start
+
+
       if(atoms_f_nblend .gt. 0) then
+        call cpu_time(start)
+
         call popadelh()
+
+        call cpu_time(finish)
+        print '("POPADELH() Time = ",f6.3," seconds.")',finish-start
+
 
         ! -- VI --
         ! Calcul du coefficient d absorption selectif et calcul du spectre
         do k = 1, atoms_f_nblend
-          gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
-          ecart(k) = atoms_f_lambda(k)-m_lzero+main_pas
+          m_gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
+          m_ecart(k) = atoms_f_lambda(k)-m_lzero+main_pas
         end do
       end if
 
+      call cpu_time(start)
+
       call filter_molecules(m_lzero, m_lfin)
+
+      call cpu_time(finish)
+      print '("FILTER_MOLECULES() Time = ",f6.3," seconds.")',finish-start
+
+
+      call cpu_time(start)
+
       call kapmol_()
 
+      call cpu_time(finish)
+      print '("KAPMOL_() Time = ",f6.3," seconds.")',finish-start
+
+
       do l = 1, km_f_mblend
-        ecartm(l) = km_f_lmbdam(l)-m_lzero + main_pas
+        m_ecartm(l) = km_f_lmbdam(l)-m_lzero + main_pas
       end do
 
+      call cpu_time(start)
+
       call selekfh()
+
+      call cpu_time(finish)
+      print '("SELEKFH() Time = ",f6.3," seconds.")',finish-start
+
+
+      !=====
+      ! Saving...
+      !=====
+
+      call cpu_time(start)
+
 
       li = int(10./main_pas)
       i1 = li+1
@@ -1465,33 +1323,35 @@ contains
         fn(d) = selekfh_fl(d) / selekfh_fcont(d)  ! normalized spectrum
       end do
 
-      !=====
       ! Writes results for current iteration into open files
-      !=====
       ! call write_lines_fort91()                        ! outfile:lines and fort.91
       ! call write_log()                                ! log.log
       call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
       call write_spec_item(UNIT_NORM, fn)             ! normalized
 
-      !#logging
-      707 format(1x,'ikey=',i10,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'i1=',i7,2x,'i2=',i7)
-      write(lll,707) ikey, m_lzero, m_lfin, i1, i2
-      call log_info(lll)
+      !707 format(1x,'ikey=',i10,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'i1=',i7,2x,'i2=',i7)
+      !write(lll,707) ikey, m_lzero, m_lfin, i1, i2
+      !call log_info(lll)
+
+      !=====
+      ! Preparing for next iteration
+      !=====
 
       call log_progress(ikey, ikeytot)
+
+      call cpu_time(finish)
+      print '("SAVING Time = ",f6.3," seconds.")',finish-start
 
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
-      !#logging
-      708 format(1x,'ikey=',i10,2x,'irh=',i6)
-      write(lll, 708) ikey, irh
-      call log_info(lll)
-
       m_lzero = m_lzero+main_aint
       m_lfin = m_lfin+main_aint
       if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
+
+
+
 
     end do  ! main loop
 
@@ -1508,6 +1368,8 @@ contains
 
     call log_debug(LEAVING//'synthesis_()')
 
+    call cpu_time(finish0)
+    print '("SYNTHESIS_() Time = ",f6.3," seconds.")',finish0-start0
 
   contains  !--still pfant_calculate()
 
@@ -1547,7 +1409,6 @@ contains
 
       write(unit_,'(40000f15.5)') (item(d), d=i1,i2)
     end
-
 
   end subroutine synthesis_
 
@@ -1755,11 +1616,252 @@ contains
 
 
 
+  !======================================================================================================================
+  !> Sets the Voigt profile using Hjertings' constants; calculates the flux and continuum
+  !>
+  !> @note Most of the calculation time is spent inside this routine
+  !>
+  !> @note Convolution for molecules uses Gaussian profile.
+  !>
+  !> @todo MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
+
+  subroutine selekfh()
+    integer d, k, l, n
+    real*8 :: bi(0:MAX_MODELES_NTOT)
+    real*8, dimension(MAX_ATOMS_F_NBLEND) :: &
+     ecar  !, & !     ecartl, &
+    real*8, dimension(MAX_MODELES_NTOT) :: &
+     kap,    &
+     kci,    &
+     kappt
+    real*8, dimension(MAX_KM_F_MBLEND) :: &
+     ecarm !, ecartlm
+    real*8 :: &
+     deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
+     phi, t, v, vm, &
+     kam, kappam, kappa, kak
+
+    if (atoms_f_nblend .ne. 0) then
+      do k = 1,atoms_f_nblend
+        ecar(k) = m_ecart(k)
+      end do
+    end if
+
+    if (km_f_mblend .ne. 0) then
+      do k=1,km_f_mblend
+        ecarm(k) = m_ecartm(k)
+      end do
+    end if
+
+    do d = 1, m_dtot
+      ! Shifts the ecar and ecarm delta lambda vectors
+      if (atoms_f_nblend .ne. 0) then
+        do k = 1, atoms_f_nblend
+          ecar(k) = ecar(k)-main_pas
+        end do
+      end if
+
+      if (km_f_mblend .ne. 0) then
+        do k = 1,km_f_mblend
+          ecarm(k) = ecarm(k)-main_pas
+        end do
+      end if
+
+      do n = 1,modeles_ntot
+        kappa = 0.
+        kappam = 0.
+        t = 5040./modeles_teta(n)
+
+        ! atomes
+        if(atoms_f_nblend .eq. 0) go to 260
+
+        do  k = 1,atoms_f_nblend
+          !if(abs(ecartl(k)) .gt. atoms_f_zinf(k)) then
+          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+            kak = 0.
+          else
+            v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
+            call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
+
+            if(atoms_f_elem(k) .eq. ' O') then
+              ! #NOXIG: oxygen is a particular case here
+              kak = phi * popadelh_pop(k,n) * m_gfal(k)
+            else
+              kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
+            end if
+          end if
+          kappa = kappa + kak
+        end do   !  fin bcle sur k
+
+        260 continue
+
+        ! molecules
+        if(km_f_mblend .eq. 0) go to 250
+        do l = 1, km_f_mblend
+          !if(abs(ecartlm(l)) .gt. km_c_alargm(l))  then
+          if(abs(ecarm(l)) .gt. km_c_alargm(l))  then
+            kam = 0.
+          else
+            deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
+            vm = abs(ecarm(l)*1.e-08/deltam(l,n))
+            phi = (exp(-vm**2))/(RPI*deltam(l,n))
+            kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
+          end if
+          kappam = kappam+kam
+        end do   !  fin bcle sur l
+
+        250 continue
+        kappt(n) = kappa+kappam
+
+        kci(n) = bk_kcd(d,n)
+        kap(n) = kappt(n)+kci(n)
+        bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
+      end do 
 
 
-  !> Calculates hy_tauh, hy_dhp, hy_dhm
+      bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
+
+      !if (d .eq. 1 .or. d .eq. m_dtot) then
+      !  150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
+      !  152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
+      !  151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
+      !
+      !  write(lll,151) d,bi(0),bi(1),bi(modeles_ntot)
+      !  call log_debug(lll)
+      !  write(lll,150) d,kci(1),kci(modeles_ntot),kappa(1),kappa(modeles_ntot)
+      !  call log_debug(lll)
+      !  !write(lll,152)kappam(1),kappam(modeles_ntot)
+      !  !call log_debug(lll)
+      !end if
+
+      if ((d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
+        ! without hydrogen lines
+        ! write(*,*) 'NO H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
+        call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
+        selekfh_fl(d) = flin_f
+      else
+        ! with hydrogen lines
+        ! write(*,*) 'YES H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
+        call flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
+        selekfh_fl(d) = flin_f
+      end if
+
+      ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
+      call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
+      selekfh_fcont(d) = flin_f
+    end do  ! fin bcle sur d
+  end
+
+
+  !======================================================================================================================
+  !> Calculates the flux in the continuum.
+  !> @todo There is a lot of calculation here that is independent from m_lzero and m_lfin (optimize?)
+  !>
+  !> @todo log_pe not used yet
+
+  subroutine bk()
+    real*8 nu, llzero, llfin, nu1, nu2, &
+     alph_n ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
+    real*8, dimension(2, MAX_MODELES_NTOT) :: kcj
+    real*8, dimension(2) :: kcn, lambdc
+    real*8 :: fttc(MAX_DTOT)
+    real*8 c3, c31, c32, fc1, fc2, t, tet0, ahnu, ahnu1, ahnu2, alph0, alph01, alph02
+    integer d, j, n
+
+    call log_debug(ENTERING//'bk()')
+
+    llzero = m_lzero
+    llfin  = m_lfin
+    nu1 = C* 1.e+8 /m_lzero
+    ahnu1 = h*nu1
+    c31 = (2*ahnu1) * (nu1/C)**2
+
+    do n = 1,modeles_ntot
+      t = 5040./modeles_teta(n)
+      alph_n = exp(-ahnu1/(KB*t))
+      bk_b1(n) = c31 * (alph_n/(1.-alph_n))
+      call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      bk_kc1(n) = absoru_totkap(1)
+    end do
+
+    nu2 = C* 1.e+8 /m_lfin
+    ahnu2 = H*nu2
+    c32 =(2*ahnu2) * (nu2/C)**2
+    do n = 1,modeles_ntot
+      !> @todo: calculate this "T" somewhere else, this is calculated all the time (optimize)
+      t = 5040./modeles_teta(n)
+      alph_n = exp(-ahnu2/(KB*t))
+      bk_b2(n) = c32 * (alph_n/(1.-alph_n))
+      call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      bk_kc2(n) = absoru_totkap(1)
+    end do
+
+    nu = C* 1.e+8 /m_lambd
+    ahnu = H*nu
+    c3 =(2*ahnu) * (nu/C)**2
+    do n=1,modeles_ntot
+      t=5040./modeles_teta(n)
+      alph_n = exp(-ahnu/(KB*t))
+      bk_b(n) = c3 * (alph_n/(1.-alph_n))
+      call absoru_(m_lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
+      bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
+      bk_kc(n) = absoru_totkap(1)
+    end do
+
+    tet0 = fteta0(modeles_pg, modeles_teta, modeles_ntot)     !on extrapole modeles_teta pour modeles_nh=0
+    t = 5040./tet0
+
+    alph01 = exp(-ahnu1/(KB*t))
+    bk_b1(0) = c31 * (alph01/(1.-alph01))
+    call flin1(bk_kc1,bk_b1,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    fc1 = flin_f
+
+    alph02 = exp(-ahnu2/(KB*t))
+    bk_b2(0) = c32 * (alph02/(1.-alph02))
+    call flin1(bk_kc2,bk_b2,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    fc2 = flin_f
+
+    alph0 = exp(-ahnu/(KB*t))
+    bk_b(0) = c3 * (alph0/(1.-alph0))
+    call flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    bk_fc = flin_f
+
+    lambdc(1) = m_lzero-m_ilzero
+    lambdc(2) = m_lfin-m_ilzero
+    do n=1,modeles_ntot
+      kcj(1,n)=bk_kc1(n)
+      kcj(2,n)=bk_kc2(n)
+    end do
+    do n=1,modeles_ntot
+      do j=1,2
+        kcn(j)=kcj(j,n)
+      end do
+      call ftlin3(2,lambdc,kcn,m_dtot,m_ttd,fttc)
+      do d = 1,m_dtot
+        bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
+      end do
+    end do
+
+    !#logging
+    153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
+    154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
+    write(lll,153) bk_kcd(1,1),bk_kcd(1,modeles_ntot)
+    call log_debug(lll)
+    write(lll,154) bk_kcd(m_dtot,1),bk_kcd(m_dtot,modeles_ntot)
+    call log_debug(lll)
+
+    call log_debug(LEAVING//'bk()')
+  end
+
+  !=======================================================================================
+  !> Hydrogen lines-related calculation: calculates hy_tauh, hy_dhp, hy_dhm
 
   subroutine calc_tauh()
+    integer :: im, dhmy(MAX_FILETOH_NUM_FILES), dhpy(MAX_FILETOH_NUM_FILES), ih, iht, imy
+    real*8 :: allhy
+
+    hy_tauh = 0.  ! initializes all elements to zero
 
     im = 0
     do ih = 1,filetoh_num_files
@@ -1768,7 +1870,6 @@ contains
       if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
           ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
         im = im+1
-        irh = 1
         iht = ih
 
         !#logging
@@ -1776,19 +1877,10 @@ contains
         write(lll,712) im, filetoh_llhy(ih), ''''//trim(filetoh_filenames(iht))//'''', iht
         call log_info(lll)
 
-        ! Lecture tau raie hydrogene et interpolation de hy_tauh
-        ! Type *,' nom des fichiers TAU raies Hydrogene'
-        !
-        ! Old "LECTAUH()". Calculates ct_tauh, ct_dhmi and ct_dhpi for file identified by ih.
-        call calc_tauh(ih, dtot, ttd, ilzero)
+        call calc_tauhi(ih)
 
-        dhmy(im) = ct_dhmi
-        dhpy(im) = ct_dhpi
-        do n = 1,modeles_ntot
-          do d = 1,dtot
-            tauhy(im, d, n) = ct_tauhi(d,n)
-          end do
-        end do
+        dhmy(im) = m_dhmi
+        dhpy(im) = m_dhpi
       end if
     end do
 
@@ -1799,268 +1891,165 @@ contains
       write(lll,*) (dhpy(im), im=1,imy)
       call log_debug('DHPY ==> '//lll)
 
-      dhp = maxi(dhpy, imy, 1, imy)
-      dhm = mini(dhmy, imy, 1, imy)
+      hy_dhm = mini(dhmy, imy, 1, imy)
+      hy_dhp = maxi(dhpy, imy, 1, imy)
 
-      do n = 1,modeles_ntot
-        do d = 1,dtot
-          hy_tauh(n, d) = 0.0
-          do im = 1,imy
-            hy_tauh(n, d) = hy_tauh(n, d)+tauhy(im,d,n)
-          end do
-        end do
-      end do
+      !!!!!do n = 1,modeles_ntot
+      !!!!!  do d = 1,dtot
+      !!!!!    tauh(n, d) = 0.0
+      !!!!!    do im = 1,imy
+      !!!!!      tauh(n, d) = tauh(d,n)+tauhy(im,d,n)
+      !!!!!    end do
+      !!!!!  end do
+      !!!!!end do
     else
-      irh=0
-      dhm=0
-      dhp=0
+      hy_dhm = 0
+      hy_dhp = 0
     end if
   end
 
+  !=======================================================================================
+  !> Adds contribution of single file to hy_tauh; also calculates m_dhmi and m_dhpi
+  !>
+  !> @todo top test the pointers
 
+  subroutine calc_tauhi(i_file)
+    integer, intent(in) :: i_file !< index pointing to element of the filetoh_* arrays
+    integer d, j, jj, jma1, n, &
+     jjmax, &
+     now_jmax ! jmax of file i_file
 
-    !======================================================================================================================
-    !> Sets the Voigt profile using Hjertings' constants; calculates the flux and continuum
+    real*8, dimension(MAX_FILETOH_JJMAX) :: llambdh, allh, tauhn
+    real*8 :: tth(MAX_FILETOH_JJMAX, MAX_MODELES_NTOT)
+    real*8 :: ftth(MAX_DTOT)
+
+    real*8 del
+    ! pointers, point to information within filetoh_* matrices at the beginning of
+    ! a specific file.
+    ! This simplifies the notation within the loop below and is probably faster than
+    ! accessing the variables filetoh_* directly
+    real*8, pointer, dimension(:,:) :: now_th
+    real*8, pointer, dimension(:)   :: now_lambdh
+
+    ! write(*,*) 'CALCULATING TAUHI FOR FILE ', filetoh_filenames(i_file)
+
+    now_jmax   = filetoh_jmax(i_file)
+    now_th     => filetoh_th(i_file, :, :)
+    now_lambdh => filetoh_lambdh(i_file, :)
+
+    jjmax = 2*now_jmax-1
+    jma1 = now_jmax-1
+    do jj = 1, now_jmax
+      del = now_lambdh(now_jmax+1-jj)-now_lambdh(1)
+      llambdh(jj) = now_lambdh(now_jmax+1-jj)-2*del
+    end do
+    do jj = now_jmax+1, jjmax
+      llambdh(jj) = now_lambdh(jj-jma1)
+    end do
+    do n = 1, modeles_ntot
+      do jj = 1, now_jmax
+        tth(jj, n) = now_th(now_jmax+1-jj, n)
+      end do
+      do jj = now_jmax+1, jjmax
+        tth(jj, n) = now_th(jj-jma1, n)
+      end do
+    end do
+
+    do j = 1,jjmax
+      allh(j) = llambdh(j)-m_ilzero
+    end do
+
+    do n = 1,modeles_ntot
+      do j = 1,jjmax
+        tauhn(j) = tth(j,n)
+      end do
+
+      call ftlin3h()
+
+      do d = 1,m_dtot
+        hy_tauh(n, d) = hy_tauh(n, d)+ftth(d)
+      end do
+    end do
+  contains
+
+    !-------------------------------------------------------------------------------------
+    !> Interpolaton specially for hydrogen lines calculation.
     !>
-    !> @note Convolution for molecules uses Gaussian profile.
+    !> Linear interpolation.
     !>
-    !> @todo MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
+    !> @note When seen in pfant output (e.g. flux.norm), the hydrogen line is
+    !> a sequence of joined convex lines. This is probably due to hy_tauh undergoing
+    !> something like -log(hy_tauh). These small convex lines are more easily noticed
+    !> if a hydrogen line is calculated alone, without other abundances.
+    !>
+    !> @note This routine is very similar to misc_math::ftlin3()*.
+    !>
 
-    subroutine selekfh()
-      integer d
-      real*8 :: bi(0:MAX_MODELES_NTOT)
-      real*8, dimension(MAX_ATOMS_F_NBLEND) :: &
-       ecar, &
-       ecartl, &
-       ka
-      real*8, dimension(MAX_MODELES_NTOT) :: &
-       kap,    &
-       kappa,  &
-       kci,    &
-       kappam, &
-       kappt
-      real*8, dimension(MAX_KM_F_MBLEND) :: &
-       ecarm,   &
-       ecartlm, &
-       kam
-      real*8 :: &
-       deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
-       phi, t, v, vm, lambi
+    subroutine ftlin3h()
+      real*8 dy, ft, t, t0, t1, t2, u0
+      integer j, k, kk, jj, kk1, kq
+
+      j = 2
+      kk = 1
+      24 continue
+      do 4 k = kk,m_dtot
+        kq = k
+        t = m_ttd(k)
+
+        jj = j-1
+        do 1  j = jj,jjmax
+          if (t-allh(j)) 3,2,1
+        1 continue
+        go to 10
+        2 ftth(k) = tauhn(j)
+        if (j .eq. 1) j = j+1
+        go to 4
+
+        3 if (j .eq. 1) go to 10
+        ! linear interpolation.
+        u0 = tauhn(j)-tauhn(j-1)
+        t0 = allh(j)-allh(j-1)
+        t1 = t-allh(j-1)
+        t2 = t1/t0
+        dy = u0*t2
+        ft = tauhn(j-1) + dy
+        ftth(k) = ft
+      4 continue
+
+      14 continue
+
+      do k = 1,m_dtot
+        if(ftth(k).gt. 1e-38) go to 20
+      end do
+
+      20 m_dhmi = k
+
+      ! ?doc?
+      if (m_dhmi .eq. m_dtot) m_dhmi = 1
 
 
-      if (atoms_f_nblend .ne. 0) then
-        do k = 1,atoms_f_nblend
-          ecar(k) = ecart(k)
-        end do
-      end if
+      kk1 = m_dhmi+1
+      do k = kk1,m_dtot
+        if (ftth(k) .le. 1e-38) go to 30
+      end do
 
-      if (km_f_mblend .ne. 0) then
-        do k=1,km_f_mblend
-          ecarm(k) = ecartm(k)
-        end do
-      end if
+      30 m_dhpi = k
 
+      ! (Paula Coelho 21/11/04) instrucao da Marie Noel
+      ! ?doc?
+      if (ftth(m_dtot) .ne. 0.0) m_dhpi = m_dtot
 
-      do d = 1, m_dtot
-        lambi = (6270+(d-1)*0.02)
-        if (atoms_f_nblend .ne. 0) then
-          do k=1,atoms_f_nblend
-            ecar(k)=ecar(k)-main_pas
-            ecartl(k)=ecar(k)
-          end do
-        end if
+      return
 
-        if(km_f_mblend .ne. 0) then
-          do k=1,km_f_mblend
-            ecarm(k) = ecarm(k)-main_pas
-            ecartlm(k) = ecarm(k)
-          end do
-        end if
+      10 ftth(k) = 0.
+      j = j+1
 
-        do n = 1,modeles_ntot
-          kappa(n) =0.
-          kappam(n) =0.
-          t = 5040./modeles_teta(n)
-
-          ! atomes
-          if(atoms_f_nblend .eq. 0) go to 260
-
-          do  k=1,atoms_f_nblend
-            if(abs(ecartl(k)) .gt. atoms_f_zinf(k)) then
-              ka(k) = 0.
-            else
-              v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
-              call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
-
-              if(atoms_f_elem(k) .eq. ' O') then
-                ! #NOXIG: oxygen is a particular case here
-                ka(k) = phi * popadelh_pop(k,n) * gfal(k)
-              else
-                ka(k) = phi * popadelh_pop(k,n) * gfal(k) * atoms_f_abonds_abo(k)
-              end if
-
-            end if
-            kappa(n) = kappa(n) + ka(k)
-          end do   !  fin bcle sur k
-
-          260 continue
-
-          ! molecules
-          if(km_f_mblend.eq.0) go to 250
-          do l = 1,km_f_mblend
-            if( abs(ecartlm(l)) .gt. km_c_alargm(l) )  then
-              kam(l)=0.
-            else
-              deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
-              vm = abs(ecarm(l)*1.e-08/deltam(l,n))
-              phi = (exp(-vm**2))/(RPI*deltam(l,n))
-              kam(l) = phi*km_c_gfm(l)*km_c_pnvj(l,n)
-            end if
-            kappam(n) = kappam(n)+kam(l)
-          end do   !  fin bcle sur l
-
-          250 continue
-          kappt(n) = kappa(n)+kappam(n)
-          kci(n) = bk_kcd(d,n)
-          kap(n) = kappt(n)+kci(n)
-          bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
-        end do    ! fin bcle sur n
-
-        bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
-
-        !#logging
-        if (d .eq. 1 .or. d .eq. m_dtot) then
-          150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
-          152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
-          151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
-
-          write(lll,151) d,bi(0),bi(1),bi(modeles_ntot)
-          call log_debug(lll)
-          write(lll,150) d,kci(1),kci(modeles_ntot),kappa(1),kappa(modeles_ntot)
-          call log_debug(lll)
-          write(lll,152)kappam(1),kappam(modeles_ntot)
-          call log_debug(lll)
-        end if
-
-        if((d .lt. dhm) .or. (d .ge. dhp)) then
-          ! without hydrogen lines
-          call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
-          selekfh_fl(d) = flin_f
-        else
-          ! with hydrogen lines
-          call flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
-          selekfh_fl(d) = flin_f
-        end if
-
-        ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-        call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
-        selekfh_fcont(d) = flin_f
-      end do  ! fin bcle sur d
+      kk = kq
+      kk = kk+1
+      if (kq .gt. m_dtot) go to 14
+      go to 24
     end
-
-
-    !======================================================================================================================
-    !> Calculates the flux in the continuum.
-    !> @todo There is a lot of calculation here that is independent from m_lzero and m_lfin (optimize?)
-    !>
-    !> @todo log_pe not used yet
-
-    subroutine bk()
-      real*8 nu, llzero, llfin, nu1, nu2, &
-       alph_n, &! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
-       log_pe   ! Created to avoid calculating ALOG10(PE) 3x
-      real*8, dimension(2, MAX_MODELES_NTOT) :: kcj
-      real*8, dimension(2) :: kcn, lambdc
-      real*8 :: fttc(MAX_DTOT)
-      real*8 c3, c31, c32, fc1, fc2, t, tet0, ahnu, ahnu1, ahnu2, alph0, alph01, alph02
-      integer d, j, n
-
-      call log_debug(ENTERING//'bk()')
-
-      llzero = m_lzero
-      llfin  = m_lfin
-      nu1 = C* 1.e+8 /m_lzero
-      ahnu1 = h*nu1
-      c31 = (2*ahnu1) * (nu1/C)**2
-
-      do n = 1,modeles_ntot
-        t = 5040./modeles_teta(n)
-        alph_n = exp(-ahnu1/(KB*t))
-        bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-        call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
-        bk_kc1(n) = absoru_totkap(1)
-      end do
-
-      nu2 = C* 1.e+8 /m_lfin
-      ahnu2 = H*nu2
-      c32 =(2*ahnu2) * (nu2/C)**2
-      do n = 1,modeles_ntot
-        !> @todo: calculate this "T" somewhere else, this is calculated all the time (optimize)
-        t = 5040./modeles_teta(n)
-        alph_n = exp(-ahnu2/(KB*t))
-        bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-        call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
-        bk_kc2(n) = absoru_totkap(1)
-      end do
-
-      nu = C* 1.e+8 /lambd
-      ahnu = H*nu
-      c3 =(2*ahnu) * (nu/C)**2
-      do n=1,modeles_ntot
-        t=5040./modeles_teta(n)
-        alph_n = exp(-ahnu/(KB*t))
-        bk_b(n) = c3 * (alph_n/(1.-alph_n))
-        call absoru_(lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
-        bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
-        bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
-        bk_kc(n) = absoru_totkap(1)
-      end do
-
-      tet0 = fteta0(modeles_pg, modeles_teta, modeles_ntot)     !on extrapole modeles_teta pour modeles_nh=0
-      t = 5040./tet0
-
-      alph01 = exp(-ahnu1/(KB*t))
-      bk_b1(0) = c31 * (alph01/(1.-alph01))
-      call flin1(bk_kc1,bk_b1,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-      fc1 = flin_f
-
-      alph02 = exp(-ahnu2/(KB*t))
-      bk_b2(0) = c32 * (alph02/(1.-alph02))
-      call flin1(bk_kc2,bk_b2,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-      fc2 = flin_f
-
-      alph0 = exp(-ahnu/(KB*t))
-      bk_b(0) = c3 * (alph0/(1.-alph0))
-      call flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-      bk_fc = flin_f
-
-      lambdc(1) = m_lzero-m_ilzero
-      lambdc(2) = m_lfin-m_ilzero
-      do n=1,modeles_ntot
-        kcj(1,n)=bk_kc1(n)
-        kcj(2,n)=bk_kc2(n)
-      end do
-      do n=1,modeles_ntot
-        do j=1,2
-          kcn(j)=kcj(j,n)
-        end do
-        call ftlin3(2,lambdc,kcn,m_dtot,m_ttd,fttc)
-        do d = 1,m_dtot
-          bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
-        end do
-      end do
-
-      !#logging
-      153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
-      154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
-      write(lll,153) bk_kcd(1,1),bk_kcd(1,modeles_ntot)
-      call log_debug(lll)
-      write(lll,154) bk_kcd(m_dtot,1),bk_kcd(m_dtot,modeles_ntot)
-      call log_debug(lll)
-
-      call log_debug(LEAVING//'bk()')
-    end
-
+  end
 
 end module
 
@@ -2127,9 +2116,6 @@ program pfant
   call synthesis_()
 
 end program pfant
-
-
-
 
 
 

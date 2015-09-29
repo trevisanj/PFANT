@@ -52,7 +52,7 @@ module misc_math
 
 contains
 
-  !> Computes the Voight function.
+!> Computes the Voight function.
   !>
   !> @verbatim
   !> COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
@@ -81,39 +81,53 @@ contains
      -.2565551e-4,.7228775e-4,-.1933631e-3,.4899520e-3,-.1173267e-2, &
      .2648762e-2,-.5623190e-2, .1119601e-1,-.2084976e-1,.3621573e-1, &
      -.5851412e-1,.8770816e-1, -.121664,.15584,-.184,.2/
+    logical :: flag_first = .true.
     logical tru/.false./
     real*8 c0, dx, v, u, y2
     integer i, j, min, max, n
+    save :: flag_first, b, ri, xn, yn, d0, d1, d2, d3, d4, hn, h, xx, hh, nby2, c
 
-    tru=.false.
-    b(1)=0.
-    b(2)=0.7093602e-7
 
-    if (tru) go to 104
+    if (flag_first) then
+      ! print *, 'first'
+      ! initialization executed at first call
 
-    ! REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
-    tru=.true.
+      flag_first = .false.
 
-    do i=1,15
-      ri(i)=-i/2.
-    end do
+      tru=.false.
+      b(1)=0.
+      b(2)=0.7093602e-7
 
-    do i=1,25
-      hn(i)=h*(i-.5)
-      c0=4.*hn(i)*hn(i)/25.-2.
+      if (tru) go to 104
 
-      do j = 2,21
-        b(j+1)=c0*b(j)-b(j-1)+c(j)
+      ! ! REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
+      ! tru = .true.
+
+      do i=1,15
+        ri(i)=-i/2.
       end do
 
-      d0(i)=hn(i)*(b(22)-b(21))/5.
-      d1(i)=1.-2.*hn(i)*d0(i)
-      d2(i)=(hn(i)*d1(i)+d0(i))/ri(2)
-      d3(i)=(hn(i)*d2(i)+d1(i))/ri(3)
-      d4(i)=(hn(i)*d3(i)+d2(i))/ri(4)
+      do i=1,25
+        hn(i)=h*(i-.5)
+        c0=4.*hn(i)*hn(i)/25.-2.
 
-      ! write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
-    end do
+        do j = 2,21
+          b(j+1)=c0*b(j)-b(j-1)+c(j)
+        end do
+
+        d0(i)=hn(i)*(b(22)-b(21))/5.
+        d1(i)=1.-2.*hn(i)*d0(i)
+        d2(i)=(hn(i)*d1(i)+d0(i))/ri(2)
+        d3(i)=(hn(i)*d2(i)+d1(i))/ri(3)
+        d4(i)=(hn(i)*d3(i)+d2(i))/ri(4)
+
+        ! write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
+      end do
+      flag_first = .false.
+    else
+      ! print *, 'NOT FIRST'
+      ! pass
+    end if
 
     104 if (x-5.) 105,112,112
     105 if (y-1.) 110,110,106
@@ -155,44 +169,188 @@ contains
     v=1.-2.*x*u
 
     ! TAYLOR SERIES EXPANSION ABOUT Y=0.0
-    vv=exp(y2-x*x)*cos(2.*x*y)/1.128379-y*v
+    vv = exp(y2-x*x)*cos(2.*x*y)/1.128379-y*v
     ! write(6,*) n,u,dx,d0(n+1),d1(n+1),d2(n+1),d3(n+1),d4(n+1)
-    uu=-y
-    max=int(5.+(12.5-x)*.8*y) !> @todo issue added int conversion but not sure if this is the logic
-    do 111 i=2,max,2
-      u=(x*v+u)/ri(i)
-      v=(x*u+v)/ri(i+1)
-      uu=-uu*y2
-      vv=vv+v*uu
+    uu = -y
+    max = int(5.+(12.5-x)*.8*y) !> @todo issue added int conversion but not sure if this is the logic
+    do 111 i = 2,max,2
+      u = (x*v+u)/ri(i)
+      v = (x*u+v)/ri(i+1)
+      uu = -uu*y2
+      vv = vv+v*uu
     111 continue
-    voigt=1.128379*vv
+    voigt = 1.128379*vv
     ! write(6,*)'region i ',voigt,vv,x,y,del
     go to 10
 
     112 continue
-    y2=y*y
-    if (y.lt.11.-.6875*x) go to 113
+    y2 = y*y
+    if (y .lt. 11.-.6875*x) go to 113
 
     !  REGION IIIB  2 POINT GAUSS-HERMITE QUADRATURE
-    u=x-xx(3)
-    v=x+xx(3)
-    voigt=y*(hh(3)/(y2+u*u)+hh(3)/(y2+v*v))
+    u = x-xx(3)
+    v = x+xx(3)
+    voigt = y*(hh(3)/(y2+u*u)+hh(3)/(y2+v*v))
     ! write(6,*)'region IIIb ', voigt
     go to 10
 
     !  REGION IIIA 4-POINT GAUSS-HERMITE QUADRATURE.
     113 continue
-    u=x-xx(1)
-    v=x+xx(1)
-    uu=x-xx(2)
-    vv=x+xx(2)
-    voigt=y*(hh(1)/(y2+u*u)+hh(1)/(y2+v*v)+hh(2)/(y2+uu*uu)+hh(2)/(y2+vv*vv))
+    u = x-xx(1)
+    v = x+xx(1)
+    uu = x-xx(2)
+    vv = x+xx(2)
+    voigt = y*(hh(1)/(y2+u*u)+hh(1)/(y2+v*v)+hh(2)/(y2+uu*uu)+hh(2)/(y2+vv*vv))
     ! write(6,*)'region IIIa',voigt
 
     10 continue
     phi = voigt /  (1.772454 * del)
-    ! write(6,*)phi
   end
+
+
+!!!!  !> Computes the Voight function.
+!!!!  !>
+!!!!  !> @verbatim
+!!!!  !> COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
+!!!!  !> - TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
+!!!!  !> LA FONCTION EST ENSUITE NORMALISEE
+!!!!  !> @endverbatim
+!!!!  !>
+!!!!  !> @par Reference
+!!!!  !> Drayson, S. Roland. "Rapid computation of the Voigt profile." Journal of
+!!!!  !> Quantitative Spectroscopy and Radiative Transfer 16.7 (1976): 611-614.
+!!!!
+!!!!  subroutine hjenor(y,x,del,phi)
+!!!!    real*8, intent(in) :: &
+!!!!     x,   & !< ?doc?
+!!!!     y,   & !< ?doc?
+!!!!     del    !< ?doc?
+!!!!    real*8, intent(out) :: phi    !< ?doc?
+!!!!    real*8 voigt
+!!!!    real*8 vv,uu
+!!!!    real*8, b(22),ri(15),xn(15)/10.,9.,2*8.,7.,6.,5.,4.,7*3./,        &
+!!!!     yn(15)/3*.6,.5,2*.4,4*.3,1.,.9,.8,2*.7/,d0(35),d1(35),d2(35)    &
+!!!!     ,d3(35),d4(35),hn(35),h/.201/,xx(3)/.5246476,1.65068,.7071068/  &
+!!!!     ,hh(3)/.2562121,.2588268e-1,.2820948/,nby2(19)/9.5,9.,8.5,8.,   &
+!!!!     7.5,7.,6.5,6.,5.5,5.,4.5,4.,3.5,3.,2.5,2.,1.5,1.,.5/,c(21)/     &
+!!!!     .7093602e-7,-.2518434e-6,.8566874e-6,-.2787638e-5,.866074e-5,   &
+!!!!     -.2565551e-4,.7228775e-4,-.1933631e-3,.4899520e-3,-.1173267e-2, &
+!!!!     .2648762e-2,-.5623190e-2, .1119601e-1,-.2084976e-1,.3621573e-1, &
+!!!!     -.5851412e-1,.8770816e-1, -.121664,.15584,-.184,.2/
+!!!!    logical, save :: flag_first = .true.
+!!!!    logical tru/.false./
+!!!!    real*8 c0, dx, v, u, y2
+!!!!    integer i, j, min, max, n
+!!!!
+!!!!    tru=.false.
+!!!!    b(1)=0.
+!!!!    b(2)=0.7093602e-7
+!!!!
+!!!!    if (tru) go to 104
+!!!!
+!!!!    ! REGION I. COMPUTE DAWSON'S FUNCTION AT MESH POINTS
+!!!!    tru = .true.
+!!!!
+!!!!    do i=1,15
+!!!!      ri(i)=-i/2.
+!!!!    end do
+!!!!
+!!!!    do i=1,25
+!!!!      hn(i)=h*(i-.5)
+!!!!      c0=4.*hn(i)*hn(i)/25.-2.
+!!!!
+!!!!      do j = 2,21
+!!!!        b(j+1)=c0*b(j)-b(j-1)+c(j)
+!!!!      end do
+!!!!
+!!!!      d0(i)=hn(i)*(b(22)-b(21))/5.
+!!!!      d1(i)=1.-2.*hn(i)*d0(i)
+!!!!      d2(i)=(hn(i)*d1(i)+d0(i))/ri(2)
+!!!!      d3(i)=(hn(i)*d2(i)+d1(i))/ri(3)
+!!!!      d4(i)=(hn(i)*d3(i)+d2(i))/ri(4)
+!!!!
+!!!!      ! write(6,*)i,d0(i),d1(i),d2(i),d3(i),d4(i)
+!!!!    end do
+!!!!
+!!!!    104 if (x-5.) 105,112,112
+!!!!    105 if (y-1.) 110,110,106
+!!!!    106 if (x.gt.1.85*(3.6-y)) go to 112
+!!!!
+!!!!    ! REGION II CONTINUED FRACTION .COMPUTE NUMBER OF TERMS NEEDED
+!!!!    ! write(6,*)'region II'
+!!!!    if (y.lt.1.45) go to 107
+!!!!    i=int(y+y) !> @todo issue added int conversion but not sure if this is the logic
+!!!!    go to 108
+!!!!
+!!!!    107 continue
+!!!!    i=int(11.*y)
+!!!!
+!!!!    108 continue
+!!!!    j=int(x+x+1.85) !> @todo issue added int conversion but not sure if this is the logic
+!!!!    max=int(xn(j)*yn(i)+.46) !> @todo issue added int conversion but not sure if this is the logic
+!!!!    min=min0(16,21-2*max)
+!!!!
+!!!!    ! EVALUATED CONTINUED FRACTION
+!!!!    uu=y
+!!!!    vv=x
+!!!!    do 109 j=min,19
+!!!!      u=nby2(j)/(uu*uu+vv*vv)
+!!!!      uu=y+u*uu
+!!!!      vv=x-u*vv
+!!!!    109 continue
+!!!!    voigt=uu/(uu*uu+vv*vv)/1.772454
+!!!!    go to 10
+!!!!
+!!!!    110 continue
+!!!!    y2=y*y
+!!!!    if (x+y.ge.5.) go to 113
+!!!!
+!!!!    ! REGION I. COMMPUTE DAWSON'S FUNCTION AT X FROM TAYLOR SERIES
+!!!!    n=int(x/h)
+!!!!    dx=x-hn(n+1)
+!!!!    u=(((d4(n+1)*dx+d3(n+1))*dx+d2(n+1))*dx+d1(n+1))*dx+d0(n+1)
+!!!!    v=1.-2.*x*u
+!!!!
+!!!!    ! TAYLOR SERIES EXPANSION ABOUT Y=0.0
+!!!!    vv = exp(y2-x*x)*cos(2.*x*y)/1.128379-y*v
+!!!!    ! write(6,*) n,u,dx,d0(n+1),d1(n+1),d2(n+1),d3(n+1),d4(n+1)
+!!!!    uu = -y
+!!!!    max = int(5.+(12.5-x)*.8*y) !> @todo issue added int conversion but not sure if this is the logic
+!!!!    do 111 i = 2,max,2
+!!!!      u = (x*v+u)/ri(i)
+!!!!      v = (x*u+v)/ri(i+1)
+!!!!      uu = -uu*y2
+!!!!      vv = vv+v*uu
+!!!!    111 continue
+!!!!    voigt = 1.128379*vv
+!!!!    ! write(6,*)'region i ',voigt,vv,x,y,del
+!!!!    go to 10
+!!!!
+!!!!    112 continue
+!!!!    y2 = y*y
+!!!!    if (y .lt. 11.-.6875*x) go to 113
+!!!!
+!!!!    !  REGION IIIB  2 POINT GAUSS-HERMITE QUADRATURE
+!!!!    u = x-xx(3)
+!!!!    v = x+xx(3)
+!!!!    voigt = y*(hh(3)/(y2+u*u)+hh(3)/(y2+v*v))
+!!!!    ! write(6,*)'region IIIb ', voigt
+!!!!    go to 10
+!!!!
+!!!!    !  REGION IIIA 4-POINT GAUSS-HERMITE QUADRATURE.
+!!!!    113 continue
+!!!!    u = x-xx(1)
+!!!!    v = x+xx(1)
+!!!!    uu = x-xx(2)
+!!!!    vv = x+xx(2)
+!!!!    voigt = y*(hh(1)/(y2+u*u)+hh(1)/(y2+v*v)+hh(2)/(y2+uu*uu)+hh(2)/(y2+vv*vv))
+!!!!    ! write(6,*)'region IIIa',voigt
+!!!!
+!!!!    10 continue
+!!!!    phi = voigt /  (1.772454 * del)
+!!!!    ! write(6,*)phi
+!!!!  end
+
 
   !---------------------------------------------------------------------------------------
   !> Returns index of minimum value of fr within interval [ia, iz]
@@ -788,8 +946,6 @@ module flin
   logical, parameter :: mode_flinh = .true., &
                         mode_flin1 = .false.
 
-  !> This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
-  real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
 
   private flin_ ! private subroutine
 
@@ -804,6 +960,8 @@ contains
     logical, intent(in) :: ptdisk
     real*8, intent(in) :: mu
     integer, intent(in) :: ntot, kik
+    ! This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
+    real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
     call flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
   end
 

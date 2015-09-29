@@ -374,6 +374,11 @@ contains
 
     ! row 09
     read(UNIT_, *) main_llzero, main_llfin, main_aint
+    ! Some interpolation routines don't deal well with lambda having decimal places, therefore
+    ! gonna round them
+    main_llzero = floor(main_llzero)
+    main_llfin = ceiling(main_llfin)
+    main_aint = floor(main_aint)
 
     101 format('reader_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
     write(lll,101) main_llzero, main_llfin, main_aint
@@ -1122,7 +1127,6 @@ contains
     integer UNIT_, finab, k, j
     parameter(UNIT_=199)
     character(len=*) :: path_to_file
-    logical flag_found
     real*8 fstar
 
     if (.not. flag_read_main) then
