@@ -11,3 +11,4 @@ from .filehmap import *
 from .fileabsoru2 import *
 from .filedissoc import *
 from .filemolecules import *
+from .fileatoms import *
