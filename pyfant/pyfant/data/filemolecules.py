@@ -20,18 +20,52 @@ logger.addHandler(logging.NullHandler())
 #     def __len__(self):
 #         return len(self.lmbdam)
 
+class SetOfLines(AttrsPart):
+    attrs = ["qqv", "ggv", "bbv", "ddv", "fact", "num_lines"]
+
+
+    def __init__(self):
+        AttrsPart.__init__(self)
+
+        self.qqv = None
+        self.ggv = None
+        self.bbv = None
+        self.ddv = None
+        self.fact = None
+
+        self.lmbdam = []
+        self.sj = []
+        self.jj = []
+
+    @property
+    def num_lines(self):
+        return len(self)
+
+    def __len__(self):
+        return len(self.lmbdam)
+
+    def filter(self, lzero, lfin):
+        """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
+        l, s, j = [], [], []
+        for _l, _s, _j in zip(self.lmbdam, self.sj, self.jj):
+            if lzero <= _l <= lfin:
+                l.append(_l)
+                s.append(_s)
+                j.append(_j)
+        self.lmbdam, self.sj, self.jj = l, s, j
+
 
 class Molecule(AttrsPart):
     attrs = ["titulo", "fe", "do", "mm", "am", "bm", "ua", "ub",
-             "te", "cro", "s", "nv", "lines_total", "qqv", "ggv", "bbv", "ddv", "fact"]
+             "te", "cro", "s", "nv", "num_lines"]
 
     @property
     def nv(self):
-        return len(self)
+        return len(self.sol)
 
     @property
-    def lines_total(self):
-        ret = sum(map(len, self.lmbdam))
+    def num_lines(self):
+        ret = sum(map(len, self.sol))
         return ret
 
     def __init__(self):
@@ -49,37 +83,18 @@ class Molecule(AttrsPart):
         self.cro = None
         self.s = None
 
-        self.qqv = None
-        self.ggv = None
-        self.bbv = None
-        self.ddv = None
-        self.fact = None
+        self.sol = []  # list of SetOfLines objects
 
-        # ** Sets of lines: list of list
-        # ** first dimension is the set-of-lines
-        # ** second dimension is the line information
-        self.lmbdam = []
-        self.sj = []
-        self.jj = []
 
     def __len__(self):
         """Returns number of set-of-lines."""
-        return len(self.lmbdam)
+        return len(self.sol)
 
     def filter(self, lzero, lfin):
         """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
-        l_new, s_new, j_new  = [], [], []
-        for _ll, _ss, _jj in zip(self.lmbdam, self.sj, self.jj):
-            l, s, j = [], [], []
-            for _l, _s, _j in zip(_ll, _ss, _jj):
-                if lzero <= _l <= lfin:
-                    l.append(_l)
-                    s.append(_s)
-                    j.append(_j)
-            l_new.append(l)
-            s_new.append(s)
-            j_new.append(j)
-        self.lmbdam, self.sj, self.jj = l_new, s_new, j_new
+
+        for set in self.sol:
+            set.filter(lzero, lfin)
 
 
 class FileMolecules(DataFile):
@@ -92,13 +107,13 @@ class FileMolecules(DataFile):
 
     default_filename = "moleculagrade.dat"
 
-    attrs = ["titm", "number", "lines_total"]
+    attrs = ["titm", "number", "num_lines"]
 
 
     @property
-    def lines_total(self):
+    def num_lines(self):
         """Total number of spectral line, counting all molecules."""
-        return sum(map(lambda x: x.lines_total, self.molecules))
+        return sum(map(lambda x: x.num_lines, self.molecules))
 
     def __init__(self):
         DataFile.__init__(self)
@@ -153,29 +168,39 @@ class FileMolecules(DataFile):
                     # These vectors must have nvi elements
                     s_v, r_inc = multirow_str_vector(h, nvi, r)
                     r += r_inc
-                    m.qqv = map(float, s_v)
+                    qqv = map(float, s_v)
                     s_v, r_inc = multirow_str_vector(h, nvi, r)
                     r += r_inc
-                    m.ggv = map(float, s_v)
+                    ggv = map(float, s_v)
                     s_v, r_inc = multirow_str_vector(h, nvi, r)
                     r += r_inc
-                    m.bbv = map(float, s_v)
+                    bbv = map(float, s_v)
                     s_v, r_inc = multirow_str_vector(h, nvi, r)
                     r += r_inc
-                    m.ddv = map(float, s_v)
+                    ddv = map(float, s_v)
                     s_v, r_inc = multirow_str_vector(h, nvi, r)
                     r += r_inc
-                    m.fact = map(float, s_v)
+                    fact = map(float, s_v)
                     for name in ["qqv", "ggv", "bbv", "ddv", "fact"]:
-                        v = m.__getattribute__(name)
+                        v = eval(name)
                         if len(v) != nvi:
                             raise FileConsistencyError(
                                 'Attribute %s of molecule #%d must be a vector with %d elements (has %d)' %
                                 (name, im+1, nvi, len(v)))
 
+                    # creates sets of lines and appends to molecule
+                    for q, g, b, d, f in zip(qqv, ggv, bbv, ddv, fact):
+                        o = SetOfLines()
+                        o.qqv = q
+                        o.ggv = g
+                        o.bbv = b
+                        o.ddv = d
+                        o.fact = f
+                        m.sol.append(o)
+
                     # Now reads lines
-                    i_sol = 0  # index of current set-of-lines, must go from 0 to nvi-1
-                    v_lmbdam, v_sj, v_jj = [], [], []
+                    sol_iter = iter(m.sol)  # iterator to change the current set-of-lines with the "numlin" flag
+                    o = sol_iter.next()  # current set-of-lines
                     while True:
                         # Someone added "*" signs as a 6th column of some lines
                         # which was causing my reading to crash.
@@ -187,20 +212,14 @@ class FileMolecules(DataFile):
                         lmbdam, sj, jj, iz, numlin = map(float, temp)
                         r += 1
 
-                        v_lmbdam.append(lmbdam)
-                        v_sj.append(sj)
-                        v_jj.append(jj)
+                        o.lmbdam.append(lmbdam)
+                        o.sj.append(sj)
+                        o.jj.append(jj)
 
                         if numlin > 0:
-                            m.lmbdam.append(v_lmbdam)
-                            m.sj.append(v_sj)
-                            m.jj.append(v_jj)
-                            v_lmbdam, v_sj, v_jj = [], [], []
-
                             if numlin == 9:
                                 break
-
-                            i_sol += 1
+                            o = sol_iter.next()
 
                     if im+1 == nm:
                         break

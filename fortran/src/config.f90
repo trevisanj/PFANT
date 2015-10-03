@@ -62,6 +62,9 @@ module options2
     !> Description.
     !> @note The newline marker "<br>" is recognized.
     character(len=MAX_LEN_DESCR) :: descr
+    !> Whether the option appears or not in --help text
+    !> Some options may be secret
+    logical :: appears
 !  contains
 !    procedure :: print => print_opt
   end type
@@ -438,6 +441,7 @@ module config
   use options2
   use misc
   use molecules_idxs
+  use welcome
   implicit none
 
   ! Possible return values of option handler
@@ -468,8 +472,9 @@ module config
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
     character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
-  logical :: config_logging_screen = .true., & !< option --logging_screen
-             config_logging_dump   = .false.   !< option --logging_dump
+  logical :: config_logging_screen = .true., &  !< option --logging_screen
+             config_logging_dump   = .false., & !< option --logging_dump
+             config_explain        = .false.    !< option --explain
 
   !---
   ! innewmarcs, hydro2, pfant
@@ -579,11 +584,12 @@ module config
     config_fn_cv = '?'                !< option: --fn_cv
   !===== end of command-line variables declarations
 
-
+  !> Unit to write to "explain" file (file containing debugging information)
+  integer, parameter :: UNIT_EXPLAIN = 145
 
 
   !=========^ PUBLIC  ^==========
-   !=========v PRIVATE v==========
+  !=========v PRIVATE v==========
 
   !=====
   ! Command-line options definition
@@ -610,20 +616,12 @@ module config
 
 contains
 
-  ! 8b   d8 8    8 .d88b. 88888      .d88b    db    8    8
-  ! 8YbmdP8 8    8 YPwww.   8        8P      dPYb   8    8
-  ! 8  "  8 8b..d8     d8   8   wwww 8b     dPwwYb  8    8
-  ! 8     8 `Y88P' `Y88P'   8        `Y88P dP    Yb 8888 8888
-  !
-  ! Routines that *must* be called from executable-specific configuration module.
-
   !=======================================================================================
   !> Initialization of this module
   !>
   !> @note Must be called *after* module-specific initialization
 
   subroutine config_init()
-    use welcome
     if (execonf_name .eq. '?') &
      call pfant_halt('Executable name not set', is_assertion=.true.)
 
@@ -654,11 +652,13 @@ contains
   !> @note character arguments are declared with len=*, truncation may occur when
   !> option structure is created.
 
-  subroutine add_option(ihpn, name, chr, has_arg, argname, default_, descr)
+  subroutine add_option(ihpn, name, chr, has_arg, argname, default_, descr, appears)
     character(len=*), intent(in) :: ihpn  !< initials of executables where option is valid
     character(len=*), intent(in) :: name, argname, default_, descr
     character(len=1), intent(in) :: chr
     logical, intent(in) :: has_arg
+    logical, intent(in), optional :: appears
+    logical :: appears_
 
     num_options = num_options+1
 
@@ -667,7 +667,13 @@ contains
        'value of MAX_NUM_OPTIONS', is_assertion=.true.)
     end if
 
-    options(num_options) = option(ihpn, name, chr, has_arg, argname, default_, descr)
+    appears_ = .true.
+    if (present(appears)) then
+      appears_ = appears
+    end if
+
+    options(num_options) = option(ihpn, name, chr, has_arg, argname, default_, descr, &
+      appears_)
   end
 
   !=======================================================================================
@@ -713,13 +719,16 @@ contains
      'input file name - main configuration')
     call add_option('ihpn', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator')
+    call add_option('ihpn', 'explain',     ' ', .true., 'T/F', logical2str(config_explain), &
+      'Save additional information in file explain.txt (debugging purposes; output varies, or flag may be ignored)', .false.)
+    call add_option('ihpn', 'play',     ' ', .false., '', '', &
+      'Fed up of calculating spectra', .false.)
 
     !
     ! innewmarcs, hydro2, pfant
     !
     call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
      'Binary file containing information about atmospheric model (created by innewmarcs)')
-
 
     !
     ! innewmarcs, hydro2
@@ -883,6 +892,9 @@ contains
       case ('help')
           call show_help(6)
           stop('Bye')
+      case ('play')
+          call play()
+          stop('Bye')
       case ('logging_level')
         ! Note that logging level change takes effect immediately
         select case (to_lower(o_arg))
@@ -910,6 +922,9 @@ contains
       case ('logging_dump')
         config_logging_dump = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_logging_dump', logical2str(config_logging_dump))
+      case ('explain')
+        config_explain = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_explain', logical2str(config_explain))
       case ('wdir')
         ! Note: using same routine parse_aux_assign_fn() to assign directory
         call parse_aux_assign_fn(o_arg, config_wdir, 'config_wdir')

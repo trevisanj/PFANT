@@ -138,13 +138,8 @@ class VisModRecords(Vis):
                 x = np.linspace(1, r.ntot, r.ntot)
                 y = np.ones(len(x)) * (i + 1)
                 z = r.__getattribute__(var)
-
-                # print "#%d - %d; (%d, %d, %d)" % (i, r.ntot, len(x), len(y), len(z))
-
                 ax.plot(x, y, z, label='a', color='k')
 
-            # ax.set_xlabel('Wavelength (A)')
-            # ax.set_ylabel('Atmospheric layer')
             ax.set_xlabel('Atmospheric layer')
             ax.set_ylabel('Record number')
             ax.set_zlabel(var)

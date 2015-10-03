@@ -96,16 +96,6 @@ module innewmarcs_calc
 contains
 
   !=======================================================================================
-  !> Initialization of this module
-  !>
-  !> One of the tasks if the initialization of the x_* variables, whose values may be
-  !> either set from the command line or taken from dfile:main
-
-  subroutine innewmarcs_init()
-    call find_two_grid_files()  ! calculates nomfipl, asalog1, asalog2
-  end
-
-  !=======================================================================================
   !> Main routine of this module
   !>
   !> @note ASCII file is always opened in status "unknown"
@@ -132,7 +122,10 @@ contains
     !=====
     ! Initialization
     !=====
-    call innewmarcs_init()
+    if (config_explain) then
+      open(unit=UNIT_EXPLAIN, file=full_path_w('innewmarcs_explain.txt'), status='replace')
+    end if
+    call find_two_grid_files()  ! calculates nomfipl, asalog1, asalog2
 
 
     !=====
@@ -245,51 +238,64 @@ contains
       else
         call interpol(t0, t1, ee, ff, z2, ntot(iabon))
       end if
+
+      if (asalog1 .eq. asalog2) then
+        exit
+      end if
     end do
 
-    ! On a 2 modeles l'un interpole ds grille a asalog1 et asalog2
-    !
-    !     interpolation sur l'abondance
-    !     les 2 modeles doivent commencer au meme niveau en log to
-    !     et avoir la meme longueur
-    to0 = amax1(z1%t5l(1), z2%t5l(1))
-    nz1 = int((to0-z1%t5l(1))*10+0.1)
-    nz2 = int((to0-z2%t5l(1))*10+0.1)
+    if (asalog1 .eq. asalog2) then
+      ! New feature(2015):
+      ! If the two metallicity files are the same, then does not need extra interpolation
+      zz = z1
+      asalalf = ralfa(1)
+      nntot = ntot(1)
+      call log_info("Using only one metallicity file")
+    else
+      ! On a 2 modeles l'un interpole ds grille a asalog1 et asalog2
+      !
+      !     interpolation sur l'abondance
+      !     les 2 modeles doivent commencer au meme niveau en log to
+      !     et avoir la meme longueur
+      to0 = amax1(z1%t5l(1), z2%t5l(1))
+      nz1 = int((to0-z1%t5l(1))*10+0.1)
+      nz2 = int((to0-z2%t5l(1))*10+0.1)
 
-    ! write(lll,*)' to0max=', to0
-    ! call log_debug(lll)
-    ! write(lll,*) z1%t5l(1),z2%t5l(1)
-    ! call log_debug(lll)
-    ! call log_debug(' couches a oter:')
-    ! write(lll,*) nz1, nz2
-    ! call log_debug(lll)
+      ! write(lll,*)' to0max=', to0
+      ! call log_debug(lll)
+      ! write(lll,*) z1%t5l(1),z2%t5l(1)
+      ! call log_debug(lll)
+      ! call log_debug(' couches a oter:')
+      ! write(lll,*) nz1, nz2
+      ! call log_debug(lll)
 
-    if(ntot(1) .gt. 0) call rangmod(z1, ntot(1), nz1)
-    if(ntot(2) .gt. 0) call rangmod(z2, ntot(2), nz2)
+      if(ntot(1) .gt. 0) call rangmod(z1, ntot(1), nz1)
+      if(ntot(2) .gt. 0) call rangmod(z2, ntot(2), nz2)
 
-    !> @todo issue look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right
-    !> I changed this
-    !>       if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1)
-    !>       if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2)
+      !> @todo issue look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right
+      !> I changed this
+      !>       if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1)
+      !>       if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2)
 
-    nntot = min0(ntot(1), ntot(2))
+      nntot = min0(ntot(1), ntot(2))
 
-    ! write(lll,*) '   nntot=',nntot
-    ! call log_debug(lll)
+      ! write(lll,*) '   nntot=',nntot
+      ! call log_debug(lll)
 
-    t0 = asalog2-asalog1
-    t1 = x_asalog-asalog1
+      t0 = asalog2-asalog1
+      t1 = x_asalog-asalog1
 
-    !!!! call log_debug(' interpolation sur l''abondance avec')
-    !!!! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
-    !!!! call log_debug(lll)
-    !!!! write(lll,*) ' t0=', t0, '       t1=',t1
-    !!!! call log_debug(lll)
+      !!!! call log_debug(' interpolation sur l''abondance avec')
+      !!!! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
+      !!!! call log_debug(lll)
+      !!!! write(lll,*) ' t0=', t0, '       t1=',t1
+      !!!! call log_debug(lll)
 
-    call interpol(t0, t1, z1, z2, zz, nntot)
+      call interpol(t0, t1, z1, z2, zz, nntot)
 
-    ! calcule les elements alpha resultants
-    asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
+      ! calcule les elements alpha resultants
+      asalalf = ralfa(1) + t1/t0*(ralfa(2)-ralfa(1))
+    end if
 
     ! write(lll,*) 'model 1 asalog, alpha=',asalog1,ralfa(1)
     ! call log_debug(lll)
@@ -353,6 +359,8 @@ contains
 
     close(unit=UNIT_MOD)
     close(unit=UNIT_DAT)
+
+    call log_info('File '''//trim(full_path_w(config_fn_modeles))//''' was successfully created.')
   end
 
 
@@ -366,10 +374,12 @@ contains
   !> @endverbatim
 
   subroutine find_two_grid_files()
-    integer i
+    integer i, n
     logical :: flag_found = .false.
 
-    do i = 1, gridsmap_num_files-1
+    n = gridsmap_num_files
+
+    do i = 1, n-1
       if (x_asalog .ge. gridsmap_asalog(i) .and. &
           x_asalog .lt. gridsmap_asalog(i+1)) then
         nomfipl(1) = gridsmap_fn(i)
@@ -382,9 +392,27 @@ contains
     end do
 
     if (.not. flag_found) then
-      call pfant_halt('Metallicity '//real42str(x_asalog, 3)//' is out of interval ['//&
-       real42str(gridsmap_asalog(1), 3)//', '//real42str(gridsmap_asalog(gridsmap_num_files), 3)//'[')
+      if (x_asalog .eq. gridsmap_asalog(n)) then
+        ! This is the case where metallicity matches that of last file.
+        ! Will use same file twice
+        nomfipl(1) = gridsmap_fn(n)
+        nomfipl(2) = gridsmap_fn(n)
+        asalog1 = gridsmap_asalog(n)
+        asalog2 = gridsmap_asalog(n)
+      else
+        ! Will not longer give error if metallicity falls outsize the range. Instead, will do the best it can
+        nomfipl(1) = gridsmap_fn(n)
+        nomfipl(2) = gridsmap_fn(n)
+        asalog1 = gridsmap_asalog(n)
+        asalog2 = gridsmap_asalog(n)
+        call log_warning('Metallicity '//real42str(x_asalog, 3)//' is out of interval ['//&
+         real42str(gridsmap_asalog(1), 3)//', '//real42str(gridsmap_asalog(gridsmap_num_files), 3)//']')
+      end if
     end if
+
+    call log_info('Chosen file 1: '''//trim(nomfipl(1))//'''')
+    call log_info('Chosen file 2: '''//trim(nomfipl(2))//'''')
+
   end
 
 
@@ -532,12 +560,12 @@ contains
     write(lll,*) 'ing=', (ing(i), i=1,nt)
     call log_debug(lll)
 
-    do i = 1, nt
-      write(lll,*) 'rteff(', i, ')=', rteff(i)
-      call log_debug(lll)
-      write(lll,*) 'aglog(i,:)=', (aglog(i,j), j=1,ing(i))
-      call log_debug(lll)
-    end do
+    !do i = 1, nt
+    !  !write(lll,*) 'rteff(', i, ')=', rteff(i)
+    !  !call log_debug(lll)
+    !  !write(lll,*) 'aglog(i,:)=', (aglog(i,j), j=1,ing(i))
+    !  !call log_debug(lll)
+    !end do
 
 
     call log_debug('Liste du nbre de g en fonction de t')
@@ -602,9 +630,17 @@ contains
     id12 = idt(jt1)+jg2(jt1)-1
     id21 = idt(jt2)+jg1(jt2)-1
     id22 = idt(jt2)+jg2(jt2)-1
-    call log_debug('Dans cette table les modeles entre lesquels on va interpoler ont les numeros:')
+    call log_info('Dans cette table les modeles entre lesquels on va interpoler ont les numeros:')
     write(lll,*)  id11,id12,id21,id22
-    call log_debug(lll)
+    call log_info(lll)
+
+    if (config_explain) then
+      write(UNIT_EXPLAIN, *) 'locatab: ''', trim(path), ''', ', int2str(id11)
+      write(UNIT_EXPLAIN, *) 'locatab: ''', trim(path), ''', ', int2str(id12)
+      write(UNIT_EXPLAIN, *) 'locatab: ''', trim(path), ''', ', int2str(id21)
+      write(UNIT_EXPLAIN, *) 'locatab: ''', trim(path), ''', ', int2str(id22)
+    end if
+
     call log_debug(LEAVING//'Sortie de locatab')
   end
 

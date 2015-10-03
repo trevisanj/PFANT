@@ -12,18 +12,18 @@ if __name__ == "__main__":
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
   )
 
-  nn = ExeConf.option_map  # option names
+  names = ExeConf().opt.get_names() # option names
 
-  for name in nn:
+  for name in names:
     parser.add_argument("--"+name, type=str, help='')
 
   args = parser.parse_args()
 
   c = Combo()
 
-  for name in nn:
+  for name in names:
     x = args.__getattribute__(name)
     if x is not None:
-      c.execonf.__setattr__("opt_"+name, x)
+      c.execonf.opt.__setattr__(name, x)
 
   c.run()

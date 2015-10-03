@@ -738,6 +738,10 @@ contains
     write(unit_,*) ''
     write(unit_,*) ''
   end
+
+  subroutine play()
+    print *, 'not yet'
+  end
 end
 
 

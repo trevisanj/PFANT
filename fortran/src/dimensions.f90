@@ -13,13 +13,14 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> This module contains the declarations for most of the "MAX_" parameters.
+!> Declarations of constants (PARAMETER) used throughout.
 !>
-!> This module is supposed to contain the declaration for all the "MAX_"
-!> parameters that can be considered of "general interest".
+!> @li *all* dimensions of arrays
+!> @li *all* file I/O UNITs used anywhere (must be declared to avoid unit conflict)
 
 module dimensions
   implicit none
+
 
   !=====
   ! "delta lambda" parameters
@@ -128,6 +129,6 @@ module dimensions
   integer, parameter :: MAX_NUM_OPTIONS = 100
 
   !> dtot maximum: maximum number of points in each calculation interval.
-  integer, parameter :: MAX_DTOT=10000
+  integer, parameter :: MAX_DTOT=50000
 end
 

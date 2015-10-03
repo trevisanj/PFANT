@@ -180,7 +180,7 @@ class Pfant(Executable):
         number of iterations in attribute ikeytot.
 
         """
-        p = self.execonf.full_path_w(self.execonf.opt_fn_progress)
+        p = self.execonf.full_path_w(self.execonf.opt.fn_progress)
         ret = Progress(exe_name="pfant")
         if os.path.isfile(p):
             with open(p) as h:
@@ -237,7 +237,7 @@ class Combo(Runnable):
 
         # Executables to run
         # order is irrelevant (will be sorted anyway).
-        self.sequence = [i_innewmarcs, i_hydro2, i_pfant, i_nulbad]
+        self.sequence = [innewmarcs, hydro2, pfant, nulbad]
 
         # ExeConf instance
         self.execonf = ExeConf()
@@ -293,8 +293,8 @@ class Combo(Runnable):
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
 
-        map = [(i_innewmarcs, self.innewmarcs), (i_hydro2, self.hydro2), (i_pfant, self.pfant),
-               (i_nulbad, self.nulbad)]
+        map = [(innewmarcs, self.innewmarcs), (hydro2, self.hydro2), (pfant, self.pfant),
+               (nulbad, self.nulbad)]
         res = []
         ii, ee = zip(*map)
         self.sequence.sort()

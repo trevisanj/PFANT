@@ -403,6 +403,7 @@ contains!> Initializes x_* variables
     end if
     if (config_asalog .eq. -1) then
       call assure_read_main()
+      !> @todo issue big using main_asalog instead of main_afstar
       x_asalog = main_asalog
       call parse_aux_log_assignment('x_asalog', real82str(x_asalog, 3))
     end if

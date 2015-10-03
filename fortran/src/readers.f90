@@ -356,6 +356,15 @@ contains
     ! row 06
     read(UNIT_, *) main_afstar
 
+    !> @todo issue decide whether to use asalog of afstar throughout the source code
+    !>       For the time, in order to avoid mistakes I am forcing them to match
+    if (abs(main_asalog-main_afstar) .gt. 0.001) then
+      call pfant_halt('asalog ('//real82str(main_asalog, 2)//&
+       ') does not match afstar ('//real82str(main_afstar, 2)//') in file '''//trim(path_to_file)//'''')
+    end if
+
+
+
     ! row 07: XXCOR(i)
     ! @todo ISSUE: Should be a column in dissoc.dat !!!!!
     ! (MT) I agree
@@ -648,6 +657,9 @@ contains
       write(lll,*) 'abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
       call pfant_halt(lll)
     end if
+    print *, 'main_asalog', main_asalog
+    print *, 'main_afstar', main_afstar
+
 
     ! ready to copy (& convert) variables to their counterparts
     modeles_ntot    = r%ntot     ! integer(4)-to-integer(?)
@@ -1393,12 +1405,12 @@ module reader_atoms
   !> atomic symbol. Must be right-aligned and uppercase
   character*2 atoms_elem(MAX_ATOMS_NBLEND)
   integer, dimension(MAX_ATOMS_NBLEND) :: &
-   atoms_ioni !< ?doc?
+   atoms_ioni !< ionization level, e.g. 2 means 1 electron missing
   real*8, dimension(MAX_ATOMS_NBLEND) :: &
-   atoms_lambda,       & !< ?doc?
-   atoms_kiex,         & !< ?doc? excitation potential for the lower level?
-   atoms_algf,         & !< ?doc?
-   atoms_ch,           & !< ?doc?
+   atoms_lambda,       & !< wavelength
+   atoms_kiex,         & !< excitation potential for the lower level
+   atoms_algf,         & !< log gf -- oscillator strength -- laboratory-adjusted
+   atoms_ch,           & !< the "C6" parameter, Van der Walls broadening parameter
    atoms_gr,           & !< ?doc?
    atoms_ge,           & !< ?doc?
    atoms_zinf,         & !< ?doc?
@@ -1415,9 +1427,9 @@ contains
   !> This file has 2 types of alternating rows:
   !> @verbatim
   !>   odd row
-  !>     col 1 -- 2-letter atoms_elem(K) atomic symbol
-  !>     col 2 -- atoms_ioni(k) ?doc?
-  !>     col 3 -- atoms_lambda(K) ?doc?
+  !>     col 1 -- 2-letter atoms_elem atomic symbol
+  !>     col 2 -- atoms_ioni
+  !>     col 3 -- atoms_lambda
   !>   even row
   !>     col 1 --
   !>     col 2 --

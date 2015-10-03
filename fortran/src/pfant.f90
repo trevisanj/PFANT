@@ -22,7 +22,8 @@
 !> Prefix "sat4_" denotes variables filled by sat4() (or indirectly, die())
 !>
 
-!> @todo hydrogen line plotted alone suggest that some interpolation is adding parabolic term with wrong signal
+!
+!> @todo consider eliminating the +-20 angstrom from calculations
 
 module dissoc
   use config
@@ -1117,8 +1118,9 @@ contains
     ! Setup
     !=====
 
-    ! @todo ?doc? The reason why values read from file are being overwritten should be explained.
+    !> @todo ?doc? The reason why values read from file are being overwritten should be explained.
     absoru2_abhel = modeles_nhe
+    !> @todo issue using modeles_asalog instead of main_afstar
     absoru2_abmet = absoru2_abmet*10.**modeles_asalog
 
     tetaef = 5040/main_teff
@@ -2068,6 +2070,7 @@ program pfant
   use welcome
   use readers
   use pfant_x
+  use misc
 
   implicit none
 
@@ -2107,6 +2110,11 @@ program pfant
 
   call read_filetoh(x_llzero, x_llfin)
   call read_molecules(full_path_w(config_fn_molecules))
+
+  if (abs(modeles_asalog-main_afstar) > 0.01) then
+    call log_warning('asalog from model ('//real82str(modeles_asalog, 2)//&
+     ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
+  end if
 
 
   !=====

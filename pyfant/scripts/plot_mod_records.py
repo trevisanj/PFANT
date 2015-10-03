@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description=plot_mod_records.__doc__,
+    description=VisModRecords.__doc__,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
   )
 

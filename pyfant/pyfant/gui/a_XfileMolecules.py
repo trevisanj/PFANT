@@ -11,6 +11,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
 import matplotlib.pyplot as plt
 import numpy as np
+#from .a_XParametersEditor import *
 
 class XFileMolecules(QMainWindow):
 
@@ -22,7 +23,9 @@ class XFileMolecules(QMainWindow):
         self.flag_jj = False
         self.flag_sort = False
         self.mol_index = None
-        self.SOL_index = None
+        self.sol_index = None
+        self.mol = None
+        self.sol = None
 
         MONO_FONT = QFont("not_a_font_name")
         MONO_FONT.setStyleHint(QFont.TypeWriter)
@@ -39,7 +42,10 @@ class XFileMolecules(QMainWindow):
         a = self.listWidgetMol = QListWidget()
         a.currentRowChanged.connect(self.on_listWidgetMol_currentRowChanged)
         # a.setEditTriggers(QAbstractItemView.DoubleClicked)
-        a.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        # a.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        a.setContextMenuPolicy(Qt.CustomContextMenu)
+        a.customContextMenuRequested.connect(self.on_listWidgetMol_customContextMenuRequested)
+        a.installEventFilter(self)
 
         self.labelMol.setBuddy(self.listWidgetMol)
 
@@ -64,24 +70,26 @@ class XFileMolecules(QMainWindow):
         # ** ** ** ** left
 
         #P = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.labelSOL = QLabel('Sets of lines (Alt+&2)')
+        self.labelSol = QLabel('Sets of lines (Alt+&2)')
 
-        a = self.listWidgetSOL = QListWidget()
+        a = self.listWidgetSol = QListWidget()
         a.setFont(MONO_FONT)
-        a.setFixedWidth(100)
-        a.currentRowChanged.connect(self.on_listWidgetSOL_currentRowChanged)
+        #a.setFixedWidth(100)
+        a.currentRowChanged.connect(self.on_listWidgetSol_currentRowChanged)
+        a.setContextMenuPolicy(Qt.CustomContextMenu)
+        a.customContextMenuRequested.connect(self.on_listWidgetSol_customContextMenuRequested)
+        a.installEventFilter(self)
 
-        self.labelSOL.setBuddy(self.listWidgetSOL)
+        self.labelSol.setBuddy(self.listWidgetSol)
 
-        l = self.layoutSOL = QVBoxLayout()
+        l = self.layoutSol = QVBoxLayout()
         l.setMargin(0)
         l.setSpacing(1)
-        l.addWidget(self.labelSOL)
-        l.addWidget(self.listWidgetSOL)
+        l.addWidget(self.labelSol)
+        l.addWidget(self.listWidgetSol)
 
-        a = self.widgetSOL = QWidget()
-        a.setLayout(self.layoutSOL)
-
+        a = self.widgetSol = QWidget()
+        a.setLayout(self.layoutSol)
 
         # ** ** ** ** right
 
@@ -105,18 +113,24 @@ class XFileMolecules(QMainWindow):
         a2 = self.labelNumLines = QLabel("--")
         a3 = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        l0 = self.layoutSOLToolbar = QHBoxLayout()
+        l0 = self.layoutSolToolbar = QHBoxLayout()
         l0.addWidget(am)
         l0.addWidget(a0)
         l0.addWidget(a1)
         l0.addWidget(a2)
         l0.addItem(a3)
         l0.setMargin(1)
-        a = self.widgetSOLToolbar = QWidget()
+        a = self.widgetSolToolbar = QWidget()
         a.setLayout(l0)
         a.setFixedHeight(40)
 
-        # ** ** ** ** ** Plot
+        # ** ** ** ** ** Set-of-lines info + Plot TABS
+
+        # ** ** ** ** ** ** tab "Set-of-lines info"
+        a = self.plainTextEditSolInfo = QPlainTextEdit()
+        a.setFont(MONO_FONT)
+
+        # ** ** ** ** ** ** Plot tab
 
         # http://stackoverflow.com/questions/12459811
         self.figure = plt.figure()
@@ -127,29 +141,37 @@ class XFileMolecules(QMainWindow):
         layout.addWidget(self.canvas)
         layout.setMargin(0)
 
-        a = self.widgetSOLPlot = QWidget()
+        a = self.widgetSolPlot = QWidget()
         a.setLayout(layout)
 
-        l1 = self.layoutSOLPlot = QVBoxLayout()
-        l1.addWidget(self.widgetSOLToolbar)
-        l1.addWidget(self.widgetSOLPlot)
+        l1 = self.layoutSolPlot = QVBoxLayout()
+        l1.addWidget(self.widgetSolToolbar)
+        l1.addWidget(self.widgetSolPlot)
         l1.setMargin(0)
 
-        a = self.widgetSOLPlot = QWidget()
+        a = self.widgetSolPlot = QWidget()
         a.setLayout(l1)
 
 
+        # ** ** ** ** **  Set-of-lines info + Plot TABS
+        a = self.tabWidgetSol = QTabWidget(self)
+        a.addTab(self.plainTextEditSolInfo, "Set-of-lines Info (Alt+&N)")
+        a.addTab(self.widgetSolPlot, "Set-of-lines plots (Alt+&P)")
+        a.setCurrentIndex(1)
+        a.setFont(MONO_FONT)
+
         # ** ** ** ** ** splitter: (list of set-of-lines) | (plot)
-        a = self.splitterSOL = QSplitter(Qt.Horizontal)
-        a.addWidget(self.widgetSOL)
-        a.addWidget(self.widgetSOLPlot)
+        a = self.splitterSol = QSplitter(Qt.Horizontal)
+        a.addWidget(self.widgetSol)
+        a.addWidget(self.tabWidgetSol)
         a.setStretchFactor(0, 2)
         a.setStretchFactor(1, 10)
 
         a = self.tabWidgetMol = QTabWidget()
         a.addTab(self.plainTextEditMolInfo, "Molecule info (Alt+&M)")
-        a.addTab(self.splitterSOL, "Sets of lines (Alt+&L)")
+        a.addTab(self.splitterSol, "Sets of lines (Alt+&L)")
         a.setCurrentIndex(1)
+        a.setFont(MONO_FONT)
 
         # ** splitter: (list of molecules) | (molecules tab widget)
         a = self.splitterMol = QSplitter(Qt.Horizontal)
@@ -160,9 +182,10 @@ class XFileMolecules(QMainWindow):
 
         # tab "File" (main tab widget
         a = self.tabWidgetFile = QTabWidget(self)
-        a.addTab(self.plainTextEditFileInfo, "General File Info (Alt+&G)")
+        a.addTab(self.plainTextEditFileInfo, "General File Info (Alt+&I)")
         a.addTab(self.splitterMol, "Molecules Browser (Alt+&B)")
         a.setCurrentIndex(1)
+        a.setFont(MONO_FONT)
 
         self.setCentralWidget(self.tabWidgetFile)
 
@@ -174,11 +197,12 @@ class XFileMolecules(QMainWindow):
 
         self.f = f
         self.setWindowTitle(f.filename)
+
         self.plainTextEditFileInfo.setPlainText(str(f))
 
         for m in f.molecules:
             assert isinstance(m, Molecule)
-            item = QListWidgetItem(m.titulo)
+            item = QListWidgetItem(self.get_mol_string(m))
             # not going to allow editing yet item.setFlags(item.flags() | Qt.ItemIsEditable)
             self.listWidgetMol.addItem(item)
 
@@ -187,12 +211,10 @@ class XFileMolecules(QMainWindow):
 
 
     def on_listWidgetMol_currentRowChanged(self, row):
-        print "CALLED on_listWidgetMol_currentRowChanged"
         self.set_molecule(row)
 
-    def on_listWidgetSOL_currentRowChanged(self, row):
-        print "CALLED on_listWidgetSOL_currentRowChanged"
-        self.set_SOL(row)
+    def on_listWidgetSol_currentRowChanged(self, row):
+        self.set_sol(row)
 
     def on_buttonSJ_clicked(self):
         self.flag_sj = self.buttonSJ.isChecked()
@@ -207,67 +229,78 @@ class XFileMolecules(QMainWindow):
         self.flag_sort = self.buttonSort.isChecked()
         self.plot_lines()
 
+    def on_listWidgetMol_customContextMenuRequested(self, position):
+        menu = QMenu()
+        a_edit = menu.addAction("&Edit")
+        action = menu.exec_(self.listWidgetMol.mapToGlobal(position))
+        if action == a_edit:
+            self.edit_mol()
+
+    def on_listWidgetSol_customContextMenuRequested(self, position):
+        menu = QMenu()
+        a_edit = menu.addAction("&Edit")
+        action = menu.exec_(self.listWidgetSol.mapToGlobal(position))
+        if action == a_edit:
+            self.edit_sol()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Return:
+                if source == self.listWidgetMol:
+                    self.edit_mol()
+                    return True
+                if source == self.listWidgetSol:
+                    self.edit_sol()
+                    return True
+
+        return False
+
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
     def set_molecule(self, i):
         self.mol_index = i
+        m = self.mol = self.f.molecules[i]
 
-        # makes kindda report for the current molecule
-        m = self.f.molecules[i]
-        s = str(m)
+        self.update_mol_info()
 
-        # No need to repeat this information, already shown in listWidgetSOL
-        # s += '\n\n' \
-        #      'Sets of lines\n' \
-        #      '-------------\n' \
-        #      ' # Number of lines\n'
-        # for i in range(len(m)):
-        #     s += '%2d %15d\n' % (i+1, len(m.lmbdam[i]))
-
-        self.plainTextEditMolInfo.setPlainText(s)
-
-        w = self.listWidgetSOL
+        w = self.listWidgetSol
         w.clear()
 
-        for i in range(len(m)):
-            item = QListWidgetItem("%3d %7s" % (i+1, '(%d)' % len(m.lmbdam[i])))
+        for i, sol in enumerate(m.sol):
+            item = QListWidgetItem(self.get_sol_string(i, sol))
             w.addItem(item)
 
         if len(m) > 0:
             w.setCurrentRow(0)
 
-    def set_SOL(self, j):
-        self.SOL_index = j
-        m = self.f.molecules[self.mol_index]
-        n = len(m.lmbdam[j])
-        self.labelNumLines.setText('Number of lines: %d' % (n,))
-        #self.labelNumLines.setText()
-
+    def set_sol(self, j):
+        self.sol_index = j
+        self.sol = self.f.molecules[self.mol_index].sol[j]
+        self.update_sol_info()
         self.plot_lines()
 
     def plot_lines(self):
-        j = self.SOL_index
-        if j is not None:
+        o = self.sol
+        if o is not None:
             self.figure.clear()
-            m = self.f.molecules[self.mol_index]
 
             n = self.flag_sj + self.flag_jj  # number of subplots (0, 1 or 2)
             map_ = []  # map to reuse plotting routine, contains what differs between each plot
             i = 1
             if self.flag_sj:
-                map_.append(('SJ', m.sj[j], n*100+10+i))
+                map_.append(('SJ', o.sj, n*100+10+i))
                 i += 1
             if self.flag_jj:
-                map_.append(('JJ', m.jj[j], n*100+10+i))
+                map_.append(('JJ', o.jj, n*100+10+i))
                 i += 1
 
             for y_label, _y, subp in map_:
 
                 if not self.flag_sort:
-                    x = m.lmbdam[j]
+                    x = o.lmbdam
                     y = _y
                 else:
-                    _x = np.array(m.lmbdam[j])
+                    _x = np.array(o.lmbdam)
                     _y = np.array(_y)
                     ii = np.argsort(_x)
                     x = _x[ii]
@@ -306,3 +339,84 @@ class XFileMolecules(QMainWindow):
     #     item.setFlags(item.flags() | Qt.ItemIsEditable)
     #     a.editItem(item)
 
+
+    def edit_file(self):
+    #     paramSpecs = [
+    #     ("titm", {"value": 5}),
+    #     ("number", {"value": 8, "description": "Size for advisor's TopBottomDetector4"}),
+    # ("SM_distance", {"value": 150}),
+    # ("SM_gainRiskRatio", {"value": 2}),
+    # ("SM_AF0", {"value": 0.02, "description": "Initial acceleration factor (AF)"}),
+    # ("SM_AFIncrement", {"value": 0.02, "description": "AF increment"})
+    # ]
+        print "quer editar o file eh"
+
+    def edit_mol(self):
+        if self.mol is None:
+            return
+        attrs = ["titulo", "fe", "do", "mm", "am", "bm", "ua", "ub", "te", "cro", "s"]
+        specs = []
+        obj = self.mol
+        for name in attrs:
+            specs.append((name, {"value": obj.__getattribute__(name)}))
+
+        form = XParametersEditor(specs=specs)
+        r = form.exec_()
+        flag_changed = False
+        if r == QDialog.Accepted:
+            kwargs = form.GetKwargs()
+            for name, value in kwargs.iteritems():
+                orig = obj.__getattribute__(name)
+                if orig != value:
+                    obj.__setattr__(name, value)
+                    flag_changed = True
+                    print "setting %s = %s" % (name, value)
+        if flag_changed:
+            self.listWidgetMol.currentItem().setText(self.get_mol_string(obj))
+            self.update_mol_info()
+
+
+
+
+    def edit_sol(self):
+        if self.sol is None:
+            return
+        print "quer editar o set-of-lines eh"
+
+    def edit_points(self):
+        print "quer editar os pontos eh"
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+
+    def update_mol_info(self):
+        """Makes report for the current molecule."""
+        m = self.mol
+        s = str(m)
+        # No need to repeat this information, already shown in listWidgetSol
+        # s += '\n\n' \
+        # 'Sets of lines\n' \
+        #      '-------------\n' \
+        #      ' # Number of lines\n'
+        # for i in range(len(m)):
+        #     s += '%2d %15d\n' % (i+1, len(m.lmbdam[i]))
+        self.plainTextEditMolInfo.setPlainText(s)
+
+    def update_sol_info(self):
+        """Makes report for the current set-of-lines."""
+        o = self.sol
+        s = str(o)
+        self.plainTextEditSolInfo.setPlainText(s)
+        n = len(o)
+        self.labelNumLines.setText('Number of lines: %d' % (n,))
+
+
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+
+    @staticmethod
+    def get_mol_string(m):
+        return m.titulo
+
+    @staticmethod
+    def get_sol_string(index, sol):
+        return "%3d %7s" % (index+1, '(%d)' % len(sol))

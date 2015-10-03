@@ -25,4 +25,5 @@ if __name__ == "__main__":
   v.title = args.fn
   v.inum = args.inum
   v.use(m)
+  plt.show()
 
