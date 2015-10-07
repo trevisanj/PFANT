@@ -186,12 +186,15 @@ class FileSpectrumNulbad(FileSpectrum):
             #    4790.0000000000000       0.99463000000000001
             #    4790.0400000000000        2.0321771294932130E-004
             pattern = re.compile(r"^\s+([0-9.E+-]+)\s+([0-9.E+-]+)")
-            for i in xrange(n):
-                s = h.readline()
-                match = pattern.match(s)
-                if match is None:
-                    raise ParseError('Row %d of file %s is invalid' % (i + 3, filename))
-                a, b = map(float, match.groups())
+            while True:
+                s = h.readline().strip()
+                if not s:
+                  break
+
+                a, b = [float(z) for z in s.split()]
+                # if match is None:
+                #     raise ParseError('Row %d of file %s is invalid' % (i + 3, filename))
+                # a, b = map(float, match.groups())
 
                 x.append(a)
                 y.append(b)
