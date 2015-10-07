@@ -3,7 +3,7 @@ __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
        "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
        "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix",
-       "slugify"]
+       "slugify", "ResetTableWidget"]
 
 import os.path
 import glob
@@ -311,3 +311,11 @@ def slugify(value, flagLower=True):
     value = value.lower()
   value = re.sub('[-\s]+', '-', value)
   return value
+
+
+def ResetTableWidget(t, rowCount, colCount):
+    """Clears and resizes a table widget."""
+    t.clear()
+    t.sortItems(-1)
+    t.setRowCount(rowCount)
+    t.setColumnCount(colCount)

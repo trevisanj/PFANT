@@ -25,7 +25,6 @@ def froze_it(cls):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
             func(self, *args, **kwargs)
-            self.hello = 'hi'
             self._frozen = True
         return wrapper
 

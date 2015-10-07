@@ -1,4 +1,4 @@
-__all__ = ["FileMolecules", "Molecule"]
+__all__ = ["FileMolecules", "Molecule", "SetOfLines"]
 
 from .datafile import *
 from ..misc import *
@@ -233,3 +233,30 @@ class FileMolecules(DataFile):
 
         for m in self.molecules:
             m.filter(lzero, lfin)
+
+
+    def _do_save_as(self, filename):
+        with open(filename, "w") as h:
+            write_lf(h, str(self.number))
+            write_lf(h, self.titm)
+            write_lf(h, " ".join([str(x.nv) for x in self.molecules]))
+            for m in self.molecules:
+                assert isinstance(m, Molecule)
+                write_lf(h, m.titulo)
+                write_lf(h, (" ".join(["%.10g"]*9)) % (m.fe, m.do, m.mm, m.am,
+                    m.bm, m.ua, m.ub, m.te, m.cro))
+                write_lf(h, "")
+                write_lf(h, str(m.s))
+                write_lf(h, " ".join([str(x.qqv) for x in m.sol]))
+                write_lf(h, " ".join([str(x.ggv) for x in m.sol]))
+                write_lf(h, " ".join([str(x.bbv) for x in m.sol]))
+                write_lf(h, " ".join([str(x.ddv) for x in m.sol]))
+                write_lf(h, " ".join([str(x.fact) for x in m.sol]))
+
+                num_sol = len(m.sol)
+                for i, s in enumerate(m.sol):
+                    assert isinstance(s, SetOfLines)
+                    num_lines = len(s)  # number of lines for current set-of-lines
+                    for j in xrange(num_lines):
+                        numlin = 0 if j < num_lines-1 else 9 if i == num_sol-1 else 1
+                        write_lf(h, "%.7g %.7g %.7g 0 %d" % (s.lmbdam[j], s.sj[j], s.jj[j], numlin))

@@ -28,7 +28,8 @@ if __name__ == "__main__":
     app = QApplication([])
 
     form = XFileMolecules()
-    form.showMaximized()
+    #form.showMaximized()
+    form.show()
     form.load(m)
 
     sys.exit(app.exec_())

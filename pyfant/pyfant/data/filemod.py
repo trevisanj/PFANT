@@ -69,7 +69,7 @@ class FileMod(DataFile):
 
         self.records.append(rec)
 
-  def save(self, filename):
+  def _do_save_as(self, filename):
     """Saves to file."""
     raise NotImplementedError("Maybe tomorrow")
 

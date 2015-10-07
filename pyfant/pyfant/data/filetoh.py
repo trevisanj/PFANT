@@ -81,7 +81,7 @@ class FileToH(DataFile):
             # whereas it was dumped in the file by column; hence we have to transpose it
             self.th = np.reshape(v, (self.ntot, self.jmax)).T
 
-    def save(self, filename):
+    def _do_save_as(self, filename):
         """Saves to file."""
         raise NotImplementedError("Maybe tomorrow")
 

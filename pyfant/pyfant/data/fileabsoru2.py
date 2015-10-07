@@ -12,5 +12,5 @@ class FileAbsoru2(DataFile):
   def _do_load(self, filename):
     raise NotImplementedError("This class is a stub ATM")
 
-  def save(self, filename):
+  def _do_save_as(self, filename):
     raise NotImplementedError("This class is a stub ATM")

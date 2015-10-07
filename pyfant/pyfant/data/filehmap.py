@@ -60,9 +60,7 @@ class FileHmap(DataFile):
           raise
 
 
-  def save(self, filename):
-    """Saves to file."""
-
+  def _do_save_as(self, filename):
     with open(filename, "w") as h:
       write_lf(h, "# filename / niv inf / niv sup / central lambda / kiex / c1")
       for r in self.rows:

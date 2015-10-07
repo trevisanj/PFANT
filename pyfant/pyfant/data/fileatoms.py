@@ -113,7 +113,7 @@ class FileAtoms(DataFile):
                 raise type(a)(("Error around %d%s row of file '%s'" %
                     (r+1, ordinal_suffix(r+1), filename))+": "+str(a)), None, sys.exc_info()[2]
 
-    def save(self, filename):
+    def _do_save_as(self, filename):
         with open(filename, "w") as h:
             n = len(self.elements)
             for i, e in enumerate(self.elements.values()):

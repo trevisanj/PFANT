@@ -31,8 +31,7 @@ class FileAbonds(DataFile):
                 self.ele.append(adjust_atomic_symbol(ele))
                 self.abol.append(float(abol))
 
-    def save(self, filename):
-        """Saves current lists to file."""
+    def _do_save_as(self, filename):
         with open(filename, "w") as h:
             h.writelines([' %-2s%6.2f\n' % (self.ele[i], self.abol[i])
                           for i in xrange(len(self))])

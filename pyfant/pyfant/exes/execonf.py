@@ -11,6 +11,7 @@ import os
 import random
 import glob
 from ..parts import *
+import re
 
 # Indexes in workflow sequence
 innewmarcs = 0
@@ -99,7 +100,7 @@ class Options(object):
 
     def get_names(self):
         """Returns a list with the names of all the options. Names come sorted"""
-        return filter(lambda x: not x.startswith('_'), dir(self))
+        return filter(lambda x: not (x.startswith('_') or x == "get_names"), dir(self))
 
 
 @froze_it
@@ -211,9 +212,11 @@ class ExeConf(object):
         l = []
         names = self.opt.get_names()
         for attr_name in names:
-            value = self.__getattribute__(attr_name)
+            value = self.opt.__getattribute__(attr_name)
             if value is not None:
                 s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
+                if re.search(r"[,|& ]", s_value):
+                    s_value = '"'+s_value+'"'  # adds quotes if string contains one of the characters above
                 l.extend(["--"+attr_name, s_value])
         return l
 
@@ -241,7 +244,7 @@ class ExeConf(object):
 
                     new_fn = os.path.join(self.get_wdir(), self.add_session_dir(obj.default_filename))
                     # Saves file
-                    obj.save(new_fn)
+                    obj.save_as(new_fn)
                     # Overwrites config option
                     self.opt.__setattr__("fn_"+attr_name[3:], new_fn)
 

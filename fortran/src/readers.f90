@@ -738,8 +738,6 @@ contains
 
     call map_file_comments(path_to_file, skip_row, num_rows)
 
-    write(*,*) 'num_rows=', num_rows
-
     open(unit=UNIT_,file=path_to_file, status='old')
 
     hmap_n = 0

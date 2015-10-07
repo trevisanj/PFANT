@@ -85,7 +85,7 @@ class FileMain(DataFile):
             self.glog, self.asalog, self.nhe, self.mu))
     self.inum = int(self.inum)
   
-  def save(self, filename):
+  def _do_save_as(self, filename):
     """Saves to file."""
     with open(filename, "w") as h:
       write_lf(h, "%-20s" % self.titrav)

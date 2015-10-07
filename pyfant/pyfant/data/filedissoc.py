@@ -78,7 +78,7 @@ class FileDissoc(DataFile):
 
 
 
-    def save(self, filename):
+    def _do_save_as(self, filename):
         with open(filename, "w") as h:
             # h.writelines([' %-2s%6.2f\n' % (self.ele[i], self.abol[i])
             #               for i in xrange(len(self))])

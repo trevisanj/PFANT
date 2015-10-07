@@ -1691,7 +1691,11 @@ contains
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
+
+            !> @todo get this out of here
+            write(44, '(e20.10)') kak
           end if
+
           kappa = kappa + kak
         end do   !  fin bcle sur k
 
