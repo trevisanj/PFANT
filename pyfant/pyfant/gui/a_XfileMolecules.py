@@ -14,8 +14,10 @@ import numpy as np
 from .a_XParametersEditor import *
 from .a_XMolLinesEditor import *
 from ._guiaux import *
+from .guimisc import *
 import os.path
 import webbrowser
+import sys
 
 class PlotInfo(object):
     def __init__(self):
@@ -221,10 +223,10 @@ class XFileMolecules(QMainWindow):
         #self.menubar.setObjectName(_fromUtf8("menubar"))
         b = self.menuBar()
         m = self.menu_file = b.addMenu("&File")
-        ac = m.addAction("&Save")
+        self.act_save = ac = m.addAction("&Save")
         ac.setShortcut("Ctrl+S")
         ac.triggered.connect(self.on_save)
-        ac = m.addAction("Save &as...")
+        self.act_save_as = ac = m.addAction("Save &as...")
         ac.setShortcut("Ctrl+Alt+S")
         ac.triggered.connect(self.on_save_as)
         m.addSeparator()
@@ -244,16 +246,29 @@ class XFileMolecules(QMainWindow):
         self.setGeometry(0, 0, 800, 600)
 
     def on_help(self, _):
-        webbrowser.open_new(os.path.join(os.path.dirname(os.path.realpath("moled.py")),
-                                         "moled.html"))
+        base_dir = os.path.dirname(sys.argv[0])
+        print "aaa", sys.argv[0]
+        print "bbb", base_dir
+        webbrowser.open_new(os.path.join(base_dir, "mled.html"))
+        ShowMessage("Help file mled.html was opened in web browser.")
+
     def on_save(self, _):
-        self.save()
+        self.disable_save_actions()
+        try:
+            self.save()
+        finally:
+            self.enable_save_actions()
 
     def on_save_as(self, _):
-        if self.f:
-            new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
-            if new_filename:
-                self.save_as(new_filename)
+        self.disable_save_actions()
+        try:
+            if self.f:
+                new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
+                if new_filename:
+                    self.save_as(new_filename)
+        finally:
+            self.enable_save_actions()
+
     def on_listWidgetMol_currentRowChanged(self, row):
         if row > -1:
             self.set_molecule(row)
@@ -538,6 +553,13 @@ class XFileMolecules(QMainWindow):
     def update_window_title(self):
         self.setWindowTitle(self.f.filename+("" if not self.flag_changed else " (changed)"))
 
+    def enable_save_actions(self):
+        self.act_save.setEnabled(True)
+        self.act_save_as.setEnabled(True)
+
+    def disable_save_actions(self):
+        self.act_save.setEnabled(False)
+        self.act_save_as.setEnabled(False)
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
