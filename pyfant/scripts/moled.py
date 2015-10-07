@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-    description=VisModRecord.__doc__,
+    description="Editor for PFANT molecular lines files",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 

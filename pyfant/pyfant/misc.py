@@ -15,6 +15,7 @@ from matplotlib import rc
 from .errors import *
 import re
 
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 

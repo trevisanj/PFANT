@@ -6,6 +6,7 @@ from PyQt4.QtGui import *
 from pyfant import *
 import numpy as np
 from ._guiaux import *
+from .guimisc import *
 
 class XMolLinesEditor(QMainWindow):
 
@@ -23,6 +24,8 @@ class XMolLinesEditor(QMainWindow):
         a.cellChanged.connect(self.on_tableWidget_cellChanged)
         a.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.EditKeyPressed)
         a.setFont(MONO_FONT)
+        a.installEventFilter(self)
+
 
         self.setCentralWidget(a)
         rect = QApplication.desktop().screenGeometry()
@@ -35,11 +38,29 @@ class XMolLinesEditor(QMainWindow):
 
     def on_tableWidget_cellChanged(self, row, column):
         if not self.flag_populating:
-            value = float(self.tableWidget.item(row, column).text())
-            self.parent.MolLinesEditor_cell_changed(row, column, value)
+            item = self.tableWidget.item(row, column)
+            try:
+                value = float(item.text())
+            except ValueError:
+                # restores original value
+                ShowError("Invalid floating point value: %s" % item.text())
+                item.setText(str(self.parent.sol.__getattribute__(SOL_ATTR_NAMES[column])[row]))
+            else:
+                self.parent.MolLinesEditor_cell_changed(row, column, value)
 
     def closeEvent(self, _):
         self.parent.MolLinesEditor_closing()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Return:
+                if source == self.tableWidget:
+                    self.tableWidget.editItem(self.tableWidget.currentItem())
+                    return True
+                if source == self.listWidgetSol:
+                    self.edit_sol()
+                    return True
+        return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
 
@@ -54,19 +75,16 @@ class XMolLinesEditor(QMainWindow):
 
             t = self.tableWidget
             n = len(sol)
-            a = ["lambda", "sj", "jj"]
-            ResetTableWidget(t, n, len(a))
-            t.setHorizontalHeaderLabels(a)
+            ResetTableWidget(t, n, len(SOL_HEADERS))
+            t.setHorizontalHeaderLabels(SOL_HEADERS)
+
+            # list with the vectors themselves
+            attrs = [sol.__getattribute__(x) for x in SOL_ATTR_NAMES]
 
             for i in xrange(len(sol)):
-                item = QTableWidgetItem(str(sol.lmbdam[i]))
-                t.setItem(i, 0, item)
-
-                item = QTableWidgetItem(str(sol.sj[i]))
-                t.setItem(i, 1, item)
-
-                item = QTableWidgetItem(str(sol.jj[i]))
-                t.setItem(i, 2, item)
+                for j, attr in enumerate(attrs):
+                    item = QTableWidgetItem(str(attr[i]))
+                    t.setItem(i, j, item)
 
             t.resizeColumnsToContents()
         finally:

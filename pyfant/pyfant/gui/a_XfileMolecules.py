@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from .a_XParametersEditor import *
 from .a_XMolLinesEditor import *
+from ._guiaux import *
+import os.path
+import webbrowser
 
 class PlotInfo(object):
     def __init__(self):
@@ -126,7 +129,7 @@ class XFileMolecules(QMainWindow):
         a1.setCheckable(True)
         if self.flag_jj():
             a0.setChecked(True)
-        a11 = self.buttonEditLines = QPushButton("Edit &lines (Alt+L)")
+        a11 = self.buttonEditLines = QPushButton("Edit lines (Alt+&3)")
         a11.clicked.connect(self.on_buttonEditLines_clicked)
         if self.flag_jj():
             a1.setChecked(True)
@@ -229,9 +232,10 @@ class XFileMolecules(QMainWindow):
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
 
-        # self.setMenuBar(self.menubar)
-        # self.setupUi()
-
+        m = self.menu_help = b.addMenu("&Help")
+        ac = m.addAction("&Open help in browser")
+        ac.setShortcut("F1")
+        ac.triggered.connect(self.on_help)
 
         # * # * # * # * # * # * # *
         # Final adjustments
@@ -239,7 +243,9 @@ class XFileMolecules(QMainWindow):
         self.setCentralWidget(self.tabWidgetFile)
         self.setGeometry(0, 0, 800, 600)
 
-
+    def on_help(self, _):
+        webbrowser.open_new(os.path.join(os.path.dirname(os.path.realpath("moled.py")),
+                                         "moled.html"))
     def on_save(self, _):
         self.save()
 
@@ -249,10 +255,12 @@ class XFileMolecules(QMainWindow):
             if new_filename:
                 self.save_as(new_filename)
     def on_listWidgetMol_currentRowChanged(self, row):
-        self.set_molecule(row)
+        if row > -1:
+            self.set_molecule(row)
 
     def on_listWidgetSol_currentRowChanged(self, row):
-        self.set_sol(row)
+        if row > -1:
+            self.set_sol(row)
 
     def on_buttonSJ_clicked(self):
         self.set_flag_sj(self.buttonSJ.isChecked())
@@ -295,7 +303,6 @@ class XFileMolecules(QMainWindow):
                 if source == self.listWidgetSol:
                     self.edit_sol()
                     return True
-
         return False
 
     def closeEvent(self, event):
@@ -430,6 +437,7 @@ class XFileMolecules(QMainWindow):
             if i_subplot > 1: plt.tight_layout()
 
             self.canvas.draw()
+            self.draw_markers()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
@@ -546,6 +554,7 @@ class XFileMolecules(QMainWindow):
         """Called by the molecular lines editor to notify that it is closing."""
         print "AHH QUECH FECHAR EH"
         self.form_lines = None
+        self.marker_row = None
 
     def MolLinesEditor_current_row_changed(self, currentRow):
         """Called by the molecular lines editor to notify that the current row has changed."""
@@ -553,13 +562,12 @@ class XFileMolecules(QMainWindow):
 
     def MolLinesEditor_cell_changed(self, row, column, value):
         """Called by the molecular lines editor to notify that a value has changed."""
-        attr_name = ["lmbdam", "sj", "jj"][column]
+        attr_name = SOL_ATTR_NAMES[column]
         v = self.sol.__getattribute__(attr_name)
         if v[row] != value:
             v[row] = value
             self.flag_changed = True
             self.plot_lines()
-            self.draw_markers()
             self.update_window_title()
 
     def set_editor_sol(self):
@@ -581,7 +589,7 @@ class XFileMolecules(QMainWindow):
 
     def draw_markers(self):
         self.clear_markers()
-        if any([o.flag for o in self.plot_info]):
+        if self.marker_row is not None and any([o.flag for o in self.plot_info]):
             i = self.marker_row
             lambda_ = self.sol.lmbdam[i]
             for o in self.plot_info:

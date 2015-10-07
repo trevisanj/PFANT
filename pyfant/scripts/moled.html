@@ -1,0 +1,58 @@
+<h1>"moled" - Molecular lines editor</h1>
+
+<p>This program allows you to visualize and edit the contents of a molecular lines file
+such as <pre>moleculagrade.dat</pre> or <pre>mghc2cnr_cn3ch13chtiog3tio.dat</pre>.</p>
+<h2>Opening files</h2>
+
+<p>To open a file, you have to specify its name from the command line, <i>i.e.</i>,</p>
+
+<pre>moled.py &lt;filename&gt;</pre>
+
+<h2>Structure of the program</h2>
+
+<p>The graphical interface is organized in a manner that reproduces
+the hierarchical structure of the molecular lines file, <i>i.e.</i>
+<ul>
+    <li>File properties
+        <ul>
+            <li>Molecule properties
+            <ul>
+                <li>
+                    Set-of-lines (transition) properties
+                </li>
+            </ul></li>
+        </ul>
+    </li>
+</ul>
+</p>
+
+<p>Navigation is facilitated by keyboard shortcuts that are shown explicitly.</p>
+
+<h2>Editing information</h2>
+
+<p>Editable items can be selected using these shortcuts:
+<ol>
+    <li>Molecule properties: Alt+1</li>
+    <li>Set-of-lines properties: Alt+2</li>
+    <li>Molecular lines: Alt+3</li>
+</ol></p>
+
+
+<h3>Editing (1) or (2) above</h3>
+<p>Press Enter or double-click with the mouse</p>
+<h3>Editing molecular lines</h3>
+<p>(3) above will open another window contaning a table. As you navigate through this table,
+the graphical point corresponding with the current row will be shown in the plots with a big
+red <span style="color: red"><b>X</b></span>.</p>
+<p>You can also click with the mouse directly on the plots and the nearest wavelength will
+be selected on the table.</p>
+
+<h2>Saving the file</h2>
+
+<p><b>Careful:</b> if you press Ctrl+S, the original file will be overwritten with your
+changes. It is recommended to backup your file before opening it with moled.</p>
+
+<p>To save it with a different name, press Ctrl+Alt+S.</p>
+
+<p>If the file has been changed, but not saved yet, the word "changed" will be shown in
+the title.</p>
