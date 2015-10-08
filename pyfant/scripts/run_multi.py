@@ -1,4 +1,19 @@
 #!/usr/bin/python
+
+"""
+Sample config file:
+
+ab = {"Ca": [-.3, 0, .3, .5],
+      "Si": [-.3, 0, .3, .5]}
+
+
+# Convolutions specification for fwhm parameter
+conv = [0.08, # first vaule
+        0.6, # last value
+        0.04  # step
+       ]
+
+"""
 from pyfant import *
 import argparse
 import os.path
