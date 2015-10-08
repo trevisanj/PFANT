@@ -84,6 +84,10 @@ class ThreadManager(threading.Thread):
         with self.lock:
             self._flag_exit = True
 
+    def has_finished(self):
+        with self.lock:
+            return len(self.threads) == self.num_finished
+
     def run(self):
         tm_print("Will run %d threads" % len(self.threads))
         while True:

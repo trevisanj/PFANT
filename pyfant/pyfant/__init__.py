@@ -4,6 +4,7 @@ from .misc import *
 from .misc import *
 from .plotters import *
 from .exes import *
+from .util import *
 
 
 # @todo script to generate gridsmap.dat

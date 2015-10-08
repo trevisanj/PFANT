@@ -68,7 +68,7 @@ contains
     real*8, intent(in) :: &
      x,   & !< ?doc?
      y,   & !< ?doc?
-     del    !< ?doc?
+     del    !< ?doc? probably delta lambda
     real*8, intent(out) :: phi    !< ?doc?
     real*8 voigt
     real*8 vv,uu

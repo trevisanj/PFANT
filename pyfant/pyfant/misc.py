@@ -320,3 +320,6 @@ def ResetTableWidget(t, rowCount, colCount):
     t.sortItems(-1)
     t.setRowCount(rowCount)
     t.setColumnCount(colCount)
+
+
+

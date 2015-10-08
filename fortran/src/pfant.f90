@@ -1070,7 +1070,6 @@ module synthesis
    C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
 
 
-
   !=====
   ! Module variables initialized in subroutine synthesis_() and shared among other routines.
   !=====
@@ -1224,9 +1223,9 @@ contains
       !#logging
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
-      501 format(2x,2x,'llzero=',f10.3,2x,'llfin=',f10.3, 2x,'m_lzero=',f10.3,2x,'m_lfin=',&
+      501 format(2x,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'m_lzero=',f10.3,2x,'m_lfin=',&
        f10.3,2x,'m_dtot=',i7,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',f10.3)
-      write(lll,501) x_llzero, x_llfin, m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
+      write(lll,501) m_lzero, m_lfin, m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
       call log_info(lll)
 
       !=====
@@ -1562,14 +1561,14 @@ contains
       ! ?doc?
       ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
       ! See also read_atoms(), variable atoms_gr, which is also overwritten.
-      if(atoms_f_ch(k).lt.1.e-37)  then
+      if(atoms_f_ch(k) .lt. 1.e-37)  then
         !> @todo optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
 
         kies = (12398.54/atoms_f_lambda(k)) + atoms_f_kiex(k)
         if(ioo.eq.1) kii = partit_ki1(j)
         if(ioo.eq.2) kii = partit_ki2(j)
 
-        if(popadelh_corch(k).lt.1.e-37)   then
+        if(popadelh_corch(k) .lt. 1.e-37)   then
           popadelh_corch(k) = 0.67 * atoms_f_kiex(k) +1
         end if
 
@@ -1582,9 +1581,10 @@ contains
 
 !
       if(atoms_f_ch(k) .lt. 1.e-20) then
-        iopi=1
+        ! This will be the case most of the time
+        iopi = 1
       else
-        iopi=2
+        iopi = 2
       end if
 
       do n = 1, modeles_ntot
@@ -1692,8 +1692,7 @@ contains
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
 
-            !> @todo get this out of here
-            write(44, '(e20.10)') kak
+            ! This was created to debug the KAK write(44, '(e20.10)') kak
           end if
 
           kappa = kappa + kak
