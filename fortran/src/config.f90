@@ -484,7 +484,7 @@ module config
   !
   ! hydro2, pfant
   !
-  logical :: config_hmap = .false. !< option: --hmap
+  logical :: config_hmap = .true. !< option: --hmap
   character*64 :: &
    config_fn_hmap    = 'hmap.dat', &  !< option: --fn_hmap
    config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
