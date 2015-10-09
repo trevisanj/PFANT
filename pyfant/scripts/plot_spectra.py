@@ -29,9 +29,15 @@ if __name__ == "__main__":
             f.load(x)
             print "... file is pfant output"
         except:
-            f = FileSpectrumNulbad()
-            f.load(x)
-            print "... file is nulbad output"
+            try:
+                f = FileSpectrumNulbad()
+                f.load(x)
+                print "... file is nulbad output"
+            except:
+                f = FileSpectrumXY()
+                f.load(x)
+                print "... read file as generic X-Y file"
+
 
         ss.append(f.spectrum)
     if args.ovl:

@@ -3,7 +3,7 @@ __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
        "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
        "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix",
-       "slugify", "ResetTableWidget"]
+       "slugify", "ResetTableWidget", "SmartFormatter"]
 
 import os.path
 import glob
@@ -14,6 +14,7 @@ import sys
 from matplotlib import rc
 from .errors import *
 import re
+from argparse import *
 
 
 logger = logging.getLogger(__name__)
@@ -323,3 +324,27 @@ def ResetTableWidget(t, rowCount, colCount):
 
 
 
+
+
+# argparse.RawTextHelpFormatter._split_lines
+
+class SmartFormatter(RawDescriptionHelpFormatter):
+    """
+    Help formatter that will show default option values and also respect
+    newlines in description. Neither are done in default help formatter.
+    """
+
+    def _get_help_string(self, action):
+        help = action.help
+        if '%(default)' not in action.help:
+            if action.default is not SUPPRESS:
+                defaulting_nargs = [OPTIONAL, ZERO_OR_MORE]
+                if action.option_strings or action.nargs in defaulting_nargs:
+                    help += ' (default: %(default)s)'
+        return help
+
+
+        # # this is the RawTextHelpFormatter._split_lines
+        # if text.startswith('R|'):
+        #     return text[2:].splitlines()
+        # return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)

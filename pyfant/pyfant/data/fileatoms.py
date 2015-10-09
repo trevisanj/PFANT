@@ -81,18 +81,18 @@ class FileAtoms(DataFile):
         """Clears internal lists and loads from file."""
 
         with open(filename, "r") as h:
-            ostr = struct.Struct("2s 1s 1x 10s")
 
             r = 0 # counts rows of file
             edict = {}  # links atomic symbols with Element objects created (key is atomic symbol)
             try:
                 while True:
-                    s = h.readline()
                     a = AtomicLine()
-                    [elem, a.ioni, a.lambda_] = ostr.unpack_from(s)
+
+                    # (EE)(I) --whitespace-- (float) --ignored...--
+                    temp = str_vector(h)
+                    elem, a.ioni = temp[0][:-1], int(temp[0][-1])
+                    a.lambda_ = float(temp[1])
                     elem = adjust_atomic_symbol(elem)
-                    a.ioni = int(a.ioni)
-                    a.lambda_ = float(a.lambda_)
                     if edict.has_key(elem):
                         e = edict[elem]
                     else:

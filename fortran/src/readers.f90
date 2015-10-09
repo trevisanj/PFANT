@@ -1645,11 +1645,6 @@ contains
     open(unit=unit_,file=filename, status='old')
 
 
-    !#logging
-    write (lll,*) 'MAX_KM_LINES_TOTAL = ', MAX_KM_LINES_TOTAL
-    call log_debug(lll)
-
-
     ! row 01:
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured

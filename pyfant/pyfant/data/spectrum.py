@@ -1,4 +1,4 @@
-__all__ = ["Spectrum", "FileSpectrum", "FileSpectrumPfant", "FileSpectrumNulbad"]
+__all__ = ["Spectrum", "FileSpectrum", "FileSpectrumPfant", "FileSpectrumNulbad", "FileSpectrumXY"]
 
 import fortranformat as ff
 import struct
@@ -63,6 +63,12 @@ class FileSpectrum(DataFile):
     def __init__(self):
         DataFile.__init__(self)
         self.spectrum = Spectrum()
+
+    def load(self, filename=None):
+        # Method was overriden to set spectrum filename automatcially so that
+        # descendants don't have to bother about this.
+        DataFile.load(self, filename)
+        self.spectrum.filename = filename
 
 
 class FileSpectrumPfant(FileSpectrum):
@@ -139,7 +145,6 @@ class FileSpectrumPfant(FileSpectrum):
         # Lambdas
         sp.x = np.array([sp.l0 + k * sp.pas for k in range(0, len(y))])
         sp.y = np.array(y)
-        sp.filename = filename
 
         logging.debug("Just read PFANT Spectrum '%s'" % filename)
 
@@ -177,7 +182,7 @@ class FileSpectrumNulbad(FileSpectrum):
                 s_header1.unpack_from(s)
             [sp.l0, sp.lf, sp.pas, sp.fwhm] = \
                 map(float, [sp.l0, sp.lf, sp.pas, sp.fwhm])
-            n = int(n)
+            #n = int(n)
 
 
             # -- rows 03 ... --
@@ -201,6 +206,29 @@ class FileSpectrumNulbad(FileSpectrum):
 
         sp.x = np.array(x)
         sp.y = np.array(y)
-        sp.filename = filename
 
         logging.debug("Just read NULBAD Spectrum '%s'" % filename)
+
+
+class FileSpectrumXY(FileSpectrum):
+    """
+    Represents a file with two columns: first is lambda (x), second is flux (y)
+
+    File may have comment lines; these will be ignored altogether
+
+    """
+
+    def _do_load(self, filename):
+        A = np.loadtxt(filename)
+        if len(A.shape) < 2:
+            raise RuntimeError("File %s does not contain 2D array" % filename)
+        if A.shape[1] < 2:
+            raise RuntimeError("File %s must contain at least two columns" % filename)
+        if A.shape[1] > 2:
+            logging.warning("File %s has more than two columns, taking only first and second" % filename)
+
+        sp = self.spectrum = Spectrum()
+        sp.x = A[:, 0]
+        sp.y = A[:, 1]
+
+        logging.debug("Just read XY Spectrum '%s'" % filename)

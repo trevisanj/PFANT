@@ -132,9 +132,7 @@ def plot_spectra(ss, title=None, flag_overlapped=False):
 
     n = len(ss)
 
-    def plot1(x, y):
-        pass
-
+    format_BLB()
     if n == 1:
         f = plt.figure()
     else:
@@ -182,6 +180,7 @@ def plot_spectra_overlapped(ss, title=None):
 
     n = len(ss)
 
+    format_BLB()
     f = plt.figure()
 
     T = 0.02  # amount of extra space on both left and right of graphics
