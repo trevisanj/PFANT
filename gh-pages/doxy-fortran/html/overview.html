@@ -121,8 +121,8 @@ Setting the system path</h2>
 <li>%/pyfant</li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>If you run on Linux, the script %/add_paths.py can be handy.</dd></dl>
-<div class="fragment"><div class="line">$ ./add_paths.py --tcsh  # <span class="keywordflow">if</span> you use <a class="code" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">the</a> tcsh shell</div>
-<div class="line">$ ./add_paths.py --bash  # <span class="keywordflow">if</span> you use <a class="code" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">the</a> bash shell</div>
+<div class="fragment"><div class="line">$ ./add_paths.py --tcsh  # <span class="keywordflow">if</span> you use the tcsh shell</div>
+<div class="line">$ ./add_paths.py --bash  # <span class="keywordflow">if</span> you use the bash shell</div>
 </div><!-- fragment --><h2><a class="anchor" id="required"></a>
 Required software</h2>
 <pre class="fragment">What                          Why?                       How to install
@@ -150,7 +150,7 @@ Directory</h1>
 │   │   ├── nulbad
 │   │   └── pfant
 │   └── src                      Fortran and documentation source files
-└── pyfant                      Python layer
+└── pyfant                       Python layer
     ├── scripts                  command-line tools
     │   ├── plot_filetoh.py      plots hydrogen lines in 3D
     │   ├── plot_mod_record.py   plots atmospheric model
@@ -249,10 +249,10 @@ Running with shipped data</h2>
 <p>If everything is alright so far, you should be able to successfully run the following commands:</p>
 <div class="fragment"><div class="line">$ <a class="code" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800">innewmarcs</a></div>
 <div class="line">$ <a class="code" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca">hydro2</a> --hmap True</div>
-<div class="line">$ <a class="code" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">pfant</a> --hmap True</div>
+<div class="line">$ pfant --hmap True</div>
 <div class="line">$ <a class="code" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d">nulbad</a></div>
 </div><!-- fragment --><p>Looks good. For a full set of command-line options, use the "--help" option with any of the executables, for example:</p>
-<div class="fragment"><div class="line">$ <a class="code" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">pfant</a> --help</div>
+<div class="fragment"><div class="line">$ pfant --help</div>
 <div class="line">$ <a class="code" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800">innewmarcs</a> --help</div>
 </div><!-- fragment --><h2><a class="anchor" id="cmd_plot"></a>
 Command-line plotting tools</h2>
@@ -261,7 +261,7 @@ Command-line plotting tools</h2>
 </div><!-- fragment --><p>Try these ones as well:</p>
 <div class="fragment"><div class="line">$ plot_mod_record.py modeles.mod      # plots interpolated atmospheric model</div>
 <div class="line">$ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid</div>
-<div class="line">$ plot_filetoh.py thalpha             # plots hydrogen <a class="code" href="namespacereader__molecules.html#aee4a30a3710c2009f6c5fe4f25bea6c1">lines</a></div>
+<div class="line">$ plot_filetoh.py thalpha             # plots hydrogen lines</div>
 </div><!-- fragment --><h1><a class="anchor" id="more_python"></a>
 Operation using Python</h1>
 <p>The four executables can be run in batch using this python script</p>
@@ -277,7 +277,7 @@ Operation using Python</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

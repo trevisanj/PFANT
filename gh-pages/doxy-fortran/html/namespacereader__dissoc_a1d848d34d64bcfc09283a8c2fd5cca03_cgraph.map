@@ -1,0 +1,8 @@
+<map id="reader_dissoc::find_atomic_symbol_dissoc" name="reader_dissoc::find_atomic_symbol_dissoc">
+<area shape="rect" id="node2" href="$namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="216,53,355,94"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="403,5,531,32"/>
+<area shape="rect" id="node6" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="419,57,514,84"/>
+<area shape="rect" id="node7" href="$namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="413,108,521,135"/>
+<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="579,5,712,32"/>
+<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="761,5,842,32"/>
+</map>

@@ -1,8 +1,8 @@
 <map id="reader_absoru2::read_absoru2" name="reader_absoru2::read_absoru2">
-<area shape="rect" id="node2" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="203,5,331,32"/>
-<area shape="rect" id="node5" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="219,56,314,83"/>
-<area shape="rect" id="node6" href="$namespacemisc.html#a026e76068a6830c8c15aa1a58bd91c92" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="197,107,336,149"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="384,5,517,32"/>
-<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="566,5,647,32"/>
-<area shape="rect" id="node7" href="$namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="397,115,505,141"/>
+<area shape="rect" id="node2" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="384,5,512,32"/>
+<area shape="rect" id="node5" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="401,115,495,141"/>
+<area shape="rect" id="node6" href="$namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="197,53,336,94"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="560,5,693,32"/>
+<area shape="rect" id="node4" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="742,5,823,32"/>
+<area shape="rect" id="node7" href="$namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="394,60,502,87"/>
 </map>

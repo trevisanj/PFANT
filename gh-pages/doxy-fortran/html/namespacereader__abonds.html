@@ -169,26 +169,26 @@ Variables</h2></td></tr>
 <dl class="section attention"><dt>Attention</dt><dd>The end of the file is signalled by two rows containing only "1" each at column 1 and nothing else at the others, i.e., <pre class="fragment"> .......(last data row).......
  1
  1</pre></dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000092">Todo:</a></b></dt><dd><p class="startdd">Test one row!!! </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000094">Todo:</a></b></dt><dd><p class="startdd">Test one row!!! </p>
 <p class="enddd">use READ()'s "END=" option </p>
 </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000093">Todo:</a></b></dt><dd>ISSUE: lot of effort to keep dubious feature </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000094">Todo:</a></b></dt><dd>ISSUE: This is the thing that Beatriz mentioned that is not used anymore </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000095">Todo:</a></b></dt><dd>ISSUE ask MT Why "-12" ?? (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000095">Todo:</a></b></dt><dd>ISSUE: lot of effort to keep dubious feature </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000096">Todo:</a></b></dt><dd>ISSUE: This is the thing that Beatriz mentioned that is not used anymore </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000097">Todo:</a></b></dt><dd>ISSUE ask MT Why "-12" ?? (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>What is in abonds.dat is log10(NX/NH) - [Fe/H]</dd>
 <dd>
 What is in dissoc.dat is log10(NX/NH) - 12 - [Fe/H]</dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000096">Todo:</a></b></dt><dd>issue abundances in abonds.dat and dissoc.dat correspond to (X/H) - [Fe/H]. The purpose is to [X/Fe] = 0.0 </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000097">Todo:</a></b></dt><dd>issue dissoc.dat has redundant information: all abundances are these but with 12 subtracted and they should match! </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000098">Todo:</a></b></dt><dd>issue abundances in abonds.dat and dissoc.dat correspond to (X/H) - [Fe/H]. The purpose is to [X/Fe] = 0.0 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000099">Todo:</a></b></dt><dd>issue dissoc.dat has redundant information: all abundances are these but with 12 subtracted and they should match! </dd></dl>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01087">1087</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01136">1136</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacereader__abonds_aa63725d967690e14991d410ba4747219_cgraph.png" border="0" usemap="#namespacereader__abonds_aa63725d967690e14991d410ba4747219_cgraph" alt=""/></div>
 <map name="namespacereader__abonds_aa63725d967690e14991d410ba4747219_cgraph" id="namespacereader__abonds_aa63725d967690e14991d410ba4747219_cgraph">
-<area shape="rect" id="node2" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="195,12,323,39"/><area shape="rect" id="node3" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="371,12,504,39"/><area shape="rect" id="node4" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="553,12,634,39"/></map>
+<area shape="rect" id="node2" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="592,33,720,60"/><area shape="rect" id="node5" href="namespacereader__dissoc.html#a1d848d34d64bcfc09283a8c2fd5cca03" title="Searches for atomic symbol inside dissoc_elems. " alt="" coords="195,34,357,75"/><area shape="rect" id="node3" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="768,33,901,60"/><area shape="rect" id="node4" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="950,33,1031,60"/><area shape="rect" id="node6" href="namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="405,85,544,126"/><area shape="rect" id="node7" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="609,88,703,115"/><area shape="rect" id="node8" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="602,139,710,165"/></map>
 </div>
 </p>
 
@@ -207,7 +207,7 @@ Here is the call graph for this function:</div>
 
 <p>?doc? </p>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01055">1055</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01104">1104</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -223,7 +223,7 @@ Here is the call graph for this function:</div>
 
 <p>?doc? </p>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01056">1056</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01105">1105</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -239,7 +239,7 @@ Here is the call graph for this function:</div>
 
 <p>?doc? </p>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01057">1057</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01106">1106</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -255,7 +255,7 @@ Here is the call graph for this function:</div>
 
 <p>?doc? This is calculated </p>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01057">1057</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01106">1106</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -271,7 +271,7 @@ Here is the call graph for this function:</div>
 
 <p>Flag indicating whether <a class="el" href="namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. ">read_abonds()</a> has already been called. </p>
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l01061">1061</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l01110">1110</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -281,7 +281,7 @@ Here is the call graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacereader__abonds.html">reader_abonds</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

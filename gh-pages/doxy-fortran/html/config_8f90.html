@@ -153,9 +153,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e">config::config_init</a> ()</td></tr>
 <tr class="memdesc:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of this module.  <a href="#a18ef2bb8c5d4d83be0bde27a470ad65e">More...</a><br /></td></tr>
 <tr class="separator:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c">config::add_option</a> (ihpn, name, chr, has_arg, argname, default_, descr)</td></tr>
-<tr class="memdesc:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates option and adds to options variable.  <a href="#a5b8c8fc4e4fac85a9c56de8c1ea3c21c">More...</a><br /></td></tr>
-<tr class="separator:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79dca0373d20dbefdc74db129f07942"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#af79dca0373d20dbefdc74db129f07942">config::add_option</a> (ihpn, name, chr, has_arg, argname, default_, descr, appears)</td></tr>
+<tr class="memdesc:af79dca0373d20dbefdc74db129f07942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates option and adds to options variable.  <a href="#af79dca0373d20dbefdc74db129f07942">More...</a><br /></td></tr>
+<tr class="separator:af79dca0373d20dbefdc74db129f07942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad865276fd39576917040625509dfbb3c"><td class="memItemLeft" align="right" valign="top">subroutine, private&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c">config::init_options</a> ()</td></tr>
 <tr class="memdesc:ad865276fd39576917040625509dfbb3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of command-line options.  <a href="#ad865276fd39576917040625509dfbb3c">More...</a><br /></td></tr>
 <tr class="separator:ad865276fd39576917040625509dfbb3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,12 +234,15 @@ Variables</h2></td></tr>
 <tr class="memdesc:ac9836df8e2674e76d30a6865ae8586bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">option --logging_screen  <a href="#ac9836df8e2674e76d30a6865ae8586bb">More...</a><br /></td></tr>
 <tr class="separator:ac9836df8e2674e76d30a6865ae8586bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefccb23e8f114f7a263670b888b53e80"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#aefccb23e8f114f7a263670b888b53e80">config::config_logging_dump</a> = .false.</td></tr>
-<tr class="memdesc:aefccb23e8f114f7a263670b888b53e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">option &ndash;logging_dump  <a href="#aefccb23e8f114f7a263670b888b53e80">More...</a><br /></td></tr>
+<tr class="memdesc:aefccb23e8f114f7a263670b888b53e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">option --logging_dump  <a href="#aefccb23e8f114f7a263670b888b53e80">More...</a><br /></td></tr>
 <tr class="separator:aefccb23e8f114f7a263670b888b53e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#afb019d9bc85a96a18a2ae0b0ac20ee1e">config::config_explain</a> = .false.</td></tr>
+<tr class="memdesc:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">option &ndash;explain  <a href="#afb019d9bc85a96a18a2ae0b0ac20ee1e">More...</a><br /></td></tr>
+<tr class="separator:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21084af9bc1961a970e7a5e974c4f962"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a21084af9bc1961a970e7a5e974c4f962">config::config_fn_modeles</a> = 'modeles.mod'</td></tr>
 <tr class="memdesc:a21084af9bc1961a970e7a5e974c4f962"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;fn_modeles  <a href="#a21084af9bc1961a970e7a5e974c4f962">More...</a><br /></td></tr>
 <tr class="separator:a21084af9bc1961a970e7a5e974c4f962"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ac56473c2157c1d8f0ca49913830c2ffd">config::config_hmap</a> = .false.</td></tr>
+<tr class="memitem:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ac56473c2157c1d8f0ca49913830c2ffd">config::config_hmap</a> = .true.</td></tr>
 <tr class="memdesc:ac56473c2157c1d8f0ca49913830c2ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;hmap  <a href="#ac56473c2157c1d8f0ca49913830c2ffd">More...</a><br /></td></tr>
 <tr class="separator:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae406c6265c752581bb2214aef0bcd3d1"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ae406c6265c752581bb2214aef0bcd3d1">config::config_fn_hmap</a> = 'hmap.dat'</td></tr>
@@ -334,7 +337,7 @@ Variables</h2></td></tr>
 <tr class="memitem:a1355ca019de5fe564012ea70fdf851e4"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a1355ca019de5fe564012ea70fdf851e4">config::config_fn_molecules</a> = 'moleculagrade.dat'</td></tr>
 <tr class="memdesc:a1355ca019de5fe564012ea70fdf851e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: --fn_molecules  <a href="#a1355ca019de5fe564012ea70fdf851e4">More...</a><br /></td></tr>
 <tr class="separator:a1355ca019de5fe564012ea70fdf851e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add5e996fefae53921475572bba692cdb"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#add5e996fefae53921475572bba692cdb">config::config_fn_lines</a> = '<a class="el" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">lines.pfant</a>'</td></tr>
+<tr class="memitem:add5e996fefae53921475572bba692cdb"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#add5e996fefae53921475572bba692cdb">config::config_fn_lines</a> = 'lines.pfant'</td></tr>
 <tr class="memdesc:add5e996fefae53921475572bba692cdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: --fn_lines  <a href="#add5e996fefae53921475572bba692cdb">More...</a><br /></td></tr>
 <tr class="separator:add5e996fefae53921475572bba692cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1371426327b4384c26c902877afc8a07"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a1371426327b4384c26c902877afc8a07">config::config_fn_log</a> = 'log.log'</td></tr>
@@ -367,6 +370,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a052f918d9939910465bba6dca6379e17"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a052f918d9939910465bba6dca6379e17">config::config_fn_cv</a> = '?'</td></tr>
 <tr class="memdesc:a052f918d9939910465bba6dca6379e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;fn_cv  <a href="#a052f918d9939910465bba6dca6379e17">More...</a><br /></td></tr>
 <tr class="separator:a052f918d9939910465bba6dca6379e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a933d28c7b24d95b32bda9da6bba9e4de"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a933d28c7b24d95b32bda9da6bba9e4de">config::unit_explain</a> = 145</td></tr>
+<tr class="memdesc:a933d28c7b24d95b32bda9da6bba9e4de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit to write to "explain" file (file containing debugging information)  <a href="#a933d28c7b24d95b32bda9da6bba9e4de">More...</a><br /></td></tr>
+<tr class="separator:a933d28c7b24d95b32bda9da6bba9e4de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="memItemLeft" align="right" valign="top">type(option), dimension(max_num_options), private&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a4d1d3dbfb01731a53cf1c0547cd05b77">config::options</a></td></tr>
 <tr class="memdesc:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of command-line options.  <a href="#a4d1d3dbfb01731a53cf1c0547cd05b77">More...</a><br /></td></tr>
 <tr class="separator:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -398,14 +404,14 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00253">253</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00256">256</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="config_8f90_ae36bdb92a3c22e440e572d5499b51a32_icgraph.png" border="0" usemap="#config_8f90_ae36bdb92a3c22e440e572d5499b51a32_icgraph" alt=""/></div>
 <map name="config_8f90_ae36bdb92a3c22e440e572d5499b51a32_icgraph" id="config_8f90_ae36bdb92a3c22e440e572d5499b51a32_icgraph">
-<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="144,81,259,108"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="307,81,437,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="486,81,610,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="675,5,736,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="659,56,751,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="675,107,735,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="680,157,731,184"/></map>
+<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="144,56,259,83"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="307,56,437,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="486,56,610,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="675,5,736,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="659,56,751,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="675,107,735,133"/></map>
 </div>
 </p>
 
@@ -425,14 +431,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00269">269</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00272">272</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="config_8f90_a14e9a0739775a8c0f4d77ca684276208_icgraph.png" border="0" usemap="#config_8f90_a14e9a0739775a8c0f4d77ca684276208_icgraph" alt=""/></div>
 <map name="config_8f90_a14e9a0739775a8c0f4d77ca684276208_icgraph" id="config_8f90_a14e9a0739775a8c0f4d77ca684276208_icgraph">
-<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="149,81,264,108"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="313,81,442,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="491,81,615,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="680,5,741,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="665,56,757,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="681,107,741,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="685,157,736,184"/></map>
+<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="149,56,264,83"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="313,56,442,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="491,56,615,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="680,5,741,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="665,56,757,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="681,107,741,133"/></map>
 </div>
 </p>
 
@@ -444,7 +450,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="config_8f90.html">config.f90</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

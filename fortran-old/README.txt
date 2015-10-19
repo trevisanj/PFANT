@@ -1,1 +1,1 @@
-Compiling versions of old code.
+This directory contains compilable versions of old code.

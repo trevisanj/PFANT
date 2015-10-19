@@ -1,9 +1,8 @@
 <map id="lookup_short" name="lookup_short">
-<area shape="rect" id="node2" href="$namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="149,81,264,108"/>
-<area shape="rect" id="node3" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="313,81,442,108"/>
-<area shape="rect" id="node4" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="491,81,615,108"/>
+<area shape="rect" id="node2" href="$namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="149,56,264,83"/>
+<area shape="rect" id="node3" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="313,56,442,83"/>
+<area shape="rect" id="node4" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="491,56,615,83"/>
 <area shape="rect" id="node5" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="680,5,741,32"/>
 <area shape="rect" id="node6" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="665,56,757,83"/>
 <area shape="rect" id="node7" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="681,107,741,133"/>
-<area shape="rect" id="node8" href="$pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="685,157,736,184"/>
 </map>

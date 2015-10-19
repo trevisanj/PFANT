@@ -1,26 +1,28 @@
 <map id="misc::int2str" name="misc::int2str">
-<area shape="rect" id="node2" href="$namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="356,76,487,103"/>
-<area shape="rect" id="node4" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="941,298,1003,324"/>
-<area shape="rect" id="node8" href="$namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="349,164,494,205"/>
-<area shape="rect" id="node10" href="$namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="163,70,271,96"/>
-<area shape="rect" id="node11" href="$misc__math_8f90.html#a41f897805296e8622dc522021f8021fe" title="Error verification, called twice. " alt="" coords="336,26,507,52"/>
-<area shape="rect" id="node17" href="$namespacemisc.html#a5a4a9a9d281f7931bef925f52b775297" title="Converts a real*4 number to string. " alt="" coords="163,222,271,248"/>
-<area shape="rect" id="node18" href="$namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="159,120,275,147"/>
-<area shape="rect" id="node19" href="$namespacemisc.html#aab2ed1853219d82f31e3b5509107e362" title="Creates a logical vector indicating which rows should be skipped in a text file. " alt="" coords="334,514,509,540"/>
-<area shape="rect" id="node21" href="$namespacemolecules__ids.html#a40e32ddd83d113f50e4aa21fb5672725" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="150,374,285,416"/>
-<area shape="rect" id="node22" href="$namespacereader__molecules.html#ae2d7ee7399992acf79c21b83d0a3aa55" title="Reads file dfile:molecules to fill variables km_r_*. " alt="" coords="343,404,500,445"/>
-<area shape="rect" id="node23" href="$namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473" title="Reads dissoc.dat to fill variables dissoc_*. " alt="" coords="149,492,285,533"/>
-<area shape="rect" id="node24" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="559,257,703,298"/>
-<area shape="rect" id="node25" href="$namespacereader__partit.html#ad9ef9a189b1d976d6da2a77cd0ad6b13" title="Reads file dfile:partit to fill variables partit_*. " alt="" coords="154,609,281,650"/>
-<area shape="rect" id="node3" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="753,171,877,198"/>
-<area shape="rect" id="node5" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="926,171,1018,198"/>
-<area shape="rect" id="node6" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="942,222,1002,248"/>
-<area shape="rect" id="node7" href="$pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="947,120,997,147"/>
-<area shape="rect" id="node9" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="566,171,695,198"/>
-<area shape="rect" id="node12" href="$namespaceflin.html#afa31a4c7d4e2d11e74bba60b2118e3c0" title="Generic routine, called by flin1() and flinh() " alt="" coords="595,26,666,52"/>
-<area shape="rect" id="node13" href="$namespaceflin.html#a85a052100ab8bbb29d5afe0d87c5e42b" title="See routine flin_() for description of parameters. " alt="" coords="779,14,850,40"/>
-<area shape="rect" id="node16" href="$namespaceflin.html#a0b2abc72f0a48c022925f7baef2011dd" title="See routine flin_() for description of parameters. " alt="" coords="779,64,850,91"/>
-<area shape="rect" id="node14" href="$pfant_8f90.html#ac8f00ffce7216c0a8b834684e1b094c7" title="selekfh" alt="" coords="940,64,1004,91"/>
-<area shape="rect" id="node15" href="$pfant_8f90.html#ae8ea663eb2f2f4bab667601f144f29b7" title="bk" alt="" coords="953,14,991,40"/>
-<area shape="rect" id="node20" href="$namespacereader__modeles.html#a3477f6189a0aa00668a08f2172a9a84a" title="Reads single record from file dfile:modeles into variables modeles_*. " alt="" coords="557,440,704,481"/>
+<area shape="rect" id="node2" href="$namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="372,466,503,493"/>
+<area shape="rect" id="node4" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="1184,154,1245,181"/>
+<area shape="rect" id="node7" href="$namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="586,531,731,572"/>
+<area shape="rect" id="node9" href="$namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="157,168,296,210"/>
+<area shape="rect" id="node10" href="$namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473" title="Reads dissoc.dat to fill variables dissoc_*. " alt="" coords="369,103,505,144"/>
+<area shape="rect" id="node13" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="365,299,509,340"/>
+<area shape="rect" id="node14" href="$namespacereader__partit.html#ad9ef9a189b1d976d6da2a77cd0ad6b13" title="Reads file dfile:partit to fill variables partit_*. " alt="" coords="374,234,501,275"/>
+<area shape="rect" id="node15" href="$namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="173,386,281,413"/>
+<area shape="rect" id="node16" href="$misc__math_8f90.html#a41f897805296e8622dc522021f8021fe" title="Error verification, called twice. " alt="" coords="352,365,523,392"/>
+<area shape="rect" id="node20" href="$namespacemisc.html#a5a4a9a9d281f7931bef925f52b775297" title="Converts a real*4 number to string. " alt="" coords="173,488,281,514"/>
+<area shape="rect" id="node21" href="$namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="169,538,285,565"/>
+<area shape="rect" id="node22" href="$namespacemisc.html#aab2ed1853219d82f31e3b5509107e362" title="Creates a logical vector indicating which rows should be skipped in a text file. " alt="" coords="571,56,746,82"/>
+<area shape="rect" id="node24" href="$namespacemolecules__idxs.html#a04b855bc2ff953cca9e0f59148070301" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="156,640,297,682"/>
+<area shape="rect" id="node26" href="$namespacereader__molecules.html#ae2d7ee7399992acf79c21b83d0a3aa55" title="Reads file dfile:molecules to fill variables km_*. " alt="" coords="359,706,516,747"/>
+<area shape="rect" id="node27" href="$namespacereader__molecules.html#a7973d8ef9b72174634eb5d699f508245" title="Finds formula id given title of molecule. " alt="" coords="150,706,303,747"/>
+<area shape="rect" id="node3" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="985,466,1109,493"/>
+<area shape="rect" id="node5" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="1169,441,1261,468"/>
+<area shape="rect" id="node6" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="1185,492,1245,518"/>
+<area shape="rect" id="node8" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="795,528,925,554"/>
+<area shape="rect" id="node11" href="$namespacereader__dissoc.html#a1d848d34d64bcfc09283a8c2fd5cca03" title="Searches for atomic symbol inside dissoc_elems. " alt="" coords="356,168,519,210"/>
+<area shape="rect" id="node12" href="$namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. " alt="" coords="589,168,729,210"/>
+<area shape="rect" id="node17" href="$namespaceflin.html#afa31a4c7d4e2d11e74bba60b2118e3c0" title="Generic routine, called by flin1() and flinh() " alt="" coords="623,365,694,392"/>
+<area shape="rect" id="node18" href="$namespaceflin.html#a85a052100ab8bbb29d5afe0d87c5e42b" title="See routine flin_() for description of parameters. " alt="" coords="825,390,895,417"/>
+<area shape="rect" id="node19" href="$namespaceflin.html#a0b2abc72f0a48c022925f7baef2011dd" title="See routine flin_() for description of parameters. " alt="" coords="825,340,895,366"/>
+<area shape="rect" id="node23" href="$namespacereader__modeles.html#a3477f6189a0aa00668a08f2172a9a84a" title="Reads single record from file dfile:modeles into variables modeles_*. " alt="" coords="973,99,1120,140"/>
+<area shape="rect" id="node25" href="$namespacemolecules__idxs.html#a1c6acb7d1d6eb08076250e9f6b437589" title="Parses string into integer array and adds molecule ids to list of &quot;off&quot; molecules. " alt="" coords="368,640,507,682"/>
 </map>

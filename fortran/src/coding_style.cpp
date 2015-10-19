@@ -13,7 +13,8 @@ Indentation
 
 @li 2-space indentation for all IF, DO, SUBROUTINE etc. structures.
 
-@li Continuation lines: suggestion: continue with a 1-space indentation from the beginning line, i.e.:
+@li Continuation lines: suggestion: continue with a 1-space indentation from the
+    beginning line, i.e.:
 
 @code
 ... WRITE (*,*) 'A equals ', A, '; B equals ', B, '; C equals ', &

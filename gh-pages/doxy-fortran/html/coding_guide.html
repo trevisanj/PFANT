@@ -128,7 +128,7 @@ Communicating with GitHub &lt;i&gt;via&lt;/i&gt; SSH</h2>
 </div><!-- fragment --> <p class="endli"></p>
 </li>
 <li>
-Change the remote URL that git uses. Tutorial at <a href="https://help.github.com/articles/changing-a-remote-s-url/">https://help.github.com/articles/changing-a-remote-s-url/</a> <div class="fragment"><div class="line">$ git remote set-url origin git@github.com:trevisanj/<a class="code" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">pfant</a>.git</div>
+Change the remote URL that git uses. Tutorial at <a href="https://help.github.com/articles/changing-a-remote-s-url/">https://help.github.com/articles/changing-a-remote-s-url/</a> <div class="fragment"><div class="line">$ git remote set-url origin git@github.com:trevisanj/pfant.git</div>
 </div><!-- fragment -->  </li>
 </ol>
 <h1><a class="anchor" id="cbfortran"></a>
@@ -159,7 +159,7 @@ Working with Doxygen</h1>
 Troubleshooting doxygen compilation</h2>
 <h2><a class="anchor" id="segfault_doxygen"></a>
 Segmentation fault running doxygen</h2>
-<p>Doxygen has got Fortran code parsing bugs*. I don't know the exact situation that causes doxygen to crash, but I have figured out things to be avoided.</p>
+<p><em>Doxygen has got Fortran code parsing bugs</em>. I don't know the exact situation that causes doxygen to crash, but I have figured out things to be avoided.</p>
 <dl class="section user"><dt>Backslashes</dt><dd>Doxygen crashed because of the following line of code:</dd></dl>
 <div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespaceconfig.html#aba4e186e3245789edac49c1b47646548">wdir_trim</a>(i:i) .eq. <span class="charliteral">&#39;\&#39;</span>) <a class="code" href="namespaceconfig.html#aba4e186e3245789edac49c1b47646548">wdir_trim</a>(i:i) = <span class="charliteral">&#39;/&#39;</span></div>
 </div><!-- fragment --><p>Besides, the file %/fortran/Doxyfile must have</p>
@@ -174,7 +174,7 @@ References</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -22,11 +22,11 @@ var dimensions_8f90 =
     [ "of", "dimensions_8f90.html#ad3dff1b084c6b6cb0426e2253a2a95dd", null ],
     [ "absoru2_numset", "dimensions_8f90.html#a3f694eeb83a083332ea83c9981ee654f", null ],
     [ "max_absoru2_numset_i", "dimensions_8f90.html#abcd927b92d2d095badaf64be0a11298a", null ],
-    [ "max_atomgrade_r_nblend", "dimensions_8f90.html#a740553bdf419b48ce4aa537f2b389a2c", null ],
-    [ "max_atomgrade_nblend", "dimensions_8f90.html#ac7c8f549f59ce35359e2768cde7ac047", null ],
+    [ "max_atoms_nblend", "dimensions_8f90.html#a1ab7157579a679d16f480bf932d78a67", null ],
+    [ "max_atoms_f_nblend", "dimensions_8f90.html#a2e2aae00e0a0509c98d1080d6b478348", null ],
     [ "num_mol", "dimensions_8f90.html#a81fe760146183ad5585c67c27d8b08bf", null ],
-    [ "max_sol_per_mol", "dimensions_8f90.html#af41d7ee600c2c28285e787431443ceed", null ],
-    [ "max_km_r_lines_total", "dimensions_8f90.html#a28ae045f303e087ac8cc9306a8f573d0", null ],
+    [ "max_nv_per_mol", "dimensions_8f90.html#a7c1ad852b0653e9e3ff873f88ab7c57f", null ],
+    [ "max_km_lines_total", "dimensions_8f90.html#a4c7638a51c279af16225bb9109fcfd09", null ],
     [ "max_num_options", "dimensions_8f90.html#a503b490272edff24368d592c52dd56c3", null ],
     [ "max_dtot", "dimensions_8f90.html#af6425580197b90c72d0b371941e18801", null ]
 ];

@@ -163,6 +163,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a1722fcdc13c1efa31678bbd913681473"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473">reader_dissoc::read_dissoc</a> (path_to_file)</td></tr>
 <tr class="memdesc:a1722fcdc13c1efa31678bbd913681473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads dissoc.dat to fill variables dissoc_*.  <a href="#a1722fcdc13c1efa31678bbd913681473">More...</a><br /></td></tr>
 <tr class="separator:a1722fcdc13c1efa31678bbd913681473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1d848d34d64bcfc09283a8c2fd5cca03">reader_dissoc::find_atomic_symbol_dissoc</a> (symbol, flag_ignore)</td></tr>
+<tr class="memdesc:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for atomic symbol inside dissoc_elems.  <a href="#a1d848d34d64bcfc09283a8c2fd5cca03">More...</a><br /></td></tr>
+<tr class="separator:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0340083926cd8b86e6a42dd62c7ee6b"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#ab0340083926cd8b86e6a42dd62c7ee6b">reader_main::assure_read_main</a> ()</td></tr>
 <tr class="memdesc:ab0340083926cd8b86e6a42dd62c7ee6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes sure that <a class="el" href="namespacereader__main.html#a87ee8d183d80f426edb100f777c0d687" title="Reads dfile:main to fill variables main_*. ">read_main()</a> has been called.  <a href="#ab0340083926cd8b86e6a42dd62c7ee6b">More...</a><br /></td></tr>
 <tr class="separator:ab0340083926cd8b86e6a42dd62c7ee6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,11 +205,14 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a5e53f676bbb6b2b85b1ca556dfbf0f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads map of models: dfile:gridsmap.  <a href="#a5e53f676bbb6b2b85b1ca556dfbf0f4a">More...</a><br /></td></tr>
 <tr class="separator:a5e53f676bbb6b2b85b1ca556dfbf0f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43ef0eeb69284dc2640ec524ab171cba"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a43ef0eeb69284dc2640ec524ab171cba">reader_atoms::read_atoms</a> (filename)</td></tr>
-<tr class="memdesc:a43ef0eeb69284dc2640ec524ab171cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file dfile:atoms to fill variables atoms_r_* (double underscore)  <a href="#a43ef0eeb69284dc2640ec524ab171cba">More...</a><br /></td></tr>
+<tr class="memdesc:a43ef0eeb69284dc2640ec524ab171cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file dfile:atoms to fill variables atoms_* (double underscore)  <a href="#a43ef0eeb69284dc2640ec524ab171cba">More...</a><br /></td></tr>
 <tr class="separator:a43ef0eeb69284dc2640ec524ab171cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2d7ee7399992acf79c21b83d0a3aa55"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae2d7ee7399992acf79c21b83d0a3aa55">reader_molecules::read_molecules</a> (filename)</td></tr>
-<tr class="memdesc:ae2d7ee7399992acf79c21b83d0a3aa55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file dfile:molecules to fill variables km_r_*.  <a href="#ae2d7ee7399992acf79c21b83d0a3aa55">More...</a><br /></td></tr>
+<tr class="memdesc:ae2d7ee7399992acf79c21b83d0a3aa55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file dfile:molecules to fill variables km_*.  <a href="#ae2d7ee7399992acf79c21b83d0a3aa55">More...</a><br /></td></tr>
 <tr class="separator:ae2d7ee7399992acf79c21b83d0a3aa55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7973d8ef9b72174634eb5d699f508245"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a7973d8ef9b72174634eb5d699f508245">reader_molecules::find_formula_id</a> (title)</td></tr>
+<tr class="memdesc:a7973d8ef9b72174634eb5d699f508245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds formula id given title of molecule.  <a href="#a7973d8ef9b72174634eb5d699f508245">More...</a><br /></td></tr>
+<tr class="separator:a7973d8ef9b72174634eb5d699f508245"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -247,10 +253,10 @@ Variables</h2></td></tr>
 <tr class="memdesc:a8142a3fe5da3bebf79590c4c2cc6414d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table field 07.  <a href="#a8142a3fe5da3bebf79590c4c2cc6414d">More...</a><br /></td></tr>
 <tr class="separator:a8142a3fe5da3bebf79590c4c2cc6414d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1de0712c123947c94d44b5523ac337f9"><td class="memItemLeft" align="right" valign="top">integer, dimension(5, max_dissoc_nmol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1de0712c123947c94d44b5523ac337f9">reader_dissoc::dissoc_nelem</a></td></tr>
-<tr class="memdesc:a1de0712c123947c94d44b5523ac337f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 08, 10, ...  <a href="#a1de0712c123947c94d44b5523ac337f9">More...</a><br /></td></tr>
+<tr class="memdesc:a1de0712c123947c94d44b5523ac337f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 08, 10, ... (atomic number)  <a href="#a1de0712c123947c94d44b5523ac337f9">More...</a><br /></td></tr>
 <tr class="separator:a1de0712c123947c94d44b5523ac337f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a260d4614ba62eda4350c899a39536f9c"><td class="memItemLeft" align="right" valign="top">integer, dimension(5, max_dissoc_nmol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a260d4614ba62eda4350c899a39536f9c">reader_dissoc::dissoc_natom</a></td></tr>
-<tr class="memdesc:a260d4614ba62eda4350c899a39536f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 09, 11, ...  <a href="#a260d4614ba62eda4350c899a39536f9c">More...</a><br /></td></tr>
+<tr class="memdesc:a260d4614ba62eda4350c899a39536f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 09, 11, ... (number of atoms)  <a href="#a260d4614ba62eda4350c899a39536f9c">More...</a><br /></td></tr>
 <tr class="separator:a260d4614ba62eda4350c899a39536f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e3bdf9dd606188eeb10686551af2f93"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a4e3bdf9dd606188eeb10686551af2f93">reader_dissoc::dissoc_nmol</a></td></tr>
 <tr class="separator:a4e3bdf9dd606188eeb10686551af2f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -273,16 +279,16 @@ Variables</h2></td></tr>
 <tr class="memdesc:a57cc347d45549ae2650f58397706f2e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculation step within each calculation sub-interval; this is a "delta lambda"  <a href="#a57cc347d45549ae2650f58397706f2e9">More...</a><br /></td></tr>
 <tr class="separator:a57cc347d45549ae2650f58397706f2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e90f9e84339adff7e5090f7e672f3e0"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a4e90f9e84339adff7e5090f7e672f3e0">reader_main::main_echx</a></td></tr>
-<tr class="memdesc:a4e90f9e84339adff7e5090f7e672f3e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a4e90f9e84339adff7e5090f7e672f3e0">More...</a><br /></td></tr>
+<tr class="memdesc:a4e90f9e84339adff7e5090f7e672f3e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">not used in calculation, only written to flux file  <a href="#a4e90f9e84339adff7e5090f7e672f3e0">More...</a><br /></td></tr>
 <tr class="separator:a4e90f9e84339adff7e5090f7e672f3e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af232dbc844c6cdd174713a3d81ded302"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#af232dbc844c6cdd174713a3d81ded302">reader_main::main_echy</a></td></tr>
-<tr class="memdesc:af232dbc844c6cdd174713a3d81ded302"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#af232dbc844c6cdd174713a3d81ded302">More...</a><br /></td></tr>
+<tr class="memdesc:af232dbc844c6cdd174713a3d81ded302"><td class="mdescLeft">&#160;</td><td class="mdescRight">not used in calculation, only written to flux file  <a href="#af232dbc844c6cdd174713a3d81ded302">More...</a><br /></td></tr>
 <tr class="separator:af232dbc844c6cdd174713a3d81ded302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fb21a5dfc557ba8f4ae09d6ebf965a5"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a6fb21a5dfc557ba8f4ae09d6ebf965a5">reader_main::main_mu</a></td></tr>
 <tr class="memdesc:a6fb21a5dfc557ba8f4ae09d6ebf965a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a6fb21a5dfc557ba8f4ae09d6ebf965a5">More...</a><br /></td></tr>
 <tr class="separator:a6fb21a5dfc557ba8f4ae09d6ebf965a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0307c1deffc4f4b617c168e408a86833"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a0307c1deffc4f4b617c168e408a86833">reader_main::main_afstar</a></td></tr>
-<tr class="memdesc:a0307c1deffc4f4b617c168e408a86833"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a0307c1deffc4f4b617c168e408a86833">More...</a><br /></td></tr>
+<tr class="memdesc:a0307c1deffc4f4b617c168e408a86833"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? metallicity of the star (in log scale)  <a href="#a0307c1deffc4f4b617c168e408a86833">More...</a><br /></td></tr>
 <tr class="separator:a0307c1deffc4f4b617c168e408a86833"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a663240d3e4ae295d26632f01c46379"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a4a663240d3e4ae295d26632f01c46379">reader_main::main_llzero</a></td></tr>
 <tr class="memdesc:a4a663240d3e4ae295d26632f01c46379"><td class="mdescLeft">&#160;</td><td class="mdescRight">lower boundary of calculation interval  <a href="#a4a663240d3e4ae295d26632f01c46379">More...</a><br /></td></tr>
@@ -303,13 +309,13 @@ Variables</h2></td></tr>
 <tr class="memdesc:a743c64b380aba20c8d36ba00b608e68e"><td class="mdescLeft">&#160;</td><td class="mdescRight">log10 of metallicity  <a href="#a743c64b380aba20c8d36ba00b608e68e">More...</a><br /></td></tr>
 <tr class="separator:a743c64b380aba20c8d36ba00b608e68e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a187defddc19ccb2240a2ccdda74ba0df"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a187defddc19ccb2240a2ccdda74ba0df">reader_main::main_nhe</a></td></tr>
-<tr class="memdesc:a187defddc19ccb2240a2ccdda74ba0df"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? I think this is not used, overwritten by sth that comes from dfile:modeles  <a href="#a187defddc19ccb2240a2ccdda74ba0df">More...</a><br /></td></tr>
+<tr class="memdesc:a187defddc19ccb2240a2ccdda74ba0df"><td class="mdescLeft">&#160;</td><td class="mdescRight">only used to check if matches with modeles_nhe  <a href="#a187defddc19ccb2240a2ccdda74ba0df">More...</a><br /></td></tr>
 <tr class="separator:a187defddc19ccb2240a2ccdda74ba0df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac00428b7dd16a1cd1bb490d42366fb58"><td class="memItemLeft" align="right" valign="top">real *8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#ac00428b7dd16a1cd1bb490d42366fb58">reader_main::main_fwhm</a></td></tr>
 <tr class="memdesc:ac00428b7dd16a1cd1bb490d42366fb58"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Full-width-half-maximum" of Gaussian function for convolution of calculated spectrum; used only by nulbad executable  <a href="#ac00428b7dd16a1cd1bb490d42366fb58">More...</a><br /></td></tr>
 <tr class="separator:ac00428b7dd16a1cd1bb490d42366fb58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4db72a3881f4f24f18b3b26ef260dc77"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a4db72a3881f4f24f18b3b26ef260dc77">reader_main::main_ivtot</a></td></tr>
-<tr class="memdesc:a4db72a3881f4f24f18b3b26ef260dc77"><td class="mdescLeft">&#160;</td><td class="mdescRight">affects <a class="el" href="namespacesynthesis.html#a12bc12626fb68b7d33ad7d2b77d99706">turbul()</a> issue ?doc?  <a href="#a4db72a3881f4f24f18b3b26ef260dc77">More...</a><br /></td></tr>
+<tr class="memdesc:a4db72a3881f4f24f18b3b26ef260dc77"><td class="mdescLeft">&#160;</td><td class="mdescRight">affects turbul() issue ?doc?  <a href="#a4db72a3881f4f24f18b3b26ef260dc77">More...</a><br /></td></tr>
 <tr class="separator:a4db72a3881f4f24f18b3b26ef260dc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0393e0f9f44cd51a0ed1f5c011e77160"><td class="memItemLeft" align="right" valign="top">character *64, dimension(max_filetoh_num_files)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__main.html#a0393e0f9f44cd51a0ed1f5c011e77160">reader_main::main_filetohy</a></td></tr>
 <tr class="memdesc:a0393e0f9f44cd51a0ed1f5c011e77160"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? Names of ten outputs files that will contain ???  <a href="#a0393e0f9f44cd51a0ed1f5c011e77160">More...</a><br /></td></tr>
@@ -468,127 +474,117 @@ Variables</h2></td></tr>
 <tr class="separator:afe3f5e74f2b37353b9913026014b1e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a870bb5c2e5c81772feded9fd1d0035cc"><td class="memItemLeft" align="right" valign="top">character *64, dimension(max_gridsmap_num_files)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__gridsmap.html#a870bb5c2e5c81772feded9fd1d0035cc">reader_gridsmap::gridsmap_fn</a></td></tr>
 <tr class="separator:a870bb5c2e5c81772feded9fd1d0035cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a604cd971c3c3d1e9d8411462f0f40698"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a604cd971c3c3d1e9d8411462f0f40698">reader_atoms::atoms_r_nblend</a></td></tr>
-<tr class="memdesc:a604cd971c3c3d1e9d8411462f0f40698"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a604cd971c3c3d1e9d8411462f0f40698">More...</a><br /></td></tr>
-<tr class="separator:a604cd971c3c3d1e9d8411462f0f40698"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab104fbec6cc16d2a8df2715e43d6fca2"><td class="memItemLeft" align="right" valign="top">character *2, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#ab104fbec6cc16d2a8df2715e43d6fca2">reader_atoms::atoms_r_elem</a></td></tr>
-<tr class="memdesc:ab104fbec6cc16d2a8df2715e43d6fca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">atomic symbol. Must be right-aligned and uppercase  <a href="#ab104fbec6cc16d2a8df2715e43d6fca2">More...</a><br /></td></tr>
-<tr class="separator:ab104fbec6cc16d2a8df2715e43d6fca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a873afbc48d7825362ef9ad852b156308"><td class="memItemLeft" align="right" valign="top">integer, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a873afbc48d7825362ef9ad852b156308">reader_atoms::atoms_r_ioni</a></td></tr>
-<tr class="memdesc:a873afbc48d7825362ef9ad852b156308"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a873afbc48d7825362ef9ad852b156308">More...</a><br /></td></tr>
-<tr class="separator:a873afbc48d7825362ef9ad852b156308"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a969903375a1325654d4045dfdf170550"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a969903375a1325654d4045dfdf170550">reader_atoms::atoms_r_lambda</a></td></tr>
-<tr class="memdesc:a969903375a1325654d4045dfdf170550"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a969903375a1325654d4045dfdf170550">More...</a><br /></td></tr>
-<tr class="separator:a969903375a1325654d4045dfdf170550"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9545bfbc8d74169b19e9df8aaff548ba"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a9545bfbc8d74169b19e9df8aaff548ba">reader_atoms::atoms_r_kiex</a></td></tr>
-<tr class="memdesc:a9545bfbc8d74169b19e9df8aaff548ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc? excitation potential for the lower level?  <a href="#a9545bfbc8d74169b19e9df8aaff548ba">More...</a><br /></td></tr>
-<tr class="separator:a9545bfbc8d74169b19e9df8aaff548ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a326a5d5907c722207d3370aa4bc4ed78"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a326a5d5907c722207d3370aa4bc4ed78">reader_atoms::atoms_r_algf</a></td></tr>
-<tr class="memdesc:a326a5d5907c722207d3370aa4bc4ed78"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a326a5d5907c722207d3370aa4bc4ed78">More...</a><br /></td></tr>
-<tr class="separator:a326a5d5907c722207d3370aa4bc4ed78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef2c2fbabb3b4d8331f3ab6b652c0ca8"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#aef2c2fbabb3b4d8331f3ab6b652c0ca8">reader_atoms::atoms_r_ch</a></td></tr>
-<tr class="memdesc:aef2c2fbabb3b4d8331f3ab6b652c0ca8"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#aef2c2fbabb3b4d8331f3ab6b652c0ca8">More...</a><br /></td></tr>
-<tr class="separator:aef2c2fbabb3b4d8331f3ab6b652c0ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f728c7777c41c9b562d2255297b7738"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a5f728c7777c41c9b562d2255297b7738">reader_atoms::atoms_r_gr</a></td></tr>
-<tr class="memdesc:a5f728c7777c41c9b562d2255297b7738"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a5f728c7777c41c9b562d2255297b7738">More...</a><br /></td></tr>
-<tr class="separator:a5f728c7777c41c9b562d2255297b7738"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49d6aee10411dea1bcc33c86d2402c68"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a49d6aee10411dea1bcc33c86d2402c68">reader_atoms::atoms_r_ge</a></td></tr>
-<tr class="memdesc:a49d6aee10411dea1bcc33c86d2402c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a49d6aee10411dea1bcc33c86d2402c68">More...</a><br /></td></tr>
-<tr class="separator:a49d6aee10411dea1bcc33c86d2402c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f0414f3cc7410d586eada8c9b13a2fb"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a3f0414f3cc7410d586eada8c9b13a2fb">reader_atoms::atoms_r_zinf</a></td></tr>
-<tr class="memdesc:a3f0414f3cc7410d586eada8c9b13a2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a3f0414f3cc7410d586eada8c9b13a2fb">More...</a><br /></td></tr>
-<tr class="separator:a3f0414f3cc7410d586eada8c9b13a2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2ccccf3125d29dc26f8b3fa96c7875d"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#ab2ccccf3125d29dc26f8b3fa96c7875d">reader_atoms::atoms_r_abondr_dummy</a></td></tr>
-<tr class="memdesc:ab2ccccf3125d29dc26f8b3fa96c7875d"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#ab2ccccf3125d29dc26f8b3fa96c7875d">More...</a><br /></td></tr>
-<tr class="separator:ab2ccccf3125d29dc26f8b3fa96c7875d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa74ddb73b3c3f62aec97b4642ba54a2c"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atomgrade_r_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#aa74ddb73b3c3f62aec97b4642ba54a2c">reader_atoms::atoms_r_abonds_abo</a></td></tr>
-<tr class="memdesc:aa74ddb73b3c3f62aec97b4642ba54a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">will be filled by "inner join" by searching  <a href="#aa74ddb73b3c3f62aec97b4642ba54a2c">More...</a><br /></td></tr>
-<tr class="separator:aa74ddb73b3c3f62aec97b4642ba54a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedb148df12f3e58ce7d2af0f407ce8fa"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aedb148df12f3e58ce7d2af0f407ce8fa">reader_molecules::km_r_number</a></td></tr>
-<tr class="separator:aedb148df12f3e58ce7d2af0f407ce8fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbf5526720d3bf6c7a9c4600737f5d5c"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#acbf5526720d3bf6c7a9c4600737f5d5c">reader_molecules::km_r_lines_total</a></td></tr>
-<tr class="separator:acbf5526720d3bf6c7a9c4600737f5d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6f57adf8ac533b0709d774b82c5a2a2"><td class="memItemLeft" align="right" valign="top">character *80&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ab6f57adf8ac533b0709d774b82c5a2a2">reader_molecules::km_r_titm</a></td></tr>
-<tr class="separator:ab6f57adf8ac533b0709d774b82c5a2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b6a13a7b17a44d3b2b7b3dc538d181d"><td class="memItemLeft" align="right" valign="top">character *80, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a2b6a13a7b17a44d3b2b7b3dc538d181d">reader_molecules::km_r_titulo</a></td></tr>
-<tr class="separator:a2b6a13a7b17a44d3b2b7b3dc538d181d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c39d38880c0d1b9c37235fe2ea0206a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a4c39d38880c0d1b9c37235fe2ea0206a">reader_molecules::km_r_fe</a></td></tr>
-<tr class="separator:a4c39d38880c0d1b9c37235fe2ea0206a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a191a5656ba7afe873b4a6a8a0ce928f1"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a191a5656ba7afe873b4a6a8a0ce928f1">reader_molecules::km_r_do</a></td></tr>
-<tr class="separator:a191a5656ba7afe873b4a6a8a0ce928f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fc5d9654a0aeedd3b09bb6811f877f8"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a4fc5d9654a0aeedd3b09bb6811f877f8">reader_molecules::km_r_mm</a></td></tr>
-<tr class="separator:a4fc5d9654a0aeedd3b09bb6811f877f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae223ae9755640721ea159ae59163cf18"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae223ae9755640721ea159ae59163cf18">reader_molecules::km_r_am</a></td></tr>
-<tr class="separator:ae223ae9755640721ea159ae59163cf18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5caabf5e06926564e59d0c22a00bf7f"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa5caabf5e06926564e59d0c22a00bf7f">reader_molecules::km_r_bm</a></td></tr>
-<tr class="separator:aa5caabf5e06926564e59d0c22a00bf7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16933ce6b5ae729c7ca708834b3de397"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a16933ce6b5ae729c7ca708834b3de397">reader_molecules::km_r_ua</a></td></tr>
-<tr class="separator:a16933ce6b5ae729c7ca708834b3de397"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44461d37e45541c42f6123bdd8fe67f1"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a44461d37e45541c42f6123bdd8fe67f1">reader_molecules::km_r_ub</a></td></tr>
-<tr class="separator:a44461d37e45541c42f6123bdd8fe67f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1aa6a7a7a195063132d4fa2281e15551"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a1aa6a7a7a195063132d4fa2281e15551">reader_molecules::km_r_te</a></td></tr>
-<tr class="separator:a1aa6a7a7a195063132d4fa2281e15551"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0336325c3c96fdbd862e39b911f0f004"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a0336325c3c96fdbd862e39b911f0f004">reader_molecules::km_r_cro</a></td></tr>
-<tr class="separator:a0336325c3c96fdbd862e39b911f0f004"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5ed652e9ec9e3eee193f34c23e880c7"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ad5ed652e9ec9e3eee193f34c23e880c7">reader_molecules::km_r_a0</a></td></tr>
-<tr class="separator:ad5ed652e9ec9e3eee193f34c23e880c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa349c74cbc1be64642138af59a1fe20f"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa349c74cbc1be64642138af59a1fe20f">reader_molecules::km_r_a1</a></td></tr>
-<tr class="separator:aa349c74cbc1be64642138af59a1fe20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa6dc8d254a4aefa33df73bd5a4921f9"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aaa6dc8d254a4aefa33df73bd5a4921f9">reader_molecules::km_r_a2</a></td></tr>
-<tr class="separator:aaa6dc8d254a4aefa33df73bd5a4921f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c65c52e69225875bcbe1a504d9ae04f"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a3c65c52e69225875bcbe1a504d9ae04f">reader_molecules::km_r_a3</a></td></tr>
-<tr class="separator:a3c65c52e69225875bcbe1a504d9ae04f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d8609dde323db5eec6742d00bc9fd4a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a3d8609dde323db5eec6742d00bc9fd4a">reader_molecules::km_r_a4</a></td></tr>
-<tr class="separator:a3d8609dde323db5eec6742d00bc9fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4fd3917a04a41fd126065308a7e1147"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#af4fd3917a04a41fd126065308a7e1147">reader_molecules::km_r_als</a></td></tr>
-<tr class="separator:af4fd3917a04a41fd126065308a7e1147"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab13177944c7708b4bbe9da852adc3352"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ab13177944c7708b4bbe9da852adc3352">reader_molecules::km_r_s</a></td></tr>
-<tr class="separator:ab13177944c7708b4bbe9da852adc3352"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb0438cdcec85223ce8e39b406068ccc"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#acb0438cdcec85223ce8e39b406068ccc">reader_molecules::km_r_ise</a></td></tr>
-<tr class="separator:acb0438cdcec85223ce8e39b406068ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7ebb872fc308a8da43b632d607a02eb"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ab7ebb872fc308a8da43b632d607a02eb">reader_molecules::km_r_nv</a></td></tr>
-<tr class="separator:ab7ebb872fc308a8da43b632d607a02eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a405c9b45ab7ae86e15b76f20b85a2afa"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a405c9b45ab7ae86e15b76f20b85a2afa">reader_molecules::km_r_lines_per_mol</a></td></tr>
-<tr class="separator:a405c9b45ab7ae86e15b76f20b85a2afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6732e206e408a256984929a9f41b003"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ad6732e206e408a256984929a9f41b003">reader_molecules::this</a></td></tr>
-<tr class="separator:ad6732e206e408a256984929a9f41b003"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af918d155bb56976bc6a7f4e6d35f4a21"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#af918d155bb56976bc6a7f4e6d35f4a21">reader_molecules::stores</a></td></tr>
-<tr class="separator:af918d155bb56976bc6a7f4e6d35f4a21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a811ba59d17358bdc5234ada6644081d9"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a811ba59d17358bdc5234ada6644081d9">reader_molecules::the</a></td></tr>
-<tr class="separator:a811ba59d17358bdc5234ada6644081d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2713bed45dd42b54ef8b2e6892f4d05e"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a2713bed45dd42b54ef8b2e6892f4d05e">reader_molecules::number</a></td></tr>
-<tr class="separator:a2713bed45dd42b54ef8b2e6892f4d05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a83453d973478865b8ca44926ceba03"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a8a83453d973478865b8ca44926ceba03">reader_molecules::of</a></td></tr>
-<tr class="separator:a8a83453d973478865b8ca44926ceba03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe3982c20bfe634c614f7139997ec547"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#afe3982c20bfe634c614f7139997ec547">reader_molecules::spectral</a></td></tr>
-<tr class="separator:afe3982c20bfe634c614f7139997ec547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee4a30a3710c2009f6c5fe4f25bea6c1"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aee4a30a3710c2009f6c5fe4f25bea6c1">reader_molecules::lines</a></td></tr>
-<tr class="separator:aee4a30a3710c2009f6c5fe4f25bea6c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9b65514f3b6382579aa220e7296c541"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa9b65514f3b6382579aa220e7296c541">reader_molecules::for</a></td></tr>
-<tr class="separator:aa9b65514f3b6382579aa220e7296c541"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84caf7ca2b5f075f67d2b0e71efc876e"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a84caf7ca2b5f075f67d2b0e71efc876e">reader_molecules::each</a></td></tr>
-<tr class="separator:a84caf7ca2b5f075f67d2b0e71efc876e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a533752ba3be2914a1f5a6e86defbde40"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a533752ba3be2914a1f5a6e86defbde40">reader_molecules::molecule</a></td></tr>
-<tr class="separator:a533752ba3be2914a1f5a6e86defbde40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e7b86f4ec1b3078f83bd2c419649ac2"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a0e7b86f4ec1b3078f83bd2c419649ac2">reader_molecules::km_r_qqv</a></td></tr>
-<tr class="separator:a0e7b86f4ec1b3078f83bd2c419649ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a747848f263b8195036cf709e3ec1bd58"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a747848f263b8195036cf709e3ec1bd58">reader_molecules::km_r_ggv</a></td></tr>
-<tr class="separator:a747848f263b8195036cf709e3ec1bd58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a069101e00e59b6afb741a82bf367bf5e"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a069101e00e59b6afb741a82bf367bf5e">reader_molecules::km_r_bbv</a></td></tr>
-<tr class="separator:a069101e00e59b6afb741a82bf367bf5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e8013dd73d8f62dd8405544782c1e2d"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a3e8013dd73d8f62dd8405544782c1e2d">reader_molecules::km_r_ddv</a></td></tr>
-<tr class="separator:a3e8013dd73d8f62dd8405544782c1e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9284a53b32ff3fcec09e79edfcca85ff"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a9284a53b32ff3fcec09e79edfcca85ff">reader_molecules::km_r_fact</a></td></tr>
-<tr class="separator:a9284a53b32ff3fcec09e79edfcca85ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03b7a5aba100eafffa8063b73c85fc0d"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_sol_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a03b7a5aba100eafffa8063b73c85fc0d">reader_molecules::km_r_iollosol</a></td></tr>
-<tr class="memdesc:a03b7a5aba100eafffa8063b73c85fc0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Index of Last Lambda Of Set-Of-Lines" Points to km_r_lmbdam, km_r_sj, km_r_jj; km_r_last This is mounted at reading to help with the filtering and avoid allocating 2 dimensions for (lm__lmbdam, km_r_sj, km_r_jj)  <a href="#a03b7a5aba100eafffa8063b73c85fc0d">More...</a><br /></td></tr>
-<tr class="separator:a03b7a5aba100eafffa8063b73c85fc0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9606d2c30dc421a24d1de73ec06583d4"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_r_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a9606d2c30dc421a24d1de73ec06583d4">reader_molecules::km_r_lmbdam</a></td></tr>
-<tr class="separator:a9606d2c30dc421a24d1de73ec06583d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9076ff5c41458189e1e4195022e9e51"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_r_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#af9076ff5c41458189e1e4195022e9e51">reader_molecules::km_r_sj</a></td></tr>
-<tr class="separator:af9076ff5c41458189e1e4195022e9e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adedb1b1178aedf6d02a7a69ca68f10be"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_r_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#adedb1b1178aedf6d02a7a69ca68f10be">reader_molecules::km_r_jj</a></td></tr>
-<tr class="separator:adedb1b1178aedf6d02a7a69ca68f10be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae61e1024d29d89ad945a95cf6faf05d4"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#ae61e1024d29d89ad945a95cf6faf05d4">reader_atoms::atoms_nblend</a></td></tr>
+<tr class="memdesc:ae61e1024d29d89ad945a95cf6faf05d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#ae61e1024d29d89ad945a95cf6faf05d4">More...</a><br /></td></tr>
+<tr class="separator:ae61e1024d29d89ad945a95cf6faf05d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd7439a34a9da78c2f6c5863d976e12"><td class="memItemLeft" align="right" valign="top">character *2, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#accd7439a34a9da78c2f6c5863d976e12">reader_atoms::atoms_elem</a></td></tr>
+<tr class="memdesc:accd7439a34a9da78c2f6c5863d976e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">atomic symbol. Must be right-aligned and uppercase  <a href="#accd7439a34a9da78c2f6c5863d976e12">More...</a><br /></td></tr>
+<tr class="separator:accd7439a34a9da78c2f6c5863d976e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab67e8bf9036cfef04a9c1877b8812a01"><td class="memItemLeft" align="right" valign="top">integer, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#ab67e8bf9036cfef04a9c1877b8812a01">reader_atoms::atoms_ioni</a></td></tr>
+<tr class="memdesc:ab67e8bf9036cfef04a9c1877b8812a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">ionization level, e.g. 2 means 1 electron missing  <a href="#ab67e8bf9036cfef04a9c1877b8812a01">More...</a><br /></td></tr>
+<tr class="separator:ab67e8bf9036cfef04a9c1877b8812a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70aa3dfda27837615db6dbbe117d9129"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a70aa3dfda27837615db6dbbe117d9129">reader_atoms::atoms_lambda</a></td></tr>
+<tr class="memdesc:a70aa3dfda27837615db6dbbe117d9129"><td class="mdescLeft">&#160;</td><td class="mdescRight">wavelength  <a href="#a70aa3dfda27837615db6dbbe117d9129">More...</a><br /></td></tr>
+<tr class="separator:a70aa3dfda27837615db6dbbe117d9129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0bd2f90007607041d2e29ab7352647"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a4e0bd2f90007607041d2e29ab7352647">reader_atoms::atoms_kiex</a></td></tr>
+<tr class="memdesc:a4e0bd2f90007607041d2e29ab7352647"><td class="mdescLeft">&#160;</td><td class="mdescRight">excitation potential for the lower level  <a href="#a4e0bd2f90007607041d2e29ab7352647">More...</a><br /></td></tr>
+<tr class="separator:a4e0bd2f90007607041d2e29ab7352647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44819c4b0a7cd9c01eaae3f5c17ed297"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a44819c4b0a7cd9c01eaae3f5c17ed297">reader_atoms::atoms_algf</a></td></tr>
+<tr class="memdesc:a44819c4b0a7cd9c01eaae3f5c17ed297"><td class="mdescLeft">&#160;</td><td class="mdescRight">log gf -- oscillator strength -- laboratory-adjusted  <a href="#a44819c4b0a7cd9c01eaae3f5c17ed297">More...</a><br /></td></tr>
+<tr class="separator:a44819c4b0a7cd9c01eaae3f5c17ed297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d5d921065ce08f7e4ee5cf2001aea12"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a6d5d921065ce08f7e4ee5cf2001aea12">reader_atoms::atoms_ch</a></td></tr>
+<tr class="memdesc:a6d5d921065ce08f7e4ee5cf2001aea12"><td class="mdescLeft">&#160;</td><td class="mdescRight">the "C6" parameter, Van der Walls broadening parameter  <a href="#a6d5d921065ce08f7e4ee5cf2001aea12">More...</a><br /></td></tr>
+<tr class="separator:a6d5d921065ce08f7e4ee5cf2001aea12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0408b1cbd9490d08d58b7c6a55420a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#aac0408b1cbd9490d08d58b7c6a55420a">reader_atoms::atoms_gr</a></td></tr>
+<tr class="memdesc:aac0408b1cbd9490d08d58b7c6a55420a"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#aac0408b1cbd9490d08d58b7c6a55420a">More...</a><br /></td></tr>
+<tr class="separator:aac0408b1cbd9490d08d58b7c6a55420a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae054563a083ab8b07fe7097a11bc9c22"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#ae054563a083ab8b07fe7097a11bc9c22">reader_atoms::atoms_ge</a></td></tr>
+<tr class="memdesc:ae054563a083ab8b07fe7097a11bc9c22"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#ae054563a083ab8b07fe7097a11bc9c22">More...</a><br /></td></tr>
+<tr class="separator:ae054563a083ab8b07fe7097a11bc9c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89342ee9b3f13ca6f9d81525fc7ad3cb"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a89342ee9b3f13ca6f9d81525fc7ad3cb">reader_atoms::atoms_zinf</a></td></tr>
+<tr class="memdesc:a89342ee9b3f13ca6f9d81525fc7ad3cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a89342ee9b3f13ca6f9d81525fc7ad3cb">More...</a><br /></td></tr>
+<tr class="separator:a89342ee9b3f13ca6f9d81525fc7ad3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c192799d4695c14f8f337807b7722bd"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#a7c192799d4695c14f8f337807b7722bd">reader_atoms::atoms_abondr_dummy</a></td></tr>
+<tr class="memdesc:a7c192799d4695c14f8f337807b7722bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">?doc?  <a href="#a7c192799d4695c14f8f337807b7722bd">More...</a><br /></td></tr>
+<tr class="separator:a7c192799d4695c14f8f337807b7722bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa02062ee23d0c4da19f9c2117d0c6aaa"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_atoms_nblend)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__atoms.html#aa02062ee23d0c4da19f9c2117d0c6aaa">reader_atoms::atoms_abonds_abo</a></td></tr>
+<tr class="memdesc:aa02062ee23d0c4da19f9c2117d0c6aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">will be filled by "inner join" by searching  <a href="#aa02062ee23d0c4da19f9c2117d0c6aaa">More...</a><br /></td></tr>
+<tr class="separator:aa02062ee23d0c4da19f9c2117d0c6aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bec2ba48ea1c43792410138f666ce86"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a0bec2ba48ea1c43792410138f666ce86">reader_molecules::num_formulae</a> = 10</td></tr>
+<tr class="memdesc:a0bec2ba48ea1c43792410138f666ce86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of different "chemical molecules" that the system supports. Differs from number of molecules listes in dfile:molecules because in the latter the same molecule is repeated, such as "CN AZUL, CN AX, CN BX", but in this case the formula is always CN.  <a href="#a0bec2ba48ea1c43792410138f666ce86">More...</a><br /></td></tr>
+<tr class="separator:a0bec2ba48ea1c43792410138f666ce86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a086acc39d9773628aac49405cf8342c3"><td class="memItemLeft" align="right" valign="top">character *6, dimension(num_formulae), parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a086acc39d9773628aac49405cf8342c3">reader_molecules::formulae</a> = (/'MgH ', 'C2 ', 'CN ', 'CH ', '13CH ', '12C16O', 'NH ', 'OH ', 'FeH ', 'TiO '/)</td></tr>
+<tr class="memdesc:a086acc39d9773628aac49405cf8342c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecule formulae.  <a href="#a086acc39d9773628aac49405cf8342c3">More...</a><br /></td></tr>
+<tr class="separator:a086acc39d9773628aac49405cf8342c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65f345547e99c62e9749313bf5546a15"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a65f345547e99c62e9749313bf5546a15">reader_molecules::km_number</a></td></tr>
+<tr class="separator:a65f345547e99c62e9749313bf5546a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a005fd3377da933780b08da8b1000477a"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a005fd3377da933780b08da8b1000477a">reader_molecules::km_lines_total</a></td></tr>
+<tr class="separator:a005fd3377da933780b08da8b1000477a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b2e01d8116fc9f35418be13c39e8b4"><td class="memItemLeft" align="right" valign="top">character *160&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a07b2e01d8116fc9f35418be13c39e8b4">reader_molecules::km_titm</a></td></tr>
+<tr class="separator:a07b2e01d8116fc9f35418be13c39e8b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad40480f78f8d8b03fd957a141000030a"><td class="memItemLeft" align="right" valign="top">character *160, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ad40480f78f8d8b03fd957a141000030a">reader_molecules::km_titulo</a></td></tr>
+<tr class="separator:ad40480f78f8d8b03fd957a141000030a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62857a6437275ecdae463782d134ab41"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a62857a6437275ecdae463782d134ab41">reader_molecules::km_fe</a></td></tr>
+<tr class="separator:a62857a6437275ecdae463782d134ab41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c5f668b5024e60ddb59a93053becf26"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a5c5f668b5024e60ddb59a93053becf26">reader_molecules::km_do</a></td></tr>
+<tr class="separator:a5c5f668b5024e60ddb59a93053becf26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b49f0bc60a96afac0249281a138dbcb"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a3b49f0bc60a96afac0249281a138dbcb">reader_molecules::km_mm</a></td></tr>
+<tr class="separator:a3b49f0bc60a96afac0249281a138dbcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa60f0bd91eb37ad1ff661118fa7e5720"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa60f0bd91eb37ad1ff661118fa7e5720">reader_molecules::km_am</a></td></tr>
+<tr class="separator:aa60f0bd91eb37ad1ff661118fa7e5720"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe554d119d48329269a8c3b64afff800"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#abe554d119d48329269a8c3b64afff800">reader_molecules::km_bm</a></td></tr>
+<tr class="separator:abe554d119d48329269a8c3b64afff800"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa725fb490d469ec34fb94073137530c6"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa725fb490d469ec34fb94073137530c6">reader_molecules::km_ua</a></td></tr>
+<tr class="separator:aa725fb490d469ec34fb94073137530c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae350b8ae260619478f5ca9b8f2bb4b4f"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae350b8ae260619478f5ca9b8f2bb4b4f">reader_molecules::km_ub</a></td></tr>
+<tr class="separator:ae350b8ae260619478f5ca9b8f2bb4b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad520d53df99dd4ab072a29fe84c2b0b5"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ad520d53df99dd4ab072a29fe84c2b0b5">reader_molecules::km_te</a></td></tr>
+<tr class="separator:ad520d53df99dd4ab072a29fe84c2b0b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e87cc5d80fb7eccc816cb259f68cdf6"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a8e87cc5d80fb7eccc816cb259f68cdf6">reader_molecules::km_cro</a></td></tr>
+<tr class="separator:a8e87cc5d80fb7eccc816cb259f68cdf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4930a1a9f836e0dfab3bd8fce591f109"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a4930a1a9f836e0dfab3bd8fce591f109">reader_molecules::km_a0</a></td></tr>
+<tr class="separator:a4930a1a9f836e0dfab3bd8fce591f109"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55a3a19c7c770a4e1253bc85bc3fee70"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a55a3a19c7c770a4e1253bc85bc3fee70">reader_molecules::km_a1</a></td></tr>
+<tr class="separator:a55a3a19c7c770a4e1253bc85bc3fee70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae49b3e3dfb25b081559273b37f261bef"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae49b3e3dfb25b081559273b37f261bef">reader_molecules::km_a2</a></td></tr>
+<tr class="separator:ae49b3e3dfb25b081559273b37f261bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742fc56771ffa5918abf856f2add1a48"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a742fc56771ffa5918abf856f2add1a48">reader_molecules::km_a3</a></td></tr>
+<tr class="separator:a742fc56771ffa5918abf856f2add1a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b5cab32694caa2d2aeb7942eaca36f"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a96b5cab32694caa2d2aeb7942eaca36f">reader_molecules::km_a4</a></td></tr>
+<tr class="separator:a96b5cab32694caa2d2aeb7942eaca36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08ae5ad6c0dd42bcdfe3d2ee72ab8c08"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a08ae5ad6c0dd42bcdfe3d2ee72ab8c08">reader_molecules::km_als</a></td></tr>
+<tr class="separator:a08ae5ad6c0dd42bcdfe3d2ee72ab8c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7204afdf836738fcf6c2f2b11f2baf"><td class="memItemLeft" align="right" valign="top">real *8, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a8a7204afdf836738fcf6c2f2b11f2baf">reader_molecules::km_s</a></td></tr>
+<tr class="separator:a8a7204afdf836738fcf6c2f2b11f2baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19c884df094f5ed71f9193228420263f"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a19c884df094f5ed71f9193228420263f">reader_molecules::km_ise</a></td></tr>
+<tr class="separator:a19c884df094f5ed71f9193228420263f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5eb236affea46aa8f84ca13b3af3ffd"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae5eb236affea46aa8f84ca13b3af3ffd">reader_molecules::km_nv</a></td></tr>
+<tr class="separator:ae5eb236affea46aa8f84ca13b3af3ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5043548eba73a2f826b4b0ad29140e3"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#af5043548eba73a2f826b4b0ad29140e3">reader_molecules::km_lines_per_mol</a></td></tr>
+<tr class="memdesc:af5043548eba73a2f826b4b0ad29140e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This stores the number of spectral lines for each molecule.  <a href="#af5043548eba73a2f826b4b0ad29140e3">More...</a><br /></td></tr>
+<tr class="separator:af5043548eba73a2f826b4b0ad29140e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3c646e3670494e99d922e982f45e613"><td class="memItemLeft" align="right" valign="top">integer, dimension(num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ac3c646e3670494e99d922e982f45e613">reader_molecules::km_formula_id</a></td></tr>
+<tr class="memdesc:ac3c646e3670494e99d922e982f45e613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formula ID of molecule (between 1 and NUM_FORMULAE)  <a href="#ac3c646e3670494e99d922e982f45e613">More...</a><br /></td></tr>
+<tr class="separator:ac3c646e3670494e99d922e982f45e613"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811671c594cc7c2eaf6c8eb6003004e8"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a811671c594cc7c2eaf6c8eb6003004e8">reader_molecules::km_qqv</a></td></tr>
+<tr class="separator:a811671c594cc7c2eaf6c8eb6003004e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0d6ac3db9f6dcf3b6ad4249c649c04c"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#aa0d6ac3db9f6dcf3b6ad4249c649c04c">reader_molecules::km_ggv</a></td></tr>
+<tr class="separator:aa0d6ac3db9f6dcf3b6ad4249c649c04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3652d907ce0ba2a1390d0fbb6b159d0e"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a3652d907ce0ba2a1390d0fbb6b159d0e">reader_molecules::km_bbv</a></td></tr>
+<tr class="separator:a3652d907ce0ba2a1390d0fbb6b159d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41b35cc97d900abf96006fba64fca19c"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a41b35cc97d900abf96006fba64fca19c">reader_molecules::km_ddv</a></td></tr>
+<tr class="separator:a41b35cc97d900abf96006fba64fca19c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67fc01e02a5b0654397d3fd930fa9723"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#a67fc01e02a5b0654397d3fd930fa9723">reader_molecules::km_fact</a></td></tr>
+<tr class="separator:a67fc01e02a5b0654397d3fd930fa9723"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab94333157c1ccf4a98865e1ae6b49f74"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_nv_per_mol, num_mol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ab94333157c1ccf4a98865e1ae6b49f74">reader_molecules::km_ln</a></td></tr>
+<tr class="memdesc:ab94333157c1ccf4a98865e1ae6b49f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Index of Last Lambda Of Set-Of-Lines" Points to km_lmbdam, km_sj, km_jj. This is mounted at reading to help with the filtering and avoid allocating 2 dimensions for (lm__lmbdam, km_sj, km_jj)  <a href="#ab94333157c1ccf4a98865e1ae6b49f74">More...</a><br /></td></tr>
+<tr class="separator:ab94333157c1ccf4a98865e1ae6b49f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab964b4e79f3afadbe29e9cc71099119a"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ab964b4e79f3afadbe29e9cc71099119a">reader_molecules::km_lmbdam</a></td></tr>
+<tr class="separator:ab964b4e79f3afadbe29e9cc71099119a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f462d38dee9f3036e200addfad99a3"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ae8f462d38dee9f3036e200addfad99a3">reader_molecules::km_sj</a></td></tr>
+<tr class="separator:ae8f462d38dee9f3036e200addfad99a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1480380c1e3e0e400e001166490dde4"><td class="memItemLeft" align="right" valign="top">real *8, dimension(max_km_lines_total)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__molecules.html#ac1480380c1e3e0e400e001166490dde4">reader_molecules::km_jj</a></td></tr>
+<tr class="separator:ac1480380c1e3e0e400e001166490dde4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a4e5979fe5f89f0f91fee700f3b35682b"></a>
@@ -604,16 +600,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="readers_8f90_source.html#l00740">740</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
-
-<p><div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="readers_8f90_a4e5979fe5f89f0f91fee700f3b35682b_icgraph.png" border="0" usemap="#readers_8f90_a4e5979fe5f89f0f91fee700f3b35682b_icgraph" alt=""/></div>
-<map name="readers_8f90_a4e5979fe5f89f0f91fee700f3b35682b_icgraph" id="readers_8f90_a4e5979fe5f89f0f91fee700f3b35682b_icgraph">
-<area shape="rect" id="node2" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="211,5,261,32"/></map>
-</div>
-</p>
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l00789">789</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
 </div>
 </div>
@@ -623,7 +610,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="readers_8f90.html">readers.f90</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

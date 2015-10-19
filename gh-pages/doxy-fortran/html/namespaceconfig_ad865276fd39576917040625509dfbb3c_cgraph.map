@@ -1,5 +1,5 @@
 <map id="config::init_options" name="config::init_options">
-<area shape="rect" id="node2" href="$namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c" title="Creates option and adds to options variable. " alt="" coords="184,5,312,32"/>
+<area shape="rect" id="node2" href="$namespaceconfig.html#af79dca0373d20dbefdc74db129f07942" title="Creates option and adds to options variable. " alt="" coords="184,5,312,32"/>
 <area shape="rect" id="node6" href="$namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="189,56,307,83"/>
 <area shape="rect" id="node7" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="377,157,471,184"/>
 <area shape="rect" id="node8" href="$namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="190,107,306,133"/>

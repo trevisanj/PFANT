@@ -117,9 +117,6 @@ $(document).ready(function(){initNavTree('namespaceinnewmarcs__calc.html','');})
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ad8e5dc5b56416b3c97ca8166639615ed"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinnewmarcs__calc.html#ad8e5dc5b56416b3c97ca8166639615ed">innewmarcs_init</a> ()</td></tr>
-<tr class="memdesc:ad8e5dc5b56416b3c97ca8166639615ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of this module.  <a href="#ad8e5dc5b56416b3c97ca8166639615ed">More...</a><br /></td></tr>
-<tr class="separator:ad8e5dc5b56416b3c97ca8166639615ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a692f151a38c6946284b7a2677248f2"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2">innewmarcs_calc_</a> ()</td></tr>
 <tr class="memdesc:a5a692f151a38c6946284b7a2677248f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main routine of this module.  <a href="#a5a692f151a38c6946284b7a2677248f2">More...</a><br /></td></tr>
 <tr class="separator:a5a692f151a38c6946284b7a2677248f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,52 +154,6 @@ Variables</h2></td></tr>
 <tr class="separator:a898d1fa273b189d80d0e6e7853729ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ad8e5dc5b56416b3c97ca8166639615ed"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine innewmarcs_calc::innewmarcs_init </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Initialization of this module. </p>
-<p>One of the tasks if the initialization of the x_* variables, whose values may be either set from the command line or taken from dfile:main </p>
-
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00105">105</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
-
-<p><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_cgraph.png" border="0" usemap="#namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_cgraph" alt=""/></div>
-<map name="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_cgraph" id="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_cgraph">
-<area shape="rect" id="node2" href="namespaceinnewmarcs__calc.html#a39c9287930f0af835e7bb86a0a46629a" title="Fill variables nomfipl, asalog1, asalog2 based on x_asalog. " alt="" coords="280,5,432,46"/></map>
-</div>
-</p>
-
-<p><div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_icgraph.png" border="0" usemap="#namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_icgraph" alt=""/></div>
-<map name="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_icgraph" id="namespaceinnewmarcs__calc_ad8e5dc5b56416b3c97ca8166639615ed_icgraph">
-<area shape="rect" id="node2" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="281,5,482,46"/><area shape="rect" id="node3" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="531,12,623,39"/></map>
-</div>
-</p>
-
-</div>
-</div>
 <a class="anchor" id="a5a692f151a38c6946284b7a2677248f2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -218,17 +169,17 @@ Here is the caller graph for this function:</div>
 
 <p>Main routine of this module. </p>
 <dl class="section note"><dt>Note</dt><dd>ASCII file is always opened in status "unknown" </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000031">Todo:</a></b></dt><dd>issue assumption: asalalf is the same for aa, bb, cc, dd???? </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000032">Todo:</a></b></dt><dd>issue look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right I changed this if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1) if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2) </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000032">Todo:</a></b></dt><dd>issue assumption: asalalf is the same for aa, bb, cc, dd???? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000033">Todo:</a></b></dt><dd>issue look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right I changed this if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1) if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2) </dd></dl>
 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00114">114</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00104">104</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceinnewmarcs__calc_a5a692f151a38c6946284b7a2677248f2_cgraph.png" border="0" usemap="#namespaceinnewmarcs__calc_a5a692f151a38c6946284b7a2677248f2_cgraph" alt=""/></div>
 <map name="namespaceinnewmarcs__calc_a5a692f151a38c6946284b7a2677248f2_cgraph" id="namespaceinnewmarcs__calc_a5a692f151a38c6946284b7a2677248f2_cgraph">
-<area shape="rect" id="node2" href="namespaceinnewmarcs__calc.html#ad8e5dc5b56416b3c97ca8166639615ed" title="Initialization of this module. " alt="" coords="257,12,482,39"/><area shape="rect" id="node4" href="namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="304,63,435,89"/><area shape="rect" id="node5" href="namespaceinnewmarcs__calc.html#a985d3fc4a4e18ab847b2354c7622b58b" title="On cherche les numeros des 4 modeles de la table entre lesquels le programme devra interpoler..." alt="" coords="283,164,456,191"/><area shape="rect" id="node7" href="namespacereader__modeles.html#a9d5d25c9605940c3474e28c248293827" title="Opens existing models binary file. " alt="" coords="533,207,683,249"/><area shape="rect" id="node13" href="namespacereader__modeles.html#a530daca27088cc43a087d0ed4815b456" title="Closes open file. " alt="" coords="531,77,685,118"/><area shape="rect" id="node14" href="namespaceinnewmarcs__calc.html#add6676d13f5cbe8a3ae3e4b532916265" title="Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot. " alt="" coords="279,265,460,292"/><area shape="rect" id="node15" href="namespaceinnewmarcs__calc.html#a618a39507c4e4598b8f56fab3669f337" title="Enlever les n premieres couches a un modele. " alt="" coords="279,316,460,343"/><area shape="rect" id="node16" href="namespaceinnewmarcs__calc.html#a24139043019a5cf915efccfb406d4ad8" title="Interpolation ?doc? " alt="" coords="283,367,456,393"/><area shape="rect" id="node3" href="namespaceinnewmarcs__calc.html#a39c9287930f0af835e7bb86a0a46629a" title="Fill variables nomfipl, asalog1, asalog2 based on x_asalog. " alt="" coords="532,5,684,46"/><area shape="rect" id="node6" href="namespacereader__modeles.html#ae0f6e205a59a9af4deb592b1320b3545" title="Returns number of records in file. " alt="" coords="538,142,678,183"/><area shape="rect" id="node11" href="namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="535,273,681,314"/><area shape="rect" id="node8" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="735,219,863,245"/><area shape="rect" id="node9" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="912,247,1045,273"/><area shape="rect" id="node10" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1094,247,1175,273"/><area shape="rect" id="node12" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="733,273,864,300"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="281,5,412,32"/><area shape="rect" id="node3" href="namespaceinnewmarcs__calc.html#a39c9287930f0af835e7bb86a0a46629a" title="Fill variables nomfipl, asalog1, asalog2 based on x_asalog. " alt="" coords="271,57,423,98"/><area shape="rect" id="node4" href="namespaceinnewmarcs__calc.html#a985d3fc4a4e18ab847b2354c7622b58b" title="On cherche les numeros des 4 modeles de la table entre lesquels le programme devra interpoler..." alt="" coords="260,173,433,200"/><area shape="rect" id="node6" href="namespacereader__modeles.html#a9d5d25c9605940c3474e28c248293827" title="Opens existing models binary file. " alt="" coords="487,86,638,127"/><area shape="rect" id="node12" href="namespacereader__modeles.html#a530daca27088cc43a087d0ed4815b456" title="Closes open file. " alt="" coords="486,217,639,258"/><area shape="rect" id="node13" href="namespaceinnewmarcs__calc.html#add6676d13f5cbe8a3ae3e4b532916265" title="Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot. " alt="" coords="256,275,437,301"/><area shape="rect" id="node14" href="namespaceinnewmarcs__calc.html#a618a39507c4e4598b8f56fab3669f337" title="Enlever les n premieres couches a un modele. " alt="" coords="256,325,437,352"/><area shape="rect" id="node15" href="namespaceinnewmarcs__calc.html#a24139043019a5cf915efccfb406d4ad8" title="Interpolation ?doc? " alt="" coords="260,376,433,403"/><area shape="rect" id="node5" href="namespacereader__modeles.html#ae0f6e205a59a9af4deb592b1320b3545" title="Returns number of records in file. " alt="" coords="493,151,633,193"/><area shape="rect" id="node10" href="namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="489,282,636,323"/><area shape="rect" id="node7" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="689,228,817,255"/><area shape="rect" id="node8" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="867,256,1000,283"/><area shape="rect" id="node9" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1049,256,1130,283"/><area shape="rect" id="node11" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="688,283,819,309"/></map>
 </div>
 </p>
 
@@ -268,14 +219,14 @@ Here is the caller graph for this function:</div>
 <p>Note that intervals are open on upper boundary, i.e., </p><pre class="fragment"> [ gridsmap_asalog(i), gridsmap_asalog(i+1) [
 
  (1 &lt;= i &lt; gridsmap_num_files)</pre> 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00369">369</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00377">377</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceinnewmarcs__calc_a39c9287930f0af835e7bb86a0a46629a_icgraph.png" border="0" usemap="#namespaceinnewmarcs__calc_a39c9287930f0af835e7bb86a0a46629a_icgraph" alt=""/></div>
 <map name="namespaceinnewmarcs__calc_a39c9287930f0af835e7bb86a0a46629a_icgraph" id="namespaceinnewmarcs__calc_a39c9287930f0af835e7bb86a0a46629a_icgraph">
-<area shape="rect" id="node2" href="namespaceinnewmarcs__calc.html#ad8e5dc5b56416b3c97ca8166639615ed" title="Initialization of this module. " alt="" coords="206,12,431,39"/><area shape="rect" id="node3" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="481,5,682,46"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="731,12,823,39"/></map>
+<area shape="rect" id="node2" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="206,5,407,46"/><area shape="rect" id="node3" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="457,12,549,39"/></map>
 </div>
 </p>
 
@@ -339,7 +290,7 @@ Here is the caller graph for this function:</div>
 
 <p>Interpolation ?doc? </p>
 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00396">396</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00424">424</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -393,7 +344,7 @@ Here is the caller graph for this function:</div>
 <p>Enlever les n premieres couches a un modele. </p>
 <p>Note that ntot may or may not be rrntot </p>
 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00432">432</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00460">460</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -432,7 +383,7 @@ Here is the caller graph for this function:</div>
 <p>Outputs are in module variables id11, id12, id21, id22</p>
 <dl class="section note"><dt>Note</dt><dd>This routine has been re-designed to sweep the whole models file to mount the tables (there was a table hard-coded before) </dd></dl>
 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00462">462</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00490">490</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -489,7 +440,7 @@ Here is the caller graph for this function:</div>
 <p>Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot. </p>
 <p>Lit sur le fichier de type .mod nh,teta,pe,pg,t5l,ntot </p>
 
-<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00618">618</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
+<p>Definition at line <a class="el" href="innewmarcs_8f90_source.html#l00654">654</a> of file <a class="el" href="innewmarcs_8f90_source.html">innewmarcs.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -616,7 +567,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceinnewmarcs__calc.html">innewmarcs_calc</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -1,7 +1,20 @@
 var searchData=
 [
-  ['naitk3',['naitk3',['../namespacemisc__math.html#aec017668df46e1f71bb72531bf49813f',1,'misc_math']]],
-  ['nulbad',['nulbad',['../nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d',1,'nulbad.f90']]],
-  ['nulbad_5fcalc_5f',['nulbad_calc_',['../namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691',1,'nulbad_calc']]],
-  ['nulbad_5finit',['nulbad_init',['../namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853',1,'nulbad_calc']]]
+  ['paint',['paint',['../structascii__canvas_1_1canvas.html#a4f94b774497be6036f570d055ca9cfd3',1,'ascii_canvas::canvas']]],
+  ['parse_5fargs',['parse_args',['../namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9',1,'config']]],
+  ['parse_5faux_5fassign_5ffn',['parse_aux_assign_fn',['../namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e',1,'config']]],
+  ['parse_5faux_5flog_5fassignment',['parse_aux_log_assignment',['../namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34',1,'config']]],
+  ['parse_5faux_5fstr2int',['parse_aux_str2int',['../namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb',1,'config']]],
+  ['parse_5faux_5fstr2logical',['parse_aux_str2logical',['../namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61',1,'config']]],
+  ['parse_5faux_5fstr2real4',['parse_aux_str2real4',['../namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8',1,'config']]],
+  ['parse_5faux_5fstr2real8',['parse_aux_str2real8',['../namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766',1,'config']]],
+  ['parse_5fint_5farray',['parse_int_array',['../namespacemisc.html#ae7cc869bb6dd4df7d6d3033af80159b3',1,'misc']]],
+  ['pfant_5fhalt',['pfant_halt',['../namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364',1,'logging']]],
+  ['pfant_5fversion',['pfant_version',['../namespacewelcome.html#a2d654e28efde010c95d6d170eebd671a',1,'welcome']]],
+  ['pipe',['pipe',['../hydro2_8f90.html#aff7dac3374c14ebba801949702d41b4a',1,'hydro2.f90']]],
+  ['play',['play',['../namespacewelcome.html#a34a2afe87d882af70c341a607b0a1fdf',1,'welcome']]],
+  ['print',['print',['../structascii__canvas_1_1canvas.html#acd3c83c75b9177c0ce2d4d98b04138e2',1,'ascii_canvas::canvas']]],
+  ['print_5fopt',['print_opt',['../namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6',1,'options2']]],
+  ['print_5fwelcome',['print_welcome',['../namespacewelcome.html#a0693616351818b37cf0a907f31c87dc6',1,'welcome']]],
+  ['pronor',['pronor',['../hydro2_8f90.html#ada11e892cc5c0cd0c9e133a429b1e1b0',1,'hydro2.f90']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['kapmol',['kapmol',['../namespacekapmol.html',1,'']]]
+  ['logging',['logging',['../namespacelogging.html',1,'']]]
 ];

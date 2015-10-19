@@ -1,17 +1,16 @@
 var searchData=
 [
-  ['iinf',['iinf',['../namespacemisc__math.html#a4dd26f2a8dbd39b2bea5096beea121b0',1,'misc_math']]],
-  ['init',['init',['../structascii__canvas_1_1canvas.html#ab12c869645af0ba4e64bf795e649e438',1,'ascii_canvas::canvas']]],
-  ['init_5foptions',['init_options',['../namespaceconfig.html#ad865276fd39576917040625509dfbb3c',1,'config']]],
-  ['innewmarcs',['innewmarcs',['../innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800',1,'innewmarcs.f90']]],
-  ['innewmarcs_5fcalc_5f',['innewmarcs_calc_',['../namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2',1,'innewmarcs_calc']]],
-  ['innewmarcs_5finit',['innewmarcs_init',['../namespaceinnewmarcs__calc.html#ad8e5dc5b56416b3c97ca8166639615ed',1,'innewmarcs_calc']]],
-  ['innewmarcs_5finit_5fx',['innewmarcs_init_x',['../namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28',1,'innewmarcs_x']]],
-  ['int2logical',['int2logical',['../namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a',1,'misc']]],
-  ['int2str',['int2str',['../namespacemisc.html#a949e8e7ae544740353251be70a8900d7',1,'misc']]],
-  ['integra',['integra',['../namespacemisc__math.html#acc641d468cfa1851f7afb9fd3922ab6a',1,'misc_math']]],
-  ['interchange_5fsort',['interchange_sort',['../misc_8f90.html#a2b962dc78c955c08065bb5ce036ff318',1,'misc.f90']]],
-  ['interpol',['interpol',['../namespaceinnewmarcs__calc.html#a24139043019a5cf915efccfb406d4ad8',1,'innewmarcs_calc']]],
-  ['ionipe',['ionipe',['../namespaceabsoru.html#a4e3b3c275ede61b17f48ca44f46dc8ef',1,'absoru']]],
-  ['isup',['isup',['../namespacemisc__math.html#ab8cdf67ced703563d0cb6f974510ce1a',1,'misc_math']]]
+  ['locatab',['locatab',['../namespaceinnewmarcs__calc.html#a985d3fc4a4e18ab847b2354c7622b58b',1,'innewmarcs_calc']]],
+  ['log_5fany',['log_any',['../namespacelogging.html#ad364db28a355e7c4fe520edc063ac949',1,'logging']]],
+  ['log_5fcritical',['log_critical',['../namespacelogging.html#a6f4a56f63163c7cd4803dedca0bbe792',1,'logging']]],
+  ['log_5fdebug',['log_debug',['../namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73',1,'logging']]],
+  ['log_5ferror',['log_error',['../namespacelogging.html#a9cc50687094614948dc73de63bf7a0fd',1,'logging']]],
+  ['log_5fhalt',['log_halt',['../namespacelogging.html#a5f475ebe6dd4c879b81a573c3ef3049c',1,'logging']]],
+  ['log_5finfo',['log_info',['../namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b',1,'logging']]],
+  ['log_5fprogress',['log_progress',['../namespacelogging.html#a968414096874e395b0212181f0941ddd',1,'logging']]],
+  ['log_5fwarning',['log_warning',['../namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5',1,'logging']]],
+  ['logical2int',['logical2int',['../namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca',1,'misc']]],
+  ['logical2str',['logical2str',['../namespacemisc.html#a06c1982771eb7304240aca2ad4d89533',1,'misc']]],
+  ['lookup_5flong',['lookup_long',['../config_8f90.html#ae36bdb92a3c22e440e572d5499b51a32',1,'config.f90']]],
+  ['lookup_5fshort',['lookup_short',['../config_8f90.html#a14e9a0739775a8c0f4d77ca684276208',1,'config.f90']]]
 ];

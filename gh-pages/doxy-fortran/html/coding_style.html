@@ -137,11 +137,11 @@ $(document).ready(function(){initNavTree('coding_style.html','');});
 <dl class="section note"><dt>Note</dt><dd>The main reasons for this was a limitation in Doxygen, which converts all symbols to lowercase in the HTMLs anyway (fix has been asked for but no action yet <a href="http://doxygen.10944.n7.nabble.com/The-lowercase-problem-when-using-the-Doxygen-with-Fortran-td1243.html">http://doxygen.10944.n7.nabble.com/The-lowercase-problem-when-using-the-Doxygen-with-Fortran-td1243.html</a>). It sucks to have to change your code conventions because of the documentation tool, but considering all you get from Doxygen, it seemed to be a good trade-off. The symbols could have been left in uppercase in the source code and would appear in lowercase in the HTML, but this would be kind of confusing.</dd></dl>
 <h2>Name conventions </h2>
 <ul>
-<li>Routines <a class="el" href="namespacesynthesis.html#af6dfd3c2d7d2be83e4bcc7e2472840c5">synthesis::synthesis_</a> and <a class="el" href="namespaceabsoru.html#a2d60649af39c2775d4002eb8fda0a91b" title="Calculates the &quot;continuum absorption&quot;. ">absoru::absoru_</a> names have a trailing underscore in order to differentiate from their respective module names;</li>
+<li>Routines synthesis::synthesis_ and <a class="el" href="namespaceabsoru.html#a2d60649af39c2775d4002eb8fda0a91b" title="Calculates the &quot;continuum absorption&quot;. ">absoru::absoru_</a> names have a trailing underscore in order to differentiate from their respective module names;</li>
 </ul>
 <ul>
 <li>Prefixes are now used extensively throughout the code to group variables according to some meaning, for example: <div class="fragment"><div class="line"><a class="code" href="namespacereader__main.html#ad68146ac61901a73339b442200e5222f">main_ptdisk</a>     ! variable comes from file main.dat</div>
-<div class="line"><a class="code" href="namespacesynthesis.html#a58951f64bdf3b80a6e2932e82f2f0a3b">selekfh_fl</a>      ! variable is calculated by subroutine <a class="code" href="pfant_8f90.html#ac8f00ffce7216c0a8b834684e1b094c7">synthesis::selekfh</a>()</div>
+<div class="line">selekfh_fl      ! variable is calculated by subroutine synthesis::selekfh()</div>
 <div class="line">MAX_PARTIT_NPAR ! constant having <a class="code" href="namespacedimensions.html#a9c3718f2b254c9e2f7b41f9975f4f274">maximum</a> allowed <a class="code" href="namespacedimensions.html#a364432bc2cd4a68d54fea6a7ed867f3c">value</a> <a class="code" href="namespacedimensions.html#ad3dff1b084c6b6cb0426e2253a2a95dd">of</a> variable <a class="code" href="namespacereader__partit.html#a2f2e81d9bce1b250bb592d220868f09b">partit_npar</a></div>
 <div class="line">...</div>
 </div><!-- fragment --></li>
@@ -187,7 +187,7 @@ ask MT                 Suggests the person who probably knows to solve the issue
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="coding_guide.html">Coding guide</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

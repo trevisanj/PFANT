@@ -1691,8 +1691,6 @@ contains
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
-
-            ! This was created to debug the KAK write(44, '(e20.10)') kak
           end if
 
           kappa = kappa + kak

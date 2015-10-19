@@ -1,20 +1,17 @@
 /**
 @mainpage Welcome
 
-PFANT is spectral synthesis software for astrononic applications written in Fortran.
+PFANT is a spectral synthesis software written in Fortran.
 
 PFANT is a suite consisting of four executables:
-@li @ref innewmarcs -- interpolation d'un modele dans les grilles de modeles de
+@li innewmarcs -- interpolation d'un modele dans les grilles de modeles de
                      NEWMARCS (2005) en fonction de Teff, log g et [Fe/H]
-@li @ref hydro2 -- calcul du profil d'une raie de l'hydrogene
-@li @ref pfant -- spectral synthesis
-@li @ref nulbad -- convolution utility
+@li hydro2 -- calcul du profil d'une raie de l'hydrogene
+@li pfant -- spectral synthesis
+@li nulbad -- convolution utility
 
 
-Why "PFANT"?
-------------
-
-Name evolution since started:
+@section history History
 
 @verbatim
  |

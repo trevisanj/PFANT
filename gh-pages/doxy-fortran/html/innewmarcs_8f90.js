@@ -1,7 +1,6 @@
 var innewmarcs_8f90 =
 [
     [ "innewmarcs_init_x", "innewmarcs_8f90.html#a3f35348d405aa967eb1a95335a4b4d28", null ],
-    [ "innewmarcs_init", "innewmarcs_8f90.html#ad8e5dc5b56416b3c97ca8166639615ed", null ],
     [ "innewmarcs_calc_", "innewmarcs_8f90.html#a5a692f151a38c6946284b7a2677248f2", null ],
     [ "find_two_grid_files", "innewmarcs_8f90.html#a39c9287930f0af835e7bb86a0a46629a", null ],
     [ "interpol", "innewmarcs_8f90.html#a24139043019a5cf915efccfb406d4ad8", null ],

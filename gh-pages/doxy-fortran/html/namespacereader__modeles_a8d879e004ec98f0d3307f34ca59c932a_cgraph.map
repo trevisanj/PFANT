@@ -1,3 +1,7 @@
 <map id="reader_modeles::read_filetoh" name="reader_modeles::read_filetoh">
-<area shape="rect" id="node2" href="$namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="200,12,331,39"/>
+<area shape="rect" id="node2" href="$namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="205,5,336,32"/>
+<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="207,56,335,83"/>
+<area shape="rect" id="node6" href="$namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="201,107,341,133"/>
+<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="389,81,523,108"/>
+<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="571,81,653,108"/>
 </map>

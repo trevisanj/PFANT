@@ -1,7 +1,9 @@
 var NAVTREE =
 [
   [ "PFANT", "index.html", [
-    [ "Welcome", "index.html", null ],
+    [ "Welcome", "index.html", [
+      [ "History", "index.html#history", null ]
+    ] ],
     [ "Coding guide", "coding_guide.html", "coding_guide" ],
     [ "Overview", "overview.html", [
       [ "Installation", "overview.html#Installation", [
@@ -49,9 +51,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "absoru_8f90.html",
-"hydro2_8f90.html#add1b3f63878b420c3a189a77d925ea5e",
-"nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d",
-"readers_8f90.html#ace5b123be6a77b32004de618f1315904"
+"hydro2_8f90.html#ad4f551acb16ac965245a2dab65c516f0",
+"overview.html#Installation"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

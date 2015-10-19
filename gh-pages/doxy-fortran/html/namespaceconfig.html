@@ -120,9 +120,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e">config_init</a> ()</td></tr>
 <tr class="memdesc:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of this module.  <a href="#a18ef2bb8c5d4d83be0bde27a470ad65e">More...</a><br /></td></tr>
 <tr class="separator:a18ef2bb8c5d4d83be0bde27a470ad65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c">add_option</a> (ihpn, name, chr, has_arg, argname, default_, descr)</td></tr>
-<tr class="memdesc:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates option and adds to options variable.  <a href="#a5b8c8fc4e4fac85a9c56de8c1ea3c21c">More...</a><br /></td></tr>
-<tr class="separator:a5b8c8fc4e4fac85a9c56de8c1ea3c21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79dca0373d20dbefdc74db129f07942"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#af79dca0373d20dbefdc74db129f07942">add_option</a> (ihpn, name, chr, has_arg, argname, default_, descr, appears)</td></tr>
+<tr class="memdesc:af79dca0373d20dbefdc74db129f07942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates option and adds to options variable.  <a href="#af79dca0373d20dbefdc74db129f07942">More...</a><br /></td></tr>
+<tr class="separator:af79dca0373d20dbefdc74db129f07942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad865276fd39576917040625509dfbb3c"><td class="memItemLeft" align="right" valign="top">subroutine, private&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c">init_options</a> ()</td></tr>
 <tr class="memdesc:ad865276fd39576917040625509dfbb3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of command-line options.  <a href="#ad865276fd39576917040625509dfbb3c">More...</a><br /></td></tr>
 <tr class="separator:ad865276fd39576917040625509dfbb3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,12 +193,15 @@ Variables</h2></td></tr>
 <tr class="memdesc:ac9836df8e2674e76d30a6865ae8586bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">option --logging_screen  <a href="#ac9836df8e2674e76d30a6865ae8586bb">More...</a><br /></td></tr>
 <tr class="separator:ac9836df8e2674e76d30a6865ae8586bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefccb23e8f114f7a263670b888b53e80"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#aefccb23e8f114f7a263670b888b53e80">config_logging_dump</a> = .false.</td></tr>
-<tr class="memdesc:aefccb23e8f114f7a263670b888b53e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">option &ndash;logging_dump  <a href="#aefccb23e8f114f7a263670b888b53e80">More...</a><br /></td></tr>
+<tr class="memdesc:aefccb23e8f114f7a263670b888b53e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">option --logging_dump  <a href="#aefccb23e8f114f7a263670b888b53e80">More...</a><br /></td></tr>
 <tr class="separator:aefccb23e8f114f7a263670b888b53e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#afb019d9bc85a96a18a2ae0b0ac20ee1e">config_explain</a> = .false.</td></tr>
+<tr class="memdesc:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">option &ndash;explain  <a href="#afb019d9bc85a96a18a2ae0b0ac20ee1e">More...</a><br /></td></tr>
+<tr class="separator:afb019d9bc85a96a18a2ae0b0ac20ee1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21084af9bc1961a970e7a5e974c4f962"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a21084af9bc1961a970e7a5e974c4f962">config_fn_modeles</a> = 'modeles.mod'</td></tr>
 <tr class="memdesc:a21084af9bc1961a970e7a5e974c4f962"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;fn_modeles  <a href="#a21084af9bc1961a970e7a5e974c4f962">More...</a><br /></td></tr>
 <tr class="separator:a21084af9bc1961a970e7a5e974c4f962"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ac56473c2157c1d8f0ca49913830c2ffd">config_hmap</a> = .false.</td></tr>
+<tr class="memitem:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ac56473c2157c1d8f0ca49913830c2ffd">config_hmap</a> = .true.</td></tr>
 <tr class="memdesc:ac56473c2157c1d8f0ca49913830c2ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;hmap  <a href="#ac56473c2157c1d8f0ca49913830c2ffd">More...</a><br /></td></tr>
 <tr class="separator:ac56473c2157c1d8f0ca49913830c2ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae406c6265c752581bb2214aef0bcd3d1"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#ae406c6265c752581bb2214aef0bcd3d1">config_fn_hmap</a> = 'hmap.dat'</td></tr>
@@ -293,7 +296,7 @@ Variables</h2></td></tr>
 <tr class="memitem:a1355ca019de5fe564012ea70fdf851e4"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a1355ca019de5fe564012ea70fdf851e4">config_fn_molecules</a> = 'moleculagrade.dat'</td></tr>
 <tr class="memdesc:a1355ca019de5fe564012ea70fdf851e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: --fn_molecules  <a href="#a1355ca019de5fe564012ea70fdf851e4">More...</a><br /></td></tr>
 <tr class="separator:a1355ca019de5fe564012ea70fdf851e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add5e996fefae53921475572bba692cdb"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#add5e996fefae53921475572bba692cdb">config_fn_lines</a> = '<a class="el" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">lines.pfant</a>'</td></tr>
+<tr class="memitem:add5e996fefae53921475572bba692cdb"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#add5e996fefae53921475572bba692cdb">config_fn_lines</a> = 'lines.pfant'</td></tr>
 <tr class="memdesc:add5e996fefae53921475572bba692cdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: --fn_lines  <a href="#add5e996fefae53921475572bba692cdb">More...</a><br /></td></tr>
 <tr class="separator:add5e996fefae53921475572bba692cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1371426327b4384c26c902877afc8a07"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a1371426327b4384c26c902877afc8a07">config_fn_log</a> = 'log.log'</td></tr>
@@ -326,6 +329,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a052f918d9939910465bba6dca6379e17"><td class="memItemLeft" align="right" valign="top">character *64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a052f918d9939910465bba6dca6379e17">config_fn_cv</a> = '?'</td></tr>
 <tr class="memdesc:a052f918d9939910465bba6dca6379e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">option: &ndash;fn_cv  <a href="#a052f918d9939910465bba6dca6379e17">More...</a><br /></td></tr>
 <tr class="separator:a052f918d9939910465bba6dca6379e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a933d28c7b24d95b32bda9da6bba9e4de"><td class="memItemLeft" align="right" valign="top">integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a933d28c7b24d95b32bda9da6bba9e4de">unit_explain</a> = 145</td></tr>
+<tr class="memdesc:a933d28c7b24d95b32bda9da6bba9e4de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit to write to "explain" file (file containing debugging information)  <a href="#a933d28c7b24d95b32bda9da6bba9e4de">More...</a><br /></td></tr>
+<tr class="separator:a933d28c7b24d95b32bda9da6bba9e4de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structoptions2_1_1option.html">option</a>), dimension(max_num_options), private&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceconfig.html#a4d1d3dbfb01731a53cf1c0547cd05b77">options</a></td></tr>
 <tr class="memdesc:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of command-line options.  <a href="#a4d1d3dbfb01731a53cf1c0547cd05b77">More...</a><br /></td></tr>
 <tr class="separator:a4d1d3dbfb01731a53cf1c0547cd05b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -359,14 +365,14 @@ Variables</h2></td></tr>
 <p>Initialization of this module. </p>
 <dl class="section note"><dt>Note</dt><dd>Must be called <em>after</em> module-specific initialization </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00626">626</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00625">625</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_cgraph.png" border="0" usemap="#namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_cgraph" alt=""/></div>
 <map name="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_cgraph" id="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_cgraph">
-<area shape="rect" id="node2" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="1076,520,1204,547"/><area shape="rect" id="node5" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="209,1314,317,1340"/><area shape="rect" id="node6" href="namespacewelcome.html#a2d654e28efde010c95d6d170eebd671a" title="Returns string representing current PFANT version. " alt="" coords="183,1364,343,1391"/><area shape="rect" id="node7" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="409,360,540,387"/><area shape="rect" id="node13" href="namespaceconfig.html#a0eb008a11cd2fbe82aebc2b603ad5151" title="Performs a series of checks to avoid programming errors while defining the command&#45;line options..." alt="" coords="395,1263,554,1290"/><area shape="rect" id="node14" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="198,604,327,631"/><area shape="rect" id="node23" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="879,1010,985,1036"/><area shape="rect" id="node38" href="namespacemisc.html#acacf3e482d34c5d8a914ac994d9e17be" title="Examples: " alt="" coords="195,1416,331,1457"/><area shape="rect" id="node39" href="namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="197,1482,328,1508"/><area shape="rect" id="node40" href="namespacewelcome.html#a0693616351818b37cf0a907f31c87dc6" title="Displays welcome message. " alt="" coords="179,1532,346,1559"/><area shape="rect" id="node3" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1259,463,1392,490"/><area shape="rect" id="node4" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1441,463,1522,490"/><area shape="rect" id="node8" href="namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c" title="Creates option and adds to options variable. " alt="" coords="868,219,996,246"/><area shape="rect" id="node9" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="640,335,757,362"/><area shape="rect" id="node10" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="885,270,979,296"/><area shape="rect" id="node11" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="641,487,757,514"/><area shape="rect" id="node12" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="645,386,753,412"/><area shape="rect" id="node15" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="417,158,532,184"/><area shape="rect" id="node19" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="868,655,996,682"/><area shape="rect" id="node20" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="402,698,547,740"/><area shape="rect" id="node27" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="843,858,1021,884"/><area shape="rect" id="node37" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="1075,151,1205,178"/><area shape="rect" id="node16" href="namespaceoptions2.html#a8da1a2829b72496f27acfc7c0d89dcdd" title="Logs error and halts This routine was created to standardize the &quot;giving error&quot; behaviuor. " alt="" coords="631,183,767,210"/><area shape="rect" id="node17" href="config_8f90.html#ae36bdb92a3c22e440e572d5499b51a32" title="lookup_long" alt="" coords="653,82,744,108"/><area shape="rect" id="node18" href="config_8f90.html#a14e9a0739775a8c0f4d77ca684276208" title="lookup_short" alt="" coords="651,132,747,159"/><area shape="rect" id="node21" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="635,655,762,682"/><area shape="rect" id="node24" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="857,1061,1007,1102"/><area shape="rect" id="node26" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="603,959,794,986"/><area shape="rect" id="node28" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="605,1111,793,1138"/><area shape="rect" id="node29" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="607,756,790,783"/><area shape="rect" id="node30" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="615,807,783,834"/><area shape="rect" id="node31" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="641,858,757,884"/><area shape="rect" id="node32" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="607,706,790,732"/><area shape="rect" id="node33" href="namespacemolecules__ids.html#a40e32ddd83d113f50e4aa21fb5672725" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="631,538,766,580"/><area shape="rect" id="node22" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="867,706,997,732"/><area shape="rect" id="node25" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="1082,604,1198,631"/><area shape="rect" id="node34" href="namespacemolecules__ids.html#a3caf9c6a343ea9f87b0bd9a195d39e9e" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is &quot;on&quot; or &quot;off&quot;..." alt="" coords="849,473,1015,514"/><area shape="rect" id="node35" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="1070,404,1210,431"/><area shape="rect" id="node36" href="namespacemolecules__ids.html#a5007abae4b9ea77df9ee1ed8260f0c56" title="Fills molidson and molidsn_on based on their complements. " alt="" coords="859,538,1005,580"/></map>
+<area shape="rect" id="node2" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="1297,535,1425,561"/><area shape="rect" id="node5" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="209,445,317,472"/><area shape="rect" id="node6" href="namespacewelcome.html#a2d654e28efde010c95d6d170eebd671a" title="Returns string representing current PFANT version. " alt="" coords="183,496,343,523"/><area shape="rect" id="node7" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="633,377,764,404"/><area shape="rect" id="node13" href="namespaceconfig.html#a0eb008a11cd2fbe82aebc2b603ad5151" title="Performs a series of checks to avoid programming errors while defining the command&#45;line options..." alt="" coords="395,355,554,381"/><area shape="rect" id="node14" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="198,833,327,860"/><area shape="rect" id="node24" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="879,744,985,771"/><area shape="rect" id="node42" href="namespacemisc.html#acacf3e482d34c5d8a914ac994d9e17be" title="Examples: " alt="" coords="195,885,331,926"/><area shape="rect" id="node43" href="namespaceconfig.html#ae488bf43899caf8c4c8f5d395efeec01" title="Concatenates config_wdir with specific filename. " alt="" coords="197,951,328,977"/><area shape="rect" id="node44" href="namespacewelcome.html#a0693616351818b37cf0a907f31c87dc6" title="Displays welcome message. " alt="" coords="179,1001,346,1028"/><area shape="rect" id="node3" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1480,464,1613,491"/><area shape="rect" id="node4" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1662,464,1743,491"/><area shape="rect" id="node8" href="namespaceconfig.html#af79dca0373d20dbefdc74db129f07942" title="Creates option and adds to options variable. " alt="" coords="1092,251,1220,277"/><area shape="rect" id="node9" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="873,480,991,507"/><area shape="rect" id="node10" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="1109,585,1203,612"/><area shape="rect" id="node11" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="874,632,990,659"/><area shape="rect" id="node12" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="878,531,986,557"/><area shape="rect" id="node15" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="417,1163,532,1189"/><area shape="rect" id="node19" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="868,43,996,69"/><area shape="rect" id="node20" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="402,649,547,690"/><area shape="rect" id="node28" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="843,947,1021,973"/><area shape="rect" id="node41" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="1296,937,1427,964"/><area shape="rect" id="node16" href="namespaceoptions2.html#a8da1a2829b72496f27acfc7c0d89dcdd" title="Logs error and halts This routine was created to standardize the &quot;giving error&quot; behaviuor. " alt="" coords="631,1239,767,1265"/><area shape="rect" id="node17" href="config_8f90.html#ae36bdb92a3c22e440e572d5499b51a32" title="lookup_long" alt="" coords="653,1137,744,1164"/><area shape="rect" id="node18" href="config_8f90.html#a14e9a0739775a8c0f4d77ca684276208" title="lookup_short" alt="" coords="651,1188,747,1215"/><area shape="rect" id="node21" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="635,93,762,120"/><area shape="rect" id="node23" href="namespacewelcome.html#a34a2afe87d882af70c341a607b0a1fdf" title="welcome::play" alt="" coords="645,479,752,505"/><area shape="rect" id="node25" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="857,195,1007,237"/><area shape="rect" id="node27" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="603,833,794,860"/><area shape="rect" id="node29" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="605,256,793,283"/><area shape="rect" id="node30" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="607,935,790,961"/><area shape="rect" id="node31" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="615,1036,783,1063"/><area shape="rect" id="node32" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="641,681,757,708"/><area shape="rect" id="node33" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="607,884,790,911"/><area shape="rect" id="node34" href="namespacemolecules__idxs.html#a1c6acb7d1d6eb08076250e9f6b437589" title="Parses string into integer array and adds molecule ids to list of &quot;off&quot; molecules. " alt="" coords="629,311,768,353"/><area shape="rect" id="node22" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="867,93,997,120"/><area shape="rect" id="node26" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="1098,200,1214,227"/><area shape="rect" id="node35" href="namespacemisc.html#ae7cc869bb6dd4df7d6d3033af80159b3" title="Parses string into array of integers. " alt="" coords="859,379,1005,405"/><area shape="rect" id="node37" href="namespacemolecules__idxs.html#a04b855bc2ff953cca9e0f59148070301" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="861,313,1003,354"/><area shape="rect" id="node36" href="namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="1094,535,1218,561"/><area shape="rect" id="node38" href="namespacemolecules__idxs.html#a03fadc0f9923977bdde94e7a3e571159" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is &quot;on&quot; or &quot;off&quot;..." alt="" coords="1070,469,1242,510"/><area shape="rect" id="node39" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="1291,393,1431,420"/><area shape="rect" id="node40" href="namespacemolecules__idxs.html#aa0401aabaf0d548c37f5f6d43e62245d" title="Fills molidxson and molidxsn_on based on their complements. " alt="" coords="1080,403,1232,445"/></map>
 </div>
 </p>
 
@@ -375,13 +381,13 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_icgraph.png" border="0" usemap="#namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_icgraph" alt=""/></div>
 <map name="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_icgraph" id="namespaceconfig_a18ef2bb8c5d4d83be0bde27a470ad65e_icgraph">
-<area shape="rect" id="node2" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="195,5,256,32"/><area shape="rect" id="node3" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="179,56,271,83"/><area shape="rect" id="node4" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="195,107,255,133"/><area shape="rect" id="node5" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="200,157,251,184"/></map>
+<area shape="rect" id="node2" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="195,5,256,32"/><area shape="rect" id="node3" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="179,56,271,83"/><area shape="rect" id="node4" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="195,107,255,133"/></map>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="a5b8c8fc4e4fac85a9c56de8c1ea3c21c"></a>
+<a class="anchor" id="af79dca0373d20dbefdc74db129f07942"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -425,7 +431,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">character(len=*), intent(in)&#160;</td>
-          <td class="paramname"><em>descr</em>&#160;</td>
+          <td class="paramname"><em>descr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in), optional&#160;</td>
+          <td class="paramname"><em>appears</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -444,13 +456,13 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00658">658</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00656">656</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_cgraph.png" border="0" usemap="#namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_cgraph" alt=""/></div>
-<map name="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_cgraph" id="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_cgraph">
+<div class="center"><img src="namespaceconfig_af79dca0373d20dbefdc74db129f07942_cgraph.png" border="0" usemap="#namespaceconfig_af79dca0373d20dbefdc74db129f07942_cgraph" alt=""/></div>
+<map name="namespaceconfig_af79dca0373d20dbefdc74db129f07942_cgraph" id="namespaceconfig_af79dca0373d20dbefdc74db129f07942_cgraph">
 <area shape="rect" id="node2" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="181,5,309,32"/><area shape="rect" id="node3" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="357,5,491,32"/><area shape="rect" id="node4" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="539,5,621,32"/></map>
 </div>
 </p>
@@ -458,9 +470,9 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_icgraph.png" border="0" usemap="#namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_icgraph" alt=""/></div>
-<map name="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_icgraph" id="namespaceconfig_a5b8c8fc4e4fac85a9c56de8c1ea3c21c_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="181,81,312,108"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="361,81,485,108"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="549,5,611,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="534,56,626,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="550,107,610,133"/><area shape="rect" id="node7" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="555,157,605,184"/></map>
+<div class="center"><img src="namespaceconfig_af79dca0373d20dbefdc74db129f07942_icgraph.png" border="0" usemap="#namespaceconfig_af79dca0373d20dbefdc74db129f07942_icgraph" alt=""/></div>
+<map name="namespaceconfig_af79dca0373d20dbefdc74db129f07942_icgraph" id="namespaceconfig_af79dca0373d20dbefdc74db129f07942_icgraph">
+<area shape="rect" id="node2" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command&#45;line options. " alt="" coords="181,56,312,83"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="361,56,485,83"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="549,5,611,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="534,56,626,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="550,107,610,133"/></map>
 </div>
 </p>
 
@@ -500,14 +512,14 @@ To indent 2nd, 3rd etc. lines of a paragraph, use the <code>IND</code> constant 
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>erplace "calculus interval" with "synthesis interval" </dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000018">Todo:</a></b></dt><dd>Find names for each file and update options help </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00691">691</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00697">697</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ad865276fd39576917040625509dfbb3c_cgraph.png" border="0" usemap="#namespaceconfig_ad865276fd39576917040625509dfbb3c_cgraph" alt=""/></div>
 <map name="namespaceconfig_ad865276fd39576917040625509dfbb3c_cgraph" id="namespaceconfig_ad865276fd39576917040625509dfbb3c_cgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#a5b8c8fc4e4fac85a9c56de8c1ea3c21c" title="Creates option and adds to options variable. " alt="" coords="184,5,312,32"/><area shape="rect" id="node6" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="189,56,307,83"/><area shape="rect" id="node7" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="377,157,471,184"/><area shape="rect" id="node8" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="190,107,306,133"/><area shape="rect" id="node9" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="194,208,302,235"/><area shape="rect" id="node3" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="360,56,488,83"/><area shape="rect" id="node4" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="536,56,669,83"/><area shape="rect" id="node5" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="718,56,799,83"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#af79dca0373d20dbefdc74db129f07942" title="Creates option and adds to options variable. " alt="" coords="184,5,312,32"/><area shape="rect" id="node6" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="189,56,307,83"/><area shape="rect" id="node7" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="377,157,471,184"/><area shape="rect" id="node8" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="190,107,306,133"/><area shape="rect" id="node9" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="194,208,302,235"/><area shape="rect" id="node3" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="360,56,488,83"/><area shape="rect" id="node4" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="536,56,669,83"/><area shape="rect" id="node5" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="718,56,799,83"/></map>
 </div>
 </p>
 
@@ -516,7 +528,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ad865276fd39576917040625509dfbb3c_icgraph.png" border="0" usemap="#namespaceconfig_ad865276fd39576917040625509dfbb3c_icgraph" alt=""/></div>
 <map name="namespaceconfig_ad865276fd39576917040625509dfbb3c_icgraph" id="namespaceconfig_ad865276fd39576917040625509dfbb3c_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="185,81,309,108"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="373,5,435,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="358,56,450,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="374,107,434,133"/><area shape="rect" id="node6" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="379,157,429,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="185,56,309,83"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="373,5,435,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="358,56,450,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="374,107,434,133"/></map>
 </div>
 </p>
 
@@ -551,14 +563,14 @@ Here is the caller graph for this function:</div>
 <dd>
 If finds "-h" or "--help", will display help text and halt. </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00877">877</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00885">885</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_cgraph.png" border="0" usemap="#namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_cgraph" alt=""/></div>
 <map name="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_cgraph" id="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_cgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="233,56,359,83"/><area shape="rect" id="node5" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="476,107,583,133"/><area shape="rect" id="node6" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="455,798,604,839"/><area shape="rect" id="node10" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="201,157,391,184"/><area shape="rect" id="node13" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="237,259,355,285"/><area shape="rect" id="node14" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="202,717,390,744"/><area shape="rect" id="node15" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="205,208,387,235"/><area shape="rect" id="node16" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="242,411,350,437"/><area shape="rect" id="node17" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="482,411,577,437"/><area shape="rect" id="node18" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="212,309,380,336"/><area shape="rect" id="node19" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="238,563,354,589"/><area shape="rect" id="node20" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="238,512,354,539"/><area shape="rect" id="node21" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="205,360,387,387"/><area shape="rect" id="node22" href="namespacemolecules__ids.html#a40e32ddd83d113f50e4aa21fb5672725" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="229,614,363,655"/><area shape="rect" id="node3" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="465,5,593,32"/><area shape="rect" id="node4" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="465,56,594,83"/><area shape="rect" id="node7" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="679,747,795,773"/><area shape="rect" id="node8" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="856,696,989,723"/><area shape="rect" id="node9" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1038,696,1119,723"/><area shape="rect" id="node11" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="673,411,801,437"/><area shape="rect" id="node12" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="440,259,619,285"/><area shape="rect" id="node23" href="namespacemolecules__ids.html#a3caf9c6a343ea9f87b0bd9a195d39e9e" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is &quot;on&quot; or &quot;off&quot;..." alt="" coords="447,513,612,554"/><area shape="rect" id="node24" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="667,696,807,723"/><area shape="rect" id="node25" href="namespacemolecules__ids.html#a5007abae4b9ea77df9ee1ed8260f0c56" title="Fills molidson and molidsn_on based on their complements. " alt="" coords="457,630,602,671"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="233,80,359,107"/><area shape="rect" id="node5" href="namespacewelcome.html#a34a2afe87d882af70c341a607b0a1fdf" title="welcome::play" alt="" coords="243,139,349,165"/><area shape="rect" id="node6" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="476,568,583,595"/><area shape="rect" id="node7" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="455,131,604,173"/><area shape="rect" id="node11" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="201,517,391,544"/><area shape="rect" id="node14" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="237,771,355,797"/><area shape="rect" id="node15" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="202,240,390,267"/><area shape="rect" id="node16" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="205,365,387,392"/><area shape="rect" id="node17" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="475,720,583,747"/><area shape="rect" id="node18" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="706,657,801,684"/><area shape="rect" id="node19" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="212,416,380,443"/><area shape="rect" id="node20" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="238,821,354,848"/><area shape="rect" id="node21" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="471,619,587,645"/><area shape="rect" id="node22" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="205,467,387,493"/><area shape="rect" id="node23" href="namespacemolecules__idxs.html#a1c6acb7d1d6eb08076250e9f6b437589" title="Parses string into integer array and adds molecule ids to list of &quot;off&quot; molecules. " alt="" coords="227,291,365,333"/><area shape="rect" id="node3" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="465,29,593,56"/><area shape="rect" id="node4" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="465,80,594,107"/><area shape="rect" id="node8" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="695,5,811,32"/><area shape="rect" id="node9" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1077,107,1211,133"/><area shape="rect" id="node10" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1259,107,1341,133"/><area shape="rect" id="node12" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="895,340,1023,367"/><area shape="rect" id="node13" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="440,416,619,443"/><area shape="rect" id="node24" href="namespacemisc.html#ae7cc869bb6dd4df7d6d3033af80159b3" title="Parses string into array of integers. " alt="" coords="456,197,603,224"/><area shape="rect" id="node26" href="namespacemolecules__idxs.html#a04b855bc2ff953cca9e0f59148070301" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="459,249,600,290"/><area shape="rect" id="node25" href="namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="691,56,815,83"/><area shape="rect" id="node27" href="namespacemolecules__idxs.html#a03fadc0f9923977bdde94e7a3e571159" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is &quot;on&quot; or &quot;off&quot;..." alt="" coords="667,158,839,199"/><area shape="rect" id="node28" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="889,107,1029,133"/><area shape="rect" id="node29" href="namespacemolecules__idxs.html#aa0401aabaf0d548c37f5f6d43e62245d" title="Fills molidxson and molidxsn_on based on their complements. " alt="" coords="677,223,829,265"/></map>
 </div>
 </p>
 
@@ -567,7 +579,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_icgraph.png" border="0" usemap="#namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_icgraph" alt=""/></div>
 <map name="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_icgraph" id="namespaceconfig_ae785f0a99abb988dda4458457bcc0e01_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="201,81,330,108"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="379,81,503,108"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="568,5,629,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="553,56,645,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="569,107,629,133"/><area shape="rect" id="node7" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="573,157,624,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="201,56,330,83"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="379,56,503,83"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="568,5,629,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="553,56,645,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="569,107,629,133"/></map>
 </div>
 </p>
 
@@ -595,14 +607,14 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01083">1083</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01096">1096</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ae488bf43899caf8c4c8f5d395efeec01_icgraph.png" border="0" usemap="#namespaceconfig_ae488bf43899caf8c4c8f5d395efeec01_icgraph" alt=""/></div>
 <map name="namespaceconfig_ae488bf43899caf8c4c8f5d395efeec01_icgraph" id="namespaceconfig_ae488bf43899caf8c4c8f5d395efeec01_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="215,107,339,133"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="708,157,769,184"/><area shape="rect" id="node6" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="495,5,545,32"/><area shape="rect" id="node7" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="419,478,621,519"/><area shape="rect" id="node8" href="namespacenulbad__calc.html#a08f8e56dc98436512aaeed06a726a91c" title="Reads spectrum file. " alt="" coords="185,376,370,403"/><area shape="rect" id="node10" href="namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="670,251,807,293"/><area shape="rect" id="node11" href="namespacesynthesis.html#af6dfd3c2d7d2be83e4bcc7e2472840c5" title="synthesis::synthesis_" alt="" coords="203,5,352,32"/><area shape="rect" id="node12" href="namespacereader__main.html#ab0340083926cd8b86e6a42dd62c7ee6b" title="Makes sure that read_main() has been called. " alt="" coords="207,310,347,351"/><area shape="rect" id="node15" href="namespacereader__modeles.html#a8d879e004ec98f0d3307f34ca59c932a" title="Reading routines and variable declarations for dfile:filetoh. " alt="" coords="204,478,351,519"/><area shape="rect" id="node16" href="namespacereader__gridsmap.html#a5e53f676bbb6b2b85b1ca556dfbf0f4a" title="Reads map of models: dfile:gridsmap. " alt="" coords="445,543,595,585"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="693,427,785,453"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="857,157,917,184"/><area shape="rect" id="node9" href="namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853" title="Initialization of this module. " alt="" coords="439,427,601,453"/><area shape="rect" id="node13" href="namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="440,309,600,336"/><area shape="rect" id="node14" href="namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28" title="Initializes x_* variables. " alt="" coords="428,361,612,402"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="458,86,582,113"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="708,36,769,62"/><area shape="rect" id="node6" href="namespaceinnewmarcs__calc.html#a5a692f151a38c6946284b7a2677248f2" title="Main routine of this module. " alt="" coords="419,203,621,244"/><area shape="rect" id="node7" href="namespacenulbad__calc.html#a08f8e56dc98436512aaeed06a726a91c" title="Reads spectrum file. " alt="" coords="185,254,370,281"/><area shape="rect" id="node9" href="namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="670,262,807,303"/><area shape="rect" id="node10" href="namespacereader__main.html#ab0340083926cd8b86e6a42dd62c7ee6b" title="Makes sure that read_main() has been called. " alt="" coords="207,138,347,179"/><area shape="rect" id="node13" href="namespacereader__modeles.html#a8d879e004ec98f0d3307f34ca59c932a" title="Reading routines and variable declarations for dfile:filetoh. " alt="" coords="204,423,351,464"/><area shape="rect" id="node14" href="namespacereader__gridsmap.html#a5e53f676bbb6b2b85b1ca556dfbf0f4a" title="Reads map of models: dfile:gridsmap. " alt="" coords="202,306,353,347"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="693,177,785,204"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="857,180,917,206"/><area shape="rect" id="node8" href="namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853" title="Initialization of this module. " alt="" coords="439,269,601,296"/><area shape="rect" id="node11" href="namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="440,36,600,62"/><area shape="rect" id="node12" href="namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28" title="Initializes x_* variables. " alt="" coords="428,138,612,179"/></map>
 </div>
 </p>
 
@@ -634,7 +646,7 @@ Here is the caller graph for this function:</div>
 
 <p>logging routine: prints variable and assigned value </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01093">1093</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01106">1106</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -650,7 +662,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a769185a6790e659a782cb1a5ae1c5f34_icgraph.png" border="0" usemap="#namespaceconfig_a769185a6790e659a782cb1a5ae1c5f34_icgraph" alt=""/></div>
 <map name="namespaceconfig_a769185a6790e659a782cb1a5ae1c5f34_icgraph" id="namespaceconfig_a769185a6790e659a782cb1a5ae1c5f34_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="441,120,586,161"/><area shape="rect" id="node9" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="203,159,391,186"/><area shape="rect" id="node10" href="namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="635,7,795,34"/><area shape="rect" id="node11" href="namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28" title="Initializes x_* variables. " alt="" coords="843,60,1027,101"/><area shape="rect" id="node12" href="namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853" title="Initialization of this module. " alt="" coords="217,210,378,236"/><area shape="rect" id="node14" href="namespacepfant__x.html#ab2805424feb9b416b8b851ca6f10483a" title="Initializes x_* variables. " alt="" coords="443,259,583,286"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="650,127,779,154"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="873,127,997,154"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="1091,26,1152,52"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="1075,110,1167,136"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="1091,170,1151,196"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="1096,223,1147,250"/><area shape="rect" id="node13" href="namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="445,188,582,229"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="441,70,586,111"/><area shape="rect" id="node8" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="203,85,391,112"/><area shape="rect" id="node9" href="namespacehydro2__x.html#abc7068d229c765256b33253ee95bc90e" title="Initializes x_* variables. " alt="" coords="635,5,795,32"/><area shape="rect" id="node10" href="namespaceinnewmarcs__x.html#a3f35348d405aa967eb1a95335a4b4d28" title="Initializes x_* variables. " alt="" coords="843,129,1027,170"/><area shape="rect" id="node11" href="namespacenulbad__calc.html#a58b84e520a0e031ee44a029b06f67853" title="Initialization of this module. " alt="" coords="217,191,378,217"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="650,77,779,104"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="873,77,997,104"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="1091,47,1152,73"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="1075,117,1167,144"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="1091,172,1151,199"/><area shape="rect" id="node12" href="namespacenulbad__calc.html#af3353ef9f82c8dbdfec0d2f724db6691" title="Main routine of this module. " alt="" coords="445,187,582,229"/></map>
 </div>
 </p>
 
@@ -697,7 +709,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01103">1103</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01116">1116</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -713,7 +725,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a791a64d940a6932e6a8163b792b48c7e_icgraph.png" border="0" usemap="#namespaceconfig_a791a64d940a6932e6a8163b792b48c7e_icgraph" alt=""/></div>
 <map name="namespaceconfig_a791a64d940a6932e6a8163b792b48c7e_icgraph" id="namespaceconfig_a791a64d940a6932e6a8163b792b48c7e_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="243,74,389,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="438,81,567,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="617,81,741,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="805,5,867,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="790,56,882,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="806,107,866,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="811,157,861,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="243,49,389,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="438,56,567,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="617,56,741,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="805,5,867,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="790,56,882,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="806,107,866,133"/></map>
 </div>
 </p>
 
@@ -753,7 +765,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01118">1118</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01131">1131</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -769,7 +781,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a55d668288b4fec89ba1f3e69e47498eb_icgraph.png" border="0" usemap="#namespaceconfig_a55d668288b4fec89ba1f3e69e47498eb_icgraph" alt=""/></div>
 <map name="namespaceconfig_a55d668288b4fec89ba1f3e69e47498eb_icgraph" id="namespaceconfig_a55d668288b4fec89ba1f3e69e47498eb_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="222,74,367,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="417,81,546,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="595,81,719,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="784,5,845,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="769,56,861,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="785,107,845,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="789,157,840,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="222,49,367,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="417,56,546,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="595,56,719,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="784,5,845,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="769,56,861,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="785,107,845,133"/></map>
 </div>
 </p>
 
@@ -809,7 +821,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01140">1140</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01153">1153</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -825,7 +837,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_aaf13f979d5ef60e9895d135a9be1f766_icgraph.png" border="0" usemap="#namespaceconfig_aaf13f979d5ef60e9895d135a9be1f766_icgraph" alt=""/></div>
 <map name="namespaceconfig_aaf13f979d5ef60e9895d135a9be1f766_icgraph" id="namespaceconfig_aaf13f979d5ef60e9895d135a9be1f766_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="238,74,383,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="433,81,562,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="611,81,735,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="800,5,861,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="785,56,877,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="801,107,861,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="805,157,856,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="238,49,383,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="433,56,562,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="611,56,735,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="800,5,861,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="785,56,877,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="801,107,861,133"/></map>
 </div>
 </p>
 
@@ -865,7 +877,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01162">1162</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01175">1175</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -881,7 +893,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a9133709af84c08fcceab3231652fe8a8_icgraph.png" border="0" usemap="#namespaceconfig_a9133709af84c08fcceab3231652fe8a8_icgraph" alt=""/></div>
 <map name="namespaceconfig_a9133709af84c08fcceab3231652fe8a8_icgraph" id="namespaceconfig_a9133709af84c08fcceab3231652fe8a8_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="238,74,383,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="433,81,562,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="611,81,735,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="800,5,861,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="785,56,877,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="801,107,861,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="805,157,856,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="238,49,383,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="433,56,562,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="611,56,735,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="800,5,861,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="785,56,877,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="801,107,861,133"/></map>
 </div>
 </p>
 
@@ -923,7 +935,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01188">1188</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01201">1201</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -939,7 +951,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a00f9e5b4c1641f0dc4316782bd686c61_icgraph.png" border="0" usemap="#namespaceconfig_a00f9e5b4c1641f0dc4316782bd686c61_icgraph" alt=""/></div>
 <map name="namespaceconfig_a00f9e5b4c1641f0dc4316782bd686c61_icgraph" id="namespaceconfig_a00f9e5b4c1641f0dc4316782bd686c61_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="246,74,391,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="441,81,570,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="619,81,743,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="808,5,869,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="793,56,885,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="809,107,869,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="813,157,864,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="246,49,391,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="441,56,570,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="619,56,743,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="808,5,869,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="793,56,885,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="809,107,869,133"/></map>
 </div>
 </p>
 
@@ -969,14 +981,14 @@ Here is the caller graph for this function:</div>
 <p>Parses and validates all command-line arguments. </p>
 <dl class="section note"><dt>Note</dt><dd>If finds "-h" or "--help", will display help text and halt. </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01222">1222</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01235">1235</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_cgraph.png" border="0" usemap="#namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_cgraph" alt=""/></div>
 <map name="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_cgraph" id="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_cgraph">
-<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="200,81,315,108"/><area shape="rect" id="node6" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="644,208,772,235"/><area shape="rect" id="node7" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="185,606,330,647"/><area shape="rect" id="node16" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="852,563,980,589"/><area shape="rect" id="node17" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="619,461,797,488"/><area shape="rect" id="node31" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="192,895,323,921"/><area shape="rect" id="node3" href="namespaceoptions2.html#a8da1a2829b72496f27acfc7c0d89dcdd" title="Logs error and halts This routine was created to standardize the &quot;giving error&quot; behaviuor. " alt="" coords="407,5,543,32"/><area shape="rect" id="node4" href="config_8f90.html#ae36bdb92a3c22e440e572d5499b51a32" title="lookup_long" alt="" coords="429,56,520,83"/><area shape="rect" id="node5" href="config_8f90.html#a14e9a0739775a8c0f4d77ca684276208" title="lookup_short" alt="" coords="427,107,523,133"/><area shape="rect" id="node8" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="411,259,538,285"/><area shape="rect" id="node10" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="655,613,761,640"/><area shape="rect" id="node11" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="633,1051,783,1093"/><area shape="rect" id="node15" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="379,563,570,589"/><area shape="rect" id="node18" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="416,411,533,437"/><area shape="rect" id="node19" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="381,1040,569,1067"/><area shape="rect" id="node20" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="383,309,566,336"/><area shape="rect" id="node21" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="421,664,529,691"/><area shape="rect" id="node22" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="661,664,755,691"/><area shape="rect" id="node23" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="391,461,559,488"/><area shape="rect" id="node24" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="417,765,533,792"/><area shape="rect" id="node25" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="417,816,533,843"/><area shape="rect" id="node26" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="383,512,566,539"/><area shape="rect" id="node27" href="namespacemolecules__ids.html#a40e32ddd83d113f50e4aa21fb5672725" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="407,867,542,909"/><area shape="rect" id="node9" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="643,259,773,285"/><area shape="rect" id="node12" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="858,949,974,976"/><area shape="rect" id="node13" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1035,975,1168,1001"/><area shape="rect" id="node14" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1217,975,1298,1001"/><area shape="rect" id="node28" href="namespacemolecules__ids.html#a3caf9c6a343ea9f87b0bd9a195d39e9e" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is &quot;on&quot; or &quot;off&quot;..." alt="" coords="625,766,791,807"/><area shape="rect" id="node29" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="846,1000,986,1027"/><area shape="rect" id="node30" href="namespacemolecules__ids.html#a5007abae4b9ea77df9ee1ed8260f0c56" title="Fills molidson and molidsn_on based on their complements. " alt="" coords="635,934,781,975"/></map>
+<area shape="rect" id="node2" href="namespaceoptions2.html#ac91fbb590357cefdf00ca6c5f5f8e5a8" title="Parse command line options. Options and their arguments must come before all non&#45;option arguments..." alt="" coords="200,81,315,108"/><area shape="rect" id="node6" href="namespaceconfig.html#a7c8f188a708db4c42251549b0d3c0141" title="Returns whether or not the option is applicable to the executable running. " alt="" coords="644,157,772,184"/><area shape="rect" id="node7" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="185,597,330,638"/><area shape="rect" id="node17" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="1073,667,1201,693"/><area shape="rect" id="node18" href="namespaceoptions2.html#a4eaeae52e216f882c983bc5e0f9e99ca" title="Returns option name with single quotes. " alt="" coords="619,933,797,960"/><area shape="rect" id="node35" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="1072,883,1203,909"/><area shape="rect" id="node3" href="namespaceoptions2.html#a8da1a2829b72496f27acfc7c0d89dcdd" title="Logs error and halts This routine was created to standardize the &quot;giving error&quot; behaviuor. " alt="" coords="407,56,543,83"/><area shape="rect" id="node4" href="config_8f90.html#ae36bdb92a3c22e440e572d5499b51a32" title="lookup_long" alt="" coords="429,107,520,133"/><area shape="rect" id="node5" href="config_8f90.html#a14e9a0739775a8c0f4d77ca684276208" title="lookup_short" alt="" coords="427,5,523,32"/><area shape="rect" id="node8" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="411,208,538,235"/><area shape="rect" id="node10" href="namespacewelcome.html#a34a2afe87d882af70c341a607b0a1fdf" title="welcome::play" alt="" coords="421,629,528,656"/><area shape="rect" id="node11" href="namespacemisc.html#a56a22914118ceb4a024e389e0d733fd2" title="Converts a string to lower case. " alt="" coords="655,731,761,757"/><area shape="rect" id="node12" href="namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="633,310,783,351"/><area shape="rect" id="node16" href="namespaceconfig.html#a00f9e5b4c1641f0dc4316782bd686c61" title="Converts string to logical, halting the program if conversion fails. " alt="" coords="379,832,570,859"/><area shape="rect" id="node19" href="namespacemisc.html#a06c1982771eb7304240aca2ad4d89533" title="Converts a logical value to string. " alt="" coords="416,579,533,605"/><area shape="rect" id="node20" href="namespaceconfig.html#a791a64d940a6932e6a8163b792b48c7e" title="Assigns option argument to filename variable. " alt="" coords="381,360,569,387"/><area shape="rect" id="node21" href="namespaceconfig.html#a9133709af84c08fcceab3231652fe8a8" title="Converts string to real*4, halting the program if conversion fails. " alt="" coords="383,1035,566,1061"/><area shape="rect" id="node22" href="namespacemisc.html#acc504c35af4b1e7b736c9dac4dcd246e" title="Converts a real*8 number to string. " alt="" coords="654,511,762,537"/><area shape="rect" id="node23" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="885,652,979,679"/><area shape="rect" id="node24" href="namespaceconfig.html#a55d668288b4fec89ba1f3e69e47498eb" title="Converts string to integer, halting the program if conversion fails. " alt="" coords="391,883,559,909"/><area shape="rect" id="node25" href="namespacemisc.html#a0e0403a455ddc9de32ee7eeee26e7bca" title="Converts a logical value to 0/1. " alt="" coords="417,781,533,808"/><area shape="rect" id="node26" href="namespacemisc.html#a4ac7fb4dd7d137624b3c7544a4f3d14a" title="Converts an integer to logical. Accepts only 0 or 1. " alt="" coords="650,680,766,707"/><area shape="rect" id="node27" href="namespaceconfig.html#aaf13f979d5ef60e9895d135a9be1f766" title="Converts string to real*8, halting the program if conversion fails. " alt="" coords="383,933,566,960"/><area shape="rect" id="node28" href="namespacemolecules__idxs.html#a1c6acb7d1d6eb08076250e9f6b437589" title="Parses string into integer array and adds molecule ids to list of &quot;off&quot; molecules. " alt="" coords="405,411,544,453"/><area shape="rect" id="node9" href="namespaceoptions2.html#a1a899bfef9dbc8c124499a849f5e60f6" title="Print an option in the style of a man page. I.e. " alt="" coords="643,208,773,235"/><area shape="rect" id="node13" href="namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="874,317,990,344"/><area shape="rect" id="node14" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="1256,571,1389,597"/><area shape="rect" id="node15" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="1438,571,1519,597"/><area shape="rect" id="node29" href="namespacemisc.html#ae7cc869bb6dd4df7d6d3033af80159b3" title="Parses string into array of integers. " alt="" coords="635,460,781,487"/><area shape="rect" id="node31" href="namespacemolecules__idxs.html#a04b855bc2ff953cca9e0f59148070301" title="Adds molecule id to list of &quot;off&quot; molecules. " alt="" coords="637,394,779,435"/><area shape="rect" id="node30" href="namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="870,601,994,628"/><area shape="rect" id="node32" href="namespacemolecules__idxs.html#a03fadc0f9923977bdde94e7a3e571159" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is &quot;on&quot; or &quot;off&quot;..." alt="" coords="846,535,1018,577"/><area shape="rect" id="node33" href="namespacelogging.html#a145c6bf29be38b84aff4f4b72bbd60b5" title="Logs message as WARNING. " alt="" coords="1067,475,1207,501"/><area shape="rect" id="node34" href="namespacemolecules__idxs.html#aa0401aabaf0d548c37f5f6d43e62245d" title="Fills molidxson and molidxsn_on based on their complements. " alt="" coords="856,470,1008,511"/></map>
 </div>
 </p>
 
@@ -985,7 +997,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_icgraph.png" border="0" usemap="#namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_icgraph" alt=""/></div>
 <map name="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_icgraph" id="namespaceconfig_ad15dc0a125fc4bb25c7f2395f72967c9_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="185,81,309,108"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="373,5,435,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="358,56,450,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="374,107,434,133"/><area shape="rect" id="node6" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="379,157,429,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="185,56,309,83"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="373,5,435,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="358,56,450,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="374,107,434,133"/></map>
 </div>
 </p>
 
@@ -1015,14 +1027,14 @@ Here is the caller graph for this function:</div>
 
 <p>Returns whether or not the option is applicable to the executable running. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01255">1255</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01268">1268</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a7c8f188a708db4c42251549b0d3c0141_icgraph.png" border="0" usemap="#namespaceconfig_a7c8f188a708db4c42251549b0d3c0141_icgraph" alt=""/></div>
 <map name="namespaceconfig_a7c8f188a708db4c42251549b0d3c0141_icgraph" id="namespaceconfig_a7c8f188a708db4c42251549b0d3c0141_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="553,81,682,108"/><area shape="rect" id="node8" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="182,107,309,133"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="731,81,855,108"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="920,5,981,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="905,56,997,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="921,107,981,133"/><area shape="rect" id="node7" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="925,157,976,184"/><area shape="rect" id="node9" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="358,103,503,145"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="553,56,682,83"/><area shape="rect" id="node7" href="namespaceconfig.html#abc0228c45bade97c912ef55cc7d84e0e" title="Writes help to particular unit. " alt="" coords="182,81,309,108"/><area shape="rect" id="node3" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="731,56,855,83"/><area shape="rect" id="node4" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="920,5,981,32"/><area shape="rect" id="node5" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="905,56,997,83"/><area shape="rect" id="node6" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="921,107,981,133"/><area shape="rect" id="node8" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="358,78,503,119"/></map>
 </div>
 </p>
 
@@ -1058,7 +1070,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01266">1266</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01279">1279</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1074,7 +1086,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_abc0228c45bade97c912ef55cc7d84e0e_icgraph.png" border="0" usemap="#namespaceconfig_abc0228c45bade97c912ef55cc7d84e0e_icgraph" alt=""/></div>
 <map name="namespaceconfig_abc0228c45bade97c912ef55cc7d84e0e_icgraph" id="namespaceconfig_abc0228c45bade97c912ef55cc7d84e0e_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="182,74,327,115"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="377,81,506,108"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="555,81,679,108"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="744,5,805,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="729,56,821,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="745,107,805,133"/><area shape="rect" id="node8" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="749,157,800,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="182,49,327,90"/><area shape="rect" id="node3" href="namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="377,56,506,83"/><area shape="rect" id="node4" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="555,56,679,83"/><area shape="rect" id="node5" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="744,5,805,32"/><area shape="rect" id="node6" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="729,56,821,83"/><area shape="rect" id="node7" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="745,107,805,133"/></map>
 </div>
 </p>
 
@@ -1104,7 +1116,7 @@ Here is the caller graph for this function:</div>
 <p>Performs a series of checks to avoid programming errors while defining the command-line options. </p>
 <p>This subroutine must be called at the end of the <a class="el" href="namespaceconfig.html#ad865276fd39576917040625509dfbb3c" title="Initialization of command-line options. ">init_options()</a> of a config module </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l01292">1292</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l01305">1305</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1120,7 +1132,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceconfig_a0eb008a11cd2fbe82aebc2b603ad5151_icgraph.png" border="0" usemap="#namespaceconfig_a0eb008a11cd2fbe82aebc2b603ad5151_icgraph" alt=""/></div>
 <map name="namespaceconfig_a0eb008a11cd2fbe82aebc2b603ad5151_icgraph" id="namespaceconfig_a0eb008a11cd2fbe82aebc2b603ad5151_icgraph">
-<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="214,81,338,108"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="403,5,464,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="387,56,479,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="403,107,463,133"/><area shape="rect" id="node6" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b" title="PFANT main executable: spectral synthesis. " alt="" coords="408,157,459,184"/></map>
+<area shape="rect" id="node2" href="namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="214,56,338,83"/><area shape="rect" id="node3" href="hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="403,5,464,32"/><area shape="rect" id="node4" href="innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="387,56,479,83"/><area shape="rect" id="node5" href="nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="403,107,463,133"/></map>
 </div>
 </p>
 
@@ -1139,7 +1151,7 @@ Here is the caller graph for this function:</div>
 
 <p>option was handled successfully </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00444">444</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00448">448</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1155,7 +1167,7 @@ Here is the caller graph for this function:</div>
 
 <p>error handling option, e.g. invalid argument </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00444">444</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00448">448</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1171,7 +1183,7 @@ Here is the caller graph for this function:</div>
 
 <p>handler not responsible for handling that option </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00444">444</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00448">448</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1187,7 +1199,7 @@ Here is the caller graph for this function:</div>
 
 <p>Name of executable. Case doesn't matter. It will be converted to all uppercase or lowercave, depending on the use. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00455">455</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00459">459</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1203,7 +1215,7 @@ Here is the caller graph for this function:</div>
 
 <p>command-line option &ndash;wdir </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00467">467</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00471">471</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1231,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_main </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00468">468</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00472">472</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1235,7 +1247,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_progress </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00469">469</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00473">473</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1251,7 +1263,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;logging_fn_dump </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00470">470</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00474">474</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1267,7 +1279,7 @@ Here is the caller graph for this function:</div>
 
 <p>option --logging_screen </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00471">471</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00475">475</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1281,9 +1293,25 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>option &ndash;logging_dump </p>
+<p>option --logging_dump </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00471">471</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00475">475</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afb019d9bc85a96a18a2ae0b0ac20ee1e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">logical config::config_explain = .false.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>option &ndash;explain </p>
+
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00475">475</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1299,7 +1327,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_modeles </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00477">477</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00482">482</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1308,14 +1336,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">logical config::config_hmap = .false.</td>
+          <td class="memname">logical config::config_hmap = .true.</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>option: &ndash;hmap </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00482">482</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00487">487</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1331,7 +1359,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_hmap </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00483">483</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00488">488</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1347,7 +1375,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_absoru2 </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00483">483</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00488">488</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1363,7 +1391,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;llzero </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00486">486</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00491">491</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1379,7 +1407,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;llfin </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00487">487</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00492">492</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1393,7 +1421,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00492">492</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00497">497</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1409,7 +1437,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;open_status </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00493">493</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00498">498</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1425,7 +1453,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_moddat </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00494">494</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00499">499</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1441,7 +1469,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_gridslist </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00494">494</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00499">499</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1457,7 +1485,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;modcode </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00497">497</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00502">502</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1473,7 +1501,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;tirb </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00499">499</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00504">504</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1489,7 +1517,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;teff </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00501">501</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00506">506</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1505,7 +1533,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;glog </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00503">503</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00508">508</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1521,7 +1549,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;asalog. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00505">505</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00510">510</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1537,7 +1565,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;inum </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00507">507</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00512">512</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1554,7 +1582,7 @@ Here is the caller graph for this function:</div>
 <p>Option: &ndash;zph. </p>
 <dl class="section note"><dt>Note</dt><dd>(historical note) This value was being read from an altered-format dfile:absoru2 which was incompatible with the pfant executable. Therefore, it has been assigned a default value and this command-line option was added </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00516">516</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00521">521</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1575,7 +1603,7 @@ Here is the caller graph for this function:</div>
 <li>1 true </li>
 </ul>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00525">525</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00530">530</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1592,7 +1620,7 @@ Here is the caller graph for this function:</div>
 <p>option: &ndash;kik </p>
 <dl class="section note"><dt>Note</dt><dd>This was called "IOP" but was changed to match variable name in pfant executable </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00528">528</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00533">533</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1610,7 +1638,7 @@ Here is the caller graph for this function:</div>
 <p>This is a tristate variable, as config_ptdisk.</p>
 <dl class="section note"><dt>Note</dt><dd>Default value taken from M.Trevisan's pfant12.R script </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00534">534</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00539">539</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1627,7 +1655,7 @@ Here is the caller graph for this function:</div>
 <p>option: &ndash;kq </p>
 <dl class="section note"><dt>Note</dt><dd>Default taken from M.Trevisan's pfant12.R script </dd></dl>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00537">537</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00542">542</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1643,7 +1671,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;nomplot </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00539">539</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00544">544</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1659,7 +1687,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;vvt </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00541">541</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00546">546</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1675,7 +1703,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --na </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00542">542</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00547">547</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1691,7 +1719,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;nb </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00542">542</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00547">547</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1707,7 +1735,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --clam </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00545">545</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00550">550</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1723,7 +1751,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --kiex </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00545">545</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00550">550</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1739,7 +1767,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;c1 </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00545">545</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00550">550</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1755,7 +1783,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_dissoc </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1771,7 +1799,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_partit </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1787,7 +1815,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_abonds </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1803,7 +1831,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_atoms </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1819,7 +1847,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_molecules </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1828,14 +1856,14 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">character*64 config::config_fn_lines = '<a class="el" href="pfant_8f90.html#a6d3aa520ee405099b73da6633cbb5e6b">lines.pfant</a>'</td>
+          <td class="memname">character*64 config::config_fn_lines = 'lines.pfant'</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>option: --fn_lines </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1851,7 +1879,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_log </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1867,7 +1895,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;flprefix </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00554">554</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00559">559</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1883,7 +1911,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;interp </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00563">563</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00568">568</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1899,7 +1927,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --norm </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00568">568</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00573">573</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1915,7 +1943,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --flam </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00568">568</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00573">573</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1931,7 +1959,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;convol </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00568">568</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00573">573</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1947,7 +1975,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fwhm </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00574">574</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00579">579</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1963,7 +1991,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;pat </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00574">574</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00579">579</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1979,7 +2007,7 @@ Here is the caller graph for this function:</div>
 
 <p>option: --fn_flux </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00577">577</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00582">582</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -1995,7 +2023,23 @@ Here is the caller graph for this function:</div>
 
 <p>option: &ndash;fn_cv </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00577">577</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00582">582</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a933d28c7b24d95b32bda9da6bba9e4de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">integer, parameter config::unit_explain = 145</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unit to write to "explain" file (file containing debugging information) </p>
+
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00588">588</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2011,7 +2055,7 @@ Here is the caller graph for this function:</div>
 
 <p>List of command-line options. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00592">592</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00598">598</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2027,7 +2071,7 @@ Here is the caller graph for this function:</div>
 
 <p>Maximum valid index of the options variable. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00594">594</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00600">600</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2043,7 +2087,7 @@ Here is the caller graph for this function:</div>
 
 <p>indentation string to be used in help text at will </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00601">601</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00607">607</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2059,7 +2103,7 @@ Here is the caller graph for this function:</div>
 
 <p>Message to be used in help text at will. </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00603">603</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00609">609</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2075,7 +2119,7 @@ Here is the caller graph for this function:</div>
 
 <p>Input directory without trailling spaces and ending with a "/". </p>
 
-<p>Definition at line <a class="el" href="config_8f90_source.html#l00605">605</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
+<p>Definition at line <a class="el" href="config_8f90_source.html#l00611">611</a> of file <a class="el" href="config_8f90_source.html">config.f90</a>.</p>
 
 </div>
 </div>
@@ -2085,7 +2129,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceconfig.html">config</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

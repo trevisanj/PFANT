@@ -30,6 +30,5 @@ var misc__math_8f90 =
     [ "c2", "misc__math_8f90.html#a8e6decc4b70f0757676cdb244a580e1a", null ],
     [ "c3", "misc__math_8f90.html#a4d6411f932f21e1987186b848eb7e0a1", null ],
     [ "mode_flinh", "misc__math_8f90.html#a63d235b149e8306b4ffe5773704c1842", null ],
-    [ "mode_flin1", "misc__math_8f90.html#afcb79e683ff3c081f07033b62cf453f4", null ],
-    [ "dummy_tauhd", "misc__math_8f90.html#aa4a336caf347c7846a25afd324166d3f", null ]
+    [ "mode_flin1", "misc__math_8f90.html#afcb79e683ff3c081f07033b62cf453f4", null ]
 ];

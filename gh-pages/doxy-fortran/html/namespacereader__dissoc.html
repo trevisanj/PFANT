@@ -123,6 +123,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a1722fcdc13c1efa31678bbd913681473"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473">read_dissoc</a> (path_to_file)</td></tr>
 <tr class="memdesc:a1722fcdc13c1efa31678bbd913681473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads dissoc.dat to fill variables dissoc_*.  <a href="#a1722fcdc13c1efa31678bbd913681473">More...</a><br /></td></tr>
 <tr class="separator:a1722fcdc13c1efa31678bbd913681473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1d848d34d64bcfc09283a8c2fd5cca03">find_atomic_symbol_dissoc</a> (symbol, flag_ignore)</td></tr>
+<tr class="memdesc:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for atomic symbol inside dissoc_elems.  <a href="#a1d848d34d64bcfc09283a8c2fd5cca03">More...</a><br /></td></tr>
+<tr class="separator:a1d848d34d64bcfc09283a8c2fd5cca03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -163,10 +166,10 @@ Variables</h2></td></tr>
 <tr class="memdesc:a8142a3fe5da3bebf79590c4c2cc6414d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table field 07.  <a href="#a8142a3fe5da3bebf79590c4c2cc6414d">More...</a><br /></td></tr>
 <tr class="separator:a8142a3fe5da3bebf79590c4c2cc6414d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1de0712c123947c94d44b5523ac337f9"><td class="memItemLeft" align="right" valign="top">integer, dimension(5, max_dissoc_nmol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a1de0712c123947c94d44b5523ac337f9">dissoc_nelem</a></td></tr>
-<tr class="memdesc:a1de0712c123947c94d44b5523ac337f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 08, 10, ...  <a href="#a1de0712c123947c94d44b5523ac337f9">More...</a><br /></td></tr>
+<tr class="memdesc:a1de0712c123947c94d44b5523ac337f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 08, 10, ... (atomic number)  <a href="#a1de0712c123947c94d44b5523ac337f9">More...</a><br /></td></tr>
 <tr class="separator:a1de0712c123947c94d44b5523ac337f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a260d4614ba62eda4350c899a39536f9c"><td class="memItemLeft" align="right" valign="top">integer, dimension(5, max_dissoc_nmol)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a260d4614ba62eda4350c899a39536f9c">dissoc_natom</a></td></tr>
-<tr class="memdesc:a260d4614ba62eda4350c899a39536f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 09, 11, ...  <a href="#a260d4614ba62eda4350c899a39536f9c">More...</a><br /></td></tr>
+<tr class="memdesc:a260d4614ba62eda4350c899a39536f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecules table fields 09, 11, ... (number of atoms)  <a href="#a260d4614ba62eda4350c899a39536f9c">More...</a><br /></td></tr>
 <tr class="separator:a260d4614ba62eda4350c899a39536f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e3bdf9dd606188eeb10686551af2f93"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereader__dissoc.html#a4e3bdf9dd606188eeb10686551af2f93">dissoc_nmol</a></td></tr>
 <tr class="separator:a4e3bdf9dd606188eeb10686551af2f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,11 +199,11 @@ Variables</h2></td></tr>
 
 <p>Reads dissoc.dat to fill variables dissoc_*. </p>
 <dl class="section attention"><dt>Attention</dt><dd>This file must end with a <b>blank row</b> so that the routine can detect the end of the file. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000081">Todo:</a></b></dt><dd><p class="startdd">Various tests: </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000082">Todo:</a></b></dt><dd><p class="startdd">Various tests: </p>
 <p>- mismatched NMETAL and metal rows </p>
 <p class="enddd">- check if NMETAL and NMOL match what they are supposed to (assertions in test) </p>
 </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000082">Todo:</a></b></dt><dd>PROPOSE: use READ()'s "END=" option </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000083">Todo:</a></b></dt><dd>PROPOSE: use READ()'s "END=" option </dd></dl>
 
 <p>Definition at line <a class="el" href="readers_8f90_source.html#l00068">68</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
@@ -209,7 +212,62 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacereader__dissoc_a1722fcdc13c1efa31678bbd913681473_cgraph.png" border="0" usemap="#namespacereader__dissoc_a1722fcdc13c1efa31678bbd913681473_cgraph" alt=""/></div>
 <map name="namespacereader__dissoc_a1722fcdc13c1efa31678bbd913681473_cgraph" id="namespacereader__dissoc_a1722fcdc13c1efa31678bbd913681473_cgraph">
-<area shape="rect" id="node2" href="namespacemisc.html#a026e76068a6830c8c15aa1a58bd91c92" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="189,5,328,46"/><area shape="rect" id="node4" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="195,71,323,97"/><area shape="rect" id="node7" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="211,121,306,148"/><area shape="rect" id="node8" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="193,172,324,199"/><area shape="rect" id="node3" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="389,12,497,39"/><area shape="rect" id="node5" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="376,121,509,148"/><area shape="rect" id="node6" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="558,121,639,148"/></map>
+<area shape="rect" id="node2" href="namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="189,47,328,89"/><area shape="rect" id="node3" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="376,5,504,32"/><area shape="rect" id="node6" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="393,108,487,135"/><area shape="rect" id="node8" href="namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="193,164,324,191"/><area shape="rect" id="node7" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="386,56,494,83"/><area shape="rect" id="node4" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="552,83,685,109"/><area shape="rect" id="node5" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="734,83,815,109"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a1d848d34d64bcfc09283a8c2fd5cca03"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">integer function reader_dissoc::find_atomic_symbol_dissoc </td>
+          <td>(</td>
+          <td class="paramtype">character(*), intent(in)&#160;</td>
+          <td class="paramname"><em>symbol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in), optional&#160;</td>
+          <td class="paramname"><em>flag_ignore</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Searches for atomic symbol inside dissoc_elems. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">symbol</td><td>Atomic symbol, case-insensitive</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag_ignore</td><td>(optional, defaults to .false.) If set, will return ZERO if symbol is not found. The default behaviour is to halt the program. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="readers_8f90_source.html#l00193">193</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_cgraph.png" border="0" usemap="#namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_cgraph" alt=""/></div>
+<map name="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_cgraph" id="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_cgraph">
+<area shape="rect" id="node2" href="namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="216,53,355,94"/><area shape="rect" id="node3" href="namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="403,5,531,32"/><area shape="rect" id="node6" href="namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="419,57,514,84"/><area shape="rect" id="node7" href="namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="413,108,521,135"/><area shape="rect" id="node4" href="namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="579,5,712,32"/><area shape="rect" id="node5" href="logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="761,5,842,32"/></map>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_icgraph.png" border="0" usemap="#namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_icgraph" alt=""/></div>
+<map name="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_icgraph" id="namespacereader__dissoc_a1d848d34d64bcfc09283a8c2fd5cca03_icgraph">
+<area shape="rect" id="node2" href="namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. " alt="" coords="217,5,357,46"/></map>
 </div>
 </p>
 
@@ -418,7 +476,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Molecules table fields 08, 10, ... </p>
+<p>Molecules table fields 08, 10, ... (atomic number) </p>
 
 <p>Definition at line <a class="el" href="readers_8f90_source.html#l00044">44</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
@@ -434,7 +492,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Molecules table fields 09, 11, ... </p>
+<p>Molecules table fields 09, 11, ... (number of atoms) </p>
 
 <p>Definition at line <a class="el" href="readers_8f90_source.html#l00044">44</a> of file <a class="el" href="readers_8f90_source.html">readers.f90</a>.</p>
 
@@ -496,7 +554,7 @@ Here is the call graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacereader__dissoc.html">reader_dissoc</a></li>
-    <li class="footer">Generated on Thu Sep 3 2015 10:01:08 for PFANT by
+    <li class="footer">Generated on Mon Oct 19 2015 17:14:53 for PFANT by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>
