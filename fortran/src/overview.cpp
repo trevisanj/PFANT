@@ -7,12 +7,10 @@
 Clone from github
 
 @code
-git clone https://github.com/trevisanj/pfant
+git clone https://github.com/trevisanj/PFANT
 @endcode
 
 or download <a href="https://github.com/trevisanj/pfant/archive/master.zip">this zip file</a>.
-
-Henceforth, the symbol @c "%" denotes the directory created during installation.
 
 @subsection install_path Setting the system path
 
@@ -20,10 +18,14 @@ Add the following directories to your system path:
 @li %/fortran/bin
 @li %/pyfant/scripts
 
+, where the symbol @c "%" denotes the directory created during installation.
+
+
 Add the following to your PYTHONPATH variable:
 @li %/pyfant
 
-@note If you run on Linux, the script %/add_paths.py can be handy.
+@note If you run on Linux, the script %/add_paths.py may be used to attempt to set
+these variables automatically.
 
 @code
 $ ./add_paths.py --tcsh  # if you use the tcsh shell
@@ -32,17 +34,26 @@ $ ./add_paths.py --bash  # if you use the bash shell
 
 @subsection required Required software
 
+Applications:
+
 @verbatim
-What                          Why?                       How to install
-----------------------------------------------------------------------------------
-gfortran, make                 Compile the Fortran code
-
-python 2.7                     run the Python scripts
-
-matplotlib (python package)    requirement for pyfant
-
-fortranformat (python package) requirement for pyfant   pip install fortranformat
+What              Why?
+-------------------------------------------------------------------------------------
+git               clone repository at github
+gfortran, make    compile the Fortran code
+Python 2.7        use PyFANT
+pip               install fortranformat Python package
 @endverbatim
+
+Python packages:
+
+@verbatim
+What              Recommended way to install
+-------------------------------------------------------------------------------------
+matplotlib        $ sudo apt-get install python-matplotlib  # Debian-based Linux
+pyqt4             $ sudo apt-get install python-qt4  # Debian-based Linux
+@li fortranformat $ sudo pip install fortranformat  # Requires pip
+
 
 
 @section tree Directory
@@ -63,13 +74,14 @@ Here is an incomplete listing of the directory tree.
 │   │   ├── nulbad
 │   │   └── pfant
 │   └── src                      Fortran and documentation source files
-└── pyfant                       Python layer
-    ├── scripts                  command-line tools
+└── pyfant                       PyFANT root
+    ├── scripts                  command-line tools, e.g.,
     │   ├── plot_filetoh.py      plots hydrogen lines in 3D
     │   ├── plot_mod_record.py   plots atmospheric model
     │   ├── plot_mod_records.py  plots NEWMARCS grid in 3D
     │   ├── plot_spectrum.py     plots synthetic spectra
-    │   └── run_4exes.py         combo-runs innewmarcs, hydro2, pfant, nulbad
+    │   ├── mled.py              molecular lines editor
+    │   └── run4.py              combo-runs innewmarcs, hydro2, pfant, nulbad
     │
     └── pyfant         package to operate PFANT using Python
 @endverbatim
@@ -173,17 +185,11 @@ or
 
 This should create four executables in the bin directory.
 
-Also, individual makefiles are available for each (platform)x(executable),
-for example, the following will compile pfant on Linux:
-
-@code
-$ make -f makefile_linux_pfant
-@endcode
 
 @subsection test_bin Running with shipped data
 
 Now create a new directory somewhere *out of the "%" directory* and copy the whole
-contents of the %/data/sun
+contents of the %/data/sun-complete
 
 @par Important
 Don't run commands inside %/data/sun. This is part of the repository and should be
@@ -194,8 +200,8 @@ commands:
 
 @code
 $ innewmarcs
-$ hydro2 --hmap True
-$ pfant --hmap True
+$ hydro2
+$ pfant
 $ nulbad
 @endcode
 

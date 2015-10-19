@@ -16,3 +16,12 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY org.gna.eclox.core 4 0 2015-10-19 17:10:30.763
 !MESSAGE : invalid custom doxygen identifier found.
+!SESSION 2015-10-19 19:49:56.036 -----------------------------------------------
+eclipse.buildId=debbuild
+java.version=1.7.0_65
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2015-10-19 19:50:03.766
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
