@@ -1,0 +1,3 @@
+# There is no point in versioning this, since it is just a temporary directory.
+# Contents are transferred using the script deploy_doxy-fortran.sh
+doxy-fortran

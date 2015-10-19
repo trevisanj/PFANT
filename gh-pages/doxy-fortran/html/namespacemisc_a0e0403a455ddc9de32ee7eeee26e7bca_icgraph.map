@@ -1,8 +1,0 @@
-<map id="misc::logical2int" name="misc::logical2int">
-<area shape="rect" id="node2" href="$namespaceconfig.html#ae785f0a99abb988dda4458457bcc0e01" title="Handles limited set of options. " alt="" coords="171,49,317,90"/>
-<area shape="rect" id="node3" href="$namespaceconfig.html#ad15dc0a125fc4bb25c7f2395f72967c9" title="Parses and validates all command&#45;line arguments. " alt="" coords="366,56,495,83"/>
-<area shape="rect" id="node4" href="$namespaceconfig.html#a18ef2bb8c5d4d83be0bde27a470ad65e" title="Initialization of this module. " alt="" coords="545,56,669,83"/>
-<area shape="rect" id="node5" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="733,5,795,32"/>
-<area shape="rect" id="node6" href="$innewmarcs_8f90.html#a0c25c8798b248ce7840bb628bac71800" title="INNEWMARCS. " alt="" coords="718,56,810,83"/>
-<area shape="rect" id="node7" href="$nulbad_8f90.html#ae442e45d9d86ab1e15e85608517dd13d" title="programme NULBT=NULBAD_SQ " alt="" coords="734,107,794,133"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="filters::filter_molecules" name="filters::filter_molecules">
-<area shape="rect" id="node2" href="$namespacemolecules__ids.html#a3caf9c6a343ea9f87b0bd9a195d39e9e" title="Returns .TRUE. or .FALSE. depending on whether molecule represented by molid is &quot;on&quot; or &quot;off&quot;..." alt="" coords="208,5,373,46"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="421,12,549,39"/>
-<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="597,12,731,39"/>
-<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="779,12,861,39"/>
-</map>

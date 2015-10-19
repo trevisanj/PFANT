@@ -1,7 +1,0 @@
-<map id="innewmarcs_calc::readerbn" name="innewmarcs_calc::readerbn">
-<area shape="rect" id="node2" href="$namespacereader__modeles.html#a517a20baf9690e9a3d5cff549d89269e" title="Reads single record from .mod file. " alt="" coords="235,23,381,65"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="431,5,559,32"/>
-<area shape="rect" id="node6" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="429,56,560,83"/>
-<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="608,31,741,57"/>
-<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="790,31,871,57"/>
-</map>

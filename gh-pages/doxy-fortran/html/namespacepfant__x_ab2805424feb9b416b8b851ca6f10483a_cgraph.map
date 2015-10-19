@@ -1,6 +1,0 @@
-<map id="pfant_x::pfant_init_x" name="pfant_x::pfant_init_x">
-<area shape="rect" id="node2" href="$namespaceconfig.html#a769185a6790e659a782cb1a5ae1c5f34" title="logging routine: prints variable and assigned value " alt="" coords="195,5,344,46"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#a6318ac0003d973079d7b4ffd04751a7b" title="Logs message as INFO. " alt="" coords="393,12,509,39"/>
-<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="557,12,691,39"/>
-<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="739,12,821,39"/>
-</map>

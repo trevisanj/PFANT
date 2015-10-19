@@ -1,8 +1,0 @@
-<map id="misc::adjust_atomic_symbol" name="misc::adjust_atomic_symbol">
-<area shape="rect" id="node2" href="$namespacereader__dissoc.html#a1722fcdc13c1efa31678bbd913681473" title="Reads dissoc.dat to fill variables dissoc_*. " alt="" coords="205,5,341,46"/>
-<area shape="rect" id="node3" href="$namespacereader__dissoc.html#a1d848d34d64bcfc09283a8c2fd5cca03" title="Searches for atomic symbol inside dissoc_elems. " alt="" coords="192,70,355,111"/>
-<area shape="rect" id="node5" href="$namespacereader__absoru2.html#aa825673899639b910c086ee45a90b49d" title="Reads file dfile:absoru2 to fill variables absoru2_*. " alt="" coords="201,135,345,177"/>
-<area shape="rect" id="node7" href="$namespacereader__partit.html#ad9ef9a189b1d976d6da2a77cd0ad6b13" title="Reads file dfile:partit to fill variables partit_*. " alt="" coords="210,201,337,242"/>
-<area shape="rect" id="node4" href="$namespacereader__abonds.html#aa63725d967690e14991d410ba4747219" title="Reads file abonds.dat to fill variables abonds_*. " alt="" coords="403,70,543,111"/>
-<area shape="rect" id="node6" href="$hydro2_8f90.html#a9ab46f4f3615280b1fa70f64a29838ca" title="hydro2" alt="" coords="443,143,504,169"/>
-</map>

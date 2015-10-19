@@ -1,6 +1,0 @@
-<map id="misc_math::iinf" name="misc_math::iinf">
-<area shape="rect" id="node2" href="$namespacelogging.html#afc1b4ee534735e5f775d2f624186100d" title="Asserts i1 &lt;= i2; if not, halts showing message. " alt="" coords="166,5,290,32"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="339,5,467,32"/>
-<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="515,5,648,32"/>
-<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="697,5,778,32"/>
-</map>

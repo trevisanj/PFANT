@@ -1,9 +1,0 @@
-<map id="reader_dissoc::read_dissoc" name="reader_dissoc::read_dissoc">
-<area shape="rect" id="node2" href="$namespacemisc.html#a77f3c3f190e24fae38c02827272051bd" title="Adjusts a 2&#45;character string containing atomic symbol to right&#45;aligned uppercase. ..." alt="" coords="189,47,328,89"/>
-<area shape="rect" id="node3" href="$namespacelogging.html#a4fc75cb7a1e0429e297ce0160f8e2364" title="Logs message at HALT level and halts program execution with error code &#45;1. " alt="" coords="376,5,504,32"/>
-<area shape="rect" id="node6" href="$namespacemisc.html#a949e8e7ae544740353251be70a8900d7" title="Converts an integer to string. " alt="" coords="393,108,487,135"/>
-<area shape="rect" id="node8" href="$namespacelogging.html#a955fa2a6e2d2136983ce8b177a294f73" title="Logs message as DEBUG. " alt="" coords="193,164,324,191"/>
-<area shape="rect" id="node7" href="$namespacemisc.html#a0a0ca92c512977f1c0f69547f048d6cf" title="Converts a string to upper case. " alt="" coords="386,56,494,83"/>
-<area shape="rect" id="node4" href="$namespacelogging.html#ac1c5e31f48a9a3398fa93307aff49a42" title="Internal routine, MUST NOT be called from outside. " alt="" coords="552,83,685,109"/>
-<area shape="rect" id="node5" href="$logging_8f90.html#ad551e886bdc1cf53ffe8ae01d6934458" title="Writes (dressed or undressed) to unit of choice. " alt="" coords="734,83,815,109"/>
-</map>
