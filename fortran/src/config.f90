@@ -16,7 +16,7 @@
 !> Command-line parsing and respective global variable declarations
 !> @li Configuration globals with their default values
 !> @li Routines to parse command-line arguments
-!>
+!>z
 !> Prefixes:
 !> @li "config_" have corresponding command-line options
 !> @li "ex_config_" are unitialized and must be set by particular executable. Exception is "options"
