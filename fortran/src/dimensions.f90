@@ -109,11 +109,12 @@ module dimensions
   ! Dimensions related to dfile:molecules
   !=====
 
-  !> Number of molecules configured in the program.
-  !> Conceptually, this should be defined in molecules.f, but there would be cyclic USEs
+  !> Maximum Number of molecules in dfile:molecules
+  !> @todo change name to MAX_KM_STH
   integer, parameter :: NUM_MOL=21
 
   !> Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
+  !> @todo change name to MAX_KM_NV_PER_MOL
   integer, parameter :: MAX_NV_PER_MOL=200
 
   integer, parameter :: &
