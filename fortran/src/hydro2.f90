@@ -3,9 +3,6 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Math routines used in hydro2_calc.f90 + MAX_* declarations
 !>
-!> Routines in callhy.f that 1) didn't use COMMONs; 2) didn't take COMMON as argument
-!> were moved here.
-!>
 !> @note Arrays passed to routines now have assumed-shape declarations + assertions against
 !> access beyond boundaries.
 !>
@@ -2024,8 +2021,24 @@ end
 
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||ŝ
+!||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!> Program to create files such as thalpha, thbeta etc -- matrices of (#layer)x(lambda) data
+!>
+!> The hydrogen lines files to be created are determined by overlapping a [llzero, llfin] interval with
+!> wavelengths listed in dfile:hmap. Here is a sample hmap.dat file:
+!> 
+!> @code
+!> # filename / niv inf / niv sup / central lambda / kiex / c1
+!> thalpha   2 3 6562.817 10.199 2442.326
+!> thbeta    2 4 4861.342 10.199 249.628
+!> thgamma   2 5 4340.475 10.199 74.4776
+!> thdelta   2 6 4101.742 10.199 32.8903
+!> thepsilon 2 7 3970.070 10.199 17.72642
+!> @endcode
+!>
+!> or the parameters for a single file can be passed by command-line arguments. Run hydro2 --help for details.
+!>
 !> @verbatim
 !> HYD2
 !>
@@ -2033,13 +2046,15 @@ end
 !>
 !> CALCUL DU PROFIL D UNE RAIE DE L HYDROGENE
 !>
-!> CE PROGRAMME A ETE ECRIT PAR F.PRADERIE (ANN D AP 1967)
+!> CE PROGRAMME A ETE ECRIT PAR F. PRADERIE (ANN D AP 1967)
 !> TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
 !> G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
 !> @endverbatim
 !>
 !> En sortie:
 !> @li Un fichier de trace compatible avec GRAFIC (Nom demande)
+!>
+!> @endverbatim
 
 program hydro2
   use config
