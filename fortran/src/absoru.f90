@@ -21,22 +21,21 @@
 !>
 !> Original comment block:
 !> @verbatim
-!> PARTH =NBRE TOTAL DE NOYAUX PAR CM3
-!> PG    =PRESSION TOTALE EN DYNES/CM2
-!> ZMU   =POIDS MOLECULAIRE MOYEN
-!> RHO   =DENSITE (G-CM-3)
-!> TOC   =NOMBRE DE NOYAUX D'HYDROGENE PAR CM3
-!> AC    =DEGRE D'IONISATION MOYEN
-!> AC1(1)=  ''        ''     DE H
-!> AC1(2)=  ''        ''     DE HE+
-!> AC1(3)=  ''        ''     DE HE
-!> AC2   =  ''        ''     DES METAUX
-!> PHI(J)=  ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
-!> ZNH(M)=POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+!> PARTH : NBRE TOTAL DE NOYAUX PAR CM**3
+!> PG    : PRESSION TOTALE EN DYNES/CM**2
+!> ZMU   : POIDS MOLECULAIRE MOYEN
+!> RHO   : DENSITE (G-CM-3)
+!> TOC   : NOMBRE DE NOYAUX D'HYDROGENE PAR CM**3
+!> AC    : DEGRE D'IONISATION MOYEN
+!> AC1(1): ''        ''     DE H
+!> AC1(2): ''        ''     DE HE+
+!> AC1(3): ''        ''     DE HE
+!> AC2   : ''        ''     DES METAUX
+!> PHI(J): ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
+!> ZNH(M): POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+!>
 !> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 !> @endverbatim
-!>
-!> Public: only subroutine absoru() and variable absoru_znh
 !>
 
 module absoru
@@ -66,8 +65,21 @@ module absoru
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
 
-  real*8 au_ahe, au_ah, au_ahep, au_uh1, au_zemh, au_uhep1, au_uhe1, au_zeuhe1, &
-   au_ul, au_stimu, au_znu1, au_znu2, au_znu3, au_zmuze, au_pe
+  real*8 au_ahe, & !< ?doc?
+   au_ah, & !< ?doc?
+   au_ahep, & !< ?doc?
+   au_uh1, & !< ?doc?
+   au_zemh, & !< ?doc?
+   au_uhep1, & !< ?doc?
+   au_uhe1, & !< ?doc?
+   au_zeuhe1, & !< ?doc?
+   au_ul, & !< ?doc?
+   au_stimu, & !< ?doc?
+   au_znu1, & !< ?doc?
+   au_znu2, & !< ?doc?
+   au_znu3, & !< ?doc?
+   au_zmuze, & !< ?doc?
+   au_pe
 
   real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
   real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
@@ -76,11 +88,12 @@ module absoru
   real*8 au_ac   !< DEGRE D'IONISATION MOYEN
 
   real*8 :: au_g2d(2, 19)  !< FACTEUR DE GAUNT BOUND FREE
-  real*8, dimension(5) :: au_zexpm
-  real*8, dimension(10) :: au_zexp
-  real*8, dimension(20) :: au_zeuh, au_zeuhep
-  real*8, dimension(11) :: au_zk
-  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR)
+  real*8, dimension(5) :: au_zexpm  !< ?doc?
+  real*8, dimension(10) :: au_zexp !< ?doc?
+  real*8, dimension(20) :: au_zeuh, & !< ?doc?
+   au_zeuhep !< ?doc?
+  real*8, dimension(11) :: au_zk  !< ?doc?
+  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) & !< ?doc?
   real*8 :: au_ac2(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< DEGRE D'IONISATION DES METAUX
 
   real*8, dimension(3) :: au_ac1  !< Ionization degrees of H, He+ and He
@@ -88,7 +101,7 @@ module absoru
                                   !! @li au_AC1(2): DEGRE D'IONIZATION DE HE+
                                   !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
 
-  real*8, dimension(MAX_ABSORU2_NM) :: au_znu
+  real*8, dimension(MAX_ABSORU2_NM) :: au_znu  !< ?doc?
 contains
 
   !-------------------------------------------------------------------------------
@@ -294,13 +307,13 @@ contains
   subroutine gaunth(wl, flag_hydro2)
     !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to sqrt() in hydro2
     logical, intent(in) :: flag_hydro2
-    real*8 wl, cond, delta, rk, zj, zp, zq
+    real*8, intent(in) :: wl !< ?doc?
+    real*8 cond, delta, rk, zj, zp, zq
     integer i, j, jj, js
     real*8, parameter :: VARIAVEL = 1e-37
+
     au_jh = 0
     do 1410 i=1,au_jfz
-
-
       do j=1,19
         jj=j
         if (abs(wl-au_zlh(j)) .le. 0.5) go to 1335
@@ -429,7 +442,7 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> @todo issue ?doc?
+  !> ?doc? subroutine has no description line
   !>
   !> @verbatim
   !> HCBKTM=(H*C/K*T)*1.0E8
@@ -446,9 +459,12 @@ contains
 
   subroutine tempa(wl,th,calth,callam)
     implicit none
-    real*8 wl, th, comhe, hcbktm, uh, uhep
+    real*8, intent(in) :: wl, & !< ?doc?
+     th & !< ?doc?
+    real*8 comhe, hcbktm, uh, uhep
     integer j, k, l
-    integer callam,calth
+    integerm intent(in) :: callam, & !< ?doc?
+     calth  !< ?doc?
 
     if (calth.eq.2) go to 1001
 
@@ -523,8 +539,8 @@ contains
   !> @todo issue logic suggests a few "absoru2_nmeta+5" here should be "absoru2_nmeta+n"
 
   subroutine sahath(th, flag_hydro2)
-    real*8, intent(in) :: th
-    !> whether to use PFANT or HYDRO2 logic
+    real*8, intent(in) :: th  !< ?doc?
+    !> whether to use pfant or hydro2 logic
     logical, intent(in) :: flag_hydro2
     real*8 :: tempo, tempor, potepo
     integer i, j, n, nrr
@@ -615,20 +631,24 @@ contains
   !> @author A.M COLLE  07/12/1970
   !>
   ! Note variable named "zk_"
-  !   - local "zk" renamed to "zk_"
-  !   - old COMMON "zk" so far is a module variable named au_zk
+  ! @li local "zk" renamed to "zk_"
+  ! @li old COMMON "zk" so far is a module variable named au_zk
 
   subroutine athyhe(wl,th,callam,zzk, flag_hydro2)
+    real*8,  intent(in) :: wl, & !< ?doc?
+     th,  !< ?doc?
+     zzk(11,2) !< ?doc?
+    integer, intent(in) :: callam !< ?doc?
     !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to exp() in hydro2
     !> @todo issue decide upon a single logic, I think
     logical, intent(in) :: flag_hydro2
+
     real*8 althmb, althml, anu, any, bh, bhe, bhem, bhep, bkt, caeta, caro, difeta, &
      difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
      stimu3, tempor, uk, wlm, zkas, zlamin, zleta1, zleta2, znl, znl1, zk_
     integer i, ie, indth, ir, j, je, jhyt, jj, jjs, jr, js, k, kk, kks, l, ll, lls, n
-    integer callam, jhe, jhep, jhem
-    real*8 wl, th
-    real*8 :: tgaunt(5),trhog(5),opnu(46),zzk(11,2), expon(2)
+    integet jhe, jhep, jhem
+    real*8 :: tgaunt(5),trhog(5),opnu(46), expon(2)
     real*8 :: ezut1, ezut2, zut1, zut2
     real*8, parameter ::                                  &
      expo(2) = (/-68.88230,-71.45087/),                   &
@@ -643,9 +663,11 @@ contains
      c4(3)   = (/-14.97997,8.900841,-20.84862/),          &
      c5(3)   = (/0.0,-17.78231,0.0/),                     &
      c6(3)   = (/0.0,-7.89472e-2,0.0/)
+
     jhe  = 0
     jhep = 0
     jhem = 0
+
     if (callam.eq.1) indth = 0
     jhyt = 1
 
@@ -1055,12 +1077,13 @@ contains
   !> @todo top variable pa declared with 10 elements but should have absoru2_nr(j)+1
 
   subroutine ionipe(th,zlpe,calth)
-    implicit none
-    real*8 th, zlpe, any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
+    real*8, intent(in) :: th, & !< ?doc?
+     zlpe !< ?doc?
+    integer, intent(in) :: calth !< ?doc?
+
+    real*8 any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
     integer i, j, nrr
-
-    integer*4 calth
     real*8 kth
     dimension phi(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
      pa(10)
