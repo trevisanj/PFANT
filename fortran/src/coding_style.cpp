@@ -61,22 +61,36 @@ A module template
 -----------------
 
 @code
-!> Does this and that...
+!> Doxygen "brief" description line for module xyz.
 !>
-!> mymod_* -- public variables from this module
+!> xyz_* -- public variables from this module
+!>
 
-module my_module
+module xyz
   use another_module_1
   use another_module_2
   implicit none
+  private  ! makes all symbols declared below become private by default
   
-  real*8, public :: mymod_lambda, mymod_flux
-  integer, private :: i, j
+  !> refers to what comes after, i.e.,
+  !> explains variable num_items
+  integerm public :: xyz_num_items
+  real*8, public :: xyz_some_lambda !< explains xyz_some_lambda
+                       !! more about xyz_some_lambda
+
+  integer :: i, &  !< ?doc?
+   j !< ?doc?
+                       
+  public calc_x
   
 contains
+  !> description line for calc_x()
+  
   subroutine calc_x(par1, par2, result)
-    ! i, j, mymod_lambda, mymod_flux are visible here
+    ! i, j, xyz_* are visible here
   end    
+  
+  !> ?doc?
 
   real*8 function f(x)
     ! etc...
@@ -90,12 +104,21 @@ Variable names
 
 * Prefixes*: in many sections of the code, a preceding "prefix_" has been added to
 the original names of variables that are shared among subroutines and functions
-preceded. This practice has been implemented:
-@li to ensure that variable names don't clash across different modules
-@li to more easily identify where data is coming from
+preceded. 
+@li Prefixes help to track down the meaning and origin of a certain variable.
+@li Additionally, they help to ensure that variable names don't clash across different modules.
 
 Sometimes the prefix matches the module name where the variable is declared, sometimes not.
-Examples: au_g3d (from module absoru), config_fn_main (from module config).
+    
+Examples:
+@verbatim
+au_g3d           from module absoru
+config_fn_main   from module config
+main_ptdisk      from module reader_main
+selekfh_fl       calculated by subroutine synthesis::selekfh()
+MAX_PARTIT_NPAR  constant having maximum allowed value of variable partit_npar
+...
+@endverbatim
 
 real numbers
 ------------
@@ -108,21 +131,18 @@ not need much precision. Modern computers do not take significantly longer to
 process double precision values than they do to process reals." @ref Uwm0
 
 
-Programming
-===========
-
 Always IMPLICIT NONE
 --------------------
+
 Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
-Advantages:
-@li type of variables becomes clear (not all code readers will know about Fortran i-n
-    convention;
-@li we are forced to declare real variables as real*8.
+@li types of variables becomes clear from reading the code
+@li we are forced to remember to declare real variables as real*8
 
 Case convention
 ---------------
 All symbol (variable, function, subroutine, module) names are now declared in *lowercase*,
-except for *constants* which are all *UPPERCASE*.
+except for PARAMETERs which are all *UPPERCASE*.
+Constants not declared as PARAMETER may be also in uppercase.
 
 @note The main reasons for this was a limitation in Doxygen, which converts all symbols
 to lowercase in the HTMLs anyway (fix has been asked for but no action yet
@@ -132,22 +152,6 @@ considering all you get from Doxygen, it seemed to be a good trade-off. The symb
 have been left in uppercase in the source code and would appear in lowercase in the HTML,
 but this would be kind of confusing.
 
-Name conventions
-----------------
-
-@li Routines synthesis::synthesis_ and absoru::absoru_ names have a trailing underscore in order to
-    differentiate from their respective module names;
-
-@li Prefixes are now used extensively throughout the code to group variables according
-    to some meaning, for example:
-@code
-main_ptdisk     ! variable comes from file main.dat
-selekfh_fl      ! variable is calculated by subroutine synthesis::selekfh()
-MAX_PARTIT_NPAR ! constant having maximum allowed value of variable partit_npar
-...
-@endcode
-
-Every module should explain the meaning of its own prefixes.
 
 Variable declarations
 ---------------------
@@ -180,40 +184,69 @@ For assertions, call log_halt("message", is_assertion=.true.).
 Assertions serve both as documentation and error protection.
 
 
-How to document the code
-------------------------
+Documentation
+=============
 
-  Note that
-  @code !> @endcode refers to what comes after, and
-  @code !< @endcode refers to what comes before.
+Where to document
+-----------------
+
+@li Keep information in manuals and overviews to a minimum, 
+and try to fit explanations as close to the actual code as possible.
+This increases the chance that the explanation matches what the code actually does.
+@li this very document is already an exception, so perhaps there should be no more than a @ref overview, @ref 
+
+Commenting
+----------
+
+*What to put in comments*. It is recommended to document at least this:
+
+@li Explain -- at the beginning of a module -- what the prefixes of variables declared within it stand for.
+@li module, subroutine, and function: at least one description line .
+@li subroutine or function arguments: at least one sentence for each argument.
+@li variables declared in the header section of a module: at least one sentence.
+@li when the logic becomes tricky, it is a kind gesture to explain what the code is doing
+
+
+How to format comments for Doxygen 
+----------------------------------
+
+We tell Doxygen which comments we want parsed by using these indicators after the "!", i.e.,
+@code
+!>
+!<
+!!
+@endcode
+
+See module template in this document for example uses.
+                       
+Also check
+
+https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks
+
+https://modelingguru.nasa.gov/docs/DOC-1811
 
 
 Tags
-----
-Some tags used in comments throughout the source code:
+====
 
-@note All tags, except "@todo" are case-insensitive.
+Some tags are used to mark things left behind that should be eventually looked at.
+
+This includes:
 
 @verbatim
 
-@todo                  Doxygen's todo tag. Note that not all "todos" are marked in this
-                       way
-
-issue                  Something that needs to be solved in the code. Similar to @todo
-                       (this tag was being used before Doxygen was adopted)
-
-?doc?                  Item (variable/subroutine etc) lacks proper documentation
-
-?what?                 More serious version of ?doc?: crucial item (variable/subroutine etc)
-                       is undocumented. This is reserved undocumented items that seem
-                       important
-
-ask BLB
-ask PC
-ask MT                 Suggests the person who probably knows to solve the issue
+todo                 ordinary to-do item.
+issue                high-priority to-do item, usually an unsolved issue about the way the code works.
+?doc?                documentation "gap"
+?what?               high-priority documentation gap, e.g. subroutine lacks description line.
+ask BLB              suggestion on who to ask about issue
+ask MT               "
+ask PC               "
+ask EC               "
 
 @endverbatim
 
+@note tags are case-insensitive.
 
 
 */
