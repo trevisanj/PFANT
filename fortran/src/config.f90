@@ -36,7 +36,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Command-line parser.
 !>
-!> I took the original from the Fortran wiki @ref FortranWiki
+!> Originally from the Fortran wiki @ref FortranWiki
 
 module options2
   implicit none
@@ -82,19 +82,10 @@ module options2
 
 contains
 
-!> @todo UPDATE DOCUMENTATION
-
   !> Parse command line options. Options and their arguments must come before
   !> all non-option arguments. Short options have the form "-X", long options
-  !> have the form "--XXXX..." where "X" is any character. Parsing can be
-  !> stopped with the option '--'.
-  !> The following code snippet illustrates the intended use:
-  !> @code
-  !> do
-  !>   ! things changed
-  !> end do
-  !> @endcode
-
+  !> have the form "--XXXX..." where "X" is any character.
+  
   subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
@@ -285,7 +276,9 @@ contains
 
   end subroutine
 
-  !============================================================================
+  
+  
+  !=======================================================================================
 
   !> Print an option in the style of a man page. I.e.
   !> <pre>
@@ -429,13 +422,28 @@ contains
       res = '''-' // trim(opt%name) // ''''
     end if
   end
-
-
 end module
+
+
+
+
+
+
+
+
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+!> Configuration module for all executables
+!>
+!> Prefixes defined here:
+!> @li HANDLER_
+!> @li config_ -- throughout configuration variables
+!> @li execonf_ -- executable-specific variables
+
+
 module config
   use logging
   use options2
@@ -612,7 +620,7 @@ module config
    wdir_trim  !< Input directory without trailling spaces and ending with a "/"
 
   private :: validate_options, &
-   init_options, parse_args, show_help, exe_wants
+   init_options, parse_args, show_help, exe_wants, handle_option
 
 contains
 
@@ -874,14 +882,14 @@ contains
 
 
   !=======================================================================================
-  !> Handles limited set of options
+  !> Handles single option
   !>
   !> @note Must be called by executable-specific option handler when the latter does not
   !>       recognize the option.
   !>
   !> @note If finds "-h" or "--help", will display help text and halt.
 
-  function config_handle_option(opt, o_arg) result(res)
+  function handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
     character(len=*), intent(in) :: o_arg
     integer :: res, itemp
@@ -1225,7 +1233,7 @@ contains
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888
 
-
+  
   !=======================================================================================
   !> Parses and validates all command-line arguments.
   !>
@@ -1246,7 +1254,7 @@ contains
           opt = options(o_index)
 
           if (exe_wants(opt)) then
-            res = config_handle_option(opt, o_arg)
+            res = handle_option(opt, o_arg)
             select case(res)
               case(HANDLER_DONT_CARE)
                 call pfant_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
@@ -1260,6 +1268,7 @@ contains
       end select
     end do
   end
+
 
   !=======================================================================================
   !> Returns whether or not the option is applicable to the executable running.
