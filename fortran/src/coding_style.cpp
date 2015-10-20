@@ -3,6 +3,13 @@
 
 Sketch of a coding style manual
 
+Introduction
+============
+
+This document contains:
+@li a set of guidelines about how to format the code to keep consistent among all .f and .f90 files
+@li some [almost] rules on how to deal with modules and variables
+
 Format
 ======
 
@@ -26,22 +33,72 @@ Indentation
 Number of columns
 -----------------
 
-Rule for all @c .f, @c .f90, and @c .txt files: *90-column maximum*.
-This is probably a good a compromise between
-  predominant sense (which is 80-column, arguing about readability and ergonomics),
-  accessibility (code being read by different people on different system setups) and
-  horizontal space (not having to wrap formulas and long lines of code too often).
+Guideline applies to files of type
+@li .f
+@li .f90
+@li .txt
+@li .cpp
+
+*90-column maximum* as a tolerance over the 80-column historical width.
+
+Coders ofter pronounce on keeping code width to 80 columns maximum.
+Common arguments are for for readability, ergonomics, and ability to split screen.
 @ref Cesm0 @ref StackEx0 @ref JavaGuide
 
-
+Code structure
+==============
 
 COMMON blocks
-=============
-Do *not* use COMMON blocks (use Fortran module instead)!
+-------------
+Do *not* use COMMON blocks!! COMMON blocks require variables to be declared multiple
+times with different names and shapes. This is high-maintainance and makes the code harder
+to understand, specially for newbies.
 
+MODULE provides a more clear structure to share variables among subroutines and functions.
+Variables are declared only once at the header section of a module.
 
-Data types
-==========
+A module template
+-----------------
+
+@code
+!> Does this and that...
+!>
+!> mymod_* -- public variables from this module
+
+module my_module
+  use another_module_1
+  use another_module_2
+  implicit none
+  
+  real*8, public :: mymod_lambda, mymod_flux
+  integer, private :: i, j
+  
+contains
+  subroutine calc_x(par1, par2, result)
+    ! i, j, mymod_lambda, mymod_flux are visible here
+  end    
+
+  real*8 function f(x)
+    ! etc...
+  end 
+@endcode  
+
+Modules can be imported around through the @c USE statement.
+
+Variable names
+--------------
+
+* Prefixes*: in many sections of the code, a preceding "prefix_" has been added to
+the original names of variables that are shared among subroutines and functions
+preceded. This practice has been implemented:
+@li to ensure that variable names don't clash across different modules
+@li to more easily identify where data is coming from
+
+Sometimes the prefix matches the module name where the variable is declared, sometimes not.
+Examples: au_g3d (from module absoru), config_fn_main (from module config).
+
+real numbers
+------------
 
 real*8 is used throughout, except for reading the binary .mod files.
 
