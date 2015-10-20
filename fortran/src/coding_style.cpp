@@ -10,6 +10,13 @@ This document contains:
 @li a set of guidelines about how to format the code to keep consistent among all .f and .f90 files
 @li some [almost] rules on how to deal with modules and variables
 
+
+@todo how to create a new executable
+
+@todo how to insert new command-line option
+
+@todo reading either from main file or command-line option for all variables
+
 Format
 ======
 
