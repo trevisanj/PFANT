@@ -1,19 +1,26 @@
 /**
 * 
-* @page coding_guide Coding guide
+* @page coding_guide Coding
 * 
-* @subpage coding_style Coding style manual
+* @subpage coding_intro Introduction
+*
+* This document is divided in two sections:
+* @li a set of guidelines about how to format the code to keep consistent among all .f and .f90 files
+* @li [almost] rules on how to deal with modules and variables
+*
+* Legend
+* @verbatim
+* @endverbatim
+*
+* @subpage coding_style Coding guidelines
 * 
-* @note The symbol @c % refers to the root directory of the PFANT repository.
-* 
-* @section github Working with the GitHub repository
+* @section coding_github Working with the GitHub repository
 * 
 * @subsection github_clone Cloning the repository
 * 
 * @code
-* git clone https://github.com/trevisanj/pfant
+* git clone https://github.com/trevisanj/PFANT
 * @endcode
-* 
 * 
 * @subsection ssh_setup Communicating with GitHub <i>via</i> SSH
 * 
@@ -51,48 +58,17 @@
 *   </li>
 * </ol>
 * 
-* @section cbfortran CodeBlocks Fortran (CBFortran)
-* 
-* CBFortran is a customization of the "Code Blocks" IDE optimized for Fortran.
-* 
-* This tool is recommended to work with Fortran projects (such as PFANT) because
-* it can generate Makefile's and compile the source code with little pain.
-* 
-* Project site: http://cbfortran.sourceforge.net/
-* 
-* @subsection cbfortran_linux Running CBFortran on Linux
-* 
-* CodeBlocks Fortran does not require installation. Just download the .taz.bz2 file from the
-* downloads page http://cbfortran.sourceforge.net/downloads.html and extract it into your
-* home directory.
-* 
-* @attention In order to run, it must be extracted into your home directory (will create
-* directory <code>/home/user/CodeBLocks_Fortran_xxxxxxxx</code>).
-* 
-* After extracted, enter directory <code>/home/user/CodeBLocks_Fortran_xxxxxxxx</code> and
-* execute <code>codeblocks_run.sh</code>
-* 
-* @subsection cbfortran_work Using CBFortran
-* 
-* The CBFortran project is the file %/fortran/PFANT.cbp.
-* 
-* Some shortcuts:
-* @li Find in files: Ctrl+Shift+F
-* @li Compile: Ctrl+F9
-* @li Run: Ctrl+F10
-* 
-* 
 * 
 * @section coding_doxygen Working with Doxygen
 * 
 * Doxygen is used to generate HTML documentation such as this.
 * 
-* To recompile the HTMLs, run @c doxygen inside <code>%/fortran</code>.
-* This will generate output inside <code>%/gh-pages/doxy-fortran</code>
+* To recompile the HTMLs, run @c doxygen inside <code>PFANT/fortran</code>.
+* This will generate output inside <code>PFANT/gh-pages/doxy-fortran</code>
 * 
 * To push this documentation online, simply run the script
 * 
-* <code>deploy_doxy-fortran.sh</code> inside directory <code>%</code>
+* <code>deploy_doxy-fortran.sh</code> inside directory <code>PFANT</code>
 * 
 * @subsection doxy_troubleshooting Troubleshooting doxygen compilation
 * 
@@ -108,14 +84,41 @@
 *       if (wdir_trim(i:i) .eq. '\') wdir_trim(i:i) = '/'
 * @endcode
 * 
-* Besides, the file %/fortran/Doxyfile must have
+* Besides, the file PFANT/fortran/Doxyfile must have
 * 
 * @code
 * ENABLE_PREPROCESSING   = NO
 * @endcode
 * 
 * 
+* @section cbfortran CodeBlocks Fortran (CBFortran)
 * 
+* CBFortran is a customization of the
+* Code Blocks (CB) IDE optimized for working with Fortran projects.
+* 
+* 
+* This IDE provides an easy way to compile the code and generate makefiles. CB was used to 
+* create the makefiles in the
+* PFANT/fortran directory.
+* 
+* @subsection cbfortran_linux Running CBFortran on Linux
+* 
+* CBFortran does not require installation. Just download the .taz.bz2 file from the
+* downloads page http://cbfortran.sourceforge.net/downloads.html and extract it into your
+* home directory (will create
+* directory <code>/home/user/CodeBLocks_Fortran_xxxx</code>).
+* 
+* After extracted, enter the new directory, and
+* execute <code>codeblocks_run.sh</code>
+* 
+* @subsection cbfortran_work Using CBFortran
+* 
+* The CBFortran project is the file PFANT/fortran/PFANT.cbp.
+* 
+* Some shortcuts:
+* @li Find in files: Ctrl+Shift+F
+* @li Compile: Ctrl+F9
+* @li Run: Ctrl+F10
 * 
 * 
 * @section coding_ref References
@@ -125,5 +128,4 @@
 * https://help.github.com/articles/changing-a-remote-s-url/
 * 
 * http://cbfortran.sourceforge.net/
-* 
 */
