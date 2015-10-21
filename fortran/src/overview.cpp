@@ -2,7 +2,11 @@
 
 @page overview Overview
 
-@section Installation
+@section overview_contents Project contents
+
+PFANT 
+
+@section overview_install Installation
 
 Clone from github
 
@@ -10,21 +14,70 @@ Clone from github
 git clone https://github.com/trevisanj/PFANT
 @endcode
 
-or download <a href="https://github.com/trevisanj/pfant/archive/master.zip">this zip file</a>.
+This will create a "PFANT" directory.
 
-@subsection install_path Setting the system path
+or download <a href="https://github.com/trevisanj/PFANT/archive/master.zip">this zip file</a>.
 
-Add the following directories to your system path:
-@li %/fortran/bin
-@li %/pyfant/scripts
 
-, where the symbol @c "%" denotes the directory created during installation.
+
+
+
+@section tree Overview of the project directory
+
+Here is an incomplete listing of the directory tree.
+
+@verbatim
+PFANT
+├── fortran
+│   ├── bin                      PFANT executable binaries (add to system path!)
+│   └── src                      Fortran source code directory
+├── pyfant                       PyFANT root
+│   ├── scripts                  command-line tools (add to system path!)
+│   │   │                                                                             
+│   │   ├── ...                  scripts to handle data files (visualize, edit),
+│   │   ├── ...                  scripts to run the Fortran code
+│   │   └── ...                  etc...
+│   │
+│   └── pyfant                   Python package
+└── data                         courtesy data
+    └── sun-complete             runnable case for the Sun
+@endverbatim
+
+
+
+
+@section overview_compile Compiling the Fortran source code.
+
+The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested)
+
+The code can be compiled in CBFortran IDE, or using one of these:
+
+@code
+PFANT/fortran/make_linux.sh    # Linux
+PFANT/fortran/make_windows.bt  # Windows
+@endcode
+
+The executable binaries are found in PFANT/fortran/bin
+
+
+@section overview_path Setting the system path
+
+It is best to add a few directories to the system path
+
+@code
+PFANT/fortran/bin      # Fortran executable binaries
+PFANT/pyfant/scripts   # *.py scripts
+@endcode
+
+, where "PFANT" will actually be somehing like "/home/user/.../PFANT".
 
 
 Add the following to your PYTHONPATH variable:
-@li %/pyfant
+@li PFANT/pyfant
 
-@note If you run on Linux, the script %/add_paths.py may be used to attempt to set
+@subsection overview_path_add_paths The script add_paths.py
+
+@note If you run on Linux, the script PFANT/add_paths.py may be used to attempt to set
 these variables automatically.
 
 @code
@@ -32,7 +85,64 @@ $ ./add_paths.py --tcsh  # if you use the tcsh shell
 $ ./add_paths.py --bash  # if you use the bash shell
 @endcode
 
-@subsection required Required software
+
+
+@section test_bin Quick start
+
+This section will take you through the steps to calculate a synthetic spectrum
+from the Sun, and visualize some input and output data files.
+
+@li Create a new directory, e.g., "/home/user/sun-synthesis"
+@li Enter the sun-synthesis directory
+@li Copy the contents of the PFANT/data/sun-complete into sun-synthesis
+
+@li 
+Now try these four commands:
+
+@code
+$ innewmarcs  # creates modeles.mod
+$ hydro2      # creates thalpha
+$ pfant       # creates flux.*
+$ nulbad      # creates flux.norm.nulbad
+@endcode
+
+@subsection cmd_plot Command-line plotting tools
+
+Now let's compare que flux calculated by pfant with the convolved spectrum calculated
+by nulbad (requires <a href="http://matplotlib.org/faq/installing_faq.html">matplotlib</a>.
+
+@code
+$ plot_spectra.py flux.norm flux.norm.nulbad
+@endcode
+
+Try these ones as well:
+
+@code
+$ plot_mod_record.py modeles.mod      # plots interpolated atmospheric model
+$ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid
+$ plot_filetoh.py thalpha             # plots hydrogen lines
+@endcode
+
+
+@subsection overview_getting_help Command-line help
+
+The Fortran binaries and Python scripts all have a --help option, for example:
+
+@code
+$ pfant --help
+$ innewmarcs --help
+$ run4.py --help
+@endcode
+
+@todo Python script to provide a menu
+
+
+
+
+
+@section required Required software
+
+In order to run all the features described so far, here is a list of what you should have installed:
 
 Applications:
 
@@ -55,36 +165,6 @@ pyqt4             $ sudo apt-get install python-qt4  # Debian-based Linux
 @li fortranformat $ sudo pip install fortranformat  # Requires pip
 
 
-
-@section tree Directory
-
-Here is an incomplete listing of the directory tree.
-
-@verbatim
-%
-├── add_paths.py                 utility to update PATH and PYTHONPATH
-├── data                         courtesy data
-│   └── sun                      complete case for the Sun
-├── fortran
-│   ├── make_linux.sh            Linux script to build the executable binaries
-│   ├── make_windows.bat         Windows script to build the exe binaries
-│   ├── bin                      PFANT executable binaries
-│   │   ├── hydro2
-│   │   ├── innewmarcs
-│   │   ├── nulbad
-│   │   └── pfant
-│   └── src                      Fortran and documentation source files
-└── pyfant                       PyFANT root
-    ├── scripts                  command-line tools, e.g.,
-    │   ├── plot_filetoh.py      plots hydrogen lines in 3D
-    │   ├── plot_mod_record.py   plots atmospheric model
-    │   ├── plot_mod_records.py  plots NEWMARCS grid in 3D
-    │   ├── plot_spectrum.py     plots synthetic spectra
-    │   ├── mled.py              molecular lines editor
-    │   └── run4.py              combo-runs innewmarcs, hydro2, pfant, nulbad
-    │
-    └── pyfant         package to operate PFANT using Python
-@endverbatim
 
 @section datafiles Input/output data files
 
@@ -129,9 +209,21 @@ flux.cont         | continuum flux (multiplied by 10**5)
 flux.norm.nulbad  | convolved flux
 @endverbatim
 
-THe workflow can be summarized in the following diagram.
+@section overview_workflow Fortran bin workflow
 
-Note that the running sequence is innermarcs, hydro2, pfant, nulbad
+The Fortran binnries run in this order: innermarcs, hydro2, pfant, nulbad
+
+THe workflow can be summarized like this:
+
+@verbatim
+Summary:
+innewmarcs creates modeles.mod
+hydro2     creates a series of th* files
+pfant      creates flux.*
+nulbad     creates flux.norm.nulbad   
+@endverbatim
+
+Or in more detail:
 
 @verbatim
                         +---------------------------+---------------------main.dat
@@ -166,83 +258,6 @@ newnewp025.mod                         |            |              |         |
                                                     v
                                              flux.norm.nulbad
 @endverbatim
-
-@section running Running innewmarcs, hydro2, pfant, nulbad
-
-@subsection building Building the binaries
-
-If you have gfortran installed, go to directory %/fortran and type
-
-@code
-$ ./make_linux.sh
-@endcode
-
-or
-
-@code
-> make_windows.bat
-@endcode
-
-This should create four executables in the bin directory.
-
-
-@subsection test_bin Running with shipped data
-
-Now create a new directory somewhere *out of the "%" directory* and copy the whole
-contents of the %/data/sun-complete
-
-@par Important
-Don't run commands inside %/data/sun. This is part of the repository and should be
-kept clean.
-
-If everything is alright so far, you should be able to successfully run the following
-commands:
-
-@code
-$ innewmarcs
-$ hydro2
-$ pfant
-$ nulbad
-@endcode
-
-Looks good. For a full set of command-line options, use the "--help" option with
-any of the executables, for example:
-
-@code
-$ pfant --help
-$ innewmarcs --help
-@endcode
-
-@subsection cmd_plot Command-line plotting tools
-
-Now let's compare que flux calculated by pfant with the convolved spectrum calculated
-by nulbad (requires <a href="http://matplotlib.org/faq/installing_faq.html">matplotlib</a>.
-
-@code
-$ plot_spectra.py flux.norm flux.norm.nulbad
-@endcode
-
-Try these ones as well:
-
-@code
-$ plot_mod_record.py modeles.mod      # plots interpolated atmospheric model
-$ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid
-$ plot_filetoh.py thalpha             # plots hydrogen lines
-@endcode
-
-@section more_python Operation using Python
-
-The four executables can be run in batch using this python script
-
-@code
-run_4exes.py
-@endcode
-
-For a list of available options, type:
-
-@code
-run_4exes.py --help
-@endcode
 
 -x-x-x-x-x
 
