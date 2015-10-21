@@ -79,4 +79,5 @@
 !     Portanto, para diferenciar os arquivos binarios criados,
 !     alem do arquivo normal criado como 'spe.' + nome no dfile:main
 !     o pfant cria mais dois arquivos que comecam com 'cont.' e 'norm.'
+!     [edit: pfant output files are text files, not binary]
 !===PC2003 END===
