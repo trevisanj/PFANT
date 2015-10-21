@@ -14,13 +14,26 @@
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
+
+
+
+
+
+
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Equilibre dissociatif
 !>
-!> Prefix "sat4_" denotes variables filled by sat4() (or indirectly, die())
+!> This module contains subroutine sat4(), which calculates the sat4_* variables
+!> used by other modules.
 !>
+!> Prefixes:
+!> @li sat4_ -- variables calculated by sat4() (or indirectly, die())
+!>
+!> @todo plot the sat4_*
 
 !
 !> @todo consider eliminating the +-20 angstrom from calculations
@@ -32,14 +45,14 @@ module dissoc
 
   ! They will be pointer targets at molecules::point_ppa_pb()
   real*8, target, dimension(MAX_MODELES_NTOT) ::  &
-   sat4_pph,  & !< ?doc?
-   sat4_ppc2, & !< ?doc?
-   sat4_pn,   & !< ?doc?
-   sat4_pc13, & !< ?doc?
-   sat4_pmg,  & !< ?doc?
-   sat4_po,   & !< ?doc?
-   sat4_pti,  & !< ?doc?
-   sat4_pfe     !< ?doc?
+   sat4_pph,  & !< pressure: hydrogen ?doc?
+   sat4_ppc2, & !< pressure: 12carbon ?doc?
+   sat4_pn,   & !< pressure: nytrogen ?doc?
+   sat4_pc13, & !< pressure: 13carbon ?doc?
+   sat4_pmg,  & !< pressure: magnesium ?doc?
+   sat4_po,   & !< pressure: oxygen ?doc?
+   sat4_pti,  & !< pressure: titanium ?doc?
+   sat4_pfe     !< pressure: iron ?doc?
 
   private :: die ! private subroutine
 
@@ -50,22 +63,22 @@ module dissoc
    Z_HE       = 2       !< Atomic number of Helium
 
   ! Note that indexes of these arrays are atomic numbers
-  ! For example: ip(z) contains information related to atomic number z
+  ! For example: m_ip(z) contains information related to atomic number z
   real*8, private, dimension(MAX_DISSOC_Z) :: &
-   ip,     & ! ?doc?
-   ccomp,  & ! ?doc?
-   uiidui, & ! ?doc?
-   fp,     & ! ?doc?
-   kp,     & ! ?doc?
-   p         ! ?doc? Pressure
+   m_ip,     & ! ?doc?
+   m_ccomp,  & ! ?doc?
+   m_uiidui, & ! ?doc?
+   m_fp,     & ! ?doc?
+   m_kp,     & ! ?doc?
+   m_p         ! ?doc? Pressure
 
   real*8, private, dimension(MAX_DISSOC_NMOL) :: &
-   ppmol, & ! ?doc?
-   apmlog   ! ?doc?
+   m_ppmol, & ! ?doc?
+   m_apmlog   ! ?doc?
 
-  real*8, private :: pe !< Fictitious pressure of electron ?doc?
+  real*8, private :: m_pe !< Fictitious pressure of electron ?doc?
 
-  real*8, private, parameter :: econst = 4.342945e-1 !< ?doc?
+  real*8, private, parameter :: ECONST = 4.342945e-1 !< ?doc?
 contains
 
   !=======================================================================================
@@ -95,9 +108,9 @@ contains
       ig0i = dissoc_ig0(i)
       ig1i = dissoc_ig1(i)
 
-      ip(nelemxi) = dissoc_ip(i)
-      uiidui(nelemxi) = ig1i * 0.661 / ig0i
-      ccomp(nelemxi) = exp(cclogi/econst)
+      m_ip(nelemxi) = dissoc_ip(i)
+      m_uiidui(nelemxi) = ig1i * 0.661 / ig0i
+      m_ccomp(nelemxi) = exp(cclogi/ECONST)
 
       !~     !--debugging--!
       !~     WRITE(LLL, '(1H ,5X,A4,8X,I5,3X, F10.3,5X, 2I5,3X,F10.5)')
@@ -112,11 +125,11 @@ contains
     ! STARTING VALUE OF THE SOLUTION
     do 1400 i = 1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      p(nelemi) = 1.0e-20
+      m_p(nelemi) = 1.0e-20
     1400 continue
 
     !> @todo issue ?doc? if atomic number 99 was already in dissoc.dat?
-    p(Z_ELECTRON) = 1.0e-10
+    m_p(Z_ELECTRON) = 1.0e-10
 
     !
     !*****INPUT E
@@ -129,14 +142,14 @@ contains
 
       call die(tem,pg)
 
-      pe = p(Z_ELECTRON)
-      pelog = log10(pe)
+      m_pe = m_p(Z_ELECTRON)
+      pelog = log10(m_pe)
 
       do 1303 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        fplog  = log10(fp(nelemi))
-        xp(ito,i) = p(nelemi)+1.0e-30
+        fplog  = log10(m_fp(nelemi))
+        xp(ito,i) = m_p(nelemi)+1.0e-30
         plog   = log10( xp(ito,i) )
         pdfpl  = plog - fplog
         if (mod(i,5)) 1303,1304,1303
@@ -147,9 +160,9 @@ contains
       do 1184 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): p,kp=0 should be avoided.
-        plog   = log10(p(nelemi)+1.0e-30)
-        kplog  = log10(kp(nelemi)+1.0e-30)
+        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): m_p,m_kp=0 should be avoided.
+        plog   = log10(m_p(nelemi)+1.0e-30)
+        kplog  = log10(m_kp(nelemi)+1.0e-30)
         pionl  = plog + kplog - pelog
         xlog   = pionl - pglog
 
@@ -192,7 +205,7 @@ contains
       kd =-119
       do 1084 j=1,dissoc_nmol
         jcount = jcount + 1
-        pmoll  = log10(ppmol(j)+1.0e-30)
+        pmoll  = log10(m_ppmol(j)+1.0e-30)
         xlog   = pmoll - pglog
 
         if (j .ne. dissoc_nmol) go to 2450
@@ -274,47 +287,46 @@ contains
 
 
   !=======================================================================================
-  !> DIE9
-  !>
-  !> ?doc?
+  !> DIE9 ?what?
 
   subroutine die(tem, pg)
-    real*8 tem, pg
+    real*8, intent(in) :: tem, & !< ?doc?
+     pg !< ?doc?
     real*8, dimension(MAX_DISSOC_Z) :: fx, dfx, z, prev
     real*8, dimension(MAX_DISSOC_NMETAL) :: wa
-    real*8 aplogj, atomj, delta, df, dhh, epsdie, &
+    real*8 aplogj, atomj, delta, df, dhh, EPSDIE, &
      f, fph, heh, hkp, perev, pglog, ph, pmolj, pmoljl, q, r, s, &
      spnion, t, tem25, u, x, xr, pph, phh
     integer i, imaxp1, iterat, j, k, km5, m, mmaxj, nelemi, nelemj, &
      natomj, niter
 
-    epsdie = 5.0e-3
+    EPSDIE = 5.0e-3
     t      = 5040.0/tem
     pglog  = log10(pg)
 
-    heh    = ccomp(Z_HE)/ccomp(Z_H)  ! Helium-to-Hydrogen ratio by number
+    heh    = m_ccomp(Z_HE)/m_ccomp(Z_H)  ! Helium-to-Hydrogen ratio by number
 
-    ! EVALUATION OF LOG KP(MOL)
+    ! EVALUATION OF LOG m_kp(MOL)
     do 1025 j =1, dissoc_nmol
       aplogj = dissoc_c(j,5)
       do 1026 k=1,4
         km5 = 5-k
         aplogj = aplogj*t + dissoc_c(j,km5)
       1026 continue
-      apmlog(j) = aplogj
+      m_apmlog(j) = aplogj
     1025 continue
 
     dhh = (((0.1196952e-02*t-0.2125713e-01)*t+0.1545253e+00)*(-0.5161452e+01))*t+0.1277356e+02
-    dhh = exp(dhh/econst)
+    dhh = exp(dhh/ECONST)
 
     ! EVALUATION OF THE IONIZATION CONSTANTS
     tem25 = tem**2*sqrt(tem)
     do 1060 i = 1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      kp(nelemi) =uiidui(nelemi)*tem25*exp(-ip(nelemi)*t/econst)
+      m_kp(nelemi) =m_uiidui(nelemi)*tem25*exp(-m_ip(nelemi)*t/ECONST)
     1060 continue
 
-    hkp = kp(Z_H)
+    hkp = m_kp(Z_H)
     if (t-0.6) 1084, 1072, 1072
 
     ! PRELIMINARY VALUE OF PH AT HIGH TEMPERATURES
@@ -348,7 +360,7 @@ contains
     f  = ((u*x**2+q)*x+r)*x+s
     df = 2.0*(2.0*u*x**2+q)*x+r
     xr = x-f/df
-    if (abs((x-xr)/xr)-epsdie) 1105, 1105, 1106
+    if (abs((x-xr)/xr)-EPSDIE) 1105, 1105, 1106
 
     1106 continue
     iterat=iterat+1
@@ -377,35 +389,35 @@ contains
     !> @todo ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
     !> THe current dissoc.dat has no Z=100 (neither 99).
     !> Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
-    p(Z_H_STAR) = pph
+    m_p(Z_H_STAR) = pph
 
 
     ! EVALUATION OF THE FICTITIOUS PRESSURE OF EACH ELEMENT
     do 1070 i=1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      fp(nelemi) = ccomp(nelemi)*fph
+      m_fp(nelemi) = m_ccomp(nelemi)*fph
     1070 continue
 
     ! CHECK OF INITIALIZATION
-    pe = p(Z_ELECTRON)
+    m_pe = m_p(Z_ELECTRON)
 
 
 
-    if(ph-p(Z_H)) 1402,1402,1401
+    if(ph-m_p(Z_H)) 1402,1402,1401
 
     1401 continue
     do 1403 i=1,dissoc_nmetal
-      !> @todo ISSUE: what if some NELEMI=Z_ELECTRON=99? THen P(99) will no longer be equal to PE
+      !> @todo ISSUE: what if some NELEMI=Z_ELECTRON=99? THen m_p(99) will no longer be equal to m_pe
       nelemi=dissoc_nelemx(i)
-      p(nelemi) = fp(nelemi)*exp(-5.0*t/econst)
+      m_p(nelemi) = m_fp(nelemi)*exp(-5.0*t/ECONST)
     1403 continue
-    p(Z_H) = ph   !> @todo ISSUE: overwriting P(1)
+    m_p(Z_H) = ph   !> @todo ISSUE: overwriting m_p(1)
 
     ! Update: kept as-was
-    ! !> @note P was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
+    ! !> @note m_p was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
     ! !> @todo issue ask blb being divided by 100 is still an issue
     ! do m =1,MAX_DISSOC_Z
-    !   p(m)=1.0e-2*p(m)
+    !   m_p(m)=1.0e-2*m_p(m)
     ! end do
 
 
@@ -415,19 +427,19 @@ contains
     1040 continue
     do 1030 i =1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      fx(nelemi) = -fp(nelemi)+p(nelemi)*(1.0 + kp(nelemi)/pe)  !> @todo ISSUE if NELEMI=99, P(99) and PE are potentially not the same thing! Is this alright?
-      dfx(nelemi) = 1.0 + kp(nelemi)/pe
+      fx(nelemi) = -m_fp(nelemi)+m_p(nelemi)*(1.0 + m_kp(nelemi)/m_pe)  !> @todo ISSUE if NELEMI=99, m_p(99) and m_pe are potentially not the same thing! Is this alright?
+      dfx(nelemi) = 1.0 + m_kp(nelemi)/m_pe
     1030 continue
 
     spnion = 0.0
     do 1041 j=1,dissoc_nmol
       mmaxj  = dissoc_mmax(j)
-      pmoljl = -apmlog(j)
+      pmoljl = -m_apmlog(j)
       do 1042 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
-        !> @todo log(p) called many times, should try to optimize
-        pmoljl = pmoljl + float(natomj)*log10(p(nelemj))
+        !> @todo log(m_p()) called many times, should try to optimize
+        pmoljl = pmoljl + float(natomj)*log10(m_p(nelemj))
       1042 continue
 
       if(pmoljl - (pglog+1.0) ) 1046,1046,1047
@@ -438,13 +450,13 @@ contains
         natomj = dissoc_natom(m,j)
         pmoljl = pmoljl + float(natomj)*(-2.0)
 
-        ! For each j, divides all used elements in p by 100.
+        ! For each j, divides all used elements in m_p by 100.
         ! This is necessary for convergence of the molecular equilibrium.
-        p(nelemj) = 1.0e-2*p(nelemj)
+        m_p(nelemj) = 1.0e-2*m_p(nelemj)
 
       1048 continue
 
-      1046 pmolj = exp(pmoljl/econst)
+      1046 pmolj = exp(pmoljl/ECONST)
       do 1044 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
@@ -459,39 +471,39 @@ contains
           if(nelemj .eq. nelemi) go to 1045
           go to 1043
           1045 fx(nelemi) = fx(nelemi) + atomj*pmolj
-          dfx(nelemi) = dfx(nelemi) + atomj**2*pmolj/p(nelemi)
+          dfx(nelemi) = dfx(nelemi) + atomj**2*pmolj/m_p(nelemi)
         1043 continue
       1044 continue
-      ppmol(j) = pmolj
+      m_ppmol(j) = pmolj
     1041 continue
 
     ! SOLUTION OF THE RUSSELL EQUATIONS BY NEWTON-RAPHSON METHOD
     do 2001 i=1,dissoc_nmetal
       nelemi=dissoc_nelemx(i)
-      wa(i)=log10(p(nelemi)+1.0e-30)
+      wa(i)=log10(m_p(nelemi)+1.0e-30)
     2001 continue
 
     imaxp1 = dissoc_nmetal+1
-    wa(imaxp1) = log10(pe+1.0e-30)
+    wa(imaxp1) = log10(m_pe+1.0e-30)
     delta = 0.0
     do 1050 i=1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      prev(nelemi) = p(nelemi) - fx(nelemi)/dfx(nelemi)
+      prev(nelemi) = m_p(nelemi) - fx(nelemi)/dfx(nelemi)
       prev(nelemi) = abs(prev(nelemi))
 
       if (prev(nelemi) .lt. 1.0e-30) prev(nelemi)=1.0e-30
 
-      z(nelemi) = prev(nelemi)/p(nelemi)
+      z(nelemi) = prev(nelemi)/m_p(nelemi)
       delta = delta + abs(z(nelemi) - 1.0)
 
       if (dissoc_switer) 2500,2500,2501
 
       2501 continue
-      p(nelemi) = (prev(nelemi) + p(nelemi) )*0.5
+      m_p(nelemi) = (prev(nelemi) + m_p(nelemi) )*0.5
       go to 1050
 
       2500 continue
-      p(nelemi) = prev(nelemi)
+      m_p(nelemi) = prev(nelemi)
     1050 continue
 
 
@@ -499,13 +511,13 @@ contains
     perev = 0.0
     do 1061 i=1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      perev = perev + kp(nelemi)*p(nelemi)
+      perev = perev + m_kp(nelemi)*m_p(nelemi)
     1061 continue
 
-    perev = sqrt(perev/(1.0+spnion/pe))
-    delta = delta + abs((pe-perev)/pe)
-    pe = (perev + pe)*0.5  ! Note that it has an equivalence with the last element of P
-    p(Z_ELECTRON)=pe
+    perev = sqrt(perev/(1.0+spnion/m_pe))
+    delta = delta + abs((m_pe-perev)/m_pe)
+    m_pe = (perev + m_pe)*0.5  ! Note that it has an equivalence with the last element of m_p
+    m_p(Z_ELECTRON)=m_pe
 
     if (delta - dissoc_eps) 1051,1051,1052
 
@@ -524,12 +536,16 @@ end
 
 
 
+
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Contains subroutines filter_molecules_() and filter_atoms_()
+!> Contains subroutines filter_molecules() and filter_atoms()
 !>
-!> Variables calculated have prefixes km_f_ or atoms_f_
+!> Prefixes:
+!> @li km_f_ -- calculated by filter_molecules()
+!> @li atoms_f_ -- calculated by filter_atoms()
 
 module filters
   use molecules_idxs
@@ -560,11 +576,9 @@ module filters
   !> Contains the index of the last line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
   !> **for the current molecule** I_MOL
   !>
-  !> @par Augmented
-  !> First row is 0 (ZERO) -- facilitates the algorithm
-  !> element (i+1, j) represents to i-th transition of j-th molecule
+  !> Augmented: first row is 0 (ZERO) or repeats last element of previous column
   !>
-  !> molecule j is same as j-th molecule found in file
+  !> km_f_ln(i+1, j) represents to i-th transition of j-th molecule, 1=1,molidxs%n_on
   integer :: km_f_ln(MAX_NV_PER_MOL+1, NUM_MOL)
 
   !=====
@@ -610,12 +624,11 @@ contains
             i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
             i_filtered          ! Counts number of filtered lines (molecule-independent);
                                 ! index of km_f_lmbdam, km_f_sj, km_f_jj
-
+    integer num_lambdas                          
     logical flag_in
 
     write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
     call log_debug(lll)
-
 
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     i_line = 1
@@ -628,15 +641,14 @@ contains
 
       i_mol = i_mol+1
 
-      km_f_ln(1, i_mol) = i_filtered
+      km_f_ln(1, i_mol) = i_filtered  ! first row contain number of lines already filtered
 
-      write(lll, *) 'molecule idx', molidx, ': ',  km_titulo(molidx)
+      write(lll, *) 'molecule idx', molidx, '; titulo: ',  km_titulo(molidx), &
+       '; number of prospective lambdas: ', km_lines_per_mol(molidx)
       call log_debug(lll)
-      write(lll, *) 'number of prospective lambdas ------>', km_lines_per_mol(molidx)
-      call log_debug(lll)
 
 
-      ! Counters starting with "J_" restart at each molecule
+      ! Counters starting with "j_" restart at each molecule
       j_set = 1   ! Current "set-of-lines"
       flag_in = .FALSE.  ! Whether has filtered in at least one line
       do j_dummy = 1, km_lines_per_mol(molidx)
@@ -660,11 +672,10 @@ contains
 
         if (i_line .eq. km_ln(j_set, molidx)) then
           ! Reached last line of current set of lines
-          km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is all ZEROes.
+          km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is set apart.
 
-
-          write(lll, *) 'number of SELECTED lambdas for transition ', j_set, '------>', &
-           km_f_ln(j_set+1, i_mol)-km_f_ln(j_set, i_mol)
+          num_lambdas = km_f_ln(j_set+1, i_mol)-km_f_ln(j_set, i_mol)
+          write(lll, *) 'number of SELECTED lambdas for transition ', j_set, ': ', num_lambdas
           call log_debug(lll)
 
 
@@ -676,6 +687,9 @@ contains
     end do !--end of MOLID loop--!
 
 
+    problema i_mol
+    
+    
     km_f_mblend = i_filtered
 
     !print *, '*****************************************************************'
@@ -723,14 +737,10 @@ contains
         atoms_f_gr(k)     = atoms_gr(j)
         atoms_f_ge(k)     = atoms_ge(j)
         atoms_f_zinf(k)   = atoms_zinf(j)
-
         atoms_f_abonds_abo(k) = atoms_abonds_abo(j)
-
         atoms_f_abondr_dummy(k) = atoms_abondr_dummy(j)
-
       end if
     end do
-
     atoms_f_nblend = k
   end
 end
@@ -754,10 +764,10 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm,    & !< ?doc?
-    km_c_alargm    !< ?doc?
+    km_c_gfm,    & !< ?doc? in sync with km_f_sj etc
+    km_c_alargm    !< ?doc? in sync with km_f_sj etc
 
-  real*8, dimension(MAX_KM_LINES_TOTAL, MAX_MODELES_NTOT) :: km_c_pnvj
+  real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj !< ?doc? in sync with km_f_sj etc
 
   real*8, private, pointer, dimension(:) :: ppa, pb
   private point_ppa_pb
@@ -849,6 +859,7 @@ contains
       end do
     end do ! end of i_mol loop
 
+    
     do l = 1, km_f_mblend
       km_c_alargm(l) = 0.1
     end do
@@ -917,7 +928,8 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Declaration and initialization of x_* variables
 !>
-!> These variable values may come either from dfile:main or command-line options.
+!> Prefixes:
+!> @li x_ -- these variable values may come either from dfile:main or command-line options.
 
 module pfant_x
   use reader_main
@@ -990,6 +1002,7 @@ end
 !>  selekfh_* calculated by selekfh()
 !>       bk_* calculated by bk()
 !>    popul_* calculated by popul()
+!> @endverbatim
 
 module synthesis
   use logging
@@ -1108,7 +1121,7 @@ contains
 
     real*8 l0, lf, alzero, tetaef, xlfin, xlzero
 
-
+    ! auxiliary variables to time the different parts
     real :: start, finish, start0, finish0
 
     call cpu_time(start0)
@@ -1335,14 +1348,14 @@ contains
       !write(lll,707) ikey, m_lzero, m_lfin, i1, i2
       !call log_info(lll)
 
+      call cpu_time(finish)
+      print '("SAVING Time = ",f6.3," seconds.")',finish-start
+
       !=====
       ! Preparing for next iteration
       !=====
 
       call log_progress(ikey, ikeytot)
-
-      call cpu_time(finish)
-      print '("SAVING Time = ",f6.3," seconds.")',finish-start
 
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
@@ -1350,10 +1363,6 @@ contains
       m_lzero = m_lzero+main_aint
       m_lfin = m_lfin+main_aint
       if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
-
-
-
-
     end do  ! main loop
 
     close(UNIT_SPEC)
@@ -1372,10 +1381,11 @@ contains
     call cpu_time(finish0)
     print '("SYNTHESIS_() Time = ",f6.3," seconds.")',finish0-start0
 
-  contains  !--still pfant_calculate()
+  contains
 
     ! These subroutines have total knowledge of the variable names and values that appear inside
-    ! their parent subroutine PFANT_CALCULATE(). http://www.personal.psu.edu/jhm/f90/statements/contains.html
+    ! their parent subroutine synthesis_().
+    ! http://www.personal.psu.edu/jhm/f90/statements/contains.html
 
     !> Used to write the "spectrum", "continuum", and "normalized".
     !> Their writing pattern is very similar. THe header is the same,
@@ -1477,7 +1487,7 @@ contains
   !> Partit donnee pour 33 temperatures au plus ds la table.
 
   subroutine popul()
-    real*8 u(3), alistu(63), ue(50), tt(51), &
+    real*8 u(3), alistu(MAX_MODELES_NTOT*2), ue(MAX_MODELES_NTOT), tt(MAX_MODELES_NTOT*2), &
      aa, bb, uuu, x, y, t, tki2
     integer j, k, kmax, l, n
 
@@ -1657,6 +1667,7 @@ contains
 
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
+      
       if (atoms_f_nblend .ne. 0) then
         do k = 1, atoms_f_nblend
           ecar(k) = ecar(k)-main_pas
@@ -1857,6 +1868,7 @@ contains
     call log_debug(LEAVING//'bk()')
   end
 
+  
   !=======================================================================================
   !> Hydrogen lines-related calculation: calculates hy_tauh, hy_dhp, hy_dhm
 
@@ -2062,7 +2074,15 @@ end module
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> PFANT main executable: spectral synthesis
 !>
-!> @todo List of prefixes somewhere
+!> Creates three files such as (flux.spec, flux.cont, flux.norm).
+!> These files can be inputted into nulbad
+!> or visualized with plot_spectra.py
+!>
+!> Takes as input most of the data files.
+!>
+!> @verbatim
+!> @note Flux absolu sortant a ete multiplie par 10**5
+!> @endverbatim
 
 program pfant
   use config
@@ -2090,8 +2110,9 @@ program pfant
 
   !---
   ! (intermission)
-  ! Initializes variables whose values may come either from dfile:main or
-  ! command-line argument as soon as it reads the main file
+  ! After reading dfile:dissoc and dfile:main, 
+  ! initializes variables whose values may come either from dfile:main or
+  ! command-line option
   !---
   call pfant_init_x()
 
