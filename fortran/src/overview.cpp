@@ -170,35 +170,35 @@ pyqt4             $ sudo apt-get install python-qt4  # Debian-based Linux
 
 Here is a list of files used, and their default names.
 @verbatim
-Default name      | Description
+--option          |  Default name     | Description
 ------------------+-----------------------------------------------------------
 *** star-specific files ***
-main.dat          | main configuration file
-abonds.dat        | abundances
-dissoc.dat        | dissociation equilibrium data
+--fn_main         |      main.dat     | main configuration file
+--fn_abonds       | abonds.dat        | abundances
+--fn_dissoc       | dissoc.dat        | dissociation equilibrium data
 
 *** "constant" data files ***
-absoru2.dat       | absorbances ?doc?
-atomgrade.dat     | atomic lines
-moleculagrade.dat | molecular lines
-partit.dat        | partition functions
-hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
-gridsmap.dat      | list of NEWMARCS grids
-newnewm150.mod    | filenames listed in gridsmap.dat
-newnewm100.mod    | "
-newnewm050.mod    | "
-newnewp000.mod    | "
-newnewp025.mod    | "
+--fn_absoru2      | absoru2.dat       | absorbances ?doc?
+--fn_atoms        | atomgrade.dat     | atomic lines
+--fn_molecules    | moleculagrade.dat | molecular lines
+--fn_partit       | partit.dat        | partition functions
+                  | hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
+                  |   /gridsmap.dat   | list of NEWMARCS grids
+                  |  / newnewm150.mod | NEWMARCS grid listed in gridsmap.dat
+                  | -  newnewm100.mod | "
+                  |  \ newnewm050.mod | "
+                  |  | newnewp000.mod | "
+                  |   \newnewp025.mod | "
 
 *** created by innewmarcs ***
-modeles.mod       | atmospheric model (binary file created by innewmarcs)
+--fn_modeles      | modeles.mod       | atmospheric model (binary file)
 
 *** created by hydro2 ***
-thalpha           | hydrogen lines files
-thbeta            | "
-thgamma           | "
-thdelta           | "
-thepsilon         | "
+                  | thalpha           | hydrogen lines files
+                  | thbeta            | "
+                  | thgamma           | "
+                  | thdelta           | "
+                  | thepsilon         | "
 
 *** created by pfant ***
 flux.norm         | normalized flux
