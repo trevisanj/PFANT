@@ -37,6 +37,10 @@
 !> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
 !> @endverbatim
 !>
+!>
+!> Prefixes:
+!> @li absoru_ -- public variables used in other modules
+!> @li au_, at_ -- private variables shared among routines
 
 module absoru
   use absoru_data
@@ -93,7 +97,7 @@ module absoru
   real*8, dimension(20) :: au_zeuh, & !< ?doc?
    au_zeuhep !< ?doc?
   real*8, dimension(11) :: au_zk  !< ?doc?
-  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) & !< ?doc?
+  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< ?doc?
   real*8 :: au_ac2(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< DEGRE D'IONISATION DES METAUX
 
   real*8, dimension(3) :: au_ac1  !< Ionization degrees of H, He+ and He
@@ -102,6 +106,10 @@ module absoru
                                   !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
 
   real*8, dimension(MAX_ABSORU2_NM) :: au_znu  !< ?doc?
+
+
+  real*8 :: at_zzk(11,2) !> Calculated by athyhe()
+
 contains
 
   !-------------------------------------------------------------------------------
@@ -132,7 +140,7 @@ contains
     !> Affects value of MAX_WLH_I2: 1200 or 14110
     logical, intent(in) :: flag_hydro2
 
-    real*8 zzkk(11,2), dif(2,3),scath(2),zzk(11,2),scat(2), &
+    real*8 zzkk(11,2), dif(2,3),scath(2),at_zzk(11,2),scat(2), &
      scatel, sum1, sum2, unit, wl4, wlh
 
     integer i, ilt, ith, m, min, mm, mmm, nset, kkk
@@ -221,7 +229,7 @@ contains
 
     9007 continue
     if ((calth.eq.2).and.(callam.eq.2)) go to 9006
-    call athyhe (wl,th,callam,zzk, flag_hydro2)
+    call athyhe(wl, th, callam, at_zzk, flag_hydro2)
 
     9006 continue
     if (calmet.eq.1) go to 9003 ! note: will go to 9003 anyway
@@ -264,13 +272,13 @@ contains
         if ((m.ne.(absoru2_nmeta+1)).and.(m.ne.(absoru2_nmeta+3))) go to 4222
 
         if (m.eq.(absoru2_nmeta+1)) &
-         zzkk(m,i)=zzk(m,i)*(absoru_znh(absoru2_nmeta+4)*au_pe*1.e-26)/unit
+         zzkk(m,i)=at_zzk(m,i)*(absoru_znh(absoru2_nmeta+4)*au_pe*1.e-26)/unit
         if (m.eq.(absoru2_nmeta+3)) &
-         zzkk(m,i)=zzk(m,i)*((absoru_znh(absoru2_nmeta+4)*1.e-19)*(absoru_znh(absoru2_nmeta+7)*1.0e-20))/unit
+         zzkk(m,i)=at_zzk(m,i)*((absoru_znh(absoru2_nmeta+4)*1.e-19)*(absoru_znh(absoru2_nmeta+7)*1.0e-20))/unit
         go to 4221
 
         4222 continue
-        zzkk(m,i)=zzk(m,i)*absoru_znh(m)/unit
+        zzkk(m,i)=at_zzk(m,i)*absoru_znh(m)/unit
         if (m.eq.(absoru2_nmeta+2)) zzkk(m,i)=zzkk(m,i)*au_pe
 
         4221 continue
@@ -460,10 +468,10 @@ contains
   subroutine tempa(wl,th,calth,callam)
     implicit none
     real*8, intent(in) :: wl, & !< ?doc?
-     th & !< ?doc?
+     th  !< ?doc?
     real*8 comhe, hcbktm, uh, uhep
     integer j, k, l
-    integerm intent(in) :: callam, & !< ?doc?
+    integer, intent(in) :: callam, & !< ?doc?
      calth  !< ?doc?
 
     if (calth.eq.2) go to 1001
@@ -625,7 +633,7 @@ contains
 
   !-------------------------------------------------------------------------------
   !> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
-  !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE ZZK SI WL= A UNE
+  !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE at_zzk SI WL= A UNE
   !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
   !>
   !> @author A.M COLLE  07/12/1970
@@ -634,20 +642,20 @@ contains
   ! @li local "zk" renamed to "zk_"
   ! @li old COMMON "zk" so far is a module variable named au_zk
 
-  subroutine athyhe(wl,th,callam,zzk, flag_hydro2)
+  subroutine athyhe(wl,th,callam,at_zzk, flag_hydro2)
     real*8,  intent(in) :: wl, & !< ?doc?
-     th,  !< ?doc?
-     zzk(11,2) !< ?doc?
+     th !< ?doc?
     integer, intent(in) :: callam !< ?doc?
     !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to exp() in hydro2
     !> @todo issue decide upon a single logic, I think
     logical, intent(in) :: flag_hydro2
+    real*8,  intent(out) :: at_zzk(11,2) !< ?doc?
 
     real*8 althmb, althml, anu, any, bh, bhe, bhem, bhep, bkt, caeta, caro, difeta, &
      difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
      stimu3, tempor, uk, wlm, zkas, zlamin, zleta1, zleta2, znl, znl1, zk_
     integer i, ie, indth, ir, j, je, jhyt, jj, jjs, jr, js, k, kk, kks, l, ll, lls, n
-    integet jhe, jhep, jhem
+    integer jhe, jhep, jhem
     real*8 :: tgaunt(5),trhog(5),opnu(46), expon(2)
     real*8 :: ezut1, ezut2, zut1, zut2
     real*8, parameter ::                                  &
@@ -699,7 +707,7 @@ contains
 
     1335 if (th .ge. 0.3) go to 6060
 
-    zzk(absoru2_nmeta+1,1)=0.0
+    at_zzk(absoru2_nmeta+1,1)=0.0
     go to 6210
 
     6060 if ((callam.eq.2).and.(indth.eq.1)) go to 6100
@@ -735,18 +743,18 @@ contains
      ((-0.34592*th+7.0355)*th-0.40192))+((0.027039*th-0.011493)*th+0.0053666)
 
     !> @todo ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
-    zzk(absoru2_nmeta+1,1) = althmb+althml
+    at_zzk(absoru2_nmeta+1,1) = althmb+althml
 
     ! -- II --  H2-
     ! H2- SOMMERVILLE: APJ. VOL. 139 P. 195 1963
     6210 if (th .lt. 0.5) go to 2050
     if (wl .ge. 3040.0) go to 2070
 
-    2050 zzk(absoru2_nmeta+2,1)=0.0
+    2050 at_zzk(absoru2_nmeta+2,1)=0.0
     go to 2080
 
     2070 dksq=911.27/wl
-    zzk(absoru2_nmeta+2,1)=(((0.09319*th+2.857-0.9316/th)/dksq-(2.6*th+6.831-4.993/th))/ &
+    at_zzk(absoru2_nmeta+2,1)=(((0.09319*th+2.857-0.9316/th)/dksq-(2.6*th+6.831-4.993/th))/ &
      dksq+(35.29*th-9.804-10.62/th)-(74.52*th-62.48+0.4679/th)*dksq)*1.0e-29
 
     ! -- III --  H2+
@@ -784,20 +792,20 @@ contains
       if (zlamin .lt. au_winv(j)) go to 1015
     end do
 
-    1014 zzk(absoru2_nmeta+3,1)=opnu(jj)
+    1014 at_zzk(absoru2_nmeta+3,1)=opnu(jj)
     go to 1016
 
     ! INTERPOLATION LINEAIRE
-    1015 zzk(absoru2_nmeta+3,1)=(opnu(jj-1)*au_winv(jj)-opnu(jj)*au_winv(jj-1)+ &
+    1015 at_zzk(absoru2_nmeta+3,1)=(opnu(jj-1)*au_winv(jj)-opnu(jj)*au_winv(jj-1)+ &
      (opnu(jj)-opnu(jj-1))*zlamin)/(au_winv(jj)-au_winv(jj-1))
     go to 1016
 
-    1012 zzk(absoru2_nmeta+3,1)=0.0
+    1012 at_zzk(absoru2_nmeta+3,1)=0.0
 
     ! CAS OU WL EST UNE DISCONTINUITE
     1016 if (au_jfz.ne.2) go to 1017
     do n = 1,3
-      zzk(absoru2_nmeta+n,2)=zzk(absoru2_nmeta+n,1)
+      at_zzk(absoru2_nmeta+n,2)=at_zzk(absoru2_nmeta+n,1)
     end do
 
     ! -- IV --  H
@@ -886,7 +894,7 @@ contains
     end do
     go to 4199
 
-    1809 zzk(absoru2_nmeta+4,1)=0.0
+    1809 at_zzk(absoru2_nmeta+4,1)=0.0
     jhyt=0
 
     4199 continue
@@ -895,7 +903,7 @@ contains
       !
       ! WL N'EST PAS UNE DISCONTINUITE DE H
       !
-      if (i.eq.2) zzk(absoru2_nmeta+4,2)=zzk(absoru2_nmeta+4,1)
+      if (i.eq.2) at_zzk(absoru2_nmeta+4,2)=at_zzk(absoru2_nmeta+4,1)
       go to 1451
 
       4201 sigh=0.0
@@ -905,7 +913,7 @@ contains
       end do
 
       bh=sigh+(au_zeuh(20)-(1.0-g3)*au_zemh)/(2*au_uh1)
-      zzk(absoru2_nmeta+4,i)=au_ah*bh*stimu3
+      at_zzk(absoru2_nmeta+4,i)=au_ah*bh*stimu3
 
       !
       ! -- V -- HE+
@@ -932,7 +940,7 @@ contains
       ! WL N'EST PAS UNE DISCONTINUITE DE HE+
       !
 
-      zzk(absoru2_nmeta+5,2)=zzk(absoru2_nmeta+5,1)
+      at_zzk(absoru2_nmeta+5,2)=at_zzk(absoru2_nmeta+5,1)
       go to 1554
 
       1471 continue
@@ -940,16 +948,16 @@ contains
         sighep=sighep+au_zeuhep(jj)
       end do
       bhep=sighep+au_zeuhep(20)/(2*au_uhep1)
-      zzk(absoru2_nmeta+5,i)=au_ahep*bhep*stimu3
+      at_zzk(absoru2_nmeta+5,i)=au_ahep*bhep*stimu3
       go to 1554
 
-      1552 zzk(absoru2_nmeta+5,i)=0.0
+      1552 at_zzk(absoru2_nmeta+5,i)=0.0
 
       !
       ! -- VI -- HE
       ! HE  VARDYA: APJ. SUP. 80 VOL. 8 P. 277 JANVIER 1964
       1554 if (th.le.0.8) go to 5400
-      zzk(absoru2_nmeta+6,i)=0.0
+      at_zzk(absoru2_nmeta+6,i)=0.0
       go to 4200
 
       5400 if ((i.eq.2).and.(au_jh.eq.1)) go to 5872
@@ -1047,13 +1055,13 @@ contains
       end do
       bhe=sighe+(1807.240*au_zexp(10)-0.8072399*au_zeuhe1)/(2*au_uhe1)
 
-      5871 zzk(absoru2_nmeta+6,i)=au_ahe*bhe*stimu3+bhem
+      5871 at_zzk(absoru2_nmeta+6,i)=au_ahe*bhe*stimu3+bhem
       go to 4200
 
       !
       ! WL N'EST PAS UNE DISCONTINUITE DE HE
       !
-      5872 zzk(absoru2_nmeta+6,2)=zzk(absoru2_nmeta+6,1)
+      5872 at_zzk(absoru2_nmeta+6,2)=at_zzk(absoru2_nmeta+6,1)
     4200 continue
   end
 

@@ -624,7 +624,7 @@ contains
             i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
             i_filtered          ! Counts number of filtered lines (molecule-independent);
                                 ! index of km_f_lmbdam, km_f_sj, km_f_jj
-    integer num_lambdas                          
+    integer num_lambdas
     logical flag_in
 
     write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
@@ -686,10 +686,6 @@ contains
       end do
     end do !--end of MOLID loop--!
 
-
-    problema i_mol
-    
-    
     km_f_mblend = i_filtered
 
     !print *, '*****************************************************************'
@@ -859,7 +855,7 @@ contains
       end do
     end do ! end of i_mol loop
 
-    
+
     do l = 1, km_f_mblend
       km_c_alargm(l) = 0.1
     end do
@@ -1667,7 +1663,7 @@ contains
 
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
-      
+
       if (atoms_f_nblend .ne. 0) then
         do k = 1, atoms_f_nblend
           ecar(k) = ecar(k)-main_pas
@@ -1730,7 +1726,7 @@ contains
         kci(n) = bk_kcd(d,n)
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
-      end do 
+      end do
 
 
       bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
@@ -1868,7 +1864,7 @@ contains
     call log_debug(LEAVING//'bk()')
   end
 
-  
+
   !=======================================================================================
   !> Hydrogen lines-related calculation: calculates hy_tauh, hy_dhp, hy_dhm
 
@@ -2110,7 +2106,7 @@ program pfant
 
   !---
   ! (intermission)
-  ! After reading dfile:dissoc and dfile:main, 
+  ! After reading dfile:dissoc and dfile:main,
   ! initializes variables whose values may come either from dfile:main or
   ! command-line option
   !---

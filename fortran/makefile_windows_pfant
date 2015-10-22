@@ -3,36 +3,38 @@
 #
 
 SRCS_f90d1 = \
-readers.f90 \
-pfant.f90 \
-misc_math.f90 \
-misc.f90 \
-logging.f90 \
-dimensions.f90 \
+absoru.f90 \
 config.f90 \
-absoru.f90 
+dimensions.f90 \
+logging.f90 \
+misc.f90 \
+misc_math.f90 \
+paula2003.f90 \
+pfant.f90 \
+readers.f90 
 
 SRCS_fd1 = \
 absoru_data.f 
 
 OBJS_f90d1 = \
-readers.o \
-pfant.o \
-misc_math.o \
-misc.o \
-logging.o \
-dimensions.o \
+absoru.o \
 config.o \
-absoru.o 
+dimensions.o \
+logging.o \
+misc.o \
+misc_math.o \
+paula2003.o \
+pfant.o \
+readers.o 
 
 OBJS_fd1 = \
 absoru_data.o 
 
-SRC_DIR_f90d1 = 
+SRC_DIR_f90d1 = src/
 
-SRC_DIR_fd1 = 
-OBJS_DIR = ../obj-windows/
-EXE_DIR = ../bin/
+SRC_DIR_fd1 = src/
+OBJS_DIR = obj-windows/src/
+EXE_DIR = bin/
 
 EXE = pfant.exe
 FC = mingw32-gfortran.exe
@@ -63,42 +65,44 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-readers.o: \
-    readers.f90 \
-    config.o \
-    logging.o \
-    dimensions.o \
-    misc.o
-pfant.o: \
-    pfant.f90 \
-    absoru.o \
-    config.o \
-    misc_math.o \
-    logging.o \
-    dimensions.o \
-    misc.o \
-    readers.o
-misc_math.o: \
-    misc_math.f90 \
-    logging.o \
-    dimensions.o \
-    misc.o
-misc.o: \
-    misc.f90 \
-    logging.o \
-    dimensions.o
-logging.o: \
-    logging.f90
-dimensions.o: \
-    dimensions.f90
-config.o: \
-    config.f90 \
-    logging.o \
-    misc.o
-absoru_data.o: \
-    absoru_data.f
 absoru.o: \
     absoru.f90 \
     absoru_data.o \
     readers.o
+absoru_data.o: \
+    absoru_data.f
+config.o: \
+    config.f90 \
+    logging.o \
+    misc.o
+dimensions.o: \
+    dimensions.f90
+logging.o: \
+    logging.f90
+misc.o: \
+    misc.f90 \
+    dimensions.o \
+    logging.o
+misc_math.o: \
+    misc_math.f90 \
+    dimensions.o \
+    logging.o \
+    misc.o
+paula2003.o: \
+    paula2003.f90
+pfant.o: \
+    pfant.f90 \
+    absoru.o \
+    config.o \
+    dimensions.o \
+    misc_math.o \
+    logging.o \
+    misc.o \
+    readers.o
+readers.o: \
+    readers.f90 \
+    config.o \
+    dimensions.o \
+    logging.o \
+    misc.o
 

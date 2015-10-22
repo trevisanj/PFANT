@@ -91,10 +91,10 @@ C> aligned in 72 columns.
      +65848.0,73822.6,82253.0/) !< ?doc?
 
 
-      integer, parameter :: G3D_DIM_RHO = 12, & !< length in the rho direction
-       G3D_DIM_ETA = 18, & !< length in the eta direction
-       G3DX = 9 !< half the length in the eta direction
-      
+      integer, parameter :: G3D_DIM_RHO = 12, !< length in the rho direction
+     +G3D_DIM_ETA = 18,  !< length in the eta direction
+     +G3DX = 9 !< half the length in the eta direction
+
       !> equivalente with first G3DX columns of au_g3d
       real*8 :: g3d1(G3D_DIM_RHO,G3DX)
       data g3d1
@@ -124,14 +124,14 @@ C> aligned in 72 columns.
      +200,1.130,1.084,1.065,1.053,1.047,1.042,1.037,1.034,1.026,1.022/
 
       !> au_g3d(i,j) = facteur de gaunt en fonction de au_rhog et de log(-eta)
-      real*8, dimension(G3D_DIM_RHO,GED_DIM2) :: au_g3d
+      real*8, dimension(G3D_DIM_RHO,G3D_DIM_ETA) :: au_g3d
       equivalence (au_g3d(1,1),g3d1(1,1)),(au_g3d(1,G3DX+1),g3d2(1,1))
 
-      
+
       real*8, parameter :: au_rhog(G3D_DIM_RHO) = (
      + /1.010,1.025,1.050,1.100,1.150,1.200,1.250,1.300,1.350,1.
      +400,1.600,1.800/) !< ?doc?
-     
+
       real*8, parameter :: au_zletag(G3D_DIM_ETA) = (
      + /-3.0000,-2.0000,-1.0000,-0.6021,-0.3010,-0
      +.1249,0.0000,0.3979,0.6990,0.8751,1.0000,1.0969,1.1761,1.3010,1.39
