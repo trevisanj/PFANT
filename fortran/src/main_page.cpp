@@ -1,7 +1,3 @@
-// .cpp (C++ source file) extension is preferred for documentation sources
-// because of their /** ... */  block comments
-// which do not require a "!" at the beginning of every line like Fortran.
-
 /**
 @mainpage Welcome
 
