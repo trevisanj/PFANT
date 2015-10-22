@@ -165,6 +165,12 @@ pyqt4             $ sudo apt-get install python-qt4  # Debian-based Linux
 @li fortranformat $ sudo pip install fortranformat  # Requires pip
 
 
+*Windows compiler*
+
+A possible way to compile in Winows is to install MinGW (http://sourceforge.net/projects/mingw/files/).
+In MinGW Installation Manager, install at least the following packages:
+mingw-developer-toolkit, mingw32-base, mingw32-gcc-fortran, msys-base.
+
 
 @section datafiles Input/output data files
 
