@@ -1,5 +1,6 @@
 # PFANT
-Automatically exported from code.google.com/p/pfant
+
+Spectral synthesis
 
 Here is a description of each item in directory:
 
