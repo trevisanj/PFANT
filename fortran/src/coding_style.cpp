@@ -194,16 +194,32 @@ Assertions serve both as documentation and error protection.
 Documentation
 =============
 
-Where to document
------------------
+Some guidelines inspired in Agile modelling documentation guidelines
+(http://www.agilemodeling.com/essays/agileDocumentation.htm):
 
-@li Keep information in manuals and overviews to a minimum, 
-and try to fit explanations as close to the actual code as possible.
-This increases the chance that the explanation matches what the code actually does.
-@li this very document is already an exception, so perhaps there should be no more than a @ref overview, @ref 
+@li Explain what the code does in the .f90 files, preferrably as close
+    to the actual code as possible.
+@li Keep the information in the .cpp files to a minimum, mostly to give
+    directions to users who just bumped into the project.
 
-Commenting
-----------
+
+C++ sources
+-----------
+
+For writing pages, such as overview, this page, etc.,
+the .cpp (C++ source file) extension is preferred for documentation sources
+(overview.cpp, main_page.cpp, etc.), as
+@code
+/**
+C++ block comments
+do not require
+*/
+!> these markers
+!> at the beginnig of each line
+@endcode
+
+.f, .f90 files
+--------------
 
 *What to put in comments*. It is recommended to document at least this:
 
@@ -214,19 +230,19 @@ Commenting
 @li when the logic becomes tricky, it is a kind gesture to explain what the code is doing
 
 
-How to format comments for Doxygen 
-----------------------------------
+How to format comments for Doxygen in the .f, .f90 files
+--------------------------------------------------------
 
 We tell Doxygen which comments we want parsed by using these indicators after the "!", i.e.,
 @code
-!>
-!<
-!!
+!> explains what comes next
+!< explains what came last ...
+!! ... continuing
 @endcode
 
 See module template in this document for example uses.
                        
-Also check
+More about how Doxygen:
 
 https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks
 
@@ -236,9 +252,7 @@ https://modelingguru.nasa.gov/docs/DOC-1811
 Tags
 ====
 
-Some tags are used to mark things left behind that should be eventually looked at.
-
-This includes:
+These are search keywords with the following meaning:
 
 @verbatim
 
@@ -253,7 +267,14 @@ ask EC               "
 
 @endverbatim
 
-@note tags are case-insensitive.
+Tags are case-insensitive. This list is probably not complete. 
 
+References
+==========
 
+https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks
+
+https://modelingguru.nasa.gov/docs/DOC-1811
+
+http://www.agilemodeling.com/essays/agileDocumentation.htm
 */
