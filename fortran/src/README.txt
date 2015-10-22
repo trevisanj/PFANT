@@ -1,4 +1,9 @@
-*.f90, *.f      -- Fortran sources
-*.cpp           -- additional documentation that will by parsed by Doxygen
+Directory contents
 
-Important: keep these files together, documentation is part of the source code.
+*.f90, *.f      -- Fortran sources
+
+*.cpp           -- C++ source containing only comment blocks.
+                   Additional documentation that will by parsed by Doxygen.
+                   
+                   
+
