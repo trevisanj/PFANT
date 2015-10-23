@@ -1,5 +1,5 @@
-GFORTRAN module version '10' created from /home/j/Documents/projects/pfant/working/github/fortran/src/absoru_data.f
-MD5:a590915e734ee0e015dc9c35d014ba15 -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '10' created from /home/jtrevisan/Documents/projects/pfant/PFANT/fortran/src/absoru_data.f
+MD5:a35b5924aeb177652b74015db6955600 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -405,9 +405,19 @@ UNKNOWN IMPLICIT-SAVE 0 0 DIMENSION DATA) (REAL 8 0 0 0 REAL ()) 0 0 ()
 (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '12') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '9')) 0 () () () 0 0)
+21 'g3d_dim_eta' 'absoru_data' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '18') () 0 () () () 0 0)
+22 'g3d_dim_rho' 'absoru_data' '' 1 ((PARAMETER UNKNOWN-INTENT
+UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
+() (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '12') () 0 () () () 0 0)
+23 'g3dx' 'absoru_data' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '9') () 0 () () () 0 0)
 )
 
 ('__convert_r4_r8' 0 5 'absoru_data' 0 6 'au_aa' 0 7 'au_g3d' 0 2
 'au_grdm' 0 8 'au_rhog' 0 9 'au_stwtm' 0 10 'au_u1' 0 11 'au_u2' 0 12
 'au_winv' 0 13 'au_yy' 0 14 'au_zeff4' 0 15 'au_zletag' 0 16 'au_zlh' 0
-17 'au_zlhe' 0 18 'au_zlhem' 0 19 'au_zlhep' 0 20 'g3d1' 0 4 'g3d2' 0 3)
+17 'au_zlhe' 0 18 'au_zlhem' 0 19 'au_zlhep' 0 20 'g3d1' 0 4 'g3d2' 0 3
+'g3d_dim_eta' 0 21 'g3d_dim_rho' 0 22 'g3dx' 0 23)

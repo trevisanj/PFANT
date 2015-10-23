@@ -1,5 +1,5 @@
-GFORTRAN module version '10' created from /home/j/Documents/projects/pfant/working/github/fortran/src/dimensions.f90
-MD5:5cabf06b9eab9529920167cc11fcfdbe -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '10' created from /home/jtrevisan/Documents/projects/pfant/PFANT/fortran/src/dimensions.f90
+MD5:25e5948a52af99b4a70ea5e914ef406d -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -57,7 +57,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '100') () 0 () () () 0 0)
 15 'max_dtot' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
-CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10000') () 0 () () () 0 0)
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '50000') () 0 () () () 0 0)
 16 'max_filetoh_jjmax' 'dimensions' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '99') () 0 () () () 0 0)

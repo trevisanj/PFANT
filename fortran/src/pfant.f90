@@ -1186,22 +1186,24 @@ contains
     if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
-      do i = 2,250
+      do i = 2,25000
         xlfin = xlfin+main_aint
         if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
-    m_lzero = x_llzero-LAMBDA_STRETCH
-    m_lfin = m_lzero+main_aint+LAMBDA_STRETCH
+    !m_lzero = x_llzero-LAMBDA_STRETCH
+    !m_lfin = m_lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
 
     !> @todo check if 10 is LAMBDA_STRETCH/2.
     !
     !> @todo This is used by nulbad. Gotta plot non-convolved on top of convolved and see if the lambdas are right
-    l0 = x_llzero-10.
-    lf = x_llfin+10.
+    !l0 = x_llzero-LAMBDA_STRETCH/2
+    !lf = x_llfin+LAMBDA_STRETCH/2
+    l0 = x_llzero-LAMBDA_STRETCH
+    lf = x_llfin+LAMBDA_STRETCH
 
 
     !=====
@@ -1213,6 +1215,20 @@ contains
       ! Initialization of lambdas / delta lambdas for current iteration
       !=====
 
+      ! Overrides calculation interval.
+      ! Now stretching only at first and last steps
+      if (ikey .eq. 1) then
+        m_lzero = x_llzero-LAMBDA_STRETCH-main_pas
+      else
+        m_lzero = x_llzero+main_aint*(ikey-1)+main_pas-main_pas
+      end if
+
+      if (ikey .eq. ikeytot) then
+        m_lfin = x_llfin+LAMBDA_STRETCH+main_pas
+      else
+        m_lfin = x_llzero+main_aint*ikey+main_pas
+      end if
+
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
       m_dtot = int((m_lfin-m_lzero)/main_pas + 1.0005)
 
@@ -1223,7 +1239,7 @@ contains
       end if
 
       m_lambd = (m_lzero+m_lfin)/2
-      m_ilzero = int(m_lzero/100.)*100
+      m_ilzero = int((m_lzero-main_pas)/main_pas)*main_pas  ! some reference ilzero smaller than lzero
       alzero = m_lzero-m_ilzero
       do d = 1,m_dtot
         m_ttd(d) = alzero+main_pas*(d-1)
@@ -1232,9 +1248,9 @@ contains
       !#logging
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
-      501 format(2x,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'m_lzero=',f10.3,2x,'m_lfin=',&
-       f10.3,2x,'m_dtot=',i7,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',f10.3)
-      write(lll,501) m_lzero, m_lfin, m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
+      501 format(2x,2x,'m_lzero=',f10.3,2x,'m_lfin=',&
+       f10.3,2x,'m_dtot=',i7,2x,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',f10.3)
+      write(lll,501) m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
       call log_info(lll)
 
       !=====
@@ -1301,9 +1317,6 @@ contains
       print '("KAPMOL_() Time = ",f6.3," seconds.")',finish-start
 
 
-      do l = 1, km_f_mblend
-        m_ecartm(l) = km_f_lmbdam(l)-m_lzero + main_pas
-      end do
 
       call cpu_time(start)
 
@@ -1320,14 +1333,23 @@ contains
       call cpu_time(start)
 
 
-      li = int(10./main_pas)
-      i1 = li+1
-      i2 = m_dtot - li
-      if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
-        i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
-      end if
-      itot = i2-i1+1
-      do d = i1,i2
+      !li = int(dble(LAMBDA_STRETCH)/2/main_pas)
+      !i1 = li+1  ! initial recording index
+      !i2 = m_dtot - li
+      !if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
+      !  i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
+      !end if
+      !itot = i2-i1+1
+      !do d = i1,i2
+
+      i1 = 2  ! initial recording index
+      i2 = m_dtot - 1
+      !if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
+      !  i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
+      !end if
+      ! itot = i2-i1+1
+      !do d = i1,i2
+      do d = 1, m_dtot
         selekfh_fl(d) = selekfh_fl(d)*(10.**5)
         selekfh_fcont(d) = selekfh_fcont(d)*(10.**5)
         fn(d) = selekfh_fl(d) / selekfh_fcont(d)  ! normalized spectrum
@@ -1356,9 +1378,9 @@ contains
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
-      m_lzero = m_lzero+main_aint
-      m_lfin = m_lfin+main_aint
-      if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
+      !m_lzero = m_lzero+main_aint
+      !m_lfin = m_lfin+main_aint
+      !if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
     end do  ! main loop
 
     close(UNIT_SPEC)
@@ -1396,6 +1418,23 @@ contains
       amg = main_xxcor(8)  ! ?doc? MT: I think that somebody did this because the "alpha-enhanced" is specified nowhere. See also in write_log()
 
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
+!      write(unit_, 1130)       &
+!       ikeytot,                &  ! fixed (same value for all iterations)
+!       modeles_tit,            &  ! fixed
+!       tetaef,                 &  ! fixed
+!       main_glog,              &  ! fixed
+!       main_asalog,            &  ! fixed
+!       modeles_nhe,            &  ! fixed
+!       amg,                    &  ! fixed
+!       l0,                     &  ! fixed
+!       lf,                     &  ! fixed
+!       m_lzero,                &  ! changes (value changes with each iteration)
+!       m_lfin,                 &  ! changes
+!       itot,                   &  ! changes
+!       main_pas,               &  ! fixed
+!       main_echx,              &  ! fixed
+!       main_echy,              &  ! fixed
+!       main_fwhm                  ! fixed
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
        modeles_tit,            &  ! fixed
@@ -1406,15 +1445,14 @@ contains
        amg,                    &  ! fixed
        l0,                     &  ! fixed
        lf,                     &  ! fixed
-       m_lzero,                  &  ! changes (value changes with each iteration)
-       m_lfin,                   &  ! changes
-       itot,                   &  ! changes
+       m_lzero+main_pas*(i1-1),                &  ! changes (value changes with each iteration)
+       m_lzero+main_pas*(i2-1),                 &  ! changes
+       i2-i1+1,                   &  ! old nulbad, not used
        main_pas,               &  ! fixed
        main_echx,              &  ! fixed
        main_echy,              &  ! fixed
        main_fwhm                  ! fixed
-
-      write(unit_,'(40000f15.5)') (item(d), d=i1,i2)
+      write(unit_,'('//int2str(MAX_DTOT)//'f15.5)') (item(d), d=i1,i2)  !(item(d), d=i1,i2)
     end
 
   end subroutine synthesis_
@@ -1656,20 +1694,24 @@ contains
     end if
 
     if (km_f_mblend .ne. 0) then
+      ! do l = 1, km_f_mblend
+      !   m_ecartm(l) = km_f_lmbdam(l)-m_lzero + main_pas
+      ! end do
+      ! do k=1,km_f_mblend
+      !  ecarm(k) = m_ecartm(k)
+      ! end do
       do k=1,km_f_mblend
-        ecarm(k) = m_ecartm(k)
+        ecarm(k) = km_f_lmbdam(k)-m_lzero + main_pas
       end do
     end if
 
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
-
       if (atoms_f_nblend .ne. 0) then
         do k = 1, atoms_f_nblend
           ecar(k) = ecar(k)-main_pas
         end do
       end if
-
       if (km_f_mblend .ne. 0) then
         do k = 1,km_f_mblend
           ecarm(k) = ecarm(k)-main_pas
@@ -1847,7 +1889,15 @@ contains
       do j=1,2
         kcn(j)=kcj(j,n)
       end do
+!write(*,*)'AQUI QCHEGOU'
+!write(*,*) 'lambdc', lambdc
+!write(*,*) 'kcn', kcn
+!write(*,*) 'm_dtot', m_dtot
+!write(*,*) 'm_ttd', m_ttd(1), m_ttd(m_dtot)
+!write(*,*) 'fttc', fttc(1), fttc(m_dtot)
+!write(*,*)'---------------'
       call ftlin3(2,lambdc,kcn,m_dtot,m_ttd,fttc)
+!      write(*,*)'MAS PASSOU DO FTLIN3!!!!!!!!!!!!!!!!!!!!'
       do d = 1,m_dtot
         bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
       end do

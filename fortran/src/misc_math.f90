@@ -681,7 +681,8 @@ contains
         if(t-x(j) ) 3,2,1
       1 continue
 
-      go to 10
+      !if (abs(t-x(j)) .le. 1e-38) goto 2  ! tolerance because numbers may not match because of tolerance
+      !go to 10
 
       2 continue
       ft=y(j)

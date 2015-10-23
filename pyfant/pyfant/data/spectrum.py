@@ -101,13 +101,30 @@ class FileSpectrumPfant(FileSpectrum):
                      sp.amg,
                      sp.l0,
                      sp.lf,
-                     _,  # self.lzero,
-                     _,  #self.lfin,
-                     _,  #self.itot,
+                     lzero,  # self.lzero,
+                     lfin,  #self.lfin,
+                     itot,  #self.itot,
                      sp.pas,
                      sp.echx,
                      sp.echy,
                      sp.fwhm] = vars
+
+                    print                     [sp.ikeytot,
+                     sp.tit,
+                     sp.tetaef,
+                     sp.glog,
+                     sp.asalog,
+                     sp.modeles_nhe,
+                     sp.amg,
+                     sp.l0,
+                     sp.lf,
+                     lzero,  # self.lzero,
+                     lfin,  #self.lfin,
+                     itot,  #self.itot,
+                     sp.pas,
+                     sp.echx,
+                     sp.echy,
+                     sp.fwhm]
 
                 itot = vars[11]
 
@@ -131,7 +148,7 @@ class FileSpectrumPfant(FileSpectrum):
 
                 if i < sp.ikeytot - 1:
                     # for some reason the last point is not used...
-                    y = y + v[:-1]
+                    y = y + v  # update: taking all points calculated yes [:-1]
                 else:
                     # ...except for in the last calculation interval
                     # (then the last point is used).
