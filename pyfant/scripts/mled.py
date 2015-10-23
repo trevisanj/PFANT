@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+"""
+mled - Molecular Lines EDitor
+
+See mled.html or press F1 inside application.
+"""
+
 from pyfant.gui import *
 from pyfant import *
 import sys
