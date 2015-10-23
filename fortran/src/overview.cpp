@@ -160,9 +160,10 @@ Python packages:
 @verbatim
 What              Recommended way to install
 -------------------------------------------------------------------------------------
-matplotlib        $ sudo apt-get install python-matplotlib  # Debian-based Linux
-pyqt4             $ sudo apt-get install python-qt4  # Debian-based Linux
-@li fortranformat $ sudo pip install fortranformat  # Requires pip
+matplotlib        Debian-based Linux: $ sudo apt-get install python-matplotlib
+pyqt4             Debian-based Linux: $ sudo apt-get install python-qt4
+                  Windows: download installer at https://riverbankcomputing.com/software/pyqt/download
+@li fortranformat Linux and Windows: pip install fortranformat
 
 
 *Windows compiler*
