@@ -162,7 +162,7 @@ What              Recommended way to install
 -------------------------------------------------------------------------------------
 matplotlib        Debian-based Linux: $ sudo apt-get install python-matplotlib
 pyqt4             Debian-based Linux: $ sudo apt-get install python-qt4
-                  Windows: download installer at https://riverbankcomputing.com/software/pyqt/download
+                  Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
 @li fortranformat Linux and Windows: pip install fortranformat
 
 
