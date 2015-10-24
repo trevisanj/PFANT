@@ -22,24 +22,29 @@ logger.addHandler(logging.NullHandler())
 #         return len(self.lmbdam)
 
 class Element(AttrsPart):
+    """
+    Represents element with its atomic lines.
+
+    Element is identified by key symbol+ionization
+    """
     attrs = ["elem"]
 
     def __init__(self):
         AttrsPart.__init__(self)
-        self.lines = []
+        self.lines = []  # list of AtomicLine
         self.elem = None
+        self.ioni = None
 
     def __len__(self):
         return len(self.lines)
 
 class AtomicLine(AttrsPart):
-    attrs = ["ioni", "lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf", "abondr"]
+    attrs = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf", "abondr"]
 
     def __init__(self):
         AttrsPart.__init__(self)
 
         # all scalars
-        self.ioni = None
         self.lambda_ = None
         self.kiex = None
         self.algf = None
@@ -90,14 +95,16 @@ class FileAtoms(DataFile):
 
                     # (EE)(I) --whitespace-- (float) --ignored...--
                     temp = str_vector(h)
-                    elem, a.ioni = temp[0][:-1], int(temp[0][-1])
+                    elem, s_ioni = temp[0][:-1], temp[0][-1]
                     a.lambda_ = float(temp[1])
                     elem = adjust_atomic_symbol(elem)
-                    if edict.has_key(elem):
-                        e = edict[elem]
+                    key = elem+ioni  # will group elements by this key 
+                    if edict.has_key(key):
+                        e = edict[key]
                     else:
-                        e = edict[elem] = Element()
+                        e = edict[key] = Element()
                         e.elem = elem
+                        e.ioni = int(s_ioni)
                         self.elements.append(e)
                     e.lines.append(a)
                     r += 1
@@ -120,6 +127,6 @@ class FileAtoms(DataFile):
                 p = len(e)
                 for j, a in enumerate(e.lines):
                     finrai = 1 if i == n-1 and j == p-1 else 0
-                    write_lf(h, "%2s%1d %10.3f" % (e.elem, a.ioni, a.lambda_))
+                    write_lf(h, "%2s%1d %10.3f" % (e.elem, e.ioni, a.lambda_))
                     write_lf(h, "%8.3f %8.3f %8.3f %8.3f %8.3f %6.1f %3.1f %1d" % \
                         (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))

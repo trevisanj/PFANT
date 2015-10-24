@@ -159,7 +159,7 @@ contains
 
       if (icle .eq. ikeytot) itot = itot+1
 
-      do d = 1,itot-1
+      do d = 1,itot ! o quiridu -1
         k=rs_ktot+d
         rs_ffnu(k)=fnu(d)
       end do
@@ -169,9 +169,7 @@ contains
       if(icle .gt. ikeytot) exit
     end do
 
-
-    print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
-
+    ! print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
 
     close(unit=UNIT_)
   end
@@ -229,64 +227,104 @@ contains
     !
     !  Convolution sp synthetique avec profil instrumental
     !
-    if(config_convol) then
-      call cafconvh()
-      call log_debug('p_ift='//int2str(p_ift))
+    call cafconvh()
+    call log_debug('p_ift='//int2str(p_ift))
 
-      j = (p_ift-1)/2
-      jp1 = j+1
-      dmj = rs_ktot-j
-      dtotc = dmj-jp1+1
+    j = (p_ift-1)/2
+    jp1 = j+1
+    dmj = rs_ktot-j
+    dtotc = dmj-jp1+1
 
-      m = 0
-      do d = jp1,dmj,ip
-        m = m+1
-        tl(m) = lambd(d)
+    m = 0
+    do d = jp1,dmj,ip
+      m = m+1
+      tl(m) = lambd(d)
+    end do
+    kktot = m
+
+    if(config_flam) then
+      do k = 1,rs_ktot
+        fl(k) = ffl(k)
       end do
-      kktot = m
-
-      if(config_flam) then
-        do k = 1,rs_ktot
-          fl(k) = ffl(k)
-        end do
-      else
-        do k = 1,rs_ktot
-          fl(k) = rs_ffnu(k)
-        end do
-      end if
-
-      call volut() ! calculates alfl
-
-      k=0
-      do i = jp1, dmj, ip
-        k = k+1
-        afl(k) = alfl(i)
-      end do
-      kktot = k
-    end if
-
-    if((.not. config_convol) .and. (.not. config_flam)) then
-      kktot = rs_ktot
-      do k = 1, kktot
-        afl(k) = rs_ffnu(k)
-      end do
-    end if
-
-    if((.not. config_convol) .and. (config_flam)) then
-      kktot = rs_ktot
-      do k = 1,kktot
-        afl(k) = ffl(k)
-        tl(k) = lambd(k)
-      end do
-    end if
-
-    if(config_convol) then
-      alz = tl(1)
-      alf = tl(kktot)
     else
-      alz = lambd(1)
-      alf = lambd(kktot)
+      do k = 1,rs_ktot
+        fl(k) = rs_ffnu(k)
+      end do
     end if
+
+    call volut() ! calculates alfl
+
+    k=0
+    do i = jp1, dmj, ip
+      k = k+1
+      afl(k) = alfl(i)
+    end do
+    kktot = k
+
+    alz = tl(1)
+    alf = tl(kktot)
+
+
+    !if(config_convol) then
+!      call cafconvh()
+!      call log_debug('p_ift='//int2str(p_ift))
+!
+!      j = (p_ift-1)/2
+!      jp1 = j+1
+!      dmj = rs_ktot-j
+!      dtotc = dmj-jp1+1
+!
+!      m = 0
+!      do d = jp1,dmj,ip
+!        m = m+1
+!        tl(m) = lambd(d)
+!      end do
+!      kktot = m
+!
+!      if(config_flam) then
+!        do k = 1,rs_ktot
+!          fl(k) = ffl(k)
+!        end do
+!      else
+!        do k = 1,rs_ktot
+!          fl(k) = rs_ffnu(k)
+!        end do
+!      end if
+!
+!      call volut() ! calculates alfl
+!
+!      k=0
+!      do i = jp1, dmj, ip
+!        k = k+1
+!        afl(k) = alfl(i)
+!      end do
+!      kktot = k
+!
+!
+    !end if
+    !
+    !if((.not. config_convol) .and. (.not. config_flam)) then
+    !  kktot = rs_ktot
+    !  do k = 1, kktot
+    !    afl(k) = rs_ffnu(k)
+    !  end do
+    !end if
+    !
+    !if((.not. config_convol) .and. (config_flam)) then
+    !  kktot = rs_ktot
+    !  do k = 1,kktot
+    !    afl(k) = ffl(k)
+    !    tl(k) = lambd(k)
+    !  end do
+    !end if
+
+    !if(config_convol) then
+    !  alz = tl(1)
+    !  alf = tl(kktot)
+    !else
+    !  alz = lambd(1)
+    !  alf = lambd(kktot)
+    !end if
 
     write(UNIT_,201) rs_titc,rs_tetaeff,rs_glog,rs_asalog,rs_amg
     201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
@@ -295,32 +333,34 @@ contains
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
 
-    write(*,*) 'ppppppppppppp', afl(1), alfl(1)
+    !write(*,*) 'ppppppppppppp', afl(1), alfl(1)
 
     do k=1,kktot
       write(UNIT_,*) tl(k), afl(k)
     end do
 
-    close(unit=UNIT_)
+    close(unit=UNIT_)  ! xxx
 
     !#loggingx4
     write(lll,110) rs_tetaeff,rs_glog,rs_asalog,rs_nhe_bid,rs_amg
     110 format(2X,'tetaeff=',F8.3,2X,'log g=',F6.2,2X,'[M/H]=',F6.2, &
                2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
-    call log_debug(lll)
+    call log_info(lll)
 
     write(lll,130) alz,alf,kktot,x_pat,x_fwhm
     130 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KKTOT=',I7, &
                2X,'PAS nouveau =',F5.2,2x,'FWHM=',F5.2)
-    call log_debug(lll)
+    call log_info(lll)
 
     write(lll,120) rs_l0,rs_lf,rs_ktot,rs_dpas
     120 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
                2X,'PAS original='F5.2)
-    call log_debug(lll)
+    call log_info(lll)
 
     write(6,'(12F6.3)') (afl(k),k=1,12)
-    call log_debug(lll)
+    call log_info(lll)
+
+    call log_info('File '//full_path_w(x_fn_cv)//' successfully created.')
   contains
 
     !=======================================================================================
@@ -346,7 +386,7 @@ contains
         alfl(i) = fl(i)
       end do
       do i = iimj,rs_ktot
-        alfl(i)=fl(i)
+        alfl(i) = fl(i)
       end do
     end
   end
@@ -364,14 +404,15 @@ contains
 
   subroutine cafconvh()
     real*8 :: at(-IPPTOT:+IPPTOT)
-    real*8, parameter :: C7 = 1.772453
-    real*8 :: sigma, aa, totlarg, bb, z
+    real*8 :: sigma, aa, totlarg, z
     integer i, ifd
     character*392 lll
+    real*8, parameter :: SQRT_2 = sqrt(2.)
+
 
     ! GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
     sigma = x_fwhm/2.35482
-    aa = 1.414214*sigma
+    aa = SQRT_2*sigma
     totlarg=3.0 * aa
 
     !#logging x2
@@ -392,8 +433,7 @@ contains
       if(at(i) .gt. totlarg) go to 40
     end do
 
-    bb = 3*aa
-    write(lll,133) bb
+    write(lll,133) totlarg
     133  FORMAT(' LE PROFIL GAUSSIEN PAR LEQUEL ON CONVOLE NE PEUT', &
       ' AVOIR PLUS DE 121 PTS (60 DE CHAQUE COTE DU CENTRE); ', &
       ' CETTE GAUSSIENNE EST CALCULEE JUSQU A UNE DISTANCE DE', &
@@ -418,15 +458,18 @@ contains
       p_tfi(i) = at(i-ifd-1)
     end do
 
-    z = c7*aa
+    z = RPI*aa
 
     do i = 1,p_ift
-      p_fi(i) = exp( -(p_tfi(i)/aa)**2)  ! here's gaussian exponential
+      p_fi(i) = exp( -(p_tfi(i)/aa)**2) / z  ! here's gaussian exponential
     end do
-
-    do i = 1,p_ift
-      p_fi(i) = p_fi(i) / z
-    end do
+! The following code was merged into a single expression above.
+!    do i = 1,p_ift
+!      p_fi(i) = exp( -(p_tfi(i)/aa)**2)  ! here's gaussian exponential
+!    end do
+!    do i = 1,p_ift
+!      p_fi(i) = p_fi(i) / z
+!    end do
   end
 end
 
