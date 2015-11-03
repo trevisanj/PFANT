@@ -163,6 +163,7 @@ What              Recommended way to install
 matplotlib        Debian-based Linux: $ sudo apt-get install python-matplotlib
 pyqt4             Debian-based Linux: $ sudo apt-get install python-qt4
                   Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
+mayavi2           Debian-based Linux: $ sudo apt-get install mayavi2
 @li fortranformat Linux and Windows: pip install fortranformat
 
 
