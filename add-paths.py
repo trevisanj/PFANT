@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
   if len(to_add) > 0:
     with open(t, 'w') as f:
-      s = orig+("\n".join(["# added by add_paths.py (PFANT)\n"+x for x in to_add]))
+      s = orig+("\n".join(["# added by add-paths.py (PFANT)\n"+x for x in to_add]))
       f.write(s)
 
     print2("Adding the following lines to file '%s')" % t)

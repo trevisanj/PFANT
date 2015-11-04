@@ -75,14 +75,14 @@ PFANT/pyfant/scripts   # *.py scripts
 Add the following to your PYTHONPATH variable:
 @li PFANT/pyfant
 
-@subsection overview_path_add_paths The script add_paths.py
+@subsection overview_path_add-paths The script add-paths.py
 
-@note If you run on Linux, the script PFANT/add_paths.py may be used to attempt to set
+@note If you run on Linux, the script PFANT/add-paths.py may be used to attempt to set
 these variables automatically.
 
 @code
-$ ./add_paths.py --tcsh  # if you use the tcsh shell
-$ ./add_paths.py --bash  # if you use the bash shell
+$ ./add-paths.py --tcsh  # if you use the tcsh shell
+$ ./add-paths.py --bash  # if you use the bash shell
 @endcode
 
 
@@ -112,15 +112,15 @@ Now let's compare que flux calculated by pfant with the convolved spectrum calcu
 by nulbad (requires <a href="http://matplotlib.org/faq/installing_faq.html">matplotlib</a>.
 
 @code
-$ plot_spectra.py flux.norm flux.norm.nulbad
+$ plot-spectra.py flux.norm flux.norm.nulbad
 @endcode
 
 Try these ones as well:
 
 @code
-$ plot_mod_record.py modeles.mod      # plots interpolated atmospheric model
-$ plot_mod_records.py newnewm050.mod  # plots NEWMARCS grid
-$ plot_filetoh.py thalpha             # plots hydrogen lines
+$ plot-mod-record.py modeles.mod      # plots interpolated atmospheric model
+$ plot-mod-records.py newnewm050.mod  # plots NEWMARCS grid
+$ plot-filetoh.py thalpha             # plots hydrogen lines
 @endcode
 
 

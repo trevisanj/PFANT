@@ -34,7 +34,7 @@ print "the directory"
 print ""
 print my_dir
 print ""
-print "to your PYTHONPATH environment variable (PFANT/add_paths.py may help),"
+print "to your PYTHONPATH environment variable (PFANT/add-paths.py may help),"
 print "and \"git pull\" often."
 print SEP*79
 print ""
