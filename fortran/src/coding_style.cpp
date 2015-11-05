@@ -205,18 +205,8 @@ Some guidelines inspired in Agile modelling documentation guidelines
 
 C++ sources
 -----------
-
-For writing pages, such as overview, this page, etc.,
-the .cpp (C++ source file) extension is preferred for documentation sources
-(overview.cpp, main_page.cpp, etc.), as
-@code
-/**
-C++ block comments
-do not require
-*/
-!> these markers
-!> at the beginnig of each line
-@endcode
+The .cpp extension was adopted to write documentation pages because C++
+block comments are more convenient than Fortran "!" at the beginning of each line.
 
 .f, .f90 files
 --------------

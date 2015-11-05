@@ -634,7 +634,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = ' v15.7.9-alpha'
+    v = ' v15.11.5-beta'
   end
 
   !> Displays welcome message

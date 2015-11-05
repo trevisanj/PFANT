@@ -29,18 +29,14 @@ Here is an incomplete listing of the directory tree.
 @verbatim
 PFANT
 ├── fortran
-│   ├── bin                      PFANT executable binaries (add to system path!)
+│   ├── bin                      PFANT executable binaries
 │   └── src                      Fortran source code directory
 ├── pyfant                       PyFANT root
-│   ├── scripts                  command-line tools (add to system path!)
-│   │   │                                                                             
-│   │   ├── ...                  scripts to handle data files (visualize, edit),
-│   │   ├── ...                  scripts to run the Fortran code
-│   │   └── ...                  etc...
-│   │
+│   ├── scripts                  command-line tools
 │   └── pyfant                   Python package
 └── data                         courtesy data
-    └── sun-complete             runnable case for the Sun
+    ├── arcturus                 Arcturus data files
+    └── sun                      Sun data files
 @endverbatim
 
 
@@ -50,19 +46,20 @@ PFANT
 
 The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested)
 
-The code can be compiled in CBFortran IDE, or using one of these:
+The code can be compiled using the CBFortran IDE, or typing
 
 @code
-PFANT/fortran/make_linux.sh    # Linux
-PFANT/fortran/make_windows.bt  # Windows
+$ cd fortran
+$ make_linux.sh     # Linux
+$ make_windows.bat  # Windows
 @endcode
 
 The executable binaries are found in PFANT/fortran/bin
 
 
-@section overview_path Setting the system path
+@section overview_path Setting the paths
 
-It is best to add a few directories to the system path
+Add the following directory to your system path:
 
 @code
 PFANT/fortran/bin      # Fortran executable binaries
@@ -71,13 +68,14 @@ PFANT/pyfant/scripts   # *.py scripts
 
 , where "PFANT" will actually be somehing like "/home/user/.../PFANT".
 
+Add the following directory to your PYTHONPATH environment variable:
 
-Add the following to your PYTHONPATH variable:
-@li PFANT/pyfant
+<code>PFANT/pyfant</endcode>
+
 
 @subsection overview_path_add-paths The script add-paths.py
 
-@note If you run on Linux, the script PFANT/add-paths.py may be used to attempt to set
+If you run on Linux, the script PFANT/add-paths.py may be used to attempt to set
 these variables automatically.
 
 @code
@@ -106,23 +104,54 @@ $ pfant       # creates flux.*
 $ nulbad      # creates flux.norm.nulbad
 @endcode
 
-@subsection cmd_plot Command-line plotting tools
+@subsection cmd_plot Python command-line tools
 
-Now let's compare que flux calculated by pfant with the convolved spectrum calculated
-by nulbad (requires <a href="http://matplotlib.org/faq/installing_faq.html">matplotlib</a>.
+To see all available Python scripts, type
 
 @code
-$ plot-spectra.py flux.norm flux.norm.nulbad
+$ pyfant-scripts.py
 @endcode
 
-Try these ones as well:
+This will print something like this:
+
+@verbatim
+ated.py .................. ated - ATomic lines file EDitor
+mled.py .................. mled - Molecular Lines EDitor
+plot-filetoh.py .......... Plots hydrogen lines
+plot-innewmarcs-result.py  Plots interpolated atmospheric model curve
+                           (hopefully) in the middle of the curves
+plot-mod-record.py ....... Plots one record of a binary .mod file (e.g.,
+                           modeles.mod, newnewm050.mod)
+plot-mod-records.py ...... Opens several windows to show what is inside a
+                           NEWMARCS grid file.
+plot-spectra.py .......... Plots one or more spectra, either stacked or
+                           overlapped.
+pyfant-scripts.py ........ Lists scripts in PFANT/pyfant/scripts directory.
+run-multi.py ............. Runs pfant for different abondances for each element,
+                           then run nulbad for each pfant result for different
+                           FWHMs.
+run4.py .................. Runs the 4 exes
+save-pdf.py .............. Looks for file "flux.norm" inside directories
+                           session_* and saves one figure per page in a PDF
+                           file.
+vis-console.py ........... Text-based menu application to open and visualize
+                           data files.
+@endverbatim
+
+Let's use some of these tools. One thing that we can do is to compare the
+synthetic spectrum before and after the convolution:
+
+@code
+$ plot-spectra.py --ovl flux.norm flux.norm.nulbad
+@endcode
+
+Other things to try:
 
 @code
 $ plot-mod-record.py modeles.mod      # plots interpolated atmospheric model
 $ plot-mod-records.py newnewm050.mod  # plots NEWMARCS grid
 $ plot-filetoh.py thalpha             # plots hydrogen lines
 @endcode
-
 
 @subsection overview_getting_help Command-line help
 
@@ -134,28 +163,24 @@ $ innewmarcs --help
 $ run4.py --help
 @endcode
 
-@todo Python script to provide a menu
-
-
-
 
 
 @section required Required software
 
 In order to run all the features described so far, here is a list of what you should have installed:
 
-Applications:
+@subsection required_applications Applications
 
 @verbatim
 What              Why?
 -------------------------------------------------------------------------------------
 git               clone repository at github
-gfortran, make    compile the Fortran code
+gfortran, make    compile the Fortran code (gfortran >= 4.6 required)
 Python 2.7        use PyFANT
 pip               install fortranformat Python package
 @endverbatim
 
-Python packages:
+@subsection required_python_packages Python packages
 
 @verbatim
 What              Recommended way to install
@@ -164,12 +189,12 @@ matplotlib        Debian-based Linux: $ sudo apt-get install python-matplotlib
 pyqt4             Debian-based Linux: $ sudo apt-get install python-qt4
                   Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
 mayavi2           Debian-based Linux: $ sudo apt-get install mayavi2
-@li fortranformat Linux and Windows: pip install fortranformat
+fortranformat     pip install fortranformat
+@endverbatim
 
+@subsection required_windows_compiler Windows compiler
 
-*Windows compiler*
-
-A possible way to compile in Winows is to install MinGW (http://sourceforge.net/projects/mingw/files/).
+A possible way to compile in Windows is to install MinGW (http://sourceforge.net/projects/mingw/files/).
 In MinGW Installation Manager, install at least the following packages:
 mingw-developer-toolkit, mingw32-base, mingw32-gcc-fortran, msys-base.
 
@@ -219,16 +244,16 @@ flux.norm.nulbad  | convolved flux
 
 @section overview_workflow Fortran bin workflow
 
-The Fortran binnries run in this order: innermarcs, hydro2, pfant, nulbad
+The Fortran binaries run in this order: innermarcs, hydro2, pfant, nulbad
 
 THe workflow can be summarized like this:
 
 @verbatim
 Summary:
-innewmarcs creates modeles.mod
-hydro2     creates a series of th* files
-pfant      creates flux.*
-nulbad     creates flux.norm.nulbad   
+innewmarcs creates modeles.mod (atmospheric model)
+hydro2     creates a series of th* files (hydrogen lines files)
+pfant      creates flux.* (spectrum, normalized spectrum, and continuum)
+nulbad     creates flux.norm.nulbad (convolved un/normalized spectrum)
 @endverbatim
 
 Or in more detail:

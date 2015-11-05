@@ -2,3 +2,5 @@
 workspace.xml
 *.o
 *~
+.metadata
+.idea
