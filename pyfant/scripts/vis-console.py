@@ -6,4 +6,5 @@ Text-based menu application to open and visualize data files.
 
 from pyfant import *
 
-console()
+if __name__ == "__main__":
+    console()

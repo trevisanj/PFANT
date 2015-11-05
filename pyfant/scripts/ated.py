@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-ated - ATomic lines file EDitor
+ated - ATomic lines file EDitor (not working yet)
 
 See ated.html or press F1 inside application.
 """
@@ -17,6 +17,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
+    sys.exit("This application is not working yet.")
     parser = argparse.ArgumentParser(
     description="ATomic lines file EDitor",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
