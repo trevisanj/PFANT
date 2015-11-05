@@ -1197,9 +1197,7 @@ contains
     !m_lfin = m_lzero+main_aint+LAMBDA_STRETCH
     ikey = 1
 
-    !> @todo check if 10 is LAMBDA_STRETCH/2.
-    !
-    !> @todo This is used by nulbad. Gotta plot non-convolved on top of convolved and see if the lambdas are right
+
     !l0 = x_llzero-LAMBDA_STRETCH/2
     !lf = x_llfin+LAMBDA_STRETCH/2
     l0 = x_llzero-LAMBDA_STRETCH
@@ -1215,16 +1213,17 @@ contains
       ! Initialization of lambdas / delta lambdas for current iteration
       !=====
 
-      ! Overrides calculation interval.
-      ! Now stretching only at first and last steps
+      ! Determines the calculation interval [m_lzero, m_lfin]
+      ! Note: two extra points are added to the left and to the right, as without this
+      ! some interpolation routines (such as ftlin3) may crash. 
       if (ikey .eq. 1) then
-        m_lzero = x_llzero-LAMBDA_STRETCH-main_pas
+        m_lzero = l0-main_pas
       else
         m_lzero = x_llzero+main_aint*(ikey-1)+main_pas-main_pas
       end if
 
       if (ikey .eq. ikeytot) then
-        m_lfin = x_llfin+LAMBDA_STRETCH+main_pas
+        m_lfin = lf+main_pas
       else
         m_lfin = x_llzero+main_aint*ikey+main_pas
       end if
@@ -1342,8 +1341,18 @@ contains
       !itot = i2-i1+1
       !do d = i1,i2
 
-      i1 = 2  ! initial recording index
-      i2 = m_dtot - 1
+      ! i1 and i2 are the initial and final indexes of selekfh_fl, selekfh_fcont, and fd
+      ! that will be written to output file.
+      i1 = 2
+      if (ikey .eq. ikeytot) then 
+        i2 = m_dtot - 1
+      else
+        ! The last value of flux in iteration ikey equals
+        ! the first value of flux in iteration ikey+1.
+        ! Note that nulbad is aware of this and discards these redundant points.
+        ! PyFANT is also aware of this.
+        i2 = m_dtot
+      end if
       !if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       !  i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
       !end if

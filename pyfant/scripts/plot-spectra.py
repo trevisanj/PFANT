@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Runs the 4 exes
+Plots one or more spectra, either stacked or overlapped.
 """
 
 import argparse

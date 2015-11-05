@@ -3,7 +3,7 @@ __all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str
        "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
        "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
        "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix",
-       "slugify", "ResetTableWidget", "SmartFormatter"]
+       "slugify", "ResetTableWidget", "SmartFormatter", "ascii_h1"]
 
 import os.path
 import glob
@@ -218,16 +218,24 @@ X = "*"
 HR = X*40
 
 def print_noisy(logger, msg):
-  """Prints string message with box around.
+    """Prints string message with box around.
 
-  This was designed to outstand in a long log dump.
-  """
+    This was designed to outstand in a long log dump.
+    """
 
-  xx = X*(len(msg)+4)
-  logger.info("")
-  logger.info(xx)
-  logger.info("%s %s %s" % (X, msg, X))
-  logger.info(xx)
+    xx = X*(len(msg)+4)
+    logger.info("")
+    logger.info(xx)
+    logger.info("%s %s %s" % (X, msg, X))
+    logger.info(xx)
+
+
+def ascii_h1(s):
+    """Returns string enclosed in an ASCII frame, with \n line separators. Does not end in \n."""
+    n = len(s)
+    return "/"+("-"*(n+2))+"\\\n"+ \
+           "| "+s+" |\n"+ \
+           "\\"+("-"*(n+2))+"/"
 
 
 

@@ -270,10 +270,10 @@ class Combo(Runnable):
         c.prepare_filenames_for_combo(self.sequence)
 
         self.logger = logging.getLogger("combo%d" % id(self))
-        add_file_handler(self.logger, c.full_path_w(c.add_session_dir("python.log")))
+        add_file_handler(self.logger, c.full_path_w(c.join_with_session_dir("python.log")))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        stdout_ = LogTwo(c.full_path_w(c.add_session_dir("fortran.log")))
+        stdout_ = LogTwo(c.full_path_w(c.join_with_session_dir("fortran.log")))
 
 
         # All files that will be created need to have the session directory added to their names

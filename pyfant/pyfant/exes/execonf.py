@@ -8,10 +8,9 @@ __all__ = ["Options", "ExeConf", "innewmarcs", "hydro2", "pfant", "nulbad"]
 from pyfant.data import DataFile, FileHmap, FileMod
 import shutil
 import os
-import random
-import glob
 from ..parts import *
 import re
+from threading import Lock
 
 # Indexes in workflow sequence
 innewmarcs = 0
@@ -147,31 +146,22 @@ class ExeConf(object):
         return wdir
 
     def make_session_id(self):
-        """Makes new session id."""
+        """Finds an id for a new session and creates corresponding
+        directory session_<id>.
+
+        Directory must be created, otherwise two concurrent threads may grab
+        the same id.
+        """
 
         # assert self.session_id is None, "Session id already made"
 
         if self.session_id is not None:
             return
 
-        # Finds a 6-digit integer that is not part of any file in directory.
-        w = self.get_wdir()
-        mask = os.path.join(w, "*")
-        i = 0
-        while True:
-            #s = "%04d" % random.randint(0, 999999)
-            s = "%04d" % i
-            ff = glob.glob(mask)
-            flag_exit = True
-            for f in ff:
-                if s in f:
-                    flag_exit = False
-                    break
-            if flag_exit:
-                break
-            i += 1
 
-        self.session_id = s
+        PREFIX = "session-"
+        self.session_id = _make_session_id(self.get_wdir(), PREFIX)
+        self._session_dir = PREFIX+self.session_id
 
     def full_path_w(self, fn):
         """Joins self.opt.wdir with specified filename.
@@ -183,19 +173,14 @@ class ExeConf(object):
         else:
             return fn
 
-    def add_session_dir(self, fn):
+    def join_with_session_dir(self, fn):
         """
         Joins self._session_dir with specified filename.
 
-        If first time called, creates the session directory.
-
         Atention: *wdir* is not part of the result.
         """
-
         if self._flag_first:
             assert self.session_id is not None, "Session id not assigned"
-            d = self._session_dir = "session_"+self.session_id
-            os.mkdir(os.path.join(self.get_wdir(), d))
             self._flag_first = False
         return os.path.join(self._session_dir, fn)
 
@@ -234,7 +219,6 @@ class ExeConf(object):
 
         Now this example extends to fo_* attributes.
         """
-
         for attr_name in dir(self):
             if attr_name[0:3] == "fo_":
                 obj = self.__getattribute__(attr_name)
@@ -242,7 +226,8 @@ class ExeConf(object):
                 if obj is not None:
                     assert isinstance(obj, DataFile)
 
-                    new_fn = os.path.join(self.get_wdir(), self.add_session_dir(obj.default_filename))
+                    new_fn = os.path.join(self.get_wdir(),
+                        self.join_with_session_dir(obj.default_filename))
                     # Saves file
                     obj.save_as(new_fn)
                     # Overwrites config option
@@ -258,14 +243,12 @@ class ExeConf(object):
 
         Restrictions:
         - flux prefix will be always "flux"
-
         """
-
         if innewmarcs in sequence:
             # ** innewmarcs -> hydro2
             # **            -> pfant
             # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
-            self.opt.fn_modeles = self.add_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileMod.default_filename)
+            self.opt.fn_modeles = self.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileMod.default_filename)
 
         if hydro2 in sequence:
             # ** hydro2 -> pfant
@@ -274,7 +257,8 @@ class ExeConf(object):
             if not self.fo_hmap:
                 # if self doesn't have a Hmap object, will load from file
                 o = self.fo_hmap = FileHmap()
-                fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else FileHmap.default_filename
+                fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else \
+                 FileHmap.default_filename
                 o.load(self.full_path_w(fn))
             else:
                 o = self.fo_hmap
@@ -283,17 +267,43 @@ class ExeConf(object):
                 #
                 # Fortran reads this correctly. If not put between quotes, Fortran thinks that the "/"
                 # denotes the end of the string.
-                row.fn = "'"+self.add_session_dir(row.fn)+"'"
+                row.fn = "'"+self.join_with_session_dir(row.fn)+"'"
                 # Done! new hmap file will be created by create_data_files
 
         # ** pfant -> nulbad
         # ** Restriction: flux prefix will be always "flux"
         if pfant in sequence:
-            self.opt.flprefix = self.add_session_dir("flux")  # this is for pfant
-            self.opt.fn_progress = self.add_session_dir("progress.txt")  # this is for pfant
+            self.opt.flprefix = self.join_with_session_dir("flux")  # this is for pfant
+            self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
 
         if nulbad in sequence:
             # ** these two are options for nulbad
             self.opt.norm = True
             # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
-            self.opt.fn_flux = self.add_session_dir("flux.norm")
+            self.opt.fn_flux = self.join_with_session_dir("flux.norm")
+
+
+# Part of code that finds new session id and creates corresponding directory
+# This has been isolated because needs to be locked
+
+_lock_session_id = Lock()
+def _make_session_id(wdir, prefix):
+    """Finds new session id (a string containing a four-digit integer)
+    corresponding with a directory that does not yet exist
+    named <prefix><session id>, and creates such directory.
+
+    Returns the new session id
+
+    This routine is thread-safe.
+    """
+    with _lock_session_id:
+        i = 0
+        while True:
+            ret = "%d" % i
+            new_dir = os.path.join(wdir, prefix+ret)
+            if not os.path.isdir(new_dir):
+                break
+            i += 1
+        os.mkdir(new_dir)
+        return ret
+

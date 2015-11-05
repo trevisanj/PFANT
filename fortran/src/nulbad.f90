@@ -157,9 +157,11 @@ contains
       ! write(lll,*) ikeytot,itot
       ! call log_debug(lll)
 
+      ! pfant writes redundant data: last value of iteration ikey equals first value of
+      ! iteration ikey+1. So the following tweak on itot is to account for this.
+      ! In the last iteration, the last point is not discarded.
       if (icle .eq. ikeytot) itot = itot+1
-
-      do d = 1,itot ! o quiridu -1
+      do d = 1,itot-1
         k=rs_ktot+d
         rs_ffnu(k)=fnu(d)
       end do

@@ -1,11 +1,7 @@
 #!/usr/bin/python
 
 """
-.
-.
-.
-The aim of this script is to run pfant for different abondances for each element,
-then run nulbad for each pfant result for different FWHMs
+Runs pfant for different abondances for each element, then run nulbad for each pfant result for different FWHMs.
 
 The configuration is read from a .py file.
 
