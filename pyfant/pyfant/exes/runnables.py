@@ -111,7 +111,7 @@ class Executable(Runnable):
         cmd_line = [self.exe_path]+args
 
         s = "%s command-line:" % (self.__class__.__name__.lower(),)
-        print_noisy(self.logger, s)
+        log_noisy(self.logger, s)
         self.logger.info(" ".join(cmd_line))
         self.logger.info(X*(len(s)+4))
 
@@ -125,11 +125,11 @@ class Executable(Runnable):
                 self.popen = subprocess.Popen(cmd_line)
 
         except OSError:
-            print_noisy(self.logger, "Failed to execute command-line")
+            self.logger.critical(fmt_error("Failed to execute command-line"))
             raise
         self.popen.wait()  # Blocks execution until finished
         self.popen.poll()
-        print_noisy(self.logger, "%s %s (returncode=%s)" %
+        log_noisy(self.logger, "%s %s (returncode=%s)" %
                     (self.__class__.__name__.lower(),
                      'finished successfully' if self.popen.returncode == 0 else '*failed*',
                      self.popen.returncode))
@@ -150,7 +150,6 @@ class Innewmarcs(Executable):
 
     def __init__(self):
         Executable.__init__(self)
-
         self.exe_path = "innewmarcs"
 
 
@@ -159,14 +158,12 @@ class Hydro2(Executable):
 
     def __init__(self):
         Executable.__init__(self)
-
         self.exe_path = "hydro2"
 
 
 class Pfant(Executable):
     def __init__(self):
         Executable.__init__(self)
-
         self.exe_path = "pfant"  # Path to PFANT executable (including executable name)
 
         # ** Variables assigned by poll_progress()
@@ -198,7 +195,6 @@ class Nulbad(Executable):
 
     def __init__(self):
         Executable.__init__(self)
-
         self.exe_path = "nulbad"
 
 
@@ -237,7 +233,7 @@ class Combo(Runnable):
 
         # Executables to run
         # order is irrelevant (will be sorted anyway).
-        self.sequence = [innewmarcs, hydro2, pfant, nulbad]
+        self.sequence = [e_innewmarcs, e_hydro2, e_pfant, e_nulbad]
 
         # ExeConf instance
         self.execonf = ExeConf()
@@ -293,8 +289,8 @@ class Combo(Runnable):
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
 
-        map = [(innewmarcs, self.innewmarcs), (hydro2, self.hydro2), (pfant, self.pfant),
-               (nulbad, self.nulbad)]
+        map = [(e_innewmarcs, self.innewmarcs), (e_hydro2, self.hydro2), (e_pfant, self.pfant),
+               (e_nulbad, self.nulbad)]
         res = []
         ii, ee = zip(*map)
         self.sequence.sort()

@@ -2,13 +2,9 @@
 
 @page overview Overview
 
-@section overview_contents Project contents
-
-PFANT 
-
 @section overview_install Installation
 
-Clone from github
+7Clone from github
 
 @code
 git clone https://github.com/trevisanj/PFANT
@@ -185,12 +181,17 @@ pip               install fortranformat Python package
 @verbatim
 What              Recommended way to install
 -------------------------------------------------------------------------------------
-matplotlib        Debian-based Linux: $ sudo apt-get install python-matplotlib
-pyqt4             Debian-based Linux: $ sudo apt-get install python-qt4
+matplotlib        apt-Linux: $ sudo apt-get install python-matplotlib
+pyqt4             apt-Linux: $ sudo apt-get install python-qt4
                   Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
-mayavi2           Debian-based Linux: $ sudo apt-get install mayavi2
-fortranformat     pip install fortranformat
+mayavi2           apt-Linux: $ sudo apt-get install mayavi2
+fortranformat     All systems: $ pip install fortranformat
+astropy           apt-Linux: $ sudo apt-get install python-astropy
+                  All systems: $ pip install astropy
 @endverbatim
+
+@note When running @c pip on Linux, you may have to sun it with @c sudo.
+
 
 @subsection required_windows_compiler Windows compiler
 

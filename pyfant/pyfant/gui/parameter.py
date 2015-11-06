@@ -1,5 +1,5 @@
 """
-Non-visual classes for defininig parameters
+Non-visual classes for defining parameters
 """
 
 __all__ = ["Parameter", "Parameters"]

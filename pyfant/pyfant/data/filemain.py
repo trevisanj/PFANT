@@ -1,5 +1,4 @@
 __all__ = ["FileMain"]
-
 from .datafile import *
 from ..errors import *
 from ..misc import *

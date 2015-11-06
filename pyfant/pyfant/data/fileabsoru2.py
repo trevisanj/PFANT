@@ -7,7 +7,7 @@ class FileAbsoru2(DataFile):
   default_filename = "absoru2.dat"
 
   def __init__(self):
-    pass
+    DataFile.__init__(self)
 
   def _do_load(self, filename):
     raise NotImplementedError("This class is a stub ATM")

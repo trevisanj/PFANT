@@ -12,7 +12,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as Navigat
 import matplotlib.pyplot as plt
 import numpy as np
 from .a_XParametersEditor import *
-#later from .a_XMolLinesEditor import *
+from .a_XAtomLinesEditor import *
 from ._guiaux import *
 from .guimisc import *
 import os.path
@@ -567,7 +567,7 @@ class XFileAtoms(QMainWindow):
 
     def on_buttonEditLines_clicked(self):
         if self.form_lines is None:
-            f = self.form_lines = XMolLinesEditor(self)
+            f = self.form_lines = XAtomLinesEditor(self)
             f.show()
             self.set_editor_sol()
         self.plot_lines()

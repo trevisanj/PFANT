@@ -5,7 +5,7 @@ Lists scripts in PFANT/pyfant/scripts directory.
 """
 
 #from pyfant.gui import *
-from pyfant import SmartFormatter, ascii_h1
+from pyfant import SmartFormatter, fmt_ascii_h1
 import sys
 #from PyQt4.QtGui import *
 #from PyQt4.QtCore import *
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         
     s = "Scripts in "+r
     
-    print ascii_h1(s)
+    print fmt_ascii_h1(s)
     for f in ff:
         module_name, _ = os.path.splitext(f)
         _, filename = os.path.split(f)

@@ -1,10 +1,17 @@
+"""Miscellanea routines used by pyfant.
 
-__all__ = ["str_vector", "float_vector", "path_to_default", "new_filename", "str2bool",
-       "write_lf", "bool2str", "list2str", "menu", "chunk_string", "readline_strip",
-       "LogTwo", "print_noisy", "X", "adjust_atomic_symbol", "random_name", "add_file_handler",
-       "format_BLB", "int_vector", "multirow_str_vector", "ordinal_suffix",
-       "slugify", "ResetTableWidget", "SmartFormatter", "ascii_h1"]
+The rule here is *not* to import any pyfant module, except for errors. This is to
+avoid cyclic imports.
 
+Miscellanea routines that import pyfant modules should be put in util.py instead.
+"""
+__all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
+ "multirow_str_vector", "ordinal_suffix", "path_to_default", "new_filename",
+ "write_lf", "slugify", "adjust_atomic_symbol", "str2bool", "bool2str",
+ "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
+ "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
+ "random_name", "format_BLB"
+]
 import os.path
 import glob
 import random
@@ -15,23 +22,35 @@ from matplotlib import rc
 from .errors import *
 import re
 from argparse import *
+# Logger for internal use
+_logger = logging.getLogger(__name__)
+_logger.addHandler(logging.NullHandler())
 
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+# #################################################################################################
+# I/O routines
 
-# Reads next line of file and makes it a vector of strings
-# Note that each str.split() already strips each resulting string of any whitespaces.
-str_vector = lambda f: f.readline().split()
+def str_vector(f):
+    """Reads next line of file and makes it a vector of strings
 
-# Reads next line of file and makes it a vector of floats
-float_vector = lambda f: [float(s) for s in str_vector(f)]
+    Note that each str.split() already strips each resulting string of any whitespaces."""
+    return f.readline().split()
 
-# Reads next line of file and makes it a vector of floats
-int_vector = lambda f: [int(s) for s in str_vector(f)]
 
-# reads next line of file and strips the newline
-readline_strip = lambda f: f.readline().strip('\n')
+def float_vector(f):
+    """Reads next line of file and makes it a vector of floats."""
+    return [float(s) for s in str_vector(f)]
+
+
+def int_vector(f):
+    """Reads next line of file and makes it a vector of floats."""
+    return [int(s) for s in str_vector(f)]
+
+
+def readline_strip(f):
+    """Reads next line of file and strips the newline."""
+    return f.readline().strip('\n')
+
 
 def multirow_str_vector(f, n, r=0):
     """
@@ -56,7 +75,7 @@ def multirow_str_vector(f, n, r=0):
         n_now = len(temp)
 
         if n_now+so_far > n:
-            logger.warning(('Reading multi-row vector: '
+            _logger.warning(('Reading multi-row vector: '
                 'row %d should have %d values (has %d)') %
                 (r+n_rows, n-so_far, n_now))
 
@@ -72,9 +91,6 @@ def multirow_str_vector(f, n, r=0):
 
     return v, n_rows
 
-def ordinal_suffix(i):
-    """Returns 'st', 'nd', or 'rd'."""
-    return 'st' if i == 1 else 'nd' if i == 2 else 'rd' if i == 3 else 'th'
 
 def path_to_default(fn):
   """Returns full path to default data file."""
@@ -92,6 +108,36 @@ def new_filename(prefix, extension=""):
       break
     i += 1
     return ret
+
+
+def write_lf(h, s):
+  """Adds lf to end of string and writes it to file."""
+  h.write(s+"\n")
+
+
+def slugify(value, flagLower=True):
+  """
+  Converts to lowercase, removes non-alpha characters,
+  and converts spaces to hyphens.
+
+  Useful for making file names.
+
+  Source: http://stackoverflow.com/questions/5574042/string-slugification-in-python
+  """
+  value = re.sub('[^\w\s.]', '', value).strip()
+  if flagLower:
+    value = value.lower()
+  value = re.sub('[-\s]+', '-', value)
+  return value
+
+
+# #################################################################################################
+# Conversion routines
+
+def adjust_atomic_symbol(x):
+    """Makes sure atomic symbol is right-aligned and upper case (PFANT convention)."""
+    assert isinstance(x, str)
+    return "%2s" % (x.strip().upper())
 
 
 def str2bool(s):
@@ -114,10 +160,104 @@ def list2str(l):
   return " ".join([str(x) for x in l])
 
 
-def write_lf(h, s):
-  """Adds lf to end of string and writes it to file."""
-  h.write(s+"\n")
+def chunk_string(string, length):
+  """
+  Splits a string into fixed-length chunks.
+  
+  This function returns a generator, using a generator comprehension. The
+  generator returns the string sliced, from 0 + a multiple of the length
+  of the chunks, to the length of the chunks + a multiple of the length
+  of the chunks.
 
+  Reference: http://stackoverflow.com/questions/18854620
+  """
+  return (string[0+i:length+i] for i in range(0, len(string), length))
+
+
+def ordinal_suffix(i):
+    """Returns 'st', 'nd', or 'rd'."""
+    return 'st' if i == 1 else 'nd' if i == 2 else 'rd' if i == 3 else 'th'
+
+
+# #################################################################################################
+# Logging routines
+
+def add_file_handler(logger, logFilename=None):
+  """Adds file handler to logger."""
+
+  assert isinstance(logger, logging.Logger)
+
+  ch = logging.FileHandler(filename=logFilename)
+  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
+  logger.addHandler(ch)
+
+
+class LogTwo(object):
+  """Logs messages to both stdout and file."""
+  def __init__(self, filename):
+    self.terminal = sys.stdout
+    self.log = open(filename, "a")
+
+  def write(self, message):
+    self.terminal.write(message)
+    self.log.write(message)
+
+
+class SmartFormatter(RawDescriptionHelpFormatter):
+    """
+    Help formatter that will show default option values and also respect
+    newlines in description. Neither are done in default help formatter.
+    """
+
+    def _get_help_string(self, action):
+        help = action.help
+        if '%(default)' not in action.help:
+            if action.default is not SUPPRESS:
+                defaulting_nargs = [OPTIONAL, ZERO_OR_MORE]
+                if action.option_strings or action.nargs in defaulting_nargs:
+                    help += ' (default: %(default)s)'
+        return help
+
+
+        # # this is the RawTextHelpFormatter._split_lines
+        # if text.startswith('R|'):
+        #     return text[2:].splitlines()
+        # return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
+
+
+# character for boxing strings
+X = "*"
+HR = X*40
+def log_noisy(logger, msg):
+    """Prints string message with box around.
+
+    This was designed to outstand in a long log dump.
+    """
+
+    xx = X*(len(msg)+4)
+    logger.info("")
+    logger.info(xx)
+    logger.info("%s %s %s" % (X, msg, X))
+    logger.info(xx)
+
+
+# #################################################################################################
+# Text interface routines - routines that are useful for building a text interface
+
+def fmt_ascii_h1(s):
+    """Returns string enclosed in an ASCII frame, with \n line separators. Does not end in \n."""
+    n = len(s)
+    return "/"+("-"*(n+2))+"\\\n"+ \
+           "| "+s+" |\n"+ \
+           "\\"+("-"*(n+2))+"/"
+
+def fmt_error(s):
+    """Standardized embellishment. Adds formatting to error message."""
+    return "!! %s !!" % s
+
+def print_error(s):
+    """Prints string as error message."""
+    print fmt_error(s)
 
 def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
   """Text menu.
@@ -174,78 +314,8 @@ def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
   return option
 
 
-def chunk_string(string, length):
-  """
-  Splits a string into fixed-length chunks.
-  
-  This function returns a generator, using a generator comprehension. The
-  generator returns the string sliced, from 0 + a multiple of the length
-  of the chunks, to the length of the chunks + a multiple of the length
-  of the chunks.
-
-  Reference: http://stackoverflow.com/questions/18854620
-  """
-  return (string[0+i:length+i] for i in range(0, len(string), length))
-
-
-
-
-def add_file_handler(logger, logFilename=None):
-  """Adds file handler to logger."""
-
-  assert isinstance(logger, logging.Logger)
-
-  ch = logging.FileHandler(filename=logFilename)
-  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
-  logger.addHandler(ch)
-
-
-
-
-
-class LogTwo(object):
-  """Logs messages to both stdout and file."""
-  def __init__(self, filename):
-    self.terminal = sys.stdout
-    self.log = open(filename, "a")
-
-  def write(self, message):
-    self.terminal.write(message)
-    self.log.write(message)
-
-# character for boxing strings
-X = "*"
-HR = X*40
-
-def print_noisy(logger, msg):
-    """Prints string message with box around.
-
-    This was designed to outstand in a long log dump.
-    """
-
-    xx = X*(len(msg)+4)
-    logger.info("")
-    logger.info(xx)
-    logger.info("%s %s %s" % (X, msg, X))
-    logger.info(xx)
-
-
-def ascii_h1(s):
-    """Returns string enclosed in an ASCII frame, with \n line separators. Does not end in \n."""
-    n = len(s)
-    return "/"+("-"*(n+2))+"\\\n"+ \
-           "| "+s+" |\n"+ \
-           "\\"+("-"*(n+2))+"/"
-
-
-
-def adjust_atomic_symbol(x):
-    """Makes sure atomic symbol is right-aligned and upper case (PFANT convention)."""
-    assert isinstance(x, str)
-    return "%2s" % (x.strip().upper())
-
-
-
+# #################################################################################################
+# Miscellanea of miscellanea
 
 _forenames = ["Solomon", "John", "Loretta", "Stephen", "Harry", "Nancy", "Tracy", "Maggie", "Lafanda", "Napoleon", "Joe",
         "Ana", "Olivia", "Lucia", "Julien", "June", "Ada", "Blaise", "Platypus", "R2D2", "Obi-Wan",
@@ -266,13 +336,13 @@ _surnames = ["Northupp", "Kanobi", "de Morgan", "de Vries", "van Halen", "McFly"
        "Lee", "Trevisan", "Travisani", "Pereira", "Nandwani", "Moura", "Senna"]
 _prefixes = ["Dr.", "Prof.", "Sir", "Ven."]
 _suffixes = ["The 3rd", "Jr.", "Sobrinho", "Neto", "VIII", "XVI", "I", "II", "III", "IV"]
-PROB_PREF = 0.1
-PROB_SUFF = 0.1
+_PROB_PREF = 0.1
+_PROB_SUFF = 0.1
 def random_name():
   a = []
 
   # Prefix
-  if random.random() < PROB_PREF:
+  if random.random() < _PROB_PREF:
     a.append(_prefixes[random.randint(0, len(_prefixes)-1)])
 
   # Forename
@@ -284,19 +354,14 @@ def random_name():
     a.append(_surnames[random.randint(0, len(_surnames)-1)])
 
   # Suffix
-  if random.random() < PROB_SUFF:
+  if random.random() < _PROB_SUFF:
     a.append(_suffixes[random.randint(0, len(_suffixes)-1)])
 
   return " ".join(a)
 
 
-
-
-
-
-
-
-
+# #################################################################################################
+# Matplotlib-related routines
 
 def format_BLB():
     """Sets some formatting options in Matplotlib."""
@@ -305,54 +370,3 @@ def format_BLB():
     rc('ytick', labelsize=14)
     #rc('text', usetex=True)
 
-
-
-def slugify(value, flagLower=True):
-  """
-  Converts to lowercase, removes non-alpha characters,
-  and converts spaces to hyphens.
-
-  Used for making file names.
-
-  TODO: cite base work.
-  """
-  value = re.sub('[^\w\s.]', '', value).strip()
-  if flagLower:
-    value = value.lower()
-  value = re.sub('[-\s]+', '-', value)
-  return value
-
-
-def ResetTableWidget(t, rowCount, colCount):
-    """Clears and resizes a table widget."""
-    t.clear()
-    t.sortItems(-1)
-    t.setRowCount(rowCount)
-    t.setColumnCount(colCount)
-
-
-
-
-
-# argparse.RawTextHelpFormatter._split_lines
-
-class SmartFormatter(RawDescriptionHelpFormatter):
-    """
-    Help formatter that will show default option values and also respect
-    newlines in description. Neither are done in default help formatter.
-    """
-
-    def _get_help_string(self, action):
-        help = action.help
-        if '%(default)' not in action.help:
-            if action.default is not SUPPRESS:
-                defaulting_nargs = [OPTIONAL, ZERO_OR_MORE]
-                if action.option_strings or action.nargs in defaulting_nargs:
-                    help += ' (default: %(default)s)'
-        return help
-
-
-        # # this is the RawTextHelpFormatter._split_lines
-        # if text.startswith('R|'):
-        #     return text[2:].splitlines()
-        # return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)

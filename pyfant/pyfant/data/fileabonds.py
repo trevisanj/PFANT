@@ -2,8 +2,7 @@ __all__ = ["FileAbonds"]
 
 import struct
 from .datafile import *
-
-from ..misc import *
+from ..misc import adjust_atomic_symbol
 
 
 class FileAbonds(DataFile):

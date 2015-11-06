@@ -1,13 +1,14 @@
-__all__ = ["Spectrum", "FileSpectrum", "FileSpectrumPfant", "FileSpectrumNulbad", "FileSpectrumXY"]
+__all__ = ["Spectrum", "FileSpectrum", "FileSpectrumPfant",
+           "FileSpectrumNulbad", "FileSpectrumXY", "FileSpectrumFits"]
 
 import fortranformat as ff
 import struct
-import re
 import logging
 import numpy as np
-from pyfant.errors import *
 from .datafile import DataFile
 from ..parts import *
+from astropy.io import fits
+from pyfant import write_lf
 
 class Spectrum(PyfantObject):
     def __init__(self):
@@ -91,7 +92,7 @@ class FileSpectrumPfant(FileSpectrum):
             while True:
                 s = h.readline()
                 if i == 0:
-                    vars = f_header.read(s)  # This is actually quite slow, gotta avoid it
+                    vars_ = f_header.read(s)  # This is actually quite slow, gotta avoid it
                     [sp.ikeytot,
                      sp.tit,
                      sp.tetaef,
@@ -101,16 +102,16 @@ class FileSpectrumPfant(FileSpectrum):
                      sp.amg,
                      sp.l0,
                      sp.lf,
-                     lzero,  # self.lzero,
-                     lfin,  #self.lfin,
-                     itot,  #self.itot,
+                     _,  # lzero,
+                     _,  # lfin,
+                     _,  # itot
                      sp.pas,
                      sp.echx,
                      sp.echy,
-                     sp.fwhm] = vars
+                     sp.fwhm] = vars_
 
 
-                itot = vars[11]
+                #itot = vars[11]
 
                 # if False:
                 # # Will have to compile a different formatter depending on itot
@@ -144,13 +145,14 @@ class FileSpectrumPfant(FileSpectrum):
                     break
 
                 i += 1
-                last_itot = itot
+
+                #last_itot = itot
 
         # Lambdas
         sp.x = np.array([sp.l0 + k * sp.pas for k in range(0, len(y))])
         sp.y = np.array(y)
 
-        logging.debug("Just read PFANT Spectrum '%s'" % filename)
+#        logging.debug("Just read PFANT Spectrum '%s'" % filename)
 
 
 class FileSpectrumNulbad(FileSpectrum):
@@ -182,7 +184,7 @@ class FileSpectrumNulbad(FileSpectrum):
             s_header1 = struct.Struct("1x 6s 21x 10s 8x 10s 7x 5s 8x 5s")
             s = h.readline()
 
-            [n, sp.l0, sp.lf, sp.pas, sp.fwhm] = \
+            [_, sp.l0, sp.lf, sp.pas, sp.fwhm] = \
                 s_header1.unpack_from(s)
             [sp.l0, sp.lf, sp.pas, sp.fwhm] = \
                 map(float, [sp.l0, sp.lf, sp.pas, sp.fwhm])
@@ -194,7 +196,8 @@ class FileSpectrumNulbad(FileSpectrum):
             # Examples:
             #    4790.0000000000000       0.99463000000000001
             #    4790.0400000000000        2.0321771294932130E-004
-            pattern = re.compile(r"^\s+([0-9.E+-]+)\s+([0-9.E+-]+)")
+
+            # pattern = re.compile(r"^\s+([0-9.E+-]+)\s+([0-9.E+-]+)")
             while True:
                 s = h.readline().strip()
                 if not s:
@@ -211,15 +214,15 @@ class FileSpectrumNulbad(FileSpectrum):
         sp.x = np.array(x)
         sp.y = np.array(y)
 
-        logging.debug("Just read NULBAD Spectrum '%s'" % filename)
+#        logging.debug("Just read NULBAD Spectrum '%s'" % filename)
 
 
 class FileSpectrumXY(FileSpectrum):
     """
     Represents a file with two columns: first is lambda (x), second is flux (y)
 
-    File may have comment lines; these will be ignored altogether
-
+    File may have comment lines; these will be ignored altogether, because the file
+    is read with numpy.loadtxt()
     """
 
     def _do_load(self, filename):
@@ -230,9 +233,44 @@ class FileSpectrumXY(FileSpectrum):
             raise RuntimeError("File %s must contain at least two columns" % filename)
         if A.shape[1] > 2:
             logging.warning("File %s has more than two columns, taking only first and second" % filename)
-
         sp = self.spectrum = Spectrum()
         sp.x = A[:, 0]
         sp.y = A[:, 1]
+#        logging.debug("Just read XY Spectrum '%s'" % filename)
 
-        logging.debug("Just read XY Spectrum '%s'" % filename)
+
+    def _do_save_as(self, filename):
+        with open(filename, "w") as h:
+            for x, y in zip(self.spectrum.x, self.spectrum.y):
+                write_lf(h, "%.10g %.10g" % (x, y))
+
+
+class FileSpectrumFits(FileSpectrum):
+    """
+    Represents a FITS file with a spectrum inside
+    """
+
+    def _do_load(self, filename):
+        fits_obj = fits.open(filename)
+        fits_obj.info()
+        hdu = fits_obj[0]
+
+        # Building the x-axis
+        n = hdu.data.shape[0]
+        lambda0 = hdu.header["CRVAL1"]
+        try:
+            delta_lambda = hdu.header["CDELT1"]
+        except Exception as E:  # todo figure out the type of exception (KeyError?)
+            delta_lambda = hdu.header['CD1_1']
+            print "Alternative delta lambda in FITS header: CD1_1"
+            print "Please narrow the Exception specification in the code"
+            print "Exception is: "+str(E)+" "+E.__class__.__name__
+            print delta_lambda
+
+        sp = self.spectrum = Spectrum()
+        sp.x = np.linspace(lambda0, lambda0+delta_lambda*(n-1), n)
+        sp.y = hdu.data
+
+    # def _do_save_as(self, filename):
+    #     """Saves spectrum back to FITS file."""
+

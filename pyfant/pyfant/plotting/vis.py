@@ -1,4 +1,5 @@
-__all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH", "get_classes"]
+__all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
+           "get_suitable_vis_classes"]
 
 from pyfant.data import *
 import numpy as np
@@ -8,7 +9,7 @@ from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 from ..parts import *
 
 
-def get_classes(obj):
+def get_suitable_vis_classes(obj):
     """Retuns a list of Vis classes that can handle obj."""
 
     ret = []

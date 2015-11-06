@@ -3,7 +3,8 @@ Class to store all command-line options & DataFile instances used to run one or 
 executables.
 """
 
-__all__ = ["Options", "ExeConf", "innewmarcs", "hydro2", "pfant", "nulbad"]
+__all__ = ["Options", "ExeConf", "e_innewmarcs", "e_hydro2", "e_pfant",
+           "e_nulbad", "session_prefix"]
 
 from pyfant.data import DataFile, FileHmap, FileMod
 import shutil
@@ -13,10 +14,13 @@ import re
 from threading import Lock
 
 # Indexes in workflow sequence
-innewmarcs = 0
-hydro2 = 1
-pfant = 2
-nulbad = 3
+e_innewmarcs = 0
+e_hydro2 = 1
+e_pfant = 2
+e_nulbad = 3
+
+# Configurable
+session_prefix = "session-"
 
 
 @froze_it
@@ -111,15 +115,26 @@ class ExeConf(object):
     command line.
     """
 
+    @property
+    def session_id(self):
+        return self._session_id
+    @session_id.setter
+    def session_id(self, x):
+        """Creates directory "<wdir>/session-<session id>" when setting session id.."""
+        self._session_id = x
+        new_dir = os.path.join(self.get_wdir(), session_prefix+x)
+        if not os.path.isdir(new_dir):
+            os.mkdir(new_dir)
+
+
     def __init__(self):
         # **
         # ** Session control
 
         # Session id is used to make up filenames as needed.
         # This variable can be set directly
-        self.session_id = None
+        self._session_id = None
         self._flag_first = True # first time calling _get_relative_path()
-        self._session_dir = None
 
         # **
         # ** DataFile instances
@@ -139,6 +154,8 @@ class ExeConf(object):
         # Command-line options
         self.opt = Options()
 
+    def get_session_dir(self):
+        return session_prefix+self.session_id
 
     def get_wdir(self):
         """Gets working directory. Always returns a string."""
@@ -155,13 +172,10 @@ class ExeConf(object):
 
         # assert self.session_id is None, "Session id already made"
 
-        if self.session_id is not None:
+        if self._session_id is not None:
             return
 
-
-        PREFIX = "session-"
-        self.session_id = _make_session_id(self.get_wdir(), PREFIX)
-        self._session_dir = PREFIX+self.session_id
+        self._session_id = _make_session_id(self.get_wdir())
 
     def full_path_w(self, fn):
         """Joins self.opt.wdir with specified filename.
@@ -175,19 +189,18 @@ class ExeConf(object):
 
     def join_with_session_dir(self, fn):
         """
-        Joins self._session_dir with specified filename.
+        Joins self.get_session_dir() with specified filename.
 
         Atention: *wdir* is not part of the result.
         """
         if self._flag_first:
             assert self.session_id is not None, "Session id not assigned"
             self._flag_first = False
-        return os.path.join(self._session_dir, fn)
+        return os.path.join(self.get_session_dir(), fn)
 
     def clean(self):
         """Deletes directory with all files inside."""
-        assert self._session_dir is not None, "Nothing to clean"
-        shutil.rmtree(os.path.join(self.get_wdir(), self._session_dir))
+        shutil.rmtree(os.path.join(self.get_wdir(), self.get_session_dir()))
 
     def get_args(self):
         """
@@ -242,15 +255,18 @@ class ExeConf(object):
           sequence: list containing one or more i_* values such as innewmarcs etc
 
         Restrictions:
-        - flux prefix will be always "flux"
+        - flux prefix will either be "flux" or set by option "--flprefix", but
+          will not be taken from main configuration file
+        - nulbad --fn_flux will be <flux prefix>.norm.nulbad
+        - nulbad will always use the normalized spectrum
         """
-        if innewmarcs in sequence:
+        if e_innewmarcs in sequence:
             # ** innewmarcs -> hydro2
             # **            -> pfant
             # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
             self.opt.fn_modeles = self.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileMod.default_filename)
 
-        if hydro2 in sequence:
+        if e_hydro2 in sequence:
             # ** hydro2 -> pfant
             # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
             # ** if it was "thalpha" it will be something like "session123456/thalpha"
@@ -271,23 +287,23 @@ class ExeConf(object):
                 # Done! new hmap file will be created by create_data_files
 
         # ** pfant -> nulbad
-        # ** Restriction: flux prefix will be always "flux"
-        if pfant in sequence:
-            self.opt.flprefix = self.join_with_session_dir("flux")  # this is for pfant
+        flprefix = self.opt.flprefix if self.opt.flprefix is not None else "flux"
+        if e_pfant in sequence:
+            self.opt.flprefix = self.join_with_session_dir(flprefix)  # this is for pfant
             self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
 
-        if nulbad in sequence:
+        if e_nulbad in sequence:
             # ** these two are options for nulbad
             self.opt.norm = True
             # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
-            self.opt.fn_flux = self.join_with_session_dir("flux.norm")
+            self.opt.fn_flux = self.join_with_session_dir(flprefix+".norm")
 
 
 # Part of code that finds new session id and creates corresponding directory
 # This has been isolated because needs to be locked
 
 _lock_session_id = Lock()
-def _make_session_id(wdir, prefix):
+def _make_session_id(wdir):
     """Finds new session id (a string containing a four-digit integer)
     corresponding with a directory that does not yet exist
     named <prefix><session id>, and creates such directory.
@@ -300,7 +316,7 @@ def _make_session_id(wdir, prefix):
         i = 0
         while True:
             ret = "%d" % i
-            new_dir = os.path.join(wdir, prefix+ret)
+            new_dir = os.path.join(wdir, session_prefix+ret)
             if not os.path.isdir(new_dir):
                 break
             i += 1

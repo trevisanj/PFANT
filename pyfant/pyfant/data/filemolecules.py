@@ -1,24 +1,13 @@
 __all__ = ["FileMolecules", "Molecule", "SetOfLines"]
-
 from .datafile import *
 from ..misc import *
 from ..parts import *
 from ..errors import *
 import logging
 import sys
+_logger = logging.getLogger(__name__)
+_logger.addHandler(logging.NullHandler())
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
-
-# class SetOfLines(object):
-#     def __init__(self):
-#         self.lmbdam = None
-#         self.sj = None
-#         self.jj = None
-#
-#     """Represents one "set of lines" for one molecule."""
-#     def __len__(self):
-#         return len(self.lmbdam)
 
 class SetOfLines(AttrsPart):
     attrs = ["qqv", "ggv", "bbv", "ddv", "fact", "num_lines"]
@@ -152,7 +141,7 @@ class FileMolecules(DataFile):
                     self.molecules.append(m)
 
                     m.titulo = readline_strip(h)
-                    logger.debug('Reading %d%s molecule \'%s\'' % (im+1, ordinal_suffix(im+1), m.titulo))
+                    _logger.debug('Reading %d%s molecule \'%s\'' % (im+1, ordinal_suffix(im+1), m.titulo))
                     r += 1
                     m.fe, m.do, m.mm, m.am, m.bm, m.ua, m.ub, m.te, m.cro = float_vector(h)
                     r += 1

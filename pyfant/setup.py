@@ -15,7 +15,7 @@ setup(
     download_url = 'https://github.com/trevisanj/pfant/tarball/0.1', # I'll explain this in a second
     keywords = ['spectral synthesis'],
     classifiers = [],
-    install_requires = ['matplotlib', 'fortranformat'],  # matplotlib never gets installed correctly by pip, byt anyway...
+    install_requires = ['astropy', 'specutils', 'matplotlib', 'fortranformat'],  # matplotlib never gets installed correctly by pip, byt anyway...
     scripts = glob('scripts/*.py')  # Considers system scripts all .py files in 'scripts' directory
 
 )

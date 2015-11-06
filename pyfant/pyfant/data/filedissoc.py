@@ -1,6 +1,4 @@
 __all__ = ["FileDissoc"]
-
-import struct
 from .datafile import *
 import fortranformat as ff
 from ..misc import *

@@ -8,6 +8,5 @@ This package is supposed to import * to keep "users" from ever bothering about
 this sub-package structure, which is likely to remain disorganized.
 
 """
-from .assorted import *
+from .plotsp import *
 from .vis import *
-from .load import *

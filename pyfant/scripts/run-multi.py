@@ -117,14 +117,14 @@ if __name__ == "__main__":
                 raise RuntimeError("Element '%s' not found" % symbol)
 
         pfant = Pfant()
-        pfant.execonf.fo_abonds = file_abonds
-        pfant.execonf.opt.flprefix = "%s%02d" % (file_main.titrav, j)
-        pfant.execonf.session_id = pfant.execonf.opt.flprefix
+        e_pfant.execonf.fo_abonds = file_abonds
+        e_pfant.execonf.opt.flprefix = "%s%02d" % (file_main.titrav, j)
+        e_pfant.execonf.session_id = e_pfant.execonf.opt.flprefix
 
-        print pfant.execonf.opt.flprefix
+        print e_pfant.execonf.opt.flprefix
 
-        f = pfant.execonf.fo_abonds
-        pfant_list.append(pfant)
+        f = e_pfant.execonf.fo_abonds
+        pfant_list.append(e_pfant)
 
     run_parallel(pfant_list, MAX_FORTRANS, flag_console=False)
 
@@ -138,18 +138,18 @@ if __name__ == "__main__":
     nulbad_list = []
     sp_filenames_by_fwhm = {}  # dictionary containing a list of .sp filenames for each FWHM
     for pfant in pfant_list:
-        prefix = pfant.execonf.opt.flprefix
+        prefix = e_pfant.execonf.opt.flprefix
 
         for fwhm in fwhms:
             nulbad = Nulbad()
-            nulbad.execonf.opt.fn_flux = prefix+".norm"
-            nulbad.execonf.opt.fwhm = fwhm
-            nulbad.execonf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
-            nulbad_list.append(nulbad)
+            e_nulbad.execonf.opt.fn_flux = prefix+".norm"
+            e_nulbad.execonf.opt.fwhm = fwhm
+            e_nulbad.execonf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
+            nulbad_list.append(e_nulbad)
 
             if not fwhm in sp_filenames_by_fwhm:
                 sp_filenames_by_fwhm[fwhm] = []
-            sp_filenames_by_fwhm[fwhm].append(nulbad.execonf.opt.fn_cv)
+            sp_filenames_by_fwhm[fwhm].append(e_nulbad.execonf.opt.fn_cv)
 
     # Saves files for lineplot.py
     for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():

@@ -1,15 +1,10 @@
 __all__ = ["FileMod", "ModRecord"]
-
 from .datafile import *
-from ..errors import *
-from ..misc import *
 from ..parts import *
 import struct
-import math
 import numpy as np
 import os
 
-# @todo actually I probably will have to read all the records
 
 class FileMod(DataFile):
   """
@@ -28,6 +23,7 @@ class FileMod(DataFile):
   attrs = ["records"]
 
   def __init__(self):
+    DataFile.__init__(self)
     self.records = None
 
   def __len__(self):
@@ -77,23 +73,6 @@ class FileMod(DataFile):
     raise RuntimeError("Not applicable")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ModRecord(AttrsPart):
   """
   Represents a single record from an atmospheric model file
@@ -111,7 +90,6 @@ class ModRecord(AttrsPart):
   attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
            "nh", "teta", "pe", "pg", "t5l"]
 
-
   def __init__(self):
     self.ntot = None
     self.teff = None
@@ -126,32 +104,5 @@ class ModRecord(AttrsPart):
     self.pe = None
     self.pg = None
     self.t5l = None
-
-
-
-class InvalidRecordError(Exception):
-  pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class InvalidRecordError(Exception):
-  pass
 
 

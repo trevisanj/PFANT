@@ -2,10 +2,11 @@
 """
 Plots one or more spectra, either stacked or overlapped.
 """
-
 import argparse
 from pyfant import *
 import matplotlib.pyplot as plt
+import traceback
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -19,30 +20,43 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
+    classes = [FileSpectrumPfant, FileSpectrumNulbad, FileSpectrumXY, FileSpectrumFits]
+
     ss = []
+    flag_ok = False
     for x in args.fn:
 
         print "Trying to read file '%s'..." % x
         # tries to load as pfant ouput; if fails, tries as nulbad output
-        try:
-            f = FileSpectrumPfant()
-            f.load(x)
-            print "... file is pfant output"
-        except:
+
+        for class_ in classes:
             try:
-                f = FileSpectrumNulbad()
+                f = class_()
                 f.load(x)
-                print "... file is nulbad output"
+                print "... successfully read using reader %s." % class_.__name__
+                flag_ok = True
+                break
+            except OSError:
+                raise
+            except IOError:
+                raise
             except:
-                f = FileSpectrumXY()
-                f.load(x)
-                print "... read file as generic X-Y file"
+                # Note: this is not good if the code has bugs, gotta make sure that the
+                # FileSpectrum* classes are are working properly.
 
-
-        ss.append(f.spectrum)
-    if args.ovl:
-        f = plot_spectra_overlapped
+                # traceback.print_exc()
+                pass
+        if not flag_ok:
+            print_error("... not recognized, sorry!")
+        else:
+            ss.append(f.spectrum)
+    if len(ss) == 0:
+        print_error("Nothing to plot!")
     else:
-        f = plot_spectra
-    f(ss, "")
-    plt.show()
+        if args.ovl:
+            f = plot_spectra_overlapped
+        else:
+            f = plot_spectra
+        f(ss, "")
+        plt.show()

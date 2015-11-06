@@ -8,18 +8,8 @@ import struct
 import logging
 import sys
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
-
-# class SetOfLines(object):
-#     def __init__(self):
-#         self.lmbdam = None
-#         self.sj = None
-#         self.jj = None
-#
-#     """Represents one "set of lines" for one molecule."""
-#     def __len__(self):
-#         return len(self.lmbdam)
+_logger = logging.getLogger(__name__)
+_logger.addHandler(logging.NullHandler())
 
 class Element(AttrsPart):
     """
@@ -98,7 +88,7 @@ class FileAtoms(DataFile):
                     elem, s_ioni = temp[0][:-1], temp[0][-1]
                     a.lambda_ = float(temp[1])
                     elem = adjust_atomic_symbol(elem)
-                    key = elem+ioni  # will group elements by this key 
+                    key = elem+s_ioni  # will group elements by this key
                     if edict.has_key(key):
                         e = edict[key]
                     else:

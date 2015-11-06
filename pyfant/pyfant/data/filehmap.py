@@ -5,7 +5,8 @@ from ..misc import *
 import logging
 from ..parts import *
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+_logger.addHandler(logging.NullHandler())
 
 class HmapRow(PyfantObject):
   """Same structure as reader_hmap.f90::hmap_row type."""
@@ -56,7 +57,7 @@ class FileHmap(DataFile):
 
           self.rows.append(r)
         except:
-          logger.error("Error reading row #%d, file \"%s\"" % (i+1, filename))
+          _logger.error("Error reading row #%d, file \"%s\"" % (i+1, filename))
           raise
 
 

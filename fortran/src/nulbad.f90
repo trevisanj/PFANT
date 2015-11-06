@@ -356,7 +356,7 @@ contains
 
     write(lll,120) rs_l0,rs_lf,rs_ktot,rs_dpas
     120 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
-               2X,'PAS original='F5.2)
+               2X,'PAS original='F7.4)
     call log_info(lll)
 
     write(6,'(12F6.3)') (afl(k),k=1,12)
