@@ -114,7 +114,7 @@ if __name__ == "__main__":
                     found = True
 
             if not found:
-                raise RuntimeError("Element '%s' not found" % symbol)
+                raise RuntimeError("Atom '%s' not found" % symbol)
 
         pfant = Pfant()
         e_pfant.execonf.fo_abonds = file_abonds

@@ -4,7 +4,6 @@ __all__ = ["XMolLinesEditor"]
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from pyfant import *
-import numpy as np
 from ._guiaux import *
 from .guimisc import *
 

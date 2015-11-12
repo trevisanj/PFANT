@@ -1,4 +1,4 @@
-__all__ = ["FileAtoms", "Element", "AtomicLine"]
+__all__ = ["FileAtoms", "Atom", "AtomicLine"]
 
 from .datafile import *
 from ..misc import *
@@ -11,11 +11,11 @@ import sys
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
-class Element(AttrsPart):
+class Atom(PyfantObject):
     """
     Represents element with its atomic lines.
 
-    Element is identified by key symbol+ionization
+    Atom is identified by key symbol+ionization
     """
     attrs = ["elem"]
 
@@ -27,6 +27,13 @@ class Element(AttrsPart):
 
     def __len__(self):
         return len(self.lines)
+
+    def __str__(self):
+        return "%s%s" % (self.elem, self.ioni)
+
+    def __repr__(self):
+        return "'%s%s'" % (self.elem, self.ioni)
+
 
 class AtomicLine(AttrsPart):
     attrs = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf", "abondr"]
@@ -52,24 +59,21 @@ class AtomicLine(AttrsPart):
 
 class FileAtoms(DataFile):
     """
-    Represents file with molecular lines.
-
-    Rather than as read_Atoms() in readers.f90, this class stores
-    information for each molecule inside a Molecule object.
+    Represents file with atomic lines.
     """
 
     default_filename = "atomgrade.dat"
-
+    attrs = ["atoms"]
 
     def __len__(self):
         """Length of FileAtoms object is defined as number of elements."""
-        return len(self.elements)
+        return len(self.atoms)
 
     def __init__(self):
         DataFile.__init__(self)
 
-        # list of Element objects
-        self.elements = []
+        # list of Atom objects
+        self.atoms = []
 
 
     def _do_load(self, filename):
@@ -78,7 +82,7 @@ class FileAtoms(DataFile):
         with open(filename, "r") as h:
 
             r = 0 # counts rows of file
-            edict = {}  # links atomic symbols with Element objects created (key is atomic symbol)
+            edict = {}  # links atomic symbols with Atom objects created (key is atomic symbol)
             try:
                 while True:
                     a = AtomicLine()
@@ -92,10 +96,10 @@ class FileAtoms(DataFile):
                     if edict.has_key(key):
                         e = edict[key]
                     else:
-                        e = edict[key] = Element()
+                        e = edict[key] = Atom()
                         e.elem = elem
                         e.ioni = int(s_ioni)
-                        self.elements.append(e)
+                        self.atoms.append(e)
                     e.lines.append(a)
                     r += 1
 
@@ -112,8 +116,8 @@ class FileAtoms(DataFile):
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:
-            n = len(self.elements)
-            for i, e in enumerate(self.elements.values()):
+            n = len(self.atoms)
+            for i, e in enumerate(self.atoms.values()):
                 p = len(e)
                 for j, a in enumerate(e.lines):
                     finrai = 1 if i == n-1 and j == p-1 else 0

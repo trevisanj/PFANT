@@ -11,7 +11,6 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
 import matplotlib.pyplot as plt
 import numpy as np
-from .a_XParametersEditor import *
 from .a_XMolLinesEditor import *
 from ._guiaux import *
 from .guimisc import *
@@ -19,12 +18,7 @@ import os.path
 import webbrowser
 import sys
 
-class PlotInfo(object):
-    def __init__(self):
-        self.flag = True
-        self.mpl_obj = None  # matplotlib Lines2D object
-        self.axis = None  # matplotlib axis
-        self.y_vector = None  # reference to sol.sj or jj
+NUM_PLOTS = len(SOL_HEADERS)-1  # -1 because whe "lambda" does not have its plot
 
 class XFileMolecules(QMainWindow):
 
@@ -42,12 +36,9 @@ class XFileMolecules(QMainWindow):
 
         # Information about the plots
         self.marker_row = None  # points into current set-of-lines, self.sol
-        self.plot_info = [PlotInfo() for i in range(2)]
-        self.set_flag_sj(True)
-        self.set_flag_jj(True)
-
-        MONO_FONT = QFont("not_a_font_name")
-        MONO_FONT.setStyleHint(QFont.TypeWriter)
+        self.plot_info = [PlotInfo() for i in range(NUM_PLOTS)]
+        self.set_flag_plot(SOL_ATTR_NAMES.index("sj")-1, True)
+        self.set_flag_plot(SOL_ATTR_NAMES.index("jj")-1, True)
 
         # ** tab "General file info"
         a = self.plainTextEditFileInfo = QPlainTextEdit()
@@ -57,7 +48,7 @@ class XFileMolecules(QMainWindow):
         # ** "Molecules browser"
 
         # ** ** left of splitter
-        self.labelMol = QLabel('Molecules list (Alt+&1)')
+        self.labelMol = QLabel('Molecules list (Ctrl+1)')
         a = self.listWidgetMol = QListWidget()
         a.currentRowChanged.connect(self.on_listWidgetMol_currentRowChanged)
         # a.setEditTriggers(QAbstractItemView.DoubleClicked)
@@ -66,8 +57,6 @@ class XFileMolecules(QMainWindow):
         a.customContextMenuRequested.connect(self.on_listWidgetMol_customContextMenuRequested)
         a.itemDoubleClicked.connect(self.on_listWidgetMol_doubleClicked)
         a.installEventFilter(self)
-
-        self.labelMol.setBuddy(self.listWidgetMol)
 
         l = self.layoutMol = QVBoxLayout()
         l.setMargin(0)
@@ -90,7 +79,7 @@ class XFileMolecules(QMainWindow):
         # ** ** ** ** left
 
         #P = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.labelSol = QLabel('Sets of lines (Alt+&2)')
+        self.labelSol = QLabel('Sets of lines (Ctrl+2)')
 
         a = self.listWidgetSol = QListWidget()
         a.setFont(MONO_FONT)
@@ -100,8 +89,6 @@ class XFileMolecules(QMainWindow):
         a.customContextMenuRequested.connect(self.on_listWidgetSol_customContextMenuRequested)
         a.itemDoubleClicked.connect(self.on_listWidgetSol_doubleClicked)
         a.installEventFilter(self)
-
-        self.labelSol.setBuddy(self.listWidgetSol)
 
         l = self.layoutSol = QVBoxLayout()
         l.setMargin(0)
@@ -121,27 +108,27 @@ class XFileMolecules(QMainWindow):
         am.setCheckable(True)
         if self.flag_sort:
             am.setChecked(True)
-        a0 = self.buttonSJ = QPushButton("SJ (Alt+&S)")
-        a0.clicked.connect(self.on_buttonSJ_clicked)
-        a0.setCheckable(True)
-        if self.flag_sj():
-            a0.setChecked(True)
-        a1 = self.buttonJJ = QPushButton("JJ (Alt+&J)")
-        a1.clicked.connect(self.on_buttonJJ_clicked)
-        a1.setCheckable(True)
-        if self.flag_jj():
-            a0.setChecked(True)
-        a11 = self.buttonEditLines = QPushButton("Edit lines (Alt+&3)")
+
+        # adds checkable buttons sj, jj
+        self.plot_buttons = bb = []
+        for i in range(NUM_PLOTS):  # sj, jj etc
+            s = SOL_HEADERS[i+1]
+            b = QPushButton("%s (Alt+&%d)" % (s, i+1))
+            b.clicked.connect(self.on_button_plot_clicked)
+            b.setCheckable(True)
+            if self.flag_plot(i):
+                b.setChecked(True)
+            bb.append(b)
+
+        a11 = self.buttonEditLines = QPushButton("Edit lines (Ctrl+3)")
         a11.clicked.connect(self.on_buttonEditLines_clicked)
-        if self.flag_jj():
-            a1.setChecked(True)
         a2 = self.labelNumLines = QLabel("--")
         a3 = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         l0 = self.layoutSolToolbar = QHBoxLayout()
         l0.addWidget(am)
-        l0.addWidget(a0)
-        l0.addWidget(a1)
+        for b in bb:
+            l0.addWidget(b)
         l0.addWidget(a11)
         l0.addWidget(a2)
         l0.addItem(a3)
@@ -245,6 +232,17 @@ class XFileMolecules(QMainWindow):
         self.setCentralWidget(self.tabWidgetFile)
         self.setGeometry(0, 0, 800, 600)
 
+    def keyPressEvent(self, ev):
+        if ev.modifiers() == Qt.ControlModifier:
+            k = ev.key()
+            if k == Qt.Key_1:
+                self.listWidgetMol.setFocus()
+            elif k == Qt.Key_2:
+                self.listWidgetSol.setFocus()
+            elif k == Qt.Key_3:
+                self.on_buttonEditLines_clicked()
+
+
     def on_help(self, _):
         base_dir = os.path.dirname(sys.argv[0])
         print "aaa", sys.argv[0]
@@ -277,12 +275,11 @@ class XFileMolecules(QMainWindow):
         if row > -1:
             self.set_sol(row)
 
-    def on_buttonSJ_clicked(self):
-        self.set_flag_sj(self.buttonSJ.isChecked())
-        self.plot_lines()
-
-    def on_buttonJJ_clicked(self):
-        self.set_flag_jj(self.buttonJJ.isChecked())
+    def on_button_plot_clicked(self):
+        # This may be triggered by any of the plot buttons
+        button = self.sender()
+        idx = self.plot_buttons.index(button)
+        self.set_flag_plot(idx, button.isChecked())
         self.plot_lines()
 
     def on_buttonSort_clicked(self):
@@ -330,15 +327,19 @@ class XFileMolecules(QMainWindow):
                         QMessageBox.Cancel)
             if r == QMessageBox.Cancel:
                 event.ignore()
-            elif r == QMessageBox.No:
-                pass
-            elif r == QMessageBox.Yes:
-                try:
-                    self.save()
-                except:
-                    # In case of error saving file, will not exit the program
-                    event.ignore()
-                    raise()
+            else:
+                if r == QMessageBox.No:
+                    pass
+                elif r == QMessageBox.Yes:
+                    try:
+                        self.save()
+                    except:
+                        # In case of error saving file, will not exit the program
+                        event.ignore()
+                        raise()
+        if event.isAccepted():
+            self.close_editor()
+
 
         #print "Flw"
 
@@ -407,9 +408,12 @@ class XFileMolecules(QMainWindow):
         if o is not None:
             self.figure.clear()
 
-            n = self.flag_sj() + self.flag_jj()  # number of subplots (0, 1 or 2)
+            n = sum([info.flag for info in self.plot_info])  # number of subplots (0, 1 or 2)
             # map to reuse plotting routine, contains what differs between each plot
-            map_ = [('SJ', o.sj), ('JJ', o.jj)]
+            map_ = [(SOL_HEADERS[i], o.__getattribute__(SOL_ATTR_NAMES[i])) \
+                    for i in range(1, len(SOL_HEADERS))]
+
+
             i_subplot = 1
             for i in range(len(map_)):
                 y_label = map_[i][0]
@@ -480,7 +484,7 @@ class XFileMolecules(QMainWindow):
         obj = self.mol
         if obj is None: return
         item = self.listWidgetMol.currentItem()
-        r, form = _show_edit_form(obj,
+        r, form = show_edit_form(obj,
             ["titulo", "fe", "do", "mm", "am", "bm", "ua", "ub", "te", "cro", "s"],
             item.text())
         flag_changed = False
@@ -506,7 +510,7 @@ class XFileMolecules(QMainWindow):
         obj = self.sol
         if obj is None: return
         item = self.listWidgetMol.currentItem()
-        r, form = _show_edit_form(self.sol, ["qqv", "ggv", "bbv", "ddv", "fact"],
+        r, form = show_edit_form(self.sol, ["qqv", "ggv", "bbv", "ddv", "fact"],
                                   item.text())
         flag_changed = False
         if r == QDialog.Accepted:
@@ -593,8 +597,13 @@ class XFileMolecules(QMainWindow):
             self.update_window_title()
 
     def set_editor_sol(self):
+        """Sets the set-of-lines of the editor."""
         if self.sol is not None and self.form_lines is not None:
             self.form_lines.set_sol(self.sol, "Set-of-lines: "+self.listWidgetSol.currentItem().text())
+
+    def close_editor(self):
+        if self.form_lines is not None:
+            self.form_lines.close()
 
     # Controlling plots and markers for current row
 
@@ -606,7 +615,7 @@ class XFileMolecules(QMainWindow):
     def clear_markers(self):
         for o in self.plot_info:
             if o.mpl_obj:
-                _remove_line(o.mpl_obj)
+                remove_line(o.mpl_obj)
                 o.mpl_obj = None
 
     def draw_markers(self):
@@ -621,22 +630,16 @@ class XFileMolecules(QMainWindow):
                     #print "drawing", [lambda_], [o.y_vector[i]]
             self.canvas.draw()
 
-    def flag_sj(self):
-        return self.plot_info[0].flag
+    def flag_plot(self, idx):
+        return self.plot_info[idx].flag
 
-    def flag_jj(self):
-        return self.plot_info[1].flag
-
-    def set_flag_sj(self, x):
-        self.plot_info[0].flag = x
-
-    def set_flag_jj(self, x):
-        self.plot_info[1].flag = x
+    def set_flag_plot(self, idx, x):
+        self.plot_info[idx].flag = x
 
     def on_plot_click(self, event):
         lambda_ = event.xdata
         if lambda_ is not None and self.form_lines is not None:
-            idx = _index_nearest(self.sol.lmbdam, lambda_)
+            idx = index_nearest(self.sol.lmbdam, lambda_)
             self.form_lines.set_row(idx)
             # self.set_marker_row(idx)
 
@@ -654,36 +657,3 @@ class XFileMolecules(QMainWindow):
         return "%3d %7s" % (index+1, '(%d)' % len(sol))
 
 
-
-def _index_nearest(array, value):
-    """
-    Finds index of nearest value in array.
-
-    http://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-    """
-    idx = (np.abs(array-value)).argmin()
-    return idx
-
-def _remove_line(line2D):
-    """
-    Removes line from matplotlib plot.
-    # http://stackoverflow.com/questions/4981815/how-to-remove-lines-in-a-matplotlib-plot
-    """
-    l = line2D.pop(0)
-    l.remove()
-    del l
-
-
-def _show_edit_form(obj, attrs, title):
-    """Shows parameters editor modal form.
-
-    Arguments:
-      obj -- object to extract attribute values
-      attrs -- list of attribute names
-    """
-    specs = []
-    for name in attrs:
-        specs.append((name, {"value": obj.__getattribute__(name)}))
-    form = XParametersEditor(specs=specs, title=title)
-    r = form.exec_()
-    return r, form

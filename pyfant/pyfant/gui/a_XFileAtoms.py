@@ -11,7 +11,6 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
 import matplotlib.pyplot as plt
 import numpy as np
-from .a_XParametersEditor import *
 from .a_XAtomLinesEditor import *
 from ._guiaux import *
 from .guimisc import *
@@ -19,12 +18,7 @@ import os.path
 import webbrowser
 import sys
 
-class PlotInfo(object):
-    def __init__(self):
-        self.flag = True
-        self.mpl_obj = None  # matplotlib Lines2D object
-        self.axis = None  # matplotlib axis
-        self.y_vector = None  # reference to sol.sj or jj
+NUM_PLOTS = len(SOL_HEADERS)
 
 class XFileAtoms(QMainWindow):
 
@@ -33,21 +27,18 @@ class XFileAtoms(QMainWindow):
 
         self.f = None  # FileAtoms object
         self.flag_sort = False
-        self.mol_index = None
-        self.sol_index = None
-        self.mol = None
-        self.sol = None
+        self.atom_index = None
+        self.element = None
         self.flag_changed = False
+        # Form with the table to edit the lines
         self.form_lines = None
 
-        # Information about the plots
+        # # Information about the plots
         self.marker_row = None  # points into current set-of-lines, self.sol
         self.plot_info = [PlotInfo() for i in range(2)]
         self.set_flag_sj(True)
         self.set_flag_jj(True)
 
-        MONO_FONT = QFont("not_a_font_name")
-        MONO_FONT.setStyleHint(QFont.TypeWriter)
 
         # ** tab "General file info"
         a = self.plainTextEditFileInfo = QPlainTextEdit()
@@ -85,12 +76,12 @@ class XFileAtoms(QMainWindow):
         a = self.plainTextEditMolInfo = QPlainTextEdit()
         a.setFont(MONO_FONT)
 
-        # ** ** ** tab "Molecular lines"
+        # ** ** ** tab "Atomic lines"
 
         # ** ** ** ** left
 
         #P = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.labelSol = QLabel('Sets of lines (Alt+&2)')
+        self.labelAtom = QLabel('Atom (Alt+&2)')
 
         a = self.listWidgetSol = QListWidget()
         a.setFont(MONO_FONT)
@@ -101,12 +92,12 @@ class XFileAtoms(QMainWindow):
         a.itemDoubleClicked.connect(self.on_listWidgetSol_doubleClicked)
         a.installEventFilter(self)
 
-        self.labelSol.setBuddy(self.listWidgetSol)
+        self.labelAtom.setBuddy(self.listWidgetSol)
 
         l = self.layoutSol = QVBoxLayout()
         l.setMargin(0)
         l.setSpacing(1)
-        l.addWidget(self.labelSol)
+        l.addWidget(self.labelAtom)
         l.addWidget(self.listWidgetSol)
 
         a = self.widgetSol = QWidget()
@@ -130,7 +121,7 @@ class XFileAtoms(QMainWindow):
         a1.clicked.connect(self.on_buttonJJ_clicked)
         a1.setCheckable(True)
         if self.flag_jj():
-            a0.setChecked(True)
+            a1.setChecked(True)
         a11 = self.buttonEditLines = QPushButton("Edit lines (Alt+&3)")
         a11.clicked.connect(self.on_buttonEditLines_clicked)
         if self.flag_jj():
@@ -194,14 +185,8 @@ class XFileAtoms(QMainWindow):
         a.setStretchFactor(0, 2)
         a.setStretchFactor(1, 10)
 
-        a = self.tabWidgetMol = QTabWidget()
-        a.addTab(self.plainTextEditMolInfo, "Molecule info (Alt+&M)")
-        a.addTab(self.splitterSol, "Sets of lines (Alt+&L)")
-        a.setCurrentIndex(1)
-        a.setFont(MONO_FONT)
-
         # ** splitter: (list of Atoms) | (Atoms tab widget)
-        a = self.splitterMol = QSplitter(Qt.Horizontal)
+        a = self.splitterElement = QSplitter(Qt.Horizontal)
         a.addWidget(self.widgetMol)
         a.addWidget(self.tabWidgetMol)
         a.setStretchFactor(0, 2)
@@ -210,7 +195,7 @@ class XFileAtoms(QMainWindow):
         # tab "File" (main tab widget
         a = self.tabWidgetFile = QTabWidget(self)
         a.addTab(self.plainTextEditFileInfo, "General File Info (Alt+&I)")
-        a.addTab(self.splitterMol, "Atoms Browser (Alt+&B)")
+        a.addTab(self.splitterElement, "Atoms Browser (Alt+&B)")
         a.setCurrentIndex(1)
         a.setFont(MONO_FONT)
 
@@ -271,7 +256,7 @@ class XFileAtoms(QMainWindow):
 
     def on_listWidgetMol_currentRowChanged(self, row):
         if row > -1:
-            self.set_molecule(row)
+            self.set_atom(row)
 
     def on_listWidgetSol_currentRowChanged(self, row):
         if row > -1:
@@ -354,13 +339,13 @@ class XFileAtoms(QMainWindow):
 
         self.plainTextEditFileInfo.setPlainText(str(f))
 
-        for m in f.Atoms:
-            assert isinstance(m, Molecule)
-            item = QListWidgetItem(self.get_mol_string(m))
+        for m in f.atoms:
+            assert isinstance(m, Atom)
+            item = QListWidgetItem(self.get_atom_string(m))
             # not going to allow editing yet item.setFlags(item.flags() | Qt.ItemIsEditable)
             self.listWidgetMol.addItem(item)
 
-        if len(f.Atoms) > 0:
+        if len(f.atoms) > 0:
             self.listWidgetMol.setCurrentRow(0)
 
         self.flag_changed = False
@@ -378,9 +363,9 @@ class XFileAtoms(QMainWindow):
             self.flag_changed = False
             self.update_window_title()
 
-    def set_molecule(self, i):
-        self.mol_index = i
-        m = self.mol = self.f.Atoms[i]
+    def set_atom(self, i):
+        self.atom_index = i
+        m = self.element = self.f.Atoms[i]
 
         self.update_mol_info()
 
@@ -396,7 +381,7 @@ class XFileAtoms(QMainWindow):
 
     def set_sol(self, j):
         self.sol_index = j
-        self.sol = self.f.Atoms[self.mol_index].sol[j]
+        self.sol = self.f.Atoms[self.atom_index].sol[j]
         self.update_sol_info()
         self.plot_lines()
         self.set_editor_sol()
@@ -477,10 +462,10 @@ class XFileAtoms(QMainWindow):
     #     print "quer editar o file eh"
 
     def edit_mol(self):
-        obj = self.mol
+        obj = self.element
         if obj is None: return
         item = self.listWidgetMol.currentItem()
-        r, form = _show_edit_form(obj,
+        r, form = show_edit_form(obj,
             ["titulo", "fe", "do", "mm", "am", "bm", "ua", "ub", "te", "cro", "s"],
             item.text())
         flag_changed = False
@@ -494,7 +479,7 @@ class XFileAtoms(QMainWindow):
                     print "setting %s = %s" % (name, value)
         if flag_changed:
             self.flag_changed = True
-            item.setText(self.get_mol_string(obj))
+            item.setText(self.get_atom_string(obj))
             #item.setStyleSheet("selected:active{background: yellow}")
             # item.setTextColor(QColor(255, 0, 0))
             #item.setBackgroundColor(QColor(255, 0, 0))
@@ -506,7 +491,7 @@ class XFileAtoms(QMainWindow):
         obj = self.sol
         if obj is None: return
         item = self.listWidgetMol.currentItem()
-        r, form = _show_edit_form(self.sol, ["qqv", "ggv", "bbv", "ddv", "fact"],
+        r, form = show_edit_form(self.sol, ["qqv", "ggv", "bbv", "ddv", "fact"],
                                   item.text())
         flag_changed = False
         if r == QDialog.Accepted:
@@ -519,7 +504,7 @@ class XFileAtoms(QMainWindow):
                     print "setting %s = %s" % (name, value)
         if flag_changed:
             self.flag_changed = True
-            item.setText(self.get_mol_string(obj))
+            item.setText(self.get_atom_string(obj))
             # item.setTextColor(QColor(255, 0, 0))
             self.update_mol_info()
             self.update_window_title()
@@ -531,7 +516,7 @@ class XFileAtoms(QMainWindow):
 
     def update_mol_info(self):
         """Makes report for the current molecule."""
-        m = self.mol
+        m = self.element
         s = str(m)
         # No need to repeat this information, already shown in listWidgetSol
         # s += '\n\n' \
@@ -606,7 +591,7 @@ class XFileAtoms(QMainWindow):
     def clear_markers(self):
         for o in self.plot_info:
             if o.mpl_obj:
-                _remove_line(o.mpl_obj)
+                remove_line(o.mpl_obj)
                 o.mpl_obj = None
 
     def draw_markers(self):
@@ -636,7 +621,7 @@ class XFileAtoms(QMainWindow):
     def on_plot_click(self, event):
         lambda_ = event.xdata
         if lambda_ is not None and self.form_lines is not None:
-            idx = _index_nearest(self.sol.lmbdam, lambda_)
+            idx = index_nearest(self.sol.lmbdam, lambda_)
             self.form_lines.set_row(idx)
             # self.set_marker_row(idx)
 
@@ -646,44 +631,6 @@ class XFileAtoms(QMainWindow):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
     @staticmethod
-    def get_mol_string(m):
-        return m.titulo
+    def get_atom_string(e):
+        return str(e.elem)  # ex: "FE1"
 
-    @staticmethod
-    def get_sol_string(index, sol):
-        return "%3d %7s" % (index+1, '(%d)' % len(sol))
-
-
-
-def _index_nearest(array, value):
-    """
-    Finds index of nearest value in array.
-
-    http://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-    """
-    idx = (np.abs(array-value)).argmin()
-    return idx
-
-def _remove_line(line2D):
-    """
-    Removes line from matplotlib plot.
-    # http://stackoverflow.com/questions/4981815/how-to-remove-lines-in-a-matplotlib-plot
-    """
-    l = line2D.pop(0)
-    l.remove()
-    del l
-
-
-def _show_edit_form(obj, attrs, title):
-    """Shows parameters editor modal form.
-
-    Arguments:
-      obj -- object to extract attribute values
-      attrs -- list of attribute names
-    """
-    specs = []
-    for name in attrs:
-        specs.append((name, {"value": obj.__getattribute__(name)}))
-    form = XParametersEditor(specs=specs, title=title)
-    r = form.exec_()
-    return r, form

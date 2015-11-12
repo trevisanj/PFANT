@@ -2,7 +2,6 @@
 
 __all__ = ["XParametersEditor"]
 
-from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import ui_XParametersEditor
 from . import a_WParametersEditor
