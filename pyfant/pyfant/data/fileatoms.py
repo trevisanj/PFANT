@@ -7,6 +7,7 @@ from ..errors import *
 import struct
 import logging
 import sys
+import numpy as np
 
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
@@ -17,7 +18,34 @@ class Atom(PyfantObject):
 
     Atom is identified by key symbol+ionization
     """
-    attrs = ["elem"]
+    attrs = ["elem", "ioni"]
+
+    # Properties that iterate through the AtomicLine objects to mount vectors
+    @property
+    def lambda_(self):
+        return np.array([x.lambda_ for x in self.lines])
+    @property
+    def kiex(self):
+        return np.array([x.kiex for x in self.lines])
+    @property
+    def algf(self):
+        return np.array([x.algf for x in self.lines])
+    @property
+    def ch(self):
+        return np.array([x.ch for x in self.lines])
+    @property
+    def gr(self):
+        return np.array([x.gr for x in self.lines])
+    @property
+    def ge(self):
+        return np.array([x.ge for x in self.lines])
+    @property
+    def zinf(self):
+        return np.array([x.zinf for x in self.lines])
+    @property
+    def abondr(self):
+        return np.array([x.abondr for x in self.lines])
+
 
     def __init__(self):
         AttrsPart.__init__(self)
@@ -50,7 +78,6 @@ class AtomicLine(AttrsPart):
         self.ge = None
         self.zinf = None
         self.abondr = None
-
 
     def filter(self, lzero, lfin):
         """Reduces the number of lines to only the ones whose lambda is inside [lzero, lfin]"""

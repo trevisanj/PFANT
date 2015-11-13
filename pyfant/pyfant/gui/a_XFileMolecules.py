@@ -103,9 +103,10 @@ class XFileMolecules(QMainWindow):
 
         # ** ** ** ** ** Toolbar above plot
 
-        am = self.buttonSort = QPushButton("Sort wavelengths (Alt+&W)")
+        am = self.buttonSort = QPushButton("Sort wave (Alt+&W)")
         am.clicked.connect(self.on_buttonSort_clicked)
         am.setCheckable(True)
+        am.setToolTip("Sort spectral lines in ascending order of wavelength")
         if self.flag_sort:
             am.setChecked(True)
 
@@ -413,7 +414,6 @@ class XFileMolecules(QMainWindow):
             map_ = [(SOL_HEADERS[i], o.__getattribute__(SOL_ATTR_NAMES[i])) \
                     for i in range(1, len(SOL_HEADERS))]
 
-
             i_subplot = 1
             for i in range(len(map_)):
                 y_label = map_[i][0]
@@ -578,9 +578,9 @@ class XFileMolecules(QMainWindow):
 
     def MolLinesEditor_closing(self):
         """Called by the molecular lines editor to notify that it is closing."""
-        print "AHH QUECH FECHAR EH"
         self.form_lines = None
         self.marker_row = None
+        self.plot_lines()  # to remove the "X" from the plot
 
     def MolLinesEditor_current_row_changed(self, currentRow):
         """Called by the molecular lines editor to notify that the current row has changed."""
