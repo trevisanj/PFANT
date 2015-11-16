@@ -144,7 +144,7 @@ class FileAtoms(DataFile):
     def _do_save_as(self, filename):
         with open(filename, "w") as h:
             n = len(self.atoms)
-            for i, e in enumerate(self.atoms.values()):
+            for i, e in enumerate(self.atoms):
                 p = len(e)
                 for j, a in enumerate(e.lines):
                     finrai = 1 if i == n-1 and j == p-1 else 0

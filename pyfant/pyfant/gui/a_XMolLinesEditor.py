@@ -56,9 +56,6 @@ class XMolLinesEditor(QMainWindow):
                 if source == self.tableWidget:
                     self.tableWidget.editItem(self.tableWidget.currentItem())
                     return True
-                if source == self.listWidgetSol:
-                    self.edit_sol()
-                    return True
         return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *

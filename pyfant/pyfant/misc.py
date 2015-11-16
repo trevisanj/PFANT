@@ -365,7 +365,7 @@ def random_name():
 
 def format_BLB():
     """Sets some formatting options in Matplotlib."""
-    rc('font', family = 'serif', serif = 'cmr10')
+    rc('font', family = 'serif') #, serif = 'cmr10')
     rc('xtick', labelsize=14)
     rc('ytick', labelsize=14)
     #rc('text', usetex=True)

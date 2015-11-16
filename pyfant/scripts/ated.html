@@ -1,0 +1,34 @@
+<h1>ated.py - Atomic lines editor</h1>
+
+<p>This program allows you to visualize and edit the contents of a atomic lines file
+such as <pre>atomgrade.dat</pre> or <pre>atom4070g.dat</pre>.</p>
+<h2>Opening files</h2>
+
+<p>To open a file, invoke the program as follows:</p>
+
+<pre>ated.py &lt;filename&gt;</pre>
+
+<h2>Structure of the program</h2>
+
+<p>The graphical interface shows the (element name)+(ionization) level on the left,
+and corresponding plots on the right.</p>
+
+<p>Navigation is facilitated by keyboard shortcuts that are shown explicitly.</p>
+
+<h2>Editing atomic lines</h2>
+<p>Pressing Ctrl+3 (or its corresponding button) will open another window contaning a table.
+As you navigate through this table,
+the current atomic line will be marked in the plots with a big
+red <span style="color: red"><b>X</b></span>.</p>
+<p>You can also click with the mouse directly on the plots, causing the nearest wavelength
+be selected on the table.</p>
+
+<h2>Saving the file</h2>
+
+<p><b>Careful:</b> if you press Ctrl+S, the original file will be overwritten with your
+changes. It is recommended to backup your file before opening it with ated.py.</p>
+
+<p>To save it with a different name, press Ctrl+Alt+S.</p>
+
+<p>If the file has been changed, but not saved yet, the word "changed" will be shown in
+the title.</p>

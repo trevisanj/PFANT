@@ -29,12 +29,12 @@ class XAtomLinesEditor(QMainWindow):
 
         self.setCentralWidget(a)
         rect = QApplication.desktop().screenGeometry()
-        W = 200  # fixed value for the width for now
+        W = 360  # fixed value for the width for now
         self.setGeometry(rect.width()-W, 0, W, rect.height())
 
     def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
                                           previousColumn):
-        self.parent.MolLinesEditor_current_row_changed(currentRow)
+        self.parent.AtomLinesEditor_current_row_changed(currentRow)
 
     def on_tableWidget_cellChanged(self, row, column):
         if not self.flag_populating:
@@ -44,12 +44,12 @@ class XAtomLinesEditor(QMainWindow):
             except ValueError:
                 # restores original value
                 ShowError("Invalid floating point value: %s" % item.text())
-                item.setText(str(self.parent.sol.__getattribute__(SOL_ATTR_NAMES[column])[row]))
+                item.setText(str(self.parent.atom.__getattribute__(ATOM_ATTR_NAMES[column])[row]))
             else:
-                self.parent.MolLinesEditor_cell_changed(row, column, value)
+                self.parent.AtomLinesEditor_cell_changed(row, column, value)
 
     def closeEvent(self, _):
-        self.parent.MolLinesEditor_closing()
+        self.parent.AtomLinesEditor_closing()
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.KeyPress:
@@ -57,31 +57,28 @@ class XAtomLinesEditor(QMainWindow):
                 if source == self.tableWidget:
                     self.tableWidget.editItem(self.tableWidget.currentItem())
                     return True
-                if source == self.listWidgetSol:
-                    self.edit_sol()
-                    return True
         return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
 
-    def set_sol(self, sol, title):
+    def set_atom(self, atom, title):
         """Sets set of lines."""
 
-        assert isinstance(sol, SetOfLines)
+        assert isinstance(atom, Atom)
 
         self.flag_populating = True
         try:
             self.setWindowTitle(title)
 
             t = self.tableWidget
-            n = len(sol)
-            ResetTableWidget(t, n, len(SOL_HEADERS))
-            t.setHorizontalHeaderLabels(SOL_HEADERS)
+            n = len(atom)
+            ResetTableWidget(t, n, len(ATOM_HEADERS))
+            t.setHorizontalHeaderLabels(ATOM_HEADERS)
 
             # list with the vectors themselves
-            attrs = [sol.__getattribute__(x) for x in SOL_ATTR_NAMES]
+            attrs = [atom.__getattribute__(x) for x in ATOM_ATTR_NAMES]
 
-            for i in xrange(len(sol)):
+            for i in xrange(len(atom)):
                 for j, attr in enumerate(attrs):
                     item = QTableWidgetItem(str(attr[i]))
                     t.setItem(i, j, item)

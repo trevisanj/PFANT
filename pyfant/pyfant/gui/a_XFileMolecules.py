@@ -233,6 +233,8 @@ class XFileMolecules(QMainWindow):
         self.setCentralWidget(self.tabWidgetFile)
         self.setGeometry(0, 0, 800, 600)
 
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+
     def keyPressEvent(self, ev):
         if ev.modifiers() == Qt.ControlModifier:
             k = ev.key()
@@ -243,6 +245,42 @@ class XFileMolecules(QMainWindow):
             elif k == Qt.Key_3:
                 self.on_buttonEditLines_clicked()
 
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Return:
+                if source == self.listWidgetMol:
+                    self.edit_mol()
+                    return True
+                if source == self.listWidgetSol:
+                    self.edit_sol()
+                    return True
+        return False
+
+    def closeEvent(self, event):
+        if self.flag_changed:
+            # http://straightedgelinux.com/blog/python/html/pyqtxt.html
+            r = QMessageBox.question(self,
+                        "About to exit",
+                        "File \"%s\" has unsaved changes. Save now?" % self.f.filename,
+                        QMessageBox.Yes|QMessageBox.No|
+                        QMessageBox.Cancel)
+            if r == QMessageBox.Cancel:
+                event.ignore()
+            else:
+                if r == QMessageBox.No:
+                    pass
+                elif r == QMessageBox.Yes:
+                    try:
+                        self.save()
+                    except:
+                        # In case of error saving file, will not exit the program
+                        event.ignore()
+                        raise()
+        if event.isAccepted():
+            self.close_editor()
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Slots
 
     def on_help(self, _):
         base_dir = os.path.dirname(sys.argv[0])
@@ -307,46 +345,7 @@ class XFileMolecules(QMainWindow):
     def on_listWidgetSol_doubleClicked(self):
         self.edit_sol()
 
-    def eventFilter(self, source, event):
-        if event.type() == QEvent.KeyPress:
-            if event.key() == Qt.Key_Return:
-                if source == self.listWidgetMol:
-                    self.edit_mol()
-                    return True
-                if source == self.listWidgetSol:
-                    self.edit_sol()
-                    return True
-        return False
-
-    def closeEvent(self, event):
-        if self.flag_changed:
-            # http://straightedgelinux.com/blog/python/html/pyqtxt.html
-            r = QMessageBox.question(self,
-                        "About to exit",
-                        "File \"%s\" has unsaved changes. Save now?" % self.f.filename,
-                        QMessageBox.Yes|QMessageBox.No|
-                        QMessageBox.Cancel)
-            if r == QMessageBox.Cancel:
-                event.ignore()
-            else:
-                if r == QMessageBox.No:
-                    pass
-                elif r == QMessageBox.Yes:
-                    try:
-                        self.save()
-                    except:
-                        # In case of error saving file, will not exit the program
-                        event.ignore()
-                        raise()
-        if event.isAccepted():
-            self.close_editor()
-
-
-        #print "Flw"
-
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
-
-
 
     def load(self, f):
         """Loads file into GUI."""

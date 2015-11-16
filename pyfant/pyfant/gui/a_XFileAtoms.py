@@ -43,7 +43,7 @@ class XFileAtoms(QMainWindow):
         # ** "Atoms browser"
 
         # ** ** left of splitter
-        self.labelAtoms = QLabel('Atoms list (Alt+&1)')
+        self.labelAtoms = QLabel('Atoms list (Ctrl+1)')
         a = self.listWidgetAtoms = QListWidget()
         a.currentRowChanged.connect(self.on_listWidgetAtoms_currentRowChanged)
         # a.setEditTriggers(QAbstractItemView.DoubleClicked)
@@ -52,14 +52,14 @@ class XFileAtoms(QMainWindow):
 
         self.labelAtoms.setBuddy(self.listWidgetAtoms)
 
-        l = self.layoutMol = QVBoxLayout()
+        l = self.layoutAtoms = QVBoxLayout()
         l.setMargin(0)
         l.setSpacing(1)
         l.addWidget(self.labelAtoms)
         l.addWidget(self.listWidgetAtoms)
 
         a = self.widgetAtoms = QWidget()
-        a.setLayout(self.layoutMol)
+        a.setLayout(self.layoutAtoms)
 
 
         # ** ** right of splitter
@@ -127,7 +127,7 @@ class XFileAtoms(QMainWindow):
         a.setLayout(l1)
 
 
-        # ** splitter: (list of Atoms) | (Molecule tab widget)
+        # ** splitter: (list of Atoms) | (plot)
         a = self.splitter = QSplitter(Qt.Horizontal)
         a.addWidget(self.widgetAtoms)
         a.addWidget(self.widgetPlot)
@@ -166,12 +166,48 @@ class XFileAtoms(QMainWindow):
         self.setCentralWidget(self.splitter)
         self.setGeometry(0, 0, 800, 600)
 
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Qt override
+
+    def closeEvent(self, event):
+        if self.flag_changed:
+            # http://straightedgelinux.com/blog/python/html/pyqtxt.html
+            r = QMessageBox.question(self,
+                        "About to exit",
+                        "File \"%s\" has unsaved changes. Save now?" % self.f.filename,
+                        QMessageBox.Yes|QMessageBox.No|
+                        QMessageBox.Cancel)
+            if r == QMessageBox.Cancel:
+                event.ignore()
+            elif r == QMessageBox.No:
+                pass
+            elif r == QMessageBox.Yes:
+                try:
+                    self.save()
+                except:
+                    # In case of error saving file, will not exit the program
+                    event.ignore()
+                    raise()
+        if event.isAccepted():
+            self.close_editor()
+
+    def keyPressEvent(self, ev):
+        if ev.modifiers() == Qt.ControlModifier:
+            k = ev.key()
+            if k == Qt.Key_1:
+                self.listWidgetAtoms.setFocus()
+            elif k == Qt.Key_3:
+                self.on_buttonEditLines_clicked()
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Slots
+
     def on_help(self, _):
         base_dir = os.path.dirname(sys.argv[0])
         print "aaa", sys.argv[0]
         print "bbb", base_dir
         webbrowser.open_new(os.path.join(base_dir, "ated.html"))
-        ShowMessage("Help file mled.html was opened in web browser.")
+        ShowMessage("Help file ated.html was opened in web browser.")
 
     def on_save(self, _):
         self.disable_save_actions()
@@ -205,41 +241,7 @@ class XFileAtoms(QMainWindow):
         self.flag_sort = self.buttonSort.isChecked()
         self.plot_lines()
 
-
-    def on_listWidgetAtoms_doubleClicked(self):
-        self.edit_mol()
-
-    def eventFilter(self, source, event):
-        if event.type() == QEvent.KeyPress:
-            if event.key() == Qt.Key_Return:
-                if source == self.listWidgetAtoms:
-                    self.edit_mol()
-                    return True
-        return False
-
-    def closeEvent(self, event):
-        if self.flag_changed:
-            # http://straightedgelinux.com/blog/python/html/pyqtxt.html
-            r = QMessageBox.question(self,
-                        "About to exit",
-                        "File \"%s\" has unsaved changes. Save now?" % self.f.filename,
-                        QMessageBox.Yes|QMessageBox.No|
-                        QMessageBox.Cancel)
-            if r == QMessageBox.Cancel:
-                event.ignore()
-            elif r == QMessageBox.No:
-                pass
-            elif r == QMessageBox.Yes:
-                try:
-                    self.save()
-                except:
-                    # In case of error saving file, will not exit the program
-                    event.ignore()
-                    raise()
-
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
-
-
 
     def load(self, f):
         """Loads file into GUI."""
@@ -337,32 +339,6 @@ class XFileAtoms(QMainWindow):
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
-    # def edit_molecule_name(self):
-    #     """Edits current item from listWidgetMol."""
-    #
-    #     a = self.listWidgetMol
-    #     item = a.currentItem()
-    #     item.setFlags(item.flags() | Qt.ItemIsEditable)
-    #     a.editItem(item)
-
-
-    # def edit_file(self):
-    # #     paramSpecs = [
-    # #     ("titm", {"value": 5}),
-    # #     ("number", {"value": 8, "description": "Size for advisor's TopBottomDetector4"}),
-    # # ("SM_distance", {"value": 150}),
-    # # ("SM_gainRiskRatio", {"value": 2}),
-    # # ("SM_AF0", {"value": 0.02, "description": "Initial acceleration factor (AF)"}),
-    # # ("SM_AFIncrement", {"value": 0.02, "description": "AF increment"})
-    # # ]
-    #     print "quer editar o file eh"
-
-
-    def edit_points(self):
-        print "quer editar os pontos eh"
-
-    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
-
     def update_atom_info(self):
         """Updates the "number of lines" label."""
         a = self.atom
@@ -392,28 +368,32 @@ class XFileAtoms(QMainWindow):
         self.plot_lines()
 
     def AtomLinesEditor_closing(self):
-        """Called by the molecular lines editor to notify that it is closing."""
-        print "AHH QUECH FECHAR EH"
+        """Called by the atomic lines editor to notify that it is closing."""
         self.form_lines = None
         self.marker_row = None
+        self.plot_lines()  # to remove the "X" from the plot
 
     def AtomLinesEditor_current_row_changed(self, currentRow):
-        """Called by the molecular lines editor to notify that the current row has changed."""
+        """Called by the atomic lines editor to notify that the current row has changed."""
         self.set_marker_row(currentRow)
 
     def AtomLinesEditor_cell_changed(self, row, column, value):
-        """Called by the molecular lines editor to notify that a value has changed."""
+        """Called by the atomic lines editor to notify that a value has changed."""
         attr_name = ATOM_ATTR_NAMES[column]
-        v = self.sol.__getattribute__(attr_name)
-        if v[row] != value:
-            v[row] = value
+        old_value = self.atom.lines[row].__getattribute__(attr_name)
+        if old_value != value:
+            self.atom.lines[row].__setattr__(attr_name, value)
             self.flag_changed = True
             self.plot_lines()
             self.update_window_title()
 
     def set_editor_atom(self):
         if self.atom is not None and self.form_lines is not None:
-            self.form_lines.set_atom(self.sol, "Atom: "+self.listWidgetAtom.currentItem().text())
+            self.form_lines.set_atom(self.atom, "Atom: "+self.listWidgetAtoms.currentItem().text())
+
+    def close_editor(self):
+        if self.form_lines is not None:
+            self.form_lines.close()
 
     # Controlling plots and markers for current row
 
