@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-ated - ATomic lines file EDitor (not working yet)
+ated - ATomic lines file EDitor
 
 See ated.html or press F1 inside application.
 """
