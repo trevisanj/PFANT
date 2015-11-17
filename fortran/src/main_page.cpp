@@ -41,13 +41,20 @@ Helping with development:
 
 @section history History
 
+Since its start in 1967, the code has been through several enhancements. The
+timeline is summarizes as follows.
+
 
 @verbatim
  |
- |     FANTÔME   - French for "ghost", "spectrum"
- |     FANTOMOL  - molecular calculus added
- |    PFANT      - "P" as in Perrin, Marie-Noel
- |
+ | 1967 - FANTÔME (French for "ghost"/"spectrum")
+ |        first version developed by Spite
+ | 1982 - FANTOMOL
+ |        Barbuy included the computation of molecular lines and
+ |        dissociative equilibrium
+ | 2003 - PFANT ("P" as in Perrin, Marie-Noel)
+ |        large wavelength coverage and inclusion or hydrogen lines
+ | 2015 - Conversion to Fortran 90 format and addition of a Python layer
 t|
  V
 @endverbatim

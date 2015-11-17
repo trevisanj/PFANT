@@ -4,18 +4,16 @@
 
 @section overview_install Installation
 
-7Clone from github
+To get the files, clone the repository from github using the following command in your shell:
 
 @code
 git clone https://github.com/trevisanj/PFANT
 @endcode
 
-This will create a "PFANT" directory.
+This will create a directory named "PFANT".
 
-or download <a href="https://github.com/trevisanj/PFANT/archive/master.zip">this zip file</a>.
-
-
-
+Alternatively, you can download
+<a href="https://github.com/trevisanj/PFANT/archive/master.zip">this zip file</a>.
 
 
 @section tree Overview of the project directory
@@ -302,6 +300,15 @@ newnewp025.mod                         |            |              |         |
   to be continued ...
 
 @endverbatim
+
+
+
+## References
+
+
+<a name="Coelho2005"></a> Coelho, P., et al. "A library of high resolution synthetic
+stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and alpha-enhanced
+composition." Astronomy & Astrophysics 443.2 (2005): 735-746.
 
 */
 
