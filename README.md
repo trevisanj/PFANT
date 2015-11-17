@@ -350,7 +350,7 @@ newnewp025.mod                         |            |              |         |
 ### More ...
 
 - [`pyfant` Python package overview](pyfant/README.md) 
-- [fortran/README.md] Coding tools, structure of the source code, coding style, etc.
+- [Coding tools, structure of the source code, coding style, etc.](fortran/README.md)
 
 ```
 -x-x-x-x-x
