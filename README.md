@@ -48,6 +48,7 @@ PFANT
 ## Installation
 
 To use PFANT, you will need to:
+
 1. Download the source code
 2. Compile the Fortran source code
 3. Add the Fortran binaries directory to your PATH system variable
@@ -112,7 +113,9 @@ apply the system settings described above.
 This section will take you through the steps to calculate a synthetic spectrum
 from the Sun, and visualize some input and output data files.
 
-@li Create a new directory, e.g., "/home/user/sun-synthesis"
+### Set up a directory to run the spectral synthesis
+
+1. Create a new directory, e.g., `/home/user/sun-synthesis`
 @li Enter the sun-synthesis directory
 @li Copy the contents of the PFANT/data/sun-complete into sun-synthesis
 
