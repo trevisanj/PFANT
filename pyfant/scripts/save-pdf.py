@@ -26,11 +26,11 @@ if __name__ == "__main__":
     parser.add_argument('--samey',
         help='Creates all plots with same y-limits of [0, 1.02]', action="store_true")
     parser.add_argument('fn_output', nargs='?', default='output.pdf', type=str,
-                        help='pdf output file name')
+                        help='PDF output file name')
 
     args = parser.parse_args()
 
-    dd = glob.glob("session_*")
+    dd = glob.glob("session-*")
     dd.sort()
 
     v = VisSpectrum()
