@@ -11,7 +11,7 @@ Similar softwares include TurboSpectrum and MOOG.
 ### History
 
 Since its start in 1967, the code has been through several enhancements. The
-timeline is summarizes as follows.
+timeline of the software is summarized as follows.
 
 ```
  |
@@ -22,7 +22,8 @@ timeline is summarizes as follows.
  |        dissociative equilibrium
  | 2003 - PFANT ("P" as in Perrin, Marie-Noel)
  |        large wavelength coverage and inclusion or hydrogen lines
- | 2015 - Conversion to Fortran 90 format and addition of a Python layer 
+ | 2015 - Conversion of source code to to Fortran 90 format, simplification of 
+ !        the user interface and addition of a Python layer 
 t|
  V
 ```
@@ -54,6 +55,9 @@ To use PFANT, you will need to:
 3. Compile the Fortran source code
 4. Add the Fortran binaries directory to your PATH system variable
 5. Add the pyfant directory to your PYTHONPATH system variable (optional)
+
+Perhaps you can skip step 1 and install requirements on demand as you get
+errors trying to follow this tutorial.
 
 ### Downloading the source code
 
@@ -95,7 +99,8 @@ fortranformat | All systems: $ pip install fortranformat
 astropy | apt-Linux: $ sudo apt-get install python-astropy
         | All systems: $ pip install astropy
                   
-[comment]: <> mayavi2           apt-Linux: $ sudo apt-get install mayavi2
+                 
+(not yet) mayavi2           apt-Linux: $ sudo apt-get install mayavi2
 
 **Note:** When running @c pip on Linux, you may have to run it with `sudo`.
 
@@ -344,7 +349,7 @@ newnewp025.mod                         |            |              |         |
 
 ### More ...
 
-- [pyfant/README.md] `pyfant` Python package overview
+- [`pyfant` Python package overview](pyfant/README.md) 
 - [fortran/README.md] Coding tools, structure of the source code, coding style, etc.
 
 ```
