@@ -49,12 +49,13 @@ PFANT
 
 To use PFANT, you will need to:
 
-1. Download the source code
-2. Compile the Fortran source code
-3. Add the Fortran binaries directory to your PATH system variable
-4. Add the pyfant directory to your PYTHONPATH system variable (optional)
+1. Install the software pre-requisites
+2. Download the source code
+3. Compile the Fortran source code
+4. Add the Fortran binaries directory to your PATH system variable
+5. Add the pyfant directory to your PYTHONPATH system variable (optional)
 
-### Download the source code
+### Downloading the source code
 
 To get the files, clone the repository from github (this will create a directory named "PFANT")
 
@@ -64,6 +65,49 @@ git clone https://github.com/trevisanj/PFANT
 
 Alternatively, you can download
 [this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
+
+
+### Required software
+
+In order to run all the features, here is a list of what probably needs to be installed on your system:
+
+#### Applications
+
+What  | Why?
+----- | ----
+git | clone repository at github
+gfortran, make | compile the Fortran code (gfortran >= 4.6 required)
+Python 2.7 | use PyFANT
+pip | install fortranformat Python package
+
+#### Python packages
+
+Some successful ways to install the Python packages are reported together with
+the package names, but the exact way to install these packages will depend on
+your system. In general, they should be all easy to install.
+
+Package name | Recommended way to install
+--- | ---
+matplotlib | apt-Linux `$ sudo apt-get install python-matplotlib`
+pyqt4 | apt-Linux `$ sudo apt-get install python-qt4
+      | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
+fortranformat | All systems: $ pip install fortranformat
+astropy | apt-Linux: $ sudo apt-get install python-astropy
+        | All systems: $ pip install astropy
+                  
+[comment]: <> mayavi2           apt-Linux: $ sudo apt-get install mayavi2
+
+**Note:** When running @c pip on Linux, you may have to run it with `sudo`.
+
+#### Windows compiler
+
+If you are using Windows, a possible way to compile the Fortran source code is
+to install MinGW (http://sourceforge.net/projects/mingw/files/).
+
+After installed, MinGW has its own package manager, named
+"MinGW Installation Manager". There, you will need to install at least the following packages:
+`mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
+
 
 ### Compiling the Fortran source code.
 
@@ -113,33 +157,83 @@ apply the system settings described above.
 This section will take you through the steps to calculate a synthetic spectrum
 from the Sun, and visualize some input and output data files.
 
+
 ### Set up a directory to run the spectral synthesis
 
 1. Create a new directory, e.g., `/home/user/sun-synthesis`
-@li Enter the sun-synthesis directory
-@li Copy the contents of the PFANT/data/sun-complete into sun-synthesis
+2. Enter this directory
+3. Copy the contents of PFANT/data/sun into this directory
 
-@li 
-Now try these four commands:
+### Short description of the Fortran binaries
 
-@code
-$ innewmarcs  # creates modeles.mod
-$ hydro2      # creates thalpha
-$ pfant       # creates flux.*
-$ nulbad      # creates flux.norm.nulbad
-@endcode
+The spectral synthesis pipeline is divided in four binaries, each one performing one step
+as described:
 
-@subsection cmd_plot Python command-line tools
+1. `innewmarcs` - creates an interpolated atmospheric model based on NEWMARCS (2005)
+    model grids
+2. `hydro2` - calculates the hydrogen lines profiles
+3. `pfant` - spectral synthesis *per se*
+4. `nulbad` - convolves the synthetic spectrum with a Gaussian function
 
-To see all available Python scripts, type
+There is a diagram of the pipeline further down in this document. 
 
-@code
-$ pyfant-scripts.py
-@endcode
+
+### Running the Fortran binaries
+
+Here are the commands to be typed in the shell, together with comments on
+the files that will be created by each of them (as configured in the Sun input data files)
+
+```shell
+innewmarcs # creates modeles.mod (atmospheric model)
+hydro2     # creates a series of th* files (hydrogen lines files)
+pfant      # creates flux.* (spectrum, normalized spectrum, and continuum)
+nulbad     # creates flux.norm.nulbad (convolved spectrum)
+```
+
+
+If everything went OK, you should have all these new files in your directory.
+
+Now it is time to draw some figures!
+
+### Python command-line tools
+
+The `pyfant` package includes a set of scripts that can be used for several things,
+such as batch/parallel run the Fortran binaries, and visualize data files.
+
+Let's use some of these tools. One thing that we can do is to compare the
+synthetic spectrum before and after the convolution:
+
+```shell
+$ plot-spectra.py --ovl flux.norm flux.norm.nulbad
+```
+
+Other things to try:
+
+```shell
+plot-mod-record.py modeles.mod      # plots interpolated atmospheric model
+plot-mod-records.py newnewm050.mod  # plots NEWMARCS grid
+plot-filetoh.py thalpha             # plots hydrogen lines
+```
+
+### Command-line help
+
+All Fortran binaries and Python scripts have a `--help` option, for example:
+
+```shell
+pfant --help
+innewmarcs --help
+run4.py --help
+```
+
+To learn all the available Python scripts, type
+
+```shell
+pyfant-scripts.py
+```
 
 This will print something like this:
 
-@verbatim
+```
 ated.py .................. ated - ATomic lines file EDitor
 mled.py .................. mled - Molecular Lines EDitor
 plot-filetoh.py .......... Plots hydrogen lines
@@ -161,78 +255,18 @@ save-pdf.py .............. Looks for file "flux.norm" inside directories
                            file.
 vis-console.py ........... Text-based menu application to open and visualize
                            data files.
-@endverbatim
-
-Let's use some of these tools. One thing that we can do is to compare the
-synthetic spectrum before and after the convolution:
-
-@code
-$ plot-spectra.py --ovl flux.norm flux.norm.nulbad
-@endcode
-
-Other things to try:
-
-@code
-$ plot-mod-record.py modeles.mod      # plots interpolated atmospheric model
-$ plot-mod-records.py newnewm050.mod  # plots NEWMARCS grid
-$ plot-filetoh.py thalpha             # plots hydrogen lines
-@endcode
-
-@subsection overview_getting_help Command-line help
-
-The Fortran binaries and Python scripts all have a --help option, for example:
-
-@code
-$ pfant --help
-$ innewmarcs --help
-$ run4.py --help
-@endcode
+```
 
 
 
-@section required Required software
+### Input/output data files
 
-In order to run all the features described so far, here is a list of what you should have installed:
+The following table summarizes the files needed for spectral synthesis.
 
-@subsection required_applications Applications
+The first column of the table shows the command-line option that can be
+used to change the default name for the corresponding file
 
-@verbatim
-What              Why?
--------------------------------------------------------------------------------------
-git               clone repository at github
-gfortran, make    compile the Fortran code (gfortran >= 4.6 required)
-Python 2.7        use PyFANT
-pip               install fortranformat Python package
-@endverbatim
-
-@subsection required_python_packages Python packages
-
-@verbatim
-What              Recommended way to install
--------------------------------------------------------------------------------------
-matplotlib        apt-Linux: $ sudo apt-get install python-matplotlib
-pyqt4             apt-Linux: $ sudo apt-get install python-qt4
-                  Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
-mayavi2           apt-Linux: $ sudo apt-get install mayavi2
-fortranformat     All systems: $ pip install fortranformat
-astropy           apt-Linux: $ sudo apt-get install python-astropy
-                  All systems: $ pip install astropy
-@endverbatim
-
-@note When running @c pip on Linux, you may have to sun it with @c sudo.
-
-
-@subsection required_windows_compiler Windows compiler
-
-A possible way to compile in Windows is to install MinGW (http://sourceforge.net/projects/mingw/files/).
-In MinGW Installation Manager, install at least the following packages:
-mingw-developer-toolkit, mingw32-base, mingw32-gcc-fortran, msys-base.
-
-
-@section datafiles Input/output data files
-
-Here is a list of files used, and their default names.
-@verbatim
+```
 --option          |  Default name     | Description
 ------------------+-----------------------------------------------------------
 *** star-specific files ***
@@ -270,25 +304,11 @@ flux.cont         | continuum flux (multiplied by 10**5)
 
 *** created by nulbad ***
 flux.norm.nulbad  | convolved flux
-@endverbatim
+```
 
-@section overview_workflow Fortran bin workflow
+### PFANT pipeline
 
-The Fortran binaries run in this order: innermarcs, hydro2, pfant, nulbad
-
-THe workflow can be summarized like this:
-
-@verbatim
-Summary:
-innewmarcs creates modeles.mod (atmospheric model)
-hydro2     creates a series of th* files (hydrogen lines files)
-pfant      creates flux.* (spectrum, normalized spectrum, and continuum)
-nulbad     creates flux.norm.nulbad (convolved un/normalized spectrum)
-@endverbatim
-
-Or in more detail:
-
-@verbatim
+```
                         +---------------------------+---------------------main.dat
   gridsmap.dat          |                           |                        |
 newnewm150.mod          v                           v                        |
@@ -320,14 +340,13 @@ newnewp025.mod                         |            |              |         |
                                                     |
                                                     v
                                              flux.norm.nulbad
-@endverbatim
+```
 
+### More ...
+
+- [pyfant/README.md] `pyfant` Python package overview
+- [fortran/README.md] Coding tools, structure of the source code, coding style, etc.
+
+```
 -x-x-x-x-x
-
-@verbatim
-.
-.
-.
-  to be continued ...
-
-@endverbatim
+```
