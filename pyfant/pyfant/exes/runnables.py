@@ -1,4 +1,5 @@
-__all__ = ["Runnable", "Progress", "Executable", "Innewmarcs", "Hydro2", "Pfant", "Nulbad", "Combo"]
+__all__ = ["Runnable", "Progress", "Executable", "Innewmarcs", "Hydro2",
+           "Pfant", "Nulbad", "Combo"]
 
 import subprocess
 import logging
@@ -9,7 +10,7 @@ from ..misc import *
 from threading import Lock
 from ..errors import *
 from ..parts import *
-from pyfant import FileSpectrumPfant
+from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 
 class Progress(PyfantObject):
     """Data class, stores progress information."""
@@ -65,15 +66,6 @@ class Executable(Runnable):
     def __init__(self):
         Runnable.__init__(self)
 
-        # # Configuration
-
-        # Whether or not to automatically open the result file(s) after the
-        # executable runs.
-        # For example, pfant will open the (.spec, .cont, .norm) files.
-        self.flag_open_result = True
-
-        # # Other properties
-
         # Full path to executable (including executable name)
         self.exe_path = "none"
 
@@ -101,12 +93,11 @@ class Executable(Runnable):
         """
         assert not self.is_running(), "Already running"
         self.logger = logging.getLogger("%s%d" % (self.__class__.__name__.lower(), id(self)))
-        add_file_handler(self.logger, self.execonf.join_with_wdir("python.log"))
+        add_file_handler(self.logger, "python.log")
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self.execonf.make_session_id()
         self.execonf.create_data_files()
         self._run()
-        self._open_result()
 
     def run_from_combo(self):
         """Alternative to run executable (called from Combo class).
@@ -155,7 +146,7 @@ class Executable(Runnable):
                      'finished successfully' if self.popen.returncode == 0 else '*failed*',
                      self.popen.returncode))
 
-    def _open_result(self):
+    def open_result(self):
         """Override this method to open the result file(s) particular to the
         executable."""
 
@@ -167,6 +158,15 @@ class Innewmarcs(Executable):
         Executable.__init__(self)
         self.exe_path = "innewmarcs"
 
+        # FileMod object
+        self.modeles = None
+
+    def open_result(self):
+        file_mod = FileMod()
+        filepath = self.execonf.get_fn_modeles()
+        file_mod.load(filepath)
+        self.modeles = file_mod
+
 
 class Hydro2(Executable):
     """Class representing the hydro2 executable."""
@@ -174,6 +174,9 @@ class Hydro2(Executable):
     def __init__(self):
         Executable.__init__(self)
         self.exe_path = "hydro2"
+
+    def open_result(self):
+        raise NotImplementedError("Opening hydro2 result will need hydro2 to save a side file containing a list of the files that it has created!!!")
 
 
 class Pfant(Executable):
@@ -201,7 +204,7 @@ class Pfant(Executable):
         number of iterations in attribute ikeytot.
 
         """
-        p = self.execonf.join_with_wdir(self.execonf.opt.fn_progress)
+        p = self.execonf.opt.fn_progress
         ret = Progress(exe_name="pfant")
         if os.path.isfile(p):
             with open(p) as h:
@@ -213,7 +216,7 @@ class Pfant(Executable):
                     pass
         return ret
 
-    def _open_result(self):
+    def open_result(self):
         file_sp = FileSpectrumPfant()
         for type_ in ("norm", "cont", "spec"):
             filepath = self.execonf.get_pfant_output_filepath(type_)
@@ -228,14 +231,14 @@ class Nulbad(Executable):
         Executable.__init__(self)
         self.exe_path = "nulbad"
 
-    def _open_result(self):
-        file_sp = FileSpectrumPfant()
-        for type_ in ("norm", "cont", "spec"):
-            filepath = self.execonf.get_pfant_output_filepath(type_)
-            file_sp.load(filepath)
-            self.__setattr__(type_, file_sp.spectrum)
+        # nulbad output
+        self.convolved = None
 
-
+    def open_result(self):
+        file_sp = FileSpectrumNulbad()
+        filepath = self.execonf.get_nulbad_output_filepath()
+        file_sp.load(filepath)
+        self.convolved = file_sp.spectrum
 
 
 class Combo(Runnable):
@@ -306,10 +309,10 @@ class Combo(Runnable):
         c.prepare_filenames_for_combo(self.sequence)
 
         self.logger = logging.getLogger("combo%d" % id(self))
-        add_file_handler(self.logger, c.join_with_wdir(c.join_with_session_dir("python.log")))
+        add_file_handler(self.logger, c.join_with_session_dir("python.log"))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        stdout_ = LogTwo(c.join_with_wdir(c.join_with_session_dir("fortran.log")))
+        stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
 
 
         # All files that will be created need to have the session directory added to their names

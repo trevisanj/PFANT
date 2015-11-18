@@ -121,7 +121,7 @@ class ExeConf(object):
     def session_id(self, x):
         """Creates directory "session-<session id>" when setting session id.."""
         self._session_id = x
-        new_dir = os.path.join(self.get_wdir(), session_prefix+x)
+        new_dir = session_prefix+x
         if not os.path.isdir(new_dir):
             os.mkdir(new_dir)
 
@@ -212,7 +212,14 @@ class ExeConf(object):
             # True or None evaluates to "norm"
             ext = "spec" if self.opt.norm == False else "norm"
             filename = flprefix+"."+ext
-        return self.join_with_wdir(filename)
+        return filename
+
+    def get_fn_modeles(self):
+        """Returns name of atmospheric model file."""
+        return FileMod.default_filename if self.opt.fn_modeles is None \
+         else self.opt.fn_modeles
+
+
 
     def get_session_dir(self):
         return session_prefix+self.session_id
@@ -230,7 +237,7 @@ class ExeConf(object):
         if self._session_id is not None:
             return
 
-        self._session_id = _make_session_id(self.get_wdir())
+        self._session_id = _make_session_id()
 
     def join_with_session_dir(self, fn):
         """Joins self.get_session_dir() with specified filename."""
@@ -241,7 +248,7 @@ class ExeConf(object):
 
     def clean(self):
         """Deletes directory with all files inside."""
-        shutil.rmtree(os.path.join(self.get_wdir(), self.get_session_dir()))
+        shutil.rmtree(self.get_session_dir())
 
     def get_args(self):
         """
@@ -280,8 +287,7 @@ class ExeConf(object):
                 if obj is not None:
                     assert isinstance(obj, DataFile)
 
-                    new_fn = os.path.join(self.get_wdir(),
-                        self.join_with_session_dir(obj.default_filename))
+                    new_fn = self.join_with_session_dir(obj.default_filename)
                     # Saves file
                     obj.save_as(new_fn)
                     # Overwrites config option
@@ -313,7 +319,7 @@ class ExeConf(object):
                 o = self.fo_hmap = FileHmap()
                 fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else \
                  FileHmap.default_filename
-                o.load(self.join_with_wdir(fn))
+                o.load(fn)
             else:
                 o = self.fo_hmap
             for row in o.rows:
