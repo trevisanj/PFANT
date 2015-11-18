@@ -5,6 +5,7 @@ from pyfant import format_BLB, cut_spectrum, Spectrum
 import matplotlib.pyplot as plt
 import math
 import matplotlib.backends.backend_pdf
+import logging
 import numpy as np
 # import matplotlib as mpl
 # from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
@@ -129,7 +130,7 @@ def plot_spectra_pieces_pdf(ss, aint=50, pdf_filename='pieces.pdf'):
         lambda0 = xmi+h*aint
         lambda1 = lambda0+aint
 
-        print "Printing page %d/%d ([%g, %g])" % (h+1, num_pages, lambda0, lambda1)
+        logging.info("Printing page %d/%d ([%g, %g])" % (h+1, num_pages, lambda0, lambda1))
 
         for i, s in enumerate(ss):
             s_cut = cut_spectrum(s, lambda0, lambda1)
@@ -145,13 +146,13 @@ def plot_spectra_pieces_pdf(ss, aint=50, pdf_filename='pieces.pdf'):
         plt.legend(loc=0)
         plt.tight_layout()
 
-
         pdf.savefig(fig)
         plt.close()
 
     # for fig in xrange(1, figure().number): ## will open an empty extra figure :(
     #     pdf.savefig( fig )
     pdf.close()
+    logging.info("File %s successfully created." % pdf_filename)
 
 
 

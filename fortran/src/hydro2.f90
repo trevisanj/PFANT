@@ -27,7 +27,6 @@ module hydro2_math
   integer, parameter :: MAX_MODIF_II = 300
 
 
-
 contains
   !=======================================================================================
   !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
@@ -585,9 +584,9 @@ contains
     call log_info(' HA:2442.326   HB:249.628   HG:74.4776')
     call log_info(' HD:32.8903    HE:17.72642')
     call log_info(' ')
-    call log_info(' ex H alfa  2 3 6562.817 10.15 2442.326 ')
-    call log_info('    H beta  2 4 4861.342 10.15  249.628 ')
-    call log_info('    H gamma 2 5 4340.475 10.15   74.4776')
+    !call log_info(' ex H alfa  2 3 6562.817 10.15 2442.326 ')
+    !call log_info('    H beta  2 4 4861.342 10.15  249.628 ')
+    !call log_info('    H gamma 2 5 4340.475 10.15   74.4776')
 
     if(ECRIT)   then
       write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
@@ -614,19 +613,17 @@ contains
 
     call abonio()
 
-
-
     if(ECRIT) then
-      call log_info(modeles_tit)
+      call log_debug(modeles_tit)
       write(lll,201)
       201 format(13X,'modeles_nh',1X,'modeles_teta', 1X,'LOG PE',12X,'m_tau')
-      call log_info(lll)
+      call log_debug(lll)
       do i=1,modeles_ntot
         write(lll,202) i,modeles_nh(i),modeles_teta(i),m_pelog(i),modeles_t5l(i)
         202 format( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
-        call log_info(lll)
+        call log_debug(lll)
       end do
-      call log_info('')
+      call log_debug('')
     end if
 
     write(lll,*)'appel de ABSORU pour clam=', m_th%clam
@@ -652,11 +649,11 @@ contains
     if(ECRIT) then
       write(lll,'(1H1,40X,''CALCUL DE m_tau SELECTIF'')')
       call log_info(lll)
-      do  i=1,modeles_ntot,5
+      do  i=1,modeles_ntot, 5
         write(lll,'(''NIVEAU '',I5,'' -- m_tau='')') i
-        call log_info(lll)
+        call log_debug(lll)
         write (lll,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
-        call log_info(lll)
+        call log_debug(lll)
       end do
       write(lll,'(10X,A)') modeles_tit
       call log_info(lll)
@@ -664,13 +661,12 @@ contains
       write(lll,121)
       121 format(7X,'m_tau',5X,'modeles_nh',1X,'modeles_teta LOGPE  KC/NOYAU_DE_H',&
        '            VT           NE         TOTH')
-      call log_info(lll)
-
+      call log_debug(lll)
       do i = 1, modeles_ntot
         write(lll,11) modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
          m_vt(i),ne(i),m_toth(i),i
         11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
-        call log_info(lll)
+        call log_debug(lll)
       end do
     end if
 
@@ -715,10 +711,10 @@ contains
       call log_info(lll)
     end if
 
-    call log_info('DELTA_LAMBDA(A) FLUX_DANS_LA_RAIE            F/FC')
+    call log_debug('DELTA_LAMBDA(A) FLUX_DANS_LA_RAIE            F/FC')
     do j = 1, m_jmax
       write(lll,'(F15.3,3X,E15.7,1X,F15.5)') m_dlam(j), fl(j), r(j)
-      call log_info(lll)
+      call log_debug(lll)
     end do
 
     !=====
@@ -739,7 +735,10 @@ contains
     write(17,'(5f14.3)')((m_dlam(jj)+m_th%clam),jj=1,m_jmax)
     write(17,'(5e12.4)')((m_tau(jj,n),jj=1,m_jmax),n=1,modeles_ntot)
 
-    call log_info('TRAVAIL TERMINE')
+    if (ECRIT) then
+      call log_info('TRAVAIL TERMINE')
+      call log_info('***********************************************************************')
+    end if
   end
 
 
@@ -2067,7 +2066,7 @@ program hydro2
   use dimensions
   use misc
   implicit none
-  integer i, cnt_in
+  integer i, cnt_in, in_idxs(MAX_FILETOH_NUM_FILES)
   type(hmap_row) :: th
 
   execonf_name = 'hydro2'
@@ -2092,10 +2091,11 @@ program hydro2
       th = hmap_rows(i)
       if (h_line_is_inside(th%clam, x_llzero, x_llfin)) then
         cnt_in = cnt_in+1
+        in_idxs(cnt_in) = i
         call log_info('*** selected row from hmap file')
         write(lll,'(''*    row #: '',I2)') i
         call log_info(lll)
-        write(lll,'(''* filename: '',A16)') th%fn
+        write(lll,'(''* filename: '',A)') th%fn
         call log_info(lll)
         write(lll,'(''*       na: '',I4)') th%na
         call log_info(lll)
@@ -2112,8 +2112,13 @@ program hydro2
       end if
     end do
 
+    ! Summary information
     call log_info('Summary: '//int2str(cnt_in)//'/'//int2str(hmap_n)//&
-     ' hydrogen lines calculated')
+     ' hydrogen lines calculated.')
+    do i = 1, cnt_in
+      th = hmap_rows(in_idxs(i))
+      call log_info(int2str(i)//' - '//full_path_w(th%fn))
+    end do
 
   else
     th%fn = config_nomplot

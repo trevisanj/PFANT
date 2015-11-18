@@ -1098,7 +1098,8 @@ contains
   !   8   `Y88P' `Y88P' 8888 `Y88P'  Tools
 
   !=======================================================================================
-  !> Concatenates config_wdir with specific filename
+  !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
+  !> Result is clean of leading/trailling spaces
 
   function full_path_w(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name

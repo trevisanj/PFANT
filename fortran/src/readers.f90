@@ -235,19 +235,21 @@ module reader_main
   logical :: flag_read_main   = .false.
 
   character*64 main_flprefix  !< prefix for flux files: <main_flprefix>.(spec, cont, norm)
-  logical   main_ptdisk    !< ?doc?
+  logical   main_ptdisk    !< Whether or not the [simulated] measurement was taken in a given point of the
+                           !! star disk. This should be True for the Sun and False for any other stars.
   real*8 :: &
    main_pas,    & !< calculation step within each calculation sub-interval; this is a "delta lambda"
    main_echx,   & !< not used in calculation, only written to flux file
    main_echy,   & !< not used in calculation, only written to flux file
-   main_mu,     & !< ?doc?
-   main_afstar, & !< ?doc? metallicity of the star (in log scale)
+   main_mu,     & !< cosine of angle between center of star disk and the [simulated] point of measurement.
+                  !! (1.0 - center of disk). Only used if main_ptdisk is True (i.e., the Sun).
+   main_afstar, & !< log10 of metallicity. Must match main_asalog
    main_llzero, & !< lower boundary of calculation interval
    main_llfin,  & !< upper boundary of calculation interval
    main_aint,   & !< length of each calculation sub-interval (llfin-llzero) is divided into intervals of roughly aint
    main_teff,   & !< effective temperature of the star
    main_glog,   & !< log10 of gravity
-   main_asalog, & !< log10 of metallicity
+   main_asalog, & !< log10 of metallicity. Must match main_afstar
    main_nhe       !< only used to check if matches with modeles_nhe
   !> "Full-width-half-maximum" of Gaussian function for
   !> convolution of calculated spectrum; used only by nulbad executable
@@ -392,6 +394,11 @@ contains
     101 format('reader_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
     write(lll,101) main_llzero, main_llfin, main_aint
     call log_info(lll)
+
+    if (main_llzero .ge. main_llfin) then
+      call pfant_halt('llzero must be lower than llfin!')
+    end if
+
 
     if (flag_read_filetoh_) then
       ! row 10 - ....

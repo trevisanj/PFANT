@@ -1111,7 +1111,7 @@ contains
 
     real*8 fn(MAX_DTOT)
 
-    integer i, i1, i2, itot, k, l, li, d, &
+    integer i, i1, i2, k, d, &
      ikey,    & ! ikey-th main_aint-large calculation interval
      ikeytot    ! total number of main_aint-large calculation intervals
 
@@ -1119,6 +1119,9 @@ contains
 
     ! auxiliary variables to time the different parts
     real :: start, finish, start0, finish0
+
+    ! output filenames with relative path included
+    character(len=:), allocatable :: path_spec, path_cont, path_norm
 
     call cpu_time(start0)
 
@@ -1137,9 +1140,12 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    open(unit=UNIT_SPEC, file=full_path_w(trim(x_flprefix)//'.spec'), status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=full_path_w(trim(x_flprefix)//'.cont'), status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=full_path_w(trim(x_flprefix)//'.norm'), status='replace')  ! normalized
+    path_spec = full_path_w(trim(x_flprefix)//'.spec')
+    path_cont = full_path_w(trim(x_flprefix)//'.cont')
+    path_norm = full_path_w(trim(x_flprefix)//'.norm')
+    open(unit=UNIT_SPEC, file=path_spec, status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=path_cont, status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=path_norm, status='replace')  ! normalized
     !--- open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
     !--- open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
 
@@ -1399,9 +1405,12 @@ contains
     !--- close(UNIT_LINES)
 
     !#logging
-    call log_info('Flux sortant est en nu: Fnu x lambda')
-    call log_info('Flux absolu sortant a ete multiplie par 10**5')
+    call log_info('Note: flux sortant est en nu: Fnu x lambda')
+    call log_info('Note: flux absolu sortant a ete multiplie par 10**5')
 
+    call log_info('File '//trim(path_spec)//' successfully created.')
+    call log_info('File '//trim(path_cont)//' successfully created.')
+    call log_info('File '//trim(path_norm)//' successfully created.')
 
     call log_debug(LEAVING//'synthesis_()')
 
