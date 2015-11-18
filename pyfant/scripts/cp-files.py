@@ -72,3 +72,11 @@ if __name__ == "__main__":
                 f = plot_spectra
             f(ss, "")
             plt.show()
+
+
+
+
+
+
+    # directory of this script
+    base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))

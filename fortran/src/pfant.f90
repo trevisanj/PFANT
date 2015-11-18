@@ -1140,14 +1140,14 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    path_spec = full_path_w(trim(x_flprefix)//'.spec')
-    path_cont = full_path_w(trim(x_flprefix)//'.cont')
-    path_norm = full_path_w(trim(x_flprefix)//'.norm')
+    path_spec = join_with_wdir(trim(x_flprefix)//'.spec')
+    path_cont = join_with_wdir(trim(x_flprefix)//'.cont')
+    path_norm = join_with_wdir(trim(x_flprefix)//'.norm')
     open(unit=UNIT_SPEC, file=path_spec, status='replace')  ! spectrum
     open(unit=UNIT_CONT, file=path_cont, status='replace')  ! continuum
     open(unit=UNIT_NORM, file=path_norm, status='replace')  ! normalized
-    !--- open(unit=UNIT_LINES,file=full_path_w(config_fn_lines), status='replace')               ! outfile:lines
-    !--- open(unit=UNIT_LOG,  file=full_path_w(config_fn_log), status='replace')                 ! log.log
+    !--- open(unit=UNIT_LINES,file=join_with_wdir(config_fn_lines), status='replace')               ! outfile:lines
+    !--- open(unit=UNIT_LOG,  file=join_with_wdir(config_fn_log), status='replace')                 ! log.log
 
 
     !=====
@@ -2169,8 +2169,8 @@ program pfant
   !=====
   ! File reading
   !=====
-  call read_dissoc(full_path_w(config_fn_dissoc))
-  call read_main(full_path_w(config_fn_main))
+  call read_dissoc(join_with_wdir(config_fn_dissoc))
+  call read_main(join_with_wdir(config_fn_main))
 
   !---
   ! (intermission)
@@ -2181,21 +2181,21 @@ program pfant
   call pfant_init_x()
 
   ! continues file reading
-  call read_partit(full_path_w(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
-  call read_absoru2(full_path_w(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-  call read_modele(full_path_w(config_fn_modeles))  ! LECTURE DU MODELE
-  call read_abonds(full_path_w(config_fn_abonds))
-  call read_atoms(full_path_w(config_fn_atoms))
+  call read_partit(join_with_wdir(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
+  call read_absoru2(join_with_wdir(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(join_with_wdir(config_fn_modeles))  ! LECTURE DU MODELE
+  call read_abonds(join_with_wdir(config_fn_abonds))
+  call read_atoms(join_with_wdir(config_fn_atoms))
   ! Gets list of hydrogen lines filenames either from dfile:main or dfile:hmap.
   ! The latter is not the preferred way.
   if (config_hmap) then
-    call read_hmap(full_path_w(config_fn_hmap))
+    call read_hmap(join_with_wdir(config_fn_hmap))
   else
     call hmap_copy_from_main()
   end if
 
   call read_filetoh(x_llzero, x_llfin)
-  call read_molecules(full_path_w(config_fn_molecules))
+  call read_molecules(join_with_wdir(config_fn_molecules))
 
   if (abs(modeles_asalog-main_afstar) > 0.01) then
     call log_warning('asalog from model ('//real82str(modeles_asalog, 2)//&

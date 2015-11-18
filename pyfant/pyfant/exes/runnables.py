@@ -9,6 +9,7 @@ from ..misc import *
 from threading import Lock
 from ..errors import *
 from ..parts import *
+from pyfant import FileSpectrumPfant
 
 class Progress(PyfantObject):
     """Data class, stores progress information."""
@@ -64,6 +65,15 @@ class Executable(Runnable):
     def __init__(self):
         Runnable.__init__(self)
 
+        # # Configuration
+
+        # Whether or not to automatically open the result file(s) after the
+        # executable runs.
+        # For example, pfant will open the (.spec, .cont, .norm) files.
+        self.flag_open_result = True
+
+        # # Other properties
+
         # Full path to executable (including executable name)
         self.exe_path = "none"
 
@@ -91,11 +101,12 @@ class Executable(Runnable):
         """
         assert not self.is_running(), "Already running"
         self.logger = logging.getLogger("%s%d" % (self.__class__.__name__.lower(), id(self)))
-        add_file_handler(self.logger, self.execonf.full_path_w("python.log"))
+        add_file_handler(self.logger, self.execonf.join_with_wdir("python.log"))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self.execonf.make_session_id()
         self.execonf.create_data_files()
         self._run()
+        self._open_result()
 
     def run_from_combo(self):
         """Alternative to run executable (called from Combo class).
@@ -105,6 +116,16 @@ class Executable(Runnable):
         """
         assert not self.is_running(), "Already running"
         self._run()
+
+    def is_running(self):
+        if self.popen is None:
+            return False
+        self.popen.poll()
+        return self.popen.returncode is None
+
+    def kill(self):
+        assert self.is_running(), "Not running"
+        self.popen.kill()
 
     def _run(self):
         args = self.execonf.get_args()
@@ -134,15 +155,9 @@ class Executable(Runnable):
                      'finished successfully' if self.popen.returncode == 0 else '*failed*',
                      self.popen.returncode))
 
-    def is_running(self):
-        if self.popen is None:
-            return False
-        self.popen.poll()
-        return self.popen.returncode is None
-
-    def kill(self):
-        assert self.is_running(), "Not running"
-        self.popen.kill()
+    def _open_result(self):
+        """Override this method to open the result file(s) particular to the
+        executable."""
 
 
 class Innewmarcs(Executable):
@@ -170,6 +185,15 @@ class Pfant(Executable):
         self.ikey = None  # Current iteration (Fortran: ikey)
         self.ikeytot = None  # Current iteration (Fortran: ikeytot)
 
+        # # Spectra loaded after pfant runs if self.flag_open_result is True
+
+        # .spec file, e.g., flux.spec
+        self.spec = None
+        # .cont file, e.g., flux.cont
+        self.cont = None
+        # .norm file, e.g., flux.norm
+        self.norm = None
+
     def get_progress(self):
         """
         Tries to open progress indicator file. If succeeds, stores
@@ -177,7 +201,7 @@ class Pfant(Executable):
         number of iterations in attribute ikeytot.
 
         """
-        p = self.execonf.full_path_w(self.execonf.opt.fn_progress)
+        p = self.execonf.join_with_wdir(self.execonf.opt.fn_progress)
         ret = Progress(exe_name="pfant")
         if os.path.isfile(p):
             with open(p) as h:
@@ -189,6 +213,13 @@ class Pfant(Executable):
                     pass
         return ret
 
+    def _open_result(self):
+        file_sp = FileSpectrumPfant()
+        for type_ in ("norm", "cont", "spec"):
+            filepath = self.execonf.get_pfant_output_filepath(type_)
+            file_sp.load(filepath)
+            self.__setattr__(type_, file_sp.spectrum)
+
 
 class Nulbad(Executable):
     """Class representing the nulbad executable."""
@@ -196,6 +227,15 @@ class Nulbad(Executable):
     def __init__(self):
         Executable.__init__(self)
         self.exe_path = "nulbad"
+
+    def _open_result(self):
+        file_sp = FileSpectrumPfant()
+        for type_ in ("norm", "cont", "spec"):
+            filepath = self.execonf.get_pfant_output_filepath(type_)
+            file_sp.load(filepath)
+            self.__setattr__(type_, file_sp.spectrum)
+
+
 
 
 class Combo(Runnable):
@@ -266,10 +306,10 @@ class Combo(Runnable):
         c.prepare_filenames_for_combo(self.sequence)
 
         self.logger = logging.getLogger("combo%d" % id(self))
-        add_file_handler(self.logger, c.full_path_w(c.join_with_session_dir("python.log")))
+        add_file_handler(self.logger, c.join_with_wdir(c.join_with_session_dir("python.log")))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        stdout_ = LogTwo(c.full_path_w(c.join_with_session_dir("fortran.log")))
+        stdout_ = LogTwo(c.join_with_wdir(c.join_with_session_dir("fortran.log")))
 
 
         # All files that will be created need to have the session directory added to their names

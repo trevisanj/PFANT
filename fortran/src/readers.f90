@@ -282,7 +282,7 @@ contains
 
   subroutine assure_read_main()
     if (.not. flag_read_main) then
-      call read_main(full_path_w(config_fn_main), flag_care_about_dissoc=.false., &
+      call read_main(join_with_wdir(config_fn_main), flag_care_about_dissoc=.false., &
        flag_read_filetoh=.false.)
     end if
   end
@@ -880,7 +880,7 @@ contains
     i = 0
 
     do i_file = 1, hmap_n
-      file_now = full_path_w(hmap_rows(i_file)%fn)
+      file_now = join_with_wdir(hmap_rows(i_file)%fn)
       clam = hmap_rows(i_file)%clam
 
       must_exist = .false.
@@ -1339,7 +1339,7 @@ contains
     real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
     integer :: order(MAX_GRIDSMAP_NUM_FILES), i
 
-    path_to_file = full_path_w(config_fn_gridslist)
+    path_to_file = join_with_wdir(config_fn_gridslist)
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
@@ -1355,7 +1355,7 @@ contains
 
       ! Opens .mod file to get metallicity from its first record
       ! (metallicity should be the same for all records)
-      call open_mod_file(full_path_w(t_fn))
+      call open_mod_file(join_with_wdir(t_fn))
       call read_mod_record(1, rec)
       call close_mod_file()
 

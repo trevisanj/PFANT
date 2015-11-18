@@ -24,8 +24,10 @@ if __name__ == "__main__":
     formatter_class=SmartFormatter
     )
     # args = parser.parse_args()
-    
+
+    # directory of this script
     base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    # gets all scripts in script directory
     ff = glob.glob(os.path.join(base_dir, "*.py"))
     ff.sort()
     

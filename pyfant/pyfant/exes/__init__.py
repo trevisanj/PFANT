@@ -1,5 +1,5 @@
 """
-Objects representing the executables
+This package wraps the Fortran binaries
 """
 
 from .execonf import *

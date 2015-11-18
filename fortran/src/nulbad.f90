@@ -36,14 +36,14 @@ module nulbad_calc
   ! prefix "rs": variables filled by read_spectrum()
   character :: rs_titc*20
   real*8 :: &
-   rs_tetaeff, & !<
-   rs_glog,    & !<
-   rs_asalog,  & !<
-   rs_amg,     & !<
-   rs_l0,      & !<
-   rs_lf,      & !<
-   rs_dpas,    & !<
-   rs_nhe_bid
+   rs_tetaeff, & !< ?doc?
+   rs_glog,    & !< ?doc?
+   rs_asalog,  & !< ?doc?
+   rs_amg,     & !< ?doc?
+   rs_l0,      & !< ?doc?
+   rs_lf,      & !< ?doc?
+   rs_dpas,    & !< ?doc?
+   rs_nhe_bid    !< ?doc?
 
   integer, parameter :: UNIT_=199 !< unit for file I/O
 
@@ -90,14 +90,12 @@ contains
     end if
     if (config_fn_flux .eq. '?') then
       call assure_read_main()
-      x_fn_flux = trim(main_flprefix)//'.norm'
+      if (x_norm) then
+        x_fn_flux = trim(main_flprefix)//'.norm'
+      else
+        x_fn_flux = trim(main_flprefix)//'.spec'
+      end if        
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
-      x_norm = .true. ! ignores config_norm because x_fn_flux has the name of the
-                      ! normalized file
-      call parse_aux_log_assignment('x_norm', logical2str(x_norm))
-      if (.not. x_norm) then
-        call log_warning('Overring config option "--norm"')
-      end if
     end if
     if (config_fn_cv .eq. '?') then
       call assure_read_main()
@@ -106,10 +104,6 @@ contains
     end if
 
     call read_spectrum()
-
-
-    write(*,*) '$$$$$$', lll, '$$$$$$'
-
   end
 
   !=======================================================================================
@@ -121,7 +115,7 @@ contains
     integer :: itot, ikeytot, icle, d, k, size_ffnu
     real*8 fnu(MAX_DTOT)  ! temporary, just for reading one "icle" iteration
 
-    open(unit=UNIT_,file=full_path_w(x_fn_flux), status='unknown')
+    open(unit=UNIT_,file=join_with_wdir(x_fn_flux), status='unknown')
 
     icle = 1
     rs_ktot = 0
@@ -192,7 +186,7 @@ contains
 
 
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=full_path_w(x_fn_cv))
+    open(unit=UNIT_,status='replace',file=join_with_wdir(x_fn_cv))
 
     do k = 1, rs_ktot
       lambd(k) = rs_l0+(k-1)*rs_dpas
@@ -267,66 +261,6 @@ contains
     alf = tl(kktot)
 
 
-    !if(config_convol) then
-!      call cafconvh()
-!      call log_debug('p_ift='//int2str(p_ift))
-!
-!      j = (p_ift-1)/2
-!      jp1 = j+1
-!      dmj = rs_ktot-j
-!      dtotc = dmj-jp1+1
-!
-!      m = 0
-!      do d = jp1,dmj,ip
-!        m = m+1
-!        tl(m) = lambd(d)
-!      end do
-!      kktot = m
-!
-!      if(config_flam) then
-!        do k = 1,rs_ktot
-!          fl(k) = ffl(k)
-!        end do
-!      else
-!        do k = 1,rs_ktot
-!          fl(k) = rs_ffnu(k)
-!        end do
-!      end if
-!
-!      call volut() ! calculates alfl
-!
-!      k=0
-!      do i = jp1, dmj, ip
-!        k = k+1
-!        afl(k) = alfl(i)
-!      end do
-!      kktot = k
-!
-!
-    !end if
-    !
-    !if((.not. config_convol) .and. (.not. config_flam)) then
-    !  kktot = rs_ktot
-    !  do k = 1, kktot
-    !    afl(k) = rs_ffnu(k)
-    !  end do
-    !end if
-    !
-    !if((.not. config_convol) .and. (config_flam)) then
-    !  kktot = rs_ktot
-    !  do k = 1,kktot
-    !    afl(k) = ffl(k)
-    !    tl(k) = lambd(k)
-    !  end do
-    !end if
-
-    !if(config_convol) then
-    !  alz = tl(1)
-    !  alf = tl(kktot)
-    !else
-    !  alz = lambd(1)
-    !  alf = lambd(kktot)
-    !end if
 
     write(UNIT_,201) rs_titc,rs_tetaeff,rs_glog,rs_asalog,rs_amg
     201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
@@ -362,7 +296,7 @@ contains
     write(6,'(12F6.3)') (afl(k),k=1,12)
     call log_info(lll)
 
-    call log_info('File '//full_path_w(x_fn_cv)//' successfully created.')
+    call log_info('File '//join_with_wdir(x_fn_cv)//' successfully created.')
   contains
 
     !=======================================================================================
@@ -398,10 +332,10 @@ contains
   !>  ON CALCULE FI(tfi) la fonction de convolution EN p_ift PTS
   !>
   !> @verbatim
-  !>  LA FONCTION DE CONVOLUTION PEUT AVOIR MAX_P_IFT PTS
-  !>   SI L ON CHANGE CE NBRE DE PTS CHANGER AUSSI IPPTOT=750
-  !>   DANS LES DATA QUELQUES LIGNES PLUS BAS.
-  !>   (LA MOITIE DU NBRE TOT DE PTS POUR LE CALCUL DES AT)
+  !> LA FONCTION DE CONVOLUTION PEUT AVOIR MAX_P_IFT PTS
+  !> SI L ON CHANGE CE NBRE DE PTS CHANGER AUSSI IPPTOT=750
+  !> DANS LES DATA QUELQUES LIGNES PLUS BAS.
+  !> (LA MOITIE DU NBRE TOT DE PTS POUR LE CALCUL DES AT)
   !> @endverbatim
 
   subroutine cafconvh()

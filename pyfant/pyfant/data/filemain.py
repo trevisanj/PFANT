@@ -16,7 +16,7 @@ class FileMain(DataFile):
   default_filename = "main.dat"
   attrs = ["titrav", "ecrit", "pas", "echx", "echy", "fwhm", "ivtot", "vvt", "tolv",
            "teff", "glog", "asalog", "nhe", "inum", "ptdisk", "mu", "afstar",
-           "xxcor", "fileflux", "llzero", "llfin", "aint", "filetohy"]
+           "xxcor", "flprefix", "llzero", "llfin", "aint", "filetohy"]
 
   def __init__(self):
     DataFile.__init__(self)
@@ -38,7 +38,7 @@ class FileMain(DataFile):
     self.mu = None
     self.afstar = None
     self.xxcor = None
-    self.fileflux = None
+    self.flprefix = None
     self.llzero = None
     self.llfin = None
     self.aint = None
@@ -67,7 +67,7 @@ class FileMain(DataFile):
       self.ptdisk, self.mu = str_vector(h)
       self.afstar = float(h.readline())
       self.xxcor = float_vector(h)
-      self.fileflux = h.readline().strip()
+      self.flprefix = h.readline().strip()
       self.llzero, self.llfin, self.aint = float_vector(h)
   
       self.filetohy = []
@@ -100,7 +100,7 @@ class FileMain(DataFile):
       write_lf(h, list2str([bool2str(self.ptdisk), self.mu]))
       write_lf(h, str(self.afstar))
       write_lf(h, list2str(self.xxcor))
-      write_lf(h, self.fileflux)
+      write_lf(h, self.flprefix)
       write_lf(h, list2str([self.llzero, self.llfin, self.aint]))
       for filetoh in self.filetohy:
         write_lf(h, filetoh)

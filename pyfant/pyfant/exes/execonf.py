@@ -6,7 +6,7 @@ executables.
 __all__ = ["Options", "ExeConf", "e_innewmarcs", "e_hydro2", "e_pfant",
            "e_nulbad", "session_prefix"]
 
-from pyfant.data import DataFile, FileHmap, FileMod
+from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
 import os
 from ..parts import *
@@ -154,6 +154,67 @@ class ExeConf(object):
         # Command-line options
         self.opt = Options()
 
+    def get_fo_main(self):
+        """Returns either self.fo_main, or if None, tries to open file and
+        return a new FileMain object.
+        """
+        if self.fo_main is not None:
+            return self.fo_main
+        file_ = FileMain()
+        if self.opt.fn_main is None:
+            file_.load()  # will try to load default file
+        else:
+            file_.load(self.opt.fn_main)
+        return file_
+
+    def get_flprefix(self, _flag_skip_opt=False):
+        """Returns the prefix for a pfant output file.
+
+        The returned prefix is used to compose a pfant output file name, e.g.
+        <prefix>.norm
+
+        Prefix is looked for in the following locations (in this order):
+          1) command-line option, i.e., self.opt.flprefix; if None,
+          2) self.fo_main.flprefix; if self.fo_main is None,
+          3) tries to open the main configuration file
+        """
+        if not _flag_skip_opt and self.opt.flprefix is not None:
+            return self.opt.flprefix
+        if self.fo_main is not None:
+            return self.fo_main.flprefix
+        file_ = self.get_fo_main()
+        return file_.flprefix
+
+    def get_pfant_output_filepath(self, type_="norm"):
+        """Returns path to a pfant output filename (working directory included).
+
+        Arguments:
+          type -- "spec", "norm", or "cont"
+
+        Looks for this information in several places; see get_flprefix()
+        for more information.
+        """
+        valid_types = ("spec", "norm", "cont")
+        assert type_ in valid_types, "type must be in %s" % (valid_types,)
+        return self.join_with_wdir(self.get_flprefix()+"."+type_)
+
+    def get_nulbad_output_filepath(self):
+        """Returns path to nulbad output filename (working directory included).
+
+        Reproduces nulbad logic in determining its output filename, i.e.,
+          1) uses --fn_cv if present; if not,
+          2) gets flprefix from main configuration file and adds
+             ".norm" or ".spec"
+        """
+        if self.opt.fn_cv is not None:
+            filename = self.opt.fn_cv
+        else:
+            flprefix = self.get_flprefix()
+            # True or None evaluates to "norm"
+            ext = "spec" if self.opt.norm == False else "norm"
+            filename = flprefix+"."+ext
+        return self.join_with_wdir(filename)
+
     def get_session_dir(self):
         return session_prefix+self.session_id
 
@@ -177,7 +238,7 @@ class ExeConf(object):
 
         self._session_id = _make_session_id(self.get_wdir())
 
-    def full_path_w(self, fn):
+    def join_with_wdir(self, fn):
         """Joins self.opt.wdir with specified filename.
 
         There is a function of same name doing the same in config.f90
@@ -254,11 +315,8 @@ class ExeConf(object):
         Arguments:
           sequence: list containing one or more i_* values such as innewmarcs etc
 
-        Restrictions:
-        - flux prefix will either be "flux" or set by option "--flprefix", but
-          will not be taken from main configuration file
-        - nulbad --fn_flux will be <flux prefix>.norm.nulbad
-        - nulbad will always use the normalized spectrum
+        Note: in order to link pfant->nulbad correctly,
+              nulbad "--fn_flux" option will not be used.
         """
         if e_innewmarcs in sequence:
             # ** innewmarcs -> hydro2
@@ -275,7 +333,7 @@ class ExeConf(object):
                 o = self.fo_hmap = FileHmap()
                 fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else \
                  FileHmap.default_filename
-                o.load(self.full_path_w(fn))
+                o.load(self.join_with_wdir(fn))
             else:
                 o = self.fo_hmap
             for row in o.rows:
@@ -287,16 +345,20 @@ class ExeConf(object):
                 # Done! new hmap file will be created by create_data_files
 
         # ** pfant -> nulbad
-        flprefix = self.opt.flprefix if self.opt.flprefix is not None else "flux"
+        if e_pfant in sequence or e_nulbad in sequence:
+            flprefix = self.get_flprefix(True)
+            self.opt.flprefix = self.join_with_session_dir(flprefix)
+
         if e_pfant in sequence:
-            self.opt.flprefix = self.join_with_session_dir(flprefix)  # this is for pfant
             self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
 
         if e_nulbad in sequence:
-            # ** these two are options for nulbad
-            self.opt.norm = True
-            # Below it is assumed that pfant inserts ".norm" suffix (not a bad assumption))
-            self.opt.fn_flux = self.join_with_session_dir(flprefix+".norm")
+            self.opt.fn_flux = None  # will cause nulbad to use flprefix
+            if self.opt.fn_cv:
+                # Note that this is recursive, but Combo is meant to be
+                # run only once.
+                self.opt.fn_cv = self.join_with_session_dir(self.opt.fn_cv)
+
 
 
 # Part of code that finds new session id and creates corresponding directory

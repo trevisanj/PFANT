@@ -140,7 +140,6 @@ class FileSpectrumPfant(FileSpectrum):
                 else:
                     # ...except for in the last calculation interval
                     # (then the last point is used).
-                    # This is an imitation of NULBADGRADE fileflux reading
                     y = y + v
                     break
 

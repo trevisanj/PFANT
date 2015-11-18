@@ -643,12 +643,12 @@ contains
     ! working directory...
     wdir_trim = trim_and_add_slash(config_wdir)
     ! logging module...
-    logging_path_progress = full_path_w(config_fn_progress)
+    logging_path_progress = join_with_wdir(config_fn_progress)
     if (config_logging_fn_dump .eq. '?') then
       config_logging_fn_dump = to_lower(execonf_name)//'_dump.log'
     end if
 
-    logging_path_dump = full_path_w(config_fn_progress)
+    logging_path_dump = join_with_wdir(config_fn_progress)
 
     call print_welcome(6)
   end
@@ -1101,7 +1101,7 @@ contains
   !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
   !> Result is clean of leading/trailling spaces
 
-  function full_path_w(filename) result(res)
+  function join_with_wdir(filename) result(res)
     character(len=*), intent(in) :: filename  !< File name
     character(len=:), allocatable :: res
 
