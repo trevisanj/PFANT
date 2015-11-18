@@ -722,7 +722,7 @@ contains
     !=====
     ! (creates the "th" file, e.g., "thalpha")
 
-    open(unit=17, file=join_with_wdir(m_th%fn), status='replace')
+    open(unit=17, file=m_th%fn, status='replace')
 
     zut1 = 0.
     zut2 = 1.
@@ -2074,12 +2074,12 @@ program hydro2
   call validate_config()
   call hydro2_init_x()
 
-  call read_absoru2(join_with_wdir(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-  call read_modele(join_with_wdir(config_fn_modeles))   ! LECTURE DU MODELE
+  call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(config_fn_modeles)   ! LECTURE DU MODELE
 
   if (config_hmap) then
     call assure_read_main()
-    call read_hmap(join_with_wdir(config_fn_hmap))
+    call read_hmap(config_fn_hmap)
 
     call log_info('Using hmap file')
     write(lll, 10) x_llzero, x_llfin
@@ -2117,7 +2117,7 @@ program hydro2
      ' hydrogen lines calculated.')
     do i = 1, cnt_in
       th = hmap_rows(in_idxs(i))
-      call log_info(int2str(i)//' - '//join_with_wdir(th%fn))
+      call log_info(int2str(i)//' - '//trim(th%fn))
     end do
 
   else

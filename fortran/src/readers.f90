@@ -282,7 +282,7 @@ contains
 
   subroutine assure_read_main()
     if (.not. flag_read_main) then
-      call read_main(join_with_wdir(config_fn_main), flag_care_about_dissoc=.false., &
+      call read_main(config_fn_main, flag_care_about_dissoc=.false., &
        flag_read_filetoh=.false.)
     end if
   end
@@ -873,14 +873,14 @@ contains
     integer unit_
     parameter(unit_=199)
     integer i, j, n, i_file
-    character(len=:), allocatable :: file_now
+    character(len=:), allocatable :: fn_now
     real*8 :: clam
     logical :: must_exist, flag_inside
 
     i = 0
 
     do i_file = 1, hmap_n
-      file_now = join_with_wdir(hmap_rows(i_file)%fn)
+      fn_now = hmap_rows(i_file)%fn
       clam = hmap_rows(i_file)%clam
 
       must_exist = .false.
@@ -897,7 +897,7 @@ contains
       end if
 
       if (flag_inside) then
-        open(err=111, unit=unit_,file=file_now,status='old')
+        open(err=111, unit=unit_,file=fn_now,status='old')
 
         i = i+1
 
@@ -929,10 +929,10 @@ contains
           130 format('[',F7.1,'-',F5.1,',',F7.1,'+',F5.1,'] overlaps with [',&
            F7.1,'-',F5.1,',',F7.1,'+',F5.1,'], but cannot open file "',A,'"')
           write(lll,130) clam, H_LINE_WIDTH, clam, H_LINE_WIDTH, llzero, LAMBDA_STRETCH, &
-           llfin, LAMBDA_STRETCH, file_now
+           llfin, LAMBDA_STRETCH, fn_now
           call pfant_halt(lll)
         end if
-        call log_warning('Error opening file "' // file_now // '"')
+        call log_warning('Error opening file "' // fn_now // '"')
       end if
 
       112 continue
@@ -1332,17 +1332,13 @@ contains
   subroutine read_gridsmap()
     character*64 :: t_fn0
     character(len=:), allocatable :: t_fn
-    character(len=:), allocatable :: path_to_file
     integer, parameter :: UNIT_ = 199
     type(modele_record) :: rec
     character*64 :: temp_fn(MAX_GRIDSMAP_NUM_FILES)
     real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
     integer :: order(MAX_GRIDSMAP_NUM_FILES), i
 
-    path_to_file = join_with_wdir(config_fn_gridslist)
-
-    open(unit=UNIT_,file=path_to_file, status='old')
-
+    open(unit=UNIT_,file=config_fn_gridslist, status='old')
 
     gridsmap_num_files = 0
     do while (.true.)
@@ -1355,7 +1351,7 @@ contains
 
       ! Opens .mod file to get metallicity from its first record
       ! (metallicity should be the same for all records)
-      call open_mod_file(join_with_wdir(t_fn))
+      call open_mod_file(t_fn)
       call read_mod_record(1, rec)
       call close_mod_file()
 

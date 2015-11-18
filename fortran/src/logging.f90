@@ -55,14 +55,14 @@ module logging
   !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
   integer :: logging_level = LOGGING_INFO
   !> Full path to file to record progress indication
-  character*256 :: logging_path_progress = 'progress.txt'
+  character*256 :: logging_fn_progress = 'progress.txt'
   !> If set to .true., will display messages do standard output (usually the screen)
   logical :: logging_screen = .true.
-  !> If set to .true., will echo logged messages into dump file specified by logging_path_dump,
+  !> If set to .true., will echo logged messages into dump file specified by logging_fn_dump,
   !> besides logging to standard output.
   logical :: logging_dump = .false.
   !> Full path to file to record logging messages indication
-  character*256 :: logging_path_dump = 'fortran_messages.log'
+  character*256 :: logging_fn_dump = 'fortran_messages.log'
 
 
   !^^^^^ PUBLIC  ^^^^^
@@ -209,7 +209,7 @@ contains
   !> Logs progress
   !>
   !> uses log_info() to write to screen + writes information into
-  !> logging::logging_path_progress
+  !> logging::logging_fn_progress
   !>
   !> If cannot create file, does not bother (warns)
 
@@ -229,7 +229,7 @@ contains
     write (lll,'(''$-$-$ progress: '', f5.1, ''% ('', i4, ''/'', i4, '') $-$-$'')') &
      perc, i, n
     call log_info(lll)
-    open(unit=UNIT_, file=logging_path_progress, status='replace', err=10)
+    open(unit=UNIT_, file=logging_fn_progress, status='replace', err=10)
 
     write(UNIT_, '(i4, ''/'', i4)') i, n
     close(UNIT_)
@@ -306,7 +306,7 @@ contains
 
     if (logging_dump) then
       if (flag_first_call) then
-        open(unit=UNIT_DUMP, file=logging_path_dump, status='unknown')
+        open(unit=UNIT_DUMP, file=logging_fn_dump, status='unknown')
       end if
 
       call do_writing(UNIT_DUMP)

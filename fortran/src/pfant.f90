@@ -1121,7 +1121,7 @@ contains
     real :: start, finish, start0, finish0
 
     ! output filenames with relative path included
-    character(len=:), allocatable :: path_spec, path_cont, path_norm
+    character(len=:), allocatable :: fn_spec, fn_cont, fn_norm
 
     call cpu_time(start0)
 
@@ -1140,12 +1140,12 @@ contains
     ! Output files opened here and left open until the end
     !-----
     ! Note that existing files are replaced
-    path_spec = join_with_wdir(trim(x_flprefix)//'.spec')
-    path_cont = join_with_wdir(trim(x_flprefix)//'.cont')
-    path_norm = join_with_wdir(trim(x_flprefix)//'.norm')
-    open(unit=UNIT_SPEC, file=path_spec, status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=path_cont, status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=path_norm, status='replace')  ! normalized
+    fn_spec = trim(x_flprefix)//'.spec'
+    fn_cont = trim(x_flprefix)//'.cont'
+    fn_norm = trim(x_flprefix)//'.norm'
+    open(unit=UNIT_SPEC, file=fn_spec, status='replace')  ! spectrum
+    open(unit=UNIT_CONT, file=fn_cont, status='replace')  ! continuum
+    open(unit=UNIT_NORM, file=fn_norm, status='replace')  ! normalized
     !--- open(unit=UNIT_LINES,file=join_with_wdir(config_fn_lines), status='replace')               ! outfile:lines
     !--- open(unit=UNIT_LOG,  file=join_with_wdir(config_fn_log), status='replace')                 ! log.log
 
@@ -1408,9 +1408,9 @@ contains
     call log_info('Note: flux sortant est en nu: Fnu x lambda')
     call log_info('Note: flux absolu sortant a ete multiplie par 10**5')
 
-    call log_info('File '//trim(path_spec)//' successfully created.')
-    call log_info('File '//trim(path_cont)//' successfully created.')
-    call log_info('File '//trim(path_norm)//' successfully created.')
+    call log_info('File '//trim(fn_spec)//' successfully created.')
+    call log_info('File '//trim(fn_cont)//' successfully created.')
+    call log_info('File '//trim(fn_norm)//' successfully created.')
 
     call log_debug(LEAVING//'synthesis_()')
 

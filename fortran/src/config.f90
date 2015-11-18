@@ -476,7 +476,6 @@ module config
   !---
   ! all executables
   !---
-  character*192 :: config_wdir    = './'  !< command-line option --wdir
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
     character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
@@ -616,9 +615,6 @@ module config
   !> Message to be used in help text at will.
   character(:), private, parameter :: FROM_MAIN = ' (read from main configuration file)'
 
-  character(len=:), private, allocatable :: &
-   wdir_trim  !< Input directory without trailling spaces and ending with a "/"
-
   private :: validate_options, &
    init_options, parse_args, show_help, exe_wants, handle_option
 
@@ -640,15 +636,12 @@ contains
     call validate_options()
     call parse_args()
 
-    ! working directory...
-    wdir_trim = trim_and_add_slash(config_wdir)
     ! logging module...
-    logging_path_progress = join_with_wdir(config_fn_progress)
+    logging_fn_progress = config_fn_progress
     if (config_logging_fn_dump .eq. '?') then
       config_logging_fn_dump = to_lower(execonf_name)//'_dump.log'
     end if
-
-    logging_path_dump = join_with_wdir(config_fn_progress)
+    logging_fn_dump = config_logging_fn_dump
 
     call print_welcome(6)
   end
@@ -707,8 +700,6 @@ contains
     !
     call add_option('ihpn', 'help', 'h', .false., '', '', &
       'Displays this help text.')
-    call add_option('ihpn', 'wdir',         'w', .true., 'directory name', config_wdir, &
-      'working directory (directory for all input/output files')
     call add_option('ihpn', 'logging_level', 'l', .true., 'level', 'debug', &
      'logging level<br>'//&
      IND//'debug<br>'//&
@@ -933,9 +924,6 @@ contains
       case ('explain')
         config_explain = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_explain', logical2str(config_explain))
-      case ('wdir')
-        ! Note: using same routine parse_aux_assign_fn() to assign directory
-        call parse_aux_assign_fn(o_arg, config_wdir, 'config_wdir')
       case ('fn_main')
         call parse_aux_assign_fn(o_arg, config_fn_main, 'config_fn_main')
       case ('logging_fn_dump')
@@ -1097,16 +1085,17 @@ contains
   !   8   8b  d8 8b  d8 8        d8
   !   8   `Y88P' `Y88P' 8888 `Y88P'  Tools
 
-  !=======================================================================================
-  !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
-  !> Result is clean of leading/trailling spaces
-
-  function join_with_wdir(filename) result(res)
-    character(len=*), intent(in) :: filename  !< File name
-    character(len=:), allocatable :: res
-
-    res = wdir_trim // trim(filename)
-  end
+  ! Nobody wants to use this
+  ! !=======================================================================================
+  ! !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
+  ! !> Result is clean of leading/trailling spaces
+  ! 
+  ! function join_with_wdir(filename) result(res)
+  !   character(len=*), intent(in) :: filename  !< File name
+  !   character(len=:), allocatable :: res
+  ! 
+  !   res = wdir_trim // trim(filename)
+  ! end
 
   !=======================================================================================
   !> logging routine: prints variable and assigned value

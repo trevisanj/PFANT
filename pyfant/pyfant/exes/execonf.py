@@ -35,7 +35,6 @@ class Options(object):
 
     def __init__(self):
         # innewmarcs, hydro2, pfant, nulbad
-        self.wdir = None
         self.logging_level = None
         self.logging_screen = None
         self.logging_dump = None
@@ -120,7 +119,7 @@ class ExeConf(object):
         return self._session_id
     @session_id.setter
     def session_id(self, x):
-        """Creates directory "<wdir>/session-<session id>" when setting session id.."""
+        """Creates directory "session-<session id>" when setting session id.."""
         self._session_id = x
         new_dir = os.path.join(self.get_wdir(), session_prefix+x)
         if not os.path.isdir(new_dir):
@@ -186,7 +185,7 @@ class ExeConf(object):
         return file_.flprefix
 
     def get_pfant_output_filepath(self, type_="norm"):
-        """Returns path to a pfant output filename (working directory included).
+        """Returns path to a pfant output filename.
 
         Arguments:
           type -- "spec", "norm", or "cont"
@@ -196,10 +195,10 @@ class ExeConf(object):
         """
         valid_types = ("spec", "norm", "cont")
         assert type_ in valid_types, "type must be in %s" % (valid_types,)
-        return self.join_with_wdir(self.get_flprefix()+"."+type_)
+        return self.get_flprefix()+"."+type_
 
     def get_nulbad_output_filepath(self):
-        """Returns path to nulbad output filename (working directory included).
+        """Returns path to nulbad output filename.
 
         Reproduces nulbad logic in determining its output filename, i.e.,
           1) uses --fn_cv if present; if not,
@@ -218,11 +217,6 @@ class ExeConf(object):
     def get_session_dir(self):
         return session_prefix+self.session_id
 
-    def get_wdir(self):
-        """Gets working directory. Always returns a string."""
-        wdir = self.opt.wdir if self.opt.wdir is not None else ""
-        return wdir
-
     def make_session_id(self):
         """Finds an id for a new session and creates corresponding
         directory session_<id>.
@@ -238,22 +232,8 @@ class ExeConf(object):
 
         self._session_id = _make_session_id(self.get_wdir())
 
-    def join_with_wdir(self, fn):
-        """Joins self.opt.wdir with specified filename.
-
-        There is a function of same name doing the same in config.f90
-        """
-        if self.opt.wdir is not None:
-            return os.path.join(self.opt.wdir, fn)
-        else:
-            return fn
-
     def join_with_session_dir(self, fn):
-        """
-        Joins self.get_session_dir() with specified filename.
-
-        Atention: *wdir* is not part of the result.
-        """
+        """Joins self.get_session_dir() with specified filename."""
         if self._flag_first:
             assert self.session_id is not None, "Session id not assigned"
             self._flag_first = False
@@ -365,7 +345,7 @@ class ExeConf(object):
 # This has been isolated because needs to be locked
 
 _lock_session_id = Lock()
-def _make_session_id(wdir):
+def _make_session_id():
     """Finds new session id (a string containing a four-digit integer)
     corresponding with a directory that does not yet exist
     named <prefix><session id>, and creates such directory.
@@ -378,7 +358,7 @@ def _make_session_id(wdir):
         i = 0
         while True:
             ret = "%d" % i
-            new_dir = os.path.join(wdir, session_prefix+ret)
+            new_dir = session_prefix+ret
             if not os.path.isdir(new_dir):
                 break
             i += 1

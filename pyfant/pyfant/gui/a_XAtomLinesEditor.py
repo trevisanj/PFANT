@@ -1,4 +1,3 @@
-# todo this file is not "working" yet
 __all__ = ["XAtomLinesEditor"]
 
 from PyQt4.QtCore import *

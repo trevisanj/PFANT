@@ -123,7 +123,7 @@ contains
     ! Initialization
     !=====
     if (config_explain) then
-      open(unit=UNIT_EXPLAIN, file=join_with_wdir('innewmarcs_explain.txt'), status='replace')
+      open(unit=UNIT_EXPLAIN, file='innewmarcs_explain.txt', status='replace')
     end if
     call find_two_grid_files()  ! calculates nomfipl, asalog1, asalog2
 
@@ -132,21 +132,21 @@ contains
     ! Calculation
     !=====
 
-    write(lll,*) 'Creating ASCII file ', join_with_wdir(config_fn_moddat)
+    write(lll,*) 'Creating ASCII file ', trim(config_fn_moddat)
     call log_info(lll)
 
-    open(unit=UNIT_DAT,file=join_with_wdir(config_fn_moddat),status='unknown')
+    open(unit=UNIT_DAT,file=config_fn_moddat,status='unknown')
 
-    call log_info('Opening binary file '//join_with_wdir(config_fn_modeles)//&
+    call log_info('Opening binary file '//trim(config_fn_modeles)//&
      ' in status='//trim(config_open_status))
 
     open(unit=UNIT_MOD,access='direct',status=config_open_status, &
-     file=join_with_wdir(config_fn_modeles), recl=1200)
+     file=config_fn_modeles, recl=1200)
 
     ! **********************Boucle sur l'abondance*******************
     do iabon = 1,2 ! on interpole dans 2 grilles d'abondance
       nomfiple = nomfipl(iabon)
-      path = join_with_wdir(nomfiple)
+      path = trim(nomfiple)
 
       !-------------------------------------------------------------
       ! On cherche ou se trouvent (teff, glog)  par rapport a la table
@@ -360,7 +360,7 @@ contains
     close(unit=UNIT_MOD)
     close(unit=UNIT_DAT)
 
-    call log_info('File '''//trim(join_with_wdir(config_fn_modeles))//''' was successfully created.')
+    call log_info('File '''//trim(config_fn_modeles)//''' was successfully created.')
   end
 
 

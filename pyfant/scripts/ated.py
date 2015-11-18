@@ -17,7 +17,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
-    # sys.exit("This application is not working yet.")
     parser = argparse.ArgumentParser(
     description="ATomic lines file EDitor",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter

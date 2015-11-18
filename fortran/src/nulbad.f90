@@ -115,7 +115,7 @@ contains
     integer :: itot, ikeytot, icle, d, k, size_ffnu
     real*8 fnu(MAX_DTOT)  ! temporary, just for reading one "icle" iteration
 
-    open(unit=UNIT_,file=join_with_wdir(x_fn_flux), status='unknown')
+    open(unit=UNIT_,file=x_fn_flux, status='unknown')
 
     icle = 1
     rs_ktot = 0
@@ -186,7 +186,7 @@ contains
 
 
     ! Note: will now replace output file if already existent
-    open(unit=UNIT_,status='replace',file=join_with_wdir(x_fn_cv))
+    open(unit=UNIT_,status='replace',file=x_fn_cv)
 
     do k = 1, rs_ktot
       lambd(k) = rs_l0+(k-1)*rs_dpas
@@ -296,7 +296,7 @@ contains
     write(6,'(12F6.3)') (afl(k),k=1,12)
     call log_info(lll)
 
-    call log_info('File '//join_with_wdir(x_fn_cv)//' successfully created.')
+    call log_info('File '//trim(x_fn_cv)//' successfully created.')
   contains
 
     !=======================================================================================
