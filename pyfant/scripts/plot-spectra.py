@@ -1,6 +1,21 @@
 #!/usr/bin/python
 """
-Plots one or more spectra, either stacked or overlapped, or cut to pieces into PDF.
+Utility to quickly visualize spectra.
+
+It works in three different modes:
+
+a) it generates a stack of sub-plots, one for each spectrum (default mode)
+   Example:
+   plot-spectra.py flux.norm.nulbad measured.fits
+
+b) it generates one single plot with all spectra overlapped ("--ovl" option)
+   Example:
+   plot-spectra.py --ovl flux.norm.nulbad measured.fits
+
+c) it creates a PDF file with a small wavelength interval per page ("--pieces"
+   option). This is useful to flick through a large wavelength range.
+   Example:
+   plot-spectra.py --pieces --aint 7 flux.norm.nulbad measured.fits
 """
 import argparse
 from pyfant import *
@@ -12,8 +27,8 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description=__doc__,
+        formatter_class=SmartFormatter
     )
 
     parser.add_argument('fn', type=str, nargs='+',
