@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description=VisModRecords.__doc__,
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-  )
+   description=VisModRecords.__doc__,
+   formatter_class=SmartFormatter
+   )
 
   parser.add_argument('fn', type=str, help='NEWMARCS grid file name')
 

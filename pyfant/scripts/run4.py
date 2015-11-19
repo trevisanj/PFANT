@@ -1,6 +1,10 @@
 #!/usr/bin/python
 """
-Runs the 4 exes
+Runs the four Fortran binaries in sequence: innewmarcs, hydro2, pfant, nulbad
+
+Any files created during the runs will be saved in a subdirectory named
+session-<i>, where i is an integer. Exception: python.log will be saved in
+current directory.
 """
 
 import argparse
@@ -8,9 +12,9 @@ from pyfant import *
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description='',
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-  )
+   description=__doc__,
+   formatter_class=SmartFormatter
+   )
 
   names = ExeConf().opt.get_names() # option names
 

@@ -3,7 +3,7 @@
 """
 ated - ATomic lines file EDitor
 
-See ated.html or press F1 inside application.
+See also ated.html or press F1 inside application.
 """
 
 from pyfant.gui import XFileAtoms
@@ -18,8 +18,8 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-    description="ATomic lines file EDitor",
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    description=__doc__,
+    formatter_class=SmartFormatter
     )
     parser.add_argument('fn', type=str, help='atoms file name', default='atomgrade.dat', nargs='?')
     args = parser.parse_args()

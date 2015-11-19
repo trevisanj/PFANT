@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-    description=VisModRecord.__doc__,
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-  )
+   description=VisModRecord.__doc__,
+   formatter_class=SmartFormatter
+   )
 
   parser.add_argument('--inum', type=int, default=1, help='Record number (>= 1)')
   parser.add_argument('fn', type=str, help='.mod binary file name', default='modeles.mod', nargs='?')

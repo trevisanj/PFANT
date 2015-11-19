@@ -9,7 +9,8 @@ from .filetoh import *
 from .filemod import *
 from .filehmap import *
 from .fileabsoru2 import *
+from .filepartit import *
 from .filedissoc import *
 from .filemolecules import *
 from .fileatoms import *
-from load_any import *
+from .load_any import *

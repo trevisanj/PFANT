@@ -10,12 +10,12 @@ a) it generates a stack of sub-plots, one for each spectrum (default mode)
 
 b) it generates one single plot with all spectra overlapped ("--ovl" option)
    Example:
-   plot-spectra.py --ovl flux.norm.nulbad measured.fits
+   > plot-spectra.py --ovl flux.norm.nulbad measured.fits
 
 c) it creates a PDF file with a small wavelength interval per page ("--pieces"
    option). This is useful to flick through a large wavelength range.
    Example:
-   plot-spectra.py --pieces --aint 7 flux.norm.nulbad measured.fits
+   > plot-spectra.py --pieces --aint 7 flux.norm.nulbad measured.fits
 """
 import argparse
 from pyfant import *
@@ -27,8 +27,8 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=SmartFormatter
+     description=__doc__,
+     formatter_class=SmartFormatter
     )
 
     parser.add_argument('fn', type=str, nargs='+',
@@ -50,31 +50,14 @@ if __name__ == "__main__":
     ss = []
     flag_ok = False
     for x in args.fn:
-
         print "Trying to read file '%s'..." % x
-        # tries to load as pfant ouput; if fails, tries as nulbad output
-
-        for class_ in classes:
-            try:
-                f = class_()
-                f.load(x)
-                print "... successfully read using reader %s." % class_.__name__
-                flag_ok = True
-                break
-            except OSError:
-                raise
-            except IOError:
-                raise
-            except:
-                # Note: this is not good if the code has bugs, gotta make sure that the
-                # FileSpectrum* classes are are working properly.
-
-                # traceback.print_exc()
-                pass
-        if not flag_ok:
-            print_error("... not recognized, sorry!")
+        f = load_with_classes(x, classes)
+        if f is None:
+            print_error("... not recognized, sorry")
         else:
+            print "... successfully read using reader %s." % f.__class__.__name__
             ss.append(f.spectrum)
+
     if len(ss) == 0:
         print_error("Nothing to plot!")
     else:

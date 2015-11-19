@@ -3,6 +3,8 @@
 """
 Looks for file "flux.norm" inside directories session_* and saves one figure per page in a PDF file.
 
+"""
+"""
 References:
 http://stackoverflow.com/questions/17788685
 """
@@ -19,9 +21,9 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=VisFileToH.__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+     description=__doc__,
+     formatter_class=SmartFormatter
+     )
 
     parser.add_argument('--samey',
         help='Creates all plots with same y-limits of [0, 1.02]', action="store_true")

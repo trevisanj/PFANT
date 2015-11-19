@@ -1,13 +1,13 @@
-__all__ = ["FileAbsoru2"]
+__all__ = ["FilePartit"]
 
 from .datafile import *
 
 
-class FileAbsoru2(DataFile):
-    """"Absoru2" file. Reader/writes not implemented (will be implemented
+class FilePartit(DataFile):
+    """Partition function. Reader/writes not implemented (will be implemented
     when there is the need for so."""
 
-    default_filename = "absoru2.dat"
+    default_filename = "partit.dat"
 
     def __init__(self):
         DataFile.__init__(self)

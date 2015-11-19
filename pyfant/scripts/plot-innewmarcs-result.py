@@ -39,13 +39,11 @@ FN_EXPLAIN = 'innewmarcs_explain.txt'
 VARS = ['nh', 'teta', 'pe', 'pg', 't5l']
 
 
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+     description=__doc__,
+     formatter_class=SmartFormatter
+     )
     parser.add_argument('--inum', type=int, default=1, help='Record number (>= 1)')
     parser.add_argument('--var', type=str, help='Variable to plot', default=VARS[0], choices=VARS)
     parser.add_argument('fn', type=str, help='.mod binary file name created by innewmarcs', default='modeles.mod', nargs='?')

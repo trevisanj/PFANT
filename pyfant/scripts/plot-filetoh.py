@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
     description=VisFileToH.__doc__,
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    formatter_class=SmartFormatter
   )
 
   parser.add_argument('fn', type=str, help='hydrogen lines file name')

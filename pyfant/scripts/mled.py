@@ -3,7 +3,7 @@
 """
 mled - Molecular Lines EDitor
 
-See mled.html or press F1 inside application.
+See also mled.html or press F1 inside application.
 """
 
 from pyfant.gui import *
@@ -18,8 +18,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-    description="mled - Molecular Lines EDitor",
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    description=__doc__,
+    formatter_class=SmartFormatter
     )
     parser.add_argument('fn', type=str, help='molecules file name', default='moleculagrade.dat', nargs='?')
     args = parser.parse_args()

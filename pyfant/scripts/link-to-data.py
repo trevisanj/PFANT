@@ -1,78 +1,112 @@
 #!/usr/bin/python
 """
-Plots one or more spectra, either stacked or overlapped, or cut to pieces into PDF.
+Creates symbolic links to PFANT data files to prevent copies of these data files.
+
+A star is specified by three data files whose typical names are:
+main.dat, abonds.dat, and dissoc.dat .
+
+The other data files (atomic/molecular lines, partition function, etc.)
+are star-independent, and this script is a proposed solution to keep you from
+copying these files for every new case.
+
+How it works: link-to-data.py will look inside a given directory and create
+symbolic links to files *.dat and *.mod.
+
+The following files will be skipped:
+  - main files, e.g. main.dat
+  - dissoc files, e.g., dissoc.dat
+  - abonds files, e.g., abonds.dat
+  - .mod files with a single model inside, e.g., modeles.mod
+  - hydrogen lines files
+
+This script works in two different modes:
+
+a) it looks for files in a subdirectory of PFANT/data
+   (default mode)
+   Example:
+   > link-to-data.py common
+   (will look inside the directory PFANT/data/common)
+
+b) looks for files in a directory specified ("-p" option)
+   Examples:
+   > link-to-data.py -p /home/user/pfant-common-data
+   > link-to-data.py -p ../../pfant-common-data
 """
 import argparse
 from pyfant import *
-import matplotlib.pyplot as plt
-import traceback
 import logging
+import os.path
+import sys
+import glob
+
 
 logging.basicConfig(level=logging.INFO)
 
+def print_skipped(reason):
+    """Standardized printing for when a file was skipped."""
+    print "   ... SKIPPED (%s)." % reason
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description=__doc__,
+        formatter_class=SmartFormatter
     )
 
     parser.add_argument('-p', '--path', action='store_true',
-      help='If this flag is used, the directory specified afterwards length of each piece-plot in wavelength units (used only if --pieces)')
-    parser.add_argument('--fn_output', nargs='?', default='pieces.pdf', type=str,
-     help='PDF output file name (used only if --pieces)')
-    parser.add_argument('fn', type=str, nargs='+',
-     help='name of subdirectory of PFANT/data')
+      help='system path mode')
+    parser.add_argument('directory', type=str, nargs=1,
+     help='name of directory (either a subdirectory of PFANT/data or the path '
+          'to a valid system directory (see modes of operation)')
 
     args = parser.parse_args()
+    print args
 
-
-    classes = [FileSpectrumPfant, FileSpectrumNulbad, FileSpectrumXY, FileSpectrumFits]
-
-    ss = []
-    flag_ok = False
-    for x in args.fn:
-
-        print "Trying to read file '%s'..." % x
-        # tries to load as pfant ouput; if fails, tries as nulbad output
-
-        for class_ in classes:
-            try:
-                f = class_()
-                f.load(x)
-                print "... successfully read using reader %s." % class_.__name__
-                flag_ok = True
-                break
-            except OSError:
-                raise
-            except IOError:
-                raise
-            except:
-                # Note: this is not good if the code has bugs, gotta make sure that the
-                # FileSpectrum* classes are are working properly.
-
-                # traceback.print_exc()
-                pass
-        if not flag_ok:
-            print_error("... not recognized, sorry!")
-        else:
-            ss.append(f.spectrum)
-    if len(ss) == 0:
-        print_error("Nothing to plot!")
+    if args.path:
+        dir_ = args.directory[0]
     else:
-        if args.pieces:
-            plot_spectra_pieces_pdf(ss, aint=args.aint, pdf_filename=args.fn_output)
+        dir_ = os.path.abspath(os.path.join(
+         os.path.dirname(os.path.realpath(sys.argv[0])),
+         '..', '..', 'data', args.directory[0]
+         ))
+
+    star_classes = [FileMain, FileDissoc, FileAbonds]
+
+    print "Will look inside directory %s" % dir_
+
+    # makes list of files to analyse
+    types = ('*.dat', '*.mod')
+    ff = []
+    for type_ in types:
+        ff.extend(glob.glob(os.path.join(dir_, type_)))
+
+    for f in ff:
+        name = os.path.split(f)[1]
+
+        flag_skip = False
+        print "Considering file '%s' ..." % name
+        if os.path.isfile(name) and not os.path.islink(name):
+            print_skipped("file exists in local directory")
+            flag_skip = True
         else:
-            if args.ovl:
-                f = plot_spectra_overlapped
+            obj = load_with_classes(f, [FileMain, FileAbonds, FileDissoc, FileToH])
+            if obj is not None:
+                print_skipped("detected type %s" % obj.__class__.__name__)
+                flag_skip = True
             else:
-                f = plot_spectra
-            f(ss, "")
-            plt.show()
+                obj = load_with_classes(f, [FileMod])
+                if obj is not None:
+                    if len(obj) == 1:
+                        print_skipped("%s of only one record" % obj.__class__.__name__)
+                        flag_skip = True
 
-
-
-
-
-
-    # directory of this script
-    base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        if not flag_skip:
+            try:
+                if os.path.islink(name):
+                    os.remove(name)
+                    s_action = "replaced existing"
+                else:
+                    s_action = "created"
+                os.symlink(f, name)
+                print "   ... %s link" % s_action
+            except Exception as e:
+                print_error("Error creating link: %s" % str(e))

@@ -3,6 +3,7 @@ __all__ = ["FileAbonds"]
 import struct
 from .datafile import *
 from ..misc import adjust_atomic_symbol
+import re
 
 
 class FileAbonds(DataFile):
@@ -27,6 +28,10 @@ class FileAbonds(DataFile):
                     if s[0] == "1":  # sign to stop reading file
                         break
                 [ele, abol] = ostr.unpack_from(s)
+
+                if not re.search(r'[a-z]', ele, re.IGNORECASE):
+                    raise RuntimeError("Invalid element symbol: '%s'" % ele.strip())
+
                 self.ele.append(adjust_atomic_symbol(ele))
                 self.abol.append(float(abol))
 
