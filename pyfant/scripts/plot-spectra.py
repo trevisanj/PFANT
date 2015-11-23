@@ -61,7 +61,7 @@ if __name__ == "__main__":
     #  'given by the --aint option.', action="store_true")
     # parser.add_argument('--pages', help='If set, will generate a PDF file with '
     #  'one spectrum per page', action="store_true")
-    parser.add_argument('--aint', type=int, nargs='?', default=50,
+    parser.add_argument('--aint', type=int, nargs='?', default=10,
      help='length of each piece-plot in wavelength units (used only if --pieces)')
     parser.add_argument('--fn_output', nargs='?', default='plot-spectra.pdf', type=str,
      help='PDF output file name (used only if --pieces)')

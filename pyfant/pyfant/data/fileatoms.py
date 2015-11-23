@@ -112,34 +112,33 @@ class FileAtoms(DataFile):
             edict = {}  # links atomic symbols with Atom objects created (key is atomic symbol)
             try:
                 while True:
-                    a = AtomicLine()
+                    line = AtomicLine()
 
                     # (EE)(I) --whitespace-- (float) --ignored...--
                     temp = str_vector(h)
                     elem, s_ioni = temp[0][:-1], temp[0][-1]
-                    a.lambda_ = float(temp[1])
+                    line.lambda_ = float(temp[1])
                     elem = adjust_atomic_symbol(elem)
                     key = elem+s_ioni  # will group elements by this key
                     if edict.has_key(key):
-                        e = edict[key]
+                        a = edict[key]
                     else:
-                        e = edict[key] = Atom()
-                        e.elem = elem
-                        e.ioni = int(s_ioni)
-                        self.atoms.append(e)
-                    e.lines.append(a)
+                        a = edict[key] = Atom()
+                        a.elem = elem
+                        a.ioni = int(s_ioni)
+                        self.atoms.append(a)
+                    a.lines.append(line)
                     r += 1
 
-                    [a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai] = \
+                    [line.kiex, line.algf, line.ch, line.gr, line.ge, line.zinf, line.abondr, finrai] = \
                         float_vector(h)
                     r += 1
                     # last element is end-of-file flag "finrai"
                     if finrai == 1:
                         break
-
-            except Exception as a:
-                raise type(a)(("Error around %d%s row of file '%s'" %
-                    (r+1, ordinal_suffix(r+1), filename))+": "+str(a)), None, sys.exc_info()[2]
+            except Exception as e:
+                raise type(e)(("Error around %d%s row of file '%s'" %
+                    (r+1, ordinal_suffix(r+1), filename))+": "+str(e)), None, sys.exc_info()[2]
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:

@@ -109,7 +109,7 @@ def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf'):
       pdf_filename -- name of output file
     """
 
-    xmin, ymax, ymin, yspan, _, yspan = _calc_max_min(ss)
+    xmin, xmax, ymin, ymax, _, yspan = _calc_max_min(ss)
 
     num_pages = int(math.ceil((xmax-xmin)/aint)) # rightmost point may be left out...or not
     # num_spectra = len(ss)
