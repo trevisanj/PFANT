@@ -9,8 +9,12 @@ import logging
 import numpy as np
 # import matplotlib as mpl
 # from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
-__all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf"]
+__all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf",
+ "plot_spectra_pages_pdf"]
 
+
+_T = 0.02  # percentual amount of extra space on left, right, top, bottom of graphics
+_FAV_COLOR = 'k'  # "favourite color" for single-spectrum plots
 
 def plot_spectra(ss, title=None):
     """
@@ -25,14 +29,12 @@ def plot_spectra(ss, title=None):
 
     format_BLB()
     if n == 1:
-        f = plt.figure()
+        fig = plt.figure()
     else:
-        f, axarr = plt.subplots(n, sharex=True)
+        fig, axarr = plt.subplots(n, sharex=True)
 
-    T = 0.02  # amount of extra space on both left and right of graphics
-
-    mi = 1e38
-    ma = -1e38
+    xmin = 1e38
+    xmax = -1e38
     for i, s in enumerate(ss):
         assert isinstance(s, Spectrum)
         if n == 1:
@@ -41,20 +43,21 @@ def plot_spectra(ss, title=None):
             ax = axarr[i]
 
         ax.plot(s.x, s.y)
-        ymi, yma = ax.get_ylim()
-        ax.set_ylim([ymi, ymi + (yma - ymi) * (1 + T)])  # prevents top of line from being hidden by plot box
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim([ymin, ymin + (ymax - ymin) * (1 + _T)])  # prevents top of line from being hidden by plot box
         ax.set_ylabel(s.filename)
 
-        mi, ma = min(min(s.x), mi), max(max(s.x), ma)
+        xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
 
         if i == n-1:
             ax.set_xlabel('Wavelength')
-            span = ma - mi
-            ax.set_xlim([mi - span * T, ma + span * T])
+            span = xmax - xmin
+            ax.set_xlim([xmin - span * _T, xmax + span * _T])
 
     plt.tight_layout()
     if title is not None:
-        f.canvas.set_window_title(title)
+        fig.canvas.set_window_title(title)
+    return fig
 
 
 def plot_spectra_overlapped(ss, title=None):
@@ -71,24 +74,22 @@ def plot_spectra_overlapped(ss, title=None):
     format_BLB()
     f = plt.figure()
 
-    T = 0.02  # amount of extra space on both left and right of graphics
-
-    mi = 1e38
-    ma = -1e38
+    xmin = 1e38
+    xmax = -1e38
     for i, s in enumerate(ss):
         assert isinstance(s, Spectrum)
         ax = plt.gca()
 
         ax.plot(s.x, s.y, label=s.filename)
-        ymi, yma = ax.get_ylim()
-        # ax.set_ylim([ymi, ymi + (yma - ymi) * (1 + T)])  # prevents top of line from being hidden by plot box
+        # ymin, ymax = ax.get_ylim()
+        # ax.set_ylim([ymin, ymin + (ymax - ymin) * (1 + T)])  # prevents top of line from being hidden by plot box
         # ax.set_ylabel(s.filename)
 
-        mi, ma = min(min(s.x), mi), max(max(s.x), ma)
+        xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
 
     plt.xlabel('Wavelength')
-    span = ma - mi
-    ax.set_xlim([mi - span * T, ma + span * T])
+    span = xmax - xmin
+    ax.set_xlim([xmin - span * _T, xmax + span * _T])
 
 
     plt.legend(loc=0)
@@ -97,55 +98,40 @@ def plot_spectra_overlapped(ss, title=None):
         f.canvas.set_window_title(title)
 
 
-def plot_spectra_pieces_pdf(ss, aint=50, pdf_filename='pieces.pdf'):
+def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf'):
     """
-    Plots spectra in parts into a PDF file.
-
-    Splits into several pieces of width
+    Plots spectra, overlapped, in small wavelength intervals into a PDF file,
+    one interval per page of the PDF file.
 
     Arguments:
       ss -- list of Spectrum objects
-      title=None -- window title
+      aint -- wavelength interval for each plot
+      pdf_filename -- name of output file
     """
 
-    # Finds minimum and maximum wavelength
-    xmi, xma, ymi, yma = 1e38, -1e38, 1e38, -1e38
-    for s in ss:
-        assert isinstance(s, Spectrum)
-        xmi, xma = min(min(s.x), xmi), max(max(s.x), xma)
-        ymi, yma = min(min(s.y), ymi), max(max(s.y), yma)
-    yspan = yma-ymi  # same y-limits will be used for all pages
+    xmin, ymax, ymin, yspan, _, yspan = _calc_max_min(ss)
 
-
-    num_pages = int(math.ceil((xma-xmi)/aint)) # rightmost point may be left out...or not
+    num_pages = int(math.ceil((xmax-xmin)/aint)) # rightmost point may be left out...or not
     # num_spectra = len(ss)
 
     format_BLB()
     pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_filename)
 
-    T = 0.02  # percentual amount of extra space on left, right, top, bottom of graphics
-
     for h in range(num_pages):
         fig = plt.figure()
-        lambda0 = xmi+h*aint
+        lambda0 = xmin+h*aint
         lambda1 = lambda0+aint
-
         logging.info("Printing page %d/%d ([%g, %g])" % (h+1, num_pages, lambda0, lambda1))
-
         for i, s in enumerate(ss):
             s_cut = cut_spectrum(s, lambda0, lambda1)
             ax = plt.gca()
             ax.plot(s_cut.x, s_cut.y, label=s.filename)
-
         plt.xlabel('Wavelength (interval: [%g, %g])' % (lambda0, lambda1))
         xspan = lambda1-lambda0
-        ax.set_xlim([lambda0 - xspan * T, lambda1 + xspan * T])
-        ax.set_ylim([ymi - yspan * T, yma + yspan * T])
-
-
+        ax.set_xlim([lambda0 - xspan * _T, lambda1 + xspan * _T])
+        ax.set_ylim([ymin - yspan * _T, ymax + yspan * _T])
         plt.legend(loc=0)
         plt.tight_layout()
-
         pdf.savefig(fig)
         plt.close()
 
@@ -155,12 +141,47 @@ def plot_spectra_pieces_pdf(ss, aint=50, pdf_filename='pieces.pdf'):
     logging.info("File %s successfully created." % pdf_filename)
 
 
+def plot_spectra_pages_pdf(ss, pdf_filename='pages.pdf'):
+    """
+    Plots spectra into a PDF file, one spectrum per page.
+
+    Splits into several pieces of width
+
+    Arguments:
+      ss -- list of Spectrum objects
+      pdf_filename -- name of output file
+    """
+    xmin, xmax, ymin, ymax, xspan, yspan = _calc_max_min(ss)
+    num_pages = len(ss)
+    format_BLB()
+    pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_filename)
+    for i, s in enumerate(ss):
+        title = s.filename
+        fig = plt.figure()
+        plt.plot(s.x, s.y, c=_FAV_COLOR)
+        plt.xlabel('Wavelength')
+        plt.title(title)
+        plt.xlim([xmin-xspan*_T, xmax+xspan*_T])
+        plt.ylim([ymin-yspan*_T, ymax+yspan*_T])
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.94) # workaround for cropped title
+        logging.info("Printing page %d/%d ('%s')" % (i+1, num_pages, title))
+        pdf.savefig(fig)
+        plt.close()
+    pdf.close()
+    logging.info("File %s successfully created." % pdf_filename)
 
 
+def _calc_max_min(ss):
+    """"Calculates (x, y) (max, min) for a list of Spectrum objects.
 
-
-
-
-
-
-
+    Returns (xmin, xmax, ymin, ymax, xspan, yspan)
+    """
+    xmin, xmax, ymin, ymax = 1e38, -1e38, 1e38, -1e38
+    for s in ss:
+        assert isinstance(s, Spectrum)
+        xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
+        ymin, ymax = min(min(s.y), ymin), max(max(s.y), ymax)
+    xspan = xmax-xmin
+    yspan = ymax - ymin
+    return xmin, xmax, ymin, ymax, xspan, yspan

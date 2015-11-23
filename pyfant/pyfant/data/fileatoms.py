@@ -149,5 +149,10 @@ class FileAtoms(DataFile):
                 for j, a in enumerate(e.lines):
                     finrai = 1 if i == n-1 and j == p-1 else 0
                     write_lf(h, "%2s%1d %10.3f" % (e.elem, e.ioni, a.lambda_))
-                    write_lf(h, "%8.3f %8.3f %8.3f %8.3f %8.3f %6.1f %3.1f %1d" % \
+                    # Writing floating-point numbers with %.7g format creates a more compact
+                    # file. In Fortran it is read with '*' format, so it understands as
+                    # long as there is a space between numbers.
+                    write_lf(h, "%.7g %.7g %.7g %.7g %.7g %.7g %.7g %1d" % \
                         (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))
+                    # old way write_lf(h, "%8.3f %.7g %8.3f %8.3f %8.3f %6.1f %3.1f %1d" % \
+                    #     (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))
