@@ -1,0 +1,5 @@
+# Object and executable files don't work well between computers, so they will not be tracked.
+obj-linux
+obj-windows
+bin
+

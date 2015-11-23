@@ -825,12 +825,6 @@ contains
           l_ini = km_f_ln(j_set, i_mol)+1
           l_fin = km_f_ln(j_set+1, i_mol)
 
-          !print *, 'OLHAIHOLHAIHOLHAIHOLHAIHOLHAIHOLHAIHOLHAIHOLHAIH'
-          !print *, 'j_set', j_set, '; l_fin', l_fin, '; l_ini', l_ini
-          !print *, i_mol, molidx, km_titulo(molidx)
-          !print *, km_f_lmbdam(l_ini), km_f_sj(l_ini), km_f_jj(l_ini)
-          !stop
-
           ! l is index within km_f_lmbdam, km_f_sj and km_f_jj
           do l= l_ini, l_fin
             ! PC2003: default value for CSC does not exist physically
@@ -1146,8 +1140,8 @@ contains
     open(unit=UNIT_SPEC, file=fn_spec, status='replace')  ! spectrum
     open(unit=UNIT_CONT, file=fn_cont, status='replace')  ! continuum
     open(unit=UNIT_NORM, file=fn_norm, status='replace')  ! normalized
-    !--- open(unit=UNIT_LINES,file=join_with_wdir(config_fn_lines), status='replace')               ! outfile:lines
-    !--- open(unit=UNIT_LOG,  file=join_with_wdir(config_fn_log), status='replace')                 ! log.log
+    !--- open(unit=UNIT_LINES,file=config_fn_lines, status='replace')               ! outfile:lines
+    !--- open(unit=UNIT_LOG,  file=config_fn_log, status='replace')                 ! log.log
 
 
     !=====
@@ -1627,8 +1621,14 @@ contains
         !> @todo optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
 
         kies = (12398.54/atoms_f_lambda(k)) + atoms_f_kiex(k)
-        if(ioo.eq.1) kii = partit_ki1(j)
-        if(ioo.eq.2) kii = partit_ki2(j)
+        if (ioo .eq. 1) then
+          kii = partit_ki1(j)
+        else if (ioo .eq. 2) then
+          kii = partit_ki2(j)
+        else
+          ! Better to give error than to silently do wrong calculations
+          call pfant_halt('popadelh() found invalid ionization level: '//int2str(ioo), is_assertion=.true.)
+        end if
 
         if(popadelh_corch(k) .lt. 1.e-37)   then
           popadelh_corch(k) = 0.67 * atoms_f_kiex(k) +1
@@ -1636,7 +1636,7 @@ contains
 
         ! 125 format(3x ,' pour',f9.3,'   on calcule ch ', 'van der waals et on multiplie par ',f7.1)
         ! write(6,125)  atoms_f_lambda(k), popadelh_corch(k)
-        popadelh_cvdw(k)= calch(kii,ioo,atoms_f_kiex(k),isi,kies,iss)
+        popadelh_cvdw(k)= calch(kii, ioo, atoms_f_kiex(k), isi, kies, iss)
 
         atoms_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
       end if
@@ -2169,8 +2169,8 @@ program pfant
   !=====
   ! File reading
   !=====
-  call read_dissoc(join_with_wdir(config_fn_dissoc))
-  call read_main(join_with_wdir(config_fn_main))
+  call read_dissoc(config_fn_dissoc)
+  call read_main(config_fn_main)
 
   !---
   ! (intermission)
@@ -2181,21 +2181,21 @@ program pfant
   call pfant_init_x()
 
   ! continues file reading
-  call read_partit(join_with_wdir(config_fn_partit))  ! LECTURE DES FCTS DE PARTITION
-  call read_absoru2(join_with_wdir(config_fn_absoru2))  ! LECTURE DES DONNEES ABSORPTION CONTINUE
-  call read_modele(join_with_wdir(config_fn_modeles))  ! LECTURE DU MODELE
-  call read_abonds(join_with_wdir(config_fn_abonds))
-  call read_atoms(join_with_wdir(config_fn_atoms))
+  call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
+  call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
+  call read_abonds(config_fn_abonds)
+  call read_atoms(config_fn_atoms)
   ! Gets list of hydrogen lines filenames either from dfile:main or dfile:hmap.
   ! The latter is not the preferred way.
   if (config_hmap) then
-    call read_hmap(join_with_wdir(config_fn_hmap))
+    call read_hmap(config_fn_hmap)
   else
     call hmap_copy_from_main()
   end if
 
   call read_filetoh(x_llzero, x_llfin)
-  call read_molecules(join_with_wdir(config_fn_molecules))
+  call read_molecules(config_fn_molecules)
 
   if (abs(modeles_asalog-main_afstar) > 0.01) then
     call log_warning('asalog from model ('//real82str(modeles_asalog, 2)//&

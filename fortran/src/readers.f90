@@ -391,7 +391,7 @@ contains
     main_llfin = ceiling(main_llfin)
     main_aint = floor(main_aint)
 
-    101 format('reader_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
+    101 format('read_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
     write(lll,101) main_llzero, main_llfin, main_aint
     call log_info(lll)
 
@@ -1460,7 +1460,6 @@ contains
     character(len=*) :: filename
     integer finrai, k, j
     logical flag_found
-
     if (.not. flag_read_abonds) then
       call pfant_halt('read_abonds() must be called before read_atoms()')
     end if
@@ -1474,10 +1473,15 @@ contains
         call pfant_halt('read_atoms(): exceeded maximum of MAX_ATOMS_NBLEND='//&
          int2str(MAX_ATOMS_NBLEND)//' spectral lines')
       end if
-
       read(unit_, '(a2, i1, 1x, f10.3)') atoms_elem(k), &
                                          atoms_ioni(k), &
                                          atoms_lambda(k)
+      if (atoms_ioni(k) .ne. 1 .and. atoms_ioni(k) .ne. 2) then
+        ! Only ionization levels 1 and 2 are accepted because subroutine popadelh() only considers these levels
+        
+        call pfant_halt('read_atoms(): error in line '//int2str(k*2-1)//' of file '//trim(filename)//&
+         ': invalid ionization level: '//int2str(atoms_ioni(k)))
+      end if
       atoms_elem(k) = adjust_atomic_symbol(atoms_elem(k))
 
       read(unit_, *) atoms_kiex(k), &
