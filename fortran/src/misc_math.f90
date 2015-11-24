@@ -51,8 +51,7 @@ module misc_math
   real*8, parameter :: RPI = sqrt(PI) !< square root of pi, approx 1.772453851
 
 contains
-
-!> Computes the Voight function.
+  !> Computes the Voigt function.
   !>
   !> @verbatim
   !> COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
@@ -60,17 +59,22 @@ contains
   !> LA FONCTION EST ENSUITE NORMALISEE
   !> @endverbatim
   !>
-  !> @par Reference
-  !> Drayson, S. Roland. "Rapid computation of the Voigt profile." Journal of
+  !> The code seems to originate from Appendix A of [1]
+  !>
+  !> @par References
+  !> [1] Drayson, S. Roland. "Rapid computation of the Voigt profile." Journal of
   !> Quantitative Spectroscopy and Radiative Transfer 16.7 (1976): 611-614.
+  !>
+  !> [2] A. Belafhal "The shape of spectral lines: widths and equivalent widths of the
+  !>     Voigt profile". Optics Communications 177 (2000). 111–118
 
-  subroutine hjenor(y,x,del,phi)
+  function hjenor(y,x,del) result (phi)
     real*8, intent(in) :: &
-     x,   & !< ?doc?
-     y,   & !< ?doc?
-     del    !< ?doc? probably delta lambda
-    real*8, intent(out) :: phi    !< ?doc?
-    real*8 voigt
+     y,   & !< ?doc? "Relative importance of the Lorentzian and Gaussian contributions" (?) [2]
+     x,   & !< ?doc? The actual variable here (?)
+     del    !< ?doc? Normalization term (?)
+    real*8 :: phi !< Result value
+    real*8 voigt ! un-normalized Voigt function value
     real*8 vv,uu
     real*8 b(22),ri(15),xn(15)/10.,9.,2*8.,7.,6.,5.,4.,7*3./,        &
      yn(15)/3*.6,.5,2*.4,4*.3,1.,.9,.8,2*.7/,d0(35),d1(35),d2(35)    &

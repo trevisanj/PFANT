@@ -146,7 +146,7 @@ class Executable(Runnable):
                      'finished successfully' if self.popen.returncode == 0 else '*failed*',
                      self.popen.returncode))
 
-    def open_result(self):
+    def load_result(self):
         """Override this method to open the result file(s) particular to the
         executable."""
 
@@ -161,7 +161,7 @@ class Innewmarcs(Executable):
         # FileMod object
         self.modeles = None
 
-    def open_result(self):
+    def load_result(self):
         file_mod = FileMod()
         filepath = self.execonf.get_fn_modeles()
         file_mod.load(filepath)
@@ -175,7 +175,7 @@ class Hydro2(Executable):
         Executable.__init__(self)
         self.exe_path = "hydro2"
 
-    def open_result(self):
+    def load_result(self):
         raise NotImplementedError("Opening hydro2 result will need hydro2 to save a side file containing a list of the files that it has created!!!")
 
 
@@ -216,7 +216,7 @@ class Pfant(Executable):
                     pass
         return ret
 
-    def open_result(self):
+    def load_result(self):
         file_sp = FileSpectrumPfant()
         for type_ in ("norm", "cont", "spec"):
             filepath = self.execonf.get_pfant_output_filepath(type_)
@@ -234,7 +234,7 @@ class Nulbad(Executable):
         # nulbad output
         self.convolved = None
 
-    def open_result(self):
+    def load_result(self):
         file_sp = FileSpectrumNulbad()
         filepath = self.execonf.get_nulbad_output_filepath()
         file_sp.load(filepath)

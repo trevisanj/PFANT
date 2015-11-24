@@ -1460,6 +1460,10 @@ contains
     character(len=*) :: filename
     integer finrai, k, j
     logical flag_found
+
+
+    real*8 zinf, kiex
+
     if (.not. flag_read_abonds) then
       call pfant_halt('read_abonds() must be called before read_atoms()')
     end if
@@ -1478,7 +1482,7 @@ contains
                                          atoms_lambda(k)
       if (atoms_ioni(k) .ne. 1 .and. atoms_ioni(k) .ne. 2) then
         ! Only ionization levels 1 and 2 are accepted because subroutine popadelh() only considers these levels
-        
+
         call pfant_halt('read_atoms(): error in line '//int2str(k*2-1)//' of file '//trim(filename)//&
          ': invalid ionization level: '//int2str(atoms_ioni(k)))
       end if
@@ -1491,6 +1495,23 @@ contains
        atoms_ge(k), &
        atoms_zinf(k), &
        atoms_abondr_dummy(k), finrai
+
+
+      if (.false.) then
+        kiex = atoms_kiex(k)
+        zinf = 100*exp(atoms_algf(k))/atoms_kiex(k)
+        ! write(*, *) atoms_elem(k), &
+        !  atoms_ioni(k), &
+        !  atoms_lambda(k),  &
+        !  ' algf=', atoms_algf(k), &
+        !  ' kiex=',atoms_kiex(k), &
+        !  ' zinf= ', zinf
+
+        ! write(44,*) atoms_lambda(k), atoms_algf(k), atoms_kiex(k), zinf
+
+        atoms_zinf(k) = zinf
+      end if
+
 
       !> @todo ISSUE ask MT Why this? Document!!! (MT) If the "radiative broadening" is zero,
       !> it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.

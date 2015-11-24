@@ -1584,7 +1584,7 @@ contains
   !======================================================================================================================
   !> Calcule la population au niveau inferieur de la transition
   !> la largeur doppler popadelh_DELTA et le coefficient d'elargissement
-  !> le "popadelh_A" utilise dans le calcul de H(popadelh_A,V)
+  !> le "popadelh_a" utilise dans le calcul de H(popadelh_a,v)
   !
 
   subroutine popadelh()
@@ -1650,10 +1650,10 @@ contains
       end if
 
       do n = 1, modeles_ntot
-        t=5040./modeles_teta(n)
-        nul= C* 1.e+8 /atoms_f_lambda(k)
-        ahnul= H*nul
-        alphl(n)=exp(-ahnul/(KB*t))
+        t = 5040./modeles_teta(n)
+        nul = C* 1.e+8 /atoms_f_lambda(k)
+        ahnul = H*nul
+        alphl(n) = exp(-ahnul/(KB*t))
 
         tap = 1.-alphl(n)
         top = 10.**(-atoms_f_kiex(k)*modeles_teta(n))
@@ -1674,6 +1674,7 @@ contains
         end if
         gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
         popadelh_a(k,n) = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
+        write(45,*) popadelh_a(k,n)
       end do
     end do
   end
@@ -1745,12 +1746,11 @@ contains
         if(atoms_f_nblend .eq. 0) go to 260
 
         do  k = 1,atoms_f_nblend
-          !if(abs(ecartl(k)) .gt. atoms_f_zinf(k)) then
           if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
-            call hjenor(popadelh_a(k,n), v, popadelh_delta(k,n), phi)
+            phi = hjenor(popadelh_a(k,n), v, popadelh_delta(k,n))
 
             if(atoms_f_elem(k) .eq. ' O') then
               ! #NOXIG: oxygen is a particular case here
