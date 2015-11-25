@@ -1026,11 +1026,30 @@ module synthesis
   !> Calculated by subroutine turbul
   real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 
-  !> calculated by subroutine popadelh
-  real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw
-  !> Calculated by subroutine popadelh
+  ! Calculated by subroutine popadelh
+  real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw, &
+   popadelh_zinf  !< limit distance from center of line to calculate the Voigt profile
+                  !! This information was once in dfile:atoms and being set manually;
+                  !! now it is calculated automatically.
+
   real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
    popadelh_pop, popadelh_a, popadelh_delta
+
+
+
+
+
+
+
+  !! Calculated by subroutine popadelh
+  !real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
+  ! popadelh_pop, popadelh_a, popadelh_delta, &
+  ! popadelh_zinf  !< limit distance from center of line to calculate the Voigt profile
+  !                !! This information was once in dfile:atoms and being set manually;
+  !                !! now it is calculated automatically.
+
+
+
 
   !> Calculated by subroutine selekfh
   real*8, dimension(MAX_DTOT) :: selekfh_fl, selekfh_fcont
@@ -1583,15 +1602,15 @@ contains
 
   !======================================================================================================================
   !> Calcule la population au niveau inferieur de la transition
-  !> la largeur doppler popadelh_DELTA et le coefficient d'elargissement
+  !> la largeur doppler popadelh_delta et le coefficient d'elargissement
   !> le "popadelh_a" utilise dans le calcul de H(popadelh_a,v)
-  !
 
   subroutine popadelh()
     implicit none
     character*1 isi, iss
     integer j, k, ioo, iopi, n
-    real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel
+    real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel, &
+     a, delta, x
     data isi/' '/, iss/' '/
 
     do k = 1, atoms_f_nblend
@@ -1665,7 +1684,9 @@ contains
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
-        popadelh_delta(k,n) =(1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
+        delta = (1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
+        popadelh_delta(k,n) = delta
+
         vrel = sqrt(C4*t*(1.+1./partit_m(j)))
         if (iopi .eq. 1) then
           gh = C5*atoms_f_ch(k)**0.4*vrel**0.6
@@ -1673,8 +1694,24 @@ contains
           gh = atoms_f_ch(k) + popadelh_corch(k)*t
         end if
         gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
-        popadelh_a(k,n) = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
-        write(45,*) popadelh_a(k,n)
+
+        a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
+        popadelh_a(k,n) = a
+
+        if (n .eq. modeles_ntot) then
+          ! zinf(k) will be calculated for the last atmospheric layer, whether there is the most
+          ! broadening
+          x = (31.9*a+5.1)*50
+          ! To convert the "x" argument of hjenor() to a wavelength, I do the inverse of what is done
+          ! just before calling hjenor() in subroutine selekfh() below
+          ! popadelh_zinf(k, n) = x*1e8*delta
+          popadelh_zinf(k) = x*1e8*delta
+
+!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
+          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
+          ! todo cleanup write(45,*) popadelh_a(k,n)
+          ! todo cleanup write(46,*) popadelh_zinf(k, n)
+        end if
       end do
     end do
   end
@@ -1746,7 +1783,9 @@ contains
         if(atoms_f_nblend .eq. 0) go to 260
 
         do  k = 1,atoms_f_nblend
-          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+!          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+!          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
+          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
@@ -1757,6 +1796,11 @@ contains
               kak = phi * popadelh_pop(k,n) * m_gfal(k)
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
+            end if
+
+            ! todo cleanup
+            if (n .eq. 50) then
+              write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
             end if
           end if
 
@@ -1907,15 +1951,7 @@ contains
       do j=1,2
         kcn(j)=kcj(j,n)
       end do
-!write(*,*)'AQUI QCHEGOU'
-!write(*,*) 'lambdc', lambdc
-!write(*,*) 'kcn', kcn
-!write(*,*) 'm_dtot', m_dtot
-!write(*,*) 'm_ttd', m_ttd(1), m_ttd(m_dtot)
-!write(*,*) 'fttc', fttc(1), fttc(m_dtot)
-!write(*,*)'---------------'
       call ftlin3(2,lambdc,kcn,m_dtot,m_ttd,fttc)
-!      write(*,*)'MAS PASSOU DO FTLIN3!!!!!!!!!!!!!!!!!!!!'
       do d = 1,m_dtot
         bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
       end do

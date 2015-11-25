@@ -1006,7 +1006,7 @@ contains
     !> @li if .TRUE. : 7 points
     !> @li .FALSE.   : 6 points
     logical, intent(in) :: ptdisk
-    !> Source is probably @REF reader_main::main_mu
+    !> cos(angle). Source is probably reader_main::main_mu
     real*8, intent(in) :: mu
     !> (old "IOP") accepts 0 or 1.
     !> @li if 0, uses the 6/7 point formulation
@@ -1029,8 +1029,8 @@ contains
     flin_to(1)=nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
     call integra(nh,kap,flin_to, ntot,flin_to(1))
     if (mode_ .eqv. mode_flinh) then  ! flinh() mode only!!!
-      do n=1,ntot
-      flin_to(n) = flin_to(n)+tauhd(n)
+      do n = 1,ntot
+        flin_to(n) = flin_to(n)+tauhd(n)
       end do
     end if
 
@@ -1048,21 +1048,21 @@ contains
       call check_modele_trop_court(1)
 
       continue
-      do l=1,ipoint
-        if(ptdisk) then
+      do l = 1,ipoint
+        if (ptdisk) then
           tt(l) = tp(l)*mu
-          cc(l)=cp(l)
+          cc(l) = cp(l)
         else
           tt(l) = td(l)
           cc(l) = cd(l)
         end if
       end do
 
-      flin_f=0.
-      do  l=1,ipoint
-        bb(l)=faitk30(tt(l), flin_to, b, ntot)
-        fp(l)=cc(l)*bb(l)
-        flin_f=flin_f+fp(l)
+      flin_f = 0.
+      do  l = 1, ipoint
+        bb(l) = faitk30(tt(l), flin_to, b, ntot)
+        fp(l) = cc(l)*bb(l)
+        flin_f = flin_f+fp(l)
       end do
       return
 
@@ -1072,23 +1072,20 @@ contains
 
       !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_main()
       if(ptdisk) then
-        1500 format('Le sp flin_ ne peut calculer l intensite en 1 pt ', &
-                    'du disque avec la formule a 26pts (utiliser 7pts kik=0)')
-        write(6,1500)
-        stop
+        call pfant_halt('Le sp flin_ ne peut calculer l intensite en 1 pt '// &
+         'du disque avec la formule a 26pts (utiliser 7pts kik=0)', is_assertion=.true.)
       end if
       tolim=5.487  ! Le modele doit aller au moins a une prof TOLIM
 
       call check_modele_trop_court(2)
 
-
-      do l=1,26
-        t=td2(l)
-        bbb(l) = faitk30(td2(l),flin_to,b,ntot)
+      do l = 1,26
+        t = td2(l)
+        bbb(l) = faitk30(td2(l), flin_to, b, ntot)
       end do
 
       do m=1,12
-        l=2*m - 1
+        l = 2*m - 1
         bb(m) = bbb(l+1)
         fp(m) = c1(m)*bbb(l) + c2(m)*bbb(l+1) + c3(m)*bbb(l+2)
         cc(m) = c2(m)
@@ -1099,8 +1096,8 @@ contains
       cc(13) = c1(13)
       ! Ces bb et cc ne servent que pour les sorties (pas au calcul)
 
-      flin_f=0.
-      do l=1,13
+      flin_f = 0.
+      do l = 1,13
         flin_f = flin_f+fp(l)
       end do
       return
@@ -1119,10 +1116,6 @@ contains
          int2str(ntot) //'; to(' //&
          int2str(ntot) // ') = ' // real82str(flin_to(ntot), 7) // ' (must be >= '//&
           real82str(tolim, 3) // ')')
-        !write(lll,1504)
-        !call log_halt(lll)
-        !write(lll,1503) ntot, flin_to(ntot)
-        !call pfant_halt(lll)
       end if
     end
   end
