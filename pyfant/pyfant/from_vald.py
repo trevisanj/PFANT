@@ -94,7 +94,8 @@ def vald3_to_atoms(file_obj):
             line.lambda_ = float(row[1])
             line.algf = float(row[2])
             line.kiex = float(row[3])
-            # Formula supplied by Elvis Cantelli
+            # Formula supplied by Elvis Cantelli:
+            # extracted from cross-entropy code by P. Barklem
             _waals = float(row[12])
             line.ch = 10**(2.5*_waals-12.32)
             # Setting gr to zero will cause PFANT to calculate it using a formula.

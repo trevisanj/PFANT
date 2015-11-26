@@ -535,8 +535,7 @@ module config
   !> @li 0 false
   !> @li 1 true
   integer :: config_ptdisk = -1
-  !> option: --kik
-  !> @note This was called "IOP" but was changed to match variable name in pfant executable
+  !> option: --kik; affects subroutine flin_()
   integer :: config_kik = 0
   !> option: --amores
   !>

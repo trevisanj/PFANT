@@ -1708,7 +1708,7 @@ contains
           popadelh_zinf(k) = x*1e8*delta
 
 !          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
-          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
+          ! write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
           ! todo cleanup write(45,*) popadelh_a(k,n)
           ! todo cleanup write(46,*) popadelh_zinf(k, n)
         end if
@@ -1742,6 +1742,19 @@ contains
      deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
      phi, t, v, vm, &
      kam, kappam, kappa, kak
+
+
+ 
+
+
+integer QWE
+
+
+
+
+
+
+
 
     if (atoms_f_nblend .ne. 0) then
       do k = 1,atoms_f_nblend
@@ -1783,9 +1796,9 @@ contains
         if(atoms_f_nblend .eq. 0) go to 260
 
         do  k = 1,atoms_f_nblend
-!          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
-          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
+!          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
@@ -1799,9 +1812,15 @@ contains
             end if
 
             ! todo cleanup
-            if (n .eq. 50) then
-              write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
-            end if
+            !if (n .eq. 50) then
+              !!! trick to write one atmospheric layer to a different file
+            !  write(n+100,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
+            !end if
+            !if (n .eq. 50) then
+              !!! trick to write one atmospheric layer to a different file
+            !  write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
+            !end if
+
           end if
 
           kappa = kappa + kak
@@ -1826,7 +1845,6 @@ contains
 
         250 continue
         kappt(n) = kappa+kappam
-
         kci(n) = bk_kcd(d,n)
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
@@ -1851,18 +1869,26 @@ contains
       if ((d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
         ! write(*,*) 'NO H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
-        call flin1(kap,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
-        selekfh_fl(d) = flin_f
+        selekfh_fl(d) = flin1(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
       else
         ! with hydrogen lines
         ! write(*,*) 'YES H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
-        call flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
-        selekfh_fl(d) = flin_f
+        selekfh_fl(d) = flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
       end if
 
       ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-      call flin1(kci,bi,modeles_nh,modeles_ntot,main_ptdisk,main_mu, config_kik)
-      selekfh_fcont(d) = flin_f
+      selekfh_fcont(d) = flin1(kci, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
+
+      ! todo cleanup
+      write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
+       m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
+
+      ! LETS SEE kap for three lines
+      QWE = 50
+
+      ! todo cleanup
+      ! write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
+
     end do  ! fin bcle sur d
   end
 
@@ -1928,18 +1954,15 @@ contains
 
     alph01 = exp(-ahnu1/(KB*t))
     bk_b1(0) = c31 * (alph01/(1.-alph01))
-    call flin1(bk_kc1,bk_b1,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-    fc1 = flin_f
+    fc1 = flin1(bk_kc1,bk_b1,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
     alph02 = exp(-ahnu2/(KB*t))
     bk_b2(0) = c32 * (alph02/(1.-alph02))
-    call flin1(bk_kc2,bk_b2,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-    fc2 = flin_f
+    fc2 = flin1(bk_kc2,bk_b2,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
     alph0 = exp(-ahnu/(KB*t))
     bk_b(0) = c3 * (alph0/(1.-alph0))
-    call flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
-    bk_fc = flin_f
+    bk_fc = flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
     lambdc(1) = m_lzero-m_ilzero
     lambdc(2) = m_lfin-m_ilzero

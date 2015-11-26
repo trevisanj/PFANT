@@ -895,21 +895,19 @@ end module misc_math
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Subroutines flin1() and flinh()
+!> Functions flin1() and flinh()
 !>
 !> Calcul du flux ou de l'intensite par la methode d'integration
 !> a 6 pts (ou 13pts) de R.Cayrel (these).
-!> nouvelle methode de calcul de to . flin_to(1) est calcule et
-!> est different de 0 (On pose flin_TO(0)=0)   -Avril 1988-
+!> nouvelle methode de calcul de to . to(1) est calcule et
+!> est different de 0 (On pose to(0)=0)   -Avril 1988-
 !>
 !> @note in flin_(), MT+JT ipoint was being set to 7 regardless of ptdisk. This has been
 !>       changed and now works as described: kik .true.: ptdisk .true. -> ipoint = 7; else 6
 !>
 !> @author Roger Cayrel
 !>
-!> @note Outputs in module variables: flin::flin_to, flin::flin_f
-!>
-!> @todo gotta check, flin_to is never used, but I am pretty sure it used to be, in the original,
+!> @todo gotta check, to is never used, but I am pretty sure it used to be, in the original,
 !> I may have deleted sth
 
 module flin
@@ -919,15 +917,7 @@ module flin
   implicit none
   private
 
-  public flinh, flin1 ! Public subroutine
-  !=====
-  !> Output variables
-  !=====
-  !> ?doc?
-  !> @todo fixed dimension, still
-  real*8, public, dimension(0:50) :: flin_to
-  !> ?doc?
-  real*8, public :: flin_f = 0
+  public flinh, flin1
 
   !^^^^^ PUBLIC  ^^^^^
   !vvvvv PRIVATE vvvvv
@@ -951,15 +941,13 @@ module flin
   logical, parameter :: mode_flinh = .true., &
                         mode_flin1 = .false.
 
-
-  private flin_ ! private subroutine
-
+  private flin_
 contains
   !---------------------------------------------------------------------------------------------------
 
   !> See routine flin_() for description of parameters
 
-  subroutine flin1(kap, b, nh, ntot, ptdisk, mu, kik)
+  real*8 function flin1(kap, b, nh, ntot, ptdisk, mu, kik)
     real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh
     real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b
     logical, intent(in) :: ptdisk
@@ -967,7 +955,8 @@ contains
     integer, intent(in) :: ntot, kik
     ! This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
     real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
-    call flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
+    real*8 f !< output variable: flux
+    flin1 = flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
   end
 
 
@@ -975,24 +964,22 @@ contains
 
   !> See routine flin_() for description of parameters
   !>
-  !> Two differences from FLIN1()
-  !> 1) adds tauhd vector to flin_to
-  !> 2) ignores PTDISK ISSUE!!!
-  !>
+  !> Differences from FLIN1(): adds tauhd vector to to_
 
-  subroutine flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
+  real*8 function flinh(kap, b, nh, ntot, ptdisk, mu, kik, tauhd)
     real*8, intent(in), dimension(MAX_MODELES_NTOT) :: kap, nh, tauhd
     real*8, dimension(0:MAX_MODELES_NTOT), intent(in) :: b
     logical, intent(in) :: ptdisk
     real*8, intent(in) :: mu
     integer, intent(in) :: ntot, kik
-    call flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_flinh)
+
+    flinh = flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_flinh)
   end
 
 
   !> Generic routine, called by flin1() and flinh()
 
-  subroutine flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
+  real*8 function flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_)
     implicit none
     !> ?doc?
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
@@ -1016,6 +1003,8 @@ contains
     real*8, intent(in) :: tauhd(MAX_MODELES_NTOT)
     !> Internal, either @ref mode_flin1 or @ref mode_flinh
     logical, intent(in) :: mode_
+    !> ?doc?
+    real*8 :: to_(0:MAX_MODELES_NTOT)
 
     real*8, dimension(13) :: fp, cc, bb, tt
     real*8, dimension(26) :: bbb
@@ -1023,14 +1012,14 @@ contains
     real*8 epsi, t, tolim
     integer ipoint, l, m, n
 
-    ! Calcul de flin_to
+    ! Calcul de to_
     epsi=0.05
-    flin_to(0)=0.
-    flin_to(1)=nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
-    call integra(nh,kap,flin_to, ntot,flin_to(1))
+    to_(0) = 0.
+    to_(1) = nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
+    call integra(nh, kap, to_, ntot, to_(1))
     if (mode_ .eqv. mode_flinh) then  ! flinh() mode only!!!
       do n = 1,ntot
-        flin_to(n) = flin_to(n)+tauhd(n)
+        to_(n) = to_(n)+tauhd(n)
       end do
     end if
 
@@ -1058,11 +1047,11 @@ contains
         end if
       end do
 
-      flin_f = 0.
+      flin_ = 0.
       do  l = 1, ipoint
-        bb(l) = faitk30(tt(l), flin_to, b, ntot)
+        bb(l) = faitk30(tt(l), to_, b, ntot)
         fp(l) = cc(l)*bb(l)
-        flin_f = flin_f+fp(l)
+        flin_ = flin_+fp(l)
       end do
       return
 
@@ -1081,7 +1070,7 @@ contains
 
       do l = 1,26
         t = td2(l)
-        bbb(l) = faitk30(td2(l), flin_to, b, ntot)
+        bbb(l) = faitk30(td2(l), to_, b, ntot)
       end do
 
       do m=1,12
@@ -1096,9 +1085,9 @@ contains
       cc(13) = c1(13)
       ! Ces bb et cc ne servent que pour les sorties (pas au calcul)
 
-      flin_f = 0.
+      flin_ = 0.
       do l = 1,13
-        flin_f = flin_f+fp(l)
+        flin_ = flin_+fp(l)
       end do
       return
     else
@@ -1110,11 +1099,11 @@ contains
     subroutine check_modele_trop_court(i_call)
       !> Indicates where it was called from, used in error message: facilitates debugging
       integer, intent(in) :: i_call
-      if(flin_to(ntot) .lt. tolim) then
+      if(to_(ntot) .lt. tolim) then
 
         call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
-         int2str(ntot) //'; to(' //&
-         int2str(ntot) // ') = ' // real82str(flin_to(ntot), 7) // ' (must be >= '//&
+         int2str(ntot) //'; to_(' //&
+         int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
           real82str(tolim, 3) // ')')
       end if
     end
