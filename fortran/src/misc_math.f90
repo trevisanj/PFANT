@@ -922,24 +922,24 @@ module flin
   !^^^^^ PUBLIC  ^^^^^
   !vvvvv PRIVATE vvvvv
 
-  real*8 :: td2, td,tp, cd, cp, c1, c2, c3
-  dimension td2(26),td(6),tp(7),cd(6),cp(7),c1(13),c2(12),c3(12)
+  real*8 :: TD2, TD, TP, CD, CP, C1, C2, C3
+  dimension TD2(26),TD(6),TP(7),CD(6),CP(7), C1(13),C2(12),C3(12)
 
-  data td /0.038,0.154,0.335,0.793,1.467,3.890 /
-  data cd /0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
-  data tp /0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
-  data cp /0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
-  data td2 /0.,.05,.1,.15,.3,.45,.60,.80,1.,1.2,1.4,1.6,1.8,2., &
+  data TD /0.038,0.154,0.335,0.793,1.467,3.890 /
+  data CD /0.1615,0.1346,0.2973,0.1872,0.1906,0.0288/
+  data TP /0.0794,0.31000,0.5156,0.8608,1.3107,2.4204,4.0/
+  data CP /0.176273,0.153405,0.167016,0.135428,0.210244,0.107848, 0.049787/
+  data TD2 /0.,.05,.1,.15,.3,.45,.60,.80,1.,1.2,1.4,1.6,1.8,2., &
    2.2,2.4,2.6,2.8,3.,3.2,3.4,3.6,3.8,4.2,4.6,5.487/
-  data c1 /.032517,.047456,.046138,.036113,.019493,.011037,.006425, &
+  data C1 /.032517,.047456,.046138,.036113,.019493,.011037,.006425, &
    .003820,.002303,.001404,.000864,.001045,.002769/
-  data c2 /.111077,.154237,.143783,.108330,.059794,.034293, &
+  data C2 /.111077,.154237,.143783,.108330,.059794,.034293, &
    .020169,.012060,.007308,.004473,.002761,.002757/
-  data c3 /.023823,.030806,.027061,.019274,.010946,.006390, &
+  data C3 /.023823,.030806,.027061,.019274,.010946,.006390, &
    .003796,.002292,.001398,.000860,.000533,.000396/
 
-  logical, parameter :: mode_flinh = .true., &
-                        mode_flin1 = .false.
+  logical, parameter :: MODE_FLINH = .true., &
+                        MODE_FLIN1 = .false.
 
   private flin_
 contains
@@ -956,7 +956,7 @@ contains
     ! This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
     real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
     real*8 f !< output variable: flux
-    flin1 = flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, mode_flin1)
+    flin1 = flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, MODE_FLIN1)
   end
 
 
@@ -973,7 +973,7 @@ contains
     real*8, intent(in) :: mu
     integer, intent(in) :: ntot, kik
 
-    flinh = flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, mode_flinh)
+    flinh = flin_(kap, b, nh, ntot, ptdisk, mu, kik, tauhd, MODE_FLINH)
   end
 
 
@@ -1001,15 +1001,15 @@ contains
     integer, intent(in) :: kik
     !> Used only in FLINH mode
     real*8, intent(in) :: tauhd(MAX_MODELES_NTOT)
-    !> Internal, either @ref mode_flin1 or @ref mode_flinh
+    !> Internal, either @ref MODE_FLIN1 or @ref MODE_FLINH
     logical, intent(in) :: mode_
-    !> ?doc?
+    ! Optical depth
     real*8 :: to_(0:MAX_MODELES_NTOT)
 
     real*8, dimension(13) :: fp, cc, bb, tt
     real*8, dimension(26) :: bbb
 
-    real*8 epsi, t, tolim
+    real*8 epsi, tolim
     integer ipoint, l, m, n
 
     ! Calcul de to_
@@ -1017,7 +1017,7 @@ contains
     to_(0) = 0.
     to_(1) = nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
     call integra(nh, kap, to_, ntot, to_(1))
-    if (mode_ .eqv. mode_flinh) then  ! flinh() mode only!!!
+    if (mode_ .eqv. MODE_FLINH) then  ! flinh() mode only!!!
       do n = 1,ntot
         to_(n) = to_(n)+tauhd(n)
       end do
@@ -1037,13 +1037,13 @@ contains
       call check_modele_trop_court(1)
 
       continue
-      do l = 1,ipoint
+      do l = 1, ipoint
         if (ptdisk) then
-          tt(l) = tp(l)*mu
-          cc(l) = cp(l)
+          tt(l) = TP(l)*mu
+          cc(l) = CP(l)
         else
-          tt(l) = td(l)
-          cc(l) = cd(l)
+          tt(l) = TD(l)
+          cc(l) = CD(l)
         end if
       end do
 
@@ -1064,25 +1064,24 @@ contains
         call pfant_halt('Le sp flin_ ne peut calculer l intensite en 1 pt '// &
          'du disque avec la formule a 26pts (utiliser 7pts kik=0)', is_assertion=.true.)
       end if
-      tolim=5.487  ! Le modele doit aller au moins a une prof TOLIM
+      tolim = 5.487  ! Le modele doit aller au moins a une prof tolim
 
       call check_modele_trop_court(2)
 
       do l = 1,26
-        t = td2(l)
-        bbb(l) = faitk30(td2(l), to_, b, ntot)
+        bbb(l) = faitk30(TD2(l), to_, b, ntot)
       end do
 
-      do m=1,12
+      do m = 1, 12
         l = 2*m - 1
         bb(m) = bbb(l+1)
-        fp(m) = c1(m)*bbb(l) + c2(m)*bbb(l+1) + c3(m)*bbb(l+2)
-        cc(m) = c2(m)
+        fp(m) = C1(m)*bbb(l) + C2(m)*bbb(l+1) + C3(m)*bbb(l+2)
+        cc(m) = C2(m)
       end do
 
-      fp(13) = c1(13)*bbb(26)
+      fp(13) = C1(13)*bbb(26)
       bb(13) = bbb(26)
-      cc(13) = c1(13)
+      cc(13) = C1(13)
       ! Ces bb et cc ne servent que pour les sorties (pas au calcul)
 
       flin_ = 0.

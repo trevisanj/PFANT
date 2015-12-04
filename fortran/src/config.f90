@@ -478,10 +478,12 @@ module config
   !---
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
-    character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
+  character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
   logical :: config_logging_screen = .true., &  !< option --logging_screen
              config_logging_dump   = .false., & !< option --logging_dump
-             config_explain        = .false.    !< option --explain
+             config_explain        = .false., & !< option --explain
+             config_no_molecules   = .false., & !< option --no_molecules
+             config_no_atoms       = .false.    !< option --no_atoms
 
   !---
   ! innewmarcs, hydro2, pfant
@@ -694,6 +696,9 @@ contains
   !> @todo where to put the explanation on option text formatting
 
   subroutine init_options()
+    ! Note that the order of calling add_option() doesn't matter for the program,
+    ! but will affect the option printing order when you invoke with "--help"
+
     !
     ! All executables
     !
@@ -848,6 +853,10 @@ contains
      IND//'<flprefix>.spec: un-normalized spectrum<br>'//&
      IND//'<flprefix>.cont: continuum<br>'//&
      IND//'<flprefix>.norm: normalized spectrum')
+    call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
+     'If set, completely skips the calculation of molecular lines')
+    call add_option('p', 'no_atoms',' ', .true., 'T/F', logical2str(config_no_atoms), &
+     'If set, completely skips the calculation of atomic lines')
 
     !
     ! nulbad-only
@@ -1023,7 +1032,7 @@ contains
         call parse_aux_log_assignment('config_c1', real82str(config_c1, 4))
       case ('hmap')
         config_hmap = .true.
-        call parse_aux_log_assignment('config_hmap', '.true.')
+        call parse_aux_log_assignment('config_hmap', logical2str(.true.))
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)
@@ -1051,8 +1060,12 @@ contains
         call set_molidxs_off(o_arg)
       case ('flprefix')
         call parse_aux_assign_fn(o_arg, config_flprefix, 'config_flprefix')
-
-
+      case ('no_molecules')
+        config_no_molecules = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_no_molecules', logical2str(config_no_molecules))
+      case ('no_atoms')
+        config_no_atoms = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_no_atoms', logical2str(config_no_atoms))
 
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)

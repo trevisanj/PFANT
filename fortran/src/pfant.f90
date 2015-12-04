@@ -44,7 +44,7 @@ module dissoc
   implicit none
 
   ! They will be pointer targets at molecules::point_ppa_pb()
-  real*8, target, dimension(MAX_MODELES_NTOT) ::  &
+  real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
    sat4_pph,  & !< pressure: hydrogen ?doc?
    sat4_ppc2, & !< pressure: 12carbon ?doc?
    sat4_pn,   & !< pressure: nytrogen ?doc?
@@ -94,7 +94,6 @@ contains
 
     !
     !*****INPUT A
-
 
     ! Infers other variables from variables dissoc_*
     do i = 1, dissoc_nmetal
@@ -263,7 +262,7 @@ contains
     sat4_pn = xp(:, iz)
     iz = find_atomic_symbol_dissoc('O ')
     sat4_po = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('A ')  ! @todo issue taking fluorine ('A') instead of 13C
+    iz = find_atomic_symbol_dissoc('A ')  ! Yeah, "A" is 13C
     sat4_pc13 = xp(:, iz)
     iz = find_atomic_symbol_dissoc('TI')
     sat4_pti = xp(:, iz)
@@ -1168,9 +1167,7 @@ contains
     !=====
 
     call cpu_time(start)
-
     call turbul()
-
     call log_debug('turbul() OK!')
     call cpu_time(finish)
     print '("TURBUL() Time = ",f6.3," seconds.")',finish-start
@@ -1179,9 +1176,7 @@ contains
     ! Calcul de quant  ne dependant que du metal et du modele
     ! Population du niv fond des ions
     call cpu_time(start)
-
     call popul()
-
     call cpu_time(finish)
     print '("POPUL() Time = ",f6.3," seconds.")',finish-start
 
@@ -1190,11 +1185,11 @@ contains
     ! Modele et de lambda : bk_b(n)   bk_kc(n)   bk_fc ISSUE probably wrong comment
     call cpu_time(start)
 
-    call sat4()
-    call log_debug('sat4() OK!')
-
-    call cpu_time(finish)
-    print '("SAT4() Time = ",f6.3," seconds.")',finish-start
+    if (.not. config_no_molecules) then
+      call sat4()
+      call cpu_time(finish)
+      print '("SAT4() Time = ",f6.3," seconds.")',finish-start
+    end if
 
 
     ! initial calculation sub-interval
@@ -1302,7 +1297,7 @@ contains
       print '("FILTER_ATOMS() Time = ",f6.3," seconds.")',finish-start
 
 
-      if(atoms_f_nblend .gt. 0) then
+      if(.not. config_no_atoms .and. atoms_f_nblend .gt. 0) then
         call cpu_time(start)
 
         call popadelh()
@@ -1319,27 +1314,20 @@ contains
         end do
       end if
 
-      call cpu_time(start)
+      if (.not. config_no_molecules) then
+        call cpu_time(start)
+        call filter_molecules(m_lzero, m_lfin)
+        call cpu_time(finish)
+        print '("FILTER_MOLECULES() Time = ",f6.3," seconds.")',finish-start
 
-      call filter_molecules(m_lzero, m_lfin)
-
-      call cpu_time(finish)
-      print '("FILTER_MOLECULES() Time = ",f6.3," seconds.")',finish-start
-
-
-      call cpu_time(start)
-
-      call kapmol_()
-
-      call cpu_time(finish)
-      print '("KAPMOL_() Time = ",f6.3," seconds.")',finish-start
-
-
+        call cpu_time(start)
+        call kapmol_()
+        call cpu_time(finish)
+        print '("KAPMOL_() Time = ",f6.3," seconds.")',finish-start
+      end if
 
       call cpu_time(start)
-
       call selekfh()
-
       call cpu_time(finish)
       print '("SELEKFH() Time = ",f6.3," seconds.")',finish-start
 
@@ -1349,17 +1337,6 @@ contains
       !=====
 
       call cpu_time(start)
-
-
-      !li = int(dble(LAMBDA_STRETCH)/2/main_pas)
-      !i1 = li+1  ! initial recording index
-      !i2 = m_dtot - li
-      !if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
-      !  i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
-      !end if
-      !itot = i2-i1+1
-      !do d = i1,i2
-
       ! i1 and i2 are the initial and final indexes of selekfh_fl, selekfh_fcont, and fd
       ! that will be written to output file.
       i1 = 2
@@ -1372,11 +1349,6 @@ contains
         ! PyFANT is also aware of this.
         i2 = m_dtot
       end if
-      !if (m_lfin .ge. (x_llfin+LAMBDA_STRETCH)) then
-      !  i2 = int((x_llfin+10.-m_lzero)/main_pas + 1.0005)
-      !end if
-      ! itot = i2-i1+1
-      !do d = i1,i2
       do d = 1, m_dtot
         selekfh_fl(d) = selekfh_fl(d)*(10.**5)
         selekfh_fcont(d) = selekfh_fcont(d)*(10.**5)
@@ -1389,10 +1361,6 @@ contains
       call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
       call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
       call write_spec_item(UNIT_NORM, fn)             ! normalized
-
-      !707 format(1x,'ikey=',i10,2x,'lzero=',f10.3,2x,'lfin=',f10.3, 2x,'i1=',i7,2x,'i2=',i7)
-      !write(lll,707) ikey, m_lzero, m_lfin, i1, i2
-      !call log_info(lll)
 
       call cpu_time(finish)
       print '("SAVING Time = ",f6.3," seconds.")',finish-start
@@ -1449,23 +1417,6 @@ contains
       amg = main_xxcor(8)  ! ?doc? MT: I think that somebody did this because the "alpha-enhanced" is specified nowhere. See also in write_log()
 
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
-!      write(unit_, 1130)       &
-!       ikeytot,                &  ! fixed (same value for all iterations)
-!       modeles_tit,            &  ! fixed
-!       tetaef,                 &  ! fixed
-!       main_glog,              &  ! fixed
-!       main_asalog,            &  ! fixed
-!       modeles_nhe,            &  ! fixed
-!       amg,                    &  ! fixed
-!       l0,                     &  ! fixed
-!       lf,                     &  ! fixed
-!       m_lzero,                &  ! changes (value changes with each iteration)
-!       m_lfin,                 &  ! changes
-!       itot,                   &  ! changes
-!       main_pas,               &  ! fixed
-!       main_echx,              &  ! fixed
-!       main_echy,              &  ! fixed
-!       main_fwhm                  ! fixed
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
        modeles_tit,            &  ! fixed
@@ -1793,12 +1744,14 @@ integer QWE
         t = 5040./modeles_teta(n)
 
         ! atomes
-        if(atoms_f_nblend .eq. 0) go to 260
+        if(config_no_atoms) go to 260
 
         do  k = 1,atoms_f_nblend
-          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+! todo cleanup
+!          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
+          if(abs(ecar(k)) .gt. 30) then   ! I think zinf won't be greater than 25, right
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
@@ -1812,10 +1765,10 @@ integer QWE
             end if
 
             ! todo cleanup
-            !if (n .eq. 50) then
-              !!! trick to write one atmospheric layer to a different file
-            !  write(n+100,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
-            !end if
+            !!! trick to write one atmospheric layer to a different file
+            ! write(n+100,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
+
+
             !if (n .eq. 50) then
               !!! trick to write one atmospheric layer to a different file
             !  write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
@@ -1829,7 +1782,7 @@ integer QWE
         260 continue
 
         ! molecules
-        if(km_f_mblend .eq. 0) go to 250
+        if (config_no_molecules) go to 250
         do l = 1, km_f_mblend
           !if(abs(ecartlm(l)) .gt. km_c_alargm(l))  then
           if(abs(ecarm(l)) .gt. km_c_alargm(l))  then
@@ -1868,11 +1821,9 @@ integer QWE
 
       if ((d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
-        ! write(*,*) 'NO H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
         selekfh_fl(d) = flin1(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
       else
         ! with hydrogen lines
-        ! write(*,*) 'YES H LINES BECAUSE d=',d,'; hy_dhm=',hy_dhm,'; hy_dhp=',hy_dhp
         selekfh_fl(d) = flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
       end if
 
@@ -1880,14 +1831,14 @@ integer QWE
       selekfh_fcont(d) = flin1(kci, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
 
       ! todo cleanup
-      write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
-       m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
+      ! write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
+      !  m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
 
       ! LETS SEE kap for three lines
       QWE = 50
 
       ! todo cleanup
-      ! write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
+      !write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
 
     end do  ! fin bcle sur d
   end
@@ -2254,7 +2205,9 @@ program pfant
   end if
 
   call read_filetoh(x_llzero, x_llfin)
-  call read_molecules(config_fn_molecules)
+  if (.not. config_no_molecules) then
+    call read_molecules(config_fn_molecules)
+  end if
 
   if (abs(modeles_asalog-main_afstar) > 0.01) then
     call log_warning('asalog from model ('//real82str(modeles_asalog, 2)//&
@@ -2267,84 +2220,4 @@ program pfant
   !=====
   ! Does the calculus
   call synthesis_()
-
 end program pfant
-
-
-
-
-
-
-! Disabled until someone misses
-! MT: Either get rid of it or include it as an optional output.
-!    !> Writes into file log.log
-!
-!    subroutine write_log()
-!      integer d
-!      real*8 amg
-!      amg = main_xxcor(8)
-!
-!      1130  format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
-!      write(UNIT_LOG, 1130) &
-!       ikeytot, &
-!       modeles_tit, &
-!       tetaef, &
-!       main_glog, &
-!       main_asalog, &
-!       modeles_nhe, &
-!       amg, &
-!       l0, &
-!       lf, &
-!       m_lzero, &
-!       m_lfin, &
-!       itot, &
-!       main_pas, &
-!       main_echx, &
-!       main_echy, &
-!       main_fwhm
-!
-!      do d = i1,i2
-!        write(UNIT_LOG, *) l0+(d-1)*main_pas, selekfh_fl(d)
-!      end do
-!    end
-!
-!    !> Writes into outfile:lines and fort.91
-!
-!    subroutine write_lines_fort91()
-!      real*8 log_abond
-!      122 FORMAT(6X,'# LAMBDA',4X,'KIEX',5X,'L GF',3X,'L ABOND',6X,'CH',10X,'GR',10X,'GE',5X,'ZINF',4X,'CORCH')
-!      write(UNIT_LINES, 122)
-!      do k=1,atoms_f_nblend
-!        log_abond = log10(atoms_f_abonds_abo(k))
-!
-!        125 format(a2,1x,i1,1x,f08.3,1x,f6.3,f09.3,f09.3,1x,3e12.3,f5.1, f7.1)
-!        write(UNIT_LINES, 125)     &
-!         atoms_f_elem(k),        &
-!         atoms_f_ioni(k),        &
-!         atoms_f_lambda(k),      &
-!         atoms_f_kiex(k),        &
-!         atoms_f_algf(k),        &
-!         log_abond-main_afstar+12, &
-!         atoms_f_ch(k),          &
-!         atoms_f_gr(k),          &
-!         atoms_f_ge(k),          &
-!         atoms_f_zinf(k),        &
-!         popadelh_corch(k)
-!
-! MT: fort.91 is not necessary to me.
-!       121 FORMAT(1X,A2,I1,1X,F08.3,1X,F6.3,F09.3,F09.3,1X,3E12.3,F5.1,F7.1)
-!        write(91,121)              &
-!         atoms_f_elem(k),        &
-!         atoms_f_ioni(k),        &
-!         atoms_f_lambda(k),      &
-!         atoms_f_kiex(k),        &
-!         atoms_f_algf(k),        &
-!         log_abond-main_afstar+12, &
-!         atoms_f_ch(k),          &
-!         atoms_f_gr(k),          &
-!         atoms_f_ge(k),          &
-!         atoms_f_zinf(k),        &
-!         popadelh_corch(k)
-!      end do
-!    end
-
