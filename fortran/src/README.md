@@ -392,8 +392,12 @@ This section contains guidelines for implementing new features in the source cod
 6. Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
+7. That was the Fortran bit. Now to make `pyfant` aware of your new option:
+   7.1 open `PFANT/pyfant/pyfant/exes/execonf.py`
+   7.2 add `self.xxxx = None` to `Config.__init__()` where `xxxx` is the name of your new
+       option, without the config_ prefix
 
 In the steps with the :bulb: above, it is best to use existing code as a template.
-Look for an existing option that is of the same type, *i.e., float, logical etc*,
-of your new option.
+Look for an existing option that is of the same type (*i.e.*, float, logical etc.)
+of your new option, and copy-paste that code.
 
