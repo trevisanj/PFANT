@@ -388,7 +388,7 @@ This section contains guidelines for implementing new features in the source cod
 2. Find string `module config`.
 3. Create a new variable starting with `config_` and set its default value. :bulb:
 4. In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
-5. In subroutine `handle_option`, add a `case` for your new variable.
+5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
 6. Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
