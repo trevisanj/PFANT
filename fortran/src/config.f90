@@ -493,7 +493,6 @@ module config
   !
   ! hydro2, pfant
   !
-  logical :: config_hmap = .true. !< option: --hmap
   character*64 :: &
    config_fn_hmap    = 'hmap.dat', &  !< option: --fn_hmap
    config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
@@ -548,18 +547,8 @@ module config
   !> option: --kq
   !> @note Default taken from M.Trevisan's pfant12.R script
   integer :: config_kq = 1
-  !> option: --nomplot
-  character*16 :: config_nomplot = '?'
   !> option: --vvt
   real*8 :: config_vvt = -1
-  integer :: &
-   config_na = -1, &   !< option: --na
-   config_nb = -1      !< option: --nb
-  real*8 :: &
-   config_clam = -1, & !< option: --clam
-   config_kiex = -1, & !< option: --kiex
-   config_c1   = -1    !< option: --c1
-
 
   !---
   ! pfant-only
@@ -759,19 +748,6 @@ contains
     call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
      'Upper boundary of calculation interval')
 
-    ! Here there is a slight difference on the description of this option depending
-    ! on the executable.
-    if (execonf_name .eq. 'hydro2') then
-      call add_option('hp', 'hmap', ' ', .true., '', logical2str(config_hmap), &
-        'If set, will read wavelength interval from main configuration file and<br>'//&
-        'determine automatically which hydrogen lines to calculate according to<br>'//&
-        'hmap file')
-    else
-      call add_option('p', 'hmap', ' ', .true., '', logical2str(config_hmap), &
-        'If set, will read hydrogen lines filenames from hmap file instead of from<br>'//&
-        'main configuration file')  ! This behavious is likely to become default soon...or not
-    end if
-
     !
     ! innewmarcs-only
     !
@@ -805,9 +781,6 @@ contains
      '"Theorie"<br>'//&
      IND//'0: THEORIE DE GRIEM;<br>'//&
      IND//'1: THEORIE QUASISTATIQUE')
-
-    call add_option('h', 'nomplot', ' ', .true., 'file name', config_nomplot, &
-     'output file name - hydrogen lines')
 
     call add_option('h', 'vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
      'velocity of microturbulence')
@@ -988,8 +961,6 @@ contains
         ! config_amores is also tristate, as config_ptdisk
         config_amores = logical2int(parse_aux_str2logical(opt, o_arg))
         call parse_aux_log_assignment('config_amores', logical2str(int2logical(config_amores)))
-      case ('nomplot')
-        call parse_aux_assign_fn(o_arg, config_nomplot, 'config_nomplot')
       case ('vvt')
         config_vvt = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_vvt', real82str(config_vvt, 3))
@@ -1007,32 +978,6 @@ contains
         config_llfin = parse_aux_str2real4(opt, o_arg)
         call parse_aux_log_assignment('config_llfin', real82str(config_llfin, 1))
 
-      case ('na')
-        config_na = parse_aux_str2int(opt, o_arg)
-        if (config_na .eq. 0 .or. config_na .eq. 1) then !#validation
-          call parse_aux_log_assignment('config_na', int2str(config_na))
-        else
-          res = HANDLER_ERROR
-        end if
-      case ('nb')
-        config_nb = parse_aux_str2int(opt, o_arg)
-        if (config_nb .eq. 0 .or. config_nb .eq. 1) then !#validation
-          call parse_aux_log_assignment('config_nb', int2str(config_nb))
-        else
-          res = HANDLER_ERROR
-        end if
-      case ('clam')
-        config_clam = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_clam', real82str(config_clam, 2))
-      case ('kiex')
-        config_kiex = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_kiex', real82str(config_kiex, 4))
-      case ('c1')
-        config_c1 = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_c1', real82str(config_c1, 4))
-      case ('hmap')
-        config_hmap = .true.
-        call parse_aux_log_assignment('config_hmap', logical2str(.true.))
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)

@@ -776,36 +776,6 @@ contains
       call log_info(lll)
     end do
   end
-
-
-  !========================================================================================
-  !> Fills hmap_rows according with main_filetohy. For compatibility with old way of
-  !> informing the "filetoh" filenames, which was inside dfile:main
-  !>
-  !> This routine fills only the "fn" (filename) field of the hmap_row structure because
-  !> the filenames are all that's available in dfile:main.
-  !>
-  !> This routine is used only by pfant when not in "--hmap" mode.
-  !>
-  !> This routine is part of a mechanism to allow pfant to work in two ways.
-  !> @li either use dfile:hmap for the list of hydrogen line files (likely to become the
-  !>     standard way in the future)
-  !> @li take this list from dfile:main (legacy)
-
-  subroutine hmap_copy_from_main()
-    integer :: i
-
-    hmap_n = 0
-    do i = 1, main_filetoh_numfiles
-      hmap_n = hmap_n+1
-      hmap_rows(hmap_n)%fn = main_filetohy(i)
-      hmap_rows(hmap_n)%na = 0
-      hmap_rows(hmap_n)%nb = 0
-      hmap_rows(hmap_n)%clam = 0
-      hmap_rows(hmap_n)%kiex = 0
-      hmap_rows(hmap_n)%c1 = 0
-    end do
-  end
 end
 
 

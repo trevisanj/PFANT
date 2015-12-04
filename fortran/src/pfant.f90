@@ -2196,13 +2196,7 @@ program pfant
   call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
   call read_abonds(config_fn_abonds)
   call read_atoms(config_fn_atoms)
-  ! Gets list of hydrogen lines filenames either from dfile:main or dfile:hmap.
-  ! The latter is not the preferred way.
-  if (config_hmap) then
-    call read_hmap(config_fn_hmap)
-  else
-    call hmap_copy_from_main()
-  end if
+  call read_hmap(config_fn_hmap)
 
   call read_filetoh(x_llzero, x_llfin)
   if (.not. config_no_molecules) then
