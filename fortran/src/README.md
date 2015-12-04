@@ -6,9 +6,8 @@
 
 *.cpp           -- C++ source containing only comment blocks.
                    Additional documentation that will by parsed by Doxygen.
-                   
-                   
-## Source code maintenance
+                                     
+## Tools
 
 This section contains guidelines for developers to maintain and share the source code. 
 
@@ -376,4 +375,25 @@ ask PC    "
 ask EC    "
 ```
 
-Tags are case-insensitive. 
+Tags are case-insensitive.
+ 
+ 
+## Development how-to's
+ 
+This section contains guidelines for implementing new features in the source code
+
+### How to append a new command-line option
+
+1. Open `config.f90`.
+2. Find string `module config`.
+3. Create a new variable starting with `config_` and set its default value. :bulb:
+4. In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
+5. In subroutine `handle_option`, add a `case` for your new variable.
+6. Finally, use your new `config_xxxx` variable in other modules of the source code,
+   making sure that the module that you are working on has a `use config` statement 
+   at its beginning.
+
+In the steps with the :bulb: above, it is best to use existing code as a template.
+Look for an existing option that is of the same type, *i.e., float, logical etc*,
+of your new option.
+
