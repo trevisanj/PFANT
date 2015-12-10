@@ -351,7 +351,7 @@ contains!> Initializes x_* variables
   subroutine hydro2_init_x()
 
     if (config_ptdisk .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_ptdisk = main_ptdisk
     else
       x_ptdisk = int2logical(config_ptdisk)
@@ -378,7 +378,7 @@ contains!> Initializes x_* variables
     x_asalog = config_asalog
     x_inum = config_inum
     if (config_inum .lt. 1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
         ! be validated upon file reading.
@@ -388,17 +388,17 @@ contains!> Initializes x_* variables
       call parse_aux_log_assignment('x_inum', int2str(x_inum))
     end if
     if (config_teff .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_teff = main_teff
       call parse_aux_log_assignment('x_teff', real82str(x_teff, 1))
     end if
     if (config_glog .eq. -1)  then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_glog = main_glog
       call parse_aux_log_assignment('x_glog', real82str(x_glog, 3))
     end if
     if (config_asalog .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       !> @todo issue big using main_asalog instead of main_afstar
       x_asalog = main_asalog
       call parse_aux_log_assignment('x_asalog', real82str(x_asalog, 3))
@@ -407,7 +407,7 @@ contains!> Initializes x_* variables
 
     x_vvt = config_vvt
     if (config_vvt .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
 
       if (main_ivtot .gt. 1) then
         call pfant_halt('Tried to read vvt from main configuration file, '//&
@@ -419,7 +419,7 @@ contains!> Initializes x_* variables
 
     x_llzero = config_llzero
     if (config_llzero .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_llzero = main_llzero
       call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
     else
@@ -428,7 +428,7 @@ contains!> Initializes x_* variables
 
     x_llfin = config_llfin
     if (config_llfin .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_llfin = main_llfin
       call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
     else
@@ -2076,7 +2076,7 @@ program hydro2
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)   ! LECTURE DU MODELE
 
-  call assure_read_main()
+  call assure_read_main(config_fn_main)
   call read_hmap(config_fn_hmap)
 
   call log_info('Using hmap file')

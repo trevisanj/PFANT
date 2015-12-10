@@ -79,17 +79,17 @@ contains
     x_fn_cv = config_fn_cv
     x_norm = config_norm
     if (config_fwhm .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_fwhm = main_fwhm
       call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm, 3))
     end if
     if (config_pat .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_pat = main_pas
       call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
     if (config_fn_flux .eq. '?') then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       if (x_norm) then
         x_fn_flux = trim(main_flprefix)//'.norm'
       else
@@ -98,7 +98,7 @@ contains
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
     end if
     if (config_fn_cv .eq. '?') then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_fn_cv = trim(x_fn_flux)//'.nulbad'
       call parse_aux_log_assignment('x_fn_cv', trim(x_fn_cv))
     end if

@@ -9,7 +9,7 @@ __all__ = ["Options", "ExeConf", "e_innewmarcs", "e_hydro2", "e_pfant",
 from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
 import os
-from ..parts import *
+from .parts import *
 import re
 from threading import Lock
 
@@ -41,6 +41,7 @@ class Options(object):
         self.logging_fn_dump = None
         self.fn_main = None
         self.explain = None
+        self.play = None
 
         # innewmarcs, hydro2, pfant
         self.fn_modeles = None
@@ -53,7 +54,6 @@ class Options(object):
 
         # hydro2, pfant
         self.fn_absoru2 = None
-        self.hmap = True # Overriding default, which is .false.
         self.fn_hmap = None
         self.llzero = None
         self.llfin = None
@@ -71,13 +71,7 @@ class Options(object):
         self.kik = None
         self.amores = None
         self.kq = None
-        self.nomplot = None
         self.vvt = None
-        self.na = None
-        self.nb = None
-        self.clam = None
-        self.kiex = None
-        self.c1 = None
 
         # pfant
         self.fn_dissoc    = None
@@ -90,6 +84,9 @@ class Options(object):
         self.fn_progress = "progress.txt"
         self.flprefix = None
         self.molidxs_off = None
+        self.no_molecules = None
+        self.no_atoms = None
+        self.no_h = None
 
         # nulbad
         self.norm = None
@@ -108,7 +105,7 @@ class Options(object):
 @froze_it
 class ExeConf(object):
     """
-    Class holds all command-line options.
+    Class holds the configuration of an executable.
 
     Most options are initialized do None. This means that they won't be added to the
     command line.
@@ -142,23 +139,25 @@ class ExeConf(object):
         # FileMain instance
         # If set, main configuration file (of random name) will be created before
         # running the executable.
-        self.fo_main = None
+        self.file_main = None
         # FileAbonds instance
-        self.fo_abonds = None
+        self.file_abonds = None
         # FileAbonds instance
-        self.fo_dissoc = None
+        self.file_dissoc = None
         # FileHmap instance
-        self.fo_hmap = None
+        self.file_hmap = None
+        # FileAtoms instance
+        self.file_atoms = None
 
         # Command-line options
         self.opt = Options()
 
-    def get_fo_main(self):
-        """Returns either self.fo_main, or if None, tries to open file and
+    def get_file_main(self):
+        """Returns either self.file_main, or if None, tries to open file and
         return a new FileMain object.
         """
-        if self.fo_main is not None:
-            return self.fo_main
+        if self.file_main is not None:
+            return self.file_main
         file_ = FileMain()
         if self.opt.fn_main is None:
             file_.load()  # will try to load default file
@@ -174,14 +173,14 @@ class ExeConf(object):
 
         Prefix is looked for in the following locations (in this order):
           1) command-line option, i.e., self.opt.flprefix; if None,
-          2) self.fo_main.flprefix; if self.fo_main is None,
+          2) self.file_main.flprefix; if self.file_main is None,
           3) tries to open the main configuration file
         """
         if not _flag_skip_opt and self.opt.flprefix is not None:
             return self.opt.flprefix
-        if self.fo_main is not None:
-            return self.fo_main.flprefix
-        file_ = self.get_fo_main()
+        if self.file_main is not None:
+            return self.file_main.flprefix
+        file_ = self.get_file_main()
         return file_.flprefix
 
     def get_pfant_output_filepath(self, type_="norm"):
@@ -268,20 +267,20 @@ class ExeConf(object):
 
     def create_data_files(self):
         """
-        Creates files for all self-attributes starting with prefix "fo_"
+        Creates files for all self-attributes starting with prefix "file_"
 
         Example:
-          Consider the attribute fo_main:
-            If self.fo_main is None:
+          Consider the attribute file_main:
+            If self.file_main is None:
               - File specified by self.fn_main must exist.
             else:
               - File of random name (e.g., main_23498.dat) will be generated
               - self.fn_main will be overwritten
 
-        Now this example extends to fo_* attributes.
+        Now this example extends to file_* attributes.
         """
         for attr_name in dir(self):
-            if attr_name[0:3] == "fo_":
+            if attr_name.startswith("file_"):
                 obj = self.__getattribute__(attr_name)
 
                 if obj is not None:
@@ -291,7 +290,7 @@ class ExeConf(object):
                     # Saves file
                     obj.save_as(new_fn)
                     # Overwrites config option
-                    self.opt.__setattr__("fn_"+attr_name[3:], new_fn)
+                    self.opt.__setattr__("fn_"+attr_name[5:], new_fn)
 
     def prepare_filenames_for_combo(self, sequence):
         """
@@ -314,14 +313,14 @@ class ExeConf(object):
             # ** hydro2 -> pfant
             # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
             # ** if it was "thalpha" it will be something like "session123456/thalpha"
-            if not self.fo_hmap:
+            if not self.file_hmap:
                 # if self doesn't have a Hmap object, will load from file
-                o = self.fo_hmap = FileHmap()
+                o = self.file_hmap = FileHmap()
                 fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else \
                  FileHmap.default_filename
                 o.load(fn)
             else:
-                o = self.fo_hmap
+                o = self.file_hmap
             for row in o.rows:
                 # directory/filename is put between single quotes.
                 #

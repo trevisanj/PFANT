@@ -228,7 +228,6 @@ module reader_main
   use logging
   use dimensions
   use reader_dissoc
-  use config
   implicit none
 
   !> Flag indicating whether read_main() has already been called.
@@ -280,9 +279,10 @@ contains
   !> This routine is used by hydro2, innewmarcs, nulbad. None of these care about dissoc
   !> or filetoh variables.
 
-  subroutine assure_read_main()
+  subroutine assure_read_main(path_to_file)
+    character(len=*), intent(in) :: path_to_file
     if (.not. flag_read_main) then
-      call read_main(config_fn_main, flag_care_about_dissoc=.false., &
+      call read_main(path_to_file, flag_care_about_dissoc=.false., &
        flag_read_filetoh=.false.)
     end if
   end
@@ -664,9 +664,6 @@ contains
       write(lll,*) 'abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
       call pfant_halt(lll)
     end if
-    print *, 'main_asalog', main_asalog
-    print *, 'main_afstar', main_afstar
-
 
     ! ready to copy (& convert) variables to their counterparts
     modeles_ntot    = r%ntot     ! integer(4)-to-integer(?)
@@ -788,7 +785,6 @@ end
 module reader_filetoh
   use dimensions
   use reader_modeles
-  use config
   use reader_hmap
   implicit none
 
@@ -850,7 +846,7 @@ contains
     i = 0
 
     do i_file = 1, hmap_n
-      fn_now = hmap_rows(i_file)%fn
+      fn_now = trim(hmap_rows(i_file)%fn)
       clam = hmap_rows(i_file)%clam
 
       must_exist = .false.
@@ -1278,7 +1274,6 @@ module reader_gridsmap
   use reader_modeles
   use qsort
   use logging
-  use config
   implicit none
 
   ! Variables related to the reference models
@@ -1299,7 +1294,8 @@ contains
   !> listing the files in a directory.
   !>
 
-  subroutine read_gridsmap()
+  subroutine read_gridsmap(path_to_file)
+    character(len=*), intent(in) :: path_to_file
     character*64 :: t_fn0
     character(len=:), allocatable :: t_fn
     integer, parameter :: UNIT_ = 199
@@ -1308,7 +1304,7 @@ contains
     real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
     integer :: order(MAX_GRIDSMAP_NUM_FILES), i
 
-    open(unit=UNIT_,file=config_fn_gridslist, status='old')
+    open(unit=UNIT_,file=path_to_file, status='old')
 
     gridsmap_num_files = 0
     do while (.true.)

@@ -28,8 +28,7 @@ module dimensions
 
   !> amount to stretch calculation interval (both to the left and to the right)
   !>
-  !> @todo EC: use 20 only close to hydrogen lines; in other places it could be +-5 only
-  real*8, parameter :: LAMBDA_STRETCH = 20.
+  real*8, parameter :: LAMBDA_STRETCH = 5.
   !> assumed width of a hydrogen line
   real*8, parameter :: H_LINE_WIDTH = 35.
 

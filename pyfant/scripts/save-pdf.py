@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    dd = glob.glob(execonf.session_prefix+"*")
+    dd = glob.glob(conf.session_prefix+"*")
     dd.sort()
 
     v = VisSpectrum()

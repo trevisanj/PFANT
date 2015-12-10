@@ -10,25 +10,26 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "write_lf", "slugify", "adjust_atomic_symbol", "str2bool", "bool2str",
  "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
- "random_name", "format_BLB"
+ "random_name", "format_BLB", "seconds2str", "SignalProxy"
 ]
 import os.path
-#import glob
 import random
-#from threading import Lock
 import logging
 import sys
 from matplotlib import rc
-#from .errors import *
 import re
 from argparse import *
+from PyQt4.QtCore import *
+import time
+from threading import Lock
+
 # Logger for internal use
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
 
 # #################################################################################################
-# I/O routines
+# # I/O routines
 
 def str_vector(f):
     """Reads next line of file and makes it a vector of strings
@@ -132,7 +133,7 @@ def slugify(value, flagLower=True):
 
 
 # #################################################################################################
-# Conversion routines
+# # Conversion routines
 
 def adjust_atomic_symbol(x):
     """Makes sure atomic symbol is right-aligned and upper case (PFANT convention)."""
@@ -179,8 +180,19 @@ def ordinal_suffix(i):
     return 'st' if i == 1 else 'nd' if i == 2 else 'rd' if i == 3 else 'th'
 
 
+def seconds2str(seconds):
+    """Returns string such as 1h 05m 55s."""
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    if h >= 1:
+        return "%dh %02dm %02ds" % (h, m, s)
+    elif m >= 1:
+        return "%02dm %02ds" % (m, s)
+    else:
+        return "%02ds" % s
+
 # #################################################################################################
-# Logging routines
+# # Logging routines
 
 def add_file_handler(logger, logFilename=None):
   """Adds file handler to logger."""
@@ -201,6 +213,9 @@ class LogTwo(object):
   def write(self, message):
     self.terminal.write(message)
     self.log.write(message)
+
+  def close(self):
+      self.log.close()
 
 
 class SmartFormatter(RawDescriptionHelpFormatter):
@@ -242,7 +257,7 @@ def log_noisy(logger, msg):
 
 
 # #################################################################################################
-# Text interface routines - routines that are useful for building a text interface
+# # Text interface routines - routines that are useful for building a text interface
 
 def fmt_ascii_h1(s):
     """Returns string enclosed in an ASCII frame, with \n line separators. Does not end in \n."""
@@ -361,7 +376,7 @@ def random_name():
 
 
 # #################################################################################################
-# Matplotlib-related routines
+# # Matplotlib-related routines
 
 def format_BLB():
     """Sets some formatting options in Matplotlib."""
@@ -369,4 +384,170 @@ def format_BLB():
     rc('xtick', labelsize=14)
     rc('ytick', labelsize=14)
     #rc('text', usetex=True)
+
+
+
+# #################################################################################################
+# # PyQt-related routines
+
+class _ThreadsafeTimer(QObject):
+    """
+    Thread-safe replacement for QTimer.
+
+    Original author: Luke Campagnola -- pyqtgraph package
+    """
+
+    timeout = pyqtSignal()
+    sigTimerStopRequested = pyqtSignal()
+    sigTimerStartRequested = pyqtSignal(object)
+
+    def __init__(self):
+        QObject.__init__(self)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timerFinished)
+        self.timer.moveToThread(QCoreApplication.instance().thread())
+        self.moveToThread(QCoreApplication.instance().thread())
+        self.sigTimerStopRequested.connect(self.stop, Qt.QueuedConnection)
+        self.sigTimerStartRequested.connect(self.start, Qt.QueuedConnection)
+
+
+    def start(self, timeout):
+        isGuiThread = QThread.currentThread() == QCoreApplication.instance().thread()
+        if isGuiThread:
+            #print "start timer", self, "from gui thread"
+            self.timer.start(timeout)
+        else:
+            #print "start timer", self, "from remote thread"
+            self.sigTimerStartRequested.emit(timeout)
+
+    def stop(self):
+        isGuiThread = QThread.currentThread() == QCoreApplication.instance().thread()
+        if isGuiThread:
+            #print "stop timer", self, "from gui thread"
+            self.timer.stop()
+        else:
+            #print "stop timer", self, "from remote thread"
+            self.sigTimerStopRequested.emit()
+
+    def timerFinished(self):
+        self.timeout.emit()
+
+
+
+class SignalProxy(QObject):
+    """Object which collects rapid-fire signals and condenses them
+    into a single signal or a rate-limited stream of signals.
+    Used, for example, to prevent a SpinBox from generating multiple
+    signals when the mouse wheel is rolled over it.
+
+    Emits sigDelayed after input signals have stopped for a certain period of time.
+
+    Note: *queued* connection is made to slot.
+
+    Original author: Luke Campagnola -- pyqtgraph package
+    """
+
+    __sigDelayed = pyqtSignal(object)
+
+    def __init__(self, signals, delay=0.3, rateLimit=0, slot=None):
+        """Initialization arguments:
+        signals - a list of bound signals or pyqtSignal instance
+        delay - Time (in seconds) to wait for signals to stop before emitting (default 0.3s)
+        slot - Optional function to connect sigDelayed to.
+        rateLimit - (signals/sec) if greater than 0, this allows signals to stream out at a
+                    steady rate while they are being received.
+        """
+
+        QObject.__init__(self)
+        for signal in signals:
+            self.__connect_signal(signal)
+        self.__signals = signals
+        self.__delay = delay
+        self.__rateLimit = rateLimit
+        self.__args = None
+        self.__timer = _ThreadsafeTimer()
+        self.__timer.timeout.connect(self.__flush)
+        self.__disconnecting = False
+        self.__slot = slot
+        self.__lastFlushTime = None
+        self.__lock = Lock()
+        # State: connected/disconnected
+        self.__connected = True
+        if slot is not None:
+            self.__sigDelayed.connect(slot, Qt.QueuedConnection)
+
+    def add_signal(self, signal):
+        """Adds "input" signal to connected signals.
+        Internally connects the signal to a control slot."""
+        self.__signals.append(signal)
+        if self.__connected:
+            # Connects signal if the current state is "connected"
+            self.__connect_signal(signal)
+
+    def connect_all(self):
+        """[Re-]connects all signals and slots.
+
+        If already in "connected" state, ignores the call.
+        """
+        if self.__connected:
+            return  # assert not self.__connected, "connect_all() already in \"connected\" state"
+        with self.__lock:
+            for signal in self.__signals:
+                self.__connect_signal(signal)
+            if self.__slot is not None:
+                self.__sigDelayed.connect(self.__slot, Qt.QueuedConnection)
+            self.__connected = True
+
+    def disconnect_all(self):
+        """Disconnects all signals and slots.
+
+        If already in "disconnected" state, ignores the call.
+        """
+        if not self.__connected:
+            return  # assert self.__connected, "disconnect_all() already in \"disconnected\" state"
+        self.__disconnecting = True
+        try:
+            for signal in self.__signals:
+                signal.disconnect(self.__signalReceived)
+            if self.__slot is not None:
+                self.__sigDelayed.disconnect(self.__slot)
+            self.__connected = False
+        finally:
+            self.__disconnecting = False
+
+    def __signalReceived(self, *args):
+        """Received signal. Cancel previous timer and store args to be forwarded later."""
+        if self.__disconnecting:
+            return
+        with self.__lock:
+            self.__args = args
+            if self.__rateLimit == 0:
+                self.__timer.stop()
+                self.__timer.start((self.__delay * 1000) + 1)
+            else:
+                now = time.time()
+                if self.__lastFlushTime is None:
+                    leakTime = 0
+                else:
+                    lastFlush = self.__lastFlushTime
+                    leakTime = max(0, (lastFlush + (1.0 / self.__rateLimit)) - now)
+
+                self.__timer.stop()
+                # Note: original was min() below.
+                timeout = (max(leakTime, self.__delay) * 1000) + 1
+                self.__timer.start(timeout)
+
+    def __flush(self):
+        """If there is a signal queued up, send it now."""
+        if self.__args is None or self.__disconnecting:
+            return False
+        #self.emit(self.signal, *self.args)
+        self.__sigDelayed.emit(self.__args)
+        self.__args = None
+        self.__timer.stop()
+        self.__lastFlushTime = time.time()
+        return True
+
+    def __connect_signal(self, signal):
+        signal.connect(self.__signalReceived)
 

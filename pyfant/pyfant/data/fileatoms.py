@@ -46,7 +46,6 @@ class Atom(PyfantObject):
     def abondr(self):
         return np.array([x.abondr for x in self.lines])
 
-
     def __init__(self):
         AttrsPart.__init__(self)
         self.lines = []  # list of AtomicLine
@@ -61,6 +60,12 @@ class Atom(PyfantObject):
 
     def __repr__(self):
         return "'%s%s'" % (self.elem, self.ioni)
+
+    def _cut(self, llzero, llfin):
+        """Keeps only the lines with their llzero <= lambda_ <= llfin."""
+        for i in reversed(xrange(len(self))):
+            if not (llzero <= self.lines[i].lambda_ <= llfin):
+                del self.lines[i]
 
 
 class AtomicLine(AttrsPart):
@@ -90,7 +95,12 @@ class FileAtoms(DataFile):
     """
 
     default_filename = "atomgrade.dat"
-    attrs = ["atoms"]
+    attrs = ["atoms", "num_lines"]
+
+    @property
+    def num_lines(self):
+        ret = sum(map(len, self.atoms))
+        return ret
 
     def __len__(self):
         """Length of FileAtoms object is defined as number of elements."""
@@ -102,6 +112,14 @@ class FileAtoms(DataFile):
         # list of Atom objects
         self.atoms = []
 
+
+    def cut(self, llzero, llfin):
+        """Keeps only the lines with their llzero <= lambda_ <= llfin."""
+        for i in reversed(xrange(len(self))):
+            atom = self.atoms[i]
+            atom._cut(llzero, llfin)
+            if len(atom) == 0:
+                del self.atoms[i]
 
     def _do_load(self, filename):
         """Clears internal lists and loads from file."""
@@ -138,7 +156,7 @@ class FileAtoms(DataFile):
                         break
             except Exception as e:
                 raise type(e)(("Error around %d%s row of file '%s'" %
-                    (r+1, ordinal_suffix(r+1), filename))+": "+str(e)), None, sys.exc_info()[2]
+                               (r+1, ordinal_suffix(r+1), filename))+": "+str(e)), None, sys.exc_info()[2]
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:
@@ -152,6 +170,6 @@ class FileAtoms(DataFile):
                     # file. In Fortran it is read with '*' format, so it understands as
                     # long as there is a space between numbers.
                     write_lf(h, "%.7g %.7g %.7g %.7g %.7g %.7g %.7g %1d" % \
-                        (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))
+                             (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))
                     # old way write_lf(h, "%8.3f %.7g %8.3f %8.3f %8.3f %6.1f %3.1f %1d" % \
                     #     (a.kiex, a.algf, a.ch, a.gr, a.ge, a.zinf, a.abondr, finrai))

@@ -674,8 +674,9 @@ contains
           km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is set apart.
 
           num_lambdas = km_f_ln(j_set+1, i_mol)-km_f_ln(j_set, i_mol)
-          write(lll, *) 'number of SELECTED lambdas for transition ', j_set, ': ', num_lambdas
-          call log_debug(lll)
+          
+          !write(lll, *) 'number of SELECTED lambdas for transition ', j_set, ': ', num_lambdas
+          !call log_debug(lll)
 
 
           j_set = j_set+1
@@ -1170,7 +1171,7 @@ contains
     call turbul()
     call log_debug('turbul() OK!')
     call cpu_time(finish)
-    print '("TURBUL() Time = ",f6.3," seconds.")',finish-start
+    call log_debug("TURBUL() Time = "//real42str(finish-start, 3)//" seconds.")
 
     ! -- III --
     ! Calcul de quant  ne dependant que du metal et du modele
@@ -1178,7 +1179,7 @@ contains
     call cpu_time(start)
     call popul()
     call cpu_time(finish)
-    print '("POPUL() Time = ",f6.3," seconds.")',finish-start
+    call log_debug("POPUL() Time = "//real42str(finish-start, 3)//" seconds.")
 
     ! -- IV --
     ! Calcul des quantites ne dependant que du
@@ -1188,7 +1189,7 @@ contains
     if (.not. config_no_molecules) then
       call sat4()
       call cpu_time(finish)
-      print '("SAT4() Time = ",f6.3," seconds.")',finish-start
+      call log_debug("SAT4() Time = "//real42str(finish-start, 3)//" seconds.")
     end if
 
 
@@ -1272,65 +1273,61 @@ contains
 
       ! ????????????????
       call cpu_time(start)
-
       call bk()
-
       call cpu_time(finish)
-      print '("BK() Time = ",f6.3," seconds.")',finish-start
+      call log_debug("BK() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
       ! hydrogen lines
-      call cpu_time(start)
-
-      call calc_tauh()
-
-      call cpu_time(finish)
-      print '("CALC_TAUH() Time = ",f6.3," seconds.")',finish-start
-
-      ! -- V --
-      ! Quantites dependant de la raie et du modele
-      call cpu_time(start)
-
-      call filter_atoms(m_lzero, m_lfin)
-
-      call cpu_time(finish)
-      print '("FILTER_ATOMS() Time = ",f6.3," seconds.")',finish-start
-
-
-      if(.not. config_no_atoms .and. atoms_f_nblend .gt. 0) then
+      if (.not. config_no_h) then
         call cpu_time(start)
-
-        call popadelh()
-
+        call calc_tauh()
         call cpu_time(finish)
-        print '("POPADELH() Time = ",f6.3," seconds.")',finish-start
+        call log_debug("CALC_TAUH() Time = "//real42str(finish-start, 3)//" seconds.")
+      end if
+
+      if (.not. config_no_atoms) then
+        ! -- V --
+        ! Quantites dependant de la raie et du modele
+        call cpu_time(start)
+        call filter_atoms(m_lzero, m_lfin)
+        call cpu_time(finish)
+        call log_debug("FILTER_ATOMS() Time = "//real42str(finish-start, 3)//" seconds.")
+
+        if (atoms_f_nblend .gt. 0) then
+          call cpu_time(start)
+
+          call popadelh()
+
+          call cpu_time(finish)
+          call log_debug("POPADELH() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
-        ! -- VI --
-        ! Calcul du coefficient d absorption selectif et calcul du spectre
-        do k = 1, atoms_f_nblend
-          m_gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
-          m_ecart(k) = atoms_f_lambda(k)-m_lzero+main_pas
-        end do
+          ! -- VI --
+          ! Calcul du coefficient d absorption selectif et calcul du spectre
+          do k = 1, atoms_f_nblend
+            m_gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
+            m_ecart(k) = atoms_f_lambda(k)-m_lzero+main_pas
+          end do
+        end if
       end if
 
       if (.not. config_no_molecules) then
         call cpu_time(start)
         call filter_molecules(m_lzero, m_lfin)
         call cpu_time(finish)
-        print '("FILTER_MOLECULES() Time = ",f6.3," seconds.")',finish-start
+        call log_debug("FILTER_MOLECULES() Time = "//real42str(finish-start, 3)//" seconds.")
 
         call cpu_time(start)
         call kapmol_()
         call cpu_time(finish)
-        print '("KAPMOL_() Time = ",f6.3," seconds.")',finish-start
+        call log_debug("KAPMOL_() Time = "//real42str(finish-start, 3)//" seconds.")
       end if
 
       call cpu_time(start)
       call selekfh()
       call cpu_time(finish)
-      print '("SELEKFH() Time = ",f6.3," seconds.")',finish-start
-
+      call log_debug("SELEKFH() Time = "//real42str(finish-start, 3)//" seconds.")
 
       !=====
       ! Saving...
@@ -1363,7 +1360,7 @@ contains
       call write_spec_item(UNIT_NORM, fn)             ! normalized
 
       call cpu_time(finish)
-      print '("SAVING Time = ",f6.3," seconds.")',finish-start
+      call log_debug("SAVING Time = "//real42str(finish-start, 3)//" seconds.")
 
       !=====
       ! Preparing for next iteration
@@ -1819,7 +1816,7 @@ integer QWE
       !  !call log_debug(lll)
       !end if
 
-      if ((d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
+      if (config_no_h .or. (d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
         selekfh_fl(d) = flin1(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
       else
@@ -2166,8 +2163,8 @@ program pfant
   use readers
   use pfant_x
   use misc
-
   implicit none
+  integer i
 
   !=====
   ! Startup
@@ -2195,16 +2192,22 @@ program pfant
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
   call read_abonds(config_fn_abonds)
-  call read_atoms(config_fn_atoms)
-  call read_hmap(config_fn_hmap)
-
-  call read_filetoh(x_llzero, x_llfin)
-  if (.not. config_no_molecules) then
-    call read_molecules(config_fn_molecules)
+  if (.not. config_no_atoms) then
+    call read_atoms(config_fn_atoms)
+    if (config_zinf .ne. -1) then
+      do i = 1, atoms_nblend
+        atoms_zinf(i) = config_zinf
+      end do
+    end if
   end if
+  if (.not. config_no_h) then
+    call read_hmap(config_fn_hmap)
+    call read_filetoh(x_llzero, x_llfin)
+  end if
+  if (.not. config_no_molecules) call read_molecules(config_fn_molecules)
 
   if (abs(modeles_asalog-main_afstar) > 0.01) then
-    call log_warning('asalog from model ('//real82str(modeles_asalog, 2)//&
+    call pfant_halt('asalog from model ('//real82str(modeles_asalog, 2)//&
      ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
   end if
 

@@ -1009,11 +1009,10 @@ contains
     real*8, dimension(13) :: fp, cc, bb, tt
     real*8, dimension(26) :: bbb
 
-    real*8 epsi, tolim
+    real*8 tolim
     integer ipoint, l, m, n
 
     ! Calcul de to_
-    epsi=0.05
     to_(0) = 0.
     to_(1) = nh(1)*(kap(1)-(kap(2)-kap(1))/(nh(2)-nh(1))*nh(1)/2.)
     call integra(nh, kap, to_, ntot, to_(1))

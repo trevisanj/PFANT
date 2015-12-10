@@ -31,7 +31,7 @@ contains
 
      x_tirb = config_tirb
     if (config_inum .lt. 1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       if (main_inum .lt. 1) then
         ! note: here this consistency check is considered an assertion, because it should
         ! be validated upon file reading.
@@ -41,22 +41,22 @@ contains
       call parse_aux_log_assignment('x_inum', int2str(x_inum))
     end if
     if (config_tirb .eq. '?') then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_tirb = main_titrav
       call parse_aux_log_assignment('x_tirb', trim(x_tirb))
     end if
     if (config_teff .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
       call parse_aux_log_assignment('x_teff', real42str(x_teff, 1))
     end if
     if (config_glog .eq. -1)  then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_glog = real(main_glog)
       call parse_aux_log_assignment('x_glog', real42str(x_glog, 3))
     end if
     if (config_asalog .eq. -1) then
-      call assure_read_main()
+      call assure_read_main(config_fn_main)
       x_asalog = real(main_asalog)
       call parse_aux_log_assignment('x_asalog', real42str(x_asalog, 3))
     end if
@@ -694,7 +694,7 @@ program innewmarcs
 
   execonf_name = 'inneWmarcs'
   call config_init()
-  call read_gridsmap()
+  call read_gridsmap(config_fn_gridsmap)
   call innewmarcs_init_x()
   call innewmarcs_calc_()
 end

@@ -28,6 +28,6 @@ if __name__ == "__main__":
   for name in names:
     x = args.__getattribute__(name)
     if x is not None:
-      c.execonf.opt.__setattr__(name, x)
+      c.conf.opt.__setattr__(name, x)
 
   c.run()

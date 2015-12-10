@@ -13,7 +13,7 @@ import time
 # ##################################################################################################
 # Terminal-based interface
 
-def run_parallel(rr, max_simultaneous=4, flag_console=True):
+def run_parallel(rr, max_simultaneous=None, flag_console=True):
     """
     Arguments:
       rr -- list of Combo
@@ -21,7 +21,8 @@ def run_parallel(rr, max_simultaneous=4, flag_console=True):
     """
     # Adds to pool
     tm = ThreadManager()
-    tm.max_threads = max_simultaneous
+    if max_simultaneous is not None:
+        tm.max_threads = max_simultaneous
     tm.start()
 
     for p in rr:
@@ -56,4 +57,3 @@ def show_menu(obj):
     if 1 <= opt <= len(oo):
         vis = classes[opt-1]()
         vis.use(obj)
-

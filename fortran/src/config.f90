@@ -483,7 +483,8 @@ module config
              config_logging_dump   = .false., & !< option --logging_dump
              config_explain        = .false., & !< option --explain
              config_no_molecules   = .false., & !< option --no_molecules
-             config_no_atoms       = .false.    !< option --no_atoms
+             config_no_atoms       = .false., & !< option --no_atoms
+             config_no_h           = .false.    !< option --no_ah
 
   !---
   ! innewmarcs, hydro2, pfant
@@ -505,8 +506,8 @@ module config
   integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
   character*20 :: config_open_status = 'unknown' !< option: --open_status
   character*64 :: &
-   config_fn_moddat = 'modeles.dat', &     !< option: --fn_moddat
-   config_fn_gridslist = 'gridsmap.dat' !< option: --fn_gridslist
+   config_fn_moddat = 'modeles.dat', &      !< option: --fn_moddat
+   config_fn_gridsmap = 'gridsmap.dat'      !<
   character*25 :: config_modcode = 'NoName' !< option: --modcode
   !> option: --tirb
   character(LEN_TIRB) :: config_tirb = '?'
@@ -578,8 +579,13 @@ module config
    config_pat = -1                   !< option: --pat
   character*64 :: &
     config_fn_flux = '?', &         !< option: --fn_flux
-    config_fn_cv = '?'                !< option: --fn_cv
+    config_fn_cv = '?'              !< option: --fn_cv
+
+
+  real*8 :: config_zinf = -1        !< option: --zinf
   !===== end of command-line variables declarations
+
+
 
   !> Unit to write to "explain" file (file containing debugging information)
   integer, parameter :: UNIT_EXPLAIN = 145
@@ -762,6 +768,8 @@ contains
      '"Model name"')
     call add_option('i', 'tirb',' ', .true., 'string up to 15 characters', config_tirb, &
      '"Titre"')
+    call add_option('hp', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
+     'input file name - file containing list of MARCS models file names')
 
     !
     ! hydro2-only
@@ -787,17 +795,6 @@ contains
 
     call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph, 2), &
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
-
-    call add_option('h', 'na', ' ', .true., 'integer', '(no default)', &
-      'lower level')
-    call add_option('h', 'nb', ' ', .true., 'integer', '(no default)', &
-      'upper level')
-    call add_option('h', 'clam', ' ', .true., 'real', '(no default)', &
-      'Central wavelength')
-    call add_option('h', 'kiex', ' ', .true., 'real', '(no default)', &
-      'excitation potential for the lower level of a given transition')
-    call add_option('h', 'c1', ' ', .true., 'real', '(no default)', &
-      'C1 ?doc?')
 
     !
     ! pfant-only
@@ -827,9 +824,15 @@ contains
      IND//'<flprefix>.cont: continuum<br>'//&
      IND//'<flprefix>.norm: normalized spectrum')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
-     'If set, completely skips the calculation of molecular lines')
+     'If set, skips the calculation of molecular lines')
     call add_option('p', 'no_atoms',' ', .true., 'T/F', logical2str(config_no_atoms), &
-     'If set, completely skips the calculation of atomic lines')
+     'If set, skips the calculation of atomic lines')
+    call add_option('p', 'no_h',' ', .true., 'T/F', logical2str(config_no_h), &
+     'If set, skips the calculation of hydrogen lines')
+    call add_option('p', 'zinf', ' ', .true., 'real value', '(zinf per-line in dfile:atoms)', &
+     'distance from center of line to consider in atomic line calculation.<br>'//&
+     IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
+     IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
 
     !
     ! nulbad-only
@@ -849,6 +852,10 @@ contains
       'Apply convolution?')
     call add_option('n', 'fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
       'Full-width-half-maximum of Gaussian function')
+
+
+    !
+    ! 
   end
 
 
@@ -972,12 +979,11 @@ contains
       case ('fn_hmap')
         call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
       case ('llzero')
-        config_llzero = parse_aux_str2real4(opt, o_arg)
+        config_llzero = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_llzero', real82str(config_llzero, 1))
       case ('llfin')
-        config_llfin = parse_aux_str2real4(opt, o_arg)
+        config_llfin = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_llfin', real82str(config_llfin, 1))
-
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)
@@ -1011,6 +1017,12 @@ contains
       case ('no_atoms')
         config_no_atoms = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_no_atoms', logical2str(config_no_atoms))
+      case ('no_h')
+        config_no_h = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_no_h', logical2str(config_no_h))
+      case ('zinf')
+        config_zinf = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_zinf', real82str(config_zinf, 1))
 
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)
@@ -1031,6 +1043,8 @@ contains
       case ('norm')
         config_norm = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_norm', logical2str(config_norm))
+      case ('fn_gridsmap')
+        call parse_aux_assign_fn(o_arg, config_fn_gridsmap, 'config_fn_gridsmap')
 
       case default
         res = HANDLER_DONT_CARE
