@@ -2,8 +2,7 @@
 
 ## Welcome
 
-PFANT is a spectral synthesis software written in Fortran
-(and now with a Python layer) for use in Astrophysics.
+PFANT is a spectral synthesis software written in Fortran for use in Astrophysics.
 
 Similar softwares include TurboSpectrum and MOOG.
 
@@ -15,65 +14,33 @@ timeline of the software is summarized as follows.
 
 ```
  |
- | 1967 - FANTÔME (French for "ghost"/"spectrum")
- |        first version developed by Spite
- | 1982 - FANTOMOL
- |        Barbuy included the computation of molecular lines and
- |        dissociative equilibrium
- | 2003 - PFANT ("P" as in Perrin, Marie-Noel)
- |        large wavelength coverage and inclusion or hydrogen lines
- | 2015 - Conversion of source code to to Fortran 90 format, simplification of 
- !        the user interface and addition of a Python layer 
+ | 1967 -- FANTÔME -- by F Spite et al.
+ | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
+ |         dissociation equilibrium.
+ | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
+ |         inclusion or hydrogen lines.
+ | 2015 -- J Trevisan: conversion of source code to Fortran 2003, Python layer.
 t|
  V
 ```
 
-### Overview of the project directory
-
-Here is an incomplete listing of the directory tree.
-
-```
-PFANT
-├── fortran
-│   ├── bin                      PFANT executable binaries
-│   └── src                      Fortran source code directory
-├── pyfant                       PyFANT root
-│   ├── scripts                  command-line tools
-│   └── pyfant                   Python package
-└── data                         bonus data!
-    ├── arcturus                 Arcturus data files
-    └── sun                      Sun data files
-```
-
-
 ## Installation
+
+PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
 To use PFANT, you will need to:
 
 1. Install the software pre-requisites
-2. Download the source code
+2. Clone the github repository or download [this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
 3. Compile the Fortran source code
 4. Add the Fortran binaries directory to your PATH system variable
 5. Add the pyfant directory to your PYTHONPATH system variable (optional)
 
-Perhaps you can skip step 1 and install requirements on demand as you get
-errors trying to follow this tutorial.
+### Installing required software
 
-### Downloading the source code
+Depending on your OS platform, you may have some of the following softwares installed already.
 
-To get the files, clone the repository from github (this will create a directory named "PFANT")
-
-```shell
-git clone https://github.com/trevisanj/PFANT
-```
-
-Alternatively, you can download
-[this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
-
-
-### Required software
-
-In order to run all the features, here is a list of what probably needs to be installed on your system:
+The install recommendations are based on successful attempts.
 
 #### Applications
 
@@ -112,6 +79,32 @@ to install MinGW (http://sourceforge.net/projects/mingw/files/).
 After installed, MinGW has its own package manager, named
 "MinGW Installation Manager". There, you will need to install at least the following packages:
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
+
+
+### To clone the github repository
+
+The following command will create a directory named "PFANT"
+
+```shell
+git clone https://github.com/trevisanj/PFANT
+```
+
+### Overview of the project directory
+
+Here is an incomplete listing of the directory tree.
+
+```
+PFANT
+├── fortran
+│   ├── bin                      Fortran binaries
+│   └── src                      Fortran source code
+├── pyfant                       
+│   ├── scripts                  Python command-line tools
+│   └── pyfant                   Python package
+└── data                         some data
+    ├── arcturus                 Arcturus: only main.dat, abonds.dat, dissoc.dat
+    └── sun                      Sun: complete set to run
+```
 
 
 ### Compiling the Fortran source code.
