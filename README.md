@@ -4,7 +4,7 @@
 
 PFANT is a spectral synthesis software written in Fortran for use in Astrophysics.
 
-Similar softwares include TurboSpectrum and MOOG.
+ANalogue softwares include TurboSpectrum and MOOG.
 
 
 ### History
