@@ -9,9 +9,6 @@ Similar softwares include TurboSpectrum and MOOG.
 
 ### History
 
-Since its start in 1967, the code has been through several enhancements. The
-timeline of the software is summarized as follows.
-
 ```
  |
  | 1967 -- FANTÔME -- by F Spite et al.
