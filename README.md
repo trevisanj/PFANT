@@ -30,8 +30,8 @@ To use PFANT, you will need to:
 1. Install the software pre-requisites
 2. Clone the github repository or download [this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
 3. Compile the Fortran source code
-4. Add the Fortran binaries directory to your PATH system variable
-5. Add the pyfant directory to your PYTHONPATH system variable (optional)
+4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH
+5. Add `PFANT/pyfant` to your PYTHONPATH
 
 ### Installing required software
 
@@ -86,9 +86,9 @@ The following command will create a directory named "PFANT"
 git clone https://github.com/trevisanj/PFANT
 ```
 
-### Overview of the project directory
+### Overview of the PFANT directory tree
 
-Here is an incomplete listing of the directory tree.
+Here is an incomplete listing:
 
 ```
 PFANT
@@ -102,7 +102,6 @@ PFANT
     ├── arcturus                 Arcturus: only main.dat, abonds.dat, dissoc.dat
     └── sun                      Sun: complete set to run
 ```
-
 
 ### Compiling the Fortran source code.
 
@@ -118,46 +117,40 @@ make_windows.bat  # Windows
 
 The executable binaries are found in PFANT/fortran/bin
 
-
 ### Setting the paths
 
-Add the following directory to your system path:
+Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
-```
-PFANT/fortran/bin      # Fortran executable binaries
-PFANT/pyfant/scripts   # *.py scripts
-```
+Add `PFANT/pyfant` to your PYTHONPATH.
 
-, where "PFANT" will actually be somehing like `/home/user/.../PFANT`.
 
-If you are interested in using the `pyfant` Python package, add the following
-directory to your PYTHONPATH environment variable:
+#### The script `PFANT/add-paths.py`
 
-```
-PFANT/pyfant
-```
-
-#### The script add-paths.py
-
-If you run on Linux, the script PFANT/add-paths.py may be used to attempt to automatically
-apply the system settings described above.
+On Linux, you may try `PFANT/add-paths.py` to automatically apply the path settings to you login script:
 
 ```shell
-./add-paths.py --tcsh  # if you use the tcsh shell
-./add-paths.py --bash  # if you use the bash shell
+./add-paths.py --tcsh  # tcsh shell only
+./add-paths.py --bash  # bash shell only
 ```
 
 ## Quick start
 
 This section will take you through the steps to calculate a synthetic spectrum
-from the Sun, and visualize some input and output data files.
+from the Sun, then do some visualizations.
 
 
-### Set up a directory to run the spectral synthesis
+### Create a new a directory to run the spectral synthesis
 
 1. Create a new directory, e.g., `/home/user/sun-synthesis`
 2. Enter this directory
-3. Copy the contents of PFANT/data/sun into this directory
+3. copy Sun-specific data files and link to other star-general data files
+
+```shell
+mkdir sun-synthesis
+cd sun-synthesis
+cp ...../PFANT/data/sun/* .
+link-to-data.py common  # will create several links
+```
 
 ### Short description of the Fortran binaries
 
@@ -167,11 +160,8 @@ as described:
 1. `innewmarcs` - creates an interpolated atmospheric model based on NEWMARCS (2005)
     model grids
 2. `hydro2` - calculates the hydrogen lines profiles
-3. `pfant` - spectral synthesis *per se*
+3. `pfant` - spectral synthesis
 4. `nulbad` - convolves the synthetic spectrum with a Gaussian function
-
-There is a diagram of the pipeline further down in this document. 
-
 
 ### Running the Fortran binaries
 
@@ -179,80 +169,48 @@ Here are the commands to be typed in the shell, together with comments on
 the files that will be created by each of them (as configured in the Sun input data files)
 
 ```shell
-innewmarcs # creates modeles.mod (atmospheric model)
-hydro2     # creates a series of th* files (hydrogen lines files)
-pfant      # creates flux.* (spectrum, normalized spectrum, and continuum)
-nulbad     # creates flux.norm.nulbad (convolved spectrum)
+innewmarcs
+hydro2
+pfant
+nulbad
 ```
 
+If everything went OK, you should have all these new files in your directory:
+- `modeles.mod` -- atmospheric model
+- `thalpha` -- hydrogen line profile
+- `flux.norm` -- normalized spectrum
+- `flux.spec` -- spectrum
+- `flux.cont` -- continuum
+- `flux.norm.nulbad` -- normalized spectrum convolved with Gaussian
 
-If everything went OK, you should have all these new files in your directory.
+### Drawing some figures
 
-Now it is time to draw some figures!
-
-### Python command-line tools
-
-The `pyfant` package includes a set of scripts that can be used for several things,
-such as batch/parallel run the Fortran binaries, and visualize data files.
-
-Let's use some of these tools. One thing that we can do is to compare the
-synthetic spectrum before and after the convolution:
+#### Plot synthetic spectrum before and after the convolution:
 
 ```shell
 $ plot-spectra.py --ovl flux.norm flux.norm.nulbad
 ```
 
-Other things to try:
-
+#### Plot interpolated atmospheric model
 ```shell
-plot-mod-record.py modeles.mod      # plots interpolated atmospheric model
-plot-mod-records.py newnewm050.mod  # plots NEWMARCS grid
-plot-filetoh.py thalpha             # plots hydrogen lines
+plot-mod-record.py modeles.mod
 ```
 
-### Command-line help
-
-All Fortran binaries and Python scripts have a `--help` option, for example:
-
+#### 3-D scatterplot NEWMARCS grid (teff, glog, metallicity) 
 ```shell
-pfant --help
-innewmarcs --help
-run4.py --help
+plot-mod-records.py newnewm050.mod
 ```
 
-To learn all the available Python scripts, type
+#### 3-D plot hydrogen line (wavelength, atmospheric layer)
+```shell
+plot-filetoh.py thalpha
+```
+
+#### More tools
 
 ```shell
 pyfant-scripts.py
 ```
-
-This will print something like this:
-
-```
-ated.py .................. ated - ATomic lines file EDitor
-mled.py .................. mled - Molecular Lines EDitor
-plot-filetoh.py .......... Plots hydrogen lines
-plot-innewmarcs-result.py  Plots interpolated atmospheric model curve
-                           (hopefully) in the middle of the curves
-plot-mod-record.py ....... Plots one record of a binary .mod file (e.g.,
-                           modeles.mod, newnewm050.mod)
-plot-mod-records.py ...... Opens several windows to show what is inside a
-                           NEWMARCS grid file.
-plot-spectra.py .......... Plots one or more spectra, either stacked or
-                           overlapped.
-pyfant-scripts.py ........ Lists scripts in PFANT/pyfant/scripts directory.
-run-multi.py ............. Runs pfant for different abondances for each element,
-                           then run nulbad for each pfant result for different
-                           FWHMs.
-run4.py .................. Runs the 4 exes
-save-pdf.py .............. Looks for file "flux.norm" inside directories
-                           session_* and saves one figure per page in a PDF
-                           file.
-vis-console.py ........... Text-based menu application to open and visualize
-                           data files.
-```
-
-
 
 ### Input/output data files
 
