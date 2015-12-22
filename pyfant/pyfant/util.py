@@ -20,9 +20,7 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
       max_simultaneous -- maximum number of simultaneous processes.
     """
     # Adds to pool
-    tm = ThreadManager()
-    if max_simultaneous is not None:
-        tm.max_threads = max_simultaneous
+    tm = ThreadManager(max_threads=max_simultaneous)
     tm.start()
 
     for p in rr:

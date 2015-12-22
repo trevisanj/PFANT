@@ -14,29 +14,37 @@ from threading import Lock
 
 class RunnableStatus(PyfantObject):
     """Data class, stores progress information."""
-
-    def __init__(self, runnable, ikey=None, ikeytot=None):
+    
+    def __init__(self, runnable):
         assert isinstance(runnable, Runnable)
-        self.ikey = ikey
-        self.ikeytot = ikeytot
         self.exe_name = runnable.__class__.__name__.lower()
-        self.is_running = runnable.is_running
-        self.is_finished = runnable.is_finished
-        self.error_message = runnable.error_message
+        self.runnable = runnable
+        self.ikey = None
+        self.ikeytot = None
+        self.flag_kill = False
+        self.returncode = None
 
     def __str__(self):
         l = []
 
         if self.exe_name is not None:
             l.append(self.exe_name)
-        if self.is_finished:
+        if self.runnable.flag_finished:
             l.append("finished")
-            if self.error_message:
-                l.append("*"+self.error_message+"*")
-        elif self.is_finished:
+        elif self.runnable.flag_running:
             l.append("running")
+        elif self.runnable.flag_killed:
+            l.append("killed")
+        if self.runnable.flag_error:
+            l.append("error")
+        if self.runnable.error_message:
+            l.append("*"+str(self.runnable.error_message)+"*")
         if self.ikey is not None:
-            l.append ("%5.1f %% (%d/%d)" % (100.*self.ikey/self.ikeytot, self.ikey, self.ikeytot))
+            l.append("%5.1f %% (%d/%d)" % (100.*self.ikey/self.ikeytot, self.ikey, self.ikeytot))
+        if self.flag_kill:
+            l.append("*kill*")
+        if self.returncode is not None:
+            l.append("returncode=%d" % self.returncode)
         if len(l) > 0:
             return " ".join(l)
         return "?"
@@ -51,41 +59,47 @@ class Runnable(PyfantObject):
     This is a base class for Executable and Combo.
     """
 
+    @property
+    def flag_finished(self):
+        return self._flag_finished
+    @property
+    def flag_running(self):
+        return self._flag_running
+    @property
+    def flag_killed(self):
+        return self._flag_killed
+    @property
+    def flag_error(self):
+        return self._flag_error
+    @property
+    def error_message(self):
+        return self._error_message
+
     def __init__(self):
         self.name = random_name()
+        self.status = RunnableStatus(self)
+        # Is running?
+        self._flag_running = False
+        # Is finished?
+        self._flag_finished = False
+        # Was killed?
+        self._flag_killed = False
+        # Had error?
+        self._flag_error = False
+        # Will contain error message if finished with error
+        self._error_message = ""
+        
+    def get_status(self):
+        return self.status
 
     def run(self):
         raise NotImplementedError()
 
-    def get_status(self):
-        """
-        Returns progress information.
-
-        Draft of a protocol:
-          string:  just human-readable information
-          (ikey, ikeytot)
-          None -- nothing available
-        """
-        return RunnableStatus(self)
-
 
 class Executable(Runnable):
     """
-    Generic class to represent an executable.
+    PFANT executables common ancestor class.
     """
-
-    @property
-    def is_finished(self):
-        with self.__L_running:
-            return self.__is_finished
-    @property
-    def is_running(self):
-        with self.__L_running:
-            return self.__is_running
-    @property
-    def error_message(self):
-        with self.__L_running:
-            return self.__error_message
 
     def __init__(self):
         Runnable.__init__(self)
@@ -101,25 +115,17 @@ class Executable(Runnable):
         self.stdout = None
         # Will receive Python output
         self.logger = None
-        # Lock is necessary because sometimes more than one locked variable
-        # needs to be accessed consistently
-        self.__L_running = Lock()
-        # Is running?
-        self.__is_running = False
-        # Is finished?
-        self.__is_finished = False
-        # Will contain error message if finished with error
-        self.__error_message = ""
-
-    def get_status(self):
-        return RunnableStatus(self)
+        # It is either a blocking _run() or asynchronous open..kill..close
+        self.__lock = Lock()
+        # Registers kill() call. Debugging purpose initially, because the popen's don't seem to exit on demand
+        self.flag_kill = False
 
     def run(self):
         """Runs executable.
 
         Blocking routine. Only returns when executable finishes running.
         """
-        assert not self.__is_running, "Already running"
+        assert not self._flag_running, "Already running"
         self.logger = logging.getLogger("%s%d" % (self.__class__.__name__.lower(), id(self)))
         # this was leaving file open after finished add_file_handler(self.logger, "python.log")
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
@@ -133,62 +139,116 @@ class Executable(Runnable):
         This routine bypasses all the configuration that is done prior to running.
         (Combo.configure() will do the necessary configuration).
         """
-        assert not self.__is_running, "Already running"
+        assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
         self._run()
 
-    # def is_running(self):
+    # def flag_running(self):
     #     if self.popen is None:
     #         return False
     #     self.popen.poll()
     #     return self.popen.returncode is None
 
     def kill(self):
-        assert self.__is_running, "Not running"
-        if self.popen:
-            self.popen.kill()
-        else:
-            self.logger.critical("Called kill() but there is no popen for %s instance" % self.__class__.__name__)
+        assert self._flag_running, "Not running"
+        self.popen.kill()
+        self.status.flag_kill = True
 
     def _run(self):
-        assert not self.__is_finished, "Can only run once!"
-        args = self.conf.get_args()
-        cmd_line = [self.exe_path]+args
+        assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
+        with self.__lock:
+            args = self.conf.get_args()
+            cmd_words = [self.exe_path]+args
 
-        s = "%s command-line:" % (self.__class__.__name__.lower(),)
-        log_noisy(self.logger, s)
-        self.logger.info(" ".join(cmd_line))
-        self.logger.info(X*(len(s)+4))
+            # s = "%s command-line:" % (self.__class__.__name__.lower(),)
+            #log_noisy(self.logger, s)
+            self.logger.info(" ".join(cmd_words))
+            #self.logger.info(X*(len(s)+4))
 
-        self.__is_running = True
-        emsg = ""
-        try:
-            if self.stdout:
-                try:
-                    self.popen = subprocess.Popen(cmd_line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    for line in self.popen.stdout:
-                        self.stdout.write(line)
-                finally:
-                    self.popen.stdout.close()
-                    self.stdout.close()
-            else:
-                self.popen = subprocess.Popen(cmd_line)
-            # blocks execution until finished
-            self.popen.wait()
-            self.popen.poll()
-        except Exception as e:
-            self.logger.critical(fmt_error("Failed to execute command-line"))
-            emsg = e.__class__.__name__+": "+str(e)
-            raise
-        finally:
-            with self.__L_running:
-                # records status
-                self.__error_message = emsg
-                self.__is_finished = True
-                self.__is_running = False
-        log_noisy(self.logger, "%s %s (returncode=%s)" %
-                    (self.__class__.__name__.lower(),
-                     'finished successfully' if self.popen.returncode == 0 else '*failed*',
-                     self.popen.returncode))
+            emsg = ""
+            try:
+                if False and self.stdout:  # TODO disabled PIPE stdout for popen
+                    self.popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                else:
+                    self.popen = subprocess.Popen(cmd_words)
+
+                self._flag_running = True
+
+                if False and self.stdout:  # TODO disabled PIPE stdout for popen
+                    try:
+                        for line in self.popen.stdout:
+                            self.stdout.write(line)
+                    finally:
+                        self.popen.stdout.close()
+                        self.stdout.close()
+
+
+                # blocks execution until finished
+                self.popen.wait()
+                self.popen.poll()
+            except Exception as e:
+                self.popen.poll()
+                # self.logger.critical(fmt_error("Failed to execute command-line (returncode=%s)" % self.popen.returncode))
+                emsg = e.__class__.__name__+": "+str(e)
+                raise
+            finally:
+                self._error_message = emsg
+                if emsg:
+                    self._flag_error = True
+                self._flag_finished = True
+                self._flag_running = False
+                self.status.returncode = self.popen.returncode
+                self.logger.info("%s %s (returncode=%s)%s" %
+                        (self.__class__.__name__.lower(),
+                         'finished successfully' if self.popen.returncode == 0 else '*failed*',
+                         self.popen.returncode,
+                         " *KILL*" if self.status.flag_kill else ""))
+
+#    def _open_popen(self):
+#        with self.__lock:
+#            args = self.conf.get_args()
+#            cmd_words = [self.exe_path]+args
+#
+#            s = "%s command-line:" % (self.__class__.__name__.lower(),)
+#            log_noisy(self.logger, s)
+#            self.logger.info(" ".join(cmd_words))
+#            self.logger.info(X*(len(s)+4))
+#
+#
+#            try:
+#                if self.stdout:
+#                    self.popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#                else:
+#                    self.popen = subprocess.Popen(cmd_words)
+#                self._flag_running = True
+#            except Exception as e:
+#                self.logger.critical(fmt_error("Failed to execute command-line"))
+#                self._error_message = e.__class__.__name__+": "+str(e)
+#                self._flag_finished = True  # finished prematurely
+#                raise
+#       
+#    def _close_popen(self):
+#        """To be called on a popen that has finished."""
+#        with self.__lock:
+#            if self.stdout:
+#                for line in self.popen.stdout:
+#                    self.stdout.write(line)
+#                self.popen.stdout.close()
+#                self.stdout.close()
+#            self.popen.poll()
+#            self._flag_finished = True
+#            self._flag_running = False
+#        
+#    def _kill_popen(self):
+#        with self.__lock:
+#            self.popen.kill()
+#            self._flag_finished = True
+#            self._flag_running = False
+#            self._flag_killed = True
+#            if self.stdout:
+#                self.popen.stdout.close()
+#                self.stdout.close()
 
     def load_result(self):
         """Override this method to open the result file(s) particular to the
@@ -249,8 +309,8 @@ class Pfant(Executable):
 
         """
         p = self.conf.opt.fn_progress
-        ret = RunnableStatus(self)
-        if not self.is_finished and os.path.isfile(p):
+        ret = self.status
+        if (not self.ikey or self.ikey < self.ikeytot) and os.path.isfile(p):
             with open(p) as h:
                 try:
                     t = map(int, h.readline().split("/"))
@@ -302,18 +362,9 @@ class Combo(Runnable):
     """
 
     @property
-    def is_finished(self):
-        with self.__L_running:
-            return self.__is_finished
-    @property
-    def is_running(self):
-        with self.__L_running:
-            return self.__is_running
-    @property
     def running_exe(self):
         """Returns the current or last running exe."""
-        with self.__L_running:
-            return self.__running_exe
+        return self.__running_exe
 
     def __init__(self, sequence=None):
         Runnable.__init__(self)
@@ -335,12 +386,11 @@ class Combo(Runnable):
         self.nulbad = Nulbad()
 
         # ** Internal variables
-        self.__L_running = Lock()  # To make the following variables thread-safe
-        self.__is_running = False
         self.__running_exe = None  # Executable object currently running
-        self.__is_finished = False
 
         self.logger = None
+        
+      
 
     def configure(self):
         """
@@ -393,9 +443,9 @@ class Combo(Runnable):
     def run(self):
         """Blocking routine. Overwrites self.popen."""
 
-        assert not self.is_running, "Already running"
+        assert not self.flag_running, "Already running"
 
-        self.__is_running = True
+        self._flag_running = True
         try:
             self.configure()
 
@@ -403,17 +453,22 @@ class Combo(Runnable):
                 self.__running_exe = e
                 e.run_from_combo()
                 if e.popen.returncode != 0:
-                    raise FailedError("%s failed" % e.__class__.__name__.lower())
+                    raise FailedError("%s failed (returncode=%s)" % (e.__class__.__name__.lower(), e.popen.returncode))
         finally:
-            with self.__L_running:
-                # leave it as last self.__running_exe = None
-                self.__is_running = False
-                self.__is_finished = True
+            # leave it as last self.__running_exe = None
+            self._flag_running = False
+            self._flag_finished = True
+
+    def kill(self):
+        if self._flag_running:
+            if self.__running_exe:
+                self.__running_exe.kill()
 
     def get_status(self):
-        """Returns status of running executable or none."""
-        with self.__L_running:
-            if self.__running_exe:
-                return self.__running_exe.get_status()
-            else:
-                return "?"
+        """Returns status of running executable or "?"."""
+        if self.__running_exe:
+            return self.__running_exe.get_status()
+        else:
+            return "?"
+                
+                

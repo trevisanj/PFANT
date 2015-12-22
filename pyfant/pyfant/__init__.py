@@ -4,6 +4,7 @@ from .data import *
 from .execonf import *
 from .runnables import *
 from .tm import *
+from .tm2 import *
 from .pipeline import *
 from .plotting import *
 from .util import *

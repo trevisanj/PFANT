@@ -182,14 +182,18 @@ def ordinal_suffix(i):
 
 def seconds2str(seconds):
     """Returns string such as 1h 05m 55s."""
+    
+    if seconds < 0:
+      return "%.3gs" % seconds
+    
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
     if h >= 1:
-        return "%dh %02dm %02ds" % (h, m, s)
+        return "%dh %02dm %.3gs" % (h, m, s)
     elif m >= 1:
-        return "%02dm %02ds" % (m, s)
+        return "%02dm %.3gs" % (m, s)
     else:
-        return "%02ds" % s
+        return "%.3gs" % s
 
 # #################################################################################################
 # # Logging routines
