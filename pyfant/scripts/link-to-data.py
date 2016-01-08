@@ -31,6 +31,8 @@ b) looks for files in a directory specified ("-p" option)
    Examples:
    > link-to-data.py -p /home/user/pfant-common-data
    > link-to-data.py -p ../../pfant-common-data
+
+Note: in Windows, must run as administrator.
 """
 import argparse
 from pyfant import *
@@ -42,9 +44,30 @@ import glob
 
 logging.basicConfig(level=logging.INFO)
 
+
 def print_skipped(reason):
     """Standardized printing for when a file was skipped."""
     print "   ... SKIPPED (%s)." % reason
+
+
+def symlink(source, link_name):
+    """
+    Creates symbolic link for either operating system.
+
+    http://stackoverflow.com/questions/6260149/os-symlink-support-in-windows
+    """
+    os_symlink = getattr(os, "symlink", None)
+    if callable(os_symlink):
+        os_symlink(source, link_name)
+    else:
+        import ctypes
+        csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+        csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
+        csl.restype = ctypes.c_ubyte
+        flags = 1 if os.path.isdir(source) else 0
+        if csl(link_name, source, flags) == 0:
+            raise ctypes.WinError()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -59,7 +82,7 @@ if __name__ == "__main__":
           'to a valid system directory (see modes of operation)')
 
     args = parser.parse_args()
-    print args
+    # print args
 
     if args.path:
         dir_ = args.directory[0]
@@ -106,7 +129,7 @@ if __name__ == "__main__":
                     s_action = "replaced existing"
                 else:
                     s_action = "created"
-                os.symlink(f, name)
+                symlink(f, name)
                 print "   ... %s link" % s_action
             except Exception as e:
                 print_error("Error creating link: %s" % str(e))

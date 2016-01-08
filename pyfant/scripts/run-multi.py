@@ -49,9 +49,11 @@ from pyfant import *
 import argparse
 import os.path
 import numpy as np
+import imp
+import logging
 
+logging.basicConfig(level=logging.INFO)
 make_filename = lambda pref, ab_diff, conv_: "%s_%s_%s.dat" % (pref, ab_diff, conv_)
-
 MAX_FORTRANS = 6  # number of pfants/nulbads to run simultaneously
 
 
@@ -67,13 +69,14 @@ if __name__ == "__main__":
     print "Using config file '%s'" % args.cfg
 
     module_name = os.path.splitext(args.cfg)[0]
-    exec("import %s as cfg" % module_name)
+    # exec("import %s as cfg" % module_name)
+    print "module_NAME", module_name
+    cfg = imp.load_source("cfg", args.cfg)  # exec("import %s as cfg" % module_name)
 
 
     os.system('rm -rf session_*')
 
-
-    # Treats config file
+    # # Treats config file
 
     symbols = [adjust_atomic_symbol(symbol) for symbol in cfg.ab.keys()]
     abdifss = cfg.ab.values()
@@ -93,9 +96,9 @@ if __name__ == "__main__":
         if fwhm > 9.99:
             raise RuntimeError("fhwm maximum is 9.99")
 
+    # # Runs pfant, pfant creates several .norm files
 
-    # Runs pfant, pfant creates several .norm files
-    # *********************************************
+    print "+++ pfant phase..."
 
     pfant_list = []
     for j in range(n_abdif):
@@ -117,20 +120,20 @@ if __name__ == "__main__":
                 raise RuntimeError("Atom '%s' not found" % symbol)
 
         pfant = Pfant()
-        e_pfant.conf.file_abonds = file_abonds
-        e_pfant.conf.opt.flprefix = "%s%02d" % (file_main.titrav, j)
-        e_pfant.conf.session_id = e_pfant.conf.opt.flprefix
+        pfant.conf.file_abonds = file_abonds
+        pfant.conf.opt.flprefix = "%s%02d" % (file_main.titrav, j)
+        pfant.conf.session_id = pfant.conf.opt.flprefix
 
-        print e_pfant.conf.opt.flprefix
+        print pfant.conf.opt.flprefix
 
-        f = e_pfant.conf.file_abonds
-        pfant_list.append(e_pfant)
+        f = pfant.conf.file_abonds
+        pfant_list.append(pfant)
 
     run_parallel(pfant_list, MAX_FORTRANS, flag_console=False)
 
+    # # Runs nulbad, saves .sp and .spl files
 
-    # Runs nulbad, saves .sp and .spl files
-    # *************************************
+    print "+++ nulbad phase..."
 
     # function to convert given FWHM to string to use as part of a file name
     fmt_fwhm = lambda x: "%03d" % round(x*100)
@@ -138,26 +141,35 @@ if __name__ == "__main__":
     nulbad_list = []
     sp_filenames_by_fwhm = {}  # dictionary containing a list of .sp filenames for each FWHM
     for pfant in pfant_list:
-        prefix = e_pfant.conf.opt.flprefix
+        prefix = pfant.conf.opt.flprefix
 
         for fwhm in fwhms:
             nulbad = Nulbad()
-            e_nulbad.conf.opt.fn_flux = prefix+".norm"
-            e_nulbad.conf.opt.fwhm = fwhm
-            e_nulbad.conf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
-            nulbad_list.append(e_nulbad)
+            nulbad.conf.opt.fn_flux = prefix+".norm"
+            nulbad.conf.opt.fwhm = fwhm
+            nulbad.conf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
+            nulbad_list.append(nulbad)
 
             if not fwhm in sp_filenames_by_fwhm:
                 sp_filenames_by_fwhm[fwhm] = []
-            sp_filenames_by_fwhm[fwhm].append(e_nulbad.conf.opt.fn_cv)
+            sp_filenames_by_fwhm[fwhm].append(nulbad.conf.opt.fn_cv)
 
-    # Saves files for lineplot.py
+    # # Saves files for lineplot.py
     for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():
         with open("cv_%s.spl" % fmt_fwhm(fwhm), "w") as h:
             for sp_filename in sp_filenames:
                 h.write(sp_filename+"\n")
 
     run_parallel(nulbad_list, MAX_FORTRANS, flag_console=False)
+
+    # # Deletes session-* directories
+
+    print "+++ cleaning up..."
+
+    for pfant in pfant_list:
+      pfant.conf.clean()
+    for nulbad in nulbad_list:
+      nulbad.conf.clean()
 
 
 

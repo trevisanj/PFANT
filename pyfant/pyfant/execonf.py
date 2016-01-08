@@ -12,6 +12,7 @@ import os
 from .parts import *
 import re
 from threading import Lock
+import logging
 
 # Indexes in workflow sequence
 e_innewmarcs = 0
@@ -218,8 +219,6 @@ class ExeConf(object):
         return FileMod.default_filename if self.opt.fn_modeles is None \
          else self.opt.fn_modeles
 
-
-
     def get_session_dir(self):
         return session_prefix+self.session_id
 
@@ -247,6 +246,7 @@ class ExeConf(object):
 
     def clean(self):
         """Deletes directory with all files inside."""
+        logging.debug("About to remove directory '%s'" % self.get_session_dir())
         shutil.rmtree(self.get_session_dir())
 
     def get_args(self):
