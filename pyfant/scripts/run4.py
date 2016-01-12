@@ -19,6 +19,7 @@ if __name__ == "__main__":
   names = ExeConf().opt.get_names() # option names
 
   for name in names:
+    name = name.replace('_', '-')
     parser.add_argument("--"+name, type=str, help='')
 
   args = parser.parse_args()

@@ -656,7 +656,7 @@ contains
   !>
   !> @todo actually all these ft routines are similar. I don't know what to do. A lot of code duplication, but each routine is a bit different
 
-  subroutine ftlin3(n,x,y,itot,tt,ftt)
+  subroutine ftlin3(n, x, y, itot, tt, ftt)
     integer, intent(in) :: &
      n, & !< Size of vectors x and y
      itot !< Size of vectors tt and ftt
@@ -680,21 +680,21 @@ contains
       t=tt(k)
       ! 103 format(5x,f10.3)
       ! write(6,103)t
-      jj=j-1
-      do 1 j=jj,n
-        if(t-x(j) ) 3,2,1
+      jj = j-1
+      do 1 j = jj, n
+        if (t-x(j)) 3, 2, 1
       1 continue
 
       !if (abs(t-x(j)) .le. 1e-38) goto 2  ! tolerance because numbers may not match because of tolerance
       !go to 10
 
       2 continue
-      ft=y(j)
-      if(j .eq. 1) j=j+1
+      ft = y(j)
+      if (j .eq. 1) j = j+1
       go to 4
-      ! 3   write(6,*) '   j=',j
 
       3 continue
+      ! write(6,*) '   j=',j
       if(j .eq. 1) go to 10
 
       u0= y(j)-y(j-1)
@@ -712,9 +712,8 @@ contains
 
     return
 
-    !> @todo test this label "10", somehow make it fall here
     10 continue
-    100 format('On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
+    100 format('ftlin3(): On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
     write(lll,100) t, (x(i),i=1,n)
     call pfant_halt(lll)
   end
@@ -830,7 +829,7 @@ contains
 
     !> @todo Document this error situation
     10 continue
-    100 format(5x,'On sort de la table d interpolation avec t=',e15.7)
+    100 format(5x,'ft2(): On sort de la table d interpolation avec t=',e15.7)
     write(lll,100) t
     call pfant_halt(lll)
   end
@@ -1098,7 +1097,6 @@ contains
       !> Indicates where it was called from, used in error message: facilitates debugging
       integer, intent(in) :: i_call
       if(to_(ntot) .lt. tolim) then
-
         call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
          int2str(ntot) //'; to_(' //&
          int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&

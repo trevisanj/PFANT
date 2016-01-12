@@ -87,7 +87,7 @@ class ThreadManager2(QObject, threading.Thread):
     Thread takes care of other threads.
 
     Keyword arguments:
-      max_threads=multiprocessing.cpu_count()
+      max_simultaneous=multiprocessing.cpu_count()
     """
 
     # Emitted when a new thread is added
@@ -102,16 +102,20 @@ class ThreadManager2(QObject, threading.Thread):
             return self.__num_finished
 
     @property
+    def num_runnables(self):
+        return len(self.__runnables)
+
+    @property
     def time_started(self):
         return self.__time_started
 
     @property
-    def max_threads(self):
-        return self.__max_threads
+    def max_simultaneous(self):
+        return self.__max_simultaneous
 
     def __init__(self, *args, **kwargs):
-        self.__max_threads = kwargs.pop("max_threads", None)
-        if self.__max_threads is None: self.__max_threads = multiprocessing.cpu_count()
+        self.__max_simultaneous = kwargs.pop("max_simultaneous", None)
+        if self.__max_simultaneous is None: self.__max_simultaneous = multiprocessing.cpu_count()
         QObject.__init__(self)
         threading.Thread.__init__(self, *args, **kwargs)
         # counts finished
@@ -132,7 +136,7 @@ class ThreadManager2(QObject, threading.Thread):
         # averate time to run each runnable
         self.time_per_runnable = 0
         
-        for i in range(self.__max_threads):
+        for i in range(self.__max_simultaneous):
             t = _Runner2(self)
             self.__runners.append(t)
 
@@ -178,7 +182,24 @@ class ThreadManager2(QObject, threading.Thread):
     def has_finished(self):
         with self.__lock:
             return self.__num_finished == len(self.__runnables)
- 
+
+    def get_summary_report(self):
+        """Returns list with information such as ellapsed time, remaining time etc."""
+
+        with self.__lock:
+            l = []
+            l.append("***finished: %d/%d" % (self.__num_finished, len(self.__runnables)))
+            if self.__time_started:
+                ella, tot, rema = self.get_times()
+                l.append("***time ellapsed: %s" % seconds2str(ella))
+                if self.__num_finished > 0:
+                    tpr = self.time_per_runnable
+                    l.append("***time per runnable: %s" % seconds2str(tpr))
+                    l.append("***time total estimate: %s" % seconds2str(tot))
+                    l.append("***time remaining estimate: %s" % seconds2str(rema))
+        return l
+
+
     def __str__(self):
         l, temp = [], []  # string list, temporary list
         with self.__lock:
@@ -193,16 +214,8 @@ class ThreadManager2(QObject, threading.Thread):
 
             for i, name, progress in temp:
                 l.append(("%03d %-"+str(w)+"s %s") % (i, name, progress))
-            l.append("***finished: %d/%d" % (self.__num_finished, len(self.__runnables)))
-            if self.__time_started:
-                ella, tot, rema = self.get_times()
-                l.append("***time ellapsed: %s" % seconds2str(ella))
-                if self.__num_finished > 0:
-                    tpr = self.time_per_runnable
-                    l.append("***time per runnable: %s" % seconds2str(tpr))
-                    l.append("***time total estimate: %s" % seconds2str(tot))
-                    l.append("***time remaining estimate: %s" % seconds2str(rema))
-                
+        l.extend(self.get_summary_report())
+
         return "\n".join(l)
 
 #    def _activate(self, runnable):
@@ -241,14 +254,14 @@ class ThreadManager2(QObject, threading.Thread):
                     j = 0
                     # loop to find idle thread
                     while True:
-                        if j >= self.__max_threads:
+                        if j >= self.__max_simultaneous:
                             # gave a full turn without finding idle thread
                             flag_sleep = True
                             break
                         r = self.__runners[it]
                         
                         it += 1
-                        if it >= self.__max_threads:
+                        if it >= self.__max_simultaneous:
                             it = 0
                             
                         if r.flag_idle:

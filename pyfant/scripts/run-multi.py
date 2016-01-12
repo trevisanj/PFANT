@@ -64,7 +64,7 @@ if __name__ == "__main__":
     description="Nulbadboy powered by pyfant.\n"+__doc__,
     formatter_class=SmartFormatter
     )
-    parser.add_argument('--cfg', default="config.py", help='Config filename')
+    parser.add_argument('--fn_cfg', default="config.py", help='Config filename')
     args = parser.parse_args()
     print "Using config file '%s'" % args.cfg
 

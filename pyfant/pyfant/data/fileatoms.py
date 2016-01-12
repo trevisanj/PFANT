@@ -102,6 +102,32 @@ class FileAtoms(DataFile):
         ret = sum(map(len, self.atoms))
         return ret
 
+    # Properties that iterate through the AtomicLine objects to mount vectors
+    @property
+    def lambda_(self):
+        return np.hstack([np.array([x.lambda_ for x in a.lines]) for a in self.atoms])
+    @property
+    def kiex(self):
+        return np.hstack([np.array([x.kiex for x in a.lines]) for a in self.atoms])
+    @property
+    def algf(self):
+        return np.hstack([np.array([x.algf for x in a.lines]) for a in self.atoms])
+    @property
+    def ch(self):
+        return np.hstack([np.array([x.ch for x in a.lines]) for a in self.atoms])
+    @property
+    def gr(self):
+        return np.hstack([np.array([x.gr for x in a.lines]) for a in self.atoms])
+    @property
+    def ge(self):
+        return np.hstack([np.array([x.ge for x in a.lines]) for a in self.atoms])
+    @property
+    def zinf(self):
+        return np.hstack([np.array([x.zinf for x in a.lines]) for a in self.atoms])
+    @property
+    def abondr(self):
+        return np.hstack([np.array([x.abondr for x in a.lines]) for a in self.atoms])
+
     def __len__(self):
         """Length of FileAtoms object is defined as number of elements."""
         return len(self.atoms)
