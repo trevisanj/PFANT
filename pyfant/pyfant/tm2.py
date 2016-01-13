@@ -12,6 +12,34 @@ import copy
 import time
 from threading import Lock
 import logging
+import sys
+
+
+# todo cleanup
+# # http://stackoverflow.com/questions/2023608/check-what-files-are-open-in-python
+# import __builtin__
+# openfiles = set()
+# oldfile = __builtin__.file
+# class newfile(oldfile):
+#     def __init__(self, *args):
+#         self.x = args[0]
+#         print "### OPENING %s ###" % str(self.x)
+#         oldfile.__init__(self, *args)
+#         openfiles.add(self)
+#
+#     def close(self):
+#         print "### CLOSING %s ###" % str(self.x)
+#         oldfile.close(self)
+#         openfiles.remove(self)
+# oldopen = __builtin__.open
+# def newopen(*args):
+#     return newfile(*args)
+# __builtin__.file = newfile
+# __builtin__.open = newopen
+#
+# def printOpenFiles():
+#     print "### %d OPEN FILES: [%s]" % (len(openfiles), ", ".join(f.x for f in openfiles))
+
 
 class _Runner2(threading.Thread):
     """
@@ -60,9 +88,19 @@ class _Runner2(threading.Thread):
                     self.flag_idle = False
                     try:
                         self.runnable.run()
-                    except:
+                    except Exception as E:
+                        # todo cleanup
+                        #
+                        # if isinstance(E, IOError):
+                        #   printOpenFiles()
+                        #
+                        # self.logger.exception("%s failed" % self.runnable.__class__.__name__)
+                        # print "EXITING SO THAT YOU CAN SEE THE ERROR"
+                        # self.manager.exit()
+                        # raise
+                        #
                         self.logger.exception("%s failed" % self.runnable.__class__.__name__)
-                    self.manager._finish(self)  # logging
+                    self.manager._finish(self)
                     self.runnable = None
                     self.flag_idle = True
                 else:
@@ -120,6 +158,8 @@ class ThreadManager2(QObject, threading.Thread):
         threading.Thread.__init__(self, *args, **kwargs)
         # counts finished
         self.__num_finished = 0
+        # counts failed
+        self.__num_failed = 0
         # points to next to start
         self.__ptrs = 0
         self.__lock = threading.Lock()
@@ -189,6 +229,8 @@ class ThreadManager2(QObject, threading.Thread):
         with self.__lock:
             l = []
             l.append("***finished: %d/%d" % (self.__num_finished, len(self.__runnables)))
+            if self.__num_failed > 0:
+                l.append("***failed: %d" % (self.__num_failed))
             if self.__time_started:
                 ella, tot, rema = self.get_times()
                 l.append("***time ellapsed: %s" % seconds2str(ella))
@@ -199,18 +241,17 @@ class ThreadManager2(QObject, threading.Thread):
                     l.append("***time remaining estimate: %s" % seconds2str(rema))
         return l
 
-
     def __str__(self):
         l, temp = [], []  # string list, temporary list
         with self.__lock:
             # loop to determine name width
             w = 0
             for i, t in enumerate(self.__runnables):
-                w = max(w, len(t.name))
+                w = max(w, len(t.conf.get_session_dir()))
                 s_prog = str(t.get_status())
                 #else:
                 #    s_prog = 'finished' if t.flag_finished else '-'
-                temp.append((i, t.name, s_prog))
+                temp.append((i, t.conf.get_session_dir(), s_prog))
 
             for i, name, progress in temp:
                 l.append(("%03d %-"+str(w)+"s %s") % (i, name, progress))
@@ -224,8 +265,16 @@ class ThreadManager2(QObject, threading.Thread):
 #            self.__active.append(runnable)
 #            self.thread_changed.emit()
 
-    def _finish(self, runnable):
+    def _finish(self, runner):
+        """Called by a _Runner2 to inform that a runnable has finished.
+
+        This is for monitoring purpose only and has no effect in the workings
+        of the thread manager.
+        """
         self.__num_finished += 1
+        if runner.runnable.flag_error:
+            self.__num_failed += 1
+
         t = time.time()
         self.time_per_runnable = (t-self.__time_started)/self.__num_finished
         if self.__num_finished == len(self.__runnables):

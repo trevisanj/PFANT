@@ -198,12 +198,13 @@ def seconds2str(seconds):
 # #################################################################################################
 # # Logging routines
 
+
 def add_file_handler(logger, logFilename=None):
   """Adds file handler to logger."""
 
   assert isinstance(logger, logging.Logger)
 
-  ch = logging.FileHandler(filename=logFilename)
+  ch = logging.FileHandler(logFilename, "w")
   ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
   logger.addHandler(ch)
 
@@ -212,7 +213,7 @@ class LogTwo(object):
   """Logs messages to both stdout and file."""
   def __init__(self, filename):
     self.terminal = sys.stdout
-    self.log = open(filename, "a")
+    self.log = open(filename, "w")
 
   def write(self, message):
     self.terminal.write(message)

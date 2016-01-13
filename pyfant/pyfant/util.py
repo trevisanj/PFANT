@@ -19,6 +19,8 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
     Arguments:
       rr -- list of Runnable instances
       max_simultaneous -- maximum number of simultaneous processes.
+
+    Returns: the ThreadManager2 object
     """
     # Adds to pool
     tm = ThreadManager2(max_simultaneous=max_simultaneous)
@@ -60,6 +62,9 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
 
     print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
     print "test-tm2 [SUPPOSED TO HAVE] EXITED"
+    print tm
+
+    return tm
 
 
 

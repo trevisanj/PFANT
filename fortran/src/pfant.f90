@@ -1246,6 +1246,13 @@ contains
       m_ilzero = floor(m_lzero/100)*100
       alzero = m_lzero-m_ilzero
       do d = 1, m_dtot
+        ! todo cleanup
+!        if (d .eq. 1) then
+!          m_ttd(d) = alzero
+!        else
+!          m_ttd(d) = alzero+main_pas*(d-1)
+!        end if
+
         m_ttd(d) = alzero+main_pas*(d-1)
       end do
 
@@ -1956,7 +1963,9 @@ contains
     bk_b(0) = c3 * (alph0/(1.-alph0))
     bk_fc = flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
-    lambdc(1) = m_lzero-m_ilzero
+    ! lambdc(1) forced to be equal to m_ttd(1) because I was experiencing numerical errors here
+    ! where m_ttd(1) was lower than lambdc(1) by ~1e-14 causing ftlin3() to crash
+    lambdc(1) = m_ttd(1) ! m_lzero-m_ilzero
     lambdc(2) = m_lfin-m_ilzero
     do n=1,modeles_ntot
       kcj(1,n)=bk_kc1(n)

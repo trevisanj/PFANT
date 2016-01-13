@@ -76,7 +76,9 @@ if __name__ == "__main__":
     print "Number of lines in file '%s': %d" % \
           (args.fn_input[0], file_atoms.num_lines)
 
-    # # Calculates spectra
+    # # Preparation
+
+    print "Preparing pfant's..."
 
     pp, ll, i = [], [], 0
     for atom in file_atoms.atoms:
@@ -86,6 +88,7 @@ if __name__ == "__main__":
             f = FileAtoms()
             f.atoms = [a]
             combo = Combo([e_pfant])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
+            combo.flag_log_console = False  # Fortran messages will not be displayed in terminal
             combo.conf.file_atoms = f
             combo.conf.opt.logging_level = "warning"
             combo.conf.opt.zinf = args.max
@@ -103,26 +106,32 @@ if __name__ == "__main__":
             # if i == 5:
             #     break
 
-    run_parallel(pp, None, False)
+    # # Runs pfant
+    print "Running pfant's..."
+    tm = run_parallel(pp, None, False)
 
-    # # Calculates zinf and saves files
-
+    # # Calculates zinf and save new atomic lines file
     n = len(pp)
     X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]
     for i, (line, combo) in enumerate(zip(ll, pp)):
         combo.pfant.load_result()
         norm = combo.pfant.norm  # normalized spectrum
         zinf = get_zinf(line.lambda_, norm)
-
-
         # todo check min and max
-
         line.zinf = zinf
-
     file_atoms.save_as(args.fn_output[0])
     print "Successfully created file '%s'" % args.fn_output[0]
 
     # # Removes session-* directories
-
+    print "Cleaning..."
     for i, combo in enumerate(pp):
-        pass # combo.conf.clean()
+        try:
+            combo.conf.clean()
+        except Exception as E:
+            print "Error cleaning session for %s: %s" % (combo.name, str(E))
+
+    # # Saves log
+    LOG_FILENAME = "tune-zinf-status.log"
+    with open(LOG_FILENAME, "w") as h:
+      h.write(str(tm))
+    print "Final status saved to file '%s'" % LOG_FILENAME

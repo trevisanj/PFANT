@@ -12,6 +12,20 @@ from .parts import *
 from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 from threading import Lock
 
+
+_python_logger = None
+def _get_python_logger():
+    """Returns logger to be used by executables, logs to file names "python.log" only (not console)."""
+
+    global _python_logger
+    if _python_logger is None:
+        l = logging.Logger("python")
+        add_file_handler(l, "python.log")
+        _python_logger = l
+    return _python_logger
+
+
+
 class RunnableStatus(PyfantObject):
     """Data class, stores progress information."""
     
@@ -126,7 +140,7 @@ class Executable(Runnable):
         Blocking routine. Only returns when executable finishes running.
         """
         assert not self._flag_running, "Already running"
-        self.logger = logging.getLogger("%s%d" % (self.__class__.__name__.lower(), id(self)))
+        self.logger = _get_python_logger()
         # this was leaving file open after finished add_file_handler(self.logger, "python.log")
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self.conf.make_session_id()
@@ -168,14 +182,14 @@ class Executable(Runnable):
 
             emsg = ""
             try:
-                if False and self.stdout:  # TODO disabled PIPE stdout for popen
+                if self.stdout:  # TODO disabled PIPE stdout for popen
                     self.popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 else:
                     self.popen = subprocess.Popen(cmd_words)
 
                 self._flag_running = True
 
-                if False and self.stdout:  # TODO disabled PIPE stdout for popen
+                if self.stdout:  # TODO disabled PIPE stdout for popen
                     try:
                         for line in self.popen.stdout:
                             self.stdout.write(line)
@@ -368,8 +382,12 @@ class Combo(Runnable):
 
     def __init__(self, sequence=None):
         Runnable.__init__(self)
+        # # Configuration
         # Directory containing the 4 executables
         self.exe_dir = ""
+        # Whether to display Fortran messages in the terminal.
+        # NoteL a file named "<session dir>/fortran.log" is always created.
+        self.flag_log_console = True
 
         # Executables to run
         # order is irrelevant (will be sorted anyway).
@@ -387,10 +405,7 @@ class Combo(Runnable):
 
         # ** Internal variables
         self.__running_exe = None  # Executable object currently running
-
         self.logger = None
-        
-      
 
     def configure(self):
         """
@@ -406,12 +421,15 @@ class Combo(Runnable):
         c.make_session_id()
         c.prepare_filenames_for_combo(self.sequence)
 
-        self.logger = logging.getLogger("combo%d" % id(self))
+        self.logger = _get_python_logger()
         # this was leaving file open after finished add_file_handler(self.logger, c.join_with_session_dir("python.log"))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
-
+        log_path = c.join_with_session_dir("fortran.log")
+        if self.flag_log_console:
+            stdout_ = LogTwo(log_path)
+        else:
+            stdout_ = open(log_path, "w")
 
         # All files that will be created need to have the session directory added to their names
         for e in self.get_exes():
