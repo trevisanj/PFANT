@@ -4,7 +4,7 @@
 
 PFANT is a spectral synthesis software written in Fortran for use in Astrophysics.
 
-ANalogue softwares include TurboSpectrum and MOOG.
+Analogue softwares include TurboSpectrum and MOOG.
 
 
 ### History
@@ -44,7 +44,7 @@ The install recommendations are based on successful attempts.
 What  | Why?
 ----- | ----
 git | clone repository at github
-gfortran, make | compile the Fortran code (gfortran >= 4.6 required)
+gfortran >= 4.6, make | compile the Fortran code
 Python 2.7 | use PyFANT
 pip | install fortranformat Python package
 
@@ -56,15 +56,15 @@ your system. In general, they should be all easy to install.
 
 Package name | Recommended way to install
 --- | ---
-matplotlib | apt-Linux `$ sudo apt-get install python-matplotlib`
-pyqt4 | apt-Linux `$ sudo apt-get install python-qt4
+matplotlib | apt-Linux `sudo apt-get install python-matplotlib`
+pyqt4 | apt-Linux `sudo apt-get install python-qt4`
       | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
-fortranformat | All systems: $ pip install fortranformat
-astropy | apt-Linux: $ sudo apt-get install python-astropy
-        | All systems: $ pip install astropy
+fortranformat | All systems: `pip install fortranformat`
+astropy | apt-Linux: `sudo apt-get install python-astropy`
+        | All systems: `pip install astropy`
                   
                  
-(not yet) mayavi2           apt-Linux: $ sudo apt-get install mayavi2
+(not yet) mayavi2           apt-Linux: `sudo apt-get install mayavi2`
 
 **Note:** When running @c pip on Linux, you may have to run it with `sudo`.
 
