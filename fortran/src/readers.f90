@@ -1463,6 +1463,7 @@ contains
        atoms_abondr_dummy(k), finrai
 
 
+! todo cleanup
       if (.false.) then
         kiex = atoms_kiex(k)
         zinf = 100*exp(atoms_algf(k))/atoms_kiex(k)

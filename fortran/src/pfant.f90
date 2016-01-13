@@ -1568,10 +1568,6 @@ contains
       popadelh_cvdw(k) = 0
       ioo = atoms_f_ioni(k)
 
-      ! fort.77 disabled until someone misses it.
-      ! write (77,*) atoms_f_elem(k),atoms_f_lambda(k)
-
-      ! ?doc?
       ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
       ! See also read_atoms(), variable atoms_gr, which is also overwritten.
       if(atoms_f_ch(k) .lt. 1.e-37)  then
@@ -1597,12 +1593,15 @@ contains
 
         atoms_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
         if (atoms_f_ch(k)  .lt. 0) then
-          ! TODO CLEANUP
-          write(*,*) 'atoms_f_ch(k)  .lt. 0'
-          write(*,*) '******',atoms_f_ch(k), '******'
+          ! ch cannot be < 0, as it will be powered to 0.4 later
           write(*,*) 'popadelh_cvdw(k) = ', popadelh_cvdw(k)
           write(*,*) 'popadelh_corch(k) = ', popadelh_corch(k)
-          END IF
+          write(*,*) 'atoms_f_kiex(k) = ', atoms_f_kiex(k)
+          write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
+          write(*,*) 'atoms_f_lambda(k) = ', atoms_f_lambda(k)
+          call log_halt('popadelh(): atoms_f_ch(k)  calculated is lower than ZERO')
+          call pfant_halt('******'//real82str(atoms_f_ch(k))//'******')
+        end if
       end if
 
 !
@@ -1629,18 +1628,19 @@ contains
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
-        IF (isnan(popadelh_pop(k, n))) then
-          write(*,*) 'isnan(popadelh_pop(k, n)'
-
-write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
-write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
-write(*,*) 'sat4_po(n) = ', sat4_po(n)
-write(*,*) 'sat4_pph(n) = ', sat4_pph(n)
-write(*,*) 'popul_p(ioo,j,n) = ', popul_p(ioo,j,n)
-write(*,*) 'top = ', top
-write(*,*) 'tap = ', tap
-stop
-end if
+! todo cleanup
+!        IF (isnan(popadelh_pop(k, n))) then
+!          write(*,*) 'isnan(popadelh_pop(k, n)'
+!
+!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
+!write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
+!write(*,*) 'sat4_po(n) = ', sat4_po(n)
+!write(*,*) 'sat4_pph(n) = ', sat4_pph(n)
+!write(*,*) 'popul_p(ioo,j,n) = ', popul_p(ioo,j,n)
+!write(*,*) 'top = ', top
+!write(*,*) 'tap = ', tap
+!stop
+!end if
 
 
 
@@ -1658,32 +1658,32 @@ end if
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
         popadelh_a(k,n) = a
 
-! TODO CLEANUP
-        if (isnan(a)) then
-          write(*,*) 'popaedlh: a is nan'
-          write(*,*) 'gamma = ', gamma
-          write(*,*) 'KB = ', KB
-          write(*,*) 't = ', t
-          write(*,*) 'atoms_f_gr(k) ', atoms_f_gr(k)
-          write(*,*) 'atoms_f_ge(k) ', atoms_f_ge(k)
-          write(*,*) 'modeles_pe(n) ', modeles_pe(n)
-          write(*,*) 'gh ', gh
-          write(*,*) 'bk_phn(n) ', bk_phn(n)
-          write(*,*) 'bk_ph2(n) ', bk_ph2(n)
-          write(*, *) 'C5', C5
-          write(*, *) 'C6', C6
-          write(*, *) 'iopi', iopi
-          write(*, *) 'atoms_f_ch(k)', atoms_f_ch(k)
-          write(*, *) 'vrel', vrel
-          write(*, *) 'popadelh_corch(k)', popadelh_corch(k)
-          write(*, *) 'C5*atoms_f_ch(k)**0.4*vrel**0.6', C5*atoms_f_ch(k)**0.4*vrel**0.6
-          write(*, *) 'C5*atoms_f_ch(k)', C5*atoms_f_ch(k)
-          write(*, *) 'atoms_f_ch(k)**0.4', atoms_f_ch(k)**0.4
-          write(*, *) 'vrel**0.6', vrel**0.6
-
-          stop
-        end if
-
+!! TODO CLEANUP
+!        if (isnan(a)) then
+!          write(*,*) 'popaedlh: a is nan'
+!          write(*,*) 'gamma = ', gamma
+!          write(*,*) 'KB = ', KB
+!          write(*,*) 't = ', t
+!          write(*,*) 'atoms_f_gr(k) ', atoms_f_gr(k)
+!          write(*,*) 'atoms_f_ge(k) ', atoms_f_ge(k)
+!          write(*,*) 'modeles_pe(n) ', modeles_pe(n)
+!          write(*,*) 'gh ', gh
+!          write(*,*) 'bk_phn(n) ', bk_phn(n)
+!          write(*,*) 'bk_ph2(n) ', bk_ph2(n)
+!          write(*, *) 'C5', C5
+!          write(*, *) 'C6', C6
+!          write(*, *) 'iopi', iopi
+!          write(*, *) 'atoms_f_ch(k)', atoms_f_ch(k)
+!          write(*, *) 'vrel', vrel
+!          write(*, *) 'popadelh_corch(k)', popadelh_corch(k)
+!          write(*, *) 'C5*atoms_f_ch(k)**0.4*vrel**0.6', C5*atoms_f_ch(k)**0.4*vrel**0.6
+!          write(*, *) 'C5*atoms_f_ch(k)', C5*atoms_f_ch(k)
+!          write(*, *) 'atoms_f_ch(k)**0.4', atoms_f_ch(k)**0.4
+!          write(*, *) 'vrel**0.6', vrel**0.6
+!
+!          stop
+!        end if
+!
 !        if (n .eq. modeles_ntot) then
 !          ! zinf(k) will be calculated for the last atmospheric layer, whether there is the most
 !          ! broadening
@@ -1787,23 +1787,23 @@ end if
 
 
 
-! TODO CLEANUP
-            if (isnan(kak)) then
-              write(*,*) 'KAK IS NAN KAK IS NAN KAK IS NAN KAK I'
-              write(*,*) 'v = ', v
-              write(*,*) 'a = ', popadelh_a(k,n)
-              write(*,*) 'delta = ', popadelh_delta(k,n)
-              write(*,*) 'phi = ', phi
-
-write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
-write(*,*) 'm_gfal(k) = ', m_gfal(k)
-write(*,*) 'atoms_f_abonds_abo(k) = ', atoms_f_abonds_abo(k)
-
-
-
-
-              stop
-            end if
+!! TODO CLEANUP
+!            if (isnan(kak)) then
+!              write(*,*) 'KAK IS NAN KAK IS NAN KAK IS NAN KAK I'
+!              write(*,*) 'v = ', v
+!              write(*,*) 'a = ', popadelh_a(k,n)
+!              write(*,*) 'delta = ', popadelh_delta(k,n)
+!              write(*,*) 'phi = ', phi
+!
+!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
+!write(*,*) 'm_gfal(k) = ', m_gfal(k)
+!write(*,*) 'atoms_f_abonds_abo(k) = ', atoms_f_abonds_abo(k)
+!
+!
+!
+!
+!              stop
+!            end if
 
             ! todo cleanup
             !!! trick to write one atmospheric layer to a different file
