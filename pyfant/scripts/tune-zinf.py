@@ -88,6 +88,7 @@ if __name__ == "__main__":
             combo = Combo([e_pfant])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
             combo.conf.file_atoms = f
             combo.conf.opt.logging_level = "warning"
+            combo.conf.opt.zinf = args.max
             combo.conf.opt.no_molecules = True
             combo.conf.opt.no_h = True
             # Note that half of the line (needs to)/(will be) calculated

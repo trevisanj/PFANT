@@ -88,7 +88,7 @@ class FileMain(DataFile):
   
   def _do_save_as(self, filename):
     """Saves to file."""
-    assert isinstance(self, vvt, list), "vvt must be list!"
+    assert isinstance(self.vvt, list), "vvt must be list!"
     with open(filename, "w") as h:
       write_lf(h, "%-20s" % self.titrav)
       write_lf(h, "%s %s %s %s %s" % (bool2str(self.ecrit),

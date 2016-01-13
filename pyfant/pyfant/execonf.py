@@ -88,6 +88,7 @@ class Options(object):
         self.no_molecules = None
         self.no_atoms = None
         self.no_h = None
+        self.zinf = None
 
         # nulbad
         self.norm = None
