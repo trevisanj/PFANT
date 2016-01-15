@@ -1,6 +1,6 @@
 __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
-           "PlotInfo"]
+           "PlotInfo", "place_left_top"]
 
 from PyQt4.QtGui import QFont
 from .a_XParametersEditor import *
@@ -54,6 +54,17 @@ def show_edit_form(obj, attrs, title):
     form = XParametersEditor(specs=specs, title=title)
     r = form.exec_()
     return r, form
+
+
+def place_left_top(window):
+    """Places window in top left corner of screen.
+
+    Qt, on doing this, does not count the window frame. This is being coarsely
+    accounted for by setting the position coordinates to values slightly greater
+    than 0.
+    """
+    window.setGeometry(2, 15, 800, 600)
+
 
 
 class PlotInfo(object):

@@ -9,14 +9,19 @@ line. It specifies the calculation range for the line:
 This script runs pfant* for each atomic line to determine the width of each
 atomic line and thus zinf.
 
-*pfant is run using most of its default settings and will require the following
-files to exist in the current directory:
+Note: *pfant is run using most of its default settings and will require the
+following files to exist in the current directory:
   - main.dat
   - dissoc.dat
   - abonds.dat
   - modeles.mod
   - partit.dat
   - absoru2.dat
+
+Note: the precision in the zinf found depends on the calculation step ("pas")
+specified in main.dat. A higher "pas" means lower precision and a tendency to
+get higher zinf's. This is really not critical. pas=0.02 or pas=0.04 should do.
+
 """
 
 import argparse
@@ -24,6 +29,8 @@ from pyfant import *
 import logging
 import copy
 import numpy as np
+from pyfant.gui import XThreadManager2
+from PyQt4.QtGui import *
 
 # Fraction of peak to be considered its "settlement"
 EPSILON = 1e-4
@@ -56,10 +63,10 @@ if __name__ == "__main__":
      description=__doc__,
      formatter_class=SmartFormatter
      )
-    parser.add_argument('--min', type=float, nargs='?', default=.3,
+    parser.add_argument('--min', type=float, nargs='?', default=.01,
      help='minimum zinf. If zinf found for a particular line is smaller than '
           'this value, this value will be used instead')
-    parser.add_argument('--max', type=float, nargs='?', default=30.,
+    parser.add_argument('--max', type=float, nargs='?', default=50.,
      help='maximum zinf. If zinf found for a particular line is greater than '
           'this value, this value will be used instead')
     parser.add_argument('--ge_current', action="store_true",
@@ -67,8 +74,14 @@ if __name__ == "__main__":
           'zinf in the atomic lines file is used as a lower boundary.')
     parser.add_argument('fn_input', type=str, help='input file name', nargs=1)
     parser.add_argument('fn_output', type=str, help='output file name', nargs=1)
+    parser.add_argument('-X', action="store_true",
+     help='Shows monitor window, then opens the Atomic Lines Editor to show '
+          'the new file')
 
     args = parser.parse_args()
+
+    if args.X:
+        app = QApplication([])
 
     file_atoms = FileAtoms()
     file_atoms.load(args.fn_input[0])
@@ -117,7 +130,14 @@ if __name__ == "__main__":
         combo.pfant.load_result()
         norm = combo.pfant.norm  # normalized spectrum
         zinf = get_zinf(line.lambda_, norm)
-        # todo check min and max
+
+        if zinf < args.min:
+            zinf = args.min
+        if zinf > args.max:
+            zinf = args.max
+        if args.ge_current and line.zinf > zinf:
+            zinf = line.zinf
+
         line.zinf = zinf
     file_atoms.save_as(args.fn_output[0])
     print "Successfully created file '%s'" % args.fn_output[0]

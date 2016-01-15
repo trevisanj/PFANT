@@ -13,19 +13,6 @@ from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 from threading import Lock
 
 
-_python_logger = None
-def _get_python_logger():
-    """Returns logger to be used by executables, logs to file names "python.log" only (not console)."""
-
-    global _python_logger
-    if _python_logger is None:
-        l = logging.Logger("python")
-        add_file_handler(l, "python.log")
-        _python_logger = l
-    return _python_logger
-
-
-
 class RunnableStatus(PyfantObject):
     """Data class, stores progress information."""
     
@@ -140,7 +127,7 @@ class Executable(Runnable):
         Blocking routine. Only returns when executable finishes running.
         """
         assert not self._flag_running, "Already running"
-        self.logger = _get_python_logger()
+        self.logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.logger, "python.log")
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self.conf.make_session_id()
@@ -421,7 +408,7 @@ class Combo(Runnable):
         c.make_session_id()
         c.prepare_filenames_for_combo(self.sequence)
 
-        self.logger = _get_python_logger()
+        self.logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.logger, c.join_with_session_dir("python.log"))
         self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 

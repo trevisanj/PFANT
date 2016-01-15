@@ -164,7 +164,7 @@ class XFileAtoms(QMainWindow):
 
         self.splitter.setFont(MONO_FONT)
         self.setCentralWidget(self.splitter)
-        self.setGeometry(0, 0, 800, 600)
+        place_left_top(self)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Qt override
@@ -346,7 +346,7 @@ class XFileAtoms(QMainWindow):
         self.labelNumLines.setText('Number of lines: %d' % (n,))
 
     def update_window_title(self):
-        self.setWindowTitle(self.f.filename+("" if not self.flag_changed else " (changed)"))
+        self.setWindowTitle("ated -- %s" % (self.f.filename+("" if not self.flag_changed else " (changed)"), ))
 
     def enable_save_actions(self):
         self.act_save.setEnabled(True)

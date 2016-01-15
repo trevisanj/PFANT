@@ -10,7 +10,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "write_lf", "slugify", "adjust_atomic_symbol", "str2bool", "bool2str",
  "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
- "random_name", "format_BLB", "seconds2str", "SignalProxy"
+ "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger"
 ]
 import os.path
 import random
@@ -20,6 +20,7 @@ from matplotlib import rc
 import re
 from argparse import *
 from PyQt4.QtCore import *
+# from PyQt4.QtGui import *
 import time
 from threading import Lock
 
@@ -197,6 +198,17 @@ def seconds2str(seconds):
 
 # #################################################################################################
 # # Logging routines
+
+
+_python_logger = None
+def get_python_logger():
+    """Returns logger to be used by executables, logs to file names "python.log" only (not console)."""
+    global _python_logger
+    if _python_logger is None:
+        l = logging.Logger("python")
+        add_file_handler(l, "python.log")
+        _python_logger = l
+    return _python_logger
 
 
 def add_file_handler(logger, logFilename=None):
@@ -436,7 +448,6 @@ class _ThreadsafeTimer(QObject):
 
     def timerFinished(self):
         self.timeout.emit()
-
 
 
 class SignalProxy(QObject):

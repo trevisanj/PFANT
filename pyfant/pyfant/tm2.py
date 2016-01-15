@@ -2,7 +2,7 @@
 __all__ = ["ThreadManager2"]
 
 from .runnables import *
-from .misc import random_name, seconds2str
+from .misc import random_name, seconds2str, get_python_logger
 import threading
 import traceback
 import time
@@ -75,7 +75,7 @@ class _Runner2(threading.Thread):
             self.runnable.kill()
 
     def run(self):
-        self.logger = logging.getLogger(self.name)
+        self.logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.logger, "python.log")
         self.logger.info("\\o/ %s is alive \\o/" % (self.name))
         misses = 0
