@@ -16,15 +16,13 @@ class XThreadManager2(QMainWindow):
     """
     Thread manager window.
 
-    Allows to monitor running threads.
+    Allows to monitor running runnables.
     """
 
     def __init__(self, tm):
         QMainWindow.__init__(self)
         assert isinstance(tm, ThreadManager2)
         self.tm = tm
-        self.threads = []
-        self.num_finished = 0
         self._lock = Lock()
 
         a = self.tableWidget = QTableWidget()
@@ -88,46 +86,42 @@ class XThreadManager2(QMainWindow):
         """Clears and rebuilds table widget."""
         with self._lock:
             a = self.tableWidget
-            self.threads = threads = self.tm.get_threads_copy()
+            self.runnables = runnables = self.tm.get_runnables_copy()
             a.clear()
             a.setAlternatingRowColors(True)
-            a.setRowCount(len(threads))
+            a.setRowCount(len(runnables))
             a.setColumnCount(2)
             a.setHorizontalHeaderLabels(["Thread name", "Progress info              "])
-            for i, thread in enumerate(threads):
+            for i, thread in enumerate(runnables):
                 item = QTableWidgetItem(thread.name)
                 a.setItem(i, 0, item)
                 item = QTableWidgetItem(str(thread.runnable.get_status()))
                 a.setItem(i, 1, item)
             a.resizeColumnsToContents()
-            self.__update_status()
+            self._update_status()
 
     def _update(self):
         """Updates second column of table widget."""
         with self._lock:
             t = time.time()
             a = self.tableWidget
-            threads = self.threads
+            runnables = self.runnables
             nf = self.tm.num_finished  # grabs this before last table update,
                                        # so that it never skips a row update
-            mt = self.tm.max_threads
+            mt = self.tm.max_simultaneous
             for i in xrange(max(0, self.num_finished-mt+1),
-                            min(len(threads), self.tm.num_finished+mt)):
-                thread = threads[i]
+                            min(len(runnables), self.tm.num_finished+mt)):
+                thread = runnables[i]
                 item = a.item(i, 1)
                 item.setText(str(thread.runnable.get_status()))
             a.setCurrentCell(self.tm.num_finished+self.tm.num_active-1, 0)
-            self.__update_status()
+            self._update_status()
             self.num_finished = nf
             print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
 
 
-    def __update_status(self):
-        nf, nt = self.tm.num_finished, len(self.threads)
-        ella = time.time()-self.tassadsasdadsasdasdasadsdasdasdasdsadsadasdsadsadsadsaella, tot, rema = self.get_times()ella, tot, rema = self.get_times()ella, tot, rema = self.get_times()m.time_started # ellapsed time
-        if nf > 0:
-            estt = seconds2str(ella/nf*nt)
-        else:
-            estt = "?"
-        self.label_n.setText("Threads: %d/%d" % (nf, nt))
-        self.label_t.setText("Time: %s / %s" % (seconds2str(ella), estt))
+    def _update_status(self):
+        nf, nt = self.tm.num_finished, self.tm.num_runnables
+        ella, tot, rema = self.get_times()
+        self.label_n.setText("Runnables: %d/%d" % (nf, nt))
+        self.label_t.setText("Time: %s / %s" % (seconds2str(ella), tot))

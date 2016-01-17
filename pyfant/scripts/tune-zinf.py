@@ -31,6 +31,8 @@ import copy
 import numpy as np
 from pyfant.gui import XThreadManager2
 from PyQt4.QtGui import *
+import time
+
 
 # Fraction of peak to be considered its "settlement"
 EPSILON = 1e-4
@@ -53,6 +55,22 @@ def get_zinf(lambda_centre, norm):
     zinf = lambda_centre-norm.x[i_zinf]
 
     return zinf
+
+
+def _tune_zinf_console(tm):
+    # if not X, shows monitoring information in the terminal
+    # perhaps enter interactive "console mode", i.e., allow user to inspect
+    # progress without bothering being verbose, but make clear that we are
+    # waiting for the user to continue
+    #
+    # currently continuing automatically
+    while True:
+        if tm.has_finished():
+            print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
+            tm.exit()
+            break
+        print "\n".join(tm.get_summary_report())
+        time.sleep(1)
 
 
 
@@ -79,9 +97,6 @@ if __name__ == "__main__":
           'the new file')
 
     args = parser.parse_args()
-
-    if args.X:
-        app = QApplication([])
 
     file_atoms = FileAtoms()
     file_atoms.load(args.fn_input[0])
@@ -121,7 +136,36 @@ if __name__ == "__main__":
 
     # # Runs pfant
     print "Running pfant's..."
-    tm = run_parallel(pp, None, False)
+    tm = ThreadManager2()
+    tm.start()
+
+    for p in pp:
+        tm.add_runnable(p)
+
+    if args.X:
+        app = QApplication([])
+        form = XThreadManager2(tm)
+        form.show()
+        app.exec_()
+
+        # todo not closing form automatically. This is OK, but perhaps it would
+        # be good to show a message to continue
+
+    else:
+        _tune_zinf_console(tm)
+
+    if args.X and not tm.flag_cancelled and not tm.has_finished:
+        # User closed window un-elegantly, we go to console mode
+        _tune_zinf_console(tm)
+
+
+    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
+    print "[SUPPOSED TO HAVE] EXITED"
+    print tm
+
+
+
+
 
     # # Calculates zinf and save new atomic lines file
     n = len(pp)

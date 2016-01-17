@@ -184,7 +184,7 @@ class ThreadManager2(QObject, threading.Thread):
         self.__time_started = time.time()
         threading.Thread.start(self)
 
-    def get_threads_copy(self):
+    def get_runnables_copy(self):
         """Returns a copy of self.__runnables.
 
         The result is a copy of the self.__runnables list, but the elements are
