@@ -3,7 +3,7 @@ __all__ = ["Runnable", "RunnableStatus", "Executable", "Innewmarcs", "Hydro2",
 
 import subprocess
 import logging
-from .execonf import *
+from .conf import *
 import os
 import sys
 from .misc import *
@@ -108,8 +108,8 @@ class Executable(Runnable):
         self.exe_path = "none"
         # File object to log executable stdout
         self.logfile = None
-        # ExeConf instance
-        self.conf = ExeConf()
+        # Conf instance
+        self.conf = Conf()
         # Created by _run()
         self.popen = None
         # file-like object, or None: will receive Fortran output
@@ -381,8 +381,8 @@ class Combo(Runnable):
         self.sequence = [e_innewmarcs, e_hydro2, e_pfant, e_nulbad] \
             if sequence is None else sequence
 
-        # ExeConf instance
-        self.conf = ExeConf()
+        # Conf instance
+        self.conf = Conf()
 
         # ** Executable instances
         self.innewmarcs = Innewmarcs()

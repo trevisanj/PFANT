@@ -16,7 +16,7 @@ if __name__ == "__main__":
    formatter_class=SmartFormatter
    )
 
-  names = ExeConf().opt.get_names() # option names
+  names = Conf().opt.get_names() # option names
 
   for name in names:
     name = name.replace('_', '-')

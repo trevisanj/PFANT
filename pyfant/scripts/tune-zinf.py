@@ -151,12 +151,17 @@ if __name__ == "__main__":
         # todo not closing form automatically. This is OK, but perhaps it would
         # be good to show a message to continue
 
+        if not tm.flag_cancelled and not tm.has_finished:
+            # User closed window un-elegantly, we go to console mode
+            _tune_zinf_console(tm)
+
+        if not tm.flag_exit:
+            # If not cancelled, will not have exited, we have
+            tm.exit()
+
     else:
         _tune_zinf_console(tm)
 
-    if args.X and not tm.flag_cancelled and not tm.has_finished:
-        # User closed window un-elegantly, we go to console mode
-        _tune_zinf_console(tm)
 
 
     print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
@@ -199,3 +204,5 @@ if __name__ == "__main__":
     with open(LOG_FILENAME, "w") as h:
       h.write(str(tm))
     print "Final status saved to file '%s'" % LOG_FILENAME
+
+# Why not closing ...
