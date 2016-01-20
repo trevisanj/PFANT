@@ -127,8 +127,8 @@ class Conf(object):
 
     @property
     def session_dir(self):
-        assert self.__session_id is not None, "Cannot get session dir because session id is not set"
-        return _get_session_dir(session_prefix, self.__session_id)
+        return None if self.__session_id is None else \
+         _get_session_dir(session_prefix, self.__session_id)
 
     def __init__(self):
         # # Session control

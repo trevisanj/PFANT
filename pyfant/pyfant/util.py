@@ -6,7 +6,7 @@ Rule: no pyfant module can import util!!!
 """
 __all__ = ["run_parallel", "show_menu"]
 from pyfant.misc import *
-from pyfant import ThreadManager2, get_suitable_vis_classes
+from pyfant import ThreadManager, get_suitable_vis_classes
 import time
 import traceback
 
@@ -20,10 +20,10 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
       rr -- list of Runnable instances
       max_simultaneous -- maximum number of simultaneous processes.
 
-    Returns: the ThreadManager2 object
+    Returns: the ThreadManager object
     """
     # Adds to pool
-    tm = ThreadManager2(max_simultaneous=max_simultaneous)
+    tm = ThreadManager(max_simultaneous=max_simultaneous)
     tm.start()
 
     for p in rr:

@@ -29,7 +29,7 @@ from pyfant import *
 import logging
 import copy
 import numpy as np
-from pyfant.gui import XThreadManager2
+from pyfant.gui import XThreadManager
 from PyQt4.QtGui import *
 import time
 
@@ -38,7 +38,7 @@ import time
 EPSILON = 1e-4
 
 
-def get_zinf(lambda_centre, norm):
+def _get_zinf(lambda_centre, norm):
     """Finds zinf given *normalized* spectrum
 
     Arguments:
@@ -65,7 +65,7 @@ def _tune_zinf_console(tm):
     #
     # currently continuing automatically
     while True:
-        if tm.has_finished():
+        if tm.has_finished:
             print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
             tm.exit()
             break
@@ -95,6 +95,8 @@ if __name__ == "__main__":
     parser.add_argument('-X', action="store_true",
      help='Shows monitor window, then opens the Atomic Lines Editor to show '
           'the new file')
+    parser.add_argument('--no_clean', action="store_true",
+     help='If set, will not remove the session directories.')
 
     args = parser.parse_args()
 
@@ -116,7 +118,7 @@ if __name__ == "__main__":
             f = FileAtoms()
             f.atoms = [a]
             combo = Combo([e_pfant])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
-            combo.flag_log_console = False  # Fortran messages will not be displayed in terminal
+            combo.__flag_log_console = False  # Fortran messages will not be displayed in terminal
             combo.conf.file_atoms = f
             combo.conf.opt.logging_level = "warning"
             combo.conf.opt.zinf = args.max
@@ -136,7 +138,7 @@ if __name__ == "__main__":
 
     # # Runs pfant
     print "Running pfant's..."
-    tm = ThreadManager2()
+    tm = ThreadManager()
     tm.start()
 
     for p in pp:
@@ -144,7 +146,7 @@ if __name__ == "__main__":
 
     if args.X:
         app = QApplication([])
-        form = XThreadManager2(tm)
+        form = XThreadManager(tm)
         form.show()
         app.exec_()
 
@@ -163,7 +165,6 @@ if __name__ == "__main__":
         _tune_zinf_console(tm)
 
 
-
     print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
     print "[SUPPOSED TO HAVE] EXITED"
     print tm
@@ -171,38 +172,50 @@ if __name__ == "__main__":
 
 
 
-
-    # # Calculates zinf and save new atomic lines file
-    n = len(pp)
-    X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]
-    for i, (line, combo) in enumerate(zip(ll, pp)):
-        combo.pfant.load_result()
-        norm = combo.pfant.norm  # normalized spectrum
-        zinf = get_zinf(line.lambda_, norm)
-
-        if zinf < args.min:
-            zinf = args.min
-        if zinf > args.max:
-            zinf = args.max
-        if args.ge_current and line.zinf > zinf:
-            zinf = line.zinf
-
-        line.zinf = zinf
-    file_atoms.save_as(args.fn_output[0])
-    print "Successfully created file '%s'" % args.fn_output[0]
-
-    # # Removes session-* directories
-    print "Cleaning..."
-    for i, combo in enumerate(pp):
-        try:
-            combo.conf.clean()
-        except Exception as E:
-            print "Error cleaning session for %s: %s" % (combo.name, str(E))
-
     # # Saves log
     LOG_FILENAME = "tune-zinf-status.log"
     with open(LOG_FILENAME, "w") as h:
       h.write(str(tm))
     print "Final status saved to file '%s'" % LOG_FILENAME
+
+
+    if not tm.has_finished:
+        print "Not finished"
+        print "(session directories will not be removed)."
+    elif tm.num_failed > 0:
+        print "Failed tasks."
+        print "Please check log files inside directories of sessions that failed"
+        print "(session directories will not be removed)."
+    else:
+        # # Calculates zinf and save new atomic lines file
+        n = len(pp)
+        X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]
+        for i, (line, combo) in enumerate(zip(ll, pp)):
+            combo.pfant.load_result()
+            norm = combo.pfant.norm  # normalized spectrum
+            zinf = _get_zinf(line.lambda_, norm)
+
+            if zinf < args.min:
+                zinf = args.min
+            if zinf > args.max:
+                zinf = args.max
+            if args.ge_current and line.zinf > zinf:
+                zinf = line.zinf
+
+            line.zinf = zinf
+
+        file_atoms.save_as(args.fn_output[0])
+
+        # # Removes session-* directories
+        if not args.no_clean:
+            print "Cleaning..."
+            for i, combo in enumerate(pp):
+                try:
+                    combo.conf.clean()
+                except Exception as E:
+                    print "Error cleaning session for %s: %s" % (combo.name, str(E))
+
+        print "Successfully created file '%s' !!" % args.fn_output[0]
+
 
 # Why not closing ...

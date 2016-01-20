@@ -954,7 +954,6 @@ contains
     integer, intent(in) :: ntot, kik
     ! This variable is needed just to fill in the allocation requisites for FLIN_() in FLIN1 mode
     real*8, dimension(MAX_MODELES_NTOT) :: dummy_tauhd
-    real*8 f !< output variable: flux
     flin1 = flin_(kap, b, nh, ntot, ptdisk, mu, kik, dummy_tauhd, MODE_FLIN1)
   end
 

@@ -1,5 +1,6 @@
 __all__ = ["XThreadManager"]
 
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from pyfant import *
@@ -16,15 +17,14 @@ class XThreadManager(QMainWindow):
     """
     Thread manager window.
 
-    Allows to monitor running threads.
+    Allows to monitor running runnables.
     """
 
     def __init__(self, tm):
         QMainWindow.__init__(self)
         assert isinstance(tm, ThreadManager)
         self.tm = tm
-        self.threads = []
-        self.num_finished = 0
+        self.num_finished = 0  # outdated version of self.tm.num_finished
         self._lock = Lock()
 
         a = self.tableWidget = QTableWidget()
@@ -43,7 +43,6 @@ class XThreadManager(QMainWindow):
         # will update progress indicators automatically
         t = self.timer = QTimer()
         t.setInterval(1000)  # miliseconds
-        # t.timeout.connect(self.on_timer_timeout)
 
         # # Status bar
         self.label_n = QLabel()
@@ -53,8 +52,8 @@ class XThreadManager(QMainWindow):
         sb.insertWidget(1, self.label_t, 0)
 
         # # proxy to "changed" signal from thread manager
-        self.changed_proxy = SignalProxy([t.timeout, self.tm.thread_changed],
-         delay=0, rateLimit=1, slot=self._update)
+        self.changed_proxy = SignalProxy([t.timeout, self.tm.runnable_changed],
+                                         delay=0, rateLimit=1, slot=self._update)
 
         # # Positions window screen-centered
         rect = QApplication.desktop().screenGeometry()
@@ -64,12 +63,12 @@ class XThreadManager(QMainWindow):
     def showEvent(self, event):
         self._populate()
         self.changed_proxy.connect_all()
-        self.tm.thread_added.connect(self.on_tm_thread_added, Qt.QueuedConnection)
+        self.tm.runnable_added.connect(self.on_tm_thread_added, Qt.QueuedConnection)
         self.timer.start()
 
     def closeEvent(self, event):
         self.changed_proxy.disconnect_all()
-        self.tm.thread_added.disconnect(self.on_tm_thread_added)
+        self.tm.runnable_added.disconnect(self.on_tm_thread_added)
         self.timer.stop()
 
     # def on_tm_thread_changed(self):
@@ -88,46 +87,56 @@ class XThreadManager(QMainWindow):
         """Clears and rebuilds table widget."""
         with self._lock:
             a = self.tableWidget
-            self.threads = threads = self.tm.get_threads_copy()
+            self.runnables = runnables = self.tm.get_runnables_copy()
             a.clear()
             a.setAlternatingRowColors(True)
-            a.setRowCount(len(threads))
+            a.setRowCount(len(runnables))
             a.setColumnCount(2)
-            a.setHorizontalHeaderLabels(["Thread name", "Progress info              "])
-            for i, thread in enumerate(threads):
-                item = QTableWidgetItem(thread.name)
+            a.setHorizontalHeaderLabels(["Session directory", "Status"])
+            for i, runnable in enumerate(runnables):
+                title = runnable.conf.session_dir
+                if title is None:
+                    title = '...'
+                item = QTableWidgetItem(title)
                 a.setItem(i, 0, item)
-                item = QTableWidgetItem(str(thread.runnable.get_status()))
+                status = str(runnable.get_status())
+                item = QTableWidgetItem("?" if status is None else str(status))
                 a.setItem(i, 1, item)
             a.resizeColumnsToContents()
-            self.__update_status()
+            a.setColumnWidth(1, 350)
+            self._update_status()
 
     def _update(self):
         """Updates second column of table widget."""
         with self._lock:
             t = time.time()
             a = self.tableWidget
-            threads = self.threads
+            runnables = self.runnables
             nf = self.tm.num_finished  # grabs this before last table update,
                                        # so that it never skips a row update
-            mt = self.tm.max_threads
+            mt = self.tm.max_simultaneous
             for i in xrange(max(0, self.num_finished-mt+1),
-                            min(len(threads), self.tm.num_finished+mt)):
-                thread = threads[i]
+                            min(len(runnables), self.tm.num_finished+mt)):
+                runnable = runnables[i]
+
+                item = a.item(i, 0)
+                title = runnable.conf.session_dir
+                if title is None:
+                    title = "..."
+                item.setText(title)
+
                 item = a.item(i, 1)
-                item.setText(str(thread.runnable.get_status()))
-            a.setCurrentCell(self.tm.num_finished+self.tm.num_active-1, 0)
-            self.__update_status()
+                status = runnable.get_status()
+                item.setText("?" if status is None else str(status))
+
+            a.setCurrentCell(self.tm.num_finished+self.tm.max_simultaneous-1, 0)
+            self._update_status()
             self.num_finished = nf
             print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
 
+    def _update_status(self):
+        nf, nt = self.tm.num_finished, self.tm.num_runnables
+        ella, tot, rema = self.tm.get_times()
+        self.label_n.setText("Runnables: %d/%d" % (nf, nt))
+        self.label_t.setText("Time: %s / %s" % (seconds2str(ella), tot))
 
-    def __update_status(self):
-        nf, nt = self.tm.num_finished, len(self.threads)
-        ella = time.time()-self.tm.time_started # ellapsed time
-        if nf > 0:
-            estt = seconds2str(ella/nf*nt)
-        else:
-            estt = "?"
-        self.label_n.setText("Threads: %d/%d" % (nf, nt))
-        self.label_t.setText("Time: %s / %s" % (seconds2str(ella), estt))

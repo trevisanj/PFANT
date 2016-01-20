@@ -926,7 +926,7 @@ module pfant_x
   use config
   implicit none
 
-  character*64 :: x_flprefix
+  character*128 :: x_flprefix
   real*8 :: x_llzero, x_llfin
 
 contains
@@ -1222,15 +1222,15 @@ contains
       ! Note: two extra points are added to the left and to the right, as without this
       ! some interpolation routines (such as ftlin3) may crash.
       if (ikey .eq. 1) then
-        m_lzero = l0-main_pas
+        m_lzero = l0
       else
-        m_lzero = x_llzero+main_aint*(ikey-1)+main_pas-main_pas
+        m_lzero = x_llzero+main_aint*(ikey-1)
       end if
 
       if (ikey .eq. ikeytot) then
-        m_lfin = lf+main_pas
+        m_lfin = lf
       else
-        m_lfin = x_llzero+main_aint*ikey+main_pas
+        m_lfin = x_llzero+main_aint*ikey-main_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
@@ -1754,6 +1754,7 @@ contains
       end do
     end if
 
+
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
       if (atoms_f_nblend .ne. 0) then
@@ -1841,7 +1842,7 @@ contains
             phi = (exp(-vm**2))/(RPI*deltam(l,n))
             kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
           end if
-          kappam = kappam+kam
+          kappam = kappam + kam
         end do   !  fin bcle sur l
 
         250 continue
@@ -1850,7 +1851,6 @@ contains
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
       end do
-
 
       bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
 
@@ -1963,10 +1963,13 @@ contains
     bk_b(0) = c3 * (alph0/(1.-alph0))
     bk_fc = flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
-    ! lambdc(1) forced to be equal to m_ttd(1) because I was experiencing numerical errors here
-    ! where m_ttd(1) was lower than lambdc(1) by ~1e-14 causing ftlin3() to crash
+    ! lambdc(1) and lambdc(2) forced to be equal to m_ttd(1) and m_ttd(m_tdod)
+    ! because I was experiencing numerical errors here
+    ! where m_ttd(1) was lower than lambdc(1) by ~1e-14 causing ftlin3() to crash and
+    ! flin_() was raising "modele trop court" because of lambdc(2) apparently.
+    ! Sorry but I don't know why exactly. But works this way
     lambdc(1) = m_ttd(1) ! m_lzero-m_ilzero
-    lambdc(2) = m_lfin-m_ilzero
+    lambdc(2) = m_ttd(m_dtot)  !  m_lfin-m_ilzero
     do n=1,modeles_ntot
       kcj(1,n)=bk_kc1(n)
       kcj(2,n)=bk_kc2(n)

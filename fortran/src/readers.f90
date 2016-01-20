@@ -307,6 +307,7 @@ contains
     character*64 filetoh_temp
     logical :: flag_care_about_dissoc_, flag_read_filetoh_
     logical ecrit_obsolete
+    real*8 temp
 
 
 
@@ -391,12 +392,20 @@ contains
     main_llfin = ceiling(main_llfin)
     main_aint = floor(main_aint)
 
-    101 format('read_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
-    write(lll,101) main_llzero, main_llfin, main_aint
-    call log_info(lll)
+    ! 101 format('read_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
+    ! write(lll,101) main_llzero, main_llfin, main_aint
+    ! call log_info(lll)
 
     if (main_llzero .ge. main_llfin) then
       call pfant_halt('llzero must be lower than llfin!')
+    end if
+
+
+    ! main_aint has to be divisible by main_pas
+    temp = main_aint/main_pas
+    if (abs(temp-nint(temp)) .gt. 1.e-10) then
+        call pfant_halt('read_main(): aint ('//real82str(main_aint)// &
+         ') must be divisible by pas ('//real82str(main_pas)//')')
     end if
 
 
