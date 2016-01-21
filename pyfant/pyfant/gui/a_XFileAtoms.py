@@ -17,6 +17,8 @@ from .guimisc import *
 import os.path
 import webbrowser
 import sys
+from . import XFileAtomsHistogram
+
 
 NUM_PLOTS = len(ATOM_HEADERS)-1  # -1 because whe "lambda" does not have its plot
 
@@ -32,6 +34,7 @@ class XFileAtoms(QMainWindow):
         self.flag_changed = False
         # Form with the table to edit the lines
         self.form_lines = None
+        self.form_histogram = None
 
         # Information about the plots
         self.marker_row = None  # points into current atom, self.atom
@@ -154,6 +157,11 @@ class XFileAtoms(QMainWindow):
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
 
+
+        m = self.menu_tools = b.addMenu("&Tools")
+        self.act_save = ac = m.addAction("&Histogram")
+        ac.triggered.connect(self.on_histogram)
+
         m = self.menu_help = b.addMenu("&Help")
         ac = m.addAction("&Open help in browser")
         ac.setShortcut("F1")
@@ -240,6 +248,12 @@ class XFileAtoms(QMainWindow):
     def on_buttonSort_clicked(self):
         self.flag_sort = self.buttonSort.isChecked()
         self.plot_lines()
+
+    def on_histogram(self, _):
+        if self.form_histogram is None:
+            f = self.form_histogram = XFileAtomsHistogram(self.f)
+        f.show()
+
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 

@@ -1,0 +1,86 @@
+# todo plot "X" instead of line
+# find line in editor by clicking
+# rename molecule
+
+__all__ = ["XFileAtomsHistogram"]
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
+import matplotlib.pyplot as plt
+from ._guiaux import *
+
+
+class XFileAtomsHistogram(QMainWindow):
+    """
+    Interactive window that plots a histogram of selected field of a FileAtoms
+    object.
+
+    Arguments:
+      file_atoms -- FileAtoms object.
+    """
+
+    def __init__(self, file_atoms):
+        QMainWindow.__init__(self)
+
+        self.f = file_atoms  # FileAtoms object
+
+        # # Toolbar
+
+        l = self.labelDataField = QLabel("&Data field")
+        c = self.comboBoxDataField = QComboBox()
+        c.addItems(ATOM_ATTR_NAMES)
+        l.setBuddy(c)
+        l2 = self.labelSpinBox = QLabel("&Bins")
+        sb = self.spinBox = QSpinBox()
+        sb.setMaximum(200)
+        sb.setValue(50)
+        l2.setBuddy(sb)
+        b = self.puishButtonPlot = QPushButton("&Plot")
+        b.clicked.connect(self.on_plot)
+
+        s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        bb = [l, c, l2, sb, b]
+
+        l0 = self.layoutToolbar = QHBoxLayout()
+        for b in bb:
+            l0.addWidget(b)
+        l0.addItem(s)
+        a = self.widgetPlotToolbar = QWidget()
+        a.setLayout(l0)
+        a.setFixedHeight(40)
+
+        # # Plot widget
+
+        # http://stackoverflow.com/questions/12459811
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar2QT(self.canvas, self)
+        layout = QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+        layout.setMargin(0)
+
+        a = self.widgetPlot = QWidget()
+        a.setLayout(layout)
+
+        l1 = self.layoutPlot = QVBoxLayout()
+        l1.addWidget(self.widgetPlotToolbar)
+        l1.addWidget(self.widgetPlot)
+        l1.setMargin(0)
+
+        a = self.widgetPlot = QWidget()
+        a.setLayout(l1)
+        a.setFont(MONO_FONT)
+
+        self.setCentralWidget(self.widgetPlot)
+        place_center(self)
+
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Slots
+
+    def on_plot(self, _):
+        print "Quech plotar nego"
