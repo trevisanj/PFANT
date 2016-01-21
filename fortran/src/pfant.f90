@@ -554,6 +554,11 @@ module filters
   implicit none
 
 
+  !> Analogue to atoms_zinf
+  !> All molecular lines will be calculated until this value (angstrom) to the
+  !> left and to the right of the line centre.
+  real*8, parameter :: KM_ALARGM = 0.1
+
   !=====
   ! km_f_*Variables filled by filter_molecules()
   !=====
@@ -653,7 +658,7 @@ contains
       do j_dummy = 1, km_lines_per_mol(molidx)
         lambda = km_lmbdam(i_line)
 
-        if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
+        if ((lambda .ge. lzero-KM_ALARGM) .and. (lambda .le. lfin+KM_ALARGM)) then
           ! Filters in a new spectral line!
           i_filtered = i_filtered+1
 
@@ -712,9 +717,8 @@ contains
 
     k = 0
     do j = 1, atoms_nblend
-      if((atoms_lambda(j).le.lfin) .and. (atoms_lambda(j) .ge. lzero)) then
+      if((atoms_lambda(j) .le. lfin+atoms_zinf(j)) .and. (atoms_lambda(j) .ge. lzero-atoms_zinf(j))) then
         k = k+1
-
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMS_F_NBLEND) then
@@ -760,8 +764,7 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm,    & !< ?doc? in sync with km_f_sj etc
-    km_c_alargm    !< ?doc? in sync with km_f_sj etc
+    km_c_gfm !< ?doc? in sync with km_f_sj etc
 
   real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj !< ?doc? in sync with km_f_sj etc
 
@@ -849,10 +852,6 @@ contains
       end do
     end do ! end of i_mol loop
 
-
-    do l = 1, km_f_mblend
-      km_c_alargm(l) = 0.1
-    end do
 
     call log_debug(LEAVING//' kapmol()')
   end
@@ -1034,10 +1033,6 @@ module synthesis
 
   real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
    popadelh_pop, popadelh_a, popadelh_delta
-
-
-
-
 
 
 
@@ -1736,6 +1731,14 @@ contains
      phi, t, v, vm, &
      kam, kappam, kappa, kak
 
+
+!todo cleanup
+integer count_
+
+
+
+
+
     if (atoms_f_nblend .ne. 0) then
       do k = 1,atoms_f_nblend
         ecar(k) = m_ecart(k)
@@ -1796,6 +1799,13 @@ contains
 
 
 !! TODO CLEANUP
+
+
+if (n .eq. 1) then
+    count_ = count_+1
+    end if
+
+
 !            if (isnan(kak)) then
 !              write(*,*) 'KAK IS NAN KAK IS NAN KAK IS NAN KAK I'
 !              write(*,*) 'v = ', v
@@ -1833,8 +1843,8 @@ contains
         ! molecules
         if (config_no_molecules) go to 250
         do l = 1, km_f_mblend
-          !if(abs(ecartlm(l)) .gt. km_c_alargm(l))  then
-          if(abs(ecarm(l)) .gt. km_c_alargm(l))  then
+          ! todo exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
+          if(abs(ecarm(l)) .gt. KM_ALARGM)  then
             kam = 0.
           else
             deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
@@ -1889,6 +1899,9 @@ contains
       !write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
 
     end do  ! fin bcle sur d
+
+    !todo cleanup
+    print *, 'olha soh  dtot=', m_dtot, '; count_=', count_
   end
 
 
