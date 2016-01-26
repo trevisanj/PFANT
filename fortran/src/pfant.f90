@@ -554,6 +554,11 @@ module filters
   implicit none
 
 
+  !> Analogue to atoms_zinf
+  !> All molecular lines will be calculated until this value (angstrom) to the
+  !> left and to the right of the line centre.
+  real*8, parameter :: KM_ALARGM = 0.1
+
   !=====
   ! km_f_*Variables filled by filter_molecules()
   !=====
@@ -653,7 +658,7 @@ contains
       do j_dummy = 1, km_lines_per_mol(molidx)
         lambda = km_lmbdam(i_line)
 
-        if ((lambda .ge. lzero) .and. (lambda .le. lfin)) then
+        if ((lambda .ge. lzero-KM_ALARGM) .and. (lambda .le. lfin+KM_ALARGM)) then
           ! Filters in a new spectral line!
           i_filtered = i_filtered+1
 
@@ -674,7 +679,7 @@ contains
           km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is set apart.
 
           num_lambdas = km_f_ln(j_set+1, i_mol)-km_f_ln(j_set, i_mol)
-          
+
           !write(lll, *) 'number of SELECTED lambdas for transition ', j_set, ': ', num_lambdas
           !call log_debug(lll)
 
@@ -712,9 +717,8 @@ contains
 
     k = 0
     do j = 1, atoms_nblend
-      if((atoms_lambda(j).le.lfin) .and. (atoms_lambda(j) .ge. lzero)) then
+      if((atoms_lambda(j) .le. lfin+atoms_zinf(j)) .and. (atoms_lambda(j) .ge. lzero-atoms_zinf(j))) then
         k = k+1
-
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMS_F_NBLEND) then
@@ -760,8 +764,7 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm,    & !< ?doc? in sync with km_f_sj etc
-    km_c_alargm    !< ?doc? in sync with km_f_sj etc
+    km_c_gfm !< ?doc? in sync with km_f_sj etc
 
   real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj !< ?doc? in sync with km_f_sj etc
 
@@ -850,10 +853,6 @@ contains
     end do ! end of i_mol loop
 
 
-    do l = 1, km_f_mblend
-      km_c_alargm(l) = 0.1
-    end do
-
     call log_debug(LEAVING//' kapmol()')
   end
 
@@ -926,7 +925,7 @@ module pfant_x
   use config
   implicit none
 
-  character*64 :: x_flprefix
+  character*128 :: x_flprefix
   real*8 :: x_llzero, x_llfin
 
 contains
@@ -1037,10 +1036,6 @@ module synthesis
 
 
 
-
-
-
-
   !! Calculated by subroutine popadelh
   !real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
   ! popadelh_pop, popadelh_a, popadelh_delta, &
@@ -1102,11 +1097,10 @@ module synthesis
    m_ttd(MAX_DTOT), &
    m_ecart(MAX_ATOMS_F_NBLEND), & !< MT: some sort of delta lambda
    m_gfal(MAX_ATOMS_F_NBLEND), &
-   m_ecartm(MAX_KM_F_MBLEND), &
-   m_ilzero
+   m_ecartm(MAX_KM_F_MBLEND)
   integer :: &
-    m_dtot!,    &  !< number of different wavelenghts for which flux will be calculated at each ikey-iteration
-    !m_ilzero      !< closest integer multiple of 100 that is <= m_lzero
+    m_dtot,    &  !< number of different wavelenghts for which flux will be calculated at each ikey-iteration
+    m_ilzero      !< closest integer multiple of 100 that is <= m_lzero
 
 contains
 
@@ -1173,24 +1167,15 @@ contains
     call cpu_time(finish)
     call log_debug("TURBUL() Time = "//real42str(finish-start, 3)//" seconds.")
 
-    ! -- III --
-    ! Calcul de quant  ne dependant que du metal et du modele
-    ! Population du niv fond des ions
     call cpu_time(start)
     call popul()
     call cpu_time(finish)
     call log_debug("POPUL() Time = "//real42str(finish-start, 3)//" seconds.")
 
-    ! -- IV --
-    ! Calcul des quantites ne dependant que du
-    ! Modele et de lambda : bk_b(n)   bk_kc(n)   bk_fc ISSUE probably wrong comment
     call cpu_time(start)
-
-    if (.not. config_no_molecules) then
-      call sat4()
-      call cpu_time(finish)
-      call log_debug("SAT4() Time = "//real42str(finish-start, 3)//" seconds.")
-    end if
+    call sat4()
+    call cpu_time(finish)
+    call log_debug("SAT4() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
     ! initial calculation sub-interval
@@ -1230,17 +1215,17 @@ contains
 
       ! Determines the calculation interval [m_lzero, m_lfin]
       ! Note: two extra points are added to the left and to the right, as without this
-      ! some interpolation routines (such as ftlin3) may crash. 
+      ! some interpolation routines (such as ftlin3) may crash.
       if (ikey .eq. 1) then
-        m_lzero = l0-main_pas
+        m_lzero = l0
       else
-        m_lzero = x_llzero+main_aint*(ikey-1)+main_pas-main_pas
+        m_lzero = x_llzero+main_aint*(ikey-1)
       end if
 
       if (ikey .eq. ikeytot) then
-        m_lfin = lf+main_pas
+        m_lfin = lf
       else
-        m_lfin = x_llzero+main_aint*ikey+main_pas
+        m_lfin = x_llzero+main_aint*ikey-main_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
@@ -1253,9 +1238,16 @@ contains
       end if
 
       m_lambd = (m_lzero+m_lfin)/2
-      m_ilzero = int((m_lzero-main_pas)/main_pas)*main_pas  ! some reference ilzero smaller than lzero
+      m_ilzero = floor(m_lzero/100)*100
       alzero = m_lzero-m_ilzero
-      do d = 1,m_dtot
+      do d = 1, m_dtot
+        ! todo cleanup
+!        if (d .eq. 1) then
+!          m_ttd(d) = alzero
+!        else
+!          m_ttd(d) = alzero+main_pas*(d-1)
+!        end if
+
         m_ttd(d) = alzero+main_pas*(d-1)
       end do
 
@@ -1263,7 +1255,7 @@ contains
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
       501 format(2x,2x,'m_lzero=',f10.3,2x,'m_lfin=',&
-       f10.3,2x,'m_dtot=',i7,2x,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',f10.3)
+       f10.3,2x,'m_dtot=',i7,2x,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',i6)
       write(lll,501) m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
       call log_info(lll)
 
@@ -1337,7 +1329,7 @@ contains
       ! i1 and i2 are the initial and final indexes of selekfh_fl, selekfh_fcont, and fd
       ! that will be written to output file.
       i1 = 2
-      if (ikey .eq. ikeytot) then 
+      if (ikey .eq. ikeytot) then
         i2 = m_dtot - 1
       else
         ! The last value of flux in iteration ikey equals
@@ -1578,10 +1570,6 @@ contains
       popadelh_cvdw(k) = 0
       ioo = atoms_f_ioni(k)
 
-      ! fort.77 disabled until someone misses it.
-      ! write (77,*) atoms_f_elem(k),atoms_f_lambda(k)
-
-      ! ?doc?
       ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
       ! See also read_atoms(), variable atoms_gr, which is also overwritten.
       if(atoms_f_ch(k) .lt. 1.e-37)  then
@@ -1606,6 +1594,16 @@ contains
         popadelh_cvdw(k)= calch(kii, ioo, atoms_f_kiex(k), isi, kies, iss)
 
         atoms_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
+        if (atoms_f_ch(k)  .lt. 0) then
+          ! ch cannot be < 0, as it will be powered to 0.4 later
+          write(*,*) 'popadelh_cvdw(k) = ', popadelh_cvdw(k)
+          write(*,*) 'popadelh_corch(k) = ', popadelh_corch(k)
+          write(*,*) 'atoms_f_kiex(k) = ', atoms_f_kiex(k)
+          write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
+          write(*,*) 'atoms_f_lambda(k) = ', atoms_f_lambda(k)
+          call log_halt('popadelh(): atoms_f_ch(k)  calculated is lower than ZERO')
+          call pfant_halt('******'//real82str(atoms_f_ch(k))//'******')
+        end if
       end if
 
 !
@@ -1632,6 +1630,22 @@ contains
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
+! todo cleanup
+!        IF (isnan(popadelh_pop(k, n))) then
+!          write(*,*) 'isnan(popadelh_pop(k, n)'
+!
+!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
+!write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
+!write(*,*) 'sat4_po(n) = ', sat4_po(n)
+!write(*,*) 'sat4_pph(n) = ', sat4_pph(n)
+!write(*,*) 'popul_p(ioo,j,n) = ', popul_p(ioo,j,n)
+!write(*,*) 'top = ', top
+!write(*,*) 'tap = ', tap
+!stop
+!end if
+
+
+
         delta = (1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         popadelh_delta(k,n) = delta
 
@@ -1646,20 +1660,46 @@ contains
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
         popadelh_a(k,n) = a
 
-        if (n .eq. modeles_ntot) then
-          ! zinf(k) will be calculated for the last atmospheric layer, whether there is the most
-          ! broadening
-          x = (31.9*a+5.1)*50
-          ! To convert the "x" argument of hjenor() to a wavelength, I do the inverse of what is done
-          ! just before calling hjenor() in subroutine selekfh() below
-          ! popadelh_zinf(k, n) = x*1e8*delta
-          popadelh_zinf(k) = x*1e8*delta
-
-!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
-          ! write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
-          ! todo cleanup write(45,*) popadelh_a(k,n)
-          ! todo cleanup write(46,*) popadelh_zinf(k, n)
-        end if
+!! TODO CLEANUP
+!        if (isnan(a)) then
+!          write(*,*) 'popaedlh: a is nan'
+!          write(*,*) 'gamma = ', gamma
+!          write(*,*) 'KB = ', KB
+!          write(*,*) 't = ', t
+!          write(*,*) 'atoms_f_gr(k) ', atoms_f_gr(k)
+!          write(*,*) 'atoms_f_ge(k) ', atoms_f_ge(k)
+!          write(*,*) 'modeles_pe(n) ', modeles_pe(n)
+!          write(*,*) 'gh ', gh
+!          write(*,*) 'bk_phn(n) ', bk_phn(n)
+!          write(*,*) 'bk_ph2(n) ', bk_ph2(n)
+!          write(*, *) 'C5', C5
+!          write(*, *) 'C6', C6
+!          write(*, *) 'iopi', iopi
+!          write(*, *) 'atoms_f_ch(k)', atoms_f_ch(k)
+!          write(*, *) 'vrel', vrel
+!          write(*, *) 'popadelh_corch(k)', popadelh_corch(k)
+!          write(*, *) 'C5*atoms_f_ch(k)**0.4*vrel**0.6', C5*atoms_f_ch(k)**0.4*vrel**0.6
+!          write(*, *) 'C5*atoms_f_ch(k)', C5*atoms_f_ch(k)
+!          write(*, *) 'atoms_f_ch(k)**0.4', atoms_f_ch(k)**0.4
+!          write(*, *) 'vrel**0.6', vrel**0.6
+!
+!          stop
+!        end if
+!
+!        if (n .eq. modeles_ntot) then
+!          ! zinf(k) will be calculated for the last atmospheric layer, whether there is the most
+!          ! broadening
+!          x = (31.9*a+5.1)*50
+!          ! To convert the "x" argument of hjenor() to a wavelength, I do the inverse of what is done
+!          ! just before calling hjenor() in subroutine selekfh() below
+!          ! popadelh_zinf(k, n) = x*1e8*delta
+!          popadelh_zinf(k) = x*1e8*delta
+!
+!!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
+!          ! write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
+!          ! todo cleanup write(45,*) popadelh_a(k,n)
+!          ! todo cleanup write(46,*) popadelh_zinf(k, n)
+!        end if
       end do
     end do
   end
@@ -1692,13 +1732,8 @@ contains
      kam, kappam, kappa, kak
 
 
- 
-
-
-integer QWE
-
-
-
+!todo cleanup
+integer count_
 
 
 
@@ -1722,6 +1757,7 @@ integer QWE
       end do
     end if
 
+
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
       if (atoms_f_nblend .ne. 0) then
@@ -1742,8 +1778,7 @@ integer QWE
 
         ! atomes
         if(config_no_atoms) go to 260
-
-        do  k = 1,atoms_f_nblend
+        do  k = 1, atoms_f_nblend
 ! todo cleanup
           if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
@@ -1760,6 +1795,33 @@ integer QWE
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
+
+
+
+!! TODO CLEANUP
+
+
+if (n .eq. 1) then
+    count_ = count_+1
+    end if
+
+
+!            if (isnan(kak)) then
+!              write(*,*) 'KAK IS NAN KAK IS NAN KAK IS NAN KAK I'
+!              write(*,*) 'v = ', v
+!              write(*,*) 'a = ', popadelh_a(k,n)
+!              write(*,*) 'delta = ', popadelh_delta(k,n)
+!              write(*,*) 'phi = ', phi
+!
+!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
+!write(*,*) 'm_gfal(k) = ', m_gfal(k)
+!write(*,*) 'atoms_f_abonds_abo(k) = ', atoms_f_abonds_abo(k)
+!
+!
+!
+!
+!              stop
+!            end if
 
             ! todo cleanup
             !!! trick to write one atmospheric layer to a different file
@@ -1781,8 +1843,8 @@ integer QWE
         ! molecules
         if (config_no_molecules) go to 250
         do l = 1, km_f_mblend
-          !if(abs(ecartlm(l)) .gt. km_c_alargm(l))  then
-          if(abs(ecarm(l)) .gt. km_c_alargm(l))  then
+          ! todo exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
+          if(abs(ecarm(l)) .gt. KM_ALARGM)  then
             kam = 0.
           else
             deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
@@ -1790,7 +1852,7 @@ integer QWE
             phi = (exp(-vm**2))/(RPI*deltam(l,n))
             kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
           end if
-          kappam = kappam+kam
+          kappam = kappam + kam
         end do   !  fin bcle sur l
 
         250 continue
@@ -1799,7 +1861,6 @@ integer QWE
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
       end do
-
 
       bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
 
@@ -1832,12 +1893,15 @@ integer QWE
        m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
 
       ! LETS SEE kap for three lines
-      QWE = 50
+      ! QWE = 50
 
       ! todo cleanup
       !write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
 
     end do  ! fin bcle sur d
+
+    !todo cleanup
+    print *, 'olha soh  dtot=', m_dtot, '; count_=', count_
   end
 
 
@@ -1912,17 +1976,22 @@ integer QWE
     bk_b(0) = c3 * (alph0/(1.-alph0))
     bk_fc = flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
 
-    lambdc(1) = m_lzero-m_ilzero
-    lambdc(2) = m_lfin-m_ilzero
+    ! lambdc(1) and lambdc(2) forced to be equal to m_ttd(1) and m_ttd(m_tdod)
+    ! because I was experiencing numerical errors here
+    ! where m_ttd(1) was lower than lambdc(1) by ~1e-14 causing ftlin3() to crash and
+    ! flin_() was raising "modele trop court" because of lambdc(2) apparently.
+    ! Sorry but I don't know why exactly. But works this way
+    lambdc(1) = m_ttd(1) ! m_lzero-m_ilzero
+    lambdc(2) = m_ttd(m_dtot)  !  m_lfin-m_ilzero
     do n=1,modeles_ntot
       kcj(1,n)=bk_kc1(n)
       kcj(2,n)=bk_kc2(n)
     end do
-    do n=1,modeles_ntot
-      do j=1,2
-        kcn(j)=kcj(j,n)
+    do n = 1, modeles_ntot
+      do j = 1, 2
+        kcn(j) = kcj(j, n)
       end do
-      call ftlin3(2,lambdc,kcn,m_dtot,m_ttd,fttc)
+      call ftlin3(2, lambdc, kcn, m_dtot, m_ttd, fttc)
       do d = 1,m_dtot
         bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
       end do

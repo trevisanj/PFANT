@@ -17,6 +17,8 @@ from .guimisc import *
 import os.path
 import webbrowser
 import sys
+from . import XFileAtomsHistogram
+
 
 NUM_PLOTS = len(ATOM_HEADERS)-1  # -1 because whe "lambda" does not have its plot
 
@@ -32,13 +34,13 @@ class XFileAtoms(QMainWindow):
         self.flag_changed = False
         # Form with the table to edit the lines
         self.form_lines = None
+        self.form_histogram = None
 
         # Information about the plots
         self.marker_row = None  # points into current atom, self.atom
         self.plot_info = [PlotInfo() for i in range(NUM_PLOTS)]
         # keptself.set_flag_plot(ATOM_ATTR_NAMES.index("kiex")-1, True)
         self.set_flag_plot(ATOM_ATTR_NAMES.index("algf")-1, True)
-
 
         # ** "Atoms browser"
 
@@ -154,6 +156,11 @@ class XFileAtoms(QMainWindow):
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
 
+
+        m = self.menu_tools = b.addMenu("&Tools")
+        self.act_save = ac = m.addAction("&Histogram")
+        ac.triggered.connect(self.on_histogram)
+
         m = self.menu_help = b.addMenu("&Help")
         ac = m.addAction("&Open help in browser")
         ac.setShortcut("F1")
@@ -164,7 +171,7 @@ class XFileAtoms(QMainWindow):
 
         self.splitter.setFont(MONO_FONT)
         self.setCentralWidget(self.splitter)
-        self.setGeometry(0, 0, 800, 600)
+        place_left_top(self)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Qt override
@@ -240,6 +247,12 @@ class XFileAtoms(QMainWindow):
     def on_buttonSort_clicked(self):
         self.flag_sort = self.buttonSort.isChecked()
         self.plot_lines()
+
+    def on_histogram(self, _):
+        if self.form_histogram is None:
+            self.form_histogram = XFileAtomsHistogram(self.f)
+        self.form_histogram.show()
+
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
@@ -346,7 +359,7 @@ class XFileAtoms(QMainWindow):
         self.labelNumLines.setText('Number of lines: %d' % (n,))
 
     def update_window_title(self):
-        self.setWindowTitle(self.f.filename+("" if not self.flag_changed else " (changed)"))
+        self.setWindowTitle("ated -- %s" % (self.f.filename+("" if not self.flag_changed else " (changed)"), ))
 
     def enable_save_actions(self):
         self.act_save.setEnabled(True)

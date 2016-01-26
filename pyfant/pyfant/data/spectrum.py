@@ -6,7 +6,7 @@ import struct
 import logging
 import numpy as np
 from .datafile import DataFile
-from ..parts import *
+from ..misc import *
 from astropy.io import fits
 from pyfant import write_lf
 

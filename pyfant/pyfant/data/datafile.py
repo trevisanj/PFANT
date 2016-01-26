@@ -5,8 +5,6 @@ Ancestor class for all classes that represent an input file.
 __all__ = ["DataFile"]
 
 from ..misc import *
-from ..parts import *
-
 
 class DataFile(AttrsPart):
     default_filename = None  ## Descendants shoulds set this

@@ -85,7 +85,7 @@ contains
   !> Parse command line options. Options and their arguments must come before
   !> all non-option arguments. Short options have the form "-X", long options
   !> have the form "--XXXX..." where "X" is any character.
-  
+
   subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
@@ -276,8 +276,8 @@ contains
 
   end subroutine
 
-  
-  
+
+
   !=======================================================================================
 
   !> Print an option in the style of a man page. I.e.
@@ -855,7 +855,7 @@ contains
 
 
     !
-    ! 
+    !
   end
 
 
@@ -979,10 +979,11 @@ contains
       case ('fn_hmap')
         call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
       case ('llzero')
-        config_llzero = parse_aux_str2real8(opt, o_arg)
+        ! llzero and llfin cannot have decimal places, I don't know why but NaN's would appear in the calculations
+        config_llzero = floor(parse_aux_str2real8(opt, o_arg))
         call parse_aux_log_assignment('config_llzero', real82str(config_llzero, 1))
       case ('llfin')
-        config_llfin = parse_aux_str2real8(opt, o_arg)
+        config_llfin = ceiling(parse_aux_str2real8(opt, o_arg))
         call parse_aux_log_assignment('config_llfin', real82str(config_llfin, 1))
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
@@ -1060,11 +1061,11 @@ contains
   ! !=======================================================================================
   ! !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
   ! !> Result is clean of leading/trailling spaces
-  ! 
+  !
   ! function join_with_wdir(filename) result(res)
   !   character(len=*), intent(in) :: filename  !< File name
   !   character(len=:), allocatable :: res
-  ! 
+  !
   !   res = wdir_trim // trim(filename)
   ! end
 
@@ -1194,7 +1195,7 @@ contains
   ! 8wwP' 8wwK'  8    YbdP  dPwwYb   8   8
   ! 8     8  Yb 888    YP  dP    Yb  8   8888
 
-  
+
   !=======================================================================================
   !> Parses and validates all command-line arguments.
   !>

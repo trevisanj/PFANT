@@ -231,7 +231,7 @@ class XFileMolecules(QMainWindow):
         # Final adjustments
 
         self.setCentralWidget(self.tabWidgetFile)
-        self.setGeometry(0, 0, 800, 600)
+        place_left_top(self)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
 
@@ -554,7 +554,7 @@ class XFileMolecules(QMainWindow):
         self.labelNumLines.setText('Number of lines: %d' % (n,))
 
     def update_window_title(self):
-        self.setWindowTitle(self.f.filename+("" if not self.flag_changed else " (changed)"))
+        self.setWindowTitle("mled - %s" % (self.f.filename+("" if not self.flag_changed else " (changed)"),))
 
     def enable_save_actions(self):
         self.act_save.setEnabled(True)

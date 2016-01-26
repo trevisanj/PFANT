@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
-from ..parts import *
+from ..misc import *
 
 
 def get_suitable_vis_classes(obj):

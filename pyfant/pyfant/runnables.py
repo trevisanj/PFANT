@@ -1,42 +1,47 @@
-__all__ = ["Runnable", "RunnableStatus", "Executable", "Innewmarcs", "Hydro2",
+__all__ = ["Runnable", "ExecutableStatus", "Executable", "Innewmarcs", "Hydro2",
            "Pfant", "Nulbad", "Combo"]
 
+
 import subprocess
-import logging
-from .execonf import *
+from .conf import *
 import os
-import sys
 from .misc import *
 from .errors import *
-from .parts import *
 from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 from threading import Lock
 
-class RunnableStatus(PyfantObject):
-    """Data class, stores progress information."""
 
-    def __init__(self, runnable, ikey=None, ikeytot=None):
-        assert isinstance(runnable, Runnable)
-        self.ikey = ikey
-        self.ikeytot = ikeytot
-        self.exe_name = runnable.__class__.__name__.lower()
-        self.is_running = runnable.is_running
-        self.is_finished = runnable.is_finished
-        self.error_message = runnable.error_message
+@froze_it
+class ExecutableStatus(PyfantObject):
+    """Stores status related to Executable for reporting purposes."""
+    
+    def __init__(self, executable):
+        assert isinstance(executable, Runnable)
+        self.exe_filename = executable.__class__.__name__.lower()
+        self.executable = executable
+        # used by pfant only
+        self.ikey = None
+        # used by pfant only
+        self.ikeytot = None
 
     def __str__(self):
         l = []
-
-        if self.exe_name is not None:
-            l.append(self.exe_name)
-        if self.is_finished:
+        if self.exe_filename is not None:
+            l.append(self.exe_filename)
+        if self.executable.flag_finished:
             l.append("finished")
-            if self.error_message:
-                l.append("*"+self.error_message+"*")
-        elif self.is_finished:
+        elif self.executable.flag_running:
             l.append("running")
+        elif self.executable.flag_killed:
+            l.append("killed")
+        if self.executable.flag_error:
+            l.append("error")
+        if self.executable.error_message:
+            l.append("*" + str(self.executable.error_message) + "*")
         if self.ikey is not None:
-            l.append ("%5.1f %% (%d/%d)" % (100.*self.ikey/self.ikeytot, self.ikey, self.ikeytot))
+            l.append("%5.1f %% (%d/%d)" % (100.*self.ikey/self.ikeytot, self.ikey, self.ikeytot))
+        if self.executable.returncode is not None:
+            l.append("returncode=%d" % self.executable.returncode)
         if len(l) > 0:
             return " ".join(l)
         return "?"
@@ -51,78 +56,120 @@ class Runnable(PyfantObject):
     This is a base class for Executable and Combo.
     """
 
+    @property
+    def flag_finished(self):
+        return self._flag_finished
+    @property
+    def flag_running(self):
+        return self._flag_running
+    @property
+    def flag_killed(self):
+        return self._flag_killed
+    @property
+    def flag_error(self):
+        return self._flag_error
+    @property
+    def error_message(self):
+        return self._error_message
+
+    @property
+    def conf(self):
+        return self.__conf
+    @conf.setter
+    def conf(self, x):
+        self.__conf = x
+
     def __init__(self):
         self.name = random_name()
+        # Is running?
+        self._flag_running = False
+        # Is finished?
+        self._flag_finished = False
+        # Was killed?
+        self._flag_killed = False
+        # Had error?
+        self._flag_error = False
+        # Will contain error message if finished with error
+        self._error_message = ""
+        # Conf instance
+        self.__conf = Conf()
+
+    def get_status(self):
+        raise NotImplementedError()
 
     def run(self):
         raise NotImplementedError()
 
-    def get_status(self):
-        """
-        Returns progress information.
-
-        Draft of a protocol:
-          string:  just human-readable information
-          (ikey, ikeytot)
-          None -- nothing available
-        """
-        return RunnableStatus(self)
+    def kill(self):
+        raise NotImplementedError()
 
 
 class Executable(Runnable):
     """
-    Generic class to represent an executable.
+    PFANT executables common ancestor class.
     """
 
     @property
-    def is_finished(self):
-        with self.__L_running:
-            return self.__is_finished
+    def returncode(self):
+        return self.__returncode
+
     @property
-    def is_running(self):
-        with self.__L_running:
-            return self.__is_running
+    def exe_path(self):
+        return self._exe_path
+    @exe_path.setter
+    def exe_path(self, x):
+        self._exe_path = x
+
     @property
-    def error_message(self):
-        with self.__L_running:
-            return self.__error_message
+    def logger(self):
+        return self.__logger
+    @logger.setter
+    def logger(self, x):
+        self.__logger = x
+
+    @property
+    def stdout(self):
+        return self.__stdout
+    @stdout.setter
+    def stdout(self, x):
+        self.__stdout = x
 
     def __init__(self):
         Runnable.__init__(self)
+        # # Protected variables
         # Full path to executable (including executable name)
-        self.exe_path = "none"
-        # File object to log executable stdout
-        self.logfile = None
-        # ExeConf instance
-        self.conf = ExeConf()
-        # Created by _run()
-        self.popen = None
-        # file-like object, or None: will receive Fortran output
-        self.stdout = None
+        self._exe_path = "none"
+        # ExecutableStatus instance
+        self._status = ExecutableStatus(self)
+
+        # # Private variables
         # Will receive Python output
-        self.logger = None
-        # Lock is necessary because sometimes more than one locked variable
-        # needs to be accessed consistently
-        self.__L_running = Lock()
-        # Is running?
-        self.__is_running = False
-        # Is finished?
-        self.__is_finished = False
-        # Will contain error message if finished with error
-        self.__error_message = ""
+        self.__logger = None
+        # fill be filled with self.popen.returncode in due time
+        self.__returncode = None
+        # Created by _run()
+        self.__popen = None
+        # file-like object, or None: will receive Fortran output
+        self.__stdout = None
+        # It is either a blocking _run() or asynchronous open..kill..close
+        self.__lock = Lock()
 
     def get_status(self):
-        return RunnableStatus(self)
+        """Updates and returns status.
+
+        Status is updated on demand, i.e., when this method is called.
+        """
+        return self._status
 
     def run(self):
         """Runs executable.
 
         Blocking routine. Only returns when executable finishes running.
         """
-        assert not self.__is_running, "Already running"
-        self.logger = logging.getLogger("%s%d" % (self.__class__.__name__.lower(), id(self)))
-        # this was leaving file open after finished add_file_handler(self.logger, "python.log")
-        self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+        assert not self._flag_running, "Already running"
+        self.__logger = get_python_logger()
+        # this was leaving file open after finished add_file_handler(self.__logger, "python.log")
+        self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self.conf.make_session_id()
         self.conf.create_data_files()
         self._run()
@@ -133,23 +180,17 @@ class Executable(Runnable):
         This routine bypasses all the configuration that is done prior to running.
         (Combo.configure() will do the necessary configuration).
         """
-        assert not self.__is_running, "Already running"
+        assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
         self._run()
 
-    # def is_running(self):
-    #     if self.popen is None:
-    #         return False
-    #     self.popen.poll()
-    #     return self.popen.returncode is None
-
     def kill(self):
-        assert self.__is_running, "Not running"
-        if self.popen:
-            self.popen.kill()
-        else:
-            self.logger.critical("Called kill() but there is no popen for %s instance" % self.__class__.__name__)
+        assert self._flag_running, "Not running"
+        self.__popen.kill()
+        self._flag_killed = True
 
     def _run(self):
+<<<<<<< HEAD
         assert not self.__is_finished, "Can only run once!"
         args = self.conf.get_args()
         cmd_line = [self.exe_path]+args
@@ -189,18 +230,82 @@ class Executable(Runnable):
         #             (self.__class__.__name__.lower(),
         #              'finished successfully' if self.popen.returncode == 0 else '*failed*',
         #              self.popen.returncode))
+=======
+        assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
+        with self.__lock:
+            args = self.conf.get_args()
+            cmd_words = [self._exe_path] + args
+
+            # s = "%s command-line:" % (self.__class__.__name__.lower(),)
+            #log_noisy(self.__logger, s)
+
+            s = " ".join(cmd_words)
+            self.__logger.info(s)
+            # logs command-line to file and closes it.
+            with open(self.conf.join_with_session_dir("commands.log"), "a") as h:
+                h.write(s+"\n\n")
+            #self.__logger.info(X*(len(s)+4))
+
+            emsg = ""
+            try:
+                if self.__stdout:  # TODO disabled PIPE stdout for popen
+                    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                else:
+                    self.__popen = subprocess.Popen(cmd_words)
+
+                self._flag_running = True
+
+                if self.__stdout:  # TODO disabled PIPE stdout for popen
+                    try:
+                        for line in self.__popen.stdout:
+                            self.__stdout.write(line)
+                    finally:
+                        # todo cleanup
+                        # printOpenFiles()
+
+                        self.__popen.stdout.close()
+                        self.__stdout.close()
+
+                        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+                        # printOpenFiles()
+                        # sys.exit()
+
+
+
+                # blocks execution until finished
+                self.__popen.wait()
+                self.__popen.poll()
+
+                if self.__popen.returncode != 0:
+                    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+
+            except Exception as e:
+                self.__popen.poll()
+                # self.__logger.critical(fmt_error("Failed to execute command-line (returncode=%s)" % self.popen.returncode))
+                self._error_message = e.__class__.__name__+": "+str(e)
+                self._flag_error = True
+                raise
+            finally:
+                self._flag_finished = True
+                self._flag_running = False
+                if self.__popen is not None:
+                    self.__returncode = self.__popen.returncode
+                self.__logger.info(str(self._status))
+>>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
 
     def load_result(self):
         """Override this method to open the result file(s) particular to the
         executable."""
 
 
+@froze_it
 class Innewmarcs(Executable):
     """Class representing the innewmarcs executable."""
 
     def __init__(self):
         Executable.__init__(self)
-        self.exe_path = "innewmarcs"
+        self._exe_path = "innewmarcs"
 
         # FileMod object
         self.modeles = None
@@ -212,21 +317,23 @@ class Innewmarcs(Executable):
         self.modeles = file_mod
 
 
+@froze_it
 class Hydro2(Executable):
     """Class representing the hydro2 executable."""
 
     def __init__(self):
         Executable.__init__(self)
-        self.exe_path = "hydro2"
+        self._exe_path = "hydro2"
 
     def load_result(self):
         raise NotImplementedError("Opening hydro2 result will need hydro2 to save a side file containing a list of the files that it has created!!!")
 
 
+@froze_it
 class Pfant(Executable):
     def __init__(self):
         Executable.__init__(self)
-        self.exe_path = "pfant"  # Path to PFANT executable (including executable name)
+        self._exe_path = "pfant"  # Path to PFANT executable (including executable name)
 
         # ** Variables assigned by poll_progress()
         self.ikey = None  # Current iteration (Fortran: ikey)
@@ -249,8 +356,8 @@ class Pfant(Executable):
 
         """
         p = self.conf.opt.fn_progress
-        ret = RunnableStatus(self)
-        if not self.is_finished and os.path.isfile(p):
+        ret = self._status
+        if (not self.ikey or self.ikey < self.ikeytot) and os.path.isfile(p):
             with open(p) as h:
                 try:
                     t = map(int, h.readline().split("/"))
@@ -274,7 +381,7 @@ class Nulbad(Executable):
 
     def __init__(self):
         Executable.__init__(self)
-        self.exe_path = "nulbad"
+        self._exe_path = "nulbad"
 
         # nulbad output
         self.convolved = None
@@ -286,6 +393,7 @@ class Nulbad(Executable):
         self.convolved = file_sp.spectrum
 
 
+@froze_it
 class Combo(Runnable):
     """
     Runs sequence of executables: innermarcs, hydro2, pfant, nulbad.
@@ -298,49 +406,74 @@ class Combo(Runnable):
     There are several restrictions imposed
     - files are created inside a session directory such as session123456
     - all four executables must be in the same directory
-
     """
 
     @property
-    def is_finished(self):
-        with self.__L_running:
-            return self.__is_finished
-    @property
-    def is_running(self):
-        with self.__L_running:
-            return self.__is_running
-    @property
     def running_exe(self):
         """Returns the current or last running exe."""
-        with self.__L_running:
-            return self.__running_exe
+        return self.__running_exe
+
+    @property
+    def exe_dir(self):
+        return self.__exe_dir
+    @exe_dir.setter
+    def exe_dir(self, x):
+        self.__exe_dir = x
+
+    @property
+    def flag_log_console(self):
+        return self.__flag_log_console
+    @flag_log_console.setter
+    def flag_log_console(self, x):
+          self.__flag_log_console = x
+
+    @property
+    def sequence(self):
+        return self.__sequence
+    @sequence.setter
+    def sequence(self, x):
+          self.__sequence = x
+
+    @property
+    def innewmarcs(self):
+        return self.__innewmarcs
+
+    @property
+    def hydro2(self):
+        return self.__hydro2
+
+    @property
+    def pfant(self):
+        return self.__pfant
+
+    @property
+    def nulbad(self):
+        return self.__nulbad
+
 
     def __init__(self, sequence=None):
         Runnable.__init__(self)
+        # # Configuration
         # Directory containing the 4 executables
-        self.exe_dir = ""
+        self.__exe_dir = ""
+        # Whether to display Fortran messages in the terminal.
+        # Note: a file named "<session dir>/fortran.log" is always created.
+        self.__flag_log_console = True
 
         # Executables to run
         # order is irrelevant (will be sorted anyway).
-        self.sequence = [e_innewmarcs, e_hydro2, e_pfant, e_nulbad] \
+        self.__sequence = [e_innewmarcs, e_hydro2, e_pfant, e_nulbad] \
             if sequence is None else sequence
 
-        # ExeConf instance
-        self.conf = ExeConf()
-
         # ** Executable instances
-        self.innewmarcs = Innewmarcs()
-        self.hydro2 = Hydro2()
-        self.pfant = Pfant()
-        self.nulbad = Nulbad()
+        self.__innewmarcs = Innewmarcs()
+        self.__hydro2 = Hydro2()
+        self.__pfant = Pfant()
+        self.__nulbad = Nulbad()
 
         # ** Internal variables
-        self.__L_running = Lock()  # To make the following variables thread-safe
-        self.__is_running = False
         self.__running_exe = None  # Executable object currently running
-        self.__is_finished = False
-
-        self.logger = None
+        self.__logger = None
 
     def configure(self):
         """
@@ -354,38 +487,49 @@ class Combo(Runnable):
         c = self.conf
 
         c.make_session_id()
-        c.prepare_filenames_for_combo(self.sequence)
+        c.prepare_filenames_for_combo(self.__sequence)
 
+<<<<<<< HEAD
         self.logger = logging.getLogger("combo%d" % id(self))
         # this was leaving file open after finished add_file_handler(self.logger, c.join_with_session_dir("python.log"))
         # self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
         # stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
         stdout_ = open(c.join_with_session_dir("fortran.log"), "a")
+=======
+        self.__logger = get_python_logger()
+        # this was leaving file open after finished add_file_handler(self.__logger, c.join_with_session_dir("python.log"))
+        self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+
+        log_path = c.join_with_session_dir("fortran.log")
+        if self.__flag_log_console:
+            stdout_ = LogTwo(log_path)
+        else:
+            stdout_ = open(log_path, "w")
+>>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
 
         # All files that will be created need to have the session directory added to their names
         for e in self.get_exes():
             # Propagates configuration
             e.conf = c
             e.stdout = stdout_
-            e.logger = self.logger
-            # e.logger = self.logger
+            e.logger = self.__logger
 
             # Fixes exe path
-            exe_filename = os.path.split(e.exe_path)[-1]
-            e.exe_path = os.path.join(self.exe_dir, exe_filename)
+            exe_filename = os.path.split(e._exe_path)[-1]
+            e.exe_path = os.path.join(self.__exe_dir, exe_filename)
 
         c.create_data_files()
 
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
 
-        map = [(e_innewmarcs, self.innewmarcs), (e_hydro2, self.hydro2), (e_pfant, self.pfant),
-               (e_nulbad, self.nulbad)]
+        map = [(e_innewmarcs, self.__innewmarcs), (e_hydro2, self.__hydro2), (e_pfant, self.__pfant),
+               (e_nulbad, self.__nulbad)]
         res = []
         ii, ee = zip(*map)
-        self.sequence.sort()
-        for i_exe in self.sequence:
+        self.__sequence.sort()
+        for i_exe in self.__sequence:
             if i_exe in ii:
                 res.append(ee[ii.index(i_exe)])
         return res
@@ -393,27 +537,35 @@ class Combo(Runnable):
     def run(self):
         """Blocking routine. Overwrites self.popen."""
 
-        assert not self.is_running, "Already running"
+        assert not self.flag_running, "Already running"
 
-        self.__is_running = True
+        self._flag_running = True
         try:
             self.configure()
 
             for e in self.get_exes():
                 self.__running_exe = e
                 e.run_from_combo()
-                if e.popen.returncode != 0:
-                    raise FailedError("%s failed" % e.__class__.__name__.lower())
+        except Exception as e:
+            self._flag_error = True
+            self._error_message = "Combo: "+str(e)
+            raise
         finally:
-            with self.__L_running:
-                # leave it as last self.__running_exe = None
-                self.__is_running = False
-                self.__is_finished = True
+            # leave it as last self.__running_exe = None
+            self._flag_running = False
+            self._flag_finished = True
+
+    def kill(self):
+        self._flag_killed = True
+        if self._flag_running:
+            if self.__running_exe:
+                self.__running_exe.kill()
 
     def get_status(self):
-        """Returns status of running executable or none."""
-        with self.__L_running:
-            if self.__running_exe:
-                return self.__running_exe.get_status()
-            else:
-                return "?"
+        """Returns status of running executable or None."""
+        if self.__running_exe:
+            return self.__running_exe.get_status()
+        else:
+            return None
+                
+                

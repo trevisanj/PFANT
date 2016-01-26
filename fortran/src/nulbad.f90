@@ -49,7 +49,7 @@ module nulbad_calc
 
   ! x_* values may come either from command line or dfile:main
   real*8 :: x_fwhm, x_pat
-  character*64 :: x_fn_flux, x_fn_cv
+  character*128 :: x_fn_flux, x_fn_cv, x_flprefix
   !> Whether or not the spectrum is normalized.
   !> @sa source for nulbad_init()
   logical x_norm
@@ -88,13 +88,20 @@ contains
       x_pat = main_pas
       call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
+    if (config_flprefix .eq. '?') then
+      call assure_read_main(config_fn_main)
+      x_flprefix = main_flprefix
+      call parse_aux_log_assignment('x_flprefix', x_flprefix)
+    else
+      x_flprefix = config_flprefix
+    end if
     if (config_fn_flux .eq. '?') then
       call assure_read_main(config_fn_main)
       if (x_norm) then
-        x_fn_flux = trim(main_flprefix)//'.norm'
+        x_fn_flux = trim(x_flprefix)//'.norm'
       else
-        x_fn_flux = trim(main_flprefix)//'.spec'
-      end if        
+        x_fn_flux = trim(x_flprefix)//'.spec'
+      end if
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
     end if
     if (config_fn_cv .eq. '?') then

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Looks for file "flux.norm" inside directories session_* and saves one figure per page in a PDF file.
+Looks for file "flux.norm" inside directories session-* and saves one figure per page in a PDF file.
 
 """
 """
@@ -63,9 +63,8 @@ if __name__ == "__main__":
         p = ax.get_position()
         p.x0 = 0.11
         ax.set_position(p)  # Try to apply same position for all figures to improve flicking experience
-
-
         pdf.savefig(fig)
+        plt.close()
 
     # for fig in xrange(1, figure().number): ## will open an empty extra figure :(
     #     pdf.savefig( fig )

@@ -7,8 +7,6 @@ import math
 import matplotlib.backends.backend_pdf
 import logging
 import numpy as np
-# import matplotlib as mpl
-# from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 __all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf",
  "plot_spectra_pages_pdf"]
 

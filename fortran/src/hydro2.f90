@@ -312,7 +312,7 @@ contains
     return
 
     10 write(lll,100) X(1),X(N),T
-    100 format(5X,'ON SORT DE LA TABLE D INTERPOLATION :', &
+    100 format(5X,'ft2_hydro2(): ON SORT DE LA TABLE D INTERPOLATION :', &
      /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
     call pfant_halt(lll)
   end
@@ -2026,7 +2026,7 @@ end
 !>
 !> The hydrogen lines files to be created are determined by overlapping a [llzero, llfin] interval with
 !> wavelengths listed in dfile:hmap. Here is a sample hmap.dat file:
-!> 
+!>
 !> @code
 !> # filename / niv inf / niv sup / central lambda / kiex / c1
 !> thalpha   2 3 6562.817 10.199 2442.326

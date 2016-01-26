@@ -3,15 +3,16 @@ Class to store all command-line options & DataFile instances used to run one or 
 executables.
 """
 
-__all__ = ["Options", "ExeConf", "e_innewmarcs", "e_hydro2", "e_pfant",
+__all__ = ["Options", "Conf", "e_innewmarcs", "e_hydro2", "e_pfant",
            "e_nulbad", "session_prefix"]
 
 from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
 import os
-from .parts import *
+from .misc import *
 import re
 from threading import Lock
+import logging
 
 # Indexes in workflow sequence
 e_innewmarcs = 0
@@ -87,6 +88,7 @@ class Options(object):
         self.no_molecules = None
         self.no_atoms = None
         self.no_h = None
+        self.zinf = None
 
         # nulbad
         self.norm = None
@@ -103,7 +105,7 @@ class Options(object):
 
 
 @froze_it
-class ExeConf(object):
+class Conf(object):
     """
     Class holds the configuration of an executable.
 
@@ -113,30 +115,31 @@ class ExeConf(object):
 
     @property
     def session_id(self):
-        return self._session_id
+        return self.__session_id
     @session_id.setter
     def session_id(self, x):
-        """Creates directory "session-<session id>" when setting session id.."""
-        self._session_id = x
-        new_dir = session_prefix+x
-        if not os.path.isdir(new_dir):
-            os.mkdir(new_dir)
+        """Sets session id and creates corresponding directory immediately.
 
+        Directory Creates directory "session-<session id>" when setting session id."""
+        self.__session_id = x
+        new_dir = _get_session_dir(session_prefix, x)
+        os.mkdir(new_dir)
+
+    @property
+    def session_dir(self):
+        return None if self.__session_id is None else \
+         _get_session_dir(session_prefix, self.__session_id)
 
     def __init__(self):
-        # **
-        # ** Session control
-
+        # # Session control
         # Session id is used to make up filenames as needed.
         # This variable can be set directly
-        self._session_id = None
-        self._flag_first = True # first time calling _get_relative_path()
+        self.__session_id = None
 
-        # **
-        # ** DataFile instances
-        # ** If set, their corresponding fn_ attribute will be overwritten
+        # # DataFile instances
+        # If set, their corresponding fn_ attribute will be overwritten
 
-        # FileMain instance
+        # ## FileMain instance
         # If set, main configuration file (of random name) will be created before
         # running the executable.
         self.file_main = None
@@ -218,11 +221,6 @@ class ExeConf(object):
         return FileMod.default_filename if self.opt.fn_modeles is None \
          else self.opt.fn_modeles
 
-
-
-    def get_session_dir(self):
-        return session_prefix+self.session_id
-
     def make_session_id(self):
         """Finds an id for a new session and creates corresponding
         directory session_<id>.
@@ -233,21 +231,19 @@ class ExeConf(object):
 
         # assert self.session_id is None, "Session id already made"
 
-        if self._session_id is not None:
+        if self.__session_id is not None:
             return
 
-        self._session_id = _make_session_id()
+        self.__session_id = _make_session_id()
 
     def join_with_session_dir(self, fn):
-        """Joins self.get_session_dir() with specified filename."""
-        if self._flag_first:
-            assert self.session_id is not None, "Session id not assigned"
-            self._flag_first = False
-        return os.path.join(self.get_session_dir(), fn)
+        """Joins self.session_dir with specified filename to make a path."""
+        return os.path.join(self.session_dir, fn)
 
     def clean(self):
         """Deletes directory with all files inside."""
-        shutil.rmtree(self.get_session_dir())
+        logging.debug("About to remove directory '%s'" % self.session_dir)
+        shutil.rmtree(self.session_dir)
 
     def get_args(self):
         """
@@ -345,7 +341,6 @@ class ExeConf(object):
                 self.opt.fn_cv = self.join_with_session_dir(self.opt.fn_cv)
 
 
-
 # Part of code that finds new session id and creates corresponding directory
 # This has been isolated because needs to be locked
 
@@ -363,10 +358,14 @@ def _make_session_id():
         i = 0
         while True:
             ret = "%d" % i
-            new_dir = session_prefix+ret
+            new_dir = _get_session_dir(session_prefix, ret)
             if not os.path.isdir(new_dir):
                 break
             i += 1
         os.mkdir(new_dir)
         return ret
 
+
+def _get_session_dir(prefix, id_):
+    """Returns string which is the name of a filesystem directory."""
+    return prefix+id_

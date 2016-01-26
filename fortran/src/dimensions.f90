@@ -28,7 +28,7 @@ module dimensions
 
   !> amount to stretch calculation interval (both to the left and to the right)
   !>
-  real*8, parameter :: LAMBDA_STRETCH = 5.
+  real*8, parameter :: LAMBDA_STRETCH = 0.
   !> assumed width of a hydrogen line
   real*8, parameter :: H_LINE_WIDTH = 35.
 

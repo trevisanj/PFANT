@@ -3,6 +3,7 @@ from .datafile import *
 from ..errors import *
 from ..misc import *
 
+NINE_HUNDRED = 900
 
 class FileMain(DataFile):
   """
@@ -53,12 +54,13 @@ class FileMain(DataFile):
   
       vvt = float(h.readline())
       self.ivtot = 1
-      if vvt <= 900:
+      if vvt <= NINE_HUNDRED:
         self.vvt = [vvt]
       else:
-        self.ivtot = int(h.readline())
+        _ivtot = int(h.readline())
         self.tolv = float_vector(h)
         self.vvt = float_vector(h)
+        self.ivtot = len(self.vvt)
   
         if not (self.ivtot == len(self.tolv) == len(vvt)):
           raise FileConsistencyError("ivtot must match len(tolv) must match len(vvt)")
@@ -86,13 +88,14 @@ class FileMain(DataFile):
   
   def _do_save_as(self, filename):
     """Saves to file."""
+    assert isinstance(self.vvt, list), "vvt must be list!"
     with open(filename, "w") as h:
       write_lf(h, "%-20s" % self.titrav)
       write_lf(h, "%s %s %s %s %s" % (bool2str(self.ecrit),
                       self.pas, self.echx, self.echy, self.fwhm))
       write_lf(h, "%s" % self.vvt[0])
-      if self.vvt[0] > 900:
-        write_lf(h, "%s" % self.ivtot)
+      if self.vvt[0] > NINE_HUNDRED:
+        write_lf(h, "%s" % len(self.vvt))  # self.ivtot)
         write_lf(list2str(self.tolv))
         write_lf(list2str(self.vvt))
   
