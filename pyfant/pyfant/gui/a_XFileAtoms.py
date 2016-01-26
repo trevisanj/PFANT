@@ -42,7 +42,6 @@ class XFileAtoms(QMainWindow):
         # keptself.set_flag_plot(ATOM_ATTR_NAMES.index("kiex")-1, True)
         self.set_flag_plot(ATOM_ATTR_NAMES.index("algf")-1, True)
 
-
         # ** "Atoms browser"
 
         # ** ** left of splitter
@@ -251,8 +250,8 @@ class XFileAtoms(QMainWindow):
 
     def on_histogram(self, _):
         if self.form_histogram is None:
-            f = self.form_histogram = XFileAtomsHistogram(self.f)
-        f.show()
+            self.form_histogram = XFileAtomsHistogram(self.f)
+        self.form_histogram.show()
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

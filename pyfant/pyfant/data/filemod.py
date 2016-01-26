@@ -1,6 +1,6 @@
 __all__ = ["FileMod", "ModRecord"]
 from .datafile import *
-from ..parts import *
+from ..misc import *
 import struct
 import numpy as np
 import os

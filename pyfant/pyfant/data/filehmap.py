@@ -3,7 +3,6 @@ __all__ = ["FileHmap", "HmapRow"]
 from .datafile import *
 from ..misc import *
 import logging
-from ..parts import *
 
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())

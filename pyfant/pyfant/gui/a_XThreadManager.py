@@ -8,9 +8,12 @@ import numpy as np
 from ._guiaux import *
 from .guimisc import *
 from ..tm import ThreadManager
-from ..misc import SignalProxy
+from ..misc import *
 from threading import Lock
 import time
+
+#todo clenaup
+import sys
 
 
 class XThreadManager(QMainWindow):
@@ -109,30 +112,39 @@ class XThreadManager(QMainWindow):
     def _update(self):
         """Updates second column of table widget."""
         with self._lock:
-            t = time.time()
-            a = self.tableWidget
-            runnables = self.runnables
-            nf = self.tm.num_finished  # grabs this before last table update,
-                                       # so that it never skips a row update
-            mt = self.tm.max_simultaneous
-            for i in xrange(max(0, self.num_finished-mt+1),
-                            min(len(runnables), self.tm.num_finished+mt)):
-                runnable = runnables[i]
+            # todo cleanup
+            try:
+                t = time.time()
+                a = self.tableWidget
+                runnables = self.runnables
+                nf = self.tm.num_finished  # grabs this before last table update,
+                                           # so that it never skips a row update
+                mt = self.tm.max_simultaneous
+                for i in xrange(max(0, self.num_finished-mt+1),
+                                min(len(runnables), self.tm.num_finished+mt)):
+                    runnable = runnables[i]
 
-                item = a.item(i, 0)
-                title = runnable.conf.session_dir
-                if title is None:
-                    title = "..."
-                item.setText(title)
+                    item = a.item(i, 0)
+                    title = runnable.conf.session_dir
+                    if title is None:
+                        title = "..."
+                    item.setText(title)
 
-                item = a.item(i, 1)
-                status = runnable.get_status()
-                item.setText("?" if status is None else str(status))
+                    item = a.item(i, 1)
+                    status = runnable.get_status()
+                    item.setText("?" if status is None else str(status))
 
-            a.setCurrentCell(self.tm.num_finished+self.tm.max_simultaneous-1, 0)
-            self._update_status()
-            self.num_finished = nf
-            print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+                a.setCurrentCell(self.tm.num_finished+self.tm.max_simultaneous-1, 0)
+                self._update_status()
+                self.num_finished = nf
+                print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+            except Exception as E:
+                raise
+
+                # if isinstance(E, IOError):
+                #   printOpenFiles()
+                # sys.exit()
+
 
     def _update_status(self):
         nf, nt = self.tm.num_finished, self.tm.num_runnables

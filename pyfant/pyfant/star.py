@@ -11,7 +11,7 @@ star = {
 }
 
 algo = {
-"ptdisk", False,
+"ptdisk": False,
 "mu": 1,
 "kik", 0,
 "tolv": None,

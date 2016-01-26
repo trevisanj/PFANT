@@ -9,6 +9,7 @@ from PyQt4.QtGui import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
 import matplotlib.pyplot as plt
+from pyfant import *
 from ._guiaux import *
 
 
@@ -76,6 +77,7 @@ class XFileAtomsHistogram(QMainWindow):
         a.setFont(MONO_FONT)
 
         self.setCentralWidget(self.widgetPlot)
+        self.setWindowTitle("Histogram")
         place_center(self)
 
 
@@ -83,4 +85,23 @@ class XFileAtomsHistogram(QMainWindow):
     # Slots
 
     def on_plot(self, _):
-        print "Quech plotar nego"
+        self._plot()
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Gear
+
+    def _plot(self):
+        attr_name = str(self.comboBoxDataField.currentText())
+        num_bins = int(self.spinBox.value())
+        v = self.f.__getattribute__(attr_name)
+
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+        ax.hist(v, num_bins)
+        ax.set_xlabel(attr_name)
+        ax.set_ylabel("counts")
+        plt.tight_layout()
+        format_BLB()
+        self.canvas.draw()
+
+

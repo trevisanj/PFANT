@@ -2,7 +2,6 @@ __all__ = ["FileAtoms", "Atom", "AtomicLine"]
 
 from .datafile import *
 from ..misc import *
-from ..parts import *
 from ..errors import *
 import struct
 import logging

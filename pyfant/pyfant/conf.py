@@ -9,7 +9,7 @@ __all__ = ["Options", "Conf", "e_innewmarcs", "e_hydro2", "e_pfant",
 from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
 import os
-from .parts import *
+from .misc import *
 import re
 from threading import Lock
 import logging
@@ -339,7 +339,6 @@ class Conf(object):
                 # Note that this is recursive, but Combo is meant to be
                 # run only once.
                 self.opt.fn_cv = self.join_with_session_dir(self.opt.fn_cv)
-
 
 
 # Part of code that finds new session id and creates corresponding directory

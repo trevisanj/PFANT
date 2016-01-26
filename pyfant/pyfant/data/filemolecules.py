@@ -1,7 +1,6 @@
 __all__ = ["FileMolecules", "Molecule", "SetOfLines"]
 from .datafile import *
 from ..misc import *
-from ..parts import *
 from ..errors import *
 import logging
 import sys

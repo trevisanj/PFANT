@@ -7,11 +7,11 @@ from .conf import *
 import os
 from .misc import *
 from .errors import *
-from .parts import *
 from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 from threading import Lock
 
 
+@froze_it
 class ExecutableStatus(PyfantObject):
     """Stores status related to Executable for reporting purposes."""
     
@@ -41,7 +41,7 @@ class ExecutableStatus(PyfantObject):
         if self.ikey is not None:
             l.append("%5.1f %% (%d/%d)" % (100.*self.ikey/self.ikeytot, self.ikey, self.ikeytot))
         if self.executable.returncode is not None:
-            l.append("returncode=%d" % self.returncode)
+            l.append("returncode=%d" % self.executable.returncode)
         if len(l) > 0:
             return " ".join(l)
         return "?"
@@ -126,6 +126,13 @@ class Executable(Runnable):
     @logger.setter
     def logger(self, x):
         self.__logger = x
+
+    @property
+    def stdout(self):
+        return self.__stdout
+    @stdout.setter
+    def stdout(self, x):
+        self.__stdout = x
 
     def __init__(self):
         Runnable.__init__(self)
@@ -213,8 +220,16 @@ class Executable(Runnable):
                         for line in self.__popen.stdout:
                             self.__stdout.write(line)
                     finally:
+                        # todo cleanup
+                        # printOpenFiles()
+
                         self.__popen.stdout.close()
                         self.__stdout.close()
+
+                        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+                        # printOpenFiles()
+                        # sys.exit()
+
 
 
                 # blocks execution until finished
@@ -234,7 +249,7 @@ class Executable(Runnable):
                 self._flag_finished = True
                 self._flag_running = False
                 if self.__popen is not None:
-                    self._returncode = self.__popen.returncode
+                    self.__returncode = self.__popen.returncode
                 self.__logger.info(str(self._status))
 
     def load_result(self):
@@ -242,6 +257,7 @@ class Executable(Runnable):
         executable."""
 
 
+@froze_it
 class Innewmarcs(Executable):
     """Class representing the innewmarcs executable."""
 
@@ -259,6 +275,7 @@ class Innewmarcs(Executable):
         self.modeles = file_mod
 
 
+@froze_it
 class Hydro2(Executable):
     """Class representing the hydro2 executable."""
 
@@ -270,6 +287,7 @@ class Hydro2(Executable):
         raise NotImplementedError("Opening hydro2 result will need hydro2 to save a side file containing a list of the files that it has created!!!")
 
 
+@froze_it
 class Pfant(Executable):
     def __init__(self):
         Executable.__init__(self)
@@ -333,6 +351,7 @@ class Nulbad(Executable):
         self.convolved = file_sp.spectrum
 
 
+@froze_it
 class Combo(Runnable):
     """
     Runs sequence of executables: innermarcs, hydro2, pfant, nulbad.

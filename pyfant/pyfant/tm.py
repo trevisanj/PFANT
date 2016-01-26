@@ -13,32 +13,7 @@ import time
 from threading import Lock
 import logging
 import sys
-
-
-# todo cleanup
-# # http://stackoverflow.com/questions/2023608/check-what-files-are-open-in-python
-# import __builtin__
-# openfiles = set()
-# oldfile = __builtin__.file
-# class newfile(oldfile):
-#     def __init__(self, *args):
-#         self.x = args[0]
-#         print "### OPENING %s ###" % str(self.x)
-#         oldfile.__init__(self, *args)
-#         openfiles.add(self)
-#
-#     def close(self):
-#         print "### CLOSING %s ###" % str(self.x)
-#         oldfile.close(self)
-#         openfiles.remove(self)
-# oldopen = __builtin__.open
-# def newopen(*args):
-#     return newfile(*args)
-# __builtin__.file = newfile
-# __builtin__.open = newopen
-#
-# def printOpenFiles():
-#     print "### %d OPEN FILES: [%s]" % (len(openfiles), ", ".join(f.x for f in openfiles))
+from .misc import froze_it
 
 
 class _Runner2(threading.Thread):
@@ -89,7 +64,7 @@ class _Runner2(threading.Thread):
                     try:
                         self.runnable.run()
                     except Exception as E:
-                        # todo cleanup
+                        # # todo cleanup
                         #
                         # if isinstance(E, IOError):
                         #   printOpenFiles()
@@ -98,7 +73,7 @@ class _Runner2(threading.Thread):
                         # print "EXITING SO THAT YOU CAN SEE THE ERROR"
                         # self.manager.exit()
                         # raise
-                        #
+
                         self.__logger.exception("%s failed" % self.runnable.__class__.__name__)
                     self.manager._finish(self)
                     self.runnable = None
@@ -120,6 +95,7 @@ def _tm_print(s):
     print "^^ %s ^^" % s
 
 
+@froze_it
 class ThreadManager(QObject, threading.Thread):
     """
     Thread takes care of other threads.
@@ -138,6 +114,11 @@ class ThreadManager(QObject, threading.Thread):
     def num_finished(self):
         with self.__lock:
             return self.__num_finished
+
+    @property
+    def time_finished(self):
+        with self.__lock:
+            return self.__time_finished
 
     @property
     def num_runnables(self):
@@ -298,7 +279,7 @@ class ThreadManager(QObject, threading.Thread):
         t = time.time()
         self.time_per_runnable = (t-self.__time_started)/self.__num_finished
         if self.__num_finished == len(self.__runnables):
-            self.time_finished = t
+            self.__time_finished = t
         self.runnable_changed.emit()
         
     def run(self):
