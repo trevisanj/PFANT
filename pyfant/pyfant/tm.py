@@ -124,7 +124,7 @@ class ThreadManager(QObject, threading.Thread):
     def run(self):
         _tm_print("Will run %d threads" % len(self.__threads))
         while True:
-            _tm_print("NUM: %d; ACTIVE: %d; FINISHED: %d" % (len(self.__threads), len(self.__active), self.__num_finished))
+            # _tm_print("NUM: %d; ACTIVE: %d; FINISHED: %d" % (len(self.__threads), len(self.__active), self.__num_finished))
             if self.__flag_exit:
                 break
 
@@ -133,7 +133,7 @@ class ThreadManager(QObject, threading.Thread):
                 num_to_start = self.__max_threads-len(self.__active)
             if num_to_start > 0:
                 for t in self.__threads:
-                    if not t.flag_started:
+                    if not t.is_alive() and not t.flag_started:
                         _tm_print("Starting %s" % t.name)
                         t.start()
                         _tm_print("Started %s" % t.name)
@@ -141,7 +141,8 @@ class ThreadManager(QObject, threading.Thread):
                     if num_to_start == 0:
                         break
 
-            time.sleep(0.5)
+            # time.sleep(0.001)
+            # time.sleep(0.5)
 
 
         _tm_print("TM exited")

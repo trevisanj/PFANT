@@ -154,10 +154,10 @@ class Executable(Runnable):
         args = self.conf.get_args()
         cmd_line = [self.exe_path]+args
 
-        s = "%s command-line:" % (self.__class__.__name__.lower(),)
-        log_noisy(self.logger, s)
+        # s = "%s command-line:" % (self.__class__.__name__.lower(),)
+        # log_noisy(self.logger, s)
         self.logger.info(" ".join(cmd_line))
-        self.logger.info(X*(len(s)+4))
+        # self.logger.info(X*(len(s)+4))
 
         self.__is_running = True
         emsg = ""
@@ -185,10 +185,10 @@ class Executable(Runnable):
                 self.__error_message = emsg
                 self.__is_finished = True
                 self.__is_running = False
-        log_noisy(self.logger, "%s %s (returncode=%s)" %
-                    (self.__class__.__name__.lower(),
-                     'finished successfully' if self.popen.returncode == 0 else '*failed*',
-                     self.popen.returncode))
+        # log_noisy(self.logger, "%s %s (returncode=%s)" %
+        #             (self.__class__.__name__.lower(),
+        #              'finished successfully' if self.popen.returncode == 0 else '*failed*',
+        #              self.popen.returncode))
 
     def load_result(self):
         """Override this method to open the result file(s) particular to the
@@ -358,10 +358,10 @@ class Combo(Runnable):
 
         self.logger = logging.getLogger("combo%d" % id(self))
         # this was leaving file open after finished add_file_handler(self.logger, c.join_with_session_dir("python.log"))
-        self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+        # self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
-
+        # stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
+        stdout_ = open(c.join_with_session_dir("fortran.log"), "a")
 
         # All files that will be created need to have the session directory added to their names
         for e in self.get_exes():

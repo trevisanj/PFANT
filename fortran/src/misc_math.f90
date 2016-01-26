@@ -1061,7 +1061,7 @@ contains
       !> @todo test this error condition, better: put this verification in somewhere at startup, but has to be after READ_main()
       if(ptdisk) then
         call pfant_halt('Le sp flin_ ne peut calculer l intensite en 1 pt '// &
-         'du disque avec la formule a 26pts (utiliser 7pts kik=0)', is_assertion=.true.)
+         'du disque avec la formule a 26pts (utiliser 6pts/7pts: kik=0)', is_assertion=.true.)
       end if
       tolim = 5.487  ! Le modele doit aller au moins a une prof tolim
 
@@ -1099,7 +1099,11 @@ contains
       integer, intent(in) :: i_call
       if(to_(ntot) .lt. tolim) then
 
-        call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
+!        call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
+!         int2str(ntot) //'; to_(' //&
+!         int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
+!          real82str(tolim, 3) // ')')
+        call log_warning('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
          int2str(ntot) //'; to_(' //&
          int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
           real82str(tolim, 3) // ')')

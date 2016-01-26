@@ -1745,10 +1745,10 @@ integer QWE
 
         do  k = 1,atoms_f_nblend
 ! todo cleanup
-!          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
+          if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
 !          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
-          if(abs(ecar(k)) .gt. 30) then   ! I think zinf won't be greater than 25, right
+!          if(abs(ecar(k)) .gt. 30) then   ! I think zinf won't be greater than 25, right
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
@@ -1828,8 +1828,8 @@ integer QWE
       selekfh_fcont(d) = flin1(kci, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
 
       ! todo cleanup
-      ! write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
-      !  m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
+      write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
+       m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
 
       ! LETS SEE kap for three lines
       QWE = 50
