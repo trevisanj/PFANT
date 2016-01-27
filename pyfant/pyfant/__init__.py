@@ -3,7 +3,7 @@ from .misc import *
 from .data import *
 from .conf import *
 from .runnables import *
-from .tm import *
+from .rm import *
 from .pipeline import *
 from .plotting import *
 from .util import *

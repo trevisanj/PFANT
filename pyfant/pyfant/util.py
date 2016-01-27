@@ -6,7 +6,7 @@ Rule: no pyfant module can import util!!!
 """
 __all__ = ["run_parallel", "show_menu"]
 from pyfant.misc import *
-from pyfant import ThreadManager, get_suitable_vis_classes
+from pyfant import RunnableManager, get_suitable_vis_classes
 import time
 import traceback
 
@@ -20,51 +20,51 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
       rr -- list of Runnable instances
       max_simultaneous -- maximum number of simultaneous processes.
 
-    Returns: the ThreadManager object
+    Returns: the RunnableManager object
     """
     # Adds to pool
-    tm = ThreadManager(max_simultaneous=max_simultaneous)
-    tm.start()
+    rm = RunnableManager(max_simultaneous=max_simultaneous)
+    rm.start()
 
     for p in rr:
-        tm.add_runnable(p)
+        rm.add_runnable(p)
 
     # Primitive thread monitor
     if flag_console:
         while True:
-            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
-            print tm
-            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")
+            print rm
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")
             s = raw_input("[Enter] -- [e]xit & keep in loop -- [q]uit -- [k]ill running >>> ")
             if s.lower() == "q":
-                if tm.is_alive():
+                if rm.is_alive():
                     try:
-                        tm.exit()
+                        rm.exit()
                     except:
                         traceback.print_exc()
                 break
             if s.lower() == "e":
                 try:
-                    tm.exit()
+                    rm.exit()
                 except:
                     traceback.print_exc()
             if s.lower() == "k":
-                tm.kill_runnables()
+                rm.kill_runnables()
     else:
         while True:
-            if tm.has_finished():
+            if rm.flag_finished():
                 print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
-                tm.exit()
+                rm.exit()
                 break
-            print "\n".join(tm.get_summary_report())
+            print "\n".join(rm.get_summary_report())
             time.sleep(1)
 
 
-    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
+    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")
     print "test-tm2 [SUPPOSED TO HAVE] EXITED"
-    print tm
+    print rm
 
-    return tm
+    return rm
 
 
 
@@ -81,11 +81,11 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
 #       max_simultaneous -- maximum number of simultaneous processes.
 #     """
 #     # Adds to pool
-#     tm = ThreadManager(max_threads=max_simultaneous)
-#     tm.start()
+#     rm = RunnableManager(max_threads=max_simultaneous)
+#     rm.start()
 #
 #     for p in rr:
-#         tm.add_runnable(p)
+#         rm.add_runnable(p)
 #
 #     # Primitive thread monitor
 #     while True:
@@ -95,14 +95,14 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
 #             if s.lower() == "e":
 #                 break
 #             print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-#             print tm
+#             print rm
 #         else:
-#             if tm.has_finished():
+#             if rm.flag_finished():
 #                 break
 #             print "waiting..."
 #             time.sleep(.5)
 #
-#     tm.exit()
+#     rm.exit()
 #
 #     print "FINISHED"
 

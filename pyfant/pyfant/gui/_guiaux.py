@@ -68,7 +68,6 @@ def place_left_top(window):
 
 def place_center(window):
     """Places window in the center of the screen."""
-    window.setGeometry(2, 15, 800, 600)
     screenGeometry = QApplication.desktop().screenGeometry()
     x = (screenGeometry.width() - window.width()) / 2
     y = (screenGeometry.height() - window.height()) / 2

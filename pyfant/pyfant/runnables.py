@@ -16,7 +16,7 @@ class ExecutableStatus(PyfantObject):
     """Stores status related to Executable for reporting purposes."""
     
     def __init__(self, executable):
-        assert isinstance(executable, Runnable)
+        assert isinstance(executable, Executable)
         self.exe_filename = executable.__class__.__name__.lower()
         self.executable = executable
         # used by pfant only
@@ -30,12 +30,12 @@ class ExecutableStatus(PyfantObject):
             l.append(self.exe_filename)
         if self.executable.flag_finished:
             l.append("finished")
-        elif self.executable.flag_running:
+        if self.executable.flag_running:
             l.append("running")
-        elif self.executable.flag_killed:
-            l.append("killed")
+        if self.executable.flag_killed:
+            l.append("*killed*")
         if self.executable.flag_error:
-            l.append("error")
+            l.append("*error*")
         if self.executable.error_message:
             l.append("*" + str(self.executable.error_message) + "*")
         if self.ikey is not None:
@@ -185,52 +185,11 @@ class Executable(Runnable):
         self._run()
 
     def kill(self):
-        assert self._flag_running, "Not running"
-        self.__popen.kill()
         self._flag_killed = True
+        if self._flag_running:
+            self.__popen.kill()
 
     def _run(self):
-<<<<<<< HEAD
-        assert not self.__is_finished, "Can only run once!"
-        args = self.conf.get_args()
-        cmd_line = [self.exe_path]+args
-
-        # s = "%s command-line:" % (self.__class__.__name__.lower(),)
-        # log_noisy(self.logger, s)
-        self.logger.info(" ".join(cmd_line))
-        # self.logger.info(X*(len(s)+4))
-
-        self.__is_running = True
-        emsg = ""
-        try:
-            if self.stdout:
-                try:
-                    self.popen = subprocess.Popen(cmd_line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    for line in self.popen.stdout:
-                        self.stdout.write(line)
-                finally:
-                    self.popen.stdout.close()
-                    self.stdout.close()
-            else:
-                self.popen = subprocess.Popen(cmd_line)
-            # blocks execution until finished
-            self.popen.wait()
-            self.popen.poll()
-        except Exception as e:
-            self.logger.critical(fmt_error("Failed to execute command-line"))
-            emsg = e.__class__.__name__+": "+str(e)
-            raise
-        finally:
-            with self.__L_running:
-                # records status
-                self.__error_message = emsg
-                self.__is_finished = True
-                self.__is_running = False
-        # log_noisy(self.logger, "%s %s (returncode=%s)" %
-        #             (self.__class__.__name__.lower(),
-        #              'finished successfully' if self.popen.returncode == 0 else '*failed*',
-        #              self.popen.returncode))
-=======
         assert not self._flag_running, "Already running"
         assert not self._flag_finished, "Already finished"
         with self.__lock:
@@ -267,10 +226,10 @@ class Executable(Runnable):
                         self.__popen.stdout.close()
                         self.__stdout.close()
 
+#todo cleanup
                         # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
                         # printOpenFiles()
                         # sys.exit()
-
 
 
                 # blocks execution until finished
@@ -283,16 +242,19 @@ class Executable(Runnable):
             except Exception as e:
                 self.__popen.poll()
                 # self.__logger.critical(fmt_error("Failed to execute command-line (returncode=%s)" % self.popen.returncode))
-                self._error_message = e.__class__.__name__+": "+str(e)
-                self._flag_error = True
-                raise
+                if isinstance(e, FailedError) and self._flag_killed:
+                    # dismisses error if explicitly killed
+                    pass
+                else:
+                    self._error_message = e.__class__.__name__+": "+str(e)
+                    self._flag_error = True
+                    raise
             finally:
                 self._flag_finished = True
                 self._flag_running = False
                 if self.__popen is not None:
                     self.__returncode = self.__popen.returncode
                 self.__logger.info(str(self._status))
->>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
 
     def load_result(self):
         """Override this method to open the result file(s) particular to the
@@ -489,14 +451,6 @@ class Combo(Runnable):
         c.make_session_id()
         c.prepare_filenames_for_combo(self.__sequence)
 
-<<<<<<< HEAD
-        self.logger = logging.getLogger("combo%d" % id(self))
-        # this was leaving file open after finished add_file_handler(self.logger, c.join_with_session_dir("python.log"))
-        # self.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
-
-        # stdout_ = LogTwo(c.join_with_session_dir("fortran.log"))
-        stdout_ = open(c.join_with_session_dir("fortran.log"), "a")
-=======
         self.__logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.__logger, c.join_with_session_dir("python.log"))
         self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
@@ -506,7 +460,6 @@ class Combo(Runnable):
             stdout_ = LogTwo(log_path)
         else:
             stdout_ = open(log_path, "w")
->>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
 
         # All files that will be created need to have the session directory added to their names
         for e in self.get_exes():

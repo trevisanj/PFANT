@@ -29,7 +29,7 @@ from pyfant import *
 import logging
 import copy
 import numpy as np
-from pyfant.gui import XThreadManager
+from pyfant.gui import XRunnableManager
 from PyQt4.QtGui import *
 import time
 
@@ -57,23 +57,6 @@ def _get_zinf(lambda_centre, norm):
     return zinf
 
 
-def _tune_zinf_console(tm):
-    # if not X, shows monitoring information in the terminal
-    # perhaps enter interactive "console mode", i.e., allow user to inspect
-    # progress without bothering being verbose, but make clear that we are
-    # waiting for the user to continue
-    #
-    # currently continuing automatically
-    while True:
-        if tm.has_finished:
-            print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
-            tm.exit()
-            break
-        print "\n".join(tm.get_summary_report())
-        time.sleep(1)
-
-
-
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
@@ -92,9 +75,6 @@ if __name__ == "__main__":
           'zinf in the atomic lines file is used as a lower boundary.')
     parser.add_argument('fn_input', type=str, help='input file name', nargs=1)
     parser.add_argument('fn_output', type=str, help='output file name', nargs=1)
-    parser.add_argument('-X', action="store_true",
-     help='Shows monitor window, then opens the Atomic Lines Editor to show '
-          'the new file')
     parser.add_argument('--no_clean', action="store_true",
      help='If set, will not remove the session directories.')
 
@@ -138,52 +118,36 @@ if __name__ == "__main__":
 
     # # Runs pfant
     print "Running pfant's..."
-    tm = ThreadManager()
-    tm.start()
-
+    rm = RunnableManager()
     for p in pp:
-        tm.add_runnable(p)
-
-    if args.X:
-        app = QApplication([])
-        form = XThreadManager(tm)
-        form.show()
-        app.exec_()
-
-        # todo not closing form automatically. This is OK, but perhaps it would
-        # be good to show a message to continue
-
-        if not tm.flag_cancelled and not tm.has_finished:
-            # User closed window un-elegantly, we go to console mode
-            _tune_zinf_console(tm)
-
-        if not tm.flag_exit:
-            # If not cancelled, will not have exited, we have
-            tm.exit()
-
-    else:
-        _tune_zinf_console(tm)
-
-
-    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if tm.is_alive() else " DEAD")
-    print "[SUPPOSED TO HAVE] EXITED"
-    print tm
-
-
-
-
+        rm.add_runnable(p)
+    app = QApplication([])
+    form = XRunnableManager(rm)
+    form.show()
+    # it is good to start the manager as late as possible, otherwise
+    # the program will hang if, for example, the form fails to be created.
+    rm.start()
+    app.exec_()
+    rm.exit()
+    # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")
+    # print "[SUPPOSED TO HAVE] EXITED"
+    # print rm
     # # Saves log
     LOG_FILENAME = "tune-zinf-status.log"
     with open(LOG_FILENAME, "w") as h:
-      h.write(str(tm))
+      h.write(str(rm))
     print "Final status saved to file '%s'" % LOG_FILENAME
 
+    # todo not closing form automatically. This is OK, but perhaps it would
+    # be good to show a message to continue
 
-    if not tm.has_finished:
+
+    # # Finds zinf's and creates output file
+    flag_clean, flag_success = False, False
+    if not rm.flag_finished:
         print "Not finished"
-        print "(session directories will not be removed)."
-    elif tm.num_failed > 0:
-        print "Failed tasks."
+    elif rm.num_failed > 0:
+        print "Number of failed tasks: " % rm.num_failed
         print "Please check log files inside directories of sessions that failed"
         print "(session directories will not be removed)."
     else:
@@ -194,28 +158,31 @@ if __name__ == "__main__":
             combo.pfant.load_result()
             norm = combo.pfant.norm  # normalized spectrum
             zinf = _get_zinf(line.lambda_, norm)
-
             if zinf < args.min:
                 zinf = args.min
             if zinf > args.max:
                 zinf = args.max
             if args.ge_current and line.zinf > zinf:
                 zinf = line.zinf
-
             line.zinf = zinf
-
+        print "Creating output file..."
         file_atoms.save_as(args.fn_output[0])
+        flag_clean = not args.no_clean
+        flag_success = True
 
-        # # Removes session-* directories
-        if not args.no_clean:
-            print "Cleaning..."
-            for i, combo in enumerate(pp):
-                try:
-                    combo.conf.clean()
-                except Exception as E:
-                    print "Error cleaning session for %s: %s" % (combo.name, str(E))
 
+    # # Removes session-* directories
+    if flag_clean:
+        print "Cleaning..."
+        for i, combo in enumerate(pp):
+            try:
+                combo.conf.clean()
+            except Exception as E:
+                print "Error cleaning session for %s: %s" % (combo.name, str(E))
+
+    if flag_success:
         print "Successfully created file '%s' !!" % args.fn_output[0]
+
 
 
 # Why not closing ...

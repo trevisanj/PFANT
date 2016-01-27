@@ -54,7 +54,7 @@ from PyQt4.QtCore import *
 import time
 from threading import Lock
 from functools import wraps
-
+import numpy as np
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -284,7 +284,11 @@ def seconds2str(seconds):
     """Returns string such as 1h 05m 55s."""
     
     if seconds < 0:
-      return "%.3gs" % seconds
+        return "%.3gs" % seconds
+    elif np.isnan(seconds):
+        return "NaN"
+    elif np.isinf(seconds):
+        return "Inf"
     
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
@@ -561,22 +565,25 @@ class SignalProxy(QObject):
     Note: *queued* connection is made to slot.
 
     Original author: Luke Campagnola -- pyqtgraph package
+
+    Arguments:
+      signals -- a list of bound signals or pyqtSignal instance
+      delay=0.3 -- Time (in seconds) to wait for signals to stop before emitting
+      slot -- Optional function to connect sigDelayed to.
+      rateLimit=0 -- (signals/second) if greater than 0, this allows signals to
+       stream out at a steady rate while they are being received.
+      flag_connect=True -- whether or not to start with the connections already
+       made. If False, the signals and slots can be connected by calling
+       connect_all()
     """
 
     __sigDelayed = pyqtSignal(object)
 
-    def __init__(self, signals, delay=0.3, rateLimit=0, slot=None):
-        """Initialization arguments:
-        signals - a list of bound signals or pyqtSignal instance
-        delay - Time (in seconds) to wait for signals to stop before emitting (default 0.3s)
-        slot - Optional function to connect sigDelayed to.
-        rateLimit - (signals/sec) if greater than 0, this allows signals to stream out at a
-                    steady rate while they are being received.
-        """
-
+    def __init__(self, signals, delay=0.3, rateLimit=0, slot=None,
+                 flag_connect=True):
         QObject.__init__(self)
-        for signal in signals:
-            self.__connect_signal(signal)
+        # for signal in signals:
+        #     self.__connect_signal(signal)
         self.__signals = signals
         self.__delay = delay
         self.__rateLimit = rateLimit
@@ -588,9 +595,11 @@ class SignalProxy(QObject):
         self.__lastFlushTime = None
         self.__lock = Lock()
         # State: connected/disconnected
-        self.__connected = True
-        if slot is not None:
-            self.__sigDelayed.connect(slot, Qt.QueuedConnection)
+        self.__connected = False
+        if flag_connect:
+            self.connect_all()
+        # if slot is not None:
+        #     self.__sigDelayed.connect(slot, Qt.QueuedConnection)
 
     def add_signal(self, signal):
         """Adds "input" signal to connected signals.

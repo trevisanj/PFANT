@@ -1,5 +1,5 @@
 """ThreadManager2 class."""
-__all__ = ["ThreadManager"]
+__all__ = ["RunnableManager"]
 
 from .runnables import *
 from .misc import random_name, seconds2str, get_python_logger
@@ -16,14 +16,14 @@ import sys
 from .misc import froze_it
 
 
-class _Runner2(threading.Thread):
+class _Runner(threading.Thread):
     """
     Thread that runs object of class Runnable.
     """
 
     def __init__(self, manager, *args, **kwargs):
         threading.Thread.__init__(self, *args, **kwargs)
-        assert isinstance(manager, ThreadManager)
+        assert isinstance(manager, RunnableManager)
         self.runnable = None
         self.manager = manager
         self.name = self.__class__.__name__+random_name()
@@ -96,7 +96,7 @@ def _tm_print(s):
 
 
 @froze_it
-class ThreadManager(QObject, threading.Thread):
+class RunnableManager(QObject, threading.Thread):
     """
     Thread takes care of other threads.
 
@@ -109,6 +109,9 @@ class ThreadManager(QObject, threading.Thread):
 
     # Emitted whenever the state of any thread has changed
     runnable_changed = pyqtSignal()
+
+    # Emitted when there are no runnables left to run
+    finished = pyqtSignal()
 
     @property
     def num_finished(self):
@@ -141,13 +144,21 @@ class ThreadManager(QObject, threading.Thread):
         return self.__flag_cancelled
 
     @property
-    def flag_exit(self):
-        return self.__flag_exit
+    def flag_exited(self):
+        return self.__time_started is not None and not self.is_alive()
 
     @property
-    def has_finished(self):
+    def flag_finished(self):
         with self.__lock:
             return self.__num_finished == len(self.__runnables)
+
+    @property
+    def flag_paused(self):
+        return self.__flag_paused
+
+    @property
+    def flag_failed(self):
+        return self.__num_failed > 0
 
     def __init__(self, *args, **kwargs):
         self.__max_simultaneous = kwargs.pop("max_simultaneous", None)
@@ -170,6 +181,9 @@ class ThreadManager(QObject, threading.Thread):
         self.__flag_exit = False
         # set to True if explicitly cancelled through calling cancel()
         self.__flag_cancelled = False
+        # indicates whether the runnable manages is paused.
+        # When paused, it will not delegate new tasks to the runners.
+        self.__flag_paused = False
 
         # # Statistics
         # time the thread has started
@@ -180,7 +194,7 @@ class ThreadManager(QObject, threading.Thread):
         self.time_per_runnable = 0
         
         for i in range(self.__max_simultaneous):
-            t = _Runner2(self)
+            t = _Runner(self)
             self.__runners.append(t)
 
     def start(self):
@@ -190,6 +204,15 @@ class ThreadManager(QObject, threading.Thread):
     def cancel(self):
         self.__flag_cancelled = True
         self.__flag_exit = True
+
+    def pause(self):
+        """Pauses the delegation of runnables to runners.
+
+        *Attention*: messes with time estimate."""
+        self.__flag_paused = True
+
+    def resume(self):
+        self.__flag_paused = False
 
     def get_runnables_copy(self):
         """Returns a copy of self.__runnables.
@@ -202,14 +225,27 @@ class ThreadManager(QObject, threading.Thread):
     def get_times(self):
         """Returns (ellapsed, total, remaining)."""
         inf = float("inf")
-        ella, tot, rema = t = time.time()-self.__time_started, inf, inf
-        nf = self.__num_finished
-        if nf > 0:
-            n = len(self.__runnables)
-            tpr = self.time_per_runnable
-            tf = tpr*nf  # estimated time until last recorded finished
-            tot = tpr*n
-            rema = tpr*(n-nf)-(ella-tf)
+        ella, tot, rema = 0, 0, 0
+        nr = self.num_runnables
+        if self.__time_started is None:
+            if nr > 0:
+                tot, rema = inf, inf
+        else:
+            ella = time.time()-self.__time_started
+            if nr > 0:
+                nf = self.__num_finished
+                if nf == 0:
+                    tot, rema = inf, inf
+                else:
+                    tpr = self.time_per_runnable
+                    tf = tpr*nf  # estimated time until last recorded finished
+                    tot = tpr*nr
+                    if not self.__flag_exit:
+                        rema = tpr*(nr-nf)-(ella-tf)
+                        if rema < 0:
+                            rema = 0
+                    else:
+                        rema = inf
         return ella, tot, rema
             
     def add_runnable(self, runnable):
@@ -219,44 +255,12 @@ class ThreadManager(QObject, threading.Thread):
 #        self.thread_added.emit()  # todo why emit this here??
 
     def exit(self):
-<<<<<<< HEAD
-        with self.__lock:
-            self.__flag_exit = True
-
-    def has_finished(self):
-        with self.__lock:
-            return len(self.__threads) == self.__num_finished
-
-    def run(self):
-        _tm_print("Will run %d threads" % len(self.__threads))
-        while True:
-            # _tm_print("NUM: %d; ACTIVE: %d; FINISHED: %d" % (len(self.__threads), len(self.__active), self.__num_finished))
-            if self.__flag_exit:
-                break
-
-            # starts threads
-            with self.__lock:
-                num_to_start = self.__max_threads-len(self.__active)
-            if num_to_start > 0:
-                for t in self.__threads:
-                    if not t.is_alive() and not t.flag_started:
-                        _tm_print("Starting %s" % t.name)
-                        t.start()
-                        _tm_print("Started %s" % t.name)
-                        num_to_start -= 1
-                    if num_to_start == 0:
-                        break
-
-            # time.sleep(0.001)
-            # time.sleep(0.5)
-=======
         self.__flag_exit = True
         
     def kill_runnables(self):
         for t in self.__runners:
             if t.runnable and t.runnable.flag_running:
                 t.kill_runnable()
->>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
 
     def get_summary_report(self):
         """Returns list with information such as ellapsed time, remaining time etc."""
@@ -299,7 +303,7 @@ class ThreadManager(QObject, threading.Thread):
         return "\n".join(l)
 
     def _finish(self, runner):
-        """Called by a _Runner2 to inform that a runnable has finished.
+        """Called by a _Runner to inform that a runnable has finished.
 
         This is for monitoring purpose only and has no effect in the workings
         of the thread manager.
@@ -313,6 +317,8 @@ class ThreadManager(QObject, threading.Thread):
         if self.__num_finished == len(self.__runnables):
             self.__time_finished = t
         self.runnable_changed.emit()
+        if self.flag_finished:
+            self.finished.emit()
         
     def run(self):
         flag_sleep = False
@@ -322,39 +328,43 @@ class ThreadManager(QObject, threading.Thread):
         while True:
             #  self.__logger.debug("NUM: %d; ACTIVE: %d; FINISHED: %d" % (len(self.__runnables), len(self.__active), self.__num_finished))
             if self.__flag_exit:
-                for t in self.__runners:
-                    if t.runnable and t.runnable.flag_running:
-                        t.kill_runnable()
-                    t.exit()
+                for runner in self.__runners:
+                    if runner.runnable and runner.runnable.flag_running:
+                        runner.kill_runnable()
+                    runner.exit()
                 break
-                
-            with self.__lock:
-                if self.__ptrs >= len(self.__runnables):
-                    flag_sleep = True
-                else:                        
-                    t = self.__runnables[self.__ptrs]
-                    j = 0
-                    # loop to find idle thread
-                    while True:
-                        if j >= self.__max_simultaneous:
-                            # gave a full turn without finding idle thread
-                            flag_sleep = True
-                            break
-                        r = self.__runners[it]
 
-                        it += 1
-                        if it >= self.__max_simultaneous:
-                            it = 0
+            if self.__flag_paused:
+                flag_sleep = True
+            else:
+                with self.__lock:
+                    if self.__ptrs >= len(self.__runnables):
+                        flag_sleep = True
+                    else:
+                        runnable = self.__runnables[self.__ptrs]
+                        j = 0
+                        # loop to find idle thread
+                        while True:
+                            if j >= self.__max_simultaneous:
+                                # gave a full turn without finding idle thread
+                                flag_sleep = True
+                                break
+                            r = self.__runners[it]
 
-                        if r.flag_idle:
-                            r.set_runnable(t)
-                            self.__logger.debug("Assigned #%d :%s to %s" % (self.__ptrs, t.name, r.name))
-                            self.__ptrs += 1
+                            it += 1
+                            if it >= self.__max_simultaneous:
+                                it = 0
 
-                            if not r.is_alive():
-                                r.start()
-                            break
-                        j += 1
+                            if r.flag_idle:
+                                r.set_runnable(runnable)
+                                self.__logger.debug("Assigned #%d :%s to %s" %
+                                 (self.__ptrs, runnable.name, r.name))
+                                self.__ptrs += 1
+
+                                if not r.is_alive():
+                                    r.start()
+                                break
+                            j += 1
             
             if flag_sleep:
                 T = 0.1
@@ -362,4 +372,3 @@ class ThreadManager(QObject, threading.Thread):
                 flag_sleep = False
     
         self.__logger.debug("TM exited")
-

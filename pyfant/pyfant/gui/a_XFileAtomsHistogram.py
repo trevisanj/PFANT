@@ -13,6 +13,9 @@ from pyfant import *
 from ._guiaux import *
 
 
+MAX_NUM_BINS = 500
+
+
 class XFileAtomsHistogram(QMainWindow):
     """
     Interactive window that plots a histogram of selected field of a FileAtoms
@@ -27,7 +30,9 @@ class XFileAtomsHistogram(QMainWindow):
 
         self.f = file_atoms  # FileAtoms object
 
-        # # Toolbar
+        # # Central widget containing toolbar and plot area
+
+        # ## Toolbar
 
         l = self.labelDataField = QLabel("&Data field")
         c = self.comboBoxDataField = QComboBox()
@@ -35,7 +40,7 @@ class XFileAtomsHistogram(QMainWindow):
         l.setBuddy(c)
         l2 = self.labelSpinBox = QLabel("&Bins")
         sb = self.spinBox = QSpinBox()
-        sb.setMaximum(200)
+        sb.setMaximum(MAX_NUM_BINS)
         sb.setValue(50)
         l2.setBuddy(sb)
         b = self.puishButtonPlot = QPushButton("&Plot")
@@ -53,30 +58,30 @@ class XFileAtomsHistogram(QMainWindow):
         a.setLayout(l0)
         a.setFixedHeight(40)
 
-        # # Plot widget
-
+        # ## Plot widget
         # http://stackoverflow.com/questions/12459811
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
-        layout = QVBoxLayout()
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
-        layout.setMargin(0)
-
-        a = self.widgetPlot = QWidget()
-        a.setLayout(layout)
-
         l1 = self.layoutPlot = QVBoxLayout()
-        l1.addWidget(self.widgetPlotToolbar)
-        l1.addWidget(self.widgetPlot)
+        l1.addWidget(self.toolbar)
+        l1.addWidget(self.canvas)
         l1.setMargin(0)
+        # a = self.widgetPlot = QWidget()
+        # a.setLayout(l1)
 
-        a = self.widgetPlot = QWidget()
-        a.setLayout(l1)
+        # ## Mounts central widget
+        l2 = self.layoutCentral = QVBoxLayout()
+        l2.addWidget(self.widgetPlotToolbar)
+        l2.addLayout(l1)
+        # l2.addWidget(self.widgetPlot)
+        l2.setMargin(0)
+        a = self.centralWidget = QWidget()
+        a.setLayout(l2)
         a.setFont(MONO_FONT)
+        self.setCentralWidget(self.centralWidget)
 
-        self.setCentralWidget(self.widgetPlot)
+        # # Final adjustments
         self.setWindowTitle("Histogram")
         place_center(self)
 

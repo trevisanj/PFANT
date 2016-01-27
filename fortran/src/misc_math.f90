@@ -1096,16 +1096,7 @@ contains
       !> Indicates where it was called from, used in error message: facilitates debugging
       integer, intent(in) :: i_call
       if(to_(ntot) .lt. tolim) then
-<<<<<<< HEAD
-
-!        call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
-!         int2str(ntot) //'; to_(' //&
-!         int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
-!          real82str(tolim, 3) // ')')
-        call log_warning('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
-=======
         call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
->>>>>>> ab30c0466aaf9bea22a50f97c45a1ef7d398b263
          int2str(ntot) //'; to_(' //&
          int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
           real82str(tolim, 3) // ')')
