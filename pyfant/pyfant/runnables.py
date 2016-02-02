@@ -1,3 +1,5 @@
+
+
 __all__ = ["Runnable", "ExecutableStatus", "Executable", "Innewmarcs", "Hydro2",
            "Pfant", "Nulbad", "Combo"]
 
@@ -120,12 +122,12 @@ class Executable(Runnable):
     def exe_path(self, x):
         self._exe_path = x
 
-    @property
-    def logger(self):
-        return self.__logger
-    @logger.setter
-    def logger(self, x):
-        self.__logger = x
+    # @property
+    # def logger(self):
+    #     return self.__logger
+    # @logger.setter
+    # def logger(self, x):
+    #     self.__logger = x
 
     @property
     def stdout(self):
@@ -143,8 +145,8 @@ class Executable(Runnable):
         self._status = ExecutableStatus(self)
 
         # # Private variables
-        # Will receive Python output
-        self.__logger = None
+        # # Will receive Python output
+        # self.__logger = None
         # fill be filled with self.popen.returncode in due time
         self.__returncode = None
         # Created by _run()
@@ -167,11 +169,12 @@ class Executable(Runnable):
         Blocking routine. Only returns when executable finishes running.
         """
         assert not self._flag_running, "Already running"
-        self.__logger = get_python_logger()
+        # self.__logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.__logger, "python.log")
-        self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
-        self.conf.make_session_id()
-        self.conf.create_data_files()
+
+
+        self.conf.configure()
+        self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
         self._run()
 
     def run_from_combo(self):
@@ -200,7 +203,7 @@ class Executable(Runnable):
             #log_noisy(self.__logger, s)
 
             s = " ".join(cmd_words)
-            self.__logger.info(s)
+            self.conf.logger.info(s)
             # logs command-line to file and closes it.
             with open(self.conf.join_with_session_dir("commands.log"), "a") as h:
                 h.write(s+"\n\n")
@@ -248,9 +251,9 @@ class Executable(Runnable):
                 elif isinstance(e, IOError) and self.__popen.returncode == 0:
                     # Sometimes a IOError is raised even if Fortran executes
                     # successfully, so the error is dismissed
-                    self.logger.warning("Harmless error in: %s %s" %
+                    self.conf.logger.warning("Harmless error in: %s %s" %
                      (self.conf.session_dir, self.get_status()))
-                    self.logger.warning(str(e))
+                    self.conf.logger.warning(str(e))
                 else:
                     flag_dismiss = False
 
@@ -263,7 +266,7 @@ class Executable(Runnable):
                 self._flag_running = False
                 if self.__popen is not None:
                     self.__returncode = self.__popen.returncode
-                self.__logger.info(str(self._status))
+                self.conf.logger.info(str(self._status))
 
     def load_result(self):
         """Override this method to open the result file(s) particular to the
@@ -347,6 +350,7 @@ class Pfant(Executable):
             self.__setattr__(type_, file_sp.spectrum)
 
 
+@froze_it
 class Nulbad(Executable):
     """Class representing the nulbad executable."""
 
@@ -444,7 +448,7 @@ class Combo(Runnable):
 
         # ** Internal variables
         self.__running_exe = None  # Executable object currently running
-        self.__logger = None
+        # self.__logger = None
 
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
@@ -466,7 +470,15 @@ class Combo(Runnable):
 
         self._flag_running = True
         try:
-            self.__configure()
+            self.conf.configure()
+            self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+
+
+
+
+
+
+
 
             for e in self.get_exes():
                 self.__running_exe = e
@@ -492,39 +504,46 @@ class Combo(Runnable):
             return self.__running_exe.get_status()
         else:
             return None
+    #
+    # def __configure(self):
+    #     """
+    #     Sets several properties of conf and executables to achieve the expected
+    #     synchronization.
+    #
+    #     Note: this routine messes with sys.stdout to log to screen and file
+    #     simultaneously.
+    #     """
+    #
+    #     c = self.conf
+    #
+    #
+    #     c.make_session_id()
+    #     c.__redirect_outputs_to_session_dir(self.__sequence)
+    #
+    #     self.__logger = get_python_logger()
+    #     self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+    #
+    #     log_path = c.join_with_session_dir("fortran.log")
+    #     if self.__flag_log_console:
+    #         stdout_ = LogTwo(log_path)
+    #     else:
+    #         stdout_ = open(log_path, "w")
+    #
+    #     # All files that will be created need to have the session directory added to their names
+    #     for e in self.get_exes():
+    #         # Propagates configuration
+    #         e.conf = c
+    #         e.stdout = stdout_
+    #         e.logger = self.__logger
+    #
+    #         # Fixes exe path
+    #         exe_filename = os.path.split(e._exe_path)[-1]
+    #         e.exe_path = os.path.join(self.__exe_dir, exe_filename)
+    #     c.create_data_files()
+    #
 
-    def __configure(self):
-        """
-        Sets several properties of conf and executables to achieve the expected
-        synchronization.
 
-        Note: this routine messes with sys.stdout to log to screen and file
-        simultaneously.
-        """
 
-        c = self.conf
 
-        c.make_session_id()
-        c.prepare_filenames_for_combo(self.__sequence)
 
-        self.__logger = get_python_logger()
-        # this was leaving file open after finished add_file_handler(self.__logger, c.join_with_session_dir("python.log"))
-        self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
 
-        log_path = c.join_with_session_dir("fortran.log")
-        if self.__flag_log_console:
-            stdout_ = LogTwo(log_path)
-        else:
-            stdout_ = open(log_path, "w")
-
-        # All files that will be created need to have the session directory added to their names
-        for e in self.get_exes():
-            # Propagates configuration
-            e.conf = c
-            e.stdout = stdout_
-            e.logger = self.__logger
-
-            # Fixes exe path
-            exe_filename = os.path.split(e._exe_path)[-1]
-            e.exe_path = os.path.join(self.__exe_dir, exe_filename)
-        c.create_data_files()

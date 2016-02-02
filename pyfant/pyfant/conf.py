@@ -13,6 +13,7 @@ from .misc import *
 import re
 from threading import Lock
 import logging
+import subprocess
 
 # Indexes in workflow sequence
 e_innewmarcs = 0
@@ -115,47 +116,111 @@ class Conf(object):
 
     @property
     def session_id(self):
+        """
+        Information used to create a session directory and to identify this directory.
+
+        Can be assigned directly by configure().
+
+        When this property is set, a directory "session-<session_id>" is created
+        immediately."""
         return self.__session_id
     @session_id.setter
     def session_id(self, x):
-        """Sets session id and creates corresponding directory immediately.
-
-        Directory Creates directory "session-<session id>" when setting session id."""
         assert self.__session_id is None, "Session id already set to \"%s\"" % self.__session_id
-        self.__session_id = x
+        self.__session_id = str(x)
         new_dir = _get_session_dirname(session_prefix, x)
         # Will raise if directory exists: directory names must be unique.
         os.mkdir(new_dir)
 
     @property
     def session_dir(self):
+        """Name made up with a prefix + (the session id)."""
         return None if self.__session_id is None else \
          _get_session_dirname(session_prefix, self.__session_id)
 
+    @property
+    def popen_stdout(self):
+        """(Read-only) To be used as stdout to a Executable Popen object."""
+        return self.__popen_stdout
+
+    @property
+    def flag_log_console(self):
+        """Display Fortran messages in console?"""
+        return self.__flag_log_console
+    @flag_log_console.setter
+    def flag_log_console(self, x):
+        self.__flag_log_console = x
+
+    @property
+    def flag_log_file(self):
+        """Log Fortran messages to "<session dir>/fortran.log"?"""
+        return self.__flag_log_file
+    @flag_log_file.setter
+    def flag_log_file(self, x):
+        self.__flag_log_file = x
+
+    @property
+    def flag_rename_outputs(self):
+        """Tweak output filenames to be created inside the session directory?"""
+        return self.__flag_rename_outputs
+    @flag_rename_outputs.setter
+    def flag_rename_outputs(self, x):
+        self.__flag_rename_outputs = x
+
+    @property
+    def logger(self):
+        return self.__logger
+
     def __init__(self):
-        # # Session control
-        # Session id is used to make up filenames as needed.
-        # This variable can be set directly
+        # # Setup properties
+        # ## Session control
         self.__session_id = None
+        # ## Setup flags
+        self.__flag_log_console = True
+        self.__flag_log_file = True
+        self.__flag_rename_outputs = False
 
         # # DataFile instances
-        # If set, their corresponding fn_ attribute will be overwritten
-
-        # ## FileMain instance
-        # If set, main configuration file (of random name) will be created before
+        # See create_data_files() to see what happens when one or more
+        # of these objects is set.
         # running the executable.
+        # ## FileMain instance
         self.file_main = None
-        # FileAbonds instance
+        # ## FileAbonds instance
         self.file_abonds = None
-        # FileAbonds instance
+        # ## FileAbonds instance
         self.file_dissoc = None
-        # FileHmap instance
+        # ## FileHmap instance
         self.file_hmap = None
-        # FileAtoms instance
+        # ## FileAtoms instance
         self.file_atoms = None
 
-        # Command-line options
+        # # Command-line options
         self.opt = Options()
+
+        # # Read-only properties
+        self.__popen_stdout = None
+        self.__logger = None
+
+    def configure(self, sequence):
+        self.__make_session_id()
+        if self.__flag_rename_outputs:
+            self.__rename_outputs(sequence)
+
+        self.__logger = get_python_logger()
+
+        if self.__flag_log_file:
+            log_path = self.join_with_session_dir("fortran.log")
+            if self.__flag_log_console:
+                stdout_ = LogTwo(log_path)
+            else:
+                stdout_ = open(log_path, "w")
+        else:
+            if self.__flag_log_console:
+                stdout_ = subprocess.STD_OUTPUT_HANDLE
+            else:
+                stdout_ = None
+        self.__popen_stdout = stdout_
 
     def get_file_main(self):
         """Returns either self.file_main, or if None, tries to open file and
@@ -271,8 +336,8 @@ class Conf(object):
             If self.file_main is None:
               - File specified by self.fn_main must exist.
             else:
-              - File of random name (e.g., main_23498.dat) will be generated
-              - self.fn_main will be overwritten
+              - File will be created inside session directory
+              - self.opt.fn_main will be overwritten
 
         Now this example extends to file_* attributes.
         """
@@ -289,7 +354,7 @@ class Conf(object):
                     # Overwrites config option
                     self.opt.__setattr__("fn_"+attr_name[5:], new_fn)
 
-    def prepare_filenames_for_combo(self, sequence):
+    def __rename_outputs(self, sequence):
         """
         Adds session dir to names of files that will be created by any of the
         executables. To be called *before* create_data_files
