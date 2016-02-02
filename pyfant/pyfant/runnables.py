@@ -241,11 +241,20 @@ class Executable(Runnable):
 
             except Exception as e:
                 self.__popen.poll()
-                # self.__logger.critical(fmt_error("Failed to execute command-line (returncode=%s)" % self.popen.returncode))
+                flag_dismiss = True
                 if isinstance(e, FailedError) and self._flag_killed:
                     # dismisses error if explicitly killed
                     pass
+                elif isinstance(e, IOError) and self.__popen.returncode == 0:
+                    # Sometimes a IOError is raised even if Fortran executes
+                    # successfully, so the error is dismissed
+                    self.logger.warning("Harmless error in: %s %s" %
+                     (self.conf.session_dir, self.get_status()))
+                    self.logger.warning(str(e))
                 else:
+                    flag_dismiss = False
+
+                if not flag_dismiss:
                     self._error_message = e.__class__.__name__+": "+str(e)
                     self._flag_error = True
                     raise
@@ -437,7 +446,54 @@ class Combo(Runnable):
         self.__running_exe = None  # Executable object currently running
         self.__logger = None
 
-    def configure(self):
+    def get_exes(self):
+        """Returns exe objects in a list according with self.sequence."""
+
+        map = [(e_innewmarcs, self.__innewmarcs), (e_hydro2, self.__hydro2), (e_pfant, self.__pfant),
+               (e_nulbad, self.__nulbad)]
+        res = []
+        ii, ee = zip(*map)
+        self.__sequence.sort()
+        for i_exe in self.__sequence:
+            if i_exe in ii:
+                res.append(ee[ii.index(i_exe)])
+        return res
+
+    def run(self):
+        """Blocking routine. Overwrites self.popen."""
+
+        assert not self.flag_running, "Already running"
+
+        self._flag_running = True
+        try:
+            self.__configure()
+
+            for e in self.get_exes():
+                self.__running_exe = e
+                e.run_from_combo()
+        except Exception as e:
+            self._flag_error = True
+            self._error_message = "Combo: "+str(e)
+            raise
+        finally:
+            # leave it as last self.__running_exe = None
+            self._flag_running = False
+            self._flag_finished = True
+
+    def kill(self):
+        self._flag_killed = True
+        if self._flag_running:
+            if self.__running_exe:
+                self.__running_exe.kill()
+
+    def get_status(self):
+        """Returns status of running executable or None."""
+        if self.__running_exe:
+            return self.__running_exe.get_status()
+        else:
+            return None
+
+    def __configure(self):
         """
         Sets several properties of conf and executables to achieve the expected
         synchronization.
@@ -471,54 +527,4 @@ class Combo(Runnable):
             # Fixes exe path
             exe_filename = os.path.split(e._exe_path)[-1]
             e.exe_path = os.path.join(self.__exe_dir, exe_filename)
-
         c.create_data_files()
-
-    def get_exes(self):
-        """Returns exe objects in a list according with self.sequence."""
-
-        map = [(e_innewmarcs, self.__innewmarcs), (e_hydro2, self.__hydro2), (e_pfant, self.__pfant),
-               (e_nulbad, self.__nulbad)]
-        res = []
-        ii, ee = zip(*map)
-        self.__sequence.sort()
-        for i_exe in self.__sequence:
-            if i_exe in ii:
-                res.append(ee[ii.index(i_exe)])
-        return res
-
-    def run(self):
-        """Blocking routine. Overwrites self.popen."""
-
-        assert not self.flag_running, "Already running"
-
-        self._flag_running = True
-        try:
-            self.configure()
-
-            for e in self.get_exes():
-                self.__running_exe = e
-                e.run_from_combo()
-        except Exception as e:
-            self._flag_error = True
-            self._error_message = "Combo: "+str(e)
-            raise
-        finally:
-            # leave it as last self.__running_exe = None
-            self._flag_running = False
-            self._flag_finished = True
-
-    def kill(self):
-        self._flag_killed = True
-        if self._flag_running:
-            if self.__running_exe:
-                self.__running_exe.kill()
-
-    def get_status(self):
-        """Returns status of running executable or None."""
-        if self.__running_exe:
-            return self.__running_exe.get_status()
-        else:
-            return None
-                
-                

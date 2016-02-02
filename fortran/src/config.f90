@@ -412,14 +412,14 @@ contains
     !> Option, will be used only in case of error
     type(option), intent(in) :: opt
 
-    if (len(opt%chr) > 0) then
+    if (len(opt%chr) > 0 .and. opt%chr .ne. ' ') then
       if (len(opt%name) > 0) then
         res = '''-' // opt%chr // '''/''--' // trim(opt%name) // ''''
       else
         res = '''-' // opt%chr // ''''
       end if
     else
-      res = '''-' // trim(opt%name) // ''''
+      res = '''--' // trim(opt%name) // ''''
     end if
   end
 end module
@@ -499,6 +499,7 @@ module config
    config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
   real*8 :: config_llzero = -1 !< option: --llzero
   real*8 :: config_llfin  = -1 !< option: --llfin
+  real*8 :: config_pas    = -1 !< option: --pas
 
   !---
   ! innewmarcs-only
@@ -750,9 +751,9 @@ contains
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
      !>@todo erplace "calculus interval" with "synthesis interval"
     call add_option('hp', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
-     'Lower boundary of calculation interval')
+     'Lower boundary of calculation interval (angstrom)')
     call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
-     'Upper boundary of calculation interval')
+     'Upper boundary of calculation interval (angstrom)')
 
     !
     ! innewmarcs-only
@@ -817,7 +818,7 @@ contains
     call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'flprefix',        ' ', .true., 'filename prefix', &
-                    '<"main_flprefix" variable> (taken from main configuration file)', &
+                    '<main_flprefix> '//FROM_MAIN, &
      'pfant output - prefix for flux output files.<br>'//&
      'Three files will be created based on this prefix:<br>'//&
      IND//'<flprefix>.spec: un-normalized spectrum<br>'//&
@@ -833,12 +834,14 @@ contains
      'distance from center of line to consider in atomic line calculation.<br>'//&
      IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
+    call add_option('p', 'pas', ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
+     'Calculation step (angstrom)')
 
     !
     ! nulbad-only
     !
     call add_option('n', 'fn_flux', ' ', .true., 'file name', &
-     '<"main_flprefix" variable>.norm (taken from main configuration file)>', &
+     '<main_flprefix>.norm '//FROM_MAIN, &
      'Flux file name')
     call add_option('n', 'norm',     ' ', .true., 'T/F', logical2str(config_norm), &
       'Is spectrum normalized?')
@@ -846,16 +849,12 @@ contains
       'Fnu to FLambda transformation?')
     call add_option('n', 'fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
       'output file name, which will have the convolved spectrum')
-    call add_option('n', 'pat',      ' ', .true., 'real value', '<"main_pas" variable> (taken from main configuration file)', &
-      'step ?doc?')
+    call add_option('n', 'pat',      ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
+      'Wavelength step of the output spectrum (angstrom)')
     call add_option('n', 'convol',   ' ', .true., 'T/F', logical2str(config_convol), &
       'Apply convolution?')
-    call add_option('n', 'fwhm',     ' ', .true., 'real value', '<"main_fwhm" variable> (taken from main configuration file)', &
+    call add_option('n', 'fwhm',     ' ', .true., 'real value', '<main_fwhm> '//FROM_MAIN, &
       'Full-width-half-maximum of Gaussian function')
-
-
-    !
-    !
   end
 
 
@@ -979,12 +978,16 @@ contains
       case ('fn_hmap')
         call parse_aux_assign_fn(o_arg, config_fn_hmap, 'config_fn_hmap')
       case ('llzero')
-        ! llzero and llfin cannot have decimal places, I don't know why but NaN's would appear in the calculations
+        ! Note (JT): decimal llzero/llfin are not allowed due to [not completely understood]
+        ! numerical complications.
         config_llzero = floor(parse_aux_str2real8(opt, o_arg))
         call parse_aux_log_assignment('config_llzero', real82str(config_llzero, 1))
       case ('llfin')
         config_llfin = ceiling(parse_aux_str2real8(opt, o_arg))
         call parse_aux_log_assignment('config_llfin', real82str(config_llfin, 1))
+      case ('pas')
+        config_pas = parse_aux_str2real8(opt, o_arg)
+        call parse_aux_log_assignment('config_pas', real82str(config_pas, 4))
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)

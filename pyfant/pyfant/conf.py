@@ -121,14 +121,16 @@ class Conf(object):
         """Sets session id and creates corresponding directory immediately.
 
         Directory Creates directory "session-<session id>" when setting session id."""
+        assert self.__session_id is None, "Session id already set to \"%s\"" % self.__session_id
         self.__session_id = x
-        new_dir = _get_session_dir(session_prefix, x)
+        new_dir = _get_session_dirname(session_prefix, x)
+        # Will raise if directory exists: directory names must be unique.
         os.mkdir(new_dir)
 
     @property
     def session_dir(self):
         return None if self.__session_id is None else \
-         _get_session_dir(session_prefix, self.__session_id)
+         _get_session_dirname(session_prefix, self.__session_id)
 
     def __init__(self):
         # # Session control
@@ -233,7 +235,6 @@ class Conf(object):
 
         if self.__session_id is not None:
             return
-
         self.__session_id = _make_session_id()
 
     def join_with_session_dir(self, fn):
@@ -358,7 +359,7 @@ def _make_session_id():
         i = 0
         while True:
             ret = "%d" % i
-            new_dir = _get_session_dir(session_prefix, ret)
+            new_dir = _get_session_dirname(session_prefix, ret)
             if not os.path.isdir(new_dir):
                 break
             i += 1
@@ -366,6 +367,6 @@ def _make_session_id():
         return ret
 
 
-def _get_session_dir(prefix, id_):
+def _get_session_dirname(prefix, id_):
     """Returns string which is the name of a filesystem directory."""
     return prefix+id_

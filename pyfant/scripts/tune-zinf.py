@@ -151,6 +151,7 @@ if __name__ == "__main__":
         print "Please check log files inside directories of sessions that failed"
         print "(session directories will not be removed)."
     else:
+        print "Calculating zinf's, please wait..."
         # # Calculates zinf and save new atomic lines file
         n = len(pp)
         X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]

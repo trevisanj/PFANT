@@ -22,6 +22,10 @@ COLORS = [QColor(255, 0, 0),
 STATUS_COLUMN_WIDTH = 730
 WINDOW_WIDTH = 700
 WINDOW_HEIGHT = 700
+# # Defaults for checkable buttons (True: checked)
+FLAG_SHOW_STATUS = True
+FLAG_SHOW_RUNNABLES = True
+
 
 class XRunnableManager(QMainWindow):
     """
@@ -46,12 +50,12 @@ class XRunnableManager(QMainWindow):
         b0 = self.pushButtonStatus = QPushButton("Show &status")
         b0.clicked.connect(self.on_status)
         b0.setCheckable(True)
-        b0.setChecked(True)
+        b0.setChecked(FLAG_SHOW_STATUS)
         b0.setToolTip("Turn status panel on/off")
         b1 = self.pushButtonTable = QPushButton("Show &runnables")
         b1.clicked.connect(self.on_table)
         b1.setCheckable(True)
-        b1.setChecked(False)
+        b1.setChecked(FLAG_SHOW_RUNNABLES)
         b1.setToolTip("Turn status panel on/off")
         b2 = self.pushButtonPause = QPushButton("&Pause")
         b2.clicked.connect(self.on_pause)
@@ -173,7 +177,7 @@ class XRunnableManager(QMainWindow):
 
         # ## Timer to flick the finish indicator
         t = self.timerFinished = QTimer()
-        t.setInterval(100)  # miliseconds
+        t.setInterval(200)  # miliseconds
         t.timeout.connect(self.on_timerFinished_timeout)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

@@ -926,7 +926,7 @@ module pfant_x
   implicit none
 
   character*128 :: x_flprefix
-  real*8 :: x_llzero, x_llfin
+  real*8 :: x_llzero, x_llfin, x_pas
 
 contains
 
@@ -952,6 +952,12 @@ contains
       call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
     else
       x_llfin = config_llfin
+    end if
+    if (config_pas .eq. -1) then
+      x_pas = main_pas
+      call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
+    else
+      x_pas = config_pas
     end if
   end
 end
@@ -1225,11 +1231,11 @@ contains
       if (ikey .eq. ikeytot) then
         m_lfin = lf
       else
-        m_lfin = x_llzero+main_aint*ikey-main_pas
+        m_lfin = x_llzero+main_aint*ikey-x_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
-      m_dtot = int((m_lfin-m_lzero)/main_pas + 1.0005)
+      m_dtot = int((m_lfin-m_lzero)/x_pas + 1.0005)
 
       ! spill check
       if(m_dtot .gt. MAX_DTOT) then
@@ -1245,10 +1251,10 @@ contains
 !        if (d .eq. 1) then
 !          m_ttd(d) = alzero
 !        else
-!          m_ttd(d) = alzero+main_pas*(d-1)
+!          m_ttd(d) = alzero+x_pas*(d-1)
 !        end if
 
-        m_ttd(d) = alzero+main_pas*(d-1)
+        m_ttd(d) = alzero+x_pas*(d-1)
       end do
 
       !#logging
@@ -1299,7 +1305,7 @@ contains
           ! Calcul du coefficient d absorption selectif et calcul du spectre
           do k = 1, atoms_f_nblend
             m_gfal(k) = atoms_f_gf(k)*C2*(atoms_f_lambda(k)*1.e-8)**2
-            m_ecart(k) = atoms_f_lambda(k)-m_lzero+main_pas
+            m_ecart(k) = atoms_f_lambda(k)-m_lzero+x_pas
           end do
         end if
       end if
@@ -1416,10 +1422,10 @@ contains
        amg,                    &  ! fixed
        l0,                     &  ! fixed
        lf,                     &  ! fixed
-       m_lzero+main_pas*(i1-1),                &  ! changes (value changes with each iteration)
-       m_lzero+main_pas*(i2-1),                 &  ! changes
+       m_lzero+x_pas*(i1-1),                &  ! changes (value changes with each iteration)
+       m_lzero+x_pas*(i2-1),                 &  ! changes
        i2-i1+1,                   &  ! old nulbad, not used
-       main_pas,               &  ! fixed
+       x_pas,               &  ! fixed
        main_echx,              &  ! fixed
        main_echy,              &  ! fixed
        main_fwhm                  ! fixed
@@ -1747,13 +1753,13 @@ integer count_
 
     if (km_f_mblend .ne. 0) then
       ! do l = 1, km_f_mblend
-      !   m_ecartm(l) = km_f_lmbdam(l)-m_lzero + main_pas
+      !   m_ecartm(l) = km_f_lmbdam(l)-m_lzero + x_pas
       ! end do
       ! do k=1,km_f_mblend
       !  ecarm(k) = m_ecartm(k)
       ! end do
       do k=1,km_f_mblend
-        ecarm(k) = km_f_lmbdam(k)-m_lzero + main_pas
+        ecarm(k) = km_f_lmbdam(k)-m_lzero + x_pas
       end do
     end if
 
@@ -1762,12 +1768,12 @@ integer count_
       ! Shifts the ecar and ecarm delta lambda vectors
       if (atoms_f_nblend .ne. 0) then
         do k = 1, atoms_f_nblend
-          ecar(k) = ecar(k)-main_pas
+          ecar(k) = ecar(k)-x_pas
         end do
       end if
       if (km_f_mblend .ne. 0) then
         do k = 1,km_f_mblend
-          ecarm(k) = ecarm(k)-main_pas
+          ecarm(k) = ecarm(k)-x_pas
         end do
       end if
 
