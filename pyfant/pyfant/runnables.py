@@ -111,6 +111,9 @@ class Executable(Runnable):
     PFANT executables common ancestor class.
     """
 
+    # Set at descendant class with a pyfant.conf.FOR_* value
+    sequence_index = -1
+
     @property
     def returncode(self):
         return self.__returncode
@@ -118,6 +121,7 @@ class Executable(Runnable):
     @property
     def exe_path(self):
         return self._exe_path
+
     @exe_path.setter
     def exe_path(self, x):
         self._exe_path = x
@@ -129,12 +133,13 @@ class Executable(Runnable):
     # def logger(self, x):
     #     self.__logger = x
 
-    @property
-    def stdout(self):
-        return self.__stdout
-    @stdout.setter
-    def stdout(self, x):
-        self.__stdout = x
+    # @property
+    # def stdout(self):
+    #     return self.__stdout
+    #
+    # @stdout.setter
+    # def stdout(self, x):
+    #     self.__stdout = x
 
     def __init__(self):
         Runnable.__init__(self)
@@ -151,8 +156,8 @@ class Executable(Runnable):
         self.__returncode = None
         # Created by _run()
         self.__popen = None
-        # file-like object, or None: will receive Fortran output
-        self.__stdout = None
+        # # file-like object, or None: will receive Fortran output
+        # self.__stdout = None
         # It is either a blocking _run() or asynchronous open..kill..close
         self.__lock = Lock()
 
@@ -169,13 +174,14 @@ class Executable(Runnable):
         Blocking routine. Only returns when executable finishes running.
         """
         assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
         # self.__logger = get_python_logger()
-        # this was leaving file open after finished add_file_handler(self.__logger, "python.log")
-
-
-        self.conf.configure()
-        self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
-        self._run()
+        self.conf.configure([self.sequence_index])
+        try:
+            self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+            self.__run()
+        finally:
+            self.conf.close_popen_text_dest()
 
     def run_from_combo(self):
         """Alternative to run executable (called from Combo class).
@@ -185,16 +191,19 @@ class Executable(Runnable):
         """
         assert not self._flag_running, "Already running"
         assert not self._flag_finished, "Already finished"
-        self._run()
+        self.__run()
 
     def kill(self):
         self._flag_killed = True
         if self._flag_running:
             self.__popen.kill()
 
-    def _run(self):
-        assert not self._flag_running, "Already running"
-        assert not self._flag_finished, "Already finished"
+    def load_result(self):
+        """Abstract. Override this method to open the result file(s) particular to the
+        executable."""
+
+    def __run(self):
+        """Called both from run() and run_from_combo()."""
         with self.__lock:
             args = self.conf.get_args()
             cmd_words = [self._exe_path] + args
@@ -211,29 +220,39 @@ class Executable(Runnable):
 
             emsg = ""
             try:
-                if self.__stdout:  # TODO disabled PIPE stdout for popen
-                    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                else:
-                    self.__popen = subprocess.Popen(cmd_words)
+                self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
+                # if self.__stdout:
+                #     self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                # else:
+                #     self.__popen = subprocess.Popen(cmd_words)
                 self._flag_running = True
-
-                if self.__stdout:  # TODO disabled PIPE stdout for popen
-                    try:
+                try:
+                    if self.conf.popen_text_dest is not None:
                         for line in self.__popen.stdout:
-                            self.__stdout.write(line)
-                    finally:
-                        # todo cleanup
-                        # printOpenFiles()
+                            self.conf.popen_text_dest.write(line)
+                finally:
+                    self.__popen.stdout.close()
 
-                        self.__popen.stdout.close()
-                        self.__stdout.close()
 
 #todo cleanup
-                        # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-                        # printOpenFiles()
-                        # sys.exit()
-
+#                 self._flag_running = True
+#
+#                 if self.__stdout:  # TODO disabled PIPE stdout for popen
+#                     try:
+#                         for line in self.__popen.stdout:
+#                             self.__stdout.write(line)
+#                     finally:
+#                         # todo cleanup
+#                         # printOpenFiles()
+#
+#                         self.__popen.stdout.close()
+#                         self.__stdout.close()
+#
+# #todo cleanup
+#                         # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+#                         # printOpenFiles()
+#                         # sys.exit()
 
                 # blocks execution until finished
                 self.__popen.wait()
@@ -268,14 +287,12 @@ class Executable(Runnable):
                     self.__returncode = self.__popen.returncode
                 self.conf.logger.info(str(self._status))
 
-    def load_result(self):
-        """Override this method to open the result file(s) particular to the
-        executable."""
-
 
 @froze_it
 class Innewmarcs(Executable):
     """Class representing the innewmarcs executable."""
+
+    sequence_index = FOR_INNEWMARCS
 
     def __init__(self):
         Executable.__init__(self)
@@ -295,6 +312,8 @@ class Innewmarcs(Executable):
 class Hydro2(Executable):
     """Class representing the hydro2 executable."""
 
+    sequence_index = FOR_HYDRO2
+
     def __init__(self):
         Executable.__init__(self)
         self._exe_path = "hydro2"
@@ -305,6 +324,10 @@ class Hydro2(Executable):
 
 @froze_it
 class Pfant(Executable):
+    """Class representing the pfant executable."""
+
+    sequence_index = FOR_PFANT
+
     def __init__(self):
         Executable.__init__(self)
         self._exe_path = "pfant"  # Path to PFANT executable (including executable name)
@@ -354,6 +377,8 @@ class Pfant(Executable):
 class Nulbad(Executable):
     """Class representing the nulbad executable."""
 
+    sequence_index = FOR_NULBAD
+
     def __init__(self):
         Executable.__init__(self)
         self._exe_path = "nulbad"
@@ -396,13 +421,6 @@ class Combo(Runnable):
         self.__exe_dir = x
 
     @property
-    def flag_log_console(self):
-        return self.__flag_log_console
-    @flag_log_console.setter
-    def flag_log_console(self, x):
-          self.__flag_log_console = x
-
-    @property
     def sequence(self):
         return self.__sequence
     @sequence.setter
@@ -437,7 +455,7 @@ class Combo(Runnable):
 
         # Executables to run
         # order is irrelevant (will be sorted anyway).
-        self.__sequence = [e_innewmarcs, e_hydro2, e_pfant, e_nulbad] \
+        self.__sequence = [FOR_INNEWMARCS, FOR_HYDRO2, FOR_PFANT, FOR_NULBAD] \
             if sequence is None else sequence
 
         # ** Executable instances
@@ -453,8 +471,8 @@ class Combo(Runnable):
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
 
-        map = [(e_innewmarcs, self.__innewmarcs), (e_hydro2, self.__hydro2), (e_pfant, self.__pfant),
-               (e_nulbad, self.__nulbad)]
+        map = [(FOR_INNEWMARCS, self.__innewmarcs), (FOR_HYDRO2, self.__hydro2), (FOR_PFANT, self.__pfant),
+               (FOR_NULBAD, self.__nulbad)]
         res = []
         ii, ee = zip(*map)
         self.__sequence.sort()
@@ -464,31 +482,22 @@ class Combo(Runnable):
         return res
 
     def run(self):
-        """Blocking routine. Overwrites self.popen."""
-
-        assert not self.flag_running, "Already running"
-
+        assert not self._flag_running, "Already running"
+        assert not self._flag_finished, "Already finished"
         self._flag_running = True
         try:
-            self.conf.configure()
+            self.conf.configure(self.__sequence)
             self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
-
-
-
-
-
-
-
-
             for e in self.get_exes():
                 self.__running_exe = e
+                e.conf = self.conf
                 e.run_from_combo()
         except Exception as e:
             self._flag_error = True
             self._error_message = "Combo: "+str(e)
             raise
         finally:
-            # leave it as last self.__running_exe = None
+            self.conf.close_popen_text_dest()
             self._flag_running = False
             self._flag_finished = True
 
@@ -541,9 +550,4 @@ class Combo(Runnable):
     #         e.exe_path = os.path.join(self.__exe_dir, exe_filename)
     #     c.create_data_files()
     #
-
-
-
-
-
 

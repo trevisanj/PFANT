@@ -97,10 +97,11 @@ if __name__ == "__main__":
             a.lines = [line]
             f = FileAtoms()
             f.atoms = [a]
-            combo = Combo([e_pfant])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
-            combo.flag_log_console = False  # Fortran messages will not be displayed in terminal
+            combo = Combo([FOR_PFANT])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
+            combo.conf.flag_log_console = False  # Fortran messages will not be displayed in terminal
             combo.conf.file_atoms = f
             combo.conf.opt.logging_level = "warning"
+            combo.conf.flag_rename_outputs = True
             combo.conf.opt.zinf = args.max
             combo.conf.opt.no_molecules = True
             combo.conf.opt.no_h = True

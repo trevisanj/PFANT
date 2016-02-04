@@ -3,8 +3,8 @@ Class to store all command-line options & DataFile instances used to run one or 
 executables.
 """
 
-__all__ = ["Options", "Conf", "e_innewmarcs", "e_hydro2", "e_pfant",
-           "e_nulbad", "session_prefix"]
+__all__ = ["Options", "Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
+           "FOR_NULBAD", "session_prefix"]
 
 from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
@@ -15,11 +15,11 @@ from threading import Lock
 import logging
 import subprocess
 
-# Indexes in workflow sequence
-e_innewmarcs = 0
-e_hydro2 = 1
-e_pfant = 2
-e_nulbad = 3
+# Indexes to use in Conf.sequence property
+FOR_INNEWMARCS = 0
+FOR_HYDRO2 = 1
+FOR_PFANT = 2
+FOR_NULBAD = 3
 
 # Configurable
 session_prefix = "session-"
@@ -90,6 +90,7 @@ class Options(object):
         self.no_atoms = None
         self.no_h = None
         self.zinf = None
+        self.pas = None
 
         # nulbad
         self.norm = None
@@ -124,6 +125,7 @@ class Conf(object):
         When this property is set, a directory "session-<session_id>" is created
         immediately."""
         return self.__session_id
+
     @session_id.setter
     def session_id(self, x):
         assert self.__session_id is None, "Session id already set to \"%s\"" % self.__session_id
@@ -139,29 +141,32 @@ class Conf(object):
          _get_session_dirname(session_prefix, self.__session_id)
 
     @property
-    def popen_stdout(self):
-        """(Read-only) To be used as stdout to a Executable Popen object."""
-        return self.__popen_stdout
+    def popen_text_dest(self):
+        """(Read-only) File-like object to act as destination to popen text messages."""
+        return self.__popen_text_dest
 
     @property
     def flag_log_console(self):
-        """Display Fortran messages in console?"""
+        """Display Fortran messages in console (default=True)?"""
         return self.__flag_log_console
+
     @flag_log_console.setter
     def flag_log_console(self, x):
         self.__flag_log_console = x
 
     @property
     def flag_log_file(self):
-        """Log Fortran messages to "<session dir>/fortran.log"?"""
+        """Log Fortran messages to "<session dir>/fortran.log" (default=True)?"""
         return self.__flag_log_file
+
     @flag_log_file.setter
     def flag_log_file(self, x):
         self.__flag_log_file = x
 
     @property
     def flag_rename_outputs(self):
-        """Tweak output filenames to be created inside the session directory?"""
+        """Tweak output filenames to be created inside the session directory
+        (default=False)?"""
         return self.__flag_rename_outputs
     @flag_rename_outputs.setter
     def flag_rename_outputs(self, x):
@@ -199,10 +204,11 @@ class Conf(object):
         self.opt = Options()
 
         # # Read-only properties
-        self.__popen_stdout = None
+        self.__popen_text_dest = None
         self.__logger = None
 
     def configure(self, sequence):
+        """Series of configuration actions to take before Runnable can run."""
         self.__make_session_id()
         if self.__flag_rename_outputs:
             self.__rename_outputs(sequence)
@@ -220,7 +226,16 @@ class Conf(object):
                 stdout_ = subprocess.STD_OUTPUT_HANDLE
             else:
                 stdout_ = None
-        self.__popen_stdout = stdout_
+        self.__popen_text_dest = stdout_
+        
+        self.__create_data_files()
+
+    def close_popen_text_dest(self):
+        """Closes self.popen_text_dest opened in configure().
+
+        To be called after the Runnable runs."""
+        if self.__popen_text_dest is not None:
+            self.__popen_text_dest.close()
 
     def get_file_main(self):
         """Returns either self.file_main, or if None, tries to open file and
@@ -288,20 +303,6 @@ class Conf(object):
         return FileMod.default_filename if self.opt.fn_modeles is None \
          else self.opt.fn_modeles
 
-    def make_session_id(self):
-        """Finds an id for a new session and creates corresponding
-        directory session_<id>.
-
-        Directory must be created, otherwise two concurrent threads may grab
-        the same id.
-        """
-
-        # assert self.session_id is None, "Session id already made"
-
-        if self.__session_id is not None:
-            return
-        self.__session_id = _make_session_id()
-
     def join_with_session_dir(self, fn):
         """Joins self.session_dir with specified filename to make a path."""
         return os.path.join(self.session_dir, fn)
@@ -327,7 +328,7 @@ class Conf(object):
                 l.extend(["--"+attr_name, s_value])
         return l
 
-    def create_data_files(self):
+    def __create_data_files(self):
         """
         Creates files for all self-attributes starting with prefix "file_"
 
@@ -365,13 +366,13 @@ class Conf(object):
         Note: in order to link pfant->nulbad correctly,
               nulbad "--fn_flux" option will not be used.
         """
-        if e_innewmarcs in sequence:
+        if FOR_INNEWMARCS in sequence:
             # ** innewmarcs -> hydro2
             # **            -> pfant
             # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
             self.opt.fn_modeles = self.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileMod.default_filename)
 
-        if e_hydro2 in sequence:
+        if FOR_HYDRO2 in sequence:
             # ** hydro2 -> pfant
             # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
             # ** if it was "thalpha" it will be something like "session123456/thalpha"
@@ -392,24 +393,40 @@ class Conf(object):
                 # Done! new hmap file will be created by create_data_files
 
         # ** pfant -> nulbad
-        if e_pfant in sequence or e_nulbad in sequence:
+        if FOR_PFANT in sequence or FOR_NULBAD in sequence:
             flprefix = self.get_flprefix(True)
             self.opt.flprefix = self.join_with_session_dir(flprefix)
 
-        if e_pfant in sequence:
+        if FOR_PFANT in sequence:
             self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
 
-        if e_nulbad in sequence:
+        if FOR_NULBAD in sequence:
             self.opt.fn_flux = None  # will cause nulbad to use flprefix
             if self.opt.fn_cv:
                 # Note that this is recursive, but Combo is meant to be
                 # run only once.
                 self.opt.fn_cv = self.join_with_session_dir(self.opt.fn_cv)
 
+    def __make_session_id(self):
+        """Finds an id for a new session and creates corresponding
+        directory session_<id>.
 
+        Directory must be created, otherwise two concurrent threads may grab
+        the same id.
+        """
+
+        # assert self.session_id is None, "Session id already made"
+
+        if self.__session_id is not None:
+            return
+        self.__session_id = _make_session_id()
+
+
+# # Section id managhement
 # Part of code that finds new session id and creates corresponding directory
-# This has been isolated because needs to be locked
 
+
+# Lock is necessary to make unique session ids
 _lock_session_id = Lock()
 def _make_session_id():
     """Finds new session id (a string containing a four-digit integer)
