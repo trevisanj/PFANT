@@ -11,24 +11,34 @@ import argparse
 from pyfant import *
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(
-   description=__doc__,
-   formatter_class=SmartFormatter
-   )
+    parser = argparse.ArgumentParser(
+    description=__doc__,
+    formatter_class=SmartFormatter
+    )
 
-  names = Conf().opt.get_names() # option names
+    names = Conf().opt.get_names() # option names
 
-  for name in names:
-    name = name.replace('_', '-')
-    parser.add_argument("--"+name, type=str, help='')
+    for name in names:
+        name = name.replace('_', '-')
+        parser.add_argument("--"+name, type=str, help='')
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  c = Combo()
 
-  for name in names:
-    x = args.__getattribute__(name)
-    if x is not None:
-      c.conf.opt.__setattr__(name, x)
+    # Configuration for Python logging messages.
+    misc.flag_log_console = True
+    misc.flag_log_file = True
+    logger = get_python_logger()
 
-  c.run()
+    c = Combo()
+    c.conf.flag_log_file = True  # Configuration for Fortran messages
+    c.conf.flag_log_console = True  # "
+    c.conf.flag_rename_outputs = False  # Will generate outputs in current directory
+
+    for name in names:
+        x = args.__getattribute__(name)
+        if x is not None:
+            c.conf.opt.__setattr__(name, x)
+
+    c.run()
+    logger.info("Session directory: %s" % c.conf.session_dir)

@@ -227,7 +227,7 @@ class Conf(object):
             else:
                 stdout_ = None
         self.__popen_text_dest = stdout_
-        
+
         self.__create_data_files()
 
     def close_popen_text_dest(self):

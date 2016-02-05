@@ -14,7 +14,7 @@ import argparse
 import logging
 
 
-logging.basicConfig(level=logging.INFO)
+misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

@@ -42,7 +42,7 @@ class _Runner(threading.Thread):
     def exit(self):
         """Intention to exit asap."""
         self.flag_exit = True
-        self.__logger.info("ok to exit")
+        self.__logger.debug("ok to exit")
         
     def kill_runnable(self):
         """Attempt to kill whatever is running."""
@@ -52,7 +52,7 @@ class _Runner(threading.Thread):
     def run(self):
         self.__logger = get_python_logger()
         # this was leaving file open after finished add_file_handler(self.__logger, "python.log")
-        self.__logger.info("\\o/ %s is alive \\o/" % (self.name))
+        self.__logger.debug("\\o/ %s is alive \\o/" % (self.name))
         misses = 0
         flag_sleep = False
         while True:

@@ -11,7 +11,7 @@ import numpy as np
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
-class Atom(PyfantObject):
+class Atom(AttrsPart):
     """
     Represents element with its atomic lines.
 

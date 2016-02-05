@@ -10,7 +10,7 @@ from ..misc import *
 from astropy.io import fits
 from pyfant import write_lf
 
-class Spectrum(PyfantObject):
+class Spectrum(object):
     def __init__(self):
         self.ikeytot = None
         self.tit = None

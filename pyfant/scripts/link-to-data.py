@@ -42,7 +42,7 @@ import sys
 import glob
 
 
-logging.basicConfig(level=logging.INFO)
+misc.logging_level = logging.INFO
 
 
 def print_skipped(reason):

@@ -7,7 +7,7 @@ import logging
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
-class HmapRow(PyfantObject):
+class HmapRow(object):
   """Same structure as reader_hmap.f90::hmap_row type."""
   def __init__(self):
     self.fn = None

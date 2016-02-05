@@ -14,7 +14,7 @@ from PyQt4.QtCore import *
 import argparse
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

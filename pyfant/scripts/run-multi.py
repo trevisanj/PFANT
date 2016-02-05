@@ -52,7 +52,7 @@ import numpy as np
 import imp
 import logging
 
-logging.basicConfig(level=logging.INFO)
+misc.logging_level = logging.INFO
 make_filename = lambda pref, ab_diff, conv_: "%s_%s_%s.dat" % (pref, ab_diff, conv_)
 MAX_FORTRANS = 6  # number of pfants/nulbads to run simultaneously
 
@@ -66,12 +66,12 @@ if __name__ == "__main__":
     )
     parser.add_argument('--fn_cfg', default="config.py", help='Config filename')
     args = parser.parse_args()
-    print "Using config file '%s'" % args.cfg
+    print "Using config file '%s'" % args.fn_cfg
 
-    module_name = os.path.splitext(args.cfg)[0]
+    module_name = os.path.splitext(args.fn_cfg)[0]
     # exec("import %s as cfg" % module_name)
     print "module_NAME", module_name
-    cfg = imp.load_source("cfg", args.cfg)  # exec("import %s as cfg" % module_name)
+    cfg = imp.load_source("cfg", args.fn_cfg)  # exec("import %s as cfg" % module_name)
 
 
     os.system('rm -rf session_*')

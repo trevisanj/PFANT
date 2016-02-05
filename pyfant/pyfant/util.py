@@ -52,7 +52,7 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
                 rm.kill_runnables()
     else:
         while True:
-            if rm.flag_finished():
+            if rm.flag_finished:
                 print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
                 rm.exit()
                 break

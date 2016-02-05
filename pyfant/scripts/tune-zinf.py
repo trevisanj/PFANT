@@ -33,13 +33,14 @@ from pyfant.gui import XRunnableManager
 from PyQt4.QtGui import *
 import time
 
+misc.logging_level = logging.INFO
 
 # Fraction of peak to be considered its "settlement"
 EPSILON = 1e-4
 
 
 def _get_zinf(lambda_centre, norm):
-    """Finds zinf given *normalized* spectrum
+    """Returns zinf given *normalized* spectrum, or 0 if line if flat.
 
     Arguments:
       lambda_centre -- centre of line
@@ -49,15 +50,15 @@ def _get_zinf(lambda_centre, norm):
     """
 
     y = norm.y  # normalized spectrum: values between 0 and 1
+    if np.all(np.diff(y) == 0):
+        # flat line
+        return 0
     maxy = 1
     miny = min(y)
     i_zinf = np.argmax(norm.y < maxy-miny*EPSILON)
     zinf = lambda_centre-norm.x[i_zinf]
-
     return zinf
 
-
-logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -83,14 +84,17 @@ if __name__ == "__main__":
     file_atoms = FileAtoms()
     file_atoms.load(args.fn_input[0])
 
-    print "Number of lines in file '%s': %d" % \
-          (args.fn_input[0], file_atoms.num_lines)
+    misc.flag_log_console = True
+    misc.flag_log_file = True
+    logger = get_python_logger()
+    logger.info("Number of lines in file '%s': %d" % \
+     (args.fn_input[0], file_atoms.num_lines))
 
     # # Preparation
 
-    print "Preparing pfant's..."
+    logger.info("Preparing pfant's...")
 
-    pp, ll, i = [], [], 0
+    pp, aa, i = [], [], 0
     for atom in file_atoms.atoms:
         for line in atom.lines:
             a = copy.copy(atom)  # shallow copy
@@ -109,16 +113,16 @@ if __name__ == "__main__":
             combo.conf.opt.llzero = line.lambda_-args.max
             combo.conf.opt.llfin = line.lambda_
             pp.append(combo)
-            ll.append(line)
+            aa.append(a)
 
             i += 1
             #     if i == 5:
             #         break
             # if i == 5:
-            #     break
+            #     breakrm
 
     # # Runs pfant
-    print "Running pfant's..."
+    logger.info("Running pfant's...")
     rm = RunnableManager()
     for p in pp:
         rm.add_runnable(p)
@@ -130,36 +134,38 @@ if __name__ == "__main__":
     rm.start()
     app.exec_()
     rm.exit()
-    # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")
-    # print "[SUPPOSED TO HAVE] EXITED"
-    # print rm
+
     # # Saves log
     LOG_FILENAME = "tune-zinf-status.log"
     with open(LOG_FILENAME, "w") as h:
       h.write(str(rm))
-    print "Final status saved to file '%s'" % LOG_FILENAME
-
-    # todo not closing form automatically. This is OK, but perhaps it would
-    # be good to show a message to continue
-
+    logger.info("Final status saved to file '%s'" % LOG_FILENAME)
 
     # # Finds zinf's and creates output file
     flag_clean, flag_success = False, False
     if not rm.flag_finished:
-        print "Not finished"
+        logger.info("Not finished")
     elif rm.num_failed > 0:
-        print "Number of failed tasks: " % rm.num_failed
-        print "Please check log files inside directories of sessions that failed"
-        print "(session directories will not be removed)."
+        logger.info("Number of failed tasks: " % rm.num_failed)
+        logger.info("Please check log files inside directories of sessions that failed")
+        logger.info("(session directories will not be removed).")
     else:
-        print "Calculating zinf's, please wait..."
+        logger.info("Finding zinf's, please wait...")
         # # Calculates zinf and save new atomic lines file
         n = len(pp)
         X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]
-        for i, (line, combo) in enumerate(zip(ll, pp)):
+        ii = 0
+        print format_progress(0, n)
+        for i, (a, combo) in enumerate(zip(aa, pp)):
             combo.pfant.load_result()
             norm = combo.pfant.norm  # normalized spectrum
+            line = a.lines[0]  # a is single-line FileAtoms object
             zinf = _get_zinf(line.lambda_, norm)
+            if zinf == 0:
+                # Note that some lines don't appear at all, so there is no way
+                # to determine zinf
+                logger.warning("zinf is ZERO: (%s) (%s) (%s)" %
+                 (combo.conf.session_dir, a.one_liner_str(), line.one_liner_str()))
             if zinf < args.min:
                 zinf = args.min
             if zinf > args.max:
@@ -167,7 +173,16 @@ if __name__ == "__main__":
             if args.ge_current and line.zinf > zinf:
                 zinf = line.zinf
             line.zinf = zinf
-        print "Creating output file..."
+
+            i += 1
+            ii += 1
+            if ii == 100:
+                print format_progress(i, n)
+                ii = 0
+        print format_progress(n, n)
+
+
+        logger.info("Creating output file...")
         file_atoms.save_as(args.fn_output[0])
         flag_clean = not args.no_clean
         flag_success = True
@@ -175,16 +190,13 @@ if __name__ == "__main__":
 
     # # Removes session-* directories
     if flag_clean:
-        print "Cleaning..."
+        logger.info("Cleaning...")
         for i, combo in enumerate(pp):
             try:
                 combo.conf.clean()
             except Exception as E:
-                print "Error cleaning session for %s: %s" % (combo.name, str(E))
+                logger.info("Error cleaning session for %s: %s" % (combo.name, str(E)))
 
     if flag_success:
-        print "Successfully created file '%s' !!" % args.fn_output[0]
+        logger.info("Successfully created file '%s' !!" % args.fn_output[0])
 
-
-
-# Why not closing ...

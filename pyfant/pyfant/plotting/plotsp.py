@@ -1,7 +1,7 @@
 """
 Routines used by plot-spectra.py
 """
-from pyfant import format_BLB, cut_spectrum, Spectrum
+from pyfant import format_BLB, cut_spectrum, Spectrum, get_python_logger
 import matplotlib.pyplot as plt
 import math
 import matplotlib.backends.backend_pdf
@@ -114,12 +114,13 @@ def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf'):
 
     format_BLB()
     pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_filename)
+    logger = get_python_logger()
 
     for h in range(num_pages):
         fig = plt.figure()
         lambda0 = xmin+h*aint
         lambda1 = lambda0+aint
-        logging.info("Printing page %d/%d ([%g, %g])" % (h+1, num_pages, lambda0, lambda1))
+        logger.info("Printing page %d/%d ([%g, %g])" % (h+1, num_pages, lambda0, lambda1))
         for i, s in enumerate(ss):
             s_cut = cut_spectrum(s, lambda0, lambda1)
             ax = plt.gca()
@@ -136,7 +137,7 @@ def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf'):
     # for fig in xrange(1, figure().number): ## will open an empty extra figure :(
     #     pdf.savefig( fig )
     pdf.close()
-    logging.info("File %s successfully created." % pdf_filename)
+    logger.info("File %s successfully created." % pdf_filename)
 
 
 def plot_spectra_pages_pdf(ss, pdf_filename='pages.pdf'):
@@ -149,6 +150,7 @@ def plot_spectra_pages_pdf(ss, pdf_filename='pages.pdf'):
       ss -- list of Spectrum objects
       pdf_filename -- name of output file
     """
+    logger = get_python_logger()
     xmin, xmax, ymin, ymax, xspan, yspan = _calc_max_min(ss)
     num_pages = len(ss)
     format_BLB()
@@ -163,11 +165,11 @@ def plot_spectra_pages_pdf(ss, pdf_filename='pages.pdf'):
         plt.ylim([ymin-yspan*_T, ymax+yspan*_T])
         plt.tight_layout()
         plt.subplots_adjust(top=0.94) # workaround for cropped title
-        logging.info("Printing page %d/%d ('%s')" % (i+1, num_pages, title))
+        logger.info("Printing page %d/%d ('%s')" % (i+1, num_pages, title))
         pdf.savefig(fig)
         plt.close()
     pdf.close()
-    logging.info("File %s successfully created." % pdf_filename)
+    logger.info("File %s successfully created." % pdf_filename)
 
 
 def _calc_max_min(ss):

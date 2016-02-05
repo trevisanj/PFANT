@@ -8,9 +8,10 @@ Molecular lines are skipped
 import argparse
 from pyfant import SmartFormatter
 from pyfant.from_vald import *
+from pyfant import misc
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -26,3 +27,4 @@ if __name__ == "__main__":
     fn_out = args.fn_output[0]
     file_atoms.save_as(fn_out)
     print "File %s was successfully created." % fn_out
+    print "Attention: rm se"

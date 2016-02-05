@@ -11,7 +11,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
- "AttrsPart", "PyfantObject", "froze_it"]
+ "AttrsPart", "froze_it", "format_progress"]
 
 
 # # todo cleanup
@@ -91,10 +91,6 @@ def froze_it(cls):
 
     return cls
 
-class PyfantObject(object):
-    """Descend from this class to prevent new attributes being created when someone
-    tries to set attribute that does not exist."""
-
 class AttrsPart(object):
     """
     Implements a new __str__() to print selected attributes.
@@ -109,11 +105,14 @@ class AttrsPart(object):
         assert self.attrs is not None, "Forgot to set attrs class variable"
 
         s_format = "{:>%d} = {}" % max([len(x) for x in self.attrs])
-        s = '' # object.__str__(self)+"\n"
         s = "\n".join([s_format.format(x, self.__getattribute__(x)) for x in self.attrs])
         return s
 
-
+    def one_liner_str(self):
+        assert self.attrs is not None, "Forgot to set attrs class variable"
+        s_format = "{} = {}"
+        s = "; ".join([s_format.format(x, self.__getattribute__(x)) for x in self.attrs])
+        return s
 
 
 
@@ -302,26 +301,40 @@ def seconds2str(seconds):
 # #################################################################################################
 # # Logging routines
 
+# Set this to make the python logger to log to the console. Note: will have no
+# effect if changed after the first call to get_python_logger()
+flag_log_console = True
+# Set this to make the python logger to log to a file named "python.log".
+# Note: will have no effect if changed after the first call to get_python_logger()
+flag_log_file = True
+# Logging level for the python logger
+logging_level = logging.INFO
 
 _python_logger = None
+_fmtr = logging.Formatter('[%(levelname)-8s] %(message)s')
 def get_python_logger():
     """Returns logger to be used by executables, logs to file names "python.log" only (not console)."""
     global _python_logger
     if _python_logger is None:
-        l = logging.Logger("python")
-        add_file_handler(l, "python.log")
+        l = logging.Logger("python", level=logging_level)
+        if flag_log_file:
+            add_file_handler(l, "python.log")
+        if flag_log_console:
+            ch = logging.StreamHandler()
+            ch.setFormatter(_fmtr)
+            l.addHandler(ch)
         _python_logger = l
+
     return _python_logger
 
 
 def add_file_handler(logger, logFilename=None):
-  """Adds file handler to logger."""
-
-  assert isinstance(logger, logging.Logger)
-
-  ch = logging.FileHandler(logFilename, "w")
-  ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
-  logger.addHandler(ch)
+    """Adds file handler to logger."""
+    assert isinstance(logger, logging.Logger)
+    ch = logging.FileHandler(logFilename, "w")
+    # ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
+    ch.setFormatter(_fmtr)
+    logger.addHandler(ch)
 
 
 @froze_it
@@ -375,6 +388,19 @@ def log_noisy(logger, msg):
     logger.info(xx)
     logger.info("%s %s %s" % (X, msg, X))
     logger.info(xx)
+
+
+def format_progress(i, n):
+    """Returns string containing a progress bar, a percentage, etc."""
+    if n == 0:
+        fraction = 0
+    else:
+        fraction = float(i)/n
+    LEN_BAR = 25
+    num_plus = int(round(fraction*LEN_BAR))
+    s_plus = '+'*num_plus
+    s_point = '.'*(LEN_BAR-num_plus)
+    return '[%s%s] %d/%d - %.1f%%' % (s_plus, s_point, i, n, fraction*100)
 
 
 # #################################################################################################

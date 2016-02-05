@@ -14,7 +14,7 @@ from threading import Lock
 
 
 @froze_it
-class ExecutableStatus(PyfantObject):
+class ExecutableStatus(object):
     """Stores status related to Executable for reporting purposes."""
     
     def __init__(self, executable):
@@ -49,7 +49,7 @@ class ExecutableStatus(PyfantObject):
         return "?"
 
 
-class Runnable(PyfantObject):
+class Runnable(object):
     """
     Object with a run() method.
 
@@ -178,7 +178,7 @@ class Executable(Runnable):
         # self.__logger = get_python_logger()
         self.conf.configure([self.sequence_index])
         try:
-            self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+            self.conf.logger.debug("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
             self.__run()
         finally:
             self.conf.close_popen_text_dest()
@@ -212,7 +212,7 @@ class Executable(Runnable):
             #log_noisy(self.__logger, s)
 
             s = " ".join(cmd_words)
-            self.conf.logger.info(s)
+            self.conf.logger.debug(s)
             # logs command-line to file and closes it.
             with open(self.conf.join_with_session_dir("commands.log"), "a") as h:
                 h.write(s+"\n\n")
@@ -285,7 +285,7 @@ class Executable(Runnable):
                 self._flag_running = False
                 if self.__popen is not None:
                     self.__returncode = self.__popen.returncode
-                self.conf.logger.info(str(self._status))
+                self.conf.logger.debug(str(self._status))
 
 
 @froze_it
@@ -487,7 +487,7 @@ class Combo(Runnable):
         self._flag_running = True
         try:
             self.conf.configure(self.__sequence)
-            self.conf.logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
+            self.conf.logger.debug("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
             for e in self.get_exes():
                 self.__running_exe = e
                 e.conf = self.conf

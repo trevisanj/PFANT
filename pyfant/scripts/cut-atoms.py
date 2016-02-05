@@ -7,10 +7,11 @@ The interval is defined as [LLZERO, LLFIN]
 
 import argparse
 from pyfant import SmartFormatter
+from pyfant import misc
 from pyfant.from_vald import *
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

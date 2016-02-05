@@ -20,7 +20,7 @@ def get_suitable_vis_classes(obj):
                 ret.append(class_)
     return ret
 
-class Vis(PyfantObject):
+class Vis(object):
     """
     Base class for visualizations.
 

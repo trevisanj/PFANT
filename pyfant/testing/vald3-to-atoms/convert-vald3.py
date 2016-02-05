@@ -1,7 +1,8 @@
 from pyfant.from_vald import *
+from pyfant import misc
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+misc.logging_level = logging.DEBUG
 
 FILENAME = 'CesarHenriqueSiqueiraMelloJunior.009511'
 
