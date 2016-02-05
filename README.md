@@ -28,7 +28,7 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 To use PFANT, you will need to:
 
 1. Install the software pre-requisites
-2. Clone the github repository or download [this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
+2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release
 3. Compile the Fortran source code
 4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH
 5. Add `PFANT/pyfant` to your PYTHONPATH
