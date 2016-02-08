@@ -13,7 +13,7 @@ Analogue softwares include TurboSpectrum and MOOG.
  |
  | 1967 -- FANTÔME -- by F Spite et al.
  | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
- |         dissociation equilibrium.
+ |         dissociatipon equilibrium.
  | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
  |         inclusion or hydrogen lines.
  | 2015 -- J Trevisan: conversion of source code to Fortran 2003, Python layer.
@@ -28,7 +28,7 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 To use PFANT, you will need to:
 
 1. Install the software pre-requisites
-2. Clone the github repository or download [this zip file](https://github.com/trevisanj/PFANT/archive/master.zip)
+2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release
 3. Compile the Fortran source code
 4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH
 5. Add `PFANT/pyfant` to your PYTHONPATH
@@ -43,15 +43,14 @@ The install recommendations are based on successful attempts.
 
 What  | Why?
 ----- | ----
-git | clone repository at github
 gfortran >= 4.6, make | compile the Fortran code
-Python 2.7 | use PyFANT
-pip | install fortranformat Python package
+Python 2.7 | use pyfant resources
+pip | install some of the required Python packages
 
 #### Python packages
 
 Some successful ways to install the Python packages are reported together with
-the package names, but the exact way to install these packages will depend on
+package names, but the exact way to install these packages will depend on
 your system. In general, they should be all easy to install.
 
 Package name | Recommended way to install
