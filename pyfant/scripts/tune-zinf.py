@@ -55,7 +55,7 @@ def _get_zinf(lambda_centre, norm):
         return 0
     maxy = 1
     miny = min(y)
-    i_zinf = np.argmax(norm.y < maxy-miny*EPSILON)
+    i_zinf = np.argmax(norm.y < maxy-(maxy-miny)*EPSILON)
     zinf = lambda_centre-norm.x[i_zinf]
     return zinf
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
      description=__doc__,
      formatter_class=SmartFormatter
      )
-    parser.add_argument('--min', type=float, nargs='?', default=.01,
+    parser.add_argument('--min', type=float, nargs='?', default=.1,
      help='minimum zinf. If zinf found for a particular line is smaller than '
           'this value, this value will be used instead')
     parser.add_argument('--max', type=float, nargs='?', default=50.,
@@ -81,19 +81,33 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    logger = get_python_logger()
+    logger.info("Using minimum zinf = %g" % args.min)
+    logger.info("Using MAXIMUM zinf = %g" % args.max)
+    logger.info("Using ge_current = %s" % args.ge_current)
+
     file_atoms = FileAtoms()
     file_atoms.load(args.fn_input[0])
 
     misc.flag_log_console = True
     misc.flag_log_file = True
-    logger = get_python_logger()
     logger.info("Number of lines in file '%s': %d" % \
      (args.fn_input[0], file_atoms.num_lines))
 
     # # Preparation
 
-    logger.info("Preparing pfant's...")
+    MIN_ABOND = 3
+    logger.info("Preparing abundances file with all abundances >= %g ..." % MIN_ABOND)
+    fa = FileAbonds()
+    fa.load("abonds.dat")
+    cnt = 0
+    for i in range(len(fa)):
+        if fa.abol[i] < MIN_ABOND:
+            fa.abol[i] = MIN_ABOND
+            cnt += 1
+    logger.info("%d abundance(s) changed" % cnt)
 
+    logger.info("Preparing pfant's...")
     pp, aa, i = [], [], 0
     for atom in file_atoms.atoms:
         for line in atom.lines:
@@ -101,9 +115,13 @@ if __name__ == "__main__":
             a.lines = [line]
             f = FileAtoms()
             f.atoms = [a]
-            combo = Combo([FOR_PFANT])  # using Combo because it saves results in session dir. For parallel run, has to be combo, really
-            combo.conf.flag_log_console = False  # Fortran messages will not be displayed in terminal
+            combo = Combo([FOR_PFANT])
+            # Fortran messages will not be displayed in terminal
+            combo.conf.flag_log_console = False
+            # Forces pfant to run one single iteration (ikeytot will be =1)
+            combo.conf.opt.aint = args.max+10
             combo.conf.file_atoms = f
+            combo.conf.file_abonds = fa
             combo.conf.opt.logging_level = "warning"
             combo.conf.flag_rename_outputs = True
             combo.conf.opt.zinf = args.max
@@ -156,6 +174,8 @@ if __name__ == "__main__":
         X = np.zeros((n, 3))  # [algf, kiex, zinf], ...]
         ii = 0
         print format_progress(0, n)
+        cnt_min = 0
+        cnt_max = 0
         for i, (a, combo) in enumerate(zip(aa, pp)):
             combo.pfant.load_result()
             norm = combo.pfant.norm  # normalized spectrum
@@ -168,8 +188,12 @@ if __name__ == "__main__":
                  (combo.conf.session_dir, a.one_liner_str(), line.one_liner_str()))
             if zinf < args.min:
                 zinf = args.min
+                cnt_min += 1
             if zinf > args.max:
+                print " %gOLHOLHO (%s) (%s) (%s)" % \
+                 (zinf, combo.conf.session_dir, a.one_liner_str(), line.one_liner_str())
                 zinf = args.max
+                cnt_max += 1
             if args.ge_current and line.zinf > zinf:
                 zinf = line.zinf
             line.zinf = zinf
@@ -180,7 +204,8 @@ if __name__ == "__main__":
                 print format_progress(i, n)
                 ii = 0
         print format_progress(n, n)
-
+        logger.info("zinf's clipped to minimum: %d" % cnt_min)
+        logger.info("zinf's clipped to maximum: %d" % cnt_max)
 
         logger.info("Creating output file...")
         file_atoms.save_as(args.fn_output[0])

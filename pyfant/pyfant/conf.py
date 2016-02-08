@@ -91,6 +91,7 @@ class Options(object):
         self.no_h = None
         self.zinf = None
         self.pas = None
+        self.aint = None
 
         # nulbad
         self.norm = None

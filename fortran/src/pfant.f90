@@ -926,7 +926,7 @@ module pfant_x
   implicit none
 
   character*128 :: x_flprefix
-  real*8 :: x_llzero, x_llfin, x_pas
+  real*8 :: x_llzero, x_llfin, x_pas, x_aint
 
 contains
 
@@ -958,6 +958,12 @@ contains
       call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
     else
       x_pas = config_pas
+    end if
+    if (config_aint .eq. -1) then
+      x_aint = main_aint
+      call parse_aux_log_assignment('x_aint', real82str(x_aint, 2))
+    else
+      x_aint = config_aint
     end if
   end
 end
@@ -1125,8 +1131,8 @@ contains
     real*8 fn(MAX_DTOT)
 
     integer i, i1, i2, k, d, &
-     ikey,    & ! ikey-th main_aint-large calculation interval
-     ikeytot    ! total number of main_aint-large calculation intervals
+     ikey,    & ! ikey-th x_aint-large calculation interval
+     ikeytot    ! total number of x_aint-large calculation intervals
 
     real*8 l0, lf, alzero, tetaef, xlfin, xlzero
 
@@ -1186,21 +1192,21 @@ contains
 
     ! initial calculation sub-interval
     xlzero = x_llzero-LAMBDA_STRETCH
-    xlfin = xlzero+main_aint+LAMBDA_STRETCH
+    xlfin = xlzero+x_aint+LAMBDA_STRETCH
 
     ! discovers the number of iterations
     if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
       do i = 2,25000
-        xlfin = xlfin+main_aint
+        xlfin = xlfin+x_aint
         if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
     !m_lzero = x_llzero-LAMBDA_STRETCH
-    !m_lfin = m_lzero+main_aint+LAMBDA_STRETCH
+    !m_lfin = m_lzero+x_aint+LAMBDA_STRETCH
     ikey = 1
 
 
@@ -1220,18 +1226,19 @@ contains
       !=====
 
       ! Determines the calculation interval [m_lzero, m_lfin]
-      ! Note: two extra points are added to the left and to the right, as without this
-      ! some interpolation routines (such as ftlin3) may crash.
       if (ikey .eq. 1) then
         m_lzero = l0
       else
-        m_lzero = x_llzero+main_aint*(ikey-1)
+        m_lzero = x_llzero+x_aint*(ikey-1)
       end if
 
+      ! Note0: The last value of flux in iteration ikey equals
+      !  the first value of flux in iteration ikey+1.
+      !  Hence the "+x_pas"  in the expression
       if (ikey .eq. ikeytot) then
-        m_lfin = lf
+        m_lfin = lf+x_pas
       else
-        m_lfin = x_llzero+main_aint*ikey-x_pas
+        m_lfin = x_llzero+x_aint*ikey-x_pas+x_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
@@ -1334,14 +1341,14 @@ contains
       call cpu_time(start)
       ! i1 and i2 are the initial and final indexes of selekfh_fl, selekfh_fcont, and fd
       ! that will be written to output file.
-      i1 = 2
+      i1 = 1
       if (ikey .eq. ikeytot) then
         i2 = m_dtot - 1
       else
-        ! The last value of flux in iteration ikey equals
-        ! the first value of flux in iteration ikey+1.
-        ! Note that nulbad is aware of this and discards these redundant points.
-        ! PyFANT is also aware of this.
+        ! Note0: The last value of flux in iteration ikey equals
+        !  the first value of flux in iteration ikey+1.
+        !  nulbad is aware of this and discards these redundant points.
+        !  pyfant is also aware of this.
         i2 = m_dtot
       end if
       do d = 1, m_dtot
@@ -1369,8 +1376,8 @@ contains
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
-      !m_lzero = m_lzero+main_aint
-      !m_lfin = m_lfin+main_aint
+      !m_lzero = m_lzero+x_aint
+      !m_lfin = m_lfin+x_aint
       !if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
     end do  ! main loop
 
@@ -2028,7 +2035,7 @@ if (n .eq. 1) then
     do ih = 1,filetoh_num_files
       allhy = filetoh_llhy(ih)-m_lzero
 
-      if (((allhy .gt. 0) .and. (allhy .le. (main_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
+      if (((allhy .gt. 0) .and. (allhy .le. (x_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
           ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
         im = im+1
         iht = ih

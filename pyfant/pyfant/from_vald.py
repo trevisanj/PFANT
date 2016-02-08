@@ -104,7 +104,7 @@ def vald3_to_atoms(file_obj):
             # ge is not present in VALD3 file. Set to 1 because it is a multiplicative
             # term in pfant.f90::popadelh()
             line.ge = 1.0
-            # todo zinf is an open issue
+            # Attention: zinf must be tuned later using tune-zinf.py
             line.zinf = 0.5
             # Never used in PFANT
             line.abondr = 0

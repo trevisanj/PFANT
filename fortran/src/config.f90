@@ -500,6 +500,7 @@ module config
   real*8 :: config_llzero = -1 !< option: --llzero
   real*8 :: config_llfin  = -1 !< option: --llfin
   real*8 :: config_pas    = -1 !< option: --pas
+  real*8 :: config_aint   = -1 !< option: --aint
 
   !---
   ! innewmarcs-only
@@ -836,6 +837,8 @@ contains
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
     call add_option('p', 'pas', ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
      'Calculation step (angstrom)')
+    call add_option('p', 'aint', ' ', .true., 'real value', '<main_aint> '//FROM_MAIN, &
+     'Interval length per iteration (angstrom)')
 
     !
     ! nulbad-only
@@ -988,6 +991,9 @@ contains
       case ('pas')
         config_pas = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_pas', real82str(config_pas, 4))
+      case ('aint')
+        config_aint = floor(parse_aux_str2real8(opt, o_arg))
+        call parse_aux_log_assignment('config_aint', real82str(config_aint, 1))
       case ('interp')
         iTemp = parse_aux_str2int(opt, o_arg)
         select case (iTemp)

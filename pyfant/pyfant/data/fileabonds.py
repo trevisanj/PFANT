@@ -8,6 +8,7 @@ import re
 
 class FileAbonds(DataFile):
     default_filename = "abonds.dat"
+    attrs = ["ele", "abol"]
 
     def __init__(self):
         self.ele = []   ## list of atomic symbols

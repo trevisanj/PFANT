@@ -146,6 +146,21 @@ class FileAtoms(DataFile):
             if len(atom) == 0:
                 del self.atoms[i]
 
+    def filter(self, function):
+        """
+        Filters atomic lines for which function(line) is true.
+
+        Arguments:
+          function -- receives an AtomicLine object as argument.
+           Example: lambda line: line.algf >= -7
+        """
+        for i in reversed(xrange(len(self))):
+            atom = self.atoms[i]
+            atom.lines = filter(function, atom.lines)
+            if len(atom) == 0:
+                del self.atoms[i]
+
+
     def _do_load(self, filename):
         """Clears internal lists and loads from file."""
 
