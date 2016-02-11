@@ -6,10 +6,10 @@ The "zinf" parameter is a distance in angstrom from the centre of an atomic
 line. It specifies the calculation range for the line:
 [centre-zinf, centre+zinf].
 
-This script runs pfant* for each atomic line to determine the width of each
+This script runs pfant for each atomic line to determine the width of each
 atomic line and thus zinf.
 
-Note: *pfant is run using most of its default settings and will require the
+Note: pfant is run using most of its default settings and will require the
 following files to exist in the current directory:
   - main.dat
   - dissoc.dat
@@ -71,6 +71,11 @@ if __name__ == "__main__":
     parser.add_argument('--max', type=float, nargs='?', default=50.,
      help='maximum zinf. If zinf found for a particular line is greater than '
           'this value, this value will be used instead')
+    parser.add_argument('--inflate', type=float, nargs='?', default=1.1,
+     help='Multiplicative constant to apply a "safety margin". '
+          'Each zinf found will be multiplied by this value. For example '
+          'a value of INFLATE=1.1 means that all the zinf\'s saved will be 10 '
+          'percent larger than those calculated')
     parser.add_argument('--ge_current', action="store_true",
      help='"Greater or Equal to current": If this option is set, the current '
           'zinf in the atomic lines file is used as a lower boundary.')
@@ -181,6 +186,7 @@ if __name__ == "__main__":
             norm = combo.pfant.norm  # normalized spectrum
             line = a.lines[0]  # a is single-line FileAtoms object
             zinf = _get_zinf(line.lambda_, norm)
+            zinf *= args.inflate
             if zinf == 0:
                 # Note that some lines don't appear at all, so there is no way
                 # to determine zinf
