@@ -89,6 +89,7 @@ if __name__ == "__main__":
     logger = get_python_logger()
     logger.info("Using minimum zinf = %g" % args.min)
     logger.info("Using MAXIMUM zinf = %g" % args.max)
+    logger.info("Using inflate = %g" % args.inflate)
     logger.info("Using ge_current = %s" % args.ge_current)
 
     file_atoms = FileAtoms()
@@ -101,16 +102,37 @@ if __name__ == "__main__":
 
     # # Preparation
 
-    MIN_ABOND = 3
-    logger.info("Preparing abundances file with all abundances >= %g ..." % MIN_ABOND)
+    # As suggested by M. Trevisan, adds 0.5 to all abundances, except that of Fe
+
+
+    K_ADD = 0.5
+    EXCEPTIONS = ["FE", "HE"]
+    logger.info("Preparing abundances (Adding %g to all abundances, " % K_ADD)
+    logger.info("except those of %s)..." % str(EXCEPTIONS))
     fa = FileAbonds()
     fa.load("abonds.dat")
     cnt = 0
     for i in range(len(fa)):
-        if fa.abol[i] < MIN_ABOND:
-            fa.abol[i] = MIN_ABOND
-            cnt += 1
+       if fa.ele[i] not in EXCEPTIONS:
+           fa.abol[i] += K_ADD
+           cnt += 1
     logger.info("%d abundance(s) changed" % cnt)
+
+
+    # This is old code, with a minimum value for the abundances but I don't think it is very reallistic
+    # MIN_ABOND = 3
+    # logger.info("Preparing abundances file with all abundances >= %g ..." % MIN_ABOND)
+    # fa = FileAbonds()
+    # fa.load("abonds.dat")
+    # cnt = 0
+    # for i in range(len(fa)):
+    #     if fa.abol[i] < MIN_ABOND:
+    #         fa.abol[i] = MIN_ABOND
+    #         cnt += 1
+    # logger.info("%d abundance(s) changed" % cnt)
+
+
+
 
     logger.info("Preparing pfant's...")
     pp, aa, i = [], [], 0
@@ -196,8 +218,8 @@ if __name__ == "__main__":
                 zinf = args.min
                 cnt_min += 1
             if zinf > args.max:
-                print " %gOLHOLHO (%s) (%s) (%s)" % \
-                 (zinf, combo.conf.session_dir, a.one_liner_str(), line.one_liner_str())
+                # print " %gOLHOLHO (%s) (%s) (%s)" % \
+                #  (zinf, combo.conf.session_dir, a.one_liner_str(), line.one_liner_str())
                 zinf = args.max
                 cnt_max += 1
             if args.ge_current and line.zinf > zinf:
