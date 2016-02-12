@@ -65,7 +65,7 @@ astropy | apt-Linux: `sudo apt-get install python-astropy`
                  
 (not yet) mayavi2           apt-Linux: `sudo apt-get install mayavi2`
 
-**Note:** When running @c pip on Linux, you may have to run it with `sudo`.
+**Note:** When running `pip` on Linux, you may have to run it with `sudo`.
 
 #### Windows compiler
 
