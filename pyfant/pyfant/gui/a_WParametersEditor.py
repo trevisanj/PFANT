@@ -42,25 +42,25 @@ class WParametersEditor(QWidget):
     """Sets focus to first field. Note: reason is ignored."""
     self.formLayout.itemAt(0, QFormLayout.FieldRole).widget().setFocus()
 
-  def GetKwargs(self):
+  def get_kwargs(self):
     self._parameters.UpdateFromWidgets()
     return self._parameters.GetKwargs()
 
-  def GetSpecs(self):
+  def get_specs(self):
     return self._parameters.GetSpecs()
 
-  def Validate(self):
+  def validate(self):
     # Currently calling Parameters.GetKwargs() to do the <quote>validation<quote>
     self._parameters.UpdateFromWidgets()
 
-  def SetErrorText(self, x):
-    self._SetErrorText(x)
+  def set_error_text(self, x):
+    self._set_error_text(x)
 
 
   ############################################################################
   ############################################################################
 
-  def _SetErrorText(self, x):
+  def _set_error_text(self, x):
     """Sets text of labelError."""
     self.labelError.setText(x)
 

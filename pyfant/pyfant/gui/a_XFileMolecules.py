@@ -488,7 +488,7 @@ class XFileMolecules(QMainWindow):
             item.text())
         flag_changed = False
         if r == QDialog.Accepted:
-            kwargs = form.GetKwargs()
+            kwargs = form.get_kwargs()
             for name, value in kwargs.iteritems():
                 orig = obj.__getattribute__(name)
                 if orig != value:
@@ -513,7 +513,7 @@ class XFileMolecules(QMainWindow):
                                   item.text())
         flag_changed = False
         if r == QDialog.Accepted:
-            kwargs = form.GetKwargs()
+            kwargs = form.get_kwargs()
             for name, value in kwargs.iteritems():
                 orig = obj.__getattribute__(name)
                 if orig != value:

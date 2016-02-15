@@ -941,7 +941,9 @@ module reader_absoru2
 
   character*2 :: absoru2_nomet(MAX_ABSORU2_NM) !< NOM DE L'ELEMENT; not used
   real*8 absoru2_abmet, & !< ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
+                          !! (read from file, then multiplied by modeles_asalog)
          absoru2_abhel    !< ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
+                          !! (read from file but overwritten by modeles_nhe in synthesis_())
   !> @todo ISSUE: i am not sure about these character*4, made this from the format below
   character*68 absoru2_titre !< ?doc?
 

@@ -1,5 +1,7 @@
 from .a_WParametersEditor import *
+from .a_WMainEditor import *
 from .a_XParametersEditor import *
+from .a_XFileMain import *
 from .guimisc import *
 from .parameter import *
 from .a_XFileAtomsHistogram import *

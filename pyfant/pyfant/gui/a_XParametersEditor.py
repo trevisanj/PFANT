@@ -34,17 +34,17 @@ class XParametersEditor(QDialog, ui_XParametersEditor.Ui_XParametersEditor):
 
 
   def GetKwargs(self):
-    return self.pe.GetKwargs()
+    return self.pe.get_kwargs()
 
   def GetSpecs(self):
-    return self.pe.GetSpecs()
+    return self.pe.get_specs()
 
   def _ReadConfig(self):
     pass
 
   def accept(self):
     try:
-      self.pe.Validate()
+      self.pe.validate()
     except Exception as E:
       QMessageBox.critical(None, "Error", E.message)
 
