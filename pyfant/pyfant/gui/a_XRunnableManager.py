@@ -34,11 +34,11 @@ class XRunnableManager(QMainWindow):
     Allows to monitor running runnables.
     """
 
-    def __init__(self, rm):
-        QMainWindow.__init__(self)
+    def __init__(self, parent=None, rm=None):
+        QMainWindow.__init__(self, parent)
         assert isinstance(rm, RunnableManager)
         self.rm = rm
-        self.num_finished = 0  # outdated version of self.rm.num_finished
+        self.num_finished_shown = 0  # outdated version of self.rm.num_finished
         self.lock_table = Lock()
         self.lfcs = 0  # labelFinished color state
 
@@ -149,16 +149,12 @@ class XRunnableManager(QMainWindow):
 
 
 
-
-
         # # # Status bar
         # self.label_n = QLabel()
         # self.label_t = QLabel()
         # sb = self.statusBar()
         # sb.insertWidget(0, self.label_n, 0)
         # sb.insertWidget(1, self.label_t, 0)
-
-
 
 
         # # Final adjustments
@@ -174,6 +170,7 @@ class XRunnableManager(QMainWindow):
         signals = [t.timeout, self.rm.runnable_changed, self.rm.finished]
         self.changed_proxy = SignalProxy(signals,
          delay=0, rateLimit=1, slot=self._update, flag_connect=False)
+        self.rm.runnable_added.connect(self._populate)
 
         # ## Timer to flick the finish indicator
         t = self.timerFinished = QTimer()
@@ -240,6 +237,7 @@ class XRunnableManager(QMainWindow):
             a = self.tableWidget
             self.runnables = runnables = self.rm.get_runnables_copy()
             a.clear()
+            self.num_finished_shown = 0
             a.setAlternatingRowColors(True)
             a.setRowCount(len(runnables))
             a.setColumnCount(2)
@@ -272,7 +270,7 @@ class XRunnableManager(QMainWindow):
             nf = self.rm.num_finished  # grabs this before last table update,
                                        # so that it never skips a row update
             mt = self.rm.max_simultaneous
-            for i in xrange(max(0, self.num_finished-mt+1),
+            for i in xrange(max(0, self.num_finished_shown-mt+1),
                             min(len(runnables), self.rm.num_finished+mt)):
                 runnable = runnables[i]
 
@@ -286,9 +284,9 @@ class XRunnableManager(QMainWindow):
                 status = runnable.get_status()
                 item.setText("?" if status is None else str(status))
 
-            if nf != self.num_finished:
+            if nf != self.num_finished_shown:
                 a.setCurrentCell(self.rm.num_finished+self.rm.max_simultaneous-1, 0)
-                self.num_finished = nf
+                self.num_finished_shown = nf
 
     def _update_status(self):
         """Updates everything except the table widget."""

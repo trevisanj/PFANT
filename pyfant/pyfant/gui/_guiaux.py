@@ -1,6 +1,6 @@
 __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
-           "PlotInfo", "place_left_top", "place_center"]
+           "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -20,6 +20,9 @@ SOL_ATTR_NAMES = ["lmbdam", "sj", "jj"]
 # This is shared between XFileAtoms and XAtomLinesEditor
 ATOM_HEADERS = ["lambda", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
+
+
+PARAMS_INVALID = "Can't save, invalid parameter values(s)!"
 
 
 
@@ -64,7 +67,7 @@ def place_left_top(window):
     accounted for by setting the position coordinates to values slightly greater
     than 0.
     """
-    window.setGeometry(2, 15, 800, 600)
+    window.setGeometry(2, 15, window.width(), window.height())
 
 def place_center(window):
     """Places window in the center of the screen."""

@@ -26,8 +26,7 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
     rm = RunnableManager(max_simultaneous=max_simultaneous)
     rm.start()
 
-    for p in rr:
-        rm.add_runnable(p)
+    rm.add_runnables(rr)
 
     # Primitive thread monitor
     if flag_console:

@@ -248,11 +248,10 @@ class RunnableManager(QObject, threading.Thread):
                         rema = inf
         return ella, tot, rema
             
-    def add_runnable(self, runnable):
-        assert isinstance(runnable, Runnable)
+    def add_runnables(self, runnables):
         with self.__lock:
-            self.__runnables.append(runnable)
-#        self.thread_added.emit()  # todo why emit this here??
+            self.__runnables.extend(runnables)
+        self.runnable_added.emit()
 
     def exit(self):
         self.__flag_exit = True
@@ -331,7 +330,8 @@ class RunnableManager(QObject, threading.Thread):
                 for runner in self.__runners:
                     if runner.runnable and runner.runnable.flag_running:
                         runner.kill_runnable()
-                    runner.exit()
+                    if runner.is_alive():
+                        runner.exit()
                 break
 
             if self.__flag_paused:

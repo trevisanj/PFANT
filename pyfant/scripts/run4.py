@@ -33,7 +33,7 @@ if __name__ == "__main__":
     c = Combo()
     c.conf.flag_log_file = True  # Configuration for Fortran messages
     c.conf.flag_log_console = True  # "
-    c.conf.flag_rename_outputs = False  # Will generate outputs in current directory
+    c.conf.flag_output_to_dir = False  # Will generate outputs in current directory
 
     for name in names:
         x = args.__getattribute__(name)

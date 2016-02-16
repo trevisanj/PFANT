@@ -150,7 +150,7 @@ if __name__ == "__main__":
             combo.conf.file_atoms = f
             combo.conf.file_abonds = fa
             combo.conf.opt.logging_level = "warning"
-            combo.conf.flag_rename_outputs = True
+            combo.conf.flag_output_to_dir = True
             combo.conf.opt.zinf = args.max
             combo.conf.opt.no_molecules = True
             combo.conf.opt.no_h = True
@@ -169,10 +169,9 @@ if __name__ == "__main__":
     # # Runs pfant
     logger.info("Running pfant's...")
     rm = RunnableManager()
-    for p in pp:
-        rm.add_runnable(p)
+    rm.add_runnables(pp)
     app = QApplication([])
-    form = XRunnableManager(rm)
+    form = XRunnableManager(None, rm)
     form.show()
     # it is good to start the manager as late as possible, otherwise
     # the program will hang if, for example, the form fails to be created.

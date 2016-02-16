@@ -49,7 +49,7 @@ class FileMain(DataFile):
     """Loads from file."""
   
     with open(filename, "r") as h:
-      self.titrav = h.readline().strip('\n')
+      self.titrav = h.readline().strip()
       self.ecrit, self.pas, self.echx, self.echy, self.fwhm = str_vector(h)
   
       vvt = float(h.readline())
@@ -90,7 +90,7 @@ class FileMain(DataFile):
     """Saves to file."""
     assert isinstance(self.vvt, list), "vvt must be list!"
     with open(filename, "w") as h:
-      write_lf(h, "%-20s" % self.titrav)
+      write_lf(h, "%s" % self.titrav)
       write_lf(h, "%s %s %s %s %s" % (bool2str(self.ecrit),
                       self.pas, self.echx, self.echy, self.fwhm))
       write_lf(h, "%s" % self.vvt[0])

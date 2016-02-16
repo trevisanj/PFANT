@@ -215,7 +215,7 @@ class XFileMolecules(QMainWindow):
         ac.setShortcut("Ctrl+S")
         ac.triggered.connect(self.on_save)
         self.act_save_as = ac = m.addAction("Save &as...")
-        ac.setShortcut("Ctrl+Alt+S")
+        ac.setShortcut("Ctrl+Shift+S")
         ac.triggered.connect(self.on_save_as)
         m.addSeparator()
         ac = m.addAction("&Quit")

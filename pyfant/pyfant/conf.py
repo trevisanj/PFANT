@@ -165,13 +165,13 @@ class Conf(object):
         self.__flag_log_file = x
 
     @property
-    def flag_rename_outputs(self):
+    def flag_output_to_dir(self):
         """Tweak output filenames to be created inside the session directory
         (default=False)?"""
-        return self.__flag_rename_outputs
-    @flag_rename_outputs.setter
-    def flag_rename_outputs(self, x):
-        self.__flag_rename_outputs = x
+        return self.__flag_output_to_dir
+    @flag_output_to_dir.setter
+    def flag_output_to_dir(self, x):
+        self.__flag_output_to_dir = x
 
     @property
     def logger(self):
@@ -184,7 +184,7 @@ class Conf(object):
         # ## Setup flags
         self.__flag_log_console = True
         self.__flag_log_file = True
-        self.__flag_rename_outputs = False
+        self.__flag_output_to_dir = False
 
         # # DataFile instances
         # See create_data_files() to see what happens when one or more
@@ -211,7 +211,7 @@ class Conf(object):
     def configure(self, sequence):
         """Series of configuration actions to take before Runnable can run."""
         self.__make_session_id()
-        if self.__flag_rename_outputs:
+        if self.__flag_output_to_dir:
             self.__rename_outputs(sequence)
 
         self.__logger = get_python_logger()
