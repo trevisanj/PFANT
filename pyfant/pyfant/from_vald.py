@@ -4,7 +4,7 @@ VALD3-to-PFANT conversions
 
 import csv
 from pyfant import adjust_atomic_symbol, Atom, FileAtoms, AtomicLine, \
- ordinal_suffix
+ ordinal_suffix, SYMBOLS
 import sys
 import logging
 
@@ -12,23 +12,6 @@ import logging
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
-
-# List of all atomic symbols
-# obtained using elements.py from http://www.lfd.uci.edu/~gohlke/, then
-# > import elements
-# > [x.symbol for x in ELEMENTS]
-_symbols = [
-'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',
- 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co',
- 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr',
- 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I',
- 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy',
- 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au',
- 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U',
- 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db',
- 'Sg', 'Bh', 'Hs', 'Mt'
-]
-_symbols = [x.upper() for x in _symbols]
 
 # Temporary: no partition function for this
 # Except for hydrogen (this must be skipped)
@@ -73,7 +56,7 @@ def vald3_to_atoms(file_obj):
                 continue
             elem = row[0][1:3]
             elem_cmp = elem.upper().strip()
-            if not elem_cmp in _symbols:
+            if not elem_cmp in SYMBOLS:
                 continue  # skips molecule
 
             if elem_cmp in _to_skip:

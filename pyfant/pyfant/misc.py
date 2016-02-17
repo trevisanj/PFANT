@@ -11,7 +11,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
- "AttrsPart", "froze_it", "format_progress"]
+ "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS"]
 
 
 # # todo cleanup
@@ -59,6 +59,25 @@ import numpy as np
 # Logger for internal use
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
+
+
+# List of all atomic symbols
+# obtained using elements.py from http://www.lfd.uci.edu/~gohlke/, then
+# > import elements
+# > [x.symbol for x in ELEMENTS]
+symbols = [
+'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',
+ 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co',
+ 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr',
+ 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I',
+ 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy',
+ 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au',
+ 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U',
+ 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db',
+ 'Sg', 'Bh', 'Hs', 'Mt'
+]
+# List of all atomic symbols in UPPERCASE
+SYMBOLS = [x.upper() for x in symbols]
 
 
 def froze_it(cls):

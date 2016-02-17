@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""abed - ABundances file EDitor (deprecated)."""
+"""ABundances file EDitor."""
 
 from pyfant.gui import XFileAbonds
 from pyfant import *

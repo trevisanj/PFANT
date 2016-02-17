@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
 import matplotlib.pyplot as plt
 from pyfant import *
-from ._guiaux import *
+from .guiaux import *
 
 
 MAX_NUM_BINS = 500

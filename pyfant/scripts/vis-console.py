@@ -26,8 +26,11 @@ def console():
             fmt = "*** %-2s %2d * %-"+str(maf)+"s * %-"+str(mac)+"s"
             for i, obj in enumerate(objs):
                 print fmt % ("->" if idx == i else "", i+1, obj.filename, obj.__class__.__name__)
-        opt = menu("MAIN MENU", ["List directory", "Change directory", "Load file",
-                                 "Select file", "Visualization options"], cancel_label="Exit", flag_allow_empty=False)
+        opt = menu("MAIN MENU", ["List directory",
+                                 "Change directory",
+                                 "Load file",
+                                 "Select file",
+                                 "Visualization options"], cancel_label="Exit", flag_allow_empty=False)
         if opt == 0:
             break
         elif opt == 1:

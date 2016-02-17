@@ -5,8 +5,7 @@ __all__ = ["XFileAbonds"]
 from PyQt4.QtGui import *
 from . import a_WFileAbonds
 from pyfant import FileAbonds, FileDissoc
-from ._guiaux import *
-from .guimisc import *
+from .guiaux import *
 import os
 
 ################################################################################

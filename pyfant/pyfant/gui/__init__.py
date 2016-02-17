@@ -4,10 +4,10 @@ from .a_WFileAbonds import *
 from .a_XParametersEditor import *
 from .a_XFileMain import *
 from .a_XFileAbonds import *
-from .guimisc import *
 from .parameter import *
 from .a_XFileAtomsHistogram import *
 from .a_XFileMolecules import *
 from .a_XFileAtoms import *
 from .a_XRunnableManager import *
+from .a_XExplorer import *
 from .a_XPFANT import *

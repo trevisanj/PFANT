@@ -12,8 +12,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as Navigat
 import matplotlib.pyplot as plt
 import numpy as np
 from .a_XMolLinesEditor import *
-from ._guiaux import *
-from .guimisc import *
+from .guiaux import *
 import os.path
 import webbrowser
 import sys

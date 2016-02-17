@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""mained - Main configuration file editor."""
+"""Main configuration file editor."""
 
 from pyfant.gui import XFileMain
 from pyfant import *
