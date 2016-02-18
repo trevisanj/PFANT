@@ -170,7 +170,7 @@ if __name__ == "__main__":
     logger.info("Running pfant's...")
     rm = RunnableManager()
     rm.add_runnables(pp)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XRunnableManager(None, rm)
     form.show()
     # it is good to start the manager as late as possible, otherwise

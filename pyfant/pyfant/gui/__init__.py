@@ -9,5 +9,6 @@ from .a_XFileAtomsHistogram import *
 from .a_XFileMolecules import *
 from .a_XFileAtoms import *
 from .a_XRunnableManager import *
+from .a_XText import *
 from .a_XExplorer import *
 from .a_XPFANT import *

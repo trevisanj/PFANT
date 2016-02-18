@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     m = FileAbonds()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileAbonds()
     form.show()
     form.load(m)

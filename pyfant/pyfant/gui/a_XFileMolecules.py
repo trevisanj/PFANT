@@ -21,8 +21,8 @@ NUM_PLOTS = len(SOL_HEADERS)-1  # -1 because whe "lambda" does not have its plot
 
 class XFileMolecules(QMainWindow):
 
-    def __init__(self):
-        QMainWindow.__init__(self)
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
 
         self.f = None  # FileMolecules object
         self.flag_sort = False

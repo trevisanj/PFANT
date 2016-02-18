@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     m = FileMolecules()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileMolecules()
     form.show()
     form.load(m)

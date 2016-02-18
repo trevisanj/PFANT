@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     m = FileAtoms()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileAtoms()
     form.show()
     form.load(m)

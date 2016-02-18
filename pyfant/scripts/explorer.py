@@ -20,7 +20,7 @@ if __name__ == "__main__":
     parser.add_argument('dir', type=str, help='directory name', default='.', nargs='?')
     args = parser.parse_args()
 
-    app = QApplication([])
+    app = get_QApplication([])
     form = XExplorer(None, args.dir)
     form.showMaximized()
     sys.exit(app.exec_())

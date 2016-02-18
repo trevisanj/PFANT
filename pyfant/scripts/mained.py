@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     m = FileMain()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileMain()
     form.show()
     form.load(m)

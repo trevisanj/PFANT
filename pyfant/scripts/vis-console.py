@@ -84,7 +84,17 @@ def console():
             if len(objs) == 0:
                 print_error("No file loaded")
             else:
-                show_menu(objs[idx])
+                show_vis_menu(objs[idx])
+
+def show_vis_menu(obj):
+    classes = get_suitable_vis_classes(obj)
+
+    oo = [x.__name__ for x in classes]
+
+    opt = menu("Please select", oo, cancel_label="Back", flag_allow_empty=True)
+    if 1 <= opt <= len(oo):
+        vis = classes[opt-1]()
+        vis.use(obj)
 
 
 if __name__ == "__main__":

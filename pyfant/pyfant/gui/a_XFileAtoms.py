@@ -23,8 +23,8 @@ NUM_PLOTS = len(ATOM_HEADERS)-1  # -1 because whe "lambda" does not have its plo
 
 class XFileAtoms(QMainWindow):
 
-    def __init__(self):
-        QMainWindow.__init__(self)
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
 
         self.f = None  # FileAtoms object
         self.flag_sort = False

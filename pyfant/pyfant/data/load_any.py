@@ -8,8 +8,8 @@ from . import *
 # Fortran.
 #
 # note: leave FileAbonds to the end because it is too general
-_classes = [FileAbsoru2, FileHmap, FileMain, FileMod, FileSpectrumNulbad,
-           FileSpectrumPfant, FileToH, FileAbonds]
+_classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileMod, FileSpectrumNulbad,
+           FileSpectrumPfant, FileToH, FileAbonds, FileAtoms, FileMolecules]
 
 def load_any_file(filename):
     """
