@@ -1465,7 +1465,8 @@ contains
       end if
       atoms_elem(k) = adjust_atomic_symbol(atoms_elem(k))
 
-      read(unit_, *) atoms_kiex(k), &
+      read(unit_, *) &
+       atoms_kiex(k), &
        atoms_algf(k), &
        atoms_ch(k), &
        atoms_gr(k), &

@@ -127,6 +127,7 @@ class XExplorer(QMainWindow):
 
         t = self.tableWidget = QTableWidget()
         sp.addWidget(t)
+        t.installEventFilter(self)
         t.setSelectionBehavior(QAbstractItemView.SelectRows)
         t.currentCellChanged.connect(self.on_tableWidget_currentCellChanged)
         t.cellDoubleClicked.connect(self.on_tableWidget_cellDoubleClicked)
@@ -157,10 +158,12 @@ class XExplorer(QMainWindow):
         s0.addWidget(w)
         l = self.c49378 = QVBoxLayout(w)
         l.setMargin(0)
-        x = self.c88888 = QLabel("<b>Visualization options</b>")
-        l.addWidget(x)
+        y = self.c88888 = QLabel("<b>Visualization &options</b>")
+        l.addWidget(y)
         x = self.listWidgetVis = QListWidget(self)
+        x.installEventFilter(self)
         x.itemDoubleClicked.connect(self.on_listWidgetVis_itemDoubleClicked)
+        y.setBuddy(x)
 
         l.addWidget(x)
 
@@ -181,6 +184,23 @@ class XExplorer(QMainWindow):
         s0.setStretchFactor(1, 10)
 
         self.set_dir(dir_)
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
+    # Qt override
+
+    def eventFilter(self, obj, event):
+        if obj == self.tableWidget:
+            return self.__check_return_space(event, self.on_load)
+        elif obj == self.listWidgetVis:
+            return self.__check_return_space(event, self.__visualize)
+        return False
+
+    def __check_return_space(self, event, callable_):
+        if event.type() == QEvent.KeyPress:
+            if event.key() in [Qt.Key_Return, Qt.Key_Space]:
+                callable_()
+                return True
+        return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Slots for Qt library signals
@@ -205,7 +225,8 @@ class XExplorer(QMainWindow):
     # TODO implement threads to load and visualize so that I can show messages in the status bar
 
     def on_load(self, _=None):
-        self.__load()
+        if not self.__flag_loading:
+            self.__load()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
@@ -294,6 +315,7 @@ class XExplorer(QMainWindow):
 
     def __set_status_text(self, text):
         self.labelStatus.setText(text)
+        time
 
     def __load(self):
         self.__flag_loading = True

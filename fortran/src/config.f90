@@ -818,13 +818,6 @@ contains
      'input file name - molecular lines')
     call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
-    call add_option('p', 'flprefix',        ' ', .true., 'filename prefix', &
-                    '<main_flprefix> '//FROM_MAIN, &
-     'pfant output - prefix for flux output files.<br>'//&
-     'Three files will be created based on this prefix:<br>'//&
-     IND//'<flprefix>.spec: un-normalized spectrum<br>'//&
-     IND//'<flprefix>.cont: continuum<br>'//&
-     IND//'<flprefix>.norm: normalized spectrum')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
      'If set, skips the calculation of molecular lines')
     call add_option('p', 'no_atoms',' ', .true., 'T/F', logical2str(config_no_atoms), &
@@ -839,6 +832,18 @@ contains
      'Calculation step (angstrom)')
     call add_option('p', 'aint', ' ', .true., 'real value', '<main_aint> '//FROM_MAIN, &
      'Interval length per iteration (angstrom)')
+
+
+    !
+    ! pfant, nulbad
+    !
+    call add_option('pn', 'flprefix',        ' ', .true., 'filename prefix', &
+                    '<main_flprefix> '//FROM_MAIN, &
+     'pfant output - prefix for flux output files.<br>'//&
+     'Three files will be created based on this prefix:<br>'//&
+     IND//'<flprefix>.spec: un-normalized spectrum<br>'//&
+     IND//'<flprefix>.cont: continuum<br>'//&
+     IND//'<flprefix>.norm: normalized spectrum')
 
     !
     ! nulbad-only
