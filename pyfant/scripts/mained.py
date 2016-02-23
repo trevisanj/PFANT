@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""mained - Main configuration file editor."""
+"""Main configuration file editor."""
 
 from pyfant.gui import XFileMain
 from pyfant import *
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     m = FileMain()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileMain()
     form.show()
     form.load(m)

@@ -4,7 +4,7 @@ Miscellanea routines that depend on other pyfant modules.
 Rule: no pyfant module can import util!!!
 
 """
-__all__ = ["run_parallel", "show_menu"]
+__all__ = ["run_parallel"]
 from pyfant.misc import *
 from pyfant import RunnableManager, get_suitable_vis_classes
 import time
@@ -106,12 +106,3 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True):
 #     print "FINISHED"
 
 
-def show_menu(obj):
-    classes = get_suitable_vis_classes(obj)
-
-    oo = [x.__name__ for x in classes]
-
-    opt = menu("Please select", oo, cancel_label="Back", flag_allow_empty=True)
-    if 1 <= opt <= len(oo):
-        vis = classes[opt-1]()
-        vis.use(obj)

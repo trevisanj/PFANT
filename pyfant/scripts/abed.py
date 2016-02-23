@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""abed - ABundances file EDitor (deprecated)."""
+"""ABundances file EDitor."""
 
 from pyfant.gui import XFileAbonds
 from pyfant import *
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     m = FileAbonds()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileAbonds()
     form.show()
     form.load(m)

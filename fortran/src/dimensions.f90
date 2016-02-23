@@ -102,7 +102,7 @@ module dimensions
 
   integer, parameter :: &
    MAX_ATOMS_NBLEND=100000, & !< Half of the maximum the number of rows in dfile:atoms
-   MAX_ATOMS_F_NBLEND=8000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
+   MAX_ATOMS_F_NBLEND=20000      !< Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
   ! Dimensions related to dfile:molecules

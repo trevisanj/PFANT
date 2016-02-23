@@ -13,7 +13,7 @@ import logging
 misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
-    app = QApplication([])
+    app = get_QApplication([])
     form0 = XPFANT()
     rm = RunnableManager()
     form1 = XRunnableManager(form0, rm)

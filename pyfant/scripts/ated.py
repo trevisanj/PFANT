@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-ated - ATomic lines file EDitor
+ATomic lines file EDitor
 
 See also ated.html or press F1 inside application.
 """
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     m = FileAtoms()
     m.load(args.fn)
-    app = QApplication([])
+    app = get_QApplication([])
     form = XFileAtoms()
     form.show()
     form.load(m)

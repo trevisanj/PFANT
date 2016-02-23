@@ -5,8 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from pyfant import *
 import numpy as np
-from ._guiaux import *
-from .guimisc import *
+from .guiaux import *
 from ..rm import RunnableManager
 from ..misc import *
 from threading import Lock

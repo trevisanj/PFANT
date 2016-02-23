@@ -1,5 +1,5 @@
 __all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
-           "get_suitable_vis_classes"]
+           "get_suitable_vis_classes", "VisAtoms", "VisMolecules"]
 
 from pyfant.data import *
 import numpy as np
@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 from ..misc import *
-
 
 def get_suitable_vis_classes(obj):
     """Retuns a list of Vis classes that can handle obj."""
@@ -32,14 +31,17 @@ class Vis(object):
 
     def __init__(self):
         self.title = None
+        self.parent_form = None
 
-    def use(self, obj):
+    def use(self, obj, parent_form=None):
         """Note: if title is None, will be replaced with obj.filename
         """
 
         if not isinstance(obj, self.input_classes):
             raise RuntimeError('%s cannot handle a %s' %
                                (self.__class__.__name__, obj.__class__.__name__))
+
+        self.parent_form = parent_form
 
         if self.title is None:
             self.title = 'file: '+obj.filename
@@ -93,7 +95,7 @@ class VisModRecord(Vis):
         axarr[4].set_ylabel('t5l')
         axarr[4].set_xlabel("Atmospheric layer #")
         plt.tight_layout()
-        # plt.show()
+        plt.show()
 
 
 
@@ -171,7 +173,7 @@ class VisSpectrum(Vis):
             plt.title(self.title) #canvas.set_window_title(self.title)
         plt.tight_layout()
 
-        # plt.show()
+        plt.show()
 
 
 class VisFileToH(Vis):
@@ -183,8 +185,6 @@ class VisFileToH(Vis):
     input_classes = (FileToH,)
 
     def _do_use(self, r):
-        assert isinstance(r, FileToH)
-
         fig = plt.figure()
         mpl.rcParams['legend.fontsize'] = 10
         fig.canvas.set_window_title(self.title)  # requires the Axes3D module
@@ -198,4 +198,24 @@ class VisFileToH(Vis):
         ax.set_ylabel('Atmospheric layer')
         ax.set_zlabel('Intensity (?)')
         plt.tight_layout()
-        # plt.show()
+        plt.show()
+
+
+class VisAtoms(Vis):
+    """Opens the mled window."""
+    input_classes = (FileAtoms,)
+    def _do_use(self, r):
+        from pyfant.gui import XFileAtoms
+        form = XFileAtoms(self.parent_form)
+        form.load(r)
+        form.show()
+
+
+class VisMolecules(Vis):
+    """Opens the ated window."""
+    input_classes = (FileMolecules,)
+    def _do_use(self, r):
+        from pyfant.gui import XFileMolecules
+        form = XFileMolecules(self.parent_form)
+        form.load(r)
+        form.show()

@@ -5,8 +5,7 @@ __all__ = ["XFileMain"]
 from PyQt4.QtGui import *
 from . import a_WFileMain
 from pyfant import FileMain
-from ._guiaux import *
-from .guimisc import *
+from .guiaux import *
 
 
 ################################################################################

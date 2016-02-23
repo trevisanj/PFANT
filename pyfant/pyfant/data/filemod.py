@@ -34,11 +34,16 @@ class FileMod(DataFile):
   def _do_load(self, filename):
     REC_SIZE = 1200
 
+    if istextfile(filename):
+        raise RuntimeError("File must be binary")
+
     b = os.path.getsize(filename)
+
+    if b < 2400:
+        raise RuntimeError("File too small")
+
     num_rec = b/REC_SIZE-1
-
     self.records = []
-
     with open(filename, "rb") as h:
       ostr = struct.Struct('<i 5f 20s 20s')
 
@@ -58,6 +63,14 @@ class FileMod(DataFile):
          rec.tit,
          rec.tiabs] = ostr.unpack(x[:64])
 
+        print "OLHA O REC: ", rec
+
+        # This routine will read almost any binary, so we perform some range checks
+        if not (1 < rec.ntot <= 1000):
+            raise RuntimeError("ntot invalid")
+        if not (100 < rec.teff < 100000):
+            raise RuntimeError("teff invalid")
+
         v = np.frombuffer(x, dtype='<f4', count=rec.ntot*5, offset=64)
         w = np.reshape(v, (rec.ntot, 5))
 
@@ -74,35 +87,39 @@ class FileMod(DataFile):
 
 
 class ModRecord(AttrsPart):
-  """
-  Represents a single record from an atmospheric model file
+    """
+    Represents a single record from an atmospheric model file
 
-  Note: while a infile:modeles may have several 1200-byte records stored in it,
-   this class only stores one of these records, specified by "inum"  argument
-   of load()
+    Note: while a infile:modeles may have several 1200-byte records stored in it,
+    this class only stores one of these records, specified by "inum"  argument
+    of load()
 
-  Imitates the logic of reader_modeles.f90::read_modele().
+    Imitates the logic of reader_modeles.f90::read_modele().
 
-  Attributes match reader_modeles.f90:modeles_* (minus the "modeles_" prefix)
-  """
-  default_filename = "modeles.mod"
+    Attributes match reader_modeles.f90:modeles_* (minus the "modeles_" prefix)
+    """
+    default_filename = "modeles.mod"
 
-  attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
+    attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
            "nh", "teta", "pe", "pg", "t5l"]
+    less_attrs = ["ntot", "teff", "glog"]
 
-  def __init__(self):
-    self.ntot = None
-    self.teff = None
-    self.glog = None
-    self.asalog = None
-    self.asalalf = None
-    self.nhe = None
-    self.tit = None
-    self.tiabs = None
-    self.nh = None
-    self.teta = None
-    self.pe = None
-    self.pg = None
-    self.t5l = None
+    def __init__(self):
+        AttrsPart.__init__(self)
+        self.ntot = None
+        self.teff = None
+        self.glog = None
+        self.asalog = None
+        self.asalalf = None
+        self.nhe = None
+        self.tit = None
+        self.tiabs = None
+        self.nh = None
+        self.teta = None
+        self.pe = None
+        self.pg = None
+        self.t5l = None
 
 
+    def __repr__(self):
+        return "/"+self.one_liner_str()+"/"

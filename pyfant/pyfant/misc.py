@@ -11,7 +11,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "list2str", "chunk_string", "add_file_handler", "LogTwo", "SmartFormatter",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
- "AttrsPart", "froze_it", "format_progress"]
+ "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
+ "istextfile", "get_QApplication"]
 
 
 # # todo cleanup
@@ -50,7 +51,7 @@ from matplotlib import rc
 import re
 from argparse import *
 from PyQt4.QtCore import *
-# from PyQt4.QtGui import *
+from PyQt4.QtGui import *
 import time
 from threading import Lock
 from functools import wraps
@@ -59,6 +60,25 @@ import numpy as np
 # Logger for internal use
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
+
+
+# List of all atomic symbols
+# obtained using elements.py from http://www.lfd.uci.edu/~gohlke/, then
+# > import elements
+# > [x.symbol for x in ELEMENTS]
+symbols = [
+'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',
+ 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co',
+ 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr',
+ 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I',
+ 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy',
+ 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au',
+ 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U',
+ 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db',
+ 'Sg', 'Bh', 'Hs', 'Mt'
+]
+# List of all atomic symbols in UPPERCASE
+SYMBOLS = [x.upper() for x in symbols]
 
 
 def froze_it(cls):
@@ -100,6 +120,14 @@ class AttrsPart(object):
 
     # for __str__()
     attrs = None
+    # for __repr__()
+    # Optional; if not set, will be overwritten with self.attrs at __init__()
+    less_attrs = None
+
+    def __init__(self):
+        if self.less_attrs is None:
+            self.less_attrs = self.attrs
+
 
     def __str__(self):
         assert self.attrs is not None, "Forgot to set attrs class variable"
@@ -109,9 +137,9 @@ class AttrsPart(object):
         return s
 
     def one_liner_str(self):
-        assert self.attrs is not None, "Forgot to set attrs class variable"
-        s_format = "{} = {}"
-        s = "; ".join([s_format.format(x, self.__getattribute__(x)) for x in self.attrs])
+        assert self.less_attrs is not None, "Forgot to set attrs class variable"
+        s_format = "{}={}"
+        s = "; ".join([s_format.format(x, self.__getattribute__(x)) for x in self.less_attrs])
         return s
 
 
@@ -486,7 +514,8 @@ _forenames = ["Solomon", "John", "Loretta", "Stephen", "Harry", "Nancy", "Tracy"
         "Pouria", "Klen", "Lydiane", "Charlotte", "Edna", "Ricardo", "Francis", "Jemma", "Valon", "Imran", "Sian",
         "Hayat", "Taghreed", "Orla", "Michael", "Lourdes", "Weiyi", "Thomas", "Willian", "Miguel", "Rui",
         "Abdullah", "Angus", "Malcolm", "Donald", "Mickey", "Polona", "Rashmi", "Xiaowei", "Sasha", "Luciano",
-        "Avinash", "Anthony", "Karen", "Matthew", "Tatiana", "Mariana", "Antonio", "Hamilton", "Pauderney"]
+        "Avinash", "Anthony", "Karen", "Matthew", "Tatiana", "Mariana", "Antonio", "Hamilton", "Pauderney",
+        "BB-8"]
 _surnames = ["Northupp", "Kanobi", "de Morgan", "de Vries", "van Halen", "McFly", "Wallace", "McLeod", "Skywalker", "Smith",
        "Silva", "da Silva", "Sexy", "Coupat", "Coupable", "Byron", "Lovelace", "Pascal", "Kareninski", "Dynamite",
        "Souza", "Ha", "Balboa", "Durden", "V.", "Li", "Manco", "Kelly", "Torquato", "Sampaio", "Bittencourt", "Parisi",
@@ -533,9 +562,17 @@ def format_BLB():
     #rc('text', usetex=True)
 
 
-
 # #################################################################################################
 # # PyQt-related routines
+
+_qapp = None
+def get_QApplication(args=[]):
+    """Returns the QApplication instance, creating it is does not yet exist."""
+    global _qapp
+    if _qapp is None:
+        _qapp = QApplication(args)
+    return _qapp
+
 
 class _ThreadsafeTimer(QObject):
     """
@@ -702,3 +739,38 @@ class SignalProxy(QObject):
     def __connect_signal(self, signal):
         signal.connect(self.__signalReceived)
 
+
+###############################################################################
+#http://eli.thegreenplace.net/2011/10/19/perls-guess-if-file-is-text-or-binary-implemented-in-python
+import sys
+PY3 = sys.version_info[0] == 3
+
+# A function that takes an integer in the 8-bit range and returns
+# a single-character byte object in py3 / a single-character string
+# in py2.
+#
+int2byte = (lambda x: bytes((x,))) if PY3 else chr
+
+_text_characters = (
+        b''.join(int2byte(i) for i in range(32, 127)) +
+        b'\n\r\t\f\b')
+
+def istextfile(filepath, blocksize=512):
+    """ Uses heuristics to guess whether the given file is text or binary,
+        by reading a single block of bytes from the file.
+        If more than 30% of the chars in the block are non-text, or there
+        are NUL ('\x00') bytes in the block, assume this is a binary file.
+    """
+    with open(filepath, "rb") as fileobj:
+        block = fileobj.read(blocksize)
+        if b'\x00' in block:
+            # Files with null bytes are binary
+            return False
+        elif not block:
+            # An empty file is considered a valid text file
+            return True
+
+        # Use translate's 'deletechars' argument to efficiently remove all
+        # occurrences of _text_characters from the block
+        nontext = block.translate(None, _text_characters)
+        return float(len(nontext)) / len(block) <= 0.30

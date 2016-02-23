@@ -1,15 +1,25 @@
 __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
-           "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID"]
+           "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
+           "ShowError", "ShowMessage", "ResetTableWidget",
+           "COLOR_ERROR", "INITIALIZES_SUN"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from .a_XParametersEditor import *
 import numpy as np
 
+
+# Messages shared in two or more different situations
+INITIALIZES_SUN = "Initializes fields with default parameters (Sun)"
+PARAMS_INVALID = "Can't save, invalid parameter values(s)!"
+
+# Colors used in two or more different situations
+COLOR_ERROR = "#AA0000" # sortta wine
+
+# Standard font to be used in all GUIs
 MONO_FONT = QFont("not_a_font_name")
 MONO_FONT.setStyleHint(QFont.TypeWriter)
-
 
 # Relating tablewidget column headers with set-of-lines attributes
 # This is shared between XFileMolecules and XMolLinesEditor
@@ -22,8 +32,20 @@ ATOM_HEADERS = ["lambda", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 
 
-PARAMS_INVALID = "Can't save, invalid parameter values(s)!"
+def ShowError(s):
+  QMessageBox.critical(None, "Error", s)
 
+
+def ShowMessage(s):
+  QMessageBox.information(None, "Information", s)
+
+
+def ResetTableWidget(t, rowCount, colCount):
+    """Clears and resizes a table widget."""
+    t.clear()
+    t.sortItems(-1)
+    t.setRowCount(rowCount)
+    t.setColumnCount(colCount)
 
 
 def index_nearest(array, value):

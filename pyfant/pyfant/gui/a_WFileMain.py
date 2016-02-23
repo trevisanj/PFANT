@@ -4,8 +4,7 @@ __all__ = ["WFileMain"]
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-# from ._guiaux import *
-# from .guimisc import *
+from .guiaux import *
 from pyfant import FileMain
 
 # Color for labels indicating a star parameter
@@ -200,8 +199,9 @@ class WFileMain(QWidget):
         x.setStyleSheet("QTextEdit {color: #333333}")
         la.addWidget(x, la.rowCount(), 0, 1, 2)
 
-        self.labelError = QLabel(self)
-        self.labelError.setStyleSheet("color: #AA0000")
+        x = self.labelError = QLabel(self)
+        x.setStyleSheet("QTextEdit {color: %s}" % COLOR_ERROR)
+
         la.addWidget(self.labelError, la.rowCount(), 0, 1, 2)
 
         self.flag_process_changes = True

@@ -12,8 +12,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as Navigat
 import matplotlib.pyplot as plt
 import numpy as np
 from .a_XAtomLinesEditor import *
-from ._guiaux import *
-from .guimisc import *
+from .guiaux import *
 import os.path
 import webbrowser
 import sys
@@ -24,8 +23,8 @@ NUM_PLOTS = len(ATOM_HEADERS)-1  # -1 because whe "lambda" does not have its plo
 
 class XFileAtoms(QMainWindow):
 
-    def __init__(self):
-        QMainWindow.__init__(self)
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
 
         self.f = None  # FileAtoms object
         self.flag_sort = False
