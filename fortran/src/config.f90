@@ -560,8 +560,8 @@ module config
    config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
-   config_fn_atoms     = 'atomgrade.dat',     & !< option: --fn_atoms
-   config_fn_molecules     = 'moleculagrade.dat',     & !< option: --fn_molecules
+   config_fn_atoms     = 'atoms.dat',     & !< option: --fn_atoms
+   config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
    config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
    config_fn_log           = 'log.log',           & !< option: --fn_log
    config_flprefix         = '?'                    !< option: --flprefix
