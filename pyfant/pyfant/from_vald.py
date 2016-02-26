@@ -80,17 +80,20 @@ def vald3_to_atoms(file_obj):
             # Formula supplied by Elvis Cantelli:
             # extracted from cross-entropy code by P. Barklem
             _waals = float(row[12])
-            line.ch = 10**(2.5*_waals-12.32)
+            if _waals == 0:
+                line.ch = 0.3e-31
+            else:
+                line.ch = 10**(2.5*_waals-12.32)
             # Setting gr to zero will cause PFANT to calculate it using a formula.
             # See readers.f90::read_atoms() for the formula.
             line.gr = 0.0
-            # ge is not present in VALD3 file. Set to 1 because it is a multiplicative
-            # term in pfant.f90::popadelh()
-            line.ge = 1.0
+            # ge is not present in VALD3 file.
+            # it enters as a multiplicative term in popadelh()
+            line.ge = 0.0
             # Attention: zinf must be tuned later using tune-zinf.py
             line.zinf = 0.5
             # Never used in PFANT
-            line.abondr = 0
+            line.abondr = 1
 
             # # Stores in object
             elem = adjust_atomic_symbol(elem)

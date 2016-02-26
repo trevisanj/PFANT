@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
         pfant = Pfant()
         pfant.conf.file_abonds = file_abonds
-        pfant.conf.opt.flprefix = "%s%02d" % (file_main.titrav, j)
+        pfant.conf.opt.flprefix = "%s_%02d" % (file_main.titrav, j)
         pfant.conf.session_id = pfant.conf.opt.flprefix
 
         print pfant.conf.opt.flprefix
