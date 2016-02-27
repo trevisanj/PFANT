@@ -73,6 +73,9 @@ class Runnable(object):
     @property
     def error_message(self):
         return self._error_message
+    @property
+    def flag_success(self):
+        return self._flag_finished and not self._flag_error and not self._flag_killed
 
     @property
     def conf(self):
@@ -104,6 +107,10 @@ class Runnable(object):
 
     def kill(self):
         raise NotImplementedError()
+
+    def load_result(self):
+        """Abstract. Override this method to open the result file(s) particular to the
+        executable."""
 
 
 class Executable(Runnable):
@@ -197,10 +204,6 @@ class Executable(Runnable):
         self._flag_killed = True
         if self._flag_running:
             self.__popen.kill()
-
-    def load_result(self):
-        """Abstract. Override this method to open the result file(s) particular to the
-        executable."""
 
     def __run(self):
         """Called both from run() and run_from_combo()."""
@@ -366,9 +369,10 @@ class Pfant(Executable):
         return ret
 
     def load_result(self):
-        file_sp = FileSpectrumPfant()
+
         for type_ in ("norm", "cont", "spec"):
             filepath = self.conf.get_pfant_output_filepath(type_)
+            file_sp = FileSpectrumPfant()
             file_sp.load(filepath)
             self.__setattr__(type_, file_sp.spectrum)
 
@@ -513,6 +517,12 @@ class Combo(Runnable):
             return self.__running_exe.get_status()
         else:
             return None
+
+    def load_result(self):
+        ee = self.get_exes()
+        for e in ee:
+            e.load_result()
+
     #
     # def __configure(self):
     #     """

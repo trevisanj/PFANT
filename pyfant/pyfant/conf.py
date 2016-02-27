@@ -229,6 +229,9 @@ class Conf(object):
                 stdout_ = None
         self.__popen_text_dest = stdout_
 
+        if FOR_PFANT in sequence:
+            self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
+
         self.__create_data_files()
 
     def close_popen_text_dest(self):
@@ -398,9 +401,6 @@ class Conf(object):
             flprefix = self.get_flprefix(True)
             self.opt.flprefix = self.join_with_session_dir(flprefix)
 
-        if FOR_PFANT in sequence:
-            self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
-
         if FOR_NULBAD in sequence:
             self.opt.fn_flux = None  # will cause nulbad to use flprefix
             if self.opt.fn_cv:
@@ -429,25 +429,44 @@ class Conf(object):
 
 # Lock is necessary to make unique session ids
 _lock_session_id = Lock()
+_id = 0
 def _make_session_id():
-    """Finds new session id (a string containing a four-digit integer)
-    corresponding with a directory that does not yet exist
-    named <prefix><session id>, and creates such directory.
+    # """Finds new session id (a string containing a four-digit integer)
+    # corresponding with a directory that does not yet exist
+    # named <prefix><session id>, and creates such directory.
+    #
+    # Returns the new session id
+    #
+    # This routine is thread-safe.
+    # """
+    # with _lock_session_id:
+    #     i = 0
+    #     while True:
+    #         ret = "%d" % i
+    #         new_dir = _get_session_dirname(session_prefix, ret)
+    #         if not os.path.isdir(new_dir):
+    #             break
+    #         i += 1
+    #     os.mkdir(new_dir)
+    #     return ret
+    #
 
-    Returns the new session id
+    """Makes session id and creates corresponding directory.
 
     This routine is thread-safe.
     """
+    global _id
     with _lock_session_id:
-        i = 0
         while True:
-            ret = "%d" % i
+            ret = "%d" % _id
+            _id += 1
             new_dir = _get_session_dirname(session_prefix, ret)
             if not os.path.isdir(new_dir):
                 break
-            i += 1
         os.mkdir(new_dir)
         return ret
+
+
 
 
 def _get_session_dirname(prefix, id_):

@@ -32,6 +32,9 @@ class FileDissoc(DataFile):
         self.eps = None
         self.switer = None
 
+        # inovation
+        self.title = None
+
     def __len__(self):
         """Returns length of "ele" attribute."""
         return len(self.ele)
@@ -41,8 +44,9 @@ class FileDissoc(DataFile):
         self.abol, self.ele = [], []
 
         with open(filename, "r") as h:
-            fr = ff.FortranRecordReader('(2i5, 2f10.5)')
-            self.nmetal, self.nimax, self.eps, self.switer = fr.read(h.readline())
+            fr = ff.FortranRecordReader('(2i5, 2f10.5, 1x, a100)')
+            self.nmetal, self.nimax, self.eps, self.switer, self.title = fr.read(h.readline())
+            self.title = self.title.strip()
 
             # atoms part
             self.elems, self.nelemx, self.ip, self.ig0, self.ig1, self.cclog = [], [], [], [], [], []
@@ -82,7 +86,7 @@ class FileDissoc(DataFile):
             #               for i in xrange(len(self))])
             # h.writelines(['1\n', '1\n'])
 
-            write_lf(h, "%5d%5d%10.5f%10.5f" % (self.nmetal, self.nimax, self.eps, self.switer))
+            write_lf(h, "%5d%5d%10.5f%10.5f %s" % (self.nmetal, self.nimax, self.eps, self.switer, self.title))
 
             # atoms part
             fr = ff.FortranRecordReader('(a2, 2x, i6, f10.3, 2i5, f10.5)')

@@ -239,7 +239,9 @@ class XExplorer(QMainWindow):
         """Sets set of lines."""
         self.dir = dir_
         self.__propss = []
-        for f in os.listdir(self.dir):
+        dir_ = os.listdir(self.dir)
+        dir_.sort()
+        for f in dir_:
             filepath = os.path.join(self.dir, f)
             if os.path.isfile(filepath):
                 p = _FileProps()
@@ -315,7 +317,6 @@ class XExplorer(QMainWindow):
 
     def __set_status_text(self, text):
         self.labelStatus.setText(text)
-        time
 
     def __load(self):
         self.__flag_loading = True

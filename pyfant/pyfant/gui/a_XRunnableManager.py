@@ -257,10 +257,10 @@ class XRunnableManager(QMainWindow):
     def _update(self):
         """Updates second column of table widget."""
         # print "UPDATE UPDATE UPDATE UPDATE UPDATE "
-        # t = time.time()
+        t = time.time()
         self._update_status()
         self._update_table()
-        # print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+        print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
 
     def _update_table(self):
         with self.lock_table:

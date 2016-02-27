@@ -21,7 +21,8 @@ if __name__ == "__main__":
     description=__doc__,
     formatter_class=SmartFormatter
     )
-    parser.add_argument('fn', type=str, help='molecules file name', default='moleculagrade.dat', nargs='?')
+    parser.add_argument('fn', type=str, help='molecules file name',
+                        default=FileMolecules.default_filename, nargs='?')
     args = parser.parse_args()
 
     m = FileMolecules()

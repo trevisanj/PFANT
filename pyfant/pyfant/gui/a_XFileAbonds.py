@@ -7,6 +7,7 @@ from . import a_WFileAbonds
 from pyfant import FileAbonds, FileDissoc
 from .guiaux import *
 import os
+from .a_XText import *
 
 ################################################################################
 class XFileAbonds(QMainWindow):
@@ -29,6 +30,14 @@ class XFileAbonds(QMainWindow):
         # self.setWindowTitle(title)
         self.setCentralWidget(me)
 
+
+        # # Status bar
+        self.labelStatus = QLabel("")
+        sb = self.statusBar()
+        sb.insertWidget(0, self.labelStatus, 0)
+
+
+        # # Menu bar
         b = self.menuBar()
         m = self.menu_file = b.addMenu("&File")
         self.act_save = ac = m.addAction("&Save")
@@ -38,10 +47,13 @@ class XFileAbonds(QMainWindow):
         ac.setShortcut("Ctrl+Shift+S")
         ac.triggered.connect(self.on_save_as)
         self.act_export_dissoc = ac = m.addAction("Export &dissoc file...")
-        assert isinstance(ac, QAction)
-        ac.setStatusTip("Saves dissoc.dat file with matching abundances")
+        ac.setStatusTip("Saves dissoc.dat file")
         ac.setShortcut("Ctrl+Shift+D")
         ac.triggered.connect(self.on_export_dissoc)
+        self.act_export_turbospectrum = ac = m.addAction("Generate text for &TurboSpectrum")
+        ac.setStatusTip("Opens window containing atomic numbers and abundances to be copy-pasted")
+        ac.setShortcut("Ctrl+Shift+T")
+        ac.triggered.connect(self.on_export_turbospectrum)
         m.addSeparator()
         ac = m.addAction("&Quit")
         ac.setShortcut("Ctrl+Q")
@@ -93,10 +105,16 @@ class XFileAbonds(QMainWindow):
                     new_filename = QFileDialog.getSaveFileName(self, "Save file",
                      os.path.join(".", FileDissoc.default_filename), ".dat")
                     if new_filename:
-                        f = self.me.f.make_dissoc()
+                        f = self.me.f.get_file_dissoc()
+                        f.title = "Created using abed.py"
                         f.save_as(new_filename)
         finally:
             self.enable_save_actions()
+
+
+    def on_export_turbospectrum(self, _):
+        w = XText(self, self.me.f.get_turbospectrum_str(), "Atomic number & abundance")
+        w.show()
 
     def on_edited(self):
         self.flag_changed = True

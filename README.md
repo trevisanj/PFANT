@@ -228,8 +228,8 @@ used to change the default name for the corresponding file
 
 *** "constant" data files ***
 --fn_absoru2      | absoru2.dat       | absorbances ?doc?
---fn_atoms        | atomgrade.dat     | atomic lines
---fn_molecules    | moleculagrade.dat | molecular lines
+--fn_atoms        | atoms.dat         | atomic lines
+--fn_molecules    | molecules.dat     | molecular lines
 --fn_partit       | partit.dat        | partition functions
                   | hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
                   |   /gridsmap.dat   | list of NEWMARCS grids
@@ -277,8 +277,8 @@ newnewp025.mod                         |            |              |         |
                                        |            |              |         |
                          abonds.dat    |            v              |         |
                          dissoc.dat    +-------->+-----+           |         |
-                      atomgrade.dat              |pfant|<----------+         |
-                  moleculagrade.dat+------------>+-----+<--------------------+
+                          atoms.dat              |pfant|<----------+         |
+                      molecules.dat+------------>+-----+<--------------------+
                          partit.dat                 |                        |
                                                     v                        |
                                                 flux.norm                    |
@@ -302,3 +302,21 @@ newnewp025.mod                         |            |              |         |
 ```
 -x-x-x-x-x
 ```
+
+
+
+
+absoru2.dat
+atom4070g.dat
+atoms.dat
+gridsmap.dat
+hmap.dat
+mghc2cnr_cn3ch13chtiog3tio.dat
+molecules.dat
+newnewm050.mod
+newnewm100.mod
+newnewm150.mod
+newnewm200.mod
+newnewp000.mod
+newnewp025.mod
+partit.dat

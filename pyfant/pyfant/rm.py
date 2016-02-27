@@ -63,6 +63,10 @@ class _Runner(threading.Thread):
                     self.flag_idle = False
                     try:
                         self.runnable.run()
+                        if self.manager.flag_auto_clean and self.runnable.flag_success:
+                            self.runnable.load_result()
+                            self.runnable.conf.clean()
+
                     except Exception as E:
                         # # todo cleanup
                         #
@@ -102,6 +106,8 @@ class RunnableManager(QObject, threading.Thread):
 
     Keyword arguments:
       max_simultaneous=multiprocessing.cpu_count()
+      flag_auto_clean=False -- if set, will load result and remove the session
+       directory as soon as a runnable has finished
     """
 
     # Emitted when a new thread is added
@@ -115,13 +121,11 @@ class RunnableManager(QObject, threading.Thread):
 
     @property
     def num_finished(self):
-        with self.__lock:
-            return self.__num_finished
+        return self.__num_finished
 
     @property
     def time_finished(self):
-        with self.__lock:
-            return self.__time_finished
+        return self.__time_finished
 
     @property
     def num_runnables(self):
@@ -149,8 +153,7 @@ class RunnableManager(QObject, threading.Thread):
 
     @property
     def flag_finished(self):
-        with self.__lock:
-            return self.__num_finished == len(self.__runnables)
+        return self.__num_finished == len(self.__runnables)
 
     @property
     def flag_paused(self):
@@ -160,8 +163,13 @@ class RunnableManager(QObject, threading.Thread):
     def flag_failed(self):
         return self.__num_failed > 0
 
+    @property
+    def flag_auto_clean(self):
+        return self.__flag_auto_clean
+
     def __init__(self, *args, **kwargs):
         self.__max_simultaneous = kwargs.pop("max_simultaneous", None)
+        self.__flag_auto_clean = kwargs.pop("flag_auto_clean", False)
         if self.__max_simultaneous is None: self.__max_simultaneous = multiprocessing.cpu_count()
         QObject.__init__(self)
         threading.Thread.__init__(self, *args, **kwargs)
@@ -307,10 +315,10 @@ class RunnableManager(QObject, threading.Thread):
         This is for monitoring purpose only and has no effect in the workings
         of the thread manager.
         """
-        self.__num_finished += 1
         if runner.runnable.flag_error:
             self.__num_failed += 1
 
+        self.__num_finished += 1
         t = time.time()
         self.time_per_runnable = (t-self.__time_started)/self.__num_finished
         if self.__num_finished == len(self.__runnables):
@@ -348,6 +356,7 @@ class RunnableManager(QObject, threading.Thread):
                             if j >= self.__max_simultaneous:
                                 # gave a full turn without finding idle thread
                                 flag_sleep = True
+                                print "All runner threads busy"
                                 break
                             r = self.__runners[it]
 

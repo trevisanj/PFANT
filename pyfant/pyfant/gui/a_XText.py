@@ -2,12 +2,7 @@
 __all__ = ["XText"]
 
 from PyQt4.QtGui import *
-from .a_WFileMain import *
-from .a_WFileAbonds import *
-from pyfant import FileMain
 from .guiaux import *
-from . import XRunnableManager
-from pyfant import *
 
 ################################################################################
 class XText(QMainWindow):

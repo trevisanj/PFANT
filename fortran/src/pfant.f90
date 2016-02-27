@@ -98,8 +98,7 @@ contains
     ! Infers other variables from variables dissoc_*
     do i = 1, dissoc_nmetal
       cclogi = dissoc_cclog(i)+main_afstar
-      !> @todo xxcor on the way. MT: Get rid of it.
-      cclogi = cclogi+main_xxcor(i)
+      cclogi = cclogi
       if(i .eq. 1) cclogi = 0.0
       if(i .eq. 2) cclogi = -1.0
 
@@ -1416,7 +1415,7 @@ contains
       !> either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
-      amg = main_xxcor(8)  ! ?doc? MT: I think that somebody did this because the "alpha-enhanced" is specified nowhere. See also in write_log()
+      amg = 0
 
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
@@ -2258,8 +2257,8 @@ program pfant
   !=====
   ! File reading
   !=====
-  call read_dissoc(config_fn_dissoc)
   call read_main(config_fn_main)
+  call read_dissoc(config_fn_dissoc)
 
   !---
   ! (intermission)

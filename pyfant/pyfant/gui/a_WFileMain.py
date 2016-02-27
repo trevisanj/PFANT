@@ -97,7 +97,7 @@ class WFileMain(QWidget):
         y = self.checkBox_ptdisk = QCheckBox()
         y.setTristate(False)
         y.installEventFilter(self)
-        # y.stateChanged.connect(self._on_edited)
+        y.stateChanged.connect(self._on_edited)
         x.setBuddy(y)
         pp.append((x, y, "pt&disk", "point of disk?", COLOR_CONFIG,
          "This option is used to simulate a spectrum acquired "
@@ -286,6 +286,7 @@ class WFileMain(QWidget):
             o.glog = float(self.lineEdit_glog.text())
             ss = "asalog"
             o.asalog = float(self.lineEdit_asalog.text())
+            o.afstar = o.asalog  # makes afstar match asalog
             ss = "nhe"
             o.nhe = float(self.lineEdit_nhe.text())
             ss = "ptdisk"

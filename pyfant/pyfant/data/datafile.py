@@ -12,6 +12,7 @@ class DataFile(AttrsPart):
     def __init__(self):
         AttrsPart.__init__(self)
         # File name is set by load()
+        self.__flag_loaded = False
         self.filename = None
 
     def save_as(self, filename=None):
@@ -32,6 +33,7 @@ class DataFile(AttrsPart):
 
     def load(self, filename=None):
         """Loads file and registers filename as attribute."""
+        assert not self.__flag_loaded, "File can be loaded only once"
         if filename is None:
             filename = self.default_filename
         assert filename is not None, \
@@ -39,6 +41,7 @@ class DataFile(AttrsPart):
 
         self._do_load(filename)
         self.filename = filename
+        self.__flag_loaded = True
 
 
     def _do_load(self, filename):

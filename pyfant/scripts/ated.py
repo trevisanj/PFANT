@@ -21,7 +21,8 @@ if __name__ == "__main__":
     description=__doc__,
     formatter_class=SmartFormatter
     )
-    parser.add_argument('fn', type=str, help='atoms file name', default='atomgrade.dat', nargs='?')
+    parser.add_argument('fn', type=str, help='atoms file name',
+                        default=FileAtoms.default_filename, nargs='?')
     args = parser.parse_args()
 
     m = FileAtoms()

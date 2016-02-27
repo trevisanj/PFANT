@@ -258,23 +258,14 @@ module reader_main
                           !< = 1 -- "vt" constant
                           !< > 1 -- "vt" variable
             main_inum     !< record id within modeles.mod
-  character*64 main_filetohy(MAX_FILETOH_NUM_FILES) !< ?doc? Names of ten outputs files that will contain ???
-  integer   main_filetoh_numfiles !< number of valid elements within filetohy
 
   character*15 main_titrav                !< Title, e.g. "Sun"
   real*8 :: main_vvt(MAX_MODELES_NTOT), & !< ?doc?
             main_tolv(MAX_MODELES_NTOT)   !< ?doc?
-  !> This vector goes along with dissoc_ELEMS and dissoc_NELEMX
-  !> @todo would go better as a column in dissoc.dat or eliminated
-  real*8 :: main_xxcor(MAX_DISSOC_NMETAL) !< ?doc?
-  save
 contains
 
   !=======================================================================================
   !> Makes sure that read_main() has been called
-  !>
-  !> @note Calls read_main() with argument flag_care_about_dissoc set to .false.
-  !> @note Calls read_main() with argument flag_read_filetoh set to .false.
   !>
   !> This routine is used by hydro2, innewmarcs, nulbad. None of these care about dissoc
   !> or filetoh variables.
@@ -282,8 +273,7 @@ contains
   subroutine assure_read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
     if (.not. flag_read_main) then
-      call read_main(path_to_file, flag_care_about_dissoc=.false., &
-       flag_read_filetoh=.false.)
+      call read_main(path_to_file)
     end if
   end
 
@@ -294,32 +284,13 @@ contains
   !> @todo ISSUE Explain the vvt case VERY WELL because it is an "anomaly", i.e., dfile:main will have MORE LINES
   !> (MT) Yes it makes sense, it specifies microturbulence velocities for each layer of the atmosphere
 
-  subroutine read_main(path_to_file, flag_care_about_dissoc, flag_read_filetoh)
+  subroutine read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
-    !> (=.true.) If .false., won't bother about reading dfile:dissoc first and
-    !> will skip the xxcor line. Only pfant bother about the xxcor line; other executables
-    !> want to use dfile:main without having to read dfile:dissoc first.
-    logical, intent(in), optional :: flag_care_about_dissoc
-    !> (=.true.) If .false., does not read the hydrogen lines filenames.
-    logical, intent(in), optional :: flag_read_filetoh
     integer, parameter :: UNIT_ = 4
     integer ih, i
     character*64 filetoh_temp
-    logical :: flag_care_about_dissoc_, flag_read_filetoh_
     logical ecrit_obsolete
     real*8 temp
-
-
-
-    flag_care_about_dissoc_ = .true.
-    if (present(flag_care_about_dissoc)) flag_care_about_dissoc_ = flag_care_about_dissoc
-
-    flag_read_filetoh_ = .true.
-    if (present(flag_read_filetoh)) flag_read_filetoh_ = flag_read_filetoh
-
-    if (flag_care_about_dissoc_ .and. .not. flag_read_dissoc) then
-      call pfant_halt('read_dissoc() must be called before read_main()')
-    end if
 
     open(unit=UNIT_,file=path_to_file, status='old')
 
@@ -367,15 +338,9 @@ contains
     end if
 
 
-
     ! row 07: XXCOR(i)
-    ! @todo ISSUE: Should be a column in dissoc.dat !!!!!
-    ! (MT) I agree
-    if (flag_care_about_dissoc_) then
-      read(UNIT_, *) (main_xxcor(i), i=1, dissoc_nmetal)
-    else
-      read(UNIT_, *) ! skips the line
-    end if
+    ! @todo ISSUE: Should be a column in dissoc.dat !!!!! (MT) I agree
+    read(UNIT_, *) ! skips the line
 
     ! row 08 -- part of a file name
     ! This line will define the names of three output files:
@@ -406,38 +371,6 @@ contains
     if (abs(temp-nint(temp)) .gt. 1.e-10) then
         call pfant_halt('read_main(): aint ('//real82str(main_aint)// &
          ') must be divisible by pas ('//real82str(main_pas)//')')
-    end if
-
-
-    if (flag_read_filetoh_) then
-      ! row 10 - ....
-      ! Considers the remaining rows as the filetoh file names
-      ! Doesn't know yet the number of files
-      ih = 1
-      110 continue
-      read(UNIT_, '(a)', end=111) filetoh_temp
-
-      if (len_trim(filetoh_temp) .eq. 0) goto 110  ! skips blank rows
-
-      ! spill check
-      if (ih .gt. MAX_FILETOH_NUM_FILES) then
-        call pfant_halt('Too many filetoh files specified (maximum is '//&
-         'MAX_FILETOH_NUM_FILES='//int2str(MAX_FILETOH_NUM_FILES)//')')
-      end if
-
-      main_filetohy(ih) = filetoh_temp
-
-      write(lll,*) 'filetohy(', ih, ') = "', trim(main_filetohy(ih)), '"'
-      call log_debug(lll)
-
-      ih = ih+1
-      goto 110
-
-      111 continue
-      main_filetoh_numfiles = ih-1
-
-      write(lll,*) 'Number of filetoh files: ', main_filetoh_numfiles
-      call log_debug(lll)
     end if
 
     close(unit=UNIT_)
@@ -800,7 +733,7 @@ module reader_filetoh
   !=====
   ! Read directly from file
   !=====
-  ! These are read by read_filetoh() and processed by filetoh_auh()
+  ! These are read by read_filetoh()
   !> ?doc?
   character*80 filetoh_titre(MAX_FILETOH_NUM_FILES)
   !> ?doc?
@@ -1098,8 +1031,6 @@ contains
   !=======================================================================================
   !> Reads file abonds.dat to fill variables abonds_*
   !>
-  !> In addition, searches elements in dissoc atoms table to take XXCOR values.
-  !>
   !> The input file has 3 columns:
   !> @li Empty space or "1"
   !> @li 2-character atomic element symbol (?)
@@ -1138,16 +1069,6 @@ contains
 
       if (finab .lt. 1) then
         abonds_ele(j) = adjust_atomic_symbol(abonds_ele(j))
-
-        ! Extra tasks (i.e., apart from reading file) [1], [2]:
-        !
-        ! [1] Searches dissoc.dat' metals table by atomic symbol to get value of XXCOR variable
-        !> @todo ISSUE: lot of effort to keep dubious feature
-        !> @todo ISSUE: This is the thing that Beatriz mentioned that is not used anymore
-
-        k = find_atomic_symbol_dissoc(abonds_ele(j), .true.)
-        abonds_abol(j) = abonds_abol(j)+main_xxcor(k)
-
 
         ! [2] Calculates abonds_ABO based on abonds_ABOL
 

@@ -41,7 +41,7 @@ class FileAbonds(DataFile):
                 self.abol.append(float(abol))
                 self.notes.append(notes.strip())
 
-    def make_dissoc(self):
+    def get_file_dissoc(self):
         """Creates a new FileDissoc object.
 
         To do so, it loads the default dissoc.dat file from pyfant/data/default
@@ -59,6 +59,30 @@ class FileAbonds(DataFile):
             j = self.ele.index(elem)
             f.cclog[i] = self.abol[j]-12
         return f
+
+    def get_turbospectrum_str(self):
+        """Returns ((atomic number, abundance), ...) string for TurboSpectrum.
+
+        Returns a text string to be pasted in a script that runs TurboSpectrum.
+
+        Elements whose symbol is not found in the periodic table are skipped
+        without warning.
+        """
+
+        # determines the atomic numbers of the elements
+        atomic_numbers, aa = [], []
+        for symbol, abundance in zip(self.ele, self.abol):
+            s = symbol.strip()
+            try:
+                atomic_numbers.append("%3d" % (SYMBOLS.index(s)+1))
+                aa.append(abundance)
+            except ValueError:
+                pass  # skips elements whose symbol is not in the periodic table
+        # sorts by atomic number
+        indexes = sorted(range(len(atomic_numbers)), key=lambda k: atomic_numbers[k])
+        # mounts string
+        l = ["%s %g" % (atomic_numbers[i], aa[i]) for i in indexes]
+        return "\n".join(l)
 
     def sort_a(self):
         """Sorts alphabetically using self.ele.
@@ -82,18 +106,17 @@ class FileAbonds(DataFile):
         """
 
         # first determines the atomic numbers of the elements
-        sort_keys = []
+        atomic_numbers = []
         not_found = []
         for symbol in self.ele:
             s = symbol.strip()
             try:
-                sort_keys.append("%3d" % SYMBOLS.index(s))
+                atomic_numbers.append("%3d" % (SYMBOLS.index(s)+1))
             except ValueError:
-                print "NOT FOUND", s
-                sort_keys.append("    "+s)
+                atomic_numbers.append("    "+s)
                 not_found.append(symbol)
 
-        indexes = sorted(range(len(sort_keys)), key=lambda k: sort_keys[k])
+        indexes = sorted(range(len(atomic_numbers)), key=lambda k: atomic_numbers[k])
         self.ele = [self.ele[i] for i in indexes]
         self.abol = [self.abol[i] for i in indexes]
         self.notes = [self.notes[i] for i in indexes]

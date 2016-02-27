@@ -93,7 +93,7 @@ class FileAtoms(DataFile):
     Represents file with atomic lines.
     """
 
-    default_filename = "atomgrade.dat"
+    default_filename = "atoms.dat"
     attrs = ["atoms", "num_lines"]
 
     @property
@@ -158,6 +158,14 @@ class FileAtoms(DataFile):
             atom = self.atoms[i]
             atom.lines = filter(function, atom.lines)
             if len(atom) == 0:
+                del self.atoms[i]
+
+    def remove_element(self, elem):
+        """Removes given element (any ionization level)."""
+        elem = adjust_atomic_symbol(elem)
+        for i in reversed(xrange(len(self))):
+            atom = self.atoms[i]
+            if atom.elem == elem:
                 del self.atoms[i]
 
 

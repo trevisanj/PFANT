@@ -63,8 +63,6 @@ class FileMod(DataFile):
          rec.tit,
          rec.tiabs] = ostr.unpack(x[:64])
 
-        print "OLHA O REC: ", rec
-
         # This routine will read almost any binary, so we perform some range checks
         if not (1 < rec.ntot <= 1000):
             raise RuntimeError("ntot invalid")

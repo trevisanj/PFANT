@@ -12,7 +12,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
- "istextfile", "get_QApplication"]
+ "istextfile", "get_QApplication", "copy_default_file"]
 
 
 # # todo cleanup
@@ -56,6 +56,8 @@ import time
 from threading import Lock
 from functools import wraps
 import numpy as np
+import shutil
+
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -141,19 +143,6 @@ class AttrsPart(object):
         s_format = "{}={}"
         s = "; ".join([s_format.format(x, self.__getattribute__(x)) for x in self.less_attrs])
         return s
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # #################################################################################################
 # # I/O routines
@@ -257,6 +246,12 @@ def slugify(value, flagLower=True):
     value = value.lower()
   value = re.sub('[-\s]+', '-', value)
   return value
+
+
+def copy_default_file(filename):
+    """Copies file from pyfant/data/default directory to local directory."""
+    fullpath = path_to_default(filename)
+    shutil.copy(fullpath, ".")
 
 
 # #################################################################################################

@@ -93,7 +93,7 @@ class FileMolecules(DataFile):
     information for each molecule inside a Molecule object.
     """
 
-    default_filename = "moleculagrade.dat"
+    default_filename = "molecules.dat"
 
     attrs = ["titm", "number", "num_lines"]
 

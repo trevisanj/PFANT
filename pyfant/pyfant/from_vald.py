@@ -4,13 +4,12 @@ VALD3-to-PFANT conversions
 
 import csv
 from pyfant import adjust_atomic_symbol, Atom, FileAtoms, AtomicLine, \
- ordinal_suffix, SYMBOLS
+ ordinal_suffix, SYMBOLS, get_python_logger
 import sys
-import logging
 
 
-_logger = logging.getLogger(__name__)
-_logger.addHandler(logging.NullHandler())
+
+_logger = get_python_logger()
 
 
 # Temporary: no partition function for this
@@ -28,6 +27,10 @@ def vald3_to_atoms(file_obj):
 
     VALD3 website: http://vald.astro.uu.se/
     """
+
+    def log_skipping(r, reason, row):
+        _logger.info("Skipping row #%d (%s)" % (r, reason))
+        _logger.info(str(row))
 
 # Here is a sample of a VALD3 file:
 #  1|                                                                   Lande factors      Damping parameters
@@ -49,6 +52,7 @@ def vald3_to_atoms(file_obj):
     ret = FileAtoms()
     edict = {}  # links atomic symbols with Atom objects created (key is atomic symbol)
     r = 0
+    num_skip_ioni = 0
     try:
         for row in reader:
             r += 1
@@ -68,27 +72,42 @@ def vald3_to_atoms(file_obj):
             s_ioni = row[0][-2]
             ioni = int(s_ioni)  # not used, stays as file validation
 
-            # todo temporary
             if ioni > 2:
-                _logger.warning('Skipping '+str(row))
+                # log_skipping(r, "ionization > 2", row)
+                num_skip_ioni += 1
                 continue
+
+            _waals = float(row[12])
+            if _waals > 0:
+                # If the van der Waals damping parameter is > 0, it means
+                # something else, see the documentation at
+                # http://www.astro.uu.se/valdwiki/Vald3Format:
+                #  "if >0 : two parameters as defined in Barklem et al.
+                #   2000A&AS..142..467B : integer part is cross-section sigma,
+                #   fractional part is velocity parameter alpha"
+                # Therefore, we fall back.
+                _waals = 0
 
             line = AtomicLine()
             line.lambda_ = float(row[1])
             line.algf = float(row[2])
             line.kiex = float(row[3])
-            # Formula supplied by Elvis Cantelli:
-            # extracted from cross-entropy code by P. Barklem
-            _waals = float(row[12])
             if _waals == 0:
                 line.ch = 0.3e-31
             else:
-                line.ch = 10**(2.5*_waals-12.32)
+                # Formula supplied by Elvis Cantelli:
+                # extracted from cross-entropy code by P. Barklem
+                try:
+                    line.ch = 10**(2.5*_waals-12.32)
+                except:
+                    _logger.critical("Error calculating ch: waals=%g" % _waals)
+                    raise
             # Setting gr to zero will cause PFANT to calculate it using a formula.
             # See readers.f90::read_atoms() for the formula.
             line.gr = 0.0
             # ge is not present in VALD3 file.
-            # it enters as a multiplicative term in popadelh()
+            # it enters as a multiplicative term in popadelh(). The original
+            # atom4070g.dat and atoms.dat all had ge=0 for all lines.
             line.ge = 0.0
             # Attention: zinf must be tuned later using tune-zinf.py
             line.zinf = 0.5
@@ -111,6 +130,7 @@ def vald3_to_atoms(file_obj):
         raise type(e)(("Error around %d%s row of VALD3 file" %
             (r+1, ordinal_suffix(r)))+": "+str(e)), None, sys.exc_info()[2]
     _logger.debug("VALD3-to-atoms conversion successful!")
+    _logger.info("Number of lines skipped (ioni > 2): %d" % num_skip_ioni)
     _logger.debug("Number of (element+ioni): %s" % len(ret))
     _logger.debug("Total number of atomic lines: %d" % (sum(len(a) for a in ret.atoms),))
     return ret
