@@ -62,13 +62,15 @@ class XRunnableManager(QMainWindow):
         b2.setToolTip("Pause/Resume")
         b3 = self.pushButtonCancel = QPushButton("&Cancel")
         b3.clicked.connect(self.on_cancel)
+        b4 = self.pushButtonRetryFailed = QPushButton("Retry &failed")
+        b4.clicked.connect(self.on_retry_failed)
         # todo + note: assuming that there is no interest in adding new tasks later
         l = self.labelEnd = QLabel()
         l.setVisible(False)
 
         s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        bb = [b0, b1, b2, b3, l]
+        bb = [b0, b1, b2, b3, b4, l]
         l0 = self.layoutToolbar = QHBoxLayout()
         for b in bb:
             l0.addWidget(b)
@@ -215,6 +217,12 @@ class XRunnableManager(QMainWindow):
 
     def on_cancel(self):
         self.rm.cancel()
+
+    def on_retry_failed(self):
+        try:
+            self.rm.retry_failed()
+        except Exception as e:
+            ShowError(str(e))
 
     # def on_timer_timeout(self):
     #     print "on_timer_timeout"

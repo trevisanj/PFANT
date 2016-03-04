@@ -175,6 +175,8 @@ class Conf(object):
 
     @property
     def logger(self):
+        if not self.__logger:
+            self.__logger = get_python_logger()
         return self.__logger
 
     def __init__(self):
@@ -311,10 +313,26 @@ class Conf(object):
         """Joins self.session_dir with specified filename to make a path."""
         return os.path.join(self.session_dir, fn)
 
-    def clean(self):
-        """Deletes directory with all files inside."""
-        logging.debug("About to remove directory '%s'" % self.session_dir)
-        shutil.rmtree(self.session_dir)
+    def clean(self, flag_remove_dir=True):
+        """Deletes directory with all files inside.
+
+        Arguments:
+          flag_remove_dif=True -- if not set, will only delete the contents,
+            keeping the directory
+        """
+
+        if flag_remove_dir:
+            logging.debug("About to remove directory '%s'" % self.session_dir)
+            shutil.rmtree(self.session_dir)
+        else:
+            # reference: http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
+            for the_file in os.listdir(self.session_dir):
+                file_path = os.path.join(self.session_dir, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except:
+                    self.logger.exception("Error removing '%s'" % the_file)
 
     def get_args(self):
         """

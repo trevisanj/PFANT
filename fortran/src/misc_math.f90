@@ -770,18 +770,18 @@ contains
      n, & !< Size of vectors x and y
      itot !< Size of vectors tt and ftt
     real*8, intent(in) :: &
-     x(:),     & !< ?doc?
-     y(:),     & !< ?doc?
-     tt(:)    !< ?doc?
+     x(:),     & !< input x-axis values
+     y(:),     & !< input y-axis values
+     tt(:)       !< x-axis values of output (to be given)
     real*8, intent(out) :: &
-     ftt(:)   !< ?doc?
+     ftt(:)   !< y-axis values of output (to be calculated)
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
 
-    call assert_le(n, size(x), 'ft2_hydro2()', 'n', 'size(x)')
-    call assert_le(n, size(y), 'ft2_hydro2()', 'n', 'size(y)')
-    call assert_le(itot, size(tt), 'ft2_hydro2()', 'itot', 'size(tt)')
-    call assert_le(itot, size(ftt), 'ft2_hydro2()', 'itot', 'size(ftt)')
+    call assert_le(n, size(x), 'ft2()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'ft22()', 'n', 'size(y)')
+    call assert_le(itot, size(tt), 'ft2()', 'itot', 'size(tt)')
+    call assert_le(itot, size(ftt), 'ft2()', 'itot', 'size(ftt)')
 
     inv = -1
     if (x(n).lt.x(1)) inv = 1

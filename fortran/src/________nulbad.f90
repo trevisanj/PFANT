@@ -3,8 +3,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !>
 !> Prefixes:
-!> @li rs_* -- calculated by read_spectrum()
-!> @li p_*  -- Gaussian function variables, calculated by cafconvh()
+!> @
 module nulbad_calc
   use misc_math
   use logging
@@ -23,13 +22,18 @@ module nulbad_calc
   integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function" (odd number)
   integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"
 
+  ! Gaussian function variables, calculated by cafconvh()
   real*8 :: &
    p_tfi(MAX_P_IFT), &  !< x-axis values of gaussian function (calculated by nulbad::cafconvh())
    p_fi(MAX_P_IFT)      !< y-axis values of gaussian function (calculated by nulbad::cafconvh())
   integer, private :: p_ift !< Number of points of gaussian function (calculated by nulbad::cafconvh())
 
-  real*8, allocatable :: rs_ffnu(:), rs_lambd(:)
+  ! Variables set by read_spectrum()
+  real*8, allocatable :: rs_ffnu(:)
   integer :: rs_ktot
+
+
+  ! prefix "rs": variables filled by read_spectrum()
   character :: rs_titc*20
   real*8 :: &
    rs_tetaeff, & !< ?doc?
@@ -92,6 +96,7 @@ contains
       x_flprefix = config_flprefix
     end if
     if (config_fn_flux .eq. '?') then
+      call assure_read_main(config_fn_main)
       if (x_norm) then
         x_fn_flux = trim(x_flprefix)//'.norm'
       else
@@ -100,9 +105,12 @@ contains
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
     end if
     if (config_fn_cv .eq. '?') then
+      call assure_read_main(config_fn_main)
       x_fn_cv = trim(x_fn_flux)//'.nulbad'
       call parse_aux_log_assignment('x_fn_cv', trim(x_fn_cv))
     end if
+
+    call read_spectrum()
   end
 
   !=======================================================================================
@@ -142,7 +150,7 @@ contains
       ! allocates rs_ffnu at first iteration
       if (icle .eq. 1) then
         size_ffnu = ikeytot*itot
-        allocate(rs_ffnu(size_ffnu), rs_lambd(size_ffnu)) ! This is probably a slight overallocation
+        allocate(rs_ffnu(size_ffnu)) ! This is probably a slight overallocation
       end if
 
       read(UNIT_, *)(fnu(d),d=1,itot)
@@ -155,19 +163,14 @@ contains
       ! In the last iteration, the last point is not discarded.
       if (icle .eq. ikeytot) itot = itot+1
       do d = 1,itot-1
-        k = rs_ktot+d
-        rs_ffnu(k) = fnu(d)
+        k=rs_ktot+d
+        rs_ffnu(k)=fnu(d)
       end do
       rs_ktot = k
 
       icle = icle+1
       if(icle .gt. ikeytot) exit
     end do
-
-    do k = 1, rs_ktot
-      rs_lambd(k) = rs_l0+(k-1)*rs_dpas
-    end do
-
 
     ! print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
 
@@ -179,66 +182,34 @@ contains
 
   subroutine nulbad_calc_()
     real*8, parameter :: C = 2.997929E+10
-    integer :: d, &
-               dmj, &
-               dtotc, &
-               k, &
-               i, &
-               j, &
-               jp1, &
-               kktot, &
-               m, &
-               ktot  ! size of lambda and flux after resampling
-    real*8, dimension(:), allocatable :: alfl, afl, fl, tl, lambd, ffnu
+    integer d, dmj, dtotc, k, i, ip, j, jp1, kktot, m
+    real*8, dimension(:), allocatable :: ffl, lambd, alfl, afl, fl, tl
     real*8 alf, alz, ca, cb
-    logical :: flag_resample
 
     call nulbad_init()
-    call read_spectrum()
+
+    allocate(ffl(rs_ktot), lambd(rs_ktot), alfl(rs_ktot), afl(rs_ktot), fl(rs_ktot), &
+     tl(rs_ktot))
 
 
-    ! # Allocation & re-sampling
-    flag_resample = abs(rs_dpas-x_pat) .ge. 1e-10
-
-    if (flag_resample) then
-      ! performs a resampling in case the new and old steps are different
-      ktot = int(rs_ktot*rs_dpas/x_pat)
-    else
-      ktot = rs_ktot
-    end if
-
-    allocate(lambd(ktot), alfl(ktot), afl(ktot), fl(ktot), &
-     tl(ktot), ffnu(ktot))
-
-
-    if (flag_resample) then
-      ! performs a resampling in case the new and old steps are different
-      ktot = int(rs_ktot*rs_dpas/x_pat)
-      do i = 1, ktot
-        lambd(i) = rs_l0+(i-1)*x_pat
-      end do
-      call log_info('Resampling...')
-      call ft2(rs_ktot, rs_lambd, rs_ffnu, ktot, lambd, ffnu)
-      call log_info('Resampling...done')
-    else
-      lambd = rs_lambd
-      ffnu = rs_ffnu
-    end if
-
-    ! # Creates output file
     ! Note: will now replace output file if already existent
     open(unit=UNIT_,status='replace',file=x_fn_cv)
 
-    ! # Transformation de Fnu en Flambda
+    do k = 1, rs_ktot
+      lambd(k) = rs_l0+(k-1)*rs_dpas
+    end do
+
+
+    ! transformation de Fnu en Flambda
     if(config_flam) then
-      do k = 1, ktot
+      do k = 1, rs_ktot
         if (.not. x_norm) then
           ca = 1.e+11/(lambd(k)**2)
-          !  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
-          cb = ca*C
-          fl(k) = ffnu(k)*cb
+          !  rs_ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
+          cb = ca*c
+          ffl(k) = rs_ffnu(k)*cb
         else
-          fl(k) = ffnu(k)
+          ffl(k) = rs_ffnu(k)
         end if
       end do
 
@@ -247,25 +218,47 @@ contains
       call log_debug(lll)
     end if
 
-    ! # Convolution sp synthetique avec profil instrumental
+    ip = int(x_pat/rs_dpas)
+
+    if (ip .lt. 1) then
+      call log_warning('New step ('//real82str(x_pat, 3)//&
+       ') lower than old step ('//real82str(rs_dpas, 3)//'), ip forced to 1')
+      ip = 1
+    end if
+
+
+    !
+    !  Convolution sp synthetique avec profil instrumental
+    !
     call cafconvh()
+    call log_debug('p_ift='//int2str(p_ift))
 
     j = (p_ift-1)/2
     jp1 = j+1
-    dmj = ktot-j
+    dmj = rs_ktot-j
     dtotc = dmj-jp1+1
 
     m = 0
-    do d = jp1,dmj
+    do d = jp1,dmj,ip
       m = m+1
       tl(m) = lambd(d)
     end do
     kktot = m
 
+    if(config_flam) then
+      do k = 1,rs_ktot
+        fl(k) = ffl(k)
+      end do
+    else
+      do k = 1,rs_ktot
+        fl(k) = rs_ffnu(k)
+      end do
+    end if
+
     call volut() ! calculates alfl
 
     k=0
-    do i = jp1, dmj
+    do i = jp1, dmj, ip
       k = k+1
       afl(k) = alfl(i)
     end do
@@ -275,13 +268,15 @@ contains
     alf = tl(kktot)
 
 
-    ! # Writes output
-    write(UNIT_,201) rs_titc,rs_tetaeff,rs_glog,rs_asalog
-    201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2)
+
+    write(UNIT_,201) rs_titc,rs_tetaeff,rs_glog,rs_asalog,rs_amg
+    201 format('#',A,'Tef=',F6.3,X,'log g=',F4.1,X,'[M/H]=',F5.2,X,F5.2)
 
     write(UNIT_,202) kktot,rs_l0,rs_lf,x_pat,x_fwhm
     202 format('#',I6,2X,'0. 0. 1. 1. Lzero =',F10.2,2x,'Lfin =', &
                F10.2,2X,'PAS =',F5.2,2x,'FWHM =',F5.2)
+
+    !write(*,*) 'ppppppppppppp', afl(1), alfl(1)
 
     do k=1,kktot
       write(UNIT_,*) tl(k), afl(k)
@@ -289,47 +284,51 @@ contains
 
     close(unit=UNIT_)  ! xxx
 
-    write(lll,110) rs_tetaeff,rs_glog,rs_asalog,rs_nhe_bid
+    !#loggingx4
+    write(lll,110) rs_tetaeff,rs_glog,rs_asalog,rs_nhe_bid,rs_amg
     110 format(2X,'tetaeff=',F8.3,2X,'log g=',F6.2,2X,'[M/H]=',F6.2, &
-               2X,'NHE=',F5.2,2X)
+               2X,'NHE=',F5.2,2X,'[Mg/Fe]=',F6.3)
     call log_info(lll)
+
     write(lll,130) alz,alf,kktot,x_pat,x_fwhm
-    130 format(2X,'Lzero=',F9.3,2x,'Lfin=',F8.2,2x,'KKTOT=',I7, &
+    130 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KKTOT=',I7, &
                2X,'PAS nouveau =',F5.2,2x,'FWHM=',F5.2)
     call log_info(lll)
-    write(lll,120) rs_l0,rs_lf,ktot,rs_dpas
-    120 format(2X,'Lzero=',F9.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
+
+    write(lll,120) rs_l0,rs_lf,rs_ktot,rs_dpas
+    120 format(2X,'Lzero=',F8.3,2x,'Lfin=',F8.2,2x,'KTOT =',I7, &
                2X,'PAS original='F7.4)
     call log_info(lll)
+
     write(6,'(12F6.3)') (afl(k),k=1,12)
     call log_info(lll)
+
     call log_info('File '//trim(x_fn_cv)//' successfully created.')
   contains
 
     !=======================================================================================
-    !> Convolution: calculates alfl
+    !> Calculates alfl
 
     subroutine volut()
-      integer i, imj, k, jjp1, iimj, j2p
-
-      do i = 1,ktot
+      integer i, imj, j2p, k, jjp1, iimj
+      do i = 1,rs_ktot
         alfl(i) = 0.
       end do
 
-      imj = ktot-j
-      j2p = 2*j+1
-      do i = jp1, imj
+      imj = rs_ktot-j
+      j2p =  2*j +1
+      do i = jp1, imj, ip
         do k = 1, j2p
-          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)
+          alfl(i) = alfl(i) + fl(i-j+k-1) * p_fi(k)*rs_dpas
         end do
       end do
 
-      jjp1 = jp1-1
+      jjp1 = jp1+1
       iimj = imj+1
       do i = 1,jjp1
         alfl(i) = fl(i)
       end do
-      do i = iimj,ktot
+      do i = iimj,rs_ktot
         alfl(i) = fl(i)
       end do
     end
@@ -350,16 +349,14 @@ contains
     real*8 :: at(-IPPTOT:+IPPTOT)
     real*8 :: sigma, aa, totlarg, z
     integer i, ifd
+    character*392 lll
     real*8, parameter :: SQRT_2 = sqrt(2.)
-
-    ! todo sum_
-    real*8 sum_
 
 
     ! GAUSS: PROFIL GAUSSIEN DE 1/2 LARG AA
     sigma = x_fwhm/2.35482
     aa = SQRT_2*sigma
-    totlarg = 3.0 * aa
+    totlarg=3.0 * aa
 
     !#logging x2
     write(lll,119) x_fwhm,sigma,aa
@@ -391,8 +388,6 @@ contains
     40 continue
     ifd = i-1
     p_ift = 1 + 2*ifd
-    write(lll, *) 'Number of point of Gaussian curve: '//int2str(p_ift)
-    call log_info(lll)
 
     if(p_ift .gt. MAX_P_IFT)  then
       write(lll,137) MAX_P_IFT, p_ift
@@ -408,19 +403,16 @@ contains
 
     z = RPI*aa
 
-    sum_ = 0
     do i = 1,p_ift
       p_fi(i) = exp( -(p_tfi(i)/aa)**2) / z  ! here's gaussian exponential
-      sum_ = sum_ +p_fi(i)
     end do
-
-    ! (JT) Normalizes the Gaussian function so that its sum_ equals one
-    !      This ensures that if the step changes (rs_dpas <> x_pat), then
-    !      the amplitude of the resulting spectrum will not change.
-    do i = 1,p_ift
-      p_fi(i) = p_fi(i)/sum_
-    end do
-
+! The following code was merged into a single expression above.
+!    do i = 1,p_ift
+!      p_fi(i) = exp( -(p_tfi(i)/aa)**2)  ! here's gaussian exponential
+!    end do
+!    do i = 1,p_ift
+!      p_fi(i) = p_fi(i) / z
+!    end do
   end
 end
 
@@ -434,8 +426,6 @@ end
 !>
 !>  Programme de lecture des flux en binaire, sortant de
 !>      Fantomol93 , calculs de 100A en 100A (ou inferieur a 100A)
-!>
-!>  (JT) Re-samples spectrum when the input (rs_dpas) and output (x_pat) steps differ.
 !>
 !> @verbatim
 !> Paula, julho de 2003:

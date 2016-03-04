@@ -238,7 +238,7 @@ if __name__ == "__main__":
     if not rm.flag_finished:
         logger.info("Not finished")
     elif rm.num_failed > 0:
-        logger.info("Number of failed tasks: " % rm.num_failed)
+        logger.info("Number of failed tasks: %d" % rm.num_failed)
         logger.info("Please check log files inside directories of sessions that failed")
         logger.info("(session directories will not be removed).")
     else:

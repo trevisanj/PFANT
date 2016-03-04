@@ -112,6 +112,17 @@ class Runnable(object):
         """Abstract. Override this method to open the result file(s) particular to the
         executable."""
 
+    def reset(self):
+        """Prepares to run again."""
+        assert not self._flag_running, "Cannot reset if running"
+        self._flag_finished = False
+        self._flag_killed = False
+        self._flag_error = False
+        self._error_message = ""
+        if self.conf.session_id:
+            self.conf.clean(False)
+
+
 
 class Executable(Runnable):
     """
@@ -265,19 +276,19 @@ class Executable(Runnable):
                     raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
 
             except Exception as e:
-                self.__popen.poll()
-                flag_dismiss = True
-                if isinstance(e, FailedError) and self._flag_killed:
-                    # dismisses error if explicitly killed
-                    pass
-                elif isinstance(e, IOError) and self.__popen.returncode == 0:
-                    # Sometimes a IOError is raised even if Fortran executes
-                    # successfully, so the error is dismissed
-                    self.conf.logger.warning("Harmless error in: %s %s" %
-                     (self.conf.session_dir, self.get_status()))
-                    self.conf.logger.warning(str(e))
-                else:
-                    flag_dismiss = False
+                flag_dismiss = False
+                if self.__popen:
+                    self.__popen.poll()
+                    if isinstance(e, FailedError) and self._flag_killed:
+                        # dismisses error if explicitly killed
+                        flag_dismiss = True
+                    elif isinstance(e, IOError) and self.__popen.returncode == 0:
+                        # Sometimes a IOError is raised even if Fortran executes
+                        # successfully, so the error is dismissed
+                        self.conf.logger.warning("Harmless error in: %s %s" %
+                         (self.conf.session_dir, self.get_status()))
+                        self.conf.logger.warning(str(e))
+                        flag_dismiss = True
 
                 if not flag_dismiss:
                     self._error_message = e.__class__.__name__+": "+str(e)
@@ -522,6 +533,12 @@ class Combo(Runnable):
         ee = self.get_exes()
         for e in ee:
             e.load_result()
+
+    def reset(self):
+        Runnable.reset(self)
+        ee = self.get_exes()
+        for e in ee:
+            e.reset()
 
     #
     # def __configure(self):
