@@ -103,6 +103,13 @@ class FileAtoms(DataFile):
 
     # Properties that iterate through the AtomicLine objects to mount vectors
     @property
+    def lines(self):
+        """Merges all AtomicLine objects. Returns a list."""
+        ret = []
+        for a in self.atoms:
+            ret.extend(a.lines)
+        return ret
+    @property
     def lambda_(self):
         return np.hstack([np.array([x.lambda_ for x in a.lines]) for a in self.atoms])
     @property
@@ -159,6 +166,18 @@ class FileAtoms(DataFile):
             atom.lines = filter(function, atom.lines)
             if len(atom) == 0:
                 del self.atoms[i]
+
+    filter_lines = filter
+
+    def filter_atoms(self, function):
+        """
+        Filters Atom objects for which function(line) is true.
+
+        Arguments:
+          function -- receives an Atomic object as argument.
+           Example: lambda atom: atom.ioni <= 2
+        """
+        self.atoms = filter(function, self.atoms)
 
     def remove_element(self, elem):
         """Removes given element (any ionization level)."""

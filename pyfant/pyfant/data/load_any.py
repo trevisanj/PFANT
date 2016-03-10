@@ -9,7 +9,7 @@ from . import *
 #
 # note: leave FileAbonds to the end because it is too general
 _classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileMod, FileSpectrumNulbad,
-           FileSpectrumPfant, FileToH, FileAbonds, FileAtoms, FileMolecules]
+           FileSpectrumPfant, FileToH, FileAbonds, FileSpectrumXY, FileAtoms, FileMolecules]
 
 def load_any_file(filename):
     """

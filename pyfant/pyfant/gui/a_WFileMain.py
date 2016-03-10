@@ -158,7 +158,7 @@ class WFileMain(QWidget):
         y.textEdited.connect(self._on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
-        pp.append((x, y, "ll&fin", "calculation calculation end (&Aring;)", COLOR_CONFIG, KKK))
+        pp.append((x, y, "&llfin", "calculation calculation end (&Aring;)", COLOR_CONFIG, KKK))
 
         x = self.label_aint = QLabel()
         y = self.lineEdit_aint = QLineEdit()
@@ -177,7 +177,7 @@ class WFileMain(QWidget):
         y.textEdited.connect(self._on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
-        pp.append((x, y, "&fwhm", "convolution full-width-half-maximum", COLOR_CONFIG,
+        pp.append((x, y, "f&whm", "convolution full-width-half-maximum", COLOR_CONFIG,
          "This parameter specifies the full-width-half-maximum "
          "of a Gaussian curve to convolve the synthetic spectrum with. <br><br>It is "
          "used by <em>nulbad</em> (Fortran code that calculates such convolution)."))
@@ -204,6 +204,8 @@ class WFileMain(QWidget):
 
         la.addWidget(self.labelError, la.rowCount(), 0, 1, 2)
 
+        self.setEnabled(False)  # disabled until load() is called
+
         self.flag_process_changes = True
 
 
@@ -216,6 +218,7 @@ class WFileMain(QWidget):
         self._update_from_file_main()
         # this is called to perform file validation upon loading
         self._update_file_main()
+        self.setEnabled(True)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Qt override
@@ -239,8 +242,10 @@ class WFileMain(QWidget):
     # # Slots
 
     def _on_edited(self):
-        self._update_file_main()
-        self.edited.emit()
+        # print "THE SENDER IS ", self.sender()
+        if self.flag_process_changes:
+            self._update_file_main()
+            self.edited.emit()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Internal gear
@@ -279,7 +284,7 @@ class WFileMain(QWidget):
         ss = ""
         try:
             ss = "titrav"
-            o.titrav = self.lineEdit_titrav.text()
+            o.titrav = str(self.lineEdit_titrav.text())
             ss = "teff"
             o.teff = float(self.lineEdit_teff.text())
             ss = "glog"
@@ -294,7 +299,7 @@ class WFileMain(QWidget):
             ss = "mu"
             o.mu = float(self.lineEdit_mu.text())
             ss = "flprefix"
-            o.flprefix = self.lineEdit_flprefix.text()
+            o.flprefix = str(self.lineEdit_flprefix.text())
             ss = "pas"
             o.pas = float(self.lineEdit_pas.text())
             ss = "llzero"

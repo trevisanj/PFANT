@@ -81,7 +81,8 @@ class FileAbonds(DataFile):
         # sorts by atomic number
         indexes = sorted(range(len(atomic_numbers)), key=lambda k: atomic_numbers[k])
         # mounts string
-        l = ["%s %g" % (atomic_numbers[i], aa[i]) for i in indexes]
+        l = ["'INDIVIDUAL ABUNDANCES:'   '%d'" % len(indexes)]+\
+            ["%s %g" % (atomic_numbers[i], aa[i]) for i in indexes]
         return "\n".join(l)
 
     def sort_a(self):

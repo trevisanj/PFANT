@@ -4,7 +4,7 @@ executables.
 """
 
 __all__ = ["Options", "Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
-           "FOR_NULBAD", "session_prefix"]
+           "FOR_NULBAD", "session_prefix_singular"]
 
 from pyfant.data import DataFile, FileHmap, FileMod, FileMain
 import shutil
@@ -22,7 +22,8 @@ FOR_PFANT = 2
 FOR_NULBAD = 3
 
 # Configurable
-session_prefix = "session-"
+session_prefix_singular = "session-"
+session_prefix_plural = "sessions-"
 
 
 @froze_it
@@ -121,8 +122,6 @@ class Conf(object):
         """
         Information used to create a session directory and to identify this directory.
 
-        Can be assigned directly by configure().
-
         When this property is set, a directory "session-<session_id>" is created
         immediately."""
         return self.__session_id
@@ -131,15 +130,14 @@ class Conf(object):
     def session_id(self, x):
         assert self.__session_id is None, "Session id already set to \"%s\"" % self.__session_id
         self.__session_id = str(x)
-        new_dir = _get_session_dirname(session_prefix, x)
+        new_dir = session_prefix_singular+x
         # Will raise if directory exists: directory names must be unique.
         os.mkdir(new_dir)
 
     @property
     def session_dir(self):
         """Name made up with a prefix + (the session id)."""
-        return None if self.__session_id is None else \
-         _get_session_dirname(session_prefix, self.__session_id)
+        return self.__session_dir
 
     @property
     def popen_text_dest(self):
@@ -174,6 +172,16 @@ class Conf(object):
         self.__flag_output_to_dir = x
 
     @property
+    def flag_split_dirs(self):
+        """Split sessions into several directories with 1000 sessions maximum each.
+
+        This option was created to speed up directory access."""
+        return self.__flag_split_dirs
+    @flag_split_dirs.setter
+    def flag_split_dirs(self, x):
+        self.__flag_split_dirs = x
+
+    @property
     def logger(self):
         if not self.__logger:
             self.__logger = get_python_logger()
@@ -183,10 +191,12 @@ class Conf(object):
         # # Setup properties
         # ## Session control
         self.__session_id = None
+        self.__session_dir = None
         # ## Setup flags
         self.__flag_log_console = True
         self.__flag_log_file = True
         self.__flag_output_to_dir = False
+        self.__flag_split_dirs = False
 
         # # DataFile instances
         # See create_data_files() to see what happens when one or more
@@ -428,7 +438,7 @@ class Conf(object):
 
     def __make_session_id(self):
         """Finds an id for a new session and creates corresponding
-        directory session_<id>.
+        directory.
 
         Directory must be created, otherwise two concurrent threads may grab
         the same id.
@@ -438,55 +448,48 @@ class Conf(object):
 
         if self.__session_id is not None:
             return
-        self.__session_id = _make_session_id()
+        self.__session_id, self.__session_dir = _IdMaker.make_session_id(self.__flag_split_dirs)
 
 
 # # Section id managhement
 # Part of code that finds new session id and creates corresponding directory
 
 
-# Lock is necessary to make unique session ids
-_lock_session_id = Lock()
-_id = 0
-def _make_session_id():
-    # """Finds new session id (a string containing a four-digit integer)
-    # corresponding with a directory that does not yet exist
-    # named <prefix><session id>, and creates such directory.
-    #
-    # Returns the new session id
-    #
-    # This routine is thread-safe.
-    # """
-    # with _lock_session_id:
-    #     i = 0
-    #     while True:
-    #         ret = "%d" % i
-    #         new_dir = _get_session_dirname(session_prefix, ret)
-    #         if not os.path.isdir(new_dir):
-    #             break
-    #         i += 1
-    #     os.mkdir(new_dir)
-    #     return ret
-    #
 
-    """Makes session id and creates corresponding directory.
-
-    This routine is thread-safe.
+class _IdMaker(object):
     """
-    global _id
-    with _lock_session_id:
-        while True:
-            ret = "%d" % _id
-            _id += 1
-            new_dir = _get_session_dirname(session_prefix, ret)
-            if not os.path.isdir(new_dir):
-                break
-        os.mkdir(new_dir)
-        return ret
+    Class to hold the thread-safe id maker + directory maker functionality.
+
+    This class is not supposed to be instantiated.
+    """
+
+    # Lock is necessary to make unique session ids
+    lock_session_id = Lock()
+    i_id = 0
+    dirs_per_dir = 1000  # only if flag_split_dirs
+
+    @classmethod
+    def make_session_id(cls, flag_split_dirs):
+        """Makes session id and creates corresponding directory.
+
+        This routine is thread-safe.
+        """
+        with cls.lock_session_id:
+            while True:
+                new_dir = cls.get_session_dirname(flag_split_dirs)
+                cls.i_id += 1
+                if not os.path.isdir(new_dir):
+                    new_id = "%d" % cls.i_id
+                    break
+            os.makedirs(new_dir)
+            return new_id, new_dir
 
 
-
-
-def _get_session_dirname(prefix, id_):
-    """Returns string which is the name of a filesystem directory."""
-    return prefix+id_
+    @classmethod
+    def get_session_dirname(cls, flag_split_dirs):
+        """Returns string which is the name of a filesystem directory."""
+        if not flag_split_dirs:
+            return session_prefix_singular+str(cls.i_id)
+        d0 = session_prefix_plural+str(int(cls.i_id//cls.dirs_per_dir)*cls.dirs_per_dir)
+        d1 = session_prefix_singular+str(cls.i_id)
+        return os.path.join(d0, d1)

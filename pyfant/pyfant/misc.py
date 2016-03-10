@@ -732,7 +732,7 @@ class SignalProxy(QObject):
         return True
 
     def __connect_signal(self, signal):
-        signal.connect(self.__signalReceived)
+        signal.connect(self.__signalReceived, Qt.QueuedConnection)
 
 
 ###############################################################################

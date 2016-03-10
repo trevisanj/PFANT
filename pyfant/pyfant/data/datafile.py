@@ -53,6 +53,10 @@ class DataFile(AttrsPart):
 
         DataFile behaviour is to try to load self.default_filename from default
         directory.
+
+        For safety, filename is reset to None so that it doesn't point to the
+        original file.
         """
         fullpath = path_to_default(self.default_filename)
         self.load(fullpath)
+        self.filename = None

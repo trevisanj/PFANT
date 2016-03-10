@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 from . import a_WFileMain
 from pyfant import FileMain
 from .guiaux import *
-
+import os.path
 
 ################################################################################
 class XFileMain(QMainWindow):
@@ -20,11 +20,12 @@ class XFileMain(QMainWindow):
         ## State variables
         QMainWindow.__init__(self, parent)
         self.flag_changed = False
-        me = self.me = a_WFileMain.WFileMain()
+        self.save_dir = "."
+        me = self.editor = a_WFileMain.WFileMain()
         me.setFont(MONO_FONT)
         me.edited.connect(self.on_edited)
         if file_main is not None:
-            self.me.load(file_main)
+            self.editor.load(file_main)
         me.setFocus()
         # self.setWindowTitle(title)
         self.setCentralWidget(me)
@@ -44,7 +45,7 @@ class XFileMain(QMainWindow):
 
     def load(self, x):
         assert isinstance(x, FileMain)
-        self.me.load(x)
+        self.editor.load(x)
         self.update_window_title()
 
 
@@ -54,23 +55,31 @@ class XFileMain(QMainWindow):
     def on_save(self, _):
         self.disable_save_actions()
         try:
-            if not self.me.flag_valid:
+            if not self.editor.flag_valid:
                 ShowError(PARAMS_INVALID)
             else:
                 self.save()
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
     def on_save_as(self, _):
         self.disable_save_actions()
         try:
-            if self.me.f:
-                if not self.me.flag_valid:
+            if self.editor.f:
+                if not self.editor.flag_valid:
                     ShowError(PARAMS_INVALID)
                 else:
-                    new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
+                    new_filename = QFileDialog.getSaveFileName(self, "Save file",
+                                      self.save_dir, "*.dat")
                     if new_filename:
+                        self.save_dir, _ = os.path.split(str(new_filename))
                         self.save_as(new_filename)
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
@@ -90,19 +99,19 @@ class XFileMain(QMainWindow):
         self.act_save_as.setEnabled(False)
 
     def save(self):
-        if self.me.f:
-            self.me.f.save_as()
+        if self.editor.f:
+            self.editor.f.save_as()
             self.flag_changed = False
             self.update_window_title()
 
     def save_as(self, filename):
-        if self.me.f:
-            self.me.f.save_as(filename)
+        if self.editor.f:
+            self.editor.f.save_as(filename)
             self.flag_changed = False
             self.update_window_title()
 
     def update_window_title(self):
-        self.setWindowTitle("mained -- %s%s%s" % (self.me.f.filename,
+        self.setWindowTitle("mained -- %s%s%s" % (self.editor.f.filename,
           "" if not self.flag_changed else " (changed)",
-          "" if self.me.flag_valid else " (*invalid*)"))
+          "" if self.editor.flag_valid else " (*invalid*)"))
 

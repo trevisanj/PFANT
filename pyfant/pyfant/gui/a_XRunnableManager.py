@@ -10,6 +10,8 @@ from ..rm import RunnableManager
 from ..misc import *
 from threading import Lock
 import time
+from .a_XExplorer import *
+import matplotlib.pyplot as plt
 
 #todo clenaup
 import sys
@@ -37,9 +39,14 @@ class XRunnableManager(QMainWindow):
         QMainWindow.__init__(self, parent)
         assert isinstance(rm, RunnableManager)
         self.rm = rm
-        self.num_finished_shown = 0  # outdated version of self.rm.num_finished
-        self.lock_table = Lock()
-        self.lfcs = 0  # labelFinished color state
+        # Whether to close matplotlib plots when window is closed
+        self.flag_close_mpl_plots_on_close = True
+        # Whether to show "close window to continue" when finished
+        self.flag_close_message = True
+        self.__num_finished_shown = 0  # outdated version of self.rm.num_finished
+        self.__lock_table = Lock()
+        self.__lfcs = 0  # labelFinished color state
+        self.__explorer_form = None
 
 
         # # Window design
@@ -132,8 +139,10 @@ class XRunnableManager(QMainWindow):
         a.setAlternatingRowColors(True)
         a.setEditTriggers(QTableWidget.NoEditTriggers)
         a.setSelectionBehavior(QTableWidget.SelectRows)
+        a.cellDoubleClicked.connect(self.on_tableWidget_cellDoubleClicked)
         # a.setFont(MONO_FONT)
         a.setVisible(self.pushButtonTable.isChecked())
+        a.installEventFilter(self)
 
         # ## Mounts central widget
 
@@ -170,8 +179,8 @@ class XRunnableManager(QMainWindow):
         t.setInterval(1000)  # miliseconds
         signals = [t.timeout, self.rm.runnable_changed, self.rm.finished]
         self.changed_proxy = SignalProxy(signals,
-         delay=0, rateLimit=1, slot=self._update, flag_connect=False)
-        self.rm.runnable_added.connect(self._populate)
+         delay=0, rateLimit=1, slot=self.__update, flag_connect=False)
+        self.rm.runnable_added.connect(self.__populate, Qt.QueuedConnection)
 
         # ## Timer to flick the finish indicator
         t = self.timerFinished = QTimer()
@@ -182,16 +191,30 @@ class XRunnableManager(QMainWindow):
     # # Qt override
 
     def showEvent(self, event):
-        self._populate()
+        self.__populate()
         self.changed_proxy.connect_all()
         # self.rm.runnable_added.connect(self.on_tm_thread_added, Qt.QueuedConnection)
         self.timerUpdate.start()
 
     def closeEvent(self, event):
+        if not self.rm.flag_finished:
+            r = QMessageBox.question(self, "Close window", "Not finished yet. Are you sure?",
+             QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+            if r != QMessageBox.Yes:
+                event.ignore()
+                return
         self.changed_proxy.disconnect_all()
         # self.rm.runnable_added.disconnect(self.on_tm_thread_added)
         self.timerUpdate.stop()
         self.timerFinished.stop()
+
+        if self.flag_close_mpl_plots_on_close:
+            plt.close("all")
+
+    def eventFilter(self, obj, event):
+        if obj == self.tableWidget:
+            return check_return_space(event, self.on_tableWidget_cellDoubleClicked)
+        return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Slots
@@ -229,22 +252,25 @@ class XRunnableManager(QMainWindow):
     #     self._update()
 
     def on_timerFinished_timeout(self):
-        self._set_labelFinished_color(COLORS[self.lfcs])
-        self.lfcs += 1
-        if self.lfcs == len(COLORS):
-            self.lfcs = 0
+        self.__set_labelFinished_color(COLORS[self.__lfcs])
+        self.__lfcs += 1
+        if self.__lfcs == len(COLORS):
+            self.__lfcs = 0
+
+    def on_tableWidget_cellDoubleClicked(self, row=0, col=0):
+        self.__explore_directory()
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Gear
 
-    def _populate(self):
+    def __populate(self):
         """Clears and rebuilds table widget."""
-        with self.lock_table:
+        with self.__lock_table:
             a = self.tableWidget
             self.runnables = runnables = self.rm.get_runnables_copy()
             a.clear()
-            self.num_finished_shown = 0
+            self.__num_finished_shown = 0
             a.setAlternatingRowColors(True)
             a.setRowCount(len(runnables))
             a.setColumnCount(2)
@@ -260,24 +286,24 @@ class XRunnableManager(QMainWindow):
                 a.setItem(i, 1, item)
             a.resizeColumnsToContents()
             a.setColumnWidth(1, STATUS_COLUMN_WIDTH)
-            self._update_status()
+            self.__update_status()
 
-    def _update(self):
+    def __update(self):
         """Updates second column of table widget."""
         # print "UPDATE UPDATE UPDATE UPDATE UPDATE "
         t = time.time()
-        self._update_status()
-        self._update_table()
-        print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+        self.__update_status()
+        self.__update_table()
+        # print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
 
-    def _update_table(self):
-        with self.lock_table:
+    def __update_table(self):
+        with self.__lock_table:
             a = self.tableWidget
             runnables = self.runnables
             nf = self.rm.num_finished  # grabs this before last table update,
                                        # so that it never skips a row update
             mt = self.rm.max_simultaneous
-            for i in xrange(max(0, self.num_finished_shown-mt+1),
+            for i in xrange(max(0, self.__num_finished_shown-mt+1),
                             min(len(runnables), self.rm.num_finished+mt)):
                 runnable = runnables[i]
 
@@ -291,16 +317,16 @@ class XRunnableManager(QMainWindow):
                 status = runnable.get_status()
                 item.setText("?" if status is None else str(status))
 
-            if nf != self.num_finished_shown:
+            if nf != self.__num_finished_shown:
                 a.setCurrentCell(self.rm.num_finished+self.rm.max_simultaneous-1, 0)
-                self.num_finished_shown = nf
+                self.__num_finished_shown = nf
 
-    def _update_status(self):
+    def __update_status(self):
         """Updates everything except the table widget."""
         flag_todo = not (self.rm.flag_finished or self.rm.flag_exited)
         self.pushButtonCancel.setEnabled(flag_todo)
         self.pushButtonPause.setEnabled(flag_todo)
-        if not flag_todo:
+        if not flag_todo and self.flag_close_message:
             s = "Please close window to continue"
             self.labelEnd.setText(s)
             self.labelEnd.setVisible(True)
@@ -321,5 +347,15 @@ class XRunnableManager(QMainWindow):
             self.checkBox_failed.setChecked(self.rm.flag_failed)
             self.checkBox_exited.setChecked(self.rm.flag_exited)
 
-    def _set_labelFinished_color(self, color):
+    def __set_labelFinished_color(self, color):
         self.labelEnd.setStyleSheet("QLabel {color: "+color.name()+";}")
+
+    def __explore_directory(self):
+        runnable = self.runnables[self.tableWidget.currentRow()]
+        dir_ = runnable.conf.session_dir
+        if not self.__explorer_form:
+            f = self.__explorer_form = XExplorer(self, dir_)
+            f.flag_close_mpl_plots_on_close = False
+        else:
+            self.__explorer_form.set_dir(dir_)
+        self.__explorer_form.show()

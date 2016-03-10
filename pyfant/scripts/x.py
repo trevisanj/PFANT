@@ -17,6 +17,8 @@ if __name__ == "__main__":
     form0 = XPFANT()
     rm = RunnableManager()
     form1 = XRunnableManager(form0, rm)
+    form1.flag_close_mpl_plots_on_close = False
+    form1.flag_close_message = False
     form0.set_manager_form(form1)
     # form1.show()
     # it is good to start the manager as late as possible, otherwise

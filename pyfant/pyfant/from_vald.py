@@ -4,7 +4,7 @@ VALD3-to-PFANT conversions
 
 import csv
 from pyfant import adjust_atomic_symbol, Atom, FileAtoms, AtomicLine, \
- ordinal_suffix, SYMBOLS, get_python_logger
+ ordinal_suffix, symbols, get_python_logger
 import sys
 
 
@@ -14,7 +14,7 @@ _logger = get_python_logger()
 
 # Temporary: no partition function for this
 # Except for hydrogen (this must be skipped)
-_to_skip = ['H', 'NE', 'F', 'HE']
+# _to_skip = ['H', 'NE', 'F', 'HE']
 
 
 def vald3_to_atoms(file_obj):
@@ -52,19 +52,27 @@ def vald3_to_atoms(file_obj):
     ret = FileAtoms()
     edict = {}  # links atomic symbols with Atom objects created (key is atomic symbol)
     r = 0
-    num_skip_ioni = 0
+    num_skip_ioni, num_skip_mol = 0, 0
     try:
         for row in reader:
             r += 1
             if len(row) <=  12:  # Condition to detect row of interest
                 continue
-            elem = row[0][1:3]
-            elem_cmp = elem.upper().strip()
-            if not elem_cmp in SYMBOLS:
-                continue  # skips molecule
+#            lde = float(row[7])
+#            if lde >= 99:
+#                continue  # skips molecule
 
-            if elem_cmp in _to_skip:
-                continue  # no partition function for this
+            elem = row[0][1:row[0].index(" ")]
+            if not elem in symbols:
+                #x = raw_input("Skipping #"+elem+"#")
+                num_skip_mol += 1
+                continue  # skips molecule
+            # elem_cmp = elem.upper().strip()
+            # if not elem_cmp in SYMBOLS:
+            #     continue  # skips molecule
+
+            # if elem_cmp in _to_skip:
+            #    continue  # no partition function for this
 
             # # Collects information and creates atomic line object.
             # Note: Variable names follow Fortran source variable names.
@@ -130,6 +138,7 @@ def vald3_to_atoms(file_obj):
         raise type(e)(("Error around %d%s row of VALD3 file" %
             (r+1, ordinal_suffix(r)))+": "+str(e)), None, sys.exc_info()[2]
     _logger.debug("VALD3-to-atoms conversion successful!")
+    _logger.info("Number of lines skipped (molecules): %d" % num_skip_mol)
     _logger.info("Number of lines skipped (ioni > 2): %d" % num_skip_ioni)
     _logger.debug("Number of (element+ioni): %s" % len(ret))
     _logger.debug("Total number of atomic lines: %d" % (sum(len(a) for a in ret.atoms),))

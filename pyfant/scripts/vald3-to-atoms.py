@@ -63,6 +63,16 @@ if __name__ == "__main__":
     file_atoms.remove_element("he")
     logger.info("Number of lines removed: %d" % (n0-file_atoms.num_lines))
 
+    n0 = file_atoms.num_lines
+    logger.info("Removing F lines (no record in partit.dat)...")
+    file_atoms.remove_element("F")
+    logger.info("Number of lines removed: %d" % (n0-file_atoms.num_lines))
+
+    n0 = file_atoms.num_lines
+    logger.info("Removing Ne lines (no record in partit.dat)...")
+    file_atoms.remove_element("Ne")
+    logger.info("Number of lines removed: %d" % (n0-file_atoms.num_lines))
+
     logger.info("Number of lines after filtering: %d" % file_atoms.num_lines)
 
     logger.info("Saving file...")

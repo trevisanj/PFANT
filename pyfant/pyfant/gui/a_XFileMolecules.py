@@ -30,6 +30,7 @@ class XFileMolecules(QMainWindow):
         self.sol_index = None
         self.mol = None
         self.sol = None
+        self.save_dir = "."
         self.flag_changed = False
         self.form_lines = None
 
@@ -282,16 +283,21 @@ class XFileMolecules(QMainWindow):
     # Slots
 
     def on_help(self, _):
-        base_dir = os.path.dirname(sys.argv[0])
-        print "aaa", sys.argv[0]
-        print "bbb", base_dir
-        webbrowser.open_new(os.path.join(base_dir, "mled.html"))
-        ShowMessage("Help file mled.html was opened in web browser.")
+        try:
+            base_dir = os.path.dirname(sys.argv[0])
+            webbrowser.open_new(os.path.join(base_dir, "mled.html"))
+            ShowMessage("Help file mled.html was opened in web browser.")
+        except Exception as e:
+            ShowError(str(e))
+            raise
 
     def on_save(self, _):
-        self.disable_save_actions()
+        self.disable_save_alsctions()
         try:
             self.save()
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
@@ -299,9 +305,14 @@ class XFileMolecules(QMainWindow):
         self.disable_save_actions()
         try:
             if self.f:
-                new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
+                new_filename = QFileDialog.getSaveFileName(self, "Save file",
+                 self.save_dir, "*.dat")
                 if new_filename:
+                    self.save_dir, _ = os.path.split(str(new_filename))
                     self.save_as(new_filename)
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 

@@ -61,12 +61,16 @@ if __name__ == "__main__":
     #  'given by the --aint option.', action="store_true")
     # parser.add_argument('--pages', help='If set, will generate a PDF file with '
     #  'one spectrum per page', action="store_true")
-    parser.add_argument('--aint', type=int, nargs='?', default=10,
+    parser.add_argument('--aint', type=float, nargs='?', default=10,
      help='length of each piece-plot in wavelength units (used only if --pieces)')
     parser.add_argument('--fn_output', nargs='?', default='plot-spectra.pdf', type=str,
      help='PDF output file name (used only if --pieces)')
+    parser.add_argument('--ymin', nargs='?', default='(automatic)', type=str,
+     help='Minimum value for y-axis')
 
     args = parser.parse_args()
+
+    ymin = None if args.ymin == "(automatic)" else float(args.ymin)
 
     # Compiles list of file names.
     # Each item in args.fn list may have wildcards, and these will be expanded
@@ -93,13 +97,14 @@ if __name__ == "__main__":
         print_error("Nothing to plot!")
     else:
         if args.pieces:
-            plot_spectra_pieces_pdf(ss, aint=args.aint, pdf_filename=args.fn_output)
+            plot_spectra_pieces_pdf(ss, aint=args.aint,
+                                    pdf_filename=args.fn_output, ymin=ymin)
         elif args.pages:
-            plot_spectra_pages_pdf(ss, pdf_filename=args.fn_output)
+            plot_spectra_pages_pdf(ss, pdf_filename=args.fn_output, ymin=ymin)
         else:
             if args.ovl:
                 f = plot_spectra_overlapped
             else:
                 f = plot_spectra
-            f(ss, "")
-            plt.show()
+            f(ss, "", ymin=ymin)
+            # plt.show()

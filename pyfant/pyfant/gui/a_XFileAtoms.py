@@ -31,6 +31,7 @@ class XFileAtoms(QMainWindow):
         self.atom_index = None
         self.atom = None  # Atom instance
         self.flag_changed = False
+        self.save_dir = "."
         # Form with the table to edit the lines
         self.form_lines = None
         self.form_histogram = None
@@ -210,15 +211,20 @@ class XFileAtoms(QMainWindow):
 
     def on_help(self, _):
         base_dir = os.path.dirname(sys.argv[0])
-        print "aaa", sys.argv[0]
-        print "bbb", base_dir
-        webbrowser.open_new(os.path.join(base_dir, "ated.html"))
-        ShowMessage("Help file ated.html was opened in web browser.")
+        try:
+            webbrowser.open_new(os.path.join(base_dir, "ated.html"))
+            ShowMessage("Help file ated.html was opened in web browser.")
+        except Exception as e:
+            ShowError(str(e))
+            raise
 
     def on_save(self, _):
         self.disable_save_actions()
         try:
             self.save()
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
@@ -226,9 +232,14 @@ class XFileAtoms(QMainWindow):
         self.disable_save_actions()
         try:
             if self.f:
-                new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
+                new_filename = QFileDialog.getSaveFileName(self, "Save file",
+                 self.save_dir, "*.dat")
                 if new_filename:
+                    self.save_dir, _ = os.path.split(str(new_filename))
                     self.save_as(new_filename)
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 

@@ -2,7 +2,7 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
            "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
            "ShowError", "ShowMessage", "ResetTableWidget",
-           "COLOR_ERROR", "INITIALIZES_SUN"]
+           "COLOR_ERROR", "INITIALIZES_SUN", "check_return_space"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -30,6 +30,15 @@ SOL_ATTR_NAMES = ["lmbdam", "sj", "jj"]
 # This is shared between XFileAtoms and XAtomLinesEditor
 ATOM_HEADERS = ["lambda", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
+
+
+def check_return_space(event, callable_):
+    """Checks if event corresponds to Return/Space being pressed and calls callable_ if so."""
+    if event.type() == QEvent.KeyPress:
+        if event.key() in [Qt.Key_Return, Qt.Key_Space]:
+            callable_()
+            return True
+    return False
 
 
 def ShowError(s):

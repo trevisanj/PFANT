@@ -105,6 +105,7 @@ class WFileAbonds(QWidget):
 
 
         # finally...
+        self.setEnabled(False)  # Disabled until load() is called
         self.flag_process_changes = True
 
 
@@ -117,6 +118,7 @@ class WFileAbonds(QWidget):
         self._update_from_file_abonds()
         # this is called to perform file validation upon loading
         self._update_file_abonds()
+        self.setEnabled(True)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Qt override

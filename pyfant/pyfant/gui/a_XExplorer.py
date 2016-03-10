@@ -11,6 +11,7 @@ import os.path
 import time
 from pyfant import *
 from .a_XText import *
+import matplotlib.pyplot as plt
 
 COLOR_LOADED = "#ADFFB4"  # light green
 COLOR_LOAD_ERROR = "#FFB5B5"  # light red
@@ -95,6 +96,8 @@ class XExplorer(QMainWindow):
     def __init__(self, parent=None, dir_="."):
         QMainWindow.__init__(self, parent)
         self.dir = None
+        # Whether to close matplotlib plots when window is closed
+        self.flag_close_mpl_plots_on_close = True
         self.__vis_classes = []
         # List of (DataFile objects)/(None if not loaded)/(-1 if error loading)
         self.__propss = []
@@ -105,8 +108,16 @@ class XExplorer(QMainWindow):
         b = self.menuBar()
         m = self.menu_file = b.addMenu("&File")
         ac = m.addAction("Attempt &load")
-        ac.setShortcut("Ctrl+L")
+        ac.setShortcut("Ctrl+L;Ctrl+O")
         ac.triggered.connect(self.on_load)
+        m.addSeparator()
+        ac = m.addAction("&Refresh")
+        ac.setShortcut("Ctrl+R")
+        ac.triggered.connect(self.on_refresh)
+        m.addSeparator()
+        ac = m.addAction("Change &directory...")
+        ac.setShortcut("Ctrl+D")
+        ac.triggered.connect(self.on_cd)
         m.addSeparator()
         ac = m.addAction("&Quit")
         ac.setShortcut("Ctrl+Q")
@@ -129,11 +140,14 @@ class XExplorer(QMainWindow):
         sp.addWidget(t)
         t.installEventFilter(self)
         t.setSelectionBehavior(QAbstractItemView.SelectRows)
-        t.currentCellChanged.connect(self.on_tableWidget_currentCellChanged)
+        # t.currentCellChanged.connect(self.on_tableWidget_currentCellChanged)
         t.cellDoubleClicked.connect(self.on_tableWidget_cellDoubleClicked)
         t.setEditTriggers(QTableWidget.NoEditTriggers)
         t.setFont(MONO_FONT)
         t.resizeColumnsToContents()
+        t.installEventFilter(self)
+        t.selectionModel().selectionChanged.connect(self.selectionChanged)
+
 
         # ## "Possibilities area"
         # The area is a widget that will be added to the main splitter.
@@ -190,24 +204,33 @@ class XExplorer(QMainWindow):
 
     def eventFilter(self, obj, event):
         if obj == self.tableWidget:
-            return self.__check_return_space(event, self.on_load)
+            return check_return_space(event, self.on_load)
         elif obj == self.listWidgetVis:
-            return self.__check_return_space(event, self.__visualize)
+            return check_return_space(event, self.__visualize)
         return False
+    #
+    # def eventFilter(self, source, event):
+    #     if event.type() == QEvent.KeyPress:
+    #         if event.key() == Qt.Key_Return:
+    #             if source == self.tableWidget:
+    #                 self.tableWidget.editItem(self.tableWidget.currentItem())
+    #                 return True
+    #     return False
 
-    def __check_return_space(self, event, callable_):
-        if event.type() == QEvent.KeyPress:
-            if event.key() in [Qt.Key_Return, Qt.Key_Space]:
-                callable_()
-                return True
-        return False
+
+
+    def closeEvent(self, event):
+        if self.flag_close_mpl_plots_on_close:
+            plt.close("all")
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Slots for Qt library signals
 
-    def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
-                                          previousColumn):
-        self.__update_info()
+    # def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
+    #                                       previousColumn):
+    #     print "QUAL EH A LINHA", self.tableWidget.currentRow()
+    #     return
+    #     self.__update_info()
 
 
     def on_tableWidget_cellDoubleClicked(self, row, col):
@@ -218,15 +241,26 @@ class XExplorer(QMainWindow):
         # Assuming that double-click will also select the row
         self.__visualize()
 
+    def selectionChanged(self, *args):
+        self.__update_info()
+
+
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Slots for Qt library signals
-
-
-    # TODO implement threads to load and visualize so that I can show messages in the status bar
 
     def on_load(self, _=None):
         if not self.__flag_loading:
             self.__load()
+
+    def on_refresh(self, _=None):
+        if not self.__flag_loading:
+            self.set_dir(self.dir)
+
+    def on_cd(self, _=None):
+        if not self.__flag_loading:
+            dir_ = QFileDialog.getExistingDirectory(None, "Change directory", self.dir)
+            if dir_:
+                self.set_dir(str(dir_))
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
@@ -248,6 +282,7 @@ class XExplorer(QMainWindow):
                 p.filepath = filepath
                 self.__propss.append(p)
         self.__update_table()
+        self.__update_info()
         self.__update_window_title()
 
     def __update_table(self):
@@ -280,62 +315,95 @@ class XExplorer(QMainWindow):
         t.resizeColumnsToContents()
 
     def __get_current_props(self):
-        return self.__propss[self.tableWidget.currentRow()]
+        if len(self.__propss) > 0:
+            return self.__propss[self.tableWidget.currentRow()]
+        return None
+
+    def __get_current_propss(self):
+        ii = self.tableWidget.selectedIndexes()
+        i_rows = set([idx.row() for idx in ii])
+        # print "AS LINHA", i_rows
+        pp = [self.__propss[i_row] for i_row in i_rows]
+        return pp
 
     def __get_current_vis_class(self):
         return self.__vis_classes[self.listWidgetVis.currentRow()]
 
     def __update_info(self):
         """Updates "visualization options" and "file info" areas."""
-        p = self.__get_current_props()
-        # Visualization options
+        t = self.tableWidget
         z = self.listWidgetVis
         z.clear()
-        if p.flag_scanned:
-            classes = self.__vis_classes = []
-            if isinstance(p.f, DataFile):
-                classes.extend(get_suitable_vis_classes(p.f))
-                if VisPrint in classes:
-                    classes.remove(VisPrint)
-            if p.flag_text:
-                # This is an exception, since "txt" is not a Vis descendant.
-                # This will be properly handled in __visualize()
-                classes.append("txt")
+        classes = self.__vis_classes = []
+        pp = self.__get_current_propss()
+        # print "RRRRRRRRRRRRRR", len(pp), pp
+        if len(pp) == 1:
+            p = pp[0]
+            # Visualization options
+            if p.flag_scanned:
+                if isinstance(p.f, DataFile):
+                    classes.extend(get_suitable_vis_classes(p.f))
+                    if VisPrint in classes:
+                        classes.remove(VisPrint)
+                if p.flag_text:
+                    # This is an exception, since "txt" is not a Vis descendant.
+                    # This will be properly handled in __visualize()
+                    classes.append("txt")
 
 
-            for x in classes:
-                if x == "txt":
-                    text = "View plain text"
-                else:
-                    text = x.__name__
-                item = QListWidgetItem(text)
-                z.addItem(item)
+                for x in classes:
+                    if x == "txt":
+                        text = "View plain text"
+                    else:
+                        text = x.__name__
+                    item = QListWidgetItem(text)
+                    z.addItem(item)
 
-        # File info
-        self.labelFileType.setText(p.get_summary())
-        self.textEditInfo.setPlainText(p.get_info())
+            # File info
+            self.labelFileType.setText(p.get_summary())
+            self.textEditInfo.setPlainText(p.get_info())
+        elif len(pp) >= 2:
+            ff = [p.f for p in pp]
+            flag_spectra = all([isinstance(f, FileSpectrum) for f in ff])
+            if flag_spectra:
+                z.addItem(QListWidgetItem("View spectra stacked"))
+                classes.append("sta")
+                z.addItem(QListWidgetItem("View spectra overlapped"))
+                classes.append("ovl")
+
 
     def __set_status_text(self, text):
         self.labelStatus.setText(text)
 
     def __load(self):
-        self.__flag_loading = True
-        self.__set_status_text("Loading file, please wait...")
-        t = LoadThread(self, self.__get_current_props())
-        t.finished.connect(self.__finished_loading)
-        t.start()
+        p = self.__get_current_props()
+        if p:
+            self.__flag_loading = True
+            self.__set_status_text("Loading file, please wait...")
+            t = LoadThread(self, p)
+            t.finished.connect(self.__finished_loading)
+            t.start()
 
     def __visualize(self):
         self.__flag_visualizing = True
         self.__set_status_text("Creating visualization, please wait...")
         try:
             vis_class = self.__get_current_vis_class()
-            props = self.__get_current_props()
-            if vis_class == "txt":
-                w = XText(self, open(props.filepath, "r").read(), props.filepath)
-                w.show()
+            if vis_class == "ovl":
+                pp = self.__get_current_propss()
+                spectra = [p.f.spectrum for p in pp]
+                plot_spectra_overlapped(spectra)
+            elif vis_class == "sta":
+                pp = self.__get_current_propss()
+                spectra = [p.f.spectrum for p in pp]
+                plot_spectra(spectra)
             else:
-                vis_class().use(props.f)
+                props = self.__get_current_props()
+                if vis_class == "txt":
+                    w = XText(self, open(props.filepath, "r").read(), props.filepath)
+                    w.show()
+                else:
+                    vis_class().use(props.f)
         finally:
             self.__set_status_text("")
             self.__flag_visualizing = False

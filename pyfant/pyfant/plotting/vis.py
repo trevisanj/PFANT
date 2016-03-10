@@ -134,6 +134,8 @@ class VisModRecords(Vis):
         for var in vars:
 
             fig = plt.figure()
+            if self.parent_form:
+                fig.canvas.setParent(self.parent_form)
             ax = fig.gca(projection='3d')
             fig.canvas.set_window_title('%s -- %s' % (self.title, var))
 
@@ -159,6 +161,8 @@ class VisSpectrum(Vis):
         s = m.spectrum
         T = 0.02  # amount of extra space on both left and right of graphics
         f = plt.figure()
+        if self.parent_form:
+            f.canvas.setParent(self.parent_form)
         ax = plt.gca()
         ax.plot(s.x, s.y, color="#800000")
         ymi, yma = ax.get_ylim()

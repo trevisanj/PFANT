@@ -179,13 +179,6 @@ class Executable(Runnable):
         # It is either a blocking _run() or asynchronous open..kill..close
         self.__lock = Lock()
 
-    def get_status(self):
-        """Updates and returns status.
-
-        Status is updated on demand, i.e., when this method is called.
-        """
-        return self._status
-
     def run(self):
         """Runs executable.
 
@@ -215,6 +208,9 @@ class Executable(Runnable):
         self._flag_killed = True
         if self._flag_running:
             self.__popen.kill()
+
+    def get_status(self):
+        return self._status
 
     def __run(self):
         """Called both from run() and run_from_combo()."""
@@ -408,6 +404,35 @@ class Nulbad(Executable):
         self.convolved = file_sp.spectrum
 
 
+
+@froze_it
+class ComboStatus(object):
+    """Combo version of ExecutableStatus.
+
+    Acts as a formatter.
+    """
+
+    def __init__(self, combo):
+        assert isinstance(combo, Combo)
+        self.combo = combo
+
+    def __str__(self):
+        l = []
+        if self.combo.flag_finished:
+            l.append("finished")
+        if self.combo.flag_running:
+            l.append("running")
+        if self.combo.flag_killed:
+            l.append("*killed*")
+        if self.combo.flag_error:
+            l.append("*error*")
+        if self.combo.error_message:
+            l.append("*" + str(self.combo.error_message) + "*")
+        if len(l) > 0:
+            return " ".join(l)
+        return "?"
+
+
 @froze_it
 class Combo(Runnable):
     """
@@ -458,7 +483,6 @@ class Combo(Runnable):
     def nulbad(self):
         return self.__nulbad
 
-
     def __init__(self, sequence=None):
         Runnable.__init__(self)
         # # Configuration
@@ -481,7 +505,8 @@ class Combo(Runnable):
 
         # ** Internal variables
         self.__running_exe = None  # Executable object currently running
-        # self.__logger = None
+        # ComboStatus instance
+        self.__status = ComboStatus(self)
 
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
@@ -523,11 +548,11 @@ class Combo(Runnable):
                 self.__running_exe.kill()
 
     def get_status(self):
-        """Returns status of running executable or None."""
+        """Returns status of running executable or self._status."""
         if self.__running_exe:
             return self.__running_exe.get_status()
         else:
-            return None
+            return self.__status
 
     def load_result(self):
         ee = self.get_exes()
@@ -539,42 +564,3 @@ class Combo(Runnable):
         ee = self.get_exes()
         for e in ee:
             e.reset()
-
-    #
-    # def __configure(self):
-    #     """
-    #     Sets several properties of conf and executables to achieve the expected
-    #     synchronization.
-    #
-    #     Note: this routine messes with sys.stdout to log to screen and file
-    #     simultaneously.
-    #     """
-    #
-    #     c = self.conf
-    #
-    #
-    #     c.make_session_id()
-    #     c.__redirect_outputs_to_session_dir(self.__sequence)
-    #
-    #     self.__logger = get_python_logger()
-    #     self.__logger.info("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
-    #
-    #     log_path = c.join_with_session_dir("fortran.log")
-    #     if self.__flag_log_console:
-    #         stdout_ = LogTwo(log_path)
-    #     else:
-    #         stdout_ = open(log_path, "w")
-    #
-    #     # All files that will be created need to have the session directory added to their names
-    #     for e in self.get_exes():
-    #         # Propagates configuration
-    #         e.conf = c
-    #         e.stdout = stdout_
-    #         e.logger = self.__logger
-    #
-    #         # Fixes exe path
-    #         exe_filename = os.path.split(e._exe_path)[-1]
-    #         e.exe_path = os.path.join(self.__exe_dir, exe_filename)
-    #     c.create_data_files()
-    #
-

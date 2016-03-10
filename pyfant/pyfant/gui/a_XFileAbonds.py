@@ -21,11 +21,12 @@ class XFileAbonds(QMainWindow):
         ## State variables
         QMainWindow.__init__(self, parent)
         self.flag_changed = False
-        me = self.me = a_WFileAbonds.WFileAbonds()
+        self.save_dir = "."
+        me = self.editor = a_WFileAbonds.WFileAbonds()
         me.setFont(MONO_FONT)
         me.edited.connect(self.on_edited)
         if file_abonds is not None:
-            self.me.load(file_abonds)
+            self.editor.load(file_abonds)
         me.setFocus()
         # self.setWindowTitle(title)
         self.setCentralWidget(me)
@@ -65,7 +66,7 @@ class XFileAbonds(QMainWindow):
 
     def load(self, x):
         assert isinstance(x, FileAbonds)
-        self.me.load(x)
+        self.editor.load(x)
         self.update_window_title()
 
 
@@ -75,45 +76,56 @@ class XFileAbonds(QMainWindow):
     def on_save(self, _):
         self.disable_save_actions()
         try:
-            if not self.me.flag_valid:
+            if not self.editor.flag_valid:
                 ShowError(PARAMS_INVALID)
             else:
                 self.save()
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
     def on_save_as(self, _):
         self.disable_save_actions()
         try:
-            if self.me.f:
-                if not self.me.flag_valid:
+            if self.editor.f:
+                if not self.editor.flag_valid:
                     ShowError(PARAMS_INVALID)
                 else:
-                    new_filename = QFileDialog.getSaveFileName(self, "Save file", ".", ".dat")
+                    new_filename = QFileDialog.getSaveFileName(self, "Save file",
+                     self.save_dir, "*.dat")
                     if new_filename:
+                        self.save_dir, _ = os.path.split(str(new_filename))
                         self.save_as(new_filename)
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
     def on_export_dissoc(self, _):
         self.disable_save_actions()
         try:
-            if self.me.f:
-                if not self.me.flag_valid:
+            if self.editor.f:
+                if not self.editor.flag_valid:
                     ShowError(PARAMS_INVALID)
                 else:
                     new_filename = QFileDialog.getSaveFileName(self, "Save file",
-                     os.path.join(".", FileDissoc.default_filename), ".dat")
+                     os.path.join(".", FileDissoc.default_filename), "*.dat")
                     if new_filename:
-                        f = self.me.f.get_file_dissoc()
+                        f = self.editor.f.get_file_dissoc()
                         f.title = "Created using abed.py"
                         f.save_as(new_filename)
+        except Exception as e:
+            ShowError(str(e))
+            raise
         finally:
             self.enable_save_actions()
 
 
     def on_export_turbospectrum(self, _):
-        w = XText(self, self.me.f.get_turbospectrum_str(), "Atomic number & abundance")
+        w = XText(self, self.editor.f.get_turbospectrum_str(), "Atomic number & abundance")
         w.show()
 
     def on_edited(self):
@@ -132,19 +144,19 @@ class XFileAbonds(QMainWindow):
         self.act_save_as.setEnabled(False)
 
     def save(self):
-        if self.me.f:
-            self.me.f.save_as()
+        if self.editor.f:
+            self.editor.f.save_as()
             self.flag_changed = False
             self.update_window_title()
 
     def save_as(self, filename):
-        if self.me.f:
-            self.me.f.save_as(filename)
+        if self.editor.f:
+            self.editor.f.save_as(filename)
             self.flag_changed = False
             self.update_window_title()
 
     def update_window_title(self):
-        self.setWindowTitle("abed -- %s%s%s" % (self.me.f.filename,
+        self.setWindowTitle("abed -- %s%s%s" % (self.editor.f.filename,
           "" if not self.flag_changed else " (changed)",
-          "" if self.me.flag_valid else " (*invalid*)"))
+          "" if self.editor.flag_valid else " (*invalid*)"))
 
