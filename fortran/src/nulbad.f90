@@ -58,6 +58,10 @@ contains
   !> either set from the command line or taken from dfile:main
 
   subroutine nulbad_init()
+    logical :: main_exists  ! whether or not main configuration file exists
+
+    inquire(file=config_fn_main, exist=main_exists)
+
     ! MAX_P_IFT must be an odd number
     if (mod(MAX_P_IFT, 2) .eq. 0) then
       call pfant_halt('MAX_P_IFT='//int2str(MAX_P_IFT)//' must be an odd number', &
@@ -75,16 +79,33 @@ contains
     x_fn_cv = config_fn_cv
     x_norm = config_norm
     if (config_fwhm .eq. -1) then
+      if(.not. main_exists) &
+        call pfant_halt('--fwhm option not set and '''//&
+         trim(config_fn_main)//''' does not exist')
       call assure_read_main(config_fn_main)
       x_fwhm = main_fwhm
       call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm, 3))
     end if
+
+    ! Reads spectrum now to make output delta-lambda equal to input delta-lambda
+    ! in case --pat not specified
+    call read_spectrum()
+
     if (config_pat .eq. -1) then
-      call assure_read_main(config_fn_main)
-      x_pat = main_pas
+      if (.not. main_exists) then
+        x_pat = rs_dpas
+      else
+        call assure_read_main(config_fn_main)
+        x_pat = main_pas
+      end if
       call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
-    if (config_flprefix .eq. '?') then
+    if (config_flprefix .eq. '?' .and. config_fn_flux .eq. '?') then
+      if(.not. main_exists) &
+        call pfant_halt('Neither --flprefix nor --fn_flux was set and '''//&
+         trim(config_fn_main)//''' does not exist')
+      ! Note: x_flprefix only used to make x_fn_flux, in case the latter is not specified
+      !       through --fn_flux option.
       call assure_read_main(config_fn_main)
       x_flprefix = main_flprefix
       call parse_aux_log_assignment('x_flprefix', x_flprefix)
@@ -100,7 +121,7 @@ contains
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
     end if
     if (config_fn_cv .eq. '?') then
-      x_fn_cv = trim(x_fn_flux)//'.nulbad'
+      x_fn_cv = trim(x_fn_flux)//'.nulbad.'//real82str(x_fwhm, 3)
       call parse_aux_log_assignment('x_fn_cv', trim(x_fn_cv))
     end if
   end
@@ -194,8 +215,6 @@ contains
     logical :: flag_resample
 
     call nulbad_init()
-    call read_spectrum()
-
 
     ! # Allocation & re-sampling
     flag_resample = abs(rs_dpas-x_pat) .ge. 1e-10
