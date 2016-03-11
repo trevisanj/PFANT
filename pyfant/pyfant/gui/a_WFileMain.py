@@ -7,19 +7,6 @@ from PyQt4.QtGui import *
 from .guiaux import *
 from pyfant import FileMain
 
-# Color for labels indicating a star parameter
-COLOR_STAR = "#2A8000"
-# Color for labels indicating a software configuration parameter
-COLOR_CONFIG = "#BD6909"
-
-def _enc_name_descr(name, descr, color="#FFFFFF"):
-    # Encodes html given name and description
-    return _enc_name(name, color)+"<br>"+descr
-
-def _enc_name(name, color="#FFFFFF"):
-    # Encodes html given name and description
-    return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
-           (color, name)
 
 class WFileMain(QWidget):
     """
@@ -51,7 +38,7 @@ class WFileMain(QWidget):
         x = self.label_titrav = QLabel()
         y = self.lineEdit_titrav = QLineEdit()
         # y.editingFinished.connect(self._on_editing_finished)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         x.setBuddy(y)
         pp.append((x, y, "t&itrav", "star name", COLOR_STAR,
@@ -59,7 +46,7 @@ class WFileMain(QWidget):
 
         x = self.label_teff = QLabel()
         y = self.lineEdit_teff = QLineEdit()
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         y.setValidator(QDoubleValidator(0, 1e10, 0))
         x.setBuddy(y)
@@ -68,7 +55,7 @@ class WFileMain(QWidget):
 
         x = self.label_glog = QLabel()
         y = self.lineEdit_glog = QLineEdit()
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         y.setValidator(QDoubleValidator(0, 1e10, 5))
         x.setBuddy(y)
@@ -77,16 +64,25 @@ class WFileMain(QWidget):
 
         x = self.label_asalog = QLabel()
         y = self.lineEdit_asalog = QLineEdit()
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         y.setValidator(QDoubleValidator(-10, 10, 5))
         x.setBuddy(y)
         pp.append((x, y, "&asalog", "metallicity", COLOR_STAR,
          "Sun: 0"))
 
+        x = self.label_vvt = QLabel()
+        y = self.lineEdit_vvt = QLineEdit()
+        y.textEdited.connect(self.on_edited)
+        y.installEventFilter(self)
+        y.setValidator(QDoubleValidator(0, 900, 2))
+        x.setBuddy(y)
+        pp.append((x, y, "&vvt", "velocity of microturbulence", COLOR_STAR,
+         "Sun: 0.9"))
+
         x = self.label_nhe = QLabel()
         y = self.lineEdit_nhe = QLineEdit()
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
@@ -97,84 +93,78 @@ class WFileMain(QWidget):
         y = self.checkBox_ptdisk = QCheckBox()
         y.setTristate(False)
         y.installEventFilter(self)
-        y.stateChanged.connect(self._on_edited)
+        y.stateChanged.connect(self.on_edited)
         x.setBuddy(y)
         pp.append((x, y, "pt&disk", "point of disk?", COLOR_CONFIG,
-         "This option is used to simulate a spectrum acquired "
-         "out of the center of the star disk.<br><br>"
-         "This is useful if the synthetic spectrum will be compared with an "
-         "observed spectrum acquired out of the center of the star disk."))
+         DESCR_PTDISK))
 
         x = self.label_mu = QLabel()
         y = self.lineEdit_mu = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(-1, 1, 5))
         x.setBuddy(y)
         pp.append((x, y, "&mu", "cosine of angle", COLOR_CONFIG,
          "This is the cosine of the angle formed by center of "
          "the star disk, the point of observation, and the Earth as vertex. "
-         "<br><br>This value will be used only if "+_enc_name("ptdisk", COLOR_CONFIG)+" is True."))
+         "<br><br>This value will be used only if "+enc_name("ptdisk", COLOR_CONFIG)+" is True."))
 
 
         x = self.label_flprefix = QLabel()
         y = self.lineEdit_flprefix = QLineEdit()
         # y.editingFinished.connect(self._on_editing_finished)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.installEventFilter(self)
         x.setBuddy(y)
         pp.append((x, y, "flprefi&x", "prefix of filename", COLOR_CONFIG,
          "pfant will create three output files:<ul>"
-         "<li>"+_enc_name("flprefix", COLOR_CONFIG)+".cont (continuum),"
-         "<li>"+_enc_name("flprefix", COLOR_CONFIG)+".norm (normalized spectrum), and"
-         "<li>"+_enc_name("flprefix", COLOR_CONFIG)+".spec (continuum*normalized)</ul>"))
+         "<li>"+enc_name("flprefix", COLOR_CONFIG)+".cont (continuum),"
+         "<li>"+enc_name("flprefix", COLOR_CONFIG)+".norm (normalized spectrum), and"
+         "<li>"+enc_name("flprefix", COLOR_CONFIG)+".spec (continuum*normalized)</ul>"))
 
 
 
         x = self.label_pas = QLabel()
         y = self.lineEdit_pas = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
         pp.append((x, y, "&pas", "calculation step (&Aring;)", COLOR_CONFIG,
-         "The synthetic spectrum will have points "+_enc_name("pas", COLOR_CONFIG)+" &Aring; distant from "
+         "The synthetic spectrum will have points "+enc_name("pas", COLOR_CONFIG)+" &Aring; distant from "
          "each other.<br><br>Use this to specify the resolution of the synthetic spectrum."))
 
-        # KKK is a repeated description
-        KKK = "The calculation interval for the synthetic spectrum is given by "\
-              "["+_enc_name("llzero", COLOR_CONFIG)+", "+_enc_name("llfin", COLOR_CONFIG)+"]"
         x = self.label_llzero = QLabel()
         y = self.lineEdit_llzero = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
-        pp.append((x, y, "ll&zero", "calculation beginning (&Aring;)", COLOR_CONFIG, KKK))
+        pp.append((x, y, "ll&zero", "lower boundary of synthesis interval (&Aring;)", COLOR_CONFIG, LLZERO_LLFIN))
 
         x = self.label_llfin = QLabel()
         y = self.lineEdit_llfin = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
-        pp.append((x, y, "&llfin", "calculation calculation end (&Aring;)", COLOR_CONFIG, KKK))
+        pp.append((x, y, "&llfin", "upper boundary of synthesis interval (&Aring;)", COLOR_CONFIG, LLZERO_LLFIN))
 
         x = self.label_aint = QLabel()
         y = self.lineEdit_aint = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
         pp.append((x, y, "&aint", "length of sub-interval (&Aring;)", COLOR_CONFIG,
          "This is length of each calculation sub-interval "
-         "(the calculation interval ["+_enc_name("llzero", COLOR_CONFIG)+", "+_enc_name("llfin", COLOR_CONFIG)+"] is split in sub-intervals of roughly "+_enc_name("aint", COLOR_CONFIG)+" &Aring;)."
-         "<br><br>Note: "+_enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+_enc_name("pas", COLOR_CONFIG)+"."))
+         "(the calculation interval ["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"] is split in sub-intervals of roughly "+enc_name("aint", COLOR_CONFIG)+" &Aring;)."
+         "<br><br>Note: "+enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+enc_name("pas", COLOR_CONFIG)+"."))
 
         x = self.label_fwhm = QLabel()
         y = self.lineEdit_fwhm = QLineEdit()
         y.installEventFilter(self)
-        y.textEdited.connect(self._on_edited)
+        y.textEdited.connect(self.on_edited)
         y.setValidator(QDoubleValidator(0, 10, 5))
         x.setBuddy(y)
         pp.append((x, y, "f&whm", "convolution full-width-half-maximum", COLOR_CONFIG,
@@ -186,7 +176,7 @@ class WFileMain(QWidget):
         for i, (label, edit, name, short_descr, color, long_descr) in enumerate(pp):
             # label.setStyleSheet("QLabel {text-align: right}")
             assert isinstance(label, QLabel)
-            label.setText(_enc_name_descr(name, short_descr, color))
+            label.setText(enc_name_descr(name, short_descr, color))
             label.setAlignment(Qt.AlignRight)
             la.addWidget(label, i, 0)
             la.addWidget(edit, i, 1)
@@ -215,9 +205,9 @@ class WFileMain(QWidget):
     def load(self, x):
         assert isinstance(x, FileMain)
         self.f = x
-        self._update_from_file_main()
+        self.__update_from_file_main()
         # this is called to perform file validation upon loading
-        self._update_file_main()
+        self.__update_file_main()
         self.setEnabled(True)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
@@ -233,24 +223,24 @@ class WFileMain(QWidget):
             for label, obj, name, short_descr, color, long_descr in self._map:
                 if obj_focused == obj:
                     text = "%s<br><br>%s" % \
-                           (_enc_name(name.replace("&", ""), color), long_descr)
+                           (enc_name(name.replace("&", ""), color), long_descr)
                     break
-            self._set_descr_text(text)
+            self.__set_descr_text(text)
         return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Slots
 
-    def _on_edited(self):
+    def on_edited(self):
         # print "THE SENDER IS ", self.sender()
         if self.flag_process_changes:
-            self._update_file_main()
+            self.__update_file_main()
             self.edited.emit()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Internal gear
 
-    def _update_from_file_main(self):
+    def __update_from_file_main(self):
         self.flag_process_changes = False
         try:
             o = self.f
@@ -258,6 +248,7 @@ class WFileMain(QWidget):
             self.lineEdit_teff.setText(str(o.teff))
             self.lineEdit_glog.setText(str(o.glog))
             self.lineEdit_asalog.setText(str(o.asalog))
+            self.lineEdit_vvt.setText(str(o.vvt[0]))
             self.lineEdit_nhe.setText(str(o.nhe))
             self.checkBox_ptdisk.setChecked(o.ptdisk)
             self.lineEdit_mu.setText(str(o.mu))
@@ -270,15 +261,15 @@ class WFileMain(QWidget):
         finally:
             self.flag_process_changes = True
 
-    def _set_error_text(self, x):
+    def __set_error_text(self, x):
         """Sets text of labelError."""
         self.labelError.setText(x)
 
-    def _set_descr_text(self, x):
+    def __set_descr_text(self, x):
         """Sets text of labelDescr."""
         self.textEditDescr.setText(x)
 
-    def _update_file_main(self):
+    def __update_file_main(self):
         o = self.f
         emsg, flag_error = "", False
         ss = ""
@@ -292,6 +283,12 @@ class WFileMain(QWidget):
             ss = "asalog"
             o.asalog = float(self.lineEdit_asalog.text())
             o.afstar = o.asalog  # makes afstar match asalog
+            ss = "vvt"
+            temp = float(self.lineEdit_vvt.text())
+            if temp > 900:
+                raise RuntimeError("Not prepared for depth-variable velocity "
+                 "of microturbulence (maximum allowed: 900)")
+            o.vvt = [temp]
             ss = "nhe"
             o.nhe = float(self.lineEdit_nhe.text())
             ss = "ptdisk"
@@ -326,4 +323,4 @@ class WFileMain(QWidget):
             emsg = "<b>Invalid</b>: "+emsg
             # ShowError(str(E))
         self.flag_valid = not flag_error
-        self._set_error_text(emsg)
+        self.__set_error_text(emsg)

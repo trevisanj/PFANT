@@ -39,9 +39,9 @@ class Options(object):
     def __init__(self):
         # innewmarcs, hydro2, pfant, nulbad
         self.logging_level = None
-        self.logging_screen = None
-        self.logging_dump = None
-        self.logging_fn_dump = None
+        self.logging_console = None
+        self.logging_file = None
+        self.fn_logging = None
         self.fn_main = None
         self.explain = None
         self.play = None
@@ -64,7 +64,7 @@ class Options(object):
         # innewmarcs
         self.open_status = None
         self.fn_moddat = None
-        self.fn_gridslist = None
+        self.fn_gridsmap = None
         self.modcode = None
         self.tirb = None
 
@@ -93,6 +93,7 @@ class Options(object):
         self.zinf = None
         self.pas = None
         self.aint = None
+        self.interp = None
 
         # nulbad
         self.norm = None

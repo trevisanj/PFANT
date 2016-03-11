@@ -138,9 +138,9 @@ contains
     open(unit=UNIT_DAT,file=config_fn_moddat,status='unknown')
 
     call log_info('Opening binary file '//trim(config_fn_modeles)//&
-     ' in status='//trim(config_open_status))
+     ' in "unknown" status=')
 
-    open(unit=UNIT_MOD,access='direct',status=config_open_status, &
+    open(unit=UNIT_MOD,access='direct',status='unknown', &
      file=config_fn_modeles, recl=1200)
 
     ! **********************Boucle sur l'abondance*******************

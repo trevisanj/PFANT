@@ -478,8 +478,8 @@ module config
   !---
   character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
   character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
-  character*64 :: config_logging_fn_dump = '?'         !< option: --logging_fn_dump
-  logical :: config_logging_screen = .true., &  !< option --logging_screen
+  character*64 :: config_fn_logging = '?'         !< option: --logging_fn_dump
+  logical :: config_logging_console = .true., &  !< option --logging_console
              config_logging_dump   = .false., & !< option --logging_dump
              config_explain        = .false., & !< option --explain
              config_no_molecules   = .false., & !< option --no_molecules
@@ -506,7 +506,6 @@ module config
   ! innewmarcs-only
   !---
   integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
-  character*20 :: config_open_status = 'unknown' !< option: --open_status
   character*64 :: &
    config_fn_moddat = 'modeles.dat', &      !< option: --fn_moddat
    config_fn_gridsmap = 'gridsmap.dat'      !<
@@ -571,8 +570,7 @@ module config
   ! nulbad-only
   !---
   logical :: &
-   config_norm = .true., &                       !< option: --norm
-   config_flam = .true., &                       !< option: --flam
+   config_flam = .false., &                      !< option: --flam
    config_convol = .true.                        !< option: --convol
   ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
   ! take values within dfile:main
@@ -636,10 +634,10 @@ contains
 
     ! logging module...
     logging_fn_progress = config_fn_progress
-    if (config_logging_fn_dump .eq. '?') then
-      config_logging_fn_dump = to_lower(execonf_name)//'_dump.log'
+    if (config_fn_logging .eq. '?') then
+      config_fn_logging = to_lower(execonf_name)//'_dump.log'
     end if
-    logging_fn_dump = config_logging_fn_dump
+    logging_fn_dump = config_fn_logging
 
     call print_welcome(6)
   end
@@ -709,7 +707,7 @@ contains
      IND//'error<br>'//&
      IND//'critical<br>'//&
      IND//'halt')
-    call add_option('ihpn', 'logging_screen',   ' ', .true., 'T/F', logical2str(config_logging_screen), &
+    call add_option('ihpn', 'logging_console',   ' ', .true., 'T/F', logical2str(config_logging_console), &
      'Print log messages to standard output (usually monitor screen)?')
     call add_option('ihpn', 'logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
       'Print log messages to dump log file?')
@@ -748,9 +746,8 @@ contains
     call add_option('hp', 'fn_absoru2',       ' ', .true., 'file name', config_fn_absoru2, &
      'input file name - absoru2')
     call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
-     'input file name - table containing table with<br>'//&
+     'input file name - contains table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-     !>@todo erplace "calculus interval" with "synthesis interval"
     call add_option('hp', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
      'Lower boundary of calculation interval (angstrom)')
     call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
@@ -759,31 +756,30 @@ contains
     !
     ! innewmarcs-only
     !
-    call add_option('i', 'open_status',' ', .true., 'string', config_open_status, &
-     'File open mode for binary file<br>'//&
-     IND//'new: file must not exist<br>'//&
-     IND//'old: file must exist<br>'//&
-     IND//'replace: replaces file if exists, otherwise creates new')
     call add_option('i', 'fn_moddat',' ', .true., 'file name', config_fn_moddat, &
      'ASCII file containing information about atmospheric model (created by innewmarcs)')
     call add_option('i', 'modcode',' ', .true., 'string up to 25 characters', config_modcode, &
      '"Model name"')
     call add_option('i', 'tirb',' ', .true., 'string up to 15 characters', config_tirb, &
      '"Titre"')
-    call add_option('hp', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
+    call add_option('i', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
      'input file name - file containing list of MARCS models file names')
 
     !
     ! hydro2-only
     !
     call add_option('h', 'ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
-     'option for interpolation subroutines<br>'//&
+     'point of disk?<br>'//&
+     IND//'This option is used to simulate a spectrum acquired '//&
+     IND//'out of the center of the star disk.<br><br>'//&
+     IND//'This is useful if the synthetic spectrum will be compared with an '//&
+     IND//'observed spectrum acquired out of the center of the star disk.<br><br>'//&
      IND//'T: 7-point integration<br>'//&
-     IND//'F: 6- or 26-point integration, depending on option kik')
+     IND//'F: 6- or 26-point integration, depending on option --kik')
     call add_option('hp', 'kik', ' ', .TRUE., '0/1', int2str(config_kik), &
-     'option for interpolation subroutines<br>'//&
-     IND//'0: integration using 6/7 points depending on option ptdisk;<br>'//&
-     IND//'1: 26-point integration)')
+     'option for flux integration<br>'//&
+     IND//'0: integration using 6/7 points depending on option --ptdisk;<br>'//&
+     IND//'1: 26-point integration')
     call add_option('h', 'amores',' ', .true., 'T/F', logical2str(int2logical(config_amores)), &
      'AMOrtissement de RESonnance?')
 
@@ -829,7 +825,7 @@ contains
      IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
     call add_option('p', 'pas', ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
-     'Calculation step (angstrom)')
+     'Calculation delta-lambda (angstrom)')
     call add_option('p', 'aint', ' ', .true., 'real value', '<main_aint> '//FROM_MAIN, &
      'Interval length per iteration (angstrom)')
 
@@ -850,19 +846,17 @@ contains
     !
     call add_option('n', 'fn_flux', ' ', .true., 'file name', &
      '<main_flprefix>.norm '//FROM_MAIN, &
-     'Flux file name')
-    call add_option('n', 'norm',     ' ', .true., 'T/F', logical2str(config_norm), &
-      'Is spectrum normalized?')
+     'flux file name')
     call add_option('n', 'flam',     ' ', .true., 'T/F', logical2str(config_flam), &
       'Fnu to FLambda transformation?')
-    call add_option('n', 'fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad', &
+    call add_option('n', 'fn_cv',     ' ', .true., 'file name', '<flux file name>.nulbad.<fwhm>', &
       'output file name, which will have the convolved spectrum')
     call add_option('n', 'pat',      ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
-      'Wavelength step of the output spectrum (angstrom)')
+      'wavelength delta-lambda of the output spectrum (angstrom)')
     call add_option('n', 'convol',   ' ', .true., 'T/F', logical2str(config_convol), &
       'Apply convolution?')
     call add_option('n', 'fwhm',     ' ', .true., 'real value', '<main_fwhm> '//FROM_MAIN, &
-      'Full-width-half-maximum of Gaussian function')
+      'full-width-half-maximum of Gaussian function')
   end
 
 
@@ -910,9 +904,9 @@ contains
         if (res .eq. HANDLER_OK) then
           call parse_aux_log_assignment('logging level', to_lower(o_arg))
         end if
-      case ('logging_screen')
-        config_logging_screen = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_logging_screen', logical2str(config_logging_screen))
+      case ('logging_console')
+        config_logging_console = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_logging_console', logical2str(config_logging_console))
       case ('logging_dump')
         config_logging_dump = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_logging_dump', logical2str(config_logging_dump))
@@ -922,11 +916,9 @@ contains
       case ('fn_main')
         call parse_aux_assign_fn(o_arg, config_fn_main, 'config_fn_main')
       case ('logging_fn_dump')
-        call parse_aux_assign_fn(o_arg, config_logging_fn_dump, 'config_logging_fn_dump')
+        call parse_aux_assign_fn(o_arg, config_fn_logging, 'config_fn_logging')
       case ('fn_progress')
         call parse_aux_assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
-      case ('open_status')
-        call parse_aux_assign_fn(o_arg, config_open_status, 'open_status')
       case ('fn_modeles')
         call parse_aux_assign_fn(o_arg, config_fn_modeles, 'fn_modeles')
       case ('fn_moddat')
@@ -1055,9 +1047,6 @@ contains
         call parse_aux_log_assignment('config_flam', logical2str(config_flam))
       case ('fn_flux')
         call parse_aux_assign_fn(o_arg, config_fn_flux, 'config_fn_flux')
-      case ('norm')
-        config_norm = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_norm', logical2str(config_norm))
       case ('fn_gridsmap')
         call parse_aux_assign_fn(o_arg, config_fn_gridsmap, 'config_fn_gridsmap')
 

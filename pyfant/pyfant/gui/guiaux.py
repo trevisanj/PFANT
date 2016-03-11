@@ -2,7 +2,9 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
            "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
            "ShowError", "ShowMessage", "ResetTableWidget",
-           "COLOR_ERROR", "INITIALIZES_SUN", "check_return_space"]
+           "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR",
+           "INITIALIZES_SUN", "check_return_space",
+           "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -10,14 +12,44 @@ from .a_XParametersEditor import *
 import numpy as np
 
 
+
+def enc_name_descr(name, descr, color="#333333"):
+    """Encodes html given name and description."""
+    return enc_name(name, color)+"<br>"+descr
+
+
+def enc_name(name, color="#FFFFFF"):
+    """Encodes html given name."""
+    return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
+           (color, name)
+
+
+# # Colors used in two or more different situations
+# Error color
+COLOR_ERROR = "#AA0000" # sortta wine
+# Color for labels indicating a star parameter
+COLOR_STAR = "#2A8000"
+# Color for labels indicating a software configuration parameter
+COLOR_CONFIG = "#BD6909"
+
+
 # Messages shared in two or more different situations
 INITIALIZES_SUN = "Initializes fields with default parameters (Sun)"
 PARAMS_INVALID = "Can't save, invalid parameter values(s)!"
+LLZERO_LLFIN = "The calculation interval for the synthetic spectrum is given by "\
+      "["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"]"
+DESCR_PTDISK = """
+This option is used to simulate a spectrum acquired
+out of the center of the star disk.<br><br>
+This is useful if the synthetic spectrum will be compared with an
+observed spectrum acquired out of the center of the star disk.
+<ul>
+    <li>True: 7-point integration
+    <li>False: 6- or 26-point integration, depending on option --kik
+</ul>"""
 
-# Colors used in two or more different situations
-COLOR_ERROR = "#AA0000" # sortta wine
 
-# Standard font to be used in all GUIs
+# Standard font to be use   d in all GUIs
 MONO_FONT = QFont("not_a_font_name")
 MONO_FONT.setStyleHint(QFont.TypeWriter)
 
@@ -30,6 +62,8 @@ SOL_ATTR_NAMES = ["lmbdam", "sj", "jj"]
 # This is shared between XFileAtoms and XAtomLinesEditor
 ATOM_HEADERS = ["lambda", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
+
+
 
 
 def check_return_space(event, callable_):

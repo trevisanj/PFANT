@@ -46,9 +46,6 @@ module nulbad_calc
   ! x_* values may come either from command line or dfile:main
   real*8 :: x_fwhm, x_pat
   character*128 :: x_fn_flux, x_fn_cv, x_flprefix
-  !> Whether or not the spectrum is normalized.
-  !> @sa source for nulbad_init()
-  logical x_norm
 contains
 
   !=======================================================================================
@@ -77,7 +74,6 @@ contains
     x_pat = config_pat
     x_fn_flux = config_fn_flux
     x_fn_cv = config_fn_cv
-    x_norm = config_norm
     if (config_fwhm .eq. -1) then
       if(.not. main_exists) &
         call pfant_halt('--fwhm option not set and '''//&
@@ -92,12 +88,7 @@ contains
     call read_spectrum()
 
     if (config_pat .eq. -1) then
-      if (.not. main_exists) then
-        x_pat = rs_dpas
-      else
-        call assure_read_main(config_fn_main)
-        x_pat = main_pas
-      end if
+      x_pat = rs_dpas
       call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
     if (config_flprefix .eq. '?' .and. config_fn_flux .eq. '?') then
@@ -113,11 +104,7 @@ contains
       x_flprefix = config_flprefix
     end if
     if (config_fn_flux .eq. '?') then
-      if (x_norm) then
-        x_fn_flux = trim(x_flprefix)//'.norm'
-      else
-        x_fn_flux = trim(x_flprefix)//'.spec'
-      end if
+      x_fn_flux = trim(x_flprefix)//'.norm'
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
     end if
     if (config_fn_cv .eq. '?') then
@@ -251,14 +238,10 @@ contains
     ! # Transformation de Fnu en Flambda
     if(config_flam) then
       do k = 1, ktot
-        if (.not. x_norm) then
-          ca = 1.e+11/(lambd(k)**2)
-          !  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
-          cb = ca*C
-          fl(k) = ffnu(k)*cb
-        else
-          fl(k) = ffnu(k)
-        end if
+        ca = 1.e+11/(lambd(k)**2)
+        !  ffnu(10(-5) etait x 10(5), donc cte=10(11) et pas 10(16)
+        cb = ca*C
+        fl(k) = ffnu(k)*cb
       end do
 
       write(lll,122) rs_dpas, rs_ktot
@@ -461,8 +444,8 @@ end
 !> - modifiquei para nao normalizar o espectro
 !> - a opcao config_convol=F nao estava imprimindo o lambda, corrigi
 !> P.Coelho, dez 2003
-!> - se config_norm = .TRUE. (saida do pfant ja eh normalizada), nao
-!>  altera o valor do fluxo
+!> - se norm = .TRUE. (saida do pfant ja eh normalizada), nao altera o valor do fluxo.
+!>   (JT) ficou so a opcao "flam", opcao "norm" foi removida por razao de redundancia (IF (norm) dentro de IF (flam))
 !> @endverbatim
 
 program nulbad

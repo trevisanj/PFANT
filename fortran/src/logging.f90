@@ -57,7 +57,7 @@ module logging
   !> Full path to file to record progress indication
   character*256 :: logging_fn_progress = 'progress.txt'
   !> If set to .true., will display messages do standard output (usually the screen)
-  logical :: logging_screen = .true.
+  logical :: logging_console = .true.
   !> If set to .true., will echo logged messages into dump file specified by logging_fn_dump,
   !> besides logging to standard output.
   logical :: logging_dump = .false.
@@ -300,7 +300,7 @@ contains
       end select
     end if
 
-    if (logging_screen) then
+    if (logging_console) then
       call do_writing(6)
     end if
 
