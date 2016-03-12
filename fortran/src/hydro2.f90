@@ -1,3 +1,18 @@
+! This file is part of PFANT.
+!
+! PFANT is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PFANT is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -333,90 +348,13 @@ module hydro2_x
   use config
   implicit none
 
-  !> Option for subroutine fluxis() (6/7/26 points for integration).
-  !> @note This was originally set to .FALSE. but I opened it for configuration
-  !>       because this information is available inside dfile:main
-  logical :: x_ptdisk
-
-  real*8 :: x_teff, x_glog, x_asalog
-  integer :: x_inum
-
-  real*8 :: x_vvt
-  logical :: x_amores
-
   real*8 :: x_llzero, x_llfin
 
 contains!> Initializes x_* variables
 
   subroutine hydro2_init_x()
 
-    if (config_ptdisk .eq. -1) then
-      call assure_read_main(config_fn_main)
-      x_ptdisk = main_ptdisk
-    else
-      x_ptdisk = int2logical(config_ptdisk)
-    end if
-
-
-    if (config_amores .eq. -1) then
-      ! No default because it was originally asking user
-      call pfant_halt('Option --amores has not been set')
-    else
-      x_amores = int2logical(config_amores)
-    end if
-
-    if (config_kq .eq. -1) then
-      ! No default because it was originally asking user
-      call pfant_halt('Option --amores has not been set')
-    else
-      x_amores = int2logical(config_amores)
-    end if
-
     ! duplicated in innewmarcs
-    x_teff = config_teff
-    x_glog = config_glog
-    x_asalog = config_asalog
-    x_inum = config_inum
-    if (config_inum .lt. 1) then
-      call assure_read_main(config_fn_main)
-      if (main_inum .lt. 1) then
-        ! note: here this consistency check is considered an assertion, because it should
-        ! be validated upon file reading.
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-      x_inum = main_inum
-      call parse_aux_log_assignment('x_inum', int2str(x_inum))
-    end if
-    if (config_teff .eq. -1) then
-      call assure_read_main(config_fn_main)
-      x_teff = main_teff
-      call parse_aux_log_assignment('x_teff', real82str(x_teff, 1))
-    end if
-    if (config_glog .eq. -1)  then
-      call assure_read_main(config_fn_main)
-      x_glog = main_glog
-      call parse_aux_log_assignment('x_glog', real82str(x_glog, 3))
-    end if
-    if (config_asalog .eq. -1) then
-      call assure_read_main(config_fn_main)
-      !> @todo issue big using main_asalog instead of main_afstar
-      x_asalog = main_asalog
-      call parse_aux_log_assignment('x_asalog', real82str(x_asalog, 3))
-    end if
-
-
-    x_vvt = config_vvt
-    if (config_vvt .eq. -1) then
-      call assure_read_main(config_fn_main)
-
-      if (main_ivtot .gt. 1) then
-        call pfant_halt('Tried to read vvt from main configuration file, '//&
-         'but not prepared for multiple microturbulence velocities')
-      end if
-      x_vvt = main_vvt(1)
-      call parse_aux_log_assignment('x_vvt', real82str(x_vvt, 3))
-    end if
-
     x_llzero = config_llzero
     if (config_llzero .eq. -1) then
       call assure_read_main(config_fn_main)
@@ -453,6 +391,7 @@ module hydro2_calc
   use hydro2_x
   use hydro2_math
   use absoru
+  use turbul
 
   implicit none
 
@@ -520,7 +459,7 @@ module hydro2_calc
   real*8 :: m_al(MAX_FILETOH_JMAX, MAX_MODELES_NTOT)
   real*8, dimension(0:MAX_MODELES_NTOT) :: m_bpl, m_tauc
   real*8, dimension(MAX_FILETOH_JMAX) :: r
-  real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, m_pelog, m_hyn, m_vt
+  real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, m_pelog, m_hyn
 
 
   !=====
@@ -558,7 +497,7 @@ contains
     real*8, dimension(MAX_MODELES_NTOT) :: ne, fl
     real*8 :: fc, zut1, zut2, zut3
 
-    integer :: i, iq, j, jj, mmu, n
+    integer :: i, iq, j, jj, n
 
 
     ! Note that elements within structure are copied
@@ -597,7 +536,7 @@ contains
       86 format('  IJ    =',10I5)
       call log_info(lll)
 
-      if(x_amores) call log_info(' AMORTISSEMENT RESONANCE')
+      if(config_amores) call log_info(' AMORTISSEMENT RESONANCE')
       if(IS_STARK) call log_info(' ECRITURE ELARG. STARK')
     end if
 
@@ -608,7 +547,8 @@ contains
 
     do  i=1,modeles_ntot
       m_pelog(i)=log10(modeles_pe(i))
-      m_vt(i)=x_vvt*1.e+5
+      ! (JT) Now uses turbul_vt
+      ! m_vt(i)=x_vvt*1.e+5
     end do
 
     call abonio()
@@ -664,7 +604,7 @@ contains
       call log_debug(lll)
       do i = 1, modeles_ntot
         write(lll,11) modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
-         m_vt(i),ne(i),m_toth(i),i
+         turbul_vt(i),ne(i),m_toth(i),i
         11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
         call log_debug(lll)
       end do
@@ -678,14 +618,13 @@ contains
       call pfant_halt(lll)
     end if
 
-    mmu = 0 ! (note: this was uninitialized, has been initialized to zero)
-    call fluxis(mmu, fl,fc)
+    call fluxis(fl,fc)
     do j=1,m_jmax
       r(j)=fl(j)/fc
     end do
 
     call log_info(' Parametres du modele')
-    write(lll,70) x_teff,x_glog,x_asalog,modeles_asalalf,modeles_nhe
+    write(lll,70) main_teff,main_glog,main_asalog,modeles_asalalf,modeles_nhe
     70 format(' TEFF=',F7.0,3X,'LOG G=',F5.2, 3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  NHE=',F6.3)
     call log_info(lll)
     write (lll,*) modeles_tit
@@ -702,11 +641,11 @@ contains
     call log_info(lll)
     if(config_kq .eq. 1) call log_info('PROFIL QUASI-STATIQUE')
     if(config_kq .ne. 1) call log_info('THEORIE DE GRIEM')
-    if(x_amores) call log_info('CALCUL DE L AMORTISSEMENT DE RESONNANCE')
-    if(.not. x_amores) call log_info('ON NEGLIGE AMORTISSEMENT DE RESONNANCE')
+    if(config_amores) call log_info('CALCUL DE L AMORTISSEMENT DE RESONNANCE')
+    if(.not. config_amores) call log_info('ON NEGLIGE AMORTISSEMENT DE RESONNANCE')
     if(J1 .eq. 1) call log_info('PAS DE CONVOLUTION AVEC NOYAU DOPPLER')
     if(J1 .eq. 0) then
-      write(lll,406)x_vvt
+      write(lll,406)main_vvt(1)
       406 format(30X,'CONVOLUTION STARK-DOPPLER',10X,'VT=', F5.1,'KM/S')
       call log_info(lll)
     end if
@@ -728,7 +667,7 @@ contains
     zut2 = 1.
     zut3 = 0.0001
 
-    write(17,100) modeles_tit,x_teff,x_glog,x_asalog,modeles_nhe
+    write(17,100) modeles_tit,main_teff,main_glog,main_asalog,modeles_nhe
     100 format(1X,A,2X,F6.0,3(1X,F6.2))
     write(17,'(I6,2F6.1,2X,2F8.4)') modeles_ntot, zut1, zut1, zut2, zut3
     write(17,'(i4)')m_jmax
@@ -776,7 +715,7 @@ contains
     call log_debug(ENTERING//' abonio')
 
     coefalf = 10**modeles_asalalf
-    asasol = 10**x_asalog
+    asasol = 10**main_asalog
 
     do j = 1,absoru2_nm
       ialfa = 0
@@ -1066,7 +1005,7 @@ contains
       cam1 = cne**0.1666667
       fo = 1.2532e-9*cam
       fac = 1.0e8*m_th%c1/fo
-      alfad = m_th%clam*sqrt(dcte*t+m_vt(i)*m_vt(i))/(fo*cl)
+      alfad = m_th%clam*sqrt(dcte*t+turbul_vt(i)*turbul_vt(i))/(fo*cl)
       dld = alfad*fo
       az(i)=ecte*m_hyn(i)*cl2/(alfad*fo)
       ddop = 0.8325*alfad
@@ -1327,7 +1266,7 @@ contains
         vx(l1)=alfa(j)
         1013 al_(l1)=log10(lv(j))
 
-      if (.not.x_amores) go to 4013
+      if (.not.config_amores) go to 4013
 
       call pronor() ! calculates ax
 
@@ -1371,7 +1310,7 @@ contains
       call log_debug(lll)
 
       71 continue
-      if (x_amores) go to 4100
+      if (config_amores) go to 4100
 
       if (ds-ddop) 1070,1070,1071
 
@@ -1943,8 +1882,7 @@ contains
   !>
 
 
-  subroutine fluxis(mmu, fl, fc)
-    integer, intent(in) :: mmu
+  subroutine fluxis(fl, fc)
     real*8, intent(out), dimension(MAX_MODELES_NTOT) :: fl
     real*8, intent(out) :: fc
 
@@ -1965,11 +1903,11 @@ contains
      TTB(26) = (/0.,0.05,0.1,0.20,0.30,0.45,0.60,0.80,1.,1.2,1.4,1.6,1.8, &
       12.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4,3.6,3.8,4.2,4.6,5.487/)
 
-    if (x_ptdisk) then
+    if (main_ptdisk) then
       ipoint = 7
       do i = 1,ipoint
         cc(i)=ccp(i)
-        tt(i)=ttp(i)*mmu
+        tt(i)=ttp(i)*main_mu
         end do
     else
       if (config_kik.eq.0) then
@@ -2053,6 +1991,9 @@ end
 !> En sortie:
 !> @li Un fichier de trace compatible avec GRAFIC (Nom demande)
 !>
+!> (JT) Now the velocity of microturbulence may vary with atmospheric depth;
+!> uses dfile:main and subroutine turbul_(), same as pfant
+!>
 !> @endverbatim
 
 program hydro2
@@ -2065,6 +2006,7 @@ program hydro2
   use logging
   use dimensions
   use misc
+  use turbul
   implicit none
   integer i, cnt_in, in_idxs(MAX_FILETOH_NUM_FILES)
   type(hmap_row) :: th
@@ -2083,6 +2025,8 @@ program hydro2
   write(lll, 10) x_llzero, x_llfin
   10 format ('Calculation interval: [',F14.3,',',F14.3,']')
   call log_info(lll)
+
+  call turbul_()
 
   cnt_in = 0
   do i = 1, hmap_n

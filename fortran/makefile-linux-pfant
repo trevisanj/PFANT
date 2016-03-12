@@ -3,27 +3,27 @@
 #
 
 SRCS_f90d1 = \
-pfant.f90 \
-absoru.f90 \
-misc.f90 \
-logging.f90 \
 config.f90 \
-readers.f90 \
+pfant.f90 \
+misc.f90 \
 dimensions.f90 \
-misc_math.f90 
+absoru.f90 \
+readers.f90 \
+misc_math.f90 \
+logging.f90 
 
 SRCS_fd1 = \
 absoru_data.f 
 
 OBJS_f90d1 = \
-pfant.o \
-absoru.o \
-misc.o \
-logging.o \
 config.o \
-readers.o \
+pfant.o \
+misc.o \
 dimensions.o \
-misc_math.o 
+absoru.o \
+readers.o \
+misc_math.o \
+logging.o 
 
 OBJS_fd1 = \
 absoru_data.o 
@@ -37,7 +37,7 @@ EXE_DIR = bin/
 EXE = pfant
 FC = gfortran
 IDIR = 
-CFLAGS = -Wall -O2   -J$(OBJS_DIR) $(IDIR)
+CFLAGS = -Wall -O2  -J$(OBJS_DIR) $(IDIR)
 LFLAGS = -s 
 LIBS = 
 
@@ -63,42 +63,43 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-pfant.o: \
-    pfant.f90 \
-    absoru.o \
-    config.o \
-    misc_math.o \
-    logging.o \
-    dimensions.o \
-    misc.o \
-    readers.o
-absoru.o: \
-    absoru.f90 \
-    absoru_data.o \
-    readers.o
-misc.o: \
-    misc.f90 \
-    logging.o \
-    dimensions.o
-absoru_data.o: \
-    absoru_data.f
-logging.o: \
-    logging.f90
 config.o: \
     config.f90 \
     logging.o \
     misc.o
+pfant.o: \
+    pfant.f90 \
+    absoru.o \
+    config.o \
+    dimensions.o \
+    misc_math.o \
+    logging.o \
+    misc.o \
+    readers.o
+misc.o: \
+    misc.f90 \
+    dimensions.o \
+    logging.o
+dimensions.o: \
+    dimensions.f90
+absoru.o: \
+    absoru.f90 \
+    absoru_data.o \
+    readers.o
 readers.o: \
     readers.f90 \
     config.o \
-    logging.o \
     dimensions.o \
-    misc.o
-dimensions.o: \
-    dimensions.f90
+    logging.o \
+    misc.o \
+    misc_math.o
 misc_math.o: \
     misc_math.f90 \
-    logging.o \
     dimensions.o \
+    logging.o \
     misc.o
+logging.o: \
+    logging.f90
+absoru_data.o: \
+    absoru_data.f
 

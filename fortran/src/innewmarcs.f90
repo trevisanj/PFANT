@@ -1,69 +1,17 @@
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Declaration and initialization of x_* variables
-!>
-!> These variable values may come either from dfile:main or command-line options.
-
-module innewmarcs_x
-  use logging
-  use reader_main
-  use config
-  implicit none
-
-  ! x_* values may come either from command line or dfile:main
-  real*4 :: x_teff, x_glog, x_asalog
-  character(LEN_TIRB) :: x_tirb
-  integer :: x_inum
-
-contains
-
-  !> Initializes x_* variables
-
-  subroutine innewmarcs_init_x()
-
-    ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from dfile:main
-     x_teff = real(config_teff)
-     x_glog = real(config_glog)
-     x_asalog = real(config_asalog)
-     x_inum   = config_inum
-
-     x_tirb = config_tirb
-    if (config_inum .lt. 1) then
-      call assure_read_main(config_fn_main)
-      if (main_inum .lt. 1) then
-        ! note: here this consistency check is considered an assertion, because it should
-        ! be validated upon file reading.
-        call pfant_halt('Invalid value for main_inum: '//int2str(main_inum), is_assertion=.true.)
-      end if
-      x_inum = main_inum
-      call parse_aux_log_assignment('x_inum', int2str(x_inum))
-    end if
-    if (config_tirb .eq. '?') then
-      call assure_read_main(config_fn_main)
-      x_tirb = main_titrav
-      call parse_aux_log_assignment('x_tirb', trim(x_tirb))
-    end if
-    if (config_teff .eq. -1) then
-      call assure_read_main(config_fn_main)
-      x_teff = real(main_teff)  ! explicit real(8)-to-real(4) conversion to shut up warning
-      call parse_aux_log_assignment('x_teff', real42str(x_teff, 1))
-    end if
-    if (config_glog .eq. -1)  then
-      call assure_read_main(config_fn_main)
-      x_glog = real(main_glog)
-      call parse_aux_log_assignment('x_glog', real42str(x_glog, 3))
-    end if
-    if (config_asalog .eq. -1) then
-      call assure_read_main(config_fn_main)
-      x_asalog = real(main_asalog)
-      call parse_aux_log_assignment('x_asalog', real42str(x_asalog, 3))
-    end if
-  end
-end
-
-
+! This file is part of PFANT.
+!
+! PFANT is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PFANT is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -72,7 +20,6 @@ module innewmarcs_calc
   use dimensions
   use reader_modeles
   use config
-  use innewmarcs_x
   use reader_gridsmap
   implicit none
 
@@ -217,10 +164,10 @@ contains
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
-      t1 = x_glog-rglog(1,1)
+      t1 = main_glog-rglog(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102)  rteff(1,1), x_glog
+      ! write(6,102)  rteff(1,1), main_glog
       ! 102 format('  modele interpole avec   Teff=',f9.3,' log g=', f9.3)
 
       call interpol(t0, t1, aa, bb, ee, ntot(iabon))
@@ -228,10 +175,10 @@ contains
 
       ! interpolation sur t
       t0 = rteff(2,1)-rteff(1,1)
-      t1 = x_teff-rteff(1,1)
+      t1 = main_teff-rteff(1,1)
 
       ! write(6,*) '  t0,t1 ',t0,t1
-      ! write(6,102) x_teff, x_glog
+      ! write(6,102) main_teff, main_glog
 
       if (iabon .eq. 1) then
         call interpol(t0, t1, ee, ff, z1, ntot(iabon))
@@ -283,7 +230,7 @@ contains
       ! call log_debug(lll)
 
       t0 = asalog2-asalog1
-      t1 = x_asalog-asalog1
+      t1 = main_asalog-asalog1
 
       !!!! call log_debug(' interpolation sur l''abondance avec')
       !!!! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
@@ -301,7 +248,7 @@ contains
     ! call log_debug(lll)
     ! write(lll,*) 'model 2 asalog, alpha=',asalog2,ralfa(2)
     ! call log_debug(lll)
-    ! write(lll,*) 'result: asalog, alpha=',x_asalog,asalalf
+    ! write(lll,*) 'result: asalog, alpha=',main_asalog,asalalf
     ! call log_debug(lll)
 
 
@@ -314,7 +261,7 @@ contains
       zz%pg(n) = 10**zz%pg(n)
     end do
 
-    tir=tira//x_tirb
+    tir=tira//main_titrav
     in = 0
 
     do n = 1,nntot
@@ -328,17 +275,17 @@ contains
     end do
 
     ! Writes binary file
-    write(UNIT_MOD, rec=x_inum) &
+    write(UNIT_MOD, rec=main_inum) &
      nntot,          &
-     x_teff, &
-     x_glog, &
-     x_asalog, &
+     sngl(main_teff), &
+     sngl(main_glog), &
+     sngl(main_asalog), &
      asalalf,        &
      dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
      tir,            &
      dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
-    write(UNIT_MOD,rec=x_inum+1) 9999  ! 4 bytes, i guess
+    write(UNIT_MOD,rec=main_inum+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
     bid0 = 0.0
@@ -348,7 +295,7 @@ contains
      config_modcode, &
      nntot,             &
      tostand,           &
-     x_glog,    &
+     main_glog,    &
      bid0,              &
      bid0
     do n = 1,nntot
@@ -364,7 +311,7 @@ contains
   end
 
 
-  !> Fill variables nomfipl, asalog1, asalog2 based on x_asalog
+  !> Fill variables nomfipl, asalog1, asalog2 based on main_asalog
   !>
   !> Note that intervals are open on upper boundary, i.e.,
   !> @verbatim
@@ -380,8 +327,8 @@ contains
     n = gridsmap_num_files
 
     do i = 1, n-1
-      if (x_asalog .ge. gridsmap_asalog(i) .and. &
-          x_asalog .lt. gridsmap_asalog(i+1)) then
+      if (main_asalog .ge. gridsmap_asalog(i) .and. &
+          main_asalog .lt. gridsmap_asalog(i+1)) then
         nomfipl(1) = gridsmap_fn(i)
         nomfipl(2) = gridsmap_fn(i+1)
         asalog1 = gridsmap_asalog(i) !sert a l'interpolation sur la metallicite
@@ -392,7 +339,7 @@ contains
     end do
 
     if (.not. flag_found) then
-      if (x_asalog .eq. gridsmap_asalog(n)) then
+      if (main_asalog .eq. gridsmap_asalog(n)) then
         ! This is the case where metallicity matches that of last file.
         ! Will use same file twice
         nomfipl(1) = gridsmap_fn(n)
@@ -405,7 +352,7 @@ contains
         nomfipl(2) = gridsmap_fn(n)
         asalog1 = gridsmap_asalog(n)
         asalog2 = gridsmap_asalog(n)
-        call log_warning('Metallicity '//real42str(x_asalog, 3)//' is out of interval ['//&
+        call log_warning('Metallicity '//real82str(main_asalog, 3)//' is out of interval ['//&
          real42str(gridsmap_asalog(1), 3)//', '//real42str(gridsmap_asalog(gridsmap_num_files), 3)//']')
       end if
     end if
@@ -552,8 +499,8 @@ contains
 
     call close_mod_file()
 
-    call log_debug('teff='//real42str(x_teff, 1))
-    call log_debug('glog='//real42str(x_glog, 3))
+    call log_debug('teff='//real82str(main_teff, 1))
+    call log_debug('glog='//real82str(main_glog, 3))
     call log_debug('nt='//int2str(nt))
     write(lll,*) 'idt=', (idt(i), i=1,nt)
     call log_debug(lll)
@@ -577,7 +524,7 @@ contains
 
     do i=1,nt
       jt2 = i
-      if(x_teff .lt. rteff(i)) go to 11
+      if(main_teff .lt. rteff(i)) go to 11
     end do
 
     11 continue
@@ -606,7 +553,7 @@ contains
 
       do i = 1,ngg
         jg2(jjt)=i
-        if(x_glog .lt. rglog(i)) go to 12
+        if(main_glog .lt. rglog(i)) go to 12
       end do
 
       12 continue
@@ -688,13 +635,12 @@ program innewmarcs
   use logging
   use welcome
   use innewmarcs_calc
-  use innewmarcs_x
   use reader_gridsmap
   implicit none
 
   execonf_name = 'inneWmarcs'
   call config_init()
+  call read_main(config_fn_main)
   call read_gridsmap(config_fn_gridsmap)
-  call innewmarcs_init_x()
   call innewmarcs_calc_()
 end

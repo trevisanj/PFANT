@@ -182,20 +182,21 @@ class WFileMain(QWidget):
             la.addWidget(edit, i, 1)
             edit.setToolTip(long_descr)
 
+
         x = self.textEditDescr = QTextEdit(self)
         x.setEnabled(False)
         # x.setGeometry(0, 0, 100, 0)
         # x.setWordWrap(True)
-        x.setStyleSheet("QTextEdit {color: #333333}")
+        x.setStyleSheet("QTextEdit {color: %s}" % COLOR_DESCR)
         la.addWidget(x, la.rowCount(), 0, 1, 2)
 
         x = self.labelError = QLabel(self)
-        x.setStyleSheet("QTextEdit {color: %s}" % COLOR_ERROR)
+        x.setStyleSheet("QLabel {color: %s}" % COLOR_ERROR)
 
         la.addWidget(self.labelError, la.rowCount(), 0, 1, 2)
 
         self.setEnabled(False)  # disabled until load() is called
-
+        style_checkboxes(self)
         self.flag_process_changes = True
 
 

@@ -1,18 +1,3 @@
-! This file is part of PFANT.
-!
-! PFANT is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! PFANT is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
-
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -579,8 +564,6 @@ contains
 
     !> @todo there was an intention here to *look for a model* that matches parameters in main.dat.
     !> hydro2 has the correct reader. but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
-
-    !> @todo will no longer compare with main_*, but probably with input variables because of hydro2, which uses x_teff, x_glog, x_asalog
 
     ! consistency check: these were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
@@ -1805,6 +1788,7 @@ contains
 end
 
 
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -1823,4 +1807,86 @@ module readers
   use reader_gridsmap
   use reader_atoms
   use reader_molecules
+end
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!> Module containing the subtourine turbul_()
+!>
+!> Prefix:
+!>   turbul_* calculated by turbul_()
+!>
+!> Note that this module is used by pfant and hydro2 now.
+
+module turbul
+  use dimensions
+  use reader_main
+  use reader_modeles
+  use config
+  use misc_math
+  implicit none
+
+  real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
+contains
+  !======================================================================================================================
+  !> This routine synchronizes the velocity(ies) of microturbulence informed in dfile:main
+  !> with the number of layers in the atmospheric model, interpolating the velocities
+  !> if necessary.
+  !>
+  !> (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
+
+  subroutine turbul_()
+    integer i, nt2, n
+
+    call log_debug('entree des turbul')
+    if(main_ivtot .eq. 1)   then
+      call log_debug('vt constant')
+      do n = 1, modeles_ntot
+        turbul_vt(n) = main_vvt(1)*1e5
+      end do
+    else
+      101 format(10f8.3)
+      call log_debug('vt variable avec la profondeur')
+      call log_debug('    log to')
+      write(lll,101) (main_tolv(i),i=1,main_ivtot)
+      call log_debug(lll)
+      call log_debug('    vt')
+      write(lll,101) (main_vvt(i),i=1,main_ivtot)
+      call log_debug(lll)
+
+      if(config_interp .eq. 1) then
+        call ftlin3(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
+      elseif (config_interp .eq. 2) then
+        !> @todo issue ask blb config_interp was hard-switched to 1, config_interp=2 path needs testing
+        call ft2(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
+      end if
+
+
+      nt2 = modeles_ntot-2
+      do n = 1, nt2, 3
+        102 format(3(i5,2f8.3,5x))
+        write(lll,102) n,modeles_t5l(n),turbul_vt(n),(n+1), modeles_t5l(n+1), &
+         turbul_vt(n+1),(n+2),modeles_t5l(n+2),turbul_vt(n+2)
+        call log_debug(lll)
+      end do
+
+      do n = 1, modeles_ntot
+        turbul_vt(n) = turbul_vt(n)*1e5
+      end do
+    end if
+
+    if(main_ivtot .eq. 1) then
+      131 format(' v microturbulence constante  =',f6.1,'km/s')
+      write(lll,131) main_vvt(1)
+      call log_debug(lll)
+    else
+      call log_debug('v microturbulence variable avec profondeur')
+    end if
+
+    return
+  end subroutine
 end

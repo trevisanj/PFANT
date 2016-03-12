@@ -505,21 +505,10 @@ module config
   !---
   ! innewmarcs-only
   !---
-  integer, parameter :: LEN_TIRB = 15 ! size of variable config_tirb
   character*64 :: &
    config_fn_moddat = 'modeles.dat', &      !< option: --fn_moddat
    config_fn_gridsmap = 'gridsmap.dat'      !<
   character*25 :: config_modcode = 'NoName' !< option: --modcode
-  !> option: --tirb
-  character(LEN_TIRB) :: config_tirb = '?'
-  !> option: --teff
-  real*8 :: config_teff = -1
-  !> option: --glog
-  real*8 :: config_glog = -1
-  !> option: --asalog.
-  real*8 :: config_asalog = -1
-  !> option: --inum
-  integer :: config_inum = 0
 
   !---
   ! hydro2-only
@@ -529,28 +518,14 @@ module config
   !> dfile:absoru2 which was incompatible with the pfant executable. Therefore,
   !> it has been assigned a default value and this command-line option was added
   real*8 :: config_zph = 12
-  !> option: --ptdisk
-  !>
-  !> This is about the "number of points" for subroutine fluxis(). Feeds into variable
-  !> x _ptdisk, which is actually logical. But I needed to make it integer here because
-  !> I need a tristate variable to flag whether it is kept unitialized (-1).
-  !> @li -1 unitialized (hydro2_init() will use main_ptdisk instead)
-  !> @li 0 false
-  !> @li 1 true
-  integer :: config_ptdisk = -1
   !> option: --kik; affects subroutine flin_()
   integer :: config_kik = 0
   !> option: --amores
-  !>
-  !> This is a tristate variable, as config_ptdisk.
-  !>
   !> @note Default value taken from M.Trevisan's pfant12.R script
-  integer :: config_amores = 1
+  logical :: config_amores = .true.
   !> option: --kq
   !> @note Default taken from M.Trevisan's pfant12.R script
   integer :: config_kq = 1
-  !> option: --vvt
-  real*8 :: config_vvt = -1
 
   !---
   ! pfant-only
@@ -580,7 +555,6 @@ module config
   character*64 :: &
     config_fn_flux = '?', &         !< option: --fn_flux
     config_fn_cv = '?'              !< option: --fn_cv
-
 
   real*8 :: config_zinf = -1        !< option: --zinf
   !===== end of command-line variables declarations
@@ -715,8 +689,6 @@ contains
      'output file name - dump log file')
     call add_option('ihpn', 'fn_main',          ' ', .true., 'file name', config_fn_main, &
      'input file name - main configuration')
-    call add_option('ihpn', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
-     'output file name - progress indicator')
     call add_option('ihpn', 'explain',     ' ', .true., 'T/F', logical2str(config_explain), &
       'Save additional information in file explain.txt (debugging purposes; output varies, or flag may be ignored)', .false.)
     call add_option('ihpn', 'play',     ' ', .false., '', '', &
@@ -727,18 +699,6 @@ contains
     !
     call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
      'Binary file containing information about atmospheric model (created by innewmarcs)')
-
-    !
-    ! innewmarcs, hydro2
-    !
-    call add_option('ih', 'teff',' ', .true., 'real value', '<main_teff> '//FROM_MAIN, &
-     '"Teff"')
-    call add_option('ih', 'glog',' ', .true., 'real value', '<main_glog> '//FROM_MAIN, &
-     '"log g"')
-    call add_option('ih', 'asalog',' ', .true., 'real value', '<main_asalog> '//FROM_MAIN, &
-     '"[M/H]"')
-    call add_option('ih', 'inum',' ', .true., 'real value', '<main_inum> '//FROM_MAIN, &
-     'Record id within atmospheric model binary file')
 
     !
     ! hydro2, pfant
@@ -752,55 +712,40 @@ contains
      'Lower boundary of calculation interval (angstrom)')
     call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
      'Upper boundary of calculation interval (angstrom)')
+    call add_option('hp', 'interp', ' ', .true., 'type', int2str(config_interp), &
+     'interpolation type for subroutine turbul()<br>'//&
+     IND//'1: linear;<br>'//&
+     IND//'2: parabolic)')
+    call add_option('hp', 'kik', ' ', .TRUE., '0/1', int2str(config_kik), &
+     'option for flux integration<br>'//&
+     IND//'0: integration using 6/7 points depending on option --ptdisk;<br>'//&
+     IND//'1: 26-point integration')
 
     !
     ! innewmarcs-only
     !
     call add_option('i', 'fn_moddat',' ', .true., 'file name', config_fn_moddat, &
-     'ASCII file containing information about atmospheric model (created by innewmarcs)')
+     'ASCII file containing information about atmospheric model (created by innewmarcs)', .false.)
     call add_option('i', 'modcode',' ', .true., 'string up to 25 characters', config_modcode, &
-     '"Model name"')
-    call add_option('i', 'tirb',' ', .true., 'string up to 15 characters', config_tirb, &
-     '"Titre"')
+     '"Model name"', .false.)
     call add_option('i', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
      'input file name - file containing list of MARCS models file names')
 
     !
     ! hydro2-only
     !
-    call add_option('h', 'ptdisk',' ', .true., 'T/F', '<main_ptdisk> '//FROM_MAIN, &
-     'point of disk?<br>'//&
-     IND//'This option is used to simulate a spectrum acquired '//&
-     IND//'out of the center of the star disk.<br><br>'//&
-     IND//'This is useful if the synthetic spectrum will be compared with an '//&
-     IND//'observed spectrum acquired out of the center of the star disk.<br><br>'//&
-     IND//'T: 7-point integration<br>'//&
-     IND//'F: 6- or 26-point integration, depending on option --kik')
-    call add_option('hp', 'kik', ' ', .TRUE., '0/1', int2str(config_kik), &
-     'option for flux integration<br>'//&
-     IND//'0: integration using 6/7 points depending on option --ptdisk;<br>'//&
-     IND//'1: 26-point integration')
-    call add_option('h', 'amores',' ', .true., 'T/F', logical2str(int2logical(config_amores)), &
+    call add_option('h', 'amores',' ', .true., 'T/F', logical2str(config_amores), &
      'AMOrtissement de RESonnance?')
-
     call add_option('h', 'kq', ' ', .true., '0/1', int2str(config_kq), &
      '"Theorie"<br>'//&
      IND//'0: THEORIE DE GRIEM;<br>'//&
      IND//'1: THEORIE QUASISTATIQUE')
-
-    call add_option('h', 'vvt', ' ', .true., 'real value', '<main_vvt(1)> '//FROM_MAIN, &
-     'velocity of microturbulence')
-
     call add_option('h', 'zph', ' ', .true., 'real value', real82str(config_zph, 2), &
      'abondance d''H pour laquelle sont donnees les abondances metalliques')
 
     !
     ! pfant-only
     !
-    call add_option('p', 'interp', 'i', .true., 'type', int2str(config_interp), &
-     'interpolation type for subroutine turbul()<br>'//&
-     IND//'1: linear;<br>'//&
-     IND//'2: parabolic)')
     !> @todo Find names for each file and update options help
     call add_option('p', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
@@ -828,6 +773,8 @@ contains
      'Calculation delta-lambda (angstrom)')
     call add_option('p', 'aint', ' ', .true., 'real value', '<main_aint> '//FROM_MAIN, &
      'Interval length per iteration (angstrom)')
+    call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
+     'output file name - progress indicator', .false.)
 
 
     !
@@ -925,30 +872,6 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_moddat, 'fn_moddat')
       case ('modcode')
         call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
-      case ('tirb')
-        call parse_aux_assign_fn(o_arg, config_tirb, 'tirb')
-      case ('teff')
-        config_teff = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_teff', real82str(config_teff, 1))
-      case ('glog')
-        config_glog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_glog', real82str(config_glog, 3))
-      case ('asalog')
-        config_asalog = parse_aux_str2real4(opt, o_arg)
-        call parse_aux_log_assignment('config_asalog', real82str(config_asalog, 3))
-      case ('inum')
-        config_inum = parse_aux_str2int(opt, o_arg)
-        if (config_inum .lt. 1) then !#validation
-          res = HANDLER_ERROR
-        else
-          call parse_aux_log_assignment('config_inum', int2str(config_inum))
-        end if
-      case ('ptdisk')
-        ! This conversion to/from integer is because config_ptdisk is a tristate variable,
-        ! but the user may think it is just a logical variable
-        ! See hydro2_init() to see how it is treated
-        config_ptdisk = logical2int(parse_aux_str2logical(opt, o_arg))
-        call parse_aux_log_assignment('config_ptdisk', logical2str(int2logical(config_ptdisk)))
       case ('kik')
         config_kik = parse_aux_str2int(opt, o_arg)
         if (config_kik .eq. 0 .or. config_kik .eq. 1) then !#validation
@@ -964,12 +887,8 @@ contains
           res = HANDLER_ERROR
         end if
       case ('amores')
-        ! config_amores is also tristate, as config_ptdisk
-        config_amores = logical2int(parse_aux_str2logical(opt, o_arg))
-        call parse_aux_log_assignment('config_amores', logical2str(int2logical(config_amores)))
-      case ('vvt')
-        config_vvt = parse_aux_str2real8(opt, o_arg)
-        call parse_aux_log_assignment('config_vvt', real82str(config_vvt, 3))
+        config_amores = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_amores', logical2str(config_amores))
       case ('zph')
         config_zph = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_zph', real82str(config_zph, 2))
@@ -1030,7 +949,6 @@ contains
       case ('zinf')
         config_zinf = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_zinf', real82str(config_zinf, 1))
-
       case ('fwhm')
         config_fwhm = parse_aux_str2real8(opt, o_arg)
         call parse_aux_log_assignment('config_fwhm', real82str(config_fwhm, 3))
@@ -1262,7 +1180,7 @@ contains
     write(*,*) '  <arg name> argument that must be specified'
 
     do i = 1, num_options
-      if (exe_wants(options(i))) then
+      if (exe_wants(options(i)) .and. options(i)%appears) then
         write(unit,*) ''
         call print_opt(options(i), unit)
       end if

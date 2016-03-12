@@ -1,10 +1,11 @@
 __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
            "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
-           "ShowError", "ShowMessage", "ResetTableWidget",
-           "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR",
+           "ShowError", "ShowMessage", "ShowWarning", "ResetTableWidget",
+           "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR",
            "INITIALIZES_SUN", "check_return_space",
-           "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK"]
+           "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
+           "style_checkboxes"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -12,16 +13,6 @@ from .a_XParametersEditor import *
 import numpy as np
 
 
-
-def enc_name_descr(name, descr, color="#333333"):
-    """Encodes html given name and description."""
-    return enc_name(name, color)+"<br>"+descr
-
-
-def enc_name(name, color="#FFFFFF"):
-    """Encodes html given name."""
-    return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
-           (color, name)
 
 
 # # Colors used in two or more different situations
@@ -31,6 +22,19 @@ COLOR_ERROR = "#AA0000" # sortta wine
 COLOR_STAR = "#2A8000"
 # Color for labels indicating a software configuration parameter
 COLOR_CONFIG = "#BD6909"
+# Default color for label text
+COLOR_DESCR = "#222222"
+
+def enc_name_descr(name, descr, color=COLOR_DESCR):
+    """Encodes html given name and description."""
+    return enc_name(name, color)+"<br>"+descr
+
+
+def enc_name(name, color=COLOR_DESCR):
+    """Encodes html given name."""
+    return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
+           (color, name)
+
 
 
 # Messages shared in two or more different situations
@@ -65,6 +69,18 @@ ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 
 
 
+def style_checkboxes(widget):
+    """
+    Iterates over widget children to change checkboxes stylesheet.
+
+    The default rendering of checkboxes does not allow to tell a focused one
+    from an unfocused one.
+    """
+
+    ww = widget.findChildren(QCheckBox)
+    for w in ww:
+        w.setStyleSheet("QCheckBox:focus {border: 1px solid #000000;}")
+
 
 def check_return_space(event, callable_):
     """Checks if event corresponds to Return/Space being pressed and calls callable_ if so."""
@@ -81,6 +97,10 @@ def ShowError(s):
 
 def ShowMessage(s):
   QMessageBox.information(None, "Information", s)
+
+
+def ShowWarning(s):
+  QMessageBox.warning(None, "Warning", s)
 
 
 def ResetTableWidget(t, rowCount, colCount):

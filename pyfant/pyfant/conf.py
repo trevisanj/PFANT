@@ -84,7 +84,7 @@ class Options(object):
         self.fn_molecules = None
         self.fn_lines     = None
         self.fn_log       = None
-        self.fn_progress = "progress.txt"
+        self.fn_progress = None
         self.flprefix = None
         self.molidxs_off = None
         self.no_molecules = None
@@ -106,7 +106,23 @@ class Options(object):
 
     def get_names(self):
         """Returns a list with the names of all the options. Names come sorted"""
-        return filter(lambda x: not (x.startswith('_') or x == "get_names"), dir(self))
+        return filter(lambda x: not x.startswith(('_', 'get_')), dir(self))
+
+    def get_args(self):
+        """
+        Returns a list of command-line arguments (only options that have been set)
+        """
+        l = []
+        names = self.get_names()
+        for attr_name in names:
+            value = self.__getattribute__(attr_name)
+            if value is not None:
+                s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
+                if re.search(r"[,|& ]", s_value):
+                    s_value = '"'+s_value+'"'  # adds quotes if string contains one of the characters above
+                l.extend(["--"+attr_name, s_value])
+        return l
+
 
 
 @froze_it
@@ -349,17 +365,7 @@ class Conf(object):
         """
         Returns a list of command-line arguments (only options that have been set)
         """
-
-        l = []
-        names = self.opt.get_names()
-        for attr_name in names:
-            value = self.opt.__getattribute__(attr_name)
-            if value is not None:
-                s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
-                if re.search(r"[,|& ]", s_value):
-                    s_value = '"'+s_value+'"'  # adds quotes if string contains one of the characters above
-                l.extend(["--"+attr_name, s_value])
-        return l
+        return self.opt.get_args()
 
     def __create_data_files(self):
         """

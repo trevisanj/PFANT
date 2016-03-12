@@ -13,15 +13,6 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
-
-
-
-
-
-
-
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -916,6 +907,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !> Declaration and initialization of x_* variables
 !>
+!> This module deals with the variables whose values may come either from dfile:main or
+!> command-line arguments (the latter has precedence).
+!>
 !> Prefixes:
 !> @li x_ -- these variable values may come either from dfile:main or command-line options.
 
@@ -926,7 +920,6 @@ module pfant_x
 
   character*128 :: x_flprefix
   real*8 :: x_llzero, x_llfin, x_pas, x_aint
-
 contains
 
   !> Initializes x_* variables
@@ -998,7 +991,6 @@ end
 !>        m_* module internal variables shared among routines
 !>       hy_* hydrogen line-related, calculated by calc_tauh()
 !> popadelh_* calculated by popadelh()
-!>   turbul_* calculated by turbul()
 !>  selekfh_* calculated by selekfh()
 !>       bk_* calculated by bk()
 !>    popul_* calculated by popul()
@@ -1014,6 +1006,7 @@ module synthesis
   use filters
   use kapmol
   use readers
+  use turbul
   use pfant_x
   implicit none
 
@@ -1032,9 +1025,6 @@ module synthesis
 
   !> Calculated by subroutine popul
   real*8, dimension(3,MAX_PARTIT_NPAR, MAX_MODELES_NTOT) :: popul_p
-
-  !> Calculated by subroutine turbul
-  real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 
   ! Calculated by subroutine popadelh
   real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw, &
@@ -1172,11 +1162,7 @@ contains
     ! Calculation begins!
     !=====
 
-    call cpu_time(start)
-    call turbul()
-    call log_debug('turbul() OK!')
-    call cpu_time(finish)
-    call log_debug("TURBUL() Time = "//real42str(finish-start, 3)//" seconds.")
+    call turbul_()  ! no need to time, very quick
 
     call cpu_time(start)
     call popul()
@@ -1439,62 +1425,6 @@ contains
     end
 
   end subroutine synthesis_
-
-  !======================================================================================================================
-  !> @todo issue ?doc? (MT): Related to line broadening due to Doppler effect caused by microturbulent velocity.
-
-  subroutine turbul()
-    integer i, nt2, n
-
-    call log_debug('entree des turbul')
-    if(main_ivtot .eq. 1)   then
-      call log_debug('vt constant')
-      do n = 1, modeles_ntot
-        turbul_vt(n) = main_vvt(1)*1e5
-      end do
-    else
-      101 format(10f8.3)
-      call log_debug('vt variable avec la profondeur')
-      call log_debug('    log to')
-      write(lll,101) (main_tolv(i),i=1,main_ivtot)
-      call log_debug(lll)
-      call log_debug('    vt')
-      write(lll,101) (main_vvt(i),i=1,main_ivtot)
-      call log_debug(lll)
-
-      if(config_interp .eq. 1) then
-        call ftlin3(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
-      elseif (config_interp .eq. 2) then
-        !> @todo issue ask blb config_interp was hard-switched to 1, config_interp=2 path needs testing
-        call ft2(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l,turbul_vt)
-      end if
-
-
-      nt2 = modeles_ntot-2
-      do n = 1, nt2, 3
-        102 format(3(i5,2f8.3,5x))
-        write(lll,102) n,modeles_t5l(n),turbul_vt(n),(n+1), modeles_t5l(n+1), &
-         turbul_vt(n+1),(n+2),modeles_t5l(n+2),turbul_vt(n+2)
-        call log_debug(lll)
-      end do
-
-      do n = 1, modeles_ntot
-        turbul_vt(n) = turbul_vt(n)*1e5
-      end do
-    end if
-
-
-    if(main_ivtot .eq. 1) then
-      131 format(' v microturbulence constante  =',f6.1,'km/s')
-      write(lll,131) main_vvt(1)
-      call log_debug(lll)
-    else
-      call log_debug('v microturbulence variable avec profondeur')
-    end if
-
-    return
-  end subroutine
-
 
   !======================================================================================================================
   !> Calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
