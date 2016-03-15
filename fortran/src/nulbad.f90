@@ -110,10 +110,6 @@ contains
     else
       x_flprefix = config_flprefix
     end if
-    print *, '##################'
-    print *, config_fn_flux
-    print *, x_flprefix
-    print *, '##################'
     if (config_fn_flux .eq. '?') then
       x_fn_flux = trim(x_flprefix)//'.norm'
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
