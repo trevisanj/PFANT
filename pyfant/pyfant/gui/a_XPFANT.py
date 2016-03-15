@@ -11,6 +11,7 @@ from .a_XMainAbonds import *
 import os.path
 import matplotlib.pyplot as plt
 import traceback
+import copy
 
 ################################################################################
 class XPFANT(XMainAbonds):
@@ -55,6 +56,12 @@ class XPFANT(XMainAbonds):
             errors.append("Main configuration not set")
         if not self.ae.f:
             errors.append("Abundances not set")
+        if not self.me.flag_valid:
+            errors.append("Error(s) in main configuration")
+        if not self.ae.flag_valid:
+            errors.append("Error(s) in abundances")
+        if not self.oe.flag_valid:
+            errors.append("Error(s) in command-line options")
         if len(errors) == 0:
             try:
                 self._manager_form.show()
@@ -74,6 +81,7 @@ class XPFANT(XMainAbonds):
 
     def __submit_job(self):
         r = Combo()
+        r.conf.opt = copy.copy(self.oe.f)
         r.conf.file_main = self.me.f
         r.conf.file_abonds = self.ae.f
         r.conf.file_dissoc = self.ae.f.get_file_dissoc()

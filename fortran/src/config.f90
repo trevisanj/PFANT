@@ -500,7 +500,26 @@ module config
   real*8 :: config_llzero = -1 !< option: --llzero
   real*8 :: config_llfin  = -1 !< option: --llfin
   real*8 :: config_pas    = -1 !< option: --pas
-  real*8 :: config_aint   = -1 !< option: --aint
+  real*8 :: config_aint   = 10 !< option: --aint
+                               !!
+                               !! It was found that subroutine selekfh() time varies is 
+                               !! approximately proportional to aint**2. Therefore, this
+                               !! parameter is set to a low value, which makes it run much
+                               !! faster than the usual/historical 50. Also, this value is
+                               !! no longer read from dfile:main.
+                               !! Below is a table containing the results of a test
+                               !! perfomed in the 5000-5100 angstrom region:
+                               !! <pre>
+                               !! aint    synthesis time
+                               !! ----------------------
+                               !! 100              16.84
+                               !!  50               9.52
+                               !!  25               5.87
+                               !!  13               4.11
+                               !!  10               3.74
+                               !!   5               3.15
+                               !!   1               3.48
+                               !! </pre>
 
   !---
   ! innewmarcs-only
@@ -771,7 +790,7 @@ contains
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
     call add_option('p', 'pas', ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
      'Calculation delta-lambda (angstrom)')
-    call add_option('p', 'aint', ' ', .true., 'real value', '<main_aint> '//FROM_MAIN, &
+    call add_option('p', 'aint', ' ', .true., 'integer value', real82str(config_aint, 0), &
      'Interval length per iteration (angstrom)')
     call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator', .false.)

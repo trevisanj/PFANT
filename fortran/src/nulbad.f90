@@ -98,14 +98,6 @@ contains
       call parse_aux_log_assignment('x_fwhm', real82str(x_fwhm, 3))
     end if
 
-    ! Reads spectrum now to make output delta-lambda equal to input delta-lambda
-    ! in case --pat not specified
-    call read_spectrum()
-
-    if (config_pat .eq. -1) then
-      x_pat = rs_dpas
-      call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
-    end if
     if (config_flprefix .eq. '?' .and. config_fn_flux .eq. '?') then
       if(.not. main_exists) &
         call pfant_halt('Neither --flprefix nor --fn_flux was set and '''//&
@@ -118,6 +110,10 @@ contains
     else
       x_flprefix = config_flprefix
     end if
+    print *, '##################'
+    print *, config_fn_flux
+    print *, x_flprefix
+    print *, '##################'
     if (config_fn_flux .eq. '?') then
       x_fn_flux = trim(x_flprefix)//'.norm'
       call parse_aux_log_assignment('x_fn_flux', trim(x_fn_flux))
@@ -125,6 +121,15 @@ contains
     if (config_fn_cv .eq. '?') then
       x_fn_cv = trim(x_fn_flux)//'.nulbad.'//real82str(x_fwhm, 3)
       call parse_aux_log_assignment('x_fn_cv', trim(x_fn_cv))
+    end if
+
+    ! Reads spectrum now to make output delta-lambda equal to input delta-lambda
+    ! in case --pat not specified
+    call read_spectrum()
+
+    if (config_pat .eq. -1) then
+      x_pat = rs_dpas
+      call parse_aux_log_assignment('x_pat', real82str(x_pat, 3))
     end if
   end
 
@@ -262,6 +267,8 @@ contains
       write(lll,122) rs_dpas, rs_ktot
       122  format(2x,'pas=',f8.3,2x,'ktot=', i10)
       call log_debug(lll)
+    else
+      fl = ffnu
     end if
 
     ! # Convolution sp synthetique avec profil instrumental

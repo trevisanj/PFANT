@@ -5,6 +5,7 @@ __all__ = ["XMainAbonds"]
 from PyQt4.QtGui import *
 from .a_WFileMain import *
 from .a_WFileAbonds import *
+from .a_WOptionsEditor import *
 from pyfant import *
 from .guiaux import *
 from . import XRunnableManager
@@ -35,13 +36,16 @@ class XMainAbonds(QMainWindow):
         # # Synchronized sequences
         # Used in generic operations where only certain parameters change
         self.tab_texts =  ["Main configuration (Alt+&1)",
-                            "Abundances (Alt+&2)"]
+                            "Abundances (Alt+&2)",
+                            "Command-line options (Alt+&3)"]
         self.flags_changed = [False, False]
         self.save_as_texts = ["Save main configuration as...",
-                               "Save abundances as..."]
+                               "Save abundances as...",
+                               None]
         self.open_texts = ["Load main configuration file",
-                            "Load abundances file"]
-        self.clss = [FileMain, FileAbonds]
+                            "Load abundances file",
+                            None]
+        self.clss = [FileMain, FileAbonds, Options]
 
         # # Menu bar
         b = self.menuBar()
@@ -83,7 +87,6 @@ class XMainAbonds(QMainWindow):
         ac.setShortcut("Ctrl+M")
         ac.triggered.connect(self.on_show_rm)
 
-
         # # Central layout
 
         cw = self.centralWidget = QWidget()
@@ -103,7 +106,6 @@ class XMainAbonds(QMainWindow):
         tt = self.tabWidget = QTabWidget(self)
         la.addWidget(tt)
         tt.setFont(MONO_FONT)
-
 
         # ### Main configuration tab
         w0 = self.c27272 = QWidget()
@@ -142,7 +144,6 @@ class XMainAbonds(QMainWindow):
         l1.addWidget(w)
         l1.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-
         # #### Abundances editor
         ae = self.ae = WFileAbonds()
         l0.addWidget(ae)
@@ -150,6 +151,11 @@ class XMainAbonds(QMainWindow):
         ae.edited.connect(self.on_edited)
         if file_abonds is not None:
             self.ae.load(file_abonds)
+
+        # ### Command-line options tab
+        w0 = self.oe  = WOptionsEditor()
+        tt.addTab(w0, self.tab_texts[2])
+
 
         # ### Final tabs setup
         tt.setCurrentIndex(0)
@@ -170,6 +176,9 @@ class XMainAbonds(QMainWindow):
             self.ae.load(f)
         self.__update_labels_fn()
 
+        # # Initializes command-line options
+        # At the moment, there is no way to save or load command-line options
+        self.oe.load(Options())
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
@@ -291,10 +300,10 @@ class XMainAbonds(QMainWindow):
 
     def __generic_open(self):
         index = self.__get_index()
-        editor, text, cls, label = self.editors[index], self.open_texts[index], \
-                                   self.clss[index], self.labels_fn[index]
         if index >= 2:
             return
+        editor, text, cls, label = self.editors[index], self.open_texts[index], \
+                                   self.clss[index], self.labels_fn[index]
         try:
             d = self.load_dir if self.load_dir is not None \
                 else self.save_dir if self.save_dir is not None \
@@ -319,7 +328,8 @@ class XMainAbonds(QMainWindow):
     def __update_labels_fn(self):
         cwd = os.getcwd()
         for editor, label in zip(self.editors, self.labels_fn):
-            # print "olholho", editor, label, editor.f
+            if not label:
+                continue
             if not editor.f:
                 text = "(not loaded)"
             else:

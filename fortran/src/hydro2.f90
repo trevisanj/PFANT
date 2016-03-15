@@ -357,7 +357,6 @@ contains!> Initializes x_* variables
     ! duplicated in innewmarcs
     x_llzero = config_llzero
     if (config_llzero .eq. -1) then
-      call assure_read_main(config_fn_main)
       x_llzero = main_llzero
       call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
     else
@@ -366,7 +365,6 @@ contains!> Initializes x_* variables
 
     x_llfin = config_llfin
     if (config_llfin .eq. -1) then
-      call assure_read_main(config_fn_main)
       x_llfin = main_llfin
       call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
     else
@@ -2016,9 +2014,8 @@ program hydro2
   call hydro2_init_x()
 
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
+  call read_main(config_fn_main)
   call read_modele(config_fn_modeles)   ! LECTURE DU MODELE
-
-  call assure_read_main(config_fn_main)
   call read_hmap(config_fn_hmap)
 
   call log_info('Using hmap file')

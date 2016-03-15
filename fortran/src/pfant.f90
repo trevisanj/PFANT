@@ -919,7 +919,7 @@ module pfant_x
   implicit none
 
   character*128 :: x_flprefix
-  real*8 :: x_llzero, x_llfin, x_pas, x_aint
+  real*8 :: x_llzero, x_llfin, x_pas
 contains
 
   !> Initializes x_* variables
@@ -950,12 +950,6 @@ contains
       call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
     else
       x_pas = config_pas
-    end if
-    if (config_aint .eq. -1) then
-      x_aint = main_aint
-      call parse_aux_log_assignment('x_aint', real82str(x_aint, 2))
-    else
-      x_aint = config_aint
     end if
   end
 end
@@ -1120,8 +1114,8 @@ contains
     real*8 fn(MAX_DTOT)
 
     integer i, i1, i2, k, d, &
-     ikey,    & ! ikey-th x_aint-large calculation interval
-     ikeytot    ! total number of x_aint-large calculation intervals
+     ikey,    & ! ikey-th config_aint-large calculation interval
+     ikeytot    ! total number of config_aint-large calculation intervals
 
     real*8 l0, lf, alzero, tetaef, xlfin, xlzero
 
@@ -1177,21 +1171,21 @@ contains
 
     ! initial calculation sub-interval
     xlzero = x_llzero-LAMBDA_STRETCH
-    xlfin = xlzero+x_aint+LAMBDA_STRETCH
+    xlfin = xlzero+config_aint+LAMBDA_STRETCH
 
     ! discovers the number of iterations
     if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
       do i = 2,25000
-        xlfin = xlfin+x_aint
+        xlfin = xlfin+config_aint
         if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
     !m_lzero = x_llzero-LAMBDA_STRETCH
-    !m_lfin = m_lzero+x_aint+LAMBDA_STRETCH
+    !m_lfin = m_lzero+config_aint+LAMBDA_STRETCH
     ikey = 1
 
 
@@ -1214,7 +1208,7 @@ contains
       if (ikey .eq. 1) then
         m_lzero = l0
       else
-        m_lzero = x_llzero+x_aint*(ikey-1)
+        m_lzero = x_llzero+config_aint*(ikey-1)
       end if
 
       ! Note0: The last value of flux in iteration ikey equals
@@ -1223,7 +1217,7 @@ contains
       if (ikey .eq. ikeytot) then
         m_lfin = lf+x_pas
       else
-        m_lfin = x_llzero+x_aint*ikey-x_pas+x_pas
+        m_lfin = x_llzero+config_aint*ikey-x_pas+x_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
@@ -1265,7 +1259,7 @@ contains
       call cpu_time(start)
       call bk()
       call cpu_time(finish)
-      call log_debug("BK() Time = "//real42str(finish-start, 3)//" seconds.")
+      call log_info("BK() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
       ! hydrogen lines
@@ -1273,7 +1267,7 @@ contains
         call cpu_time(start)
         call calc_tauh()
         call cpu_time(finish)
-        call log_debug("CALC_TAUH() Time = "//real42str(finish-start, 3)//" seconds.")
+        call log_info("CALC_TAUH() Time = "//real42str(finish-start, 3)//" seconds.")
       end if
 
       if (.not. config_no_atoms) then
@@ -1282,7 +1276,7 @@ contains
         call cpu_time(start)
         call filter_atoms(m_lzero, m_lfin)
         call cpu_time(finish)
-        call log_debug("FILTER_ATOMS() Time = "//real42str(finish-start, 3)//" seconds.")
+        call log_info("FILTER_ATOMS() Time = "//real42str(finish-start, 3)//" seconds.")
 
         if (atoms_f_nblend .gt. 0) then
           call cpu_time(start)
@@ -1290,7 +1284,7 @@ contains
           call popadelh()
 
           call cpu_time(finish)
-          call log_debug("POPADELH() Time = "//real42str(finish-start, 3)//" seconds.")
+          call log_info("POPADELH() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
           ! -- VI --
@@ -1317,7 +1311,7 @@ contains
       call cpu_time(start)
       call selekfh()
       call cpu_time(finish)
-      call log_debug("SELEKFH() Time = "//real42str(finish-start, 3)//" seconds.")
+      call log_info("SELEKFH() Time = "//real42str(finish-start, 3)//" seconds.")
 
       !=====
       ! Saving...
@@ -1361,8 +1355,8 @@ contains
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
-      !m_lzero = m_lzero+x_aint
-      !m_lfin = m_lfin+x_aint
+      !m_lzero = m_lzero+config_aint
+      !m_lfin = m_lfin+config_aint
       !if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
     end do  ! main loop
 
@@ -1383,7 +1377,7 @@ contains
     call log_debug(LEAVING//'synthesis_()')
 
     call cpu_time(finish0)
-    print '("SYNTHESIS_() Time = ",f6.3," seconds.")',finish0-start0
+    print '("SYNTHESIS_() Time = ",f10.3," seconds.")',finish0-start0
 
   contains
 
@@ -1964,7 +1958,7 @@ if (n .eq. 1) then
     do ih = 1,filetoh_num_files
       allhy = filetoh_llhy(ih)-m_lzero
 
-      if (((allhy .gt. 0) .and. (allhy .le. (x_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
+      if (((allhy .gt. 0) .and. (allhy .le. (config_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
           ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
         im = im+1
         iht = ih

@@ -237,14 +237,26 @@ class Conf(object):
         self.__popen_text_dest = None
         self.__logger = None
 
+        # # Internals
+        self.__flag_configured_before = False
+
     def configure(self, sequence):
-        """Series of configuration actions to take before Runnable can run."""
-        self.__make_session_id()
-        if self.__flag_output_to_dir:
-            self.__rename_outputs(sequence)
+        """Series of configuration actions to take before Runnable can run.
 
-        self.__logger = get_python_logger()
+        Runnable can be re-run (useful if fails), so configure() will know
+        if it has been called before and skip most operations if so.
+        """
+        if not self.__flag_configured_before:
+            self.__make_session_id()
+            if self.__flag_output_to_dir:
+                self.__rename_outputs(sequence)
 
+            self.__logger = get_python_logger()
+
+            if FOR_PFANT in sequence:
+                self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
+
+        # Always gotta open logs
         if self.__flag_log_file:
             log_path = self.join_with_session_dir("fortran.log")
             if self.__flag_log_console:
@@ -258,10 +270,9 @@ class Conf(object):
                 stdout_ = None
         self.__popen_text_dest = stdout_
 
-        if FOR_PFANT in sequence:
-            self.opt.fn_progress = self.join_with_session_dir("progress.txt")  # this is for pfant
 
         self.__create_data_files()
+        self.__flag_configured_before = True
 
     def close_popen_text_dest(self):
         """Closes self.popen_text_dest opened in configure().

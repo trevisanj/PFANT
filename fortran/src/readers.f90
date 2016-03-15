@@ -213,6 +213,7 @@ module reader_main
   use logging
   use dimensions
   use reader_dissoc
+  use config
   implicit none
 
   !> Flag indicating whether read_main() has already been called.
@@ -230,7 +231,8 @@ module reader_main
    main_afstar, & !< log10 of metallicity. Must match main_asalog
    main_llzero, & !< lower boundary of calculation interval
    main_llfin,  & !< upper boundary of calculation interval
-   main_aint,   & !< length of each calculation sub-interval (llfin-llzero) is divided into intervals of roughly aint
+   main_aint_obsolete,   & !< length of each calculation sub-interval, *no longer used*
+                           !! (now config_aint (which has a default value) is used instead)
    main_teff,   & !< effective temperature of the star
    main_glog,   & !< log10 of gravity
    main_asalog, & !< log10 of metallicity. Must match main_afstar
@@ -335,15 +337,15 @@ contains
     read(UNIT_, '(a)') main_flprefix
 
     ! row 09
-    read(UNIT_, *) main_llzero, main_llfin, main_aint
+    read(UNIT_, *) main_llzero, main_llfin, main_aint_obsolete
     ! Some interpolation routines don't deal well with lambda having decimal places, therefore
     ! gonna round them
     main_llzero = floor(main_llzero)
     main_llfin = ceiling(main_llfin)
-    main_aint = floor(main_aint)
+    main_aint_obsolete = floor(main_aint_obsolete)
 
     ! 101 format('read_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
-    ! write(lll,101) main_llzero, main_llfin, main_aint
+    ! write(lll,101) main_llzero, main_llfin, main_aint_obsolete
     ! call log_info(lll)
 
     if (main_llzero .ge. main_llfin) then
@@ -351,11 +353,12 @@ contains
     end if
 
 
-    ! main_aint has to be divisible by main_pas
-    temp = main_aint/main_pas
+    ! config_aint has to be divisible by main_pas
+    temp = config_aint/main_pas
     if (abs(temp-nint(temp)) .gt. 1.e-10) then
-        call pfant_halt('read_main(): aint ('//real82str(main_aint)// &
-         ') must be divisible by pas ('//real82str(main_pas)//')')
+        call pfant_halt('pas='//real82str(main_pas, 3)//' (delta-lambda) must be a '//&
+         'sub-multiple of aint='//real82str(config_aint, 1)//' (the latter is '//&
+         'configurable through command-line option "--aint").')
     end if
 
     close(unit=UNIT_)
@@ -578,15 +581,15 @@ contains
     ! end if
 
     if(ddt .gt. 1.0) then
-      write(lll,*) 'abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
+      write(lll,*) 'read_modele(): abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
       call pfant_halt(lll)
     end if
     if(ddg .gt. 0.01) then
-      write(lll,*) 'abs(main_glog-(model glog)) = ', ddg, ' > 0.01'
+      write(lll,*) 'read_modele(): abs(main_glog-(model glog)) = ', ddg, ' > 0.01'
       call pfant_halt(lll)
     end if
     if(ddab .gt. 0.01) then
-      write(lll,*) 'abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
+      write(lll,*) 'read_modele(): abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
       call pfant_halt(lll)
     end if
 
