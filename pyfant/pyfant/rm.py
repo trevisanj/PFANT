@@ -253,6 +253,19 @@ class RunnableManager(QObject, threading.Thread):
 
         return "\n".join(l)
 
+
+    def wait_until_finished(self):
+        if not self.is_alive():
+            raise RuntimeError("Runnable manager not running")
+        while True:
+            if self.flag_finished:
+                print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
+                self.exit()
+                break
+            print "\n".join(self.get_summary_report())
+            time.sleep(1)
+
+
     def retry_failed(self):
         """Retries all failed runnables."""
         if not self.flag_finished:

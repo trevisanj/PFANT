@@ -1,14 +1,13 @@
 #!/usr/bin/python
 """
-Cuts atomic lines file to wavelength interval specified.
+Cuts spectrum file to wavelength interval specified. Saved in 2-column format.
 
 The interval is [llzero, llfin]
+
 """
 
 import argparse
-from pyfant import SmartFormatter
-from pyfant import misc
-from pyfant.from_vald import *
+from pyfant import *
 import logging
 
 misc.logging_level = logging.INFO
@@ -27,15 +26,18 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    file_atoms = FileAtoms()
-    file_atoms.load(args.fn_input[0])
+    file_sp = load_spectrum(args.fn_input[0])
+    if not file_sp:
+        print "File '%s' not recognized as a spectrum file." % args.fn_input[0]
 
-    m = min([min(a.lambda_) for a in file_atoms.atoms])
-    M = max([max(a.lambda_) for a in file_atoms.atoms])
+    sp = file_sp.spectrum
+    m = min(sp.x)
+    M = max(sp.x)
 
     print "Original interval: [%g, %g]" % (m, M)
     print "New interval: [%g, %g]" % (args.llzero[0], args.llfin[0])
 
-    file_atoms.cut(args.llzero[0], args.llfin[0])
-    file_atoms.save_as(args.fn_output[0])
+    f = FileSpectrumXY()
+    f.spectrum = cut_spectrum(sp, args.llzero[0], args.llfin[0])
+    f.save_as(args.fn_output[0])
     print "Successfully created file '%s'" % args.fn_output[0]

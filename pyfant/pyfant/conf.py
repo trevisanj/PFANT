@@ -146,10 +146,11 @@ class Conf(object):
     @session_id.setter
     def session_id(self, x):
         assert self.__session_id is None, "Session id already set to \"%s\"" % self.__session_id
-        self.__session_id = str(x)
         new_dir = session_prefix_singular+x
-        # Will raise if directory exists: directory names must be unique.
         os.mkdir(new_dir)
+        self.__session_id = str(x)
+        self.__session_dir = new_dir
+        # Will raise if directory exists: directory names must be unique.
 
     @property
     def session_dir(self):

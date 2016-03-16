@@ -1,7 +1,7 @@
 """
 Contains routine load_any_file()
 """
-__all__ = ["load_with_classes", "load_any_file"]
+__all__ = ["load_with_classes", "load_any_file", "load_spectrum"]
 from . import *
 
 # List of classe representing all file formats either read or written by
@@ -9,13 +9,21 @@ from . import *
 #
 # note: leave FileAbonds to the end because it is too general
 _classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileMod, FileSpectrumNulbad,
-           FileSpectrumPfant, FileToH, FileAbonds, FileSpectrumXY, FileAtoms, FileMolecules]
+           FileSpectrumPfant, FileToH, FileAbonds, FileSpectrumXY, FileAtoms, FileMolecules, FileSpectrumFits]
+
+_classes_sp = [FileMod, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY, FileSpectrumFits]
 
 def load_any_file(filename):
     """
     Attempts to load filename by trial-and-error using _classes as list of classes.
     """
     return load_with_classes(filename, _classes)
+
+def load_spectrum(filename):
+    """
+    Attempts to load spectrum as one of the supported types.
+    """
+    return load_with_classes(filename, _classes_sp)
 
 def load_with_classes(filename, classes):
     """Attempts to load file by trial-and-error using a given list of classes.

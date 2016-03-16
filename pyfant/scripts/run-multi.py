@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 """
-Runs pfant for different abondances for each element, then run nulbad for each pfant result for different FWHMs.
+Runs pfant for different abundances for each element, then run nulbad for each pfant result for different FWHMs.
 
 The configuration is read from a .py file.
 
 The user must specify a list of FWHM values for nulbad convolutions, and
 a dictionary containing element symbols and respective list of differential
-abondances (n_abdif) to be used for each element. See sample config file below
+abundances (n_abdif) to be used for each element. See sample config file below
 for details (should be clear from the example)
 
 pfant will be run n_abdif times, each time adding to each element in ab the i-th
@@ -29,9 +29,9 @@ Note2: before running, it will remove all "session_*" directories
 
 ===Begin sample config file=====================================================
 
-# specification of differential abondances for each chemical
-# - differential abondance: number to add to original value in abonds.dat
-# - all list of abondances for each element must have the same length
+# specification of differential abundances for each chemical
+# - differential abundance: number to add to original value in abonds.dat
+# - all list of abundances for each element must have the same length
 ab = {"Ca": [-.3, 0, .3, .5],
       "Si": [-.3, 0, .3, .5]}
 
@@ -60,6 +60,8 @@ MAX_FORTRANS = 6  # number of pfants/nulbads to run simultaneously
 if __name__ == "__main__":
     # Parses command-line options
     # ***************************
+
+def run_multi():
     parser = argparse.ArgumentParser(
     description="Nulbadboy powered by pyfant.\n"+__doc__,
     formatter_class=SmartFormatter
@@ -74,17 +76,17 @@ if __name__ == "__main__":
     cfg = imp.load_source("cfg", args.fn_cfg)  # exec("import %s as cfg" % module_name)
 
 
-    os.system('rm -rf session_*')
+    os.system('rm -rf session*')
 
     # # Treats config file
 
     symbols = [adjust_atomic_symbol(symbol) for symbol in cfg.ab.keys()]
-    abdifss = cfg.ab.values()
+    abmargss = cfg.ab.values()
 
-    n_abdif = len(abdifss[0])
-    for abdifs in abdifss:
+    n_abdif = len(abmargss[0])
+    for abdifs in abmargss:
         if len(abdifs) != n_abdif:
-            raise RuntimeError('All abondances vectors must have length of %d' % n_abdif)
+            raise RuntimeError('All abundances vectors must have length of %d' % n_abdif)
 
     file_main = FileMain()
     file_main.load("main.dat")
@@ -111,9 +113,9 @@ if __name__ == "__main__":
             found = False
             for k in range(len(file_abonds.ele)):
                 if file_abonds.ele[k] == symbol:
-                    abdif = abdifss[i][j]
+                    abdif = abmargss[i][j]
                     file_abonds.abol[k] += abdif
-                    print j, " - ", symbol, "with abondance", file_abonds.abol[k]
+                    print j, " - ", symbol, "with abundance", file_abonds.abol[k]
                     found = True
 
             if not found:
@@ -121,6 +123,7 @@ if __name__ == "__main__":
 
         pfant = Pfant()
         pfant.conf.file_abonds = file_abonds
+        # todo replace j with a descriptive name, configurable in FileAbXFwhm
         pfant.conf.opt.flprefix = "%s_%02d" % (file_main.titrav, j)
         pfant.conf.session_id = pfant.conf.opt.flprefix
 

@@ -2011,10 +2011,9 @@ program hydro2
 
   execonf_name = 'hydro2'
   call config_init()
-  call hydro2_init_x()
-
-  call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_main(config_fn_main)
+  call hydro2_init_x()
+  call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)   ! LECTURE DU MODELE
   call read_hmap(config_fn_hmap)
 

@@ -13,15 +13,6 @@ _NUM_MOL = 21
 _EXE_NAMES = {"i": "innewmarcs", "h": "hydro2", "p": "pfant", "n": "nulbad"}
 
 
-def _enc_name_descr(name, descr, color="#FFFFFF"):
-    # Encodes html given name and description
-    return _enc_name(name, color)+"<br>"+descr
-
-def _enc_name(name, color="#FFFFFF"):
-    # Encodes html given name and description
-    return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
-           (color, name)
-
 @froze_it
 class _Option(AttrsPart):
     attrs = ["name", "argname", "descr"]
@@ -118,7 +109,7 @@ class _Option(AttrsPart):
 
 class WOptionsEditor(QWidget):
     """
-    FileMain editor widget.
+    Options editor widget.
 
     Arguments:
       parent=None
@@ -339,7 +330,7 @@ class WOptionsEditor(QWidget):
 
         o = self.__add_option(self.w_zph, 'h', 'zph', 12.,
          'hydrogen-reference-abundance',
-         'abondance d\'H pour laquelle sont donn&eacute;es les abondances metalliques')
+         'abundance d\'H pour laquelle sont donn&eacute;es les abondances metalliques')
         o.min = 0.
         o.max = 24.  # actually I would like to remove this option
 
@@ -559,7 +550,7 @@ class WOptionsEditor(QWidget):
             option = self.__find_option_by_widget(obj_focused)
             if option:
                 text = "%s<br><br>%s" % \
-                       (_enc_name(option.name.replace("&", ""), option.color),
+                       (enc_name(option.name.replace("&", ""), option.color),
                         option.long_descr)
                 self.__set_descr_text(text)
 
@@ -661,15 +652,13 @@ class WOptionsEditor(QWidget):
     def __update_data(self):
         emsg, flag_error = "", False
         ss = ""
-        # todo cleanup
-        print "UPDATE OPTIONS BEGIN"
         try:
             for option in self.omap:
-                if not option.checkbox.isChecked():
-                    continue
                 ss = option.name
-                value = option.get_value()
-
+                if not option.checkbox.isChecked():
+                    value = None
+                else:
+                    value = option.get_value()
                 self.f.__setattr__(option.name, value)
 
             ss = ""
@@ -683,9 +672,6 @@ class WOptionsEditor(QWidget):
             else:
                 emsg = str(E)
             emsg = "<b>Invalid</b>: "+emsg
-            print "UPDATE OPTIONS ERROR"
-            # ShowError(str(E))
-        print "UPDATE OPTIONS DONE"
         self.flag_valid = not flag_error
         self.__set_error_text(emsg)
 

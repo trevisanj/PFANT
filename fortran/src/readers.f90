@@ -696,7 +696,7 @@ contains
     call log_info('reader_hmap():')
     call log_info('filename         na nb c.lambda     kiex       c1')
     do i = 1, hmap_n
-      11 format(a16,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
+      11 format(a,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
       write(lll, 11) hmap_rows(i)
       call log_info(lll)
     end do

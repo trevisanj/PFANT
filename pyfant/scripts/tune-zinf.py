@@ -33,6 +33,7 @@ from pyfant.gui import XRunnableManager
 from PyQt4.QtGui import *
 import time
 import os.path
+import glob
 
 misc.logging_level = logging.INFO
 
@@ -300,12 +301,17 @@ if __name__ == "__main__":
 
     # # Removes session-* directories
     if flag_clean:
+        # this part removes sessionxxxx/sessionyyyy
         logger.info("Cleaning...")
+
         for i, combo in enumerate(pp):
             try:
                 combo.conf.clean()
             except Exception as E:
                 logger.info("Error cleaning session for %s: %s" % (combo.name, str(E)))
+        # this part removes sessionxxxxx
+        # but also removes previous sessions
+        # not gonna do it dd = glob.glob("session*")
 
     if flag_success:
         logger.info("Successfully created file '%s' !!" % fn_out)

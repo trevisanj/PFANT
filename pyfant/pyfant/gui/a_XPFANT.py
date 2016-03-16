@@ -12,6 +12,8 @@ import os.path
 import matplotlib.pyplot as plt
 import traceback
 import copy
+import syntax
+
 
 ################################################################################
 class XPFANT(XMainAbonds):
@@ -30,14 +32,21 @@ class XPFANT(XMainAbonds):
         # ## Main control bar
 
         l = self.controlLayout
-        b = self.buttonSubmit = QPushButton("&Submit job")
-        b.clicked.connect(self.on_submit)
-        l.addWidget(b)
+        w = self.buttonSubmit = QPushButton("&Submit job")
+        w.clicked.connect(self.on_submit)
+        l.addWidget(w)
+        w = self.checkbox_custom_id = QCheckBox("Custom session id")
+        w.stateChanged.connect(self.on_checkbox_custom_id_state_changed)
+        l.addWidget(w)
+        w = self.lineEdit_custom_id = QLineEdit()
+        w.setFixedWidth(100)
+        l.addWidget(w)
         # s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
         l.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # # Final adjustments
         self.setWindowTitle("PFANT launcher")
+        self.__update_lineEdit_custom_id()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Qt override
@@ -51,17 +60,12 @@ class XPFANT(XMainAbonds):
 
     def on_submit(self):
         flag_ok = True
-        errors = []
-        if not self.me.f:
-            errors.append("Main configuration not set")
-        if not self.ae.f:
-            errors.append("Abundances not set")
-        if not self.me.flag_valid:
-            errors.append("Error(s) in main configuration")
-        if not self.ae.flag_valid:
-            errors.append("Error(s) in abundances")
-        if not self.oe.flag_valid:
-            errors.append("Error(s) in command-line options")
+        errors = self._check_setup()
+        if len(errors) == 0:
+            # more error checking
+            if self.checkbox_custom_id.isChecked():
+                if len(self.__get_custom_session_id()) == 0:
+                    errors.append("Please inform custom session id.")
         if len(errors) == 0:
             try:
                 self._manager_form.show()
@@ -72,6 +76,9 @@ class XPFANT(XMainAbonds):
         if len(errors) > 0:
             ShowError("Cannot submit job:\n  - "+("\n  - ".join(errors)))
 
+    def on_checkbox_custom_id_state_changed(self):
+        self.__update_lineEdit_custom_id()
+
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for signals emited by pyfant widgets
 
@@ -79,8 +86,13 @@ class XPFANT(XMainAbonds):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Internals
 
+    def __get_custom_session_id(self):
+        return str(self.lineEdit_custom_id.text()).strip()
+
     def __submit_job(self):
         r = Combo()
+        if self.checkbox_custom_id.isChecked():
+            r.conf.session_id = self.__get_custom_session_id()
         r.conf.opt = copy.copy(self.oe.f)
         r.conf.file_main = self.me.f
         r.conf.file_abonds = self.ae.f
@@ -88,3 +100,23 @@ class XPFANT(XMainAbonds):
         r.conf.flag_output_to_dir = True
         self._rm.add_runnables([r])
 
+    def __update_lineEdit_custom_id(self):
+        self.lineEdit_custom_id.setEnabled(self.checkbox_custom_id.isChecked())
+
+    def _check_setup(self):
+        """Checks if setup parameters are valid.
+
+        The verifications here apply both to single and multi mode.
+        """
+        errors = []
+        if not self.me.f:
+            errors.append("main configuration not set")
+        if not self.ae.f:
+            errors.append("abundances not set")
+        if not self.me.flag_valid:
+            errors.append("error(s) in main configuration")
+        if not self.ae.flag_valid:
+            errors.append("error(s) in abundances")
+        if not self.oe.flag_valid:
+            errors.append("error(s) in command-line options")
+        return errors
