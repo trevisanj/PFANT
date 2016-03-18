@@ -123,24 +123,7 @@ class WFileAbXFwhm(QWidget):
         f = FileAbXFwhm()
         # first validation: code parses OK and has "ab" and "conv" variables
         f.source = str(self.editor.toPlainText())
-        # validates abundances specification
-        flag_first = True
-        for symbol, mab in f.ab.iteritems():
-            assert isinstance(mab, (list, tuple)), \
-                'Symbol "%s": differential abundances must be list or tuple' % symbol
-            if flag_first:
-                n = len(mab)
-                flag_first = False
-            else:
-                if len(mab) != n:
-                    raise ValueError('Symbol "%s": should have %d differential abundance%s, not %d' %
-                     (symbol, n, "s" if n != 1 else "", len(mab)))
-                # TODO: cross-check with ABONDS
-        # validates if can use FWHM spect to make a vector
-        try:
-            fwhms = f.get_fwhms()
-        except Exception, e:
-            raise Exception('Error in "conv" specification: '+str(e))
+        f.validate(self.file_abonds)
 
 
 

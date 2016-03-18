@@ -87,6 +87,39 @@ conv = [0.08, 0.6,  0.04]
         """Returns FWHM's as a numpy vector."""
         return np.arange(self.conv[0], self.conv[1]+.00000001, self.conv[2])
 
+    def validate(self, file_abonds=None):
+        # validates abundances specification
+        flag_first = True
+        for symbol, mab in self.ab.iteritems():
+            assert isinstance(mab, (list, tuple)), \
+                'Symbol "%s": differential abundances must be list or tuple' % symbol
+            if flag_first:
+                n = len(mab)
+                flag_first = False
+            else:
+                if len(mab) != n:
+                    raise ValueError('Symbol "%s": should have %d differential abundance%s, not %d' %
+                     (symbol.strip(), n, "s" if n != 1 else "", len(mab)))
+                # TODO: cross-check with ABONDS
+        # validates if can use FWHM spect to make a vector
+        try:
+            fwhms = self.get_fwhms()
+        except Exception, e:
+            raise Exception('Error in "conv" specification: '+str(e))
+
+        # this validation is necessary just because fwhm will be used as part of
+        # filename
+        for fwhm in self.get_fwhms():
+            if fwhm > 9.99:
+                raise RuntimeError("fhwm maximum is 9.99")
+
+
+        if file_abonds:
+            for symbol in self.ab:
+                if not symbol in file_abonds.ele:
+                    raise RuntimeError('Symbol "%s" is not in abundances list.' %
+                                       symbol.strip())
+
     def __parse(self, x):
         """Populates __ab, __conf, and __source."""
         cfg = imp.new_module('cfg')

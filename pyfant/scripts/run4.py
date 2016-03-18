@@ -41,4 +41,4 @@ if __name__ == "__main__":
             c.conf.opt.__setattr__(name, x)
 
     c.run()
-    logger.info("Session directory: %s" % c.conf.session_dir)
+    logger.info("Session directory: %s" % c.conf.sid.dir)

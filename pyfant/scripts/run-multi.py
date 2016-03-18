@@ -125,7 +125,7 @@ def run_multi():
         pfant.conf.file_abonds = file_abonds
         # todo replace j with a descriptive name, configurable in FileAbXFwhm
         pfant.conf.opt.flprefix = "%s_%02d" % (file_main.titrav, j)
-        pfant.conf.session_id = pfant.conf.opt.flprefix
+        pfant.conf.sid.id = pfant.conf.opt.flprefix
 
         print pfant.conf.opt.flprefix
 

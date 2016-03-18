@@ -83,6 +83,9 @@ symbols = [
 SYMBOLS = [x.upper() for x in symbols]
 
 
+# #################################################################################################
+# # Classes
+
 def froze_it(cls):
     """
     Decorator to prevent from creating attributes in the object ouside __init__().
@@ -143,6 +146,7 @@ class AttrsPart(object):
         s_format = "{}={}"
         s = "; ".join([s_format.format(x, self.__getattribute__(x)) for x in self.less_attrs])
         return s
+
 
 # #################################################################################################
 # # I/O routines
@@ -336,12 +340,13 @@ logging_level = logging.INFO
 _python_logger = None
 _fmtr = logging.Formatter('[%(levelname)-8s] %(message)s')
 def get_python_logger():
-    """Returns logger to be used by executables, logs to file names "python.log" only (not console)."""
+    """Returns logger to receive Python messages (as opposed to Fortran)."""
     global _python_logger
     if _python_logger is None:
+        fn = "python.log"
         l = logging.Logger("python", level=logging_level)
         if flag_log_file:
-            add_file_handler(l, "python.log")
+            add_file_handler(l, fn)
         if flag_log_console:
             ch = logging.StreamHandler()
             ch.setFormatter(_fmtr)

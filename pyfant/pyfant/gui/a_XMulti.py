@@ -81,7 +81,7 @@ class XMulti(XPFANT):
         if len(errors) == 0:
             try:
                 self.setEnabled(False)
-                self.__run_multi()
+                self.__submit_multi()
                 self._manager_form.show()
                 print "NOT YET MULTI SUBMIT"
             except Exception as e:
@@ -109,14 +109,14 @@ class XMulti(XPFANT):
     def __get_multi_custom_session_id(self):
         return str(self.lineEdit_multi_custom_id.text()).strip()
 
-    def __run_multi(self):
+    def __submit_multi(self):
         custom_id = None
         if self.checkbox_multi_custom_id.isChecked():
             custom_id = self.__get_multi_custom_session_id()
-        run_multi(self._manager_form.rm, self.me.f, self.ae.f,
-                  self.oe.f, self.multi_editor.f)
 
-        r.conf.flag_output_to_dir = True
+        r = MultiRunnable(self.me.f, self.ae.f, self.oe.f, self.multi_editor.f)
+        if self.checkbox_custom_id.isChecked():
+            r.sid.id = self.__get_multi_custom_session_id()
         self._rm.add_runnables([r])
 
     def __update_lineEdit_multi_custom_id(self):

@@ -1,7 +1,7 @@
 
 
-__all__ = ["Runnable", "ExecutableStatus", "Executable", "Innewmarcs", "Hydro2",
-           "Pfant", "Nulbad", "Combo"]
+__all__ = ["Runnable", "RunnableStatus", "ExecutableStatus", "Executable",
+           "Innewmarcs", "Hydro2", "Pfant", "Nulbad", "Combo"]
 
 
 import subprocess
@@ -12,6 +12,32 @@ from .errors import *
 from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
 from threading import Lock
 
+@froze_it
+class RunnableStatus(object):
+    """Combo version of ExecutableStatus.
+
+    Acts as a formatter.
+    """
+
+    def __init__(self, runnable):
+        assert isinstance(runnable, Runnable)
+        self.runnable = runnable
+
+    def __str__(self):
+        l = []
+        if self.runnable.flag_finished:
+            l.append("finished")
+        if self.runnable.flag_running:
+            l.append("running")
+        if self.runnable.flag_killed:
+            l.append("*killed*")
+        if self.runnable.flag_error:
+            l.append("*error*")
+        if self.runnable.error_message:
+            l.append("*" + str(self.runnable.error_message) + "*")
+        if len(l) > 0:
+            return " ".join(l)
+        return "?"
 
 @froze_it
 class ExecutableStatus(object):
@@ -78,11 +104,8 @@ class Runnable(object):
         return self._flag_finished and not self._flag_error and not self._flag_killed
 
     @property
-    def conf(self):
-        return self.__conf
-    @conf.setter
-    def conf(self, x):
-        self.__conf = x
+    def session_dir(self):
+        return self._get_session_dir()
 
     def __init__(self):
         self.name = random_name()
@@ -96,8 +119,6 @@ class Runnable(object):
         self._flag_error = False
         # Will contain error message if finished with error
         self._error_message = ""
-        # Conf instance
-        self.__conf = Conf()
 
     def get_status(self):
         raise NotImplementedError()
@@ -119,9 +140,11 @@ class Runnable(object):
         self._flag_killed = False
         self._flag_error = False
         self._error_message = ""
-        if self.conf.session_id:
+        if self.conf.sid.id:
             self.conf.clean(False)
 
+    def _get_session_dir(self):
+        raise NotImplementedError()
 
 
 class Executable(Runnable):
@@ -144,20 +167,13 @@ class Executable(Runnable):
     def exe_path(self, x):
         self._exe_path = x
 
-    # @property
-    # def logger(self):
-    #     return self.__logger
-    # @logger.setter
-    # def logger(self, x):
-    #     self.__logger = x
+    @property
+    def conf(self):
+        return self.__conf
 
-    # @property
-    # def stdout(self):
-    #     return self.__stdout
-    #
-    # @stdout.setter
-    # def stdout(self, x):
-    #     self.__stdout = x
+    @conf.setter
+    def conf(self, x):
+        self.__conf = x
 
     def __init__(self):
         Runnable.__init__(self)
@@ -168,16 +184,12 @@ class Executable(Runnable):
         self._status = ExecutableStatus(self)
 
         # # Private variables
-        # # Will receive Python output
-        # self.__logger = None
         # fill be filled with self.popen.returncode in due time
         self.__returncode = None
         # Created by _run()
         self.__popen = None
-        # # file-like object, or None: will receive Fortran output
-        # self.__stdout = None
-        # It is either a blocking _run() or asynchronous open..kill..close
-        self.__lock = Lock()
+        # Conf instance
+        self.__conf = Conf()
 
     def run(self):
         """Runs executable.
@@ -186,7 +198,6 @@ class Executable(Runnable):
         """
         assert not self._flag_running, "Already running"
         assert not self._flag_finished, "Already finished"
-        # self.__logger = get_python_logger()
         self.conf.configure([self.sequence_index])
         try:
             self.conf.logger.debug("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
@@ -212,37 +223,34 @@ class Executable(Runnable):
     def get_status(self):
         return self._status
 
+    def _get_session_dir(self):
+        return self.__conf.sid.id
+
     def __run(self):
         """Called both from run() and run_from_combo()."""
-        with self.__lock:
-            args = self.conf.get_args()
-            cmd_words = [self._exe_path] + args
+        args = self.conf.get_args()
+        cmd_words = [self._exe_path] + args
 
-            # s = "%s command-line:" % (self.__class__.__name__.lower(),)
-            #log_noisy(self.__logger, s)
+        s = " ".join(cmd_words)
+        self.conf.logger.debug(s)
+        # logs command-line to file and closes it.
+        with open(self.conf.sid.join_with_session_dir("commands.log"), "a") as h:
+            h.write(s+"\n\n")
+        emsg = ""
+        try:
+            self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-            s = " ".join(cmd_words)
-            self.conf.logger.debug(s)
-            # logs command-line to file and closes it.
-            with open(self.conf.join_with_session_dir("commands.log"), "a") as h:
-                h.write(s+"\n\n")
-            #self.__logger.info(X*(len(s)+4))
-
-            emsg = ""
+            # if self.__stdout:
+            #     self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # else:
+            #     self.__popen = subprocess.Popen(cmd_words)
+            self._flag_running = True
             try:
-                self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-                # if self.__stdout:
-                #     self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                # else:
-                #     self.__popen = subprocess.Popen(cmd_words)
-                self._flag_running = True
-                try:
-                    if self.conf.popen_text_dest is not None:
-                        for line in self.__popen.stdout:
-                            self.conf.popen_text_dest.write(line)
-                finally:
-                    self.__popen.stdout.close()
+                if self.conf.popen_text_dest is not None:
+                    for line in self.__popen.stdout:
+                        self.conf.popen_text_dest.write(line)
+            finally:
+                self.__popen.stdout.close()
 
 
 #todo cleanup
@@ -264,38 +272,38 @@ class Executable(Runnable):
 #                         # printOpenFiles()
 #                         # sys.exit()
 
-                # blocks execution until finished
-                self.__popen.wait()
+            # blocks execution until finished
+            self.__popen.wait()
+            self.__popen.poll()
+
+            if self.__popen.returncode != 0:
+                raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+
+        except Exception as e:
+            flag_re_raise = True
+            if self.__popen:
                 self.__popen.poll()
+                if isinstance(e, FailedError) and self._flag_killed:
+                    # dismisses error if explicitly killed
+                    flag_re_raise = False
+                elif isinstance(e, IOError) and self.__popen.returncode == 0:
+                    # Sometimes a IOError is raised even if Fortran executes
+                    # successfully, so the error is dismissed
+                    self.conf.logger.warning("Harmless error in: %s %s" %
+                     (self.conf.sid.dir, self.get_status()))
+                    self.conf.logger.warning(str(e))
+                    flag_re_raise = False
 
-                if self.__popen.returncode != 0:
-                    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
-
-            except Exception as e:
-                flag_dismiss = False
-                if self.__popen:
-                    self.__popen.poll()
-                    if isinstance(e, FailedError) and self._flag_killed:
-                        # dismisses error if explicitly killed
-                        flag_dismiss = True
-                    elif isinstance(e, IOError) and self.__popen.returncode == 0:
-                        # Sometimes a IOError is raised even if Fortran executes
-                        # successfully, so the error is dismissed
-                        self.conf.logger.warning("Harmless error in: %s %s" %
-                         (self.conf.session_dir, self.get_status()))
-                        self.conf.logger.warning(str(e))
-                        flag_dismiss = True
-
-                if not flag_dismiss:
-                    self._error_message = e.__class__.__name__+": "+str(e)
-                    self._flag_error = True
-                    raise
-            finally:
-                self._flag_finished = True
-                self._flag_running = False
-                if self.__popen is not None:
-                    self.__returncode = self.__popen.returncode
-                self.conf.logger.debug(str(self._status))
+            if flag_re_raise:
+                self._error_message = e.__class__.__name__+": "+str(e)
+                self._flag_error = True
+                raise
+        finally:
+            self._flag_finished = True
+            self._flag_running = False
+            if self.__popen is not None:
+                self.__returncode = self.__popen.returncode
+            self.conf.logger.debug(str(self._status))
 
 
 @froze_it
@@ -403,36 +411,6 @@ class Nulbad(Executable):
         file_sp.load(filepath)
         self.convolved = file_sp.spectrum
 
-
-
-@froze_it
-class ComboStatus(object):
-    """Combo version of ExecutableStatus.
-
-    Acts as a formatter.
-    """
-
-    def __init__(self, combo):
-        assert isinstance(combo, Combo)
-        self.combo = combo
-
-    def __str__(self):
-        l = []
-        if self.combo.flag_finished:
-            l.append("finished")
-        if self.combo.flag_running:
-            l.append("running")
-        if self.combo.flag_killed:
-            l.append("*killed*")
-        if self.combo.flag_error:
-            l.append("*error*")
-        if self.combo.error_message:
-            l.append("*" + str(self.combo.error_message) + "*")
-        if len(l) > 0:
-            return " ".join(l)
-        return "?"
-
-
 @froze_it
 class Combo(Runnable):
     """
@@ -483,6 +461,14 @@ class Combo(Runnable):
     def nulbad(self):
         return self.__nulbad
 
+    @property
+    def conf(self):
+        return self.__conf
+
+    @conf.setter
+    def conf(self, x):
+        self.__conf = x
+
     def __init__(self, sequence=None):
         Runnable.__init__(self)
         # # Configuration
@@ -506,7 +492,9 @@ class Combo(Runnable):
         # ** Internal variables
         self.__running_exe = None  # Executable object currently running
         # ComboStatus instance
-        self.__status = ComboStatus(self)
+        self.__status = RunnableStatus(self)
+        # Conf instance
+        self.__conf = Conf()
 
     def get_exes(self):
         """Returns exe objects in a list according with self.sequence."""
@@ -564,3 +552,6 @@ class Combo(Runnable):
         ee = self.get_exes()
         for e in ee:
             e.reset()
+
+    def _get_session_dir(self):
+        return self.__conf.sid.dir

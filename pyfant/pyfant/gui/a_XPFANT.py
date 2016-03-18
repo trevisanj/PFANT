@@ -92,7 +92,7 @@ class XPFANT(XMainAbonds):
     def __submit_job(self):
         r = Combo()
         if self.checkbox_custom_id.isChecked():
-            r.conf.session_id = self.__get_custom_session_id()
+            r.conf.sid.id = self.__get_custom_session_id()
         r.conf.opt = copy.copy(self.oe.f)
         r.conf.file_main = self.me.f
         r.conf.file_abonds = self.ae.f

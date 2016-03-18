@@ -48,11 +48,13 @@ class RunnableManager(QObject, threading.Thread):
 
     @property
     def num_finished(self):
-        return self.__num_finished
+        with self.__lock_finish:
+            return self.__num_finished
 
     @property
     def time_finished(self):
-        return self.__time_finished
+        with self.__lock_finish:
+            return self.__time_finished
 
     @property
     def num_runnables(self):
@@ -80,7 +82,8 @@ class RunnableManager(QObject, threading.Thread):
 
     @property
     def flag_finished(self):
-        return len(self.__idxs_to_run) == 0
+        with self.__lock_finish:
+            return len(self.__idxs_to_run) == 0
 
     @property
     def flag_paused(self):
@@ -93,6 +96,12 @@ class RunnableManager(QObject, threading.Thread):
     @property
     def flag_auto_clean(self):
         return self.__flag_auto_clean
+
+    @property
+    def flag_success(self):
+        """Success is defined as nothing left to run and no fails."""
+        with self.__lock_finish:
+            return self.__num_failed == 0 and len(self.__idxs_to_run) == 0
 
     def __init__(self, *args, **kwargs):
         self.__max_simultaneous = kwargs.pop("max_simultaneous", None)
@@ -237,7 +246,7 @@ class RunnableManager(QObject, threading.Thread):
             # loop to determine name width
             w = 0
             for i, t in enumerate(self.__runnables):
-                s_title = t.conf.session_dir
+                s_title = t.conf.sid.dir
                 if s_title is None:
                     s_title = '...'
                 w = max(w, len(s_title))

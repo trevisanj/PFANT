@@ -179,7 +179,7 @@ if __name__ == "__main__":
             combo = Combo([FOR_PFANT])
             # Fortran messages will not be displayed in terminal
             combo.conf.flag_log_console = False
-            combo.conf.flag_split_dirs = True
+            combo.conf.sid.flag_split_dirs = True
             # Forces pfant to run one single iteration (ikeytot will be =1)
             combo.conf.opt.aint = args.max+10
             combo.conf.file_atoms = f
@@ -271,7 +271,7 @@ if __name__ == "__main__":
                 # Note that some lines don't appear at all, so there is no way
                 # to determine zinf
                 logger.warning("zinf is ZERO: (%s) (%s) (%s)" %
-                 (combo.conf.session_dir, a.one_liner_str(), line.one_liner_str()))
+                 (combo.conf.sid.dir, a.one_liner_str(), line.one_liner_str()))
             if zinf < args.min:
                 zinf = args.min
                 cnt_min += 1

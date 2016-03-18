@@ -276,7 +276,7 @@ class XRunnableManager(QMainWindow):
             a.setColumnCount(2)
             a.setHorizontalHeaderLabels(["Session directory", "Status"])
             for i, runnable in enumerate(runnables):
-                title = runnable.conf.session_dir
+                title = runnable.session_dir
                 if title is None:
                     title = '...'
                 item = QTableWidgetItem(title)
@@ -290,11 +290,11 @@ class XRunnableManager(QMainWindow):
 
     def __update(self):
         """Updates second column of table widget."""
-        # print "UPDATE UPDATE UPDATE UPDATE UPDATE "
+        print "UPDATE UPDATE UPDATE UPDATE UPDATE "
         t = time.time()
         self.__update_status()
         self.__update_table()
-        # print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+        print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
 
     def __update_table(self):
         with self.__lock_table:
@@ -308,7 +308,7 @@ class XRunnableManager(QMainWindow):
                 runnable = runnables[i]
 
                 item = a.item(i, 0)
-                title = runnable.conf.session_dir
+                title = runnable.session_dir
                 if title is None:
                     title = "..."
                 item.setText(title)
@@ -352,7 +352,7 @@ class XRunnableManager(QMainWindow):
 
     def __explore_directory(self):
         runnable = self.runnables[self.tableWidget.currentRow()]
-        dir_ = runnable.conf.session_dir
+        dir_ = runnable.session_dir
         if not self.__explorer_form:
             f = self.__explorer_form = XExplorer(self, dir_)
             f.flag_close_mpl_plots_on_close = False

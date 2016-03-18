@@ -4,79 +4,54 @@ Miscellanea routines that depend on other pyfant modules.
 Rule: no pyfant module can import util!!!
 
 """
-__all__ = ["run_parallel", "run_multi"]
-# from pyfant.misc import *
+__all__ = ["MultiRunnable"]
 from pyfant import *
-import time
-import traceback
-import numpy as np
 import copy
 import os
+import logging
+
+_multi_id_maker = IdMaker()
+_multi_id_maker.session_prefix_singular = "multi-session-"
 
 
-
-
-
-
-
-
-
-
-
-class Executable(Runnable):
+class MultiRunnable(Runnable):
     """
-    PFANT executables common ancestor class.
+    Differential abundances X FWHM's runnable.
     """
 
-    # Set at descendant class with a pyfant.conf.FOR_* value
-    sequence_index = -1
-
     @property
-    def returncode(self):
-        return self.__returncode
+    def sid(self):
+        return self.__sid
 
-    @property
-    def exe_path(self):
-        return self._exe_path
-
-    @exe_path.setter
-    def exe_path(self, x):
-        self._exe_path = x
-
-    # @property
-    # def logger(self):
-    #     return self.__logger
-    # @logger.setter
-    # def logger(self, x):
-    #     self.__logger = x
-
-    # @property
-    # def stdout(self):
-    #     return self.__stdout
-    #
-    # @stdout.setter
-    # def stdout(self, x):
-    #     self.__stdout = x
-
-    def __init__(self):
+    def __init__(self, file_main, file_abonds, options, file_abxfwhm,
+                 custom_id=None):
         Runnable.__init__(self)
+        assert isinstance(file_main, FileMain)
+        assert isinstance(file_abonds, FileAbonds)
+        assert isinstance(options, Options)
+        assert isinstance(file_abxfwhm, FileAbXFwhm)
+        self.__file_main = file_main
+        self.__file_abonds = file_abonds
+        self.__options = options
+        self.__file_abxfwhm = file_abxfwhm
+        self.__custom_id = custom_id
+
         # # Protected variables
-        # Full path to executable (including executable name)
-        self._exe_path = "none"
         # ExecutableStatus instance
-        self._status = ExecutableStatus(self)
+        self.__status = RunnableStatus(self)
 
         # # Private variables
-        # # Will receive Python output
-        # self.__logger = None
-        # fill be filled with self.popen.returncode in due time
-        self.__returncode = None
-        # Created by _run()
-        self.__popen = None
-        # # file-like object, or None: will receive Fortran output
-        # self.__stdout = None
-        # It is either a blocking _run() or asynchronous open..kill..close
-        self.__lock = Lock()
+        self.__logger = None
+        self.__sid = SID(_multi_id_maker)
+        self.__runnable_manager = None
+
+    def kill(self):
+        self._flag_killed = True
+        if self._flag_running and self.__rm:
+            self.__rm.exit()
+
+    def get_status(self):
+        return self.__status
 
     def run(self):
         """Runs executable.
@@ -85,286 +60,157 @@ class Executable(Runnable):
         """
         assert not self._flag_running, "Already running"
         assert not self._flag_finished, "Already finished"
-        # self.__logger = get_python_logger()
-        self.conf.configure([self.sequence_index])
+
+
+        self._flag_running = True
         try:
-            self.conf.logger.debug("Running %s '%s'" % (self.__class__.__name__.lower(), self.name))
             self.__run()
+        except Exception as e:
+            print "CAIU AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+            self._error_message = e.__class__.__name__+": "+str(e)
+            self._flag_error = True
+            raise
         finally:
-            self.conf.close_popen_text_dest()
+            print "CCCCCCCCCCCCCCCccCAIU AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+            self._flag_finished = True
+            self._flag_running = False
+            self.__logger.debug(str(self.__status))
 
-    def run_from_combo(self):
-        """Alternative to run executable (called from Combo class).
+    def __make_logger(self):
+        _fmtr = logging.Formatter('[%(levelname)-8s] %(message)s')
+        fn = os.path.join(self.__sid.dir, "python.log")
+        l = logging.Logger("python", level=misc.logging_level)
+        if misc.flag_log_file:
+            add_file_handler(l, fn)
+        if misc.flag_log_console:
+            ch = logging.StreamHandler()
+            ch.setFormatter(_fmtr)
+            l.addHandler(ch)
+        self.__logger = l
 
-        This routine bypasses all the configuration that is done prior to running.
-        (Combo.configure() will do the necessary configuration).
-        """
-        assert not self._flag_running, "Already running"
-        assert not self._flag_finished, "Already finished"
-        self.__run()
-
-    def kill(self):
-        self._flag_killed = True
-        if self._flag_running:
-            self.__popen.kill()
-
-    def get_status(self):
-        return self._status
 
     def __run(self):
-        """Called both from run() and run_from_combo()."""
-        with self.__lock:
-            args = self.conf.get_args()
-            cmd_words = [self._exe_path] + args
+        # Called from run() to lower one indentation lever.
+        # If something is not right here, just raise.
 
-            # s = "%s command-line:" % (self.__class__.__name__.lower(),)
-            #log_noisy(self.__logger, s)
+        ####
+        # # Preparation
+        ####
+        if self.__custom_id:
+            self.__sid.id = self.__custom_id
+        else:
+            self.__sid.make_id()
 
-            s = " ".join(cmd_words)
-            self.conf.logger.debug(s)
-            # logs command-line to file and closes it.
-            with open(self.conf.join_with_session_dir("commands.log"), "a") as h:
-                h.write(s+"\n\n")
-            #self.__logger.info(X*(len(s)+4))
+        self.__make_logger()
 
-            emsg = ""
-            try:
-                self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        custom_id_maker = IdMaker()
+        custom_id_maker.session_prefix_singular = os.path.join(self.__sid.dir, "session")
 
-                # if self.__stdout:
-                #     self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                # else:
-                #     self.__popen = subprocess.Popen(cmd_words)
-                self._flag_running = True
-                try:
-                    if self.conf.popen_text_dest is not None:
-                        for line in self.__popen.stdout:
-                            self.conf.popen_text_dest.write(line)
-                finally:
-                    self.__popen.stdout.close()
+        symbols = self.__file_abxfwhm.ab.keys()
+        abdiffss = self.__file_abxfwhm.ab.values()
+        n_abdif = len(abdiffss[0])
+
+        # for abdifs in abdiffss:
+        #     if len(abdifs) != n_abdif:
+        #         raise RuntimeError(
+        #             'All abundances vectors must have length of %d' % n_abdif)
 
 
-#todo cleanup
-#                 self._flag_running = True
-#
-#                 if self.__stdout:  # TODO disabled PIPE stdout for popen
-#                     try:
-#                         for line in self.__popen.stdout:
-#                             self.__stdout.write(line)
-#                     finally:
-#                         # todo cleanup
-#                         # printOpenFiles()
-#
-#                         self.__popen.stdout.close()
-#                         self.__stdout.close()
-#
-# #todo cleanup
-#                         # print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-#                         # printOpenFiles()
-#                         # sys.exit()
-
-                # blocks execution until finished
-                self.__popen.wait()
-                self.__popen.poll()
-
-                if self.__popen.returncode != 0:
-                    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
-
-            except Exception as e:
-                flag_dismiss = False
-                if self.__popen:
-                    self.__popen.poll()
-                    if isinstance(e, FailedError) and self._flag_killed:
-                        # dismisses error if explicitly killed
-                        flag_dismiss = True
-                    elif isinstance(e, IOError) and self.__popen.returncode == 0:
-                        # Sometimes a IOError is raised even if Fortran executes
-                        # successfully, so the error is dismissed
-                        self.conf.logger.warning("Harmless error in: %s %s" %
-                         (self.conf.session_dir, self.get_status()))
-                        self.conf.logger.warning(str(e))
-                        flag_dismiss = True
-
-                if not flag_dismiss:
-                    self._error_message = e.__class__.__name__+": "+str(e)
-                    self._flag_error = True
-                    raise
-            finally:
-                self._flag_finished = True
-                self._flag_running = False
-                if self.__popen is not None:
-                    self.__returncode = self.__popen.returncode
-                self.conf.logger.debug(str(self._status))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def run_abxfwhm(runnable_manager, file_main, file_abonds, options,
-                file_abxfwhm, custom_id=None):
-    """
-    """
-    assert isinstance(runnable_manager, RunnableManager)
-    assert isinstance(file_main, FileMain)
-    assert isinstance(file_abonds, FileAbonds)
-    assert isinstance(options, Options)
-    assert isinstance(file_abxfwhm, FileAbXFwhm)
-
-    logger = get_python_logger()
-
-
-    # # Preparation
-
-    ms_dir = "multi-session-"+str(custom_id)
-    os.mkdir(ms_dir)
-
-
-    symbols = file_abxfwhm.ab.keys()
-    abdiffss = file_abxfwhm.ab.values()
-
-    n_abdif = len(abdiffss[0])
-    for abdifs in abdiffss:
-        if len(abdifs) != n_abdif:
-            raise RuntimeError('All abundances vectors must have length of %d' % n_abdif)
-
-    fwhms = file_abxfwhm.get_fwhms()
-    n_fwhms = len(fwhms)
-
-    for fwhm in fwhms:
-        if fwhm > 9.99:
-            raise RuntimeError("fhwm maximum is 9.99")
-
-    # # Runs pfant, pfant creates several .norm files
-
-    logger.info("+++ pfant phase...")
-
-    pfant_list = []
-    for j in range(n_abdif):
-        file_abonds_ = copy.deepcopy(file_abonds)
-
-        for i, symbol in enumerate(symbols):
-            found = False
-            for k in range(len(file_abonds_.ele)):
-                if file_abonds_.ele[k] == symbol:
-                    abdif = abdiffss[i][j]
-                    file_abonds_.abol[k] += abdif
-                    print j, " - ", symbol, "with abundance", file_abonds_.abol[k]
-                    found = True
-
-            if not found:
-                raise RuntimeError("Atom '%s' not found" % symbol)
-
-        pfant = Pfant()
-        pfant.conf.opt = copy.copy(options)
-        pfant.conf.file_main = file_main
-        pfant.conf.file_abonds = file_abonds_
-        pfant.conf.file_dissoc = file_abonds_
-        # todo replace j with a descriptive name, configurable in FileAbXFwhm
-        pfant.conf.opt.flprefix = "%s_%02d" % (file_main.titrav, j)
-        pfant.conf.session_id = pfant.conf.opt.flprefix
-
-        logger.debug(pfant.conf.opt.flprefix)
-
-        f = pfant.conf.file_abonds
-        pfant_list.append(pfant)
-
-    run_parallel(pfant_list, MAX_FORTRANS, flag_console=False)
-    # runnable_manager.add_runnables(pfant_list)
-    # runnable_manager.wait_until_finished()
-
-
-    # # Runs nulbad, saves .sp and .spl files
-
-    logger.info("+++ nulbad phase...")
-
-    # function to convert given FWHM to string to use as part of a file name
-    fmt_fwhm = lambda x: "%03d" % round(x*100)
-
-    nulbad_list = []
-    sp_filenames_by_fwhm = {}  # dictionary containing a list of .sp filenames for each FWHM
-    for pfant in pfant_list:
-        prefix = pfant.conf.opt.flprefix
+        fwhms = self.__file_abxfwhm.get_fwhms()
+        n_fwhms = len(fwhms)
 
         for fwhm in fwhms:
-            nulbad = Nulbad()
-            nulbad.conf.opt = copy.copy(options)
-            nulbad.conf.opt.fn_flux = prefix+".norm"
-            nulbad.conf.opt.fwhm = fwhm
-            nulbad.conf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
-            nulbad_list.append(nulbad)
+            if fwhm > 9.99:
+                raise RuntimeError("fhwm maximum is 9.99")
 
-            if not fwhm in sp_filenames_by_fwhm:
-                sp_filenames_by_fwhm[fwhm] = []
-            sp_filenames_by_fwhm[fwhm].append(nulbad.conf.opt.fn_cv)
+        ####
+        # # Runs pfant, pfant creates several .norm files
+        self.__logger.info("+++ pfant phase...")
+        pfant_list = []
+        for j in range(n_abdif):
+            file_abonds_ = copy.deepcopy(self.__file_abonds)
 
-    # # Saves files for lineplot.py
-    for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():
-        with open("cv_%s.spl" % fmt_fwhm(fwhm), "w") as h:
-            for sp_filename in sp_filenames:
-                h.write(sp_filename+"\n")
+            for i, symbol in enumerate(symbols):
+                found = False
+                for k in range(len(file_abonds_.ele)):
+                    if file_abonds_.ele[k] == symbol:
+                        abdif = abdiffss[i][j]
+                        file_abonds_.abol[k] += abdif
+                        print j, " - ", symbol, "with abundance", \
+                        file_abonds_.abol[k]
+                        found = True
 
-    runnable_manager.add_runnables(nulbad_list)
-    runnable_manager.wait_until_finished()
+                if not found:
+                    raise RuntimeError("Atom '%s' not found" % symbol)
 
-    # # Deletes session-* directories
+            pfant = Pfant()
+            pfant.conf.sid.id_maker = custom_id_maker
+            pfant.conf.logger = self.__logger
+            pfant.conf.sid.make_id()
+            pfant.conf.opt = copy.copy(self.__options)
+            pfant.conf.file_main = self.__file_main
+            pfant.conf.file_abonds = file_abonds_
+            pfant.conf.file_dissoc = file_abonds_
+            # todo replace j with a descriptive name, configurable in FileAbXFwhm
+            pfant.conf.opt.flprefix = "%s_%02d" % (self.__file_main.titrav, j)
+            pfant.conf.sid.id = pfant.conf.opt.flprefix
 
-    print "+++ cleaning up..."
+            self.__logger.debug(pfant.conf.opt.flprefix)
 
-    for pfant in pfant_list:
-      pfant.conf.clean()
-    for nulbad in nulbad_list:
-      nulbad.conf.clean()
+            pfant_list.append(pfant)
+        rm = self.__rm = RunnableManager()
+        run_parallel(pfant_list, flag_console=False, runnable_manager=rm)
+        if self._flag_killed:
+            return
+        if not rm.flag_success:
+            raise RuntimeError("Not all pfant's succeeded running.")
 
+        ####
+        # # Runs nulbad, saves .sp and .spl files
+        self.__logger.info("+++ nulbad phase...")
+        # function to convert given FWHM to string to use as part of a file name
+        fmt_fwhm = lambda x: "%03d" % round(x * 100)
 
+        # ## Prepares nulbad's
+        nulbad_list = []
+        sp_filenames_by_fwhm = {}  # dictionary containing a list of .sp filenames for each FWHM
+        for pfant in pfant_list:
+            prefix = pfant.conf.opt.flprefix
 
+            for fwhm in fwhms:
+                nulbad = Nulbad()
+                nulbad.conf.opt = copy.copy(self.__options)
+                nulbad.conf.opt.fn_flux = prefix + ".norm"
+                nulbad.conf.opt.fwhm = fwhm
+                nulbad.conf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
+                nulbad_list.append(nulbad)
 
+                if not fwhm in sp_filenames_by_fwhm:
+                    sp_filenames_by_fwhm[fwhm] = []
+                sp_filenames_by_fwhm[fwhm].append(nulbad.conf.opt.fn_cv)
 
+        # ## Saves files for lineplot.py (lists of spectra)
+        for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():
+            with open("cv_%s.spl" % fmt_fwhm(fwhm), "w") as h:
+                for sp_filename in sp_filenames:
+                    h.write(sp_filename + "\n")
 
+        # ## Runs nulbads
+        rm = self.__rm = RunnableManager()
+        run_parallel(nulbad_list, flag_console=False, runnable_manager=rm)
+        if self._flag_killed:
+            return
+        if not rm.flag_success:
+            raise RuntimeError("Not all nulbad's succeeded running.")
 
+        ####
+        # # Deletes session-* directories
+        self.__logger.info("+++ NOT cleaning up...")
 
+        # for pfant in pfant_list:
+        #     pfant.conf.clean()
+        # for nulbad in nulbad_list:
+        #     nulbad.conf.clean()
 
-
-# def run_parallel(rr, max_simultaneous=None, flag_console=True):
-#     """
-#     Arguments:
-#       rr -- list of Combo
-#       max_simultaneous -- maximum number of simultaneous processes.
-#     """
-#     # Adds to pool
-#     rm = RunnableManager(max_threads=max_simultaneous)
-#     rm.start()
-#
-#     for p in rr:
-#         rm.add_runnable(p)
-#
-#     # Primitive thread monitor
-#     while True:
-#         if flag_console:
-#             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-#             s = raw_input("press enter or 'e' to exit")
-#             if s.lower() == "e":
-#                 break
-#             print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-#             print rm
-#         else:
-#             if rm.flag_finished():
-#                 break
-#             print "waiting..."
-#             time.sleep(.5)
-#
-#     rm.exit()
-#
-#     print "FINISHED"
-
-
+    def _get_session_dir(self):
+        return self.__sid.dir
