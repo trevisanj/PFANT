@@ -7,6 +7,7 @@ from pyfant import *
 import numpy as np
 from .guiaux import *
 import os
+import glob
 import os.path
 import time
 from pyfant import *
@@ -15,6 +16,7 @@ import matplotlib.pyplot as plt
 
 COLOR_LOADED = "#ADFFB4"  # light green
 COLOR_LOAD_ERROR = "#FFB5B5"  # light red
+COLOR_DIR = "#FFFFB5"  # light yellow
 
 @froze_it
 class _FileProps(object):
@@ -29,11 +31,18 @@ class _FileProps(object):
         self.flag_error = False
         # Is text?
         self.flag_text = False
+        # Is file (name to match os.path.isfile
+        self.isfile = False
 
     def get_color(self):
         """Returns None if background not to be changed, otherwise a QColor."""
-        return QColor(COLOR_LOAD_ERROR) if self.flag_error else \
-               None if not self.flag_scanned else QColor(COLOR_LOADED)
+        if not self.isfile:
+            return QColor(COLOR_DIR)
+        elif self.flag_error:
+            return QColor(COLOR_LOAD_ERROR)
+        elif not self.flag_scanned:
+            return None
+        return QColor(COLOR_LOADED)
 
     def get_summary(self):
         ret = "File not scanned yet"
@@ -139,7 +148,7 @@ class XExplorer(QMainWindow):
         t = self.tableWidget = QTableWidget()
         sp.addWidget(t)
         t.installEventFilter(self)
-        t.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # t.setSelectionBehavior(QAbstractItemView.SelectRows)
         # t.currentCellChanged.connect(self.on_tableWidget_currentCellChanged)
         t.cellDoubleClicked.connect(self.on_tableWidget_cellDoubleClicked)
         t.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -250,7 +259,11 @@ class XExplorer(QMainWindow):
 
     def on_load(self, _=None):
         if not self.__flag_loading:
-            self.__load()
+            p = self.__get_current_props()
+            if p and not p.isfile:
+                self.set_dir(p.filepath)
+            else:
+                self.__load()
 
     def on_refresh(self, _=None):
         if not self.__flag_loading:
@@ -269,18 +282,42 @@ class XExplorer(QMainWindow):
     def __update_window_title(self):
         self.setWindowTitle("PFANT explorer -- %s" % self.dir)
 
+    def __get_file_list(self, isfile):
+
+
+        all_ = [os.path.join(self.dir, x) for x in os.listdir(self.dir)]
+        dirs = filter(os.path.isdir, all_)
+
     def set_dir(self, dir_):
         """Sets set of lines."""
-        self.dir = dir_
+        self.dir = os.path.relpath(dir_)
         self.__propss = []
-        dir_ = os.listdir(self.dir)
-        dir_.sort()
+
+
+
+        all_ = glob.glob(os.path.join(self.dir, "*"))
+        dirs = filter(os.path.isdir, all_)
+        dirs.sort()
+        files = filter(os.path.isfile, all_)
+        files.sort()
+        print "DIRS", dirs
+        print "FILES", files
+        dir_ = [".."]+dirs+files
+        print "ALL", all_
+        print "DIRS", dirs
+        print "FILES", files
+        print "DIR_", dir_
+
+
+
+
+
         for f in dir_:
-            filepath = os.path.join(self.dir, f)
-            if os.path.isfile(filepath):
-                p = _FileProps()
-                p.filepath = filepath
-                self.__propss.append(p)
+            filepath = f  #os.path.join(self.dir, f)
+            p = _FileProps()
+            p.isfile = os.path.isfile(filepath)
+            p.filepath = filepath
+            self.__propss.append(p)
         self.__update_table()
         self.__update_info()
         self.__update_window_title()
@@ -295,7 +332,10 @@ class XExplorer(QMainWindow):
         for i, p in enumerate(self.__propss):
             items = []
             info = os.stat(p.filepath)
-            item = QTableWidgetItem(os.path.basename(p.filepath))
+            filename = os.path.basename(p.filepath)
+            # if not p.isfile:
+            #     filename = "["+filename+"]"
+            item = QTableWidgetItem(filename)
             items.append(item)
             t.setItem(i, 0, item)
             item = QTableWidgetItem(str(info.st_size))

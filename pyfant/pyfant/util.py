@@ -13,6 +13,8 @@ import numpy as np
 import copy
 import os
 
+
+
 # ##################################################################################################
 # Terminal-based interface
 
@@ -28,11 +30,14 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True, runnable_manager=
     Returns: the RunnableManager object
     """
     # Adds to pool
+    logger = get_python_logger()
     if runnable_manager:
         assert isinstance(runnable_manager, RunnableManager)
         rm = runnable_manager
-    rm = RunnableManager(max_simultaneous=max_simultaneous)
-    rm.start()
+    else:
+        rm = RunnableManager(max_simultaneous=max_simultaneous)
+    if not rm.flag_start_called:
+        rm.start()
 
     rm.add_runnables(rr)
 
@@ -48,13 +53,13 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True, runnable_manager=
                     try:
                         rm.exit()
                     except:
-                        traceback.print_exc()
+                        logger.exception("Error trying to exit")
                 break
             if s.lower() == "e":
                 try:
                     rm.exit()
                 except:
-                    traceback.print_exc()
+                    logger.exception("Error trying to exit")
             if s.lower() == "k":
                 rm.kill_runnables()
     else:

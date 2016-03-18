@@ -72,7 +72,7 @@ class XPFANT(XMainAbonds):
                 self.__submit_job()
             except Exception as e:
                 errors.append(str(e))
-                traceback.print_exc()
+                get_python_logger().exception("Cannot submit job")
         if len(errors) > 0:
             ShowError("Cannot submit job:\n  - "+("\n  - ".join(errors)))
 

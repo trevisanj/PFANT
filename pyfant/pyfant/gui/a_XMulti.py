@@ -48,7 +48,7 @@ class XMulti(XPFANT):
         # ### Toolbar
         l1 = self.multiToolbarLayour = QHBoxLayout()
         l.addLayout(l1)
-        w = self.buttonSubmit = QPushButton("&Run multiple jobs")
+        w = self.buttonSubmit = QPushButton("&Submit multi-job")
         w.clicked.connect(self.on_run_multi)
         l1.addWidget(w)
         w = self.checkbox_multi_custom_id = QCheckBox("Custom multi-session id")
@@ -86,12 +86,12 @@ class XMulti(XPFANT):
                 print "NOT YET MULTI SUBMIT"
             except Exception as e:
                 errors.append(str(e))
-                traceback.print_exc()
+                get_python_logger().exception("Cannot submit multi-job")
             finally:
                 self.setEnabled(True)
 
         if len(errors) > 0:
-            ShowError("Cannot submit multiple jobs:\n  - "+("\n  - ".join(errors)))
+            ShowError("Cannot submit multi-job:\n  - "+("\n  - ".join(errors)))
 
     def on_checkbox_multi_custom_id_state_changed(self):
         self.__update_lineEdit_multi_custom_id()

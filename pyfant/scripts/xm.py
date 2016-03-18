@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # the program will hang if, for example, the form fails to be created.
     rm.start()
     try:
-        form0.showMaximized()
+        form0.show()
         app.exec_()
     finally:
         rm.exit()

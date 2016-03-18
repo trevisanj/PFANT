@@ -27,6 +27,7 @@ WINDOW_HEIGHT = 700
 FLAG_SHOW_STATUS = True
 FLAG_SHOW_RUNNABLES = True
 
+_logger = get_python_logger()
 
 class XRunnableManager(QMainWindow):
     """
@@ -245,6 +246,7 @@ class XRunnableManager(QMainWindow):
         try:
             self.rm.retry_failed()
         except Exception as e:
+            _logger.exception("Could not retry failed")
             ShowError(str(e))
 
     # def on_timer_timeout(self):

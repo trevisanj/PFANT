@@ -357,9 +357,12 @@ def get_python_logger():
 
 
 def add_file_handler(logger, logFilename=None):
-    """Adds file handler to logger."""
+    """Adds file handler to logger.
+
+    File is opened in "a" mode (append)
+    """
     assert isinstance(logger, logging.Logger)
-    ch = logging.FileHandler(logFilename, "w")
+    ch = logging.FileHandler(logFilename, "a")
     # ch.setFormatter(logging._defaultFormatter) # todo may change to have same formatter as last handler of logger
     ch.setFormatter(_fmtr)
     logger.addHandler(ch)

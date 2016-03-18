@@ -3,6 +3,7 @@ Contains routine load_any_file()
 """
 __all__ = ["load_with_classes", "load_any_file", "load_spectrum"]
 from . import *
+from pyfant.misc import get_python_logger
 
 # List of classe representing all file formats either read or written by
 # Fortran.
@@ -52,10 +53,10 @@ def load_with_classes(filename, classes):
         except OSError:
             raise
         except Exception as e:  # (ValueError, NotImplementedError):
-            # Note: this is not good for debugging
-
-            #traceback.print_exc()
-            #print "^^^^^^", e.__class__.__name__, "^^^^^^"
+            # Note: for debugging, switch the below to True
+            if False:
+                get_python_logger().exception("Error trying with class \"%s\"" % \
+                                              class_.__name__)
             pass
         if ok:
             break

@@ -86,6 +86,10 @@ class RunnableManager(QObject, threading.Thread):
             return len(self.__idxs_to_run) == 0
 
     @property
+    def flag_start_called(self):
+        return self.__time_started is not None
+
+    @property
     def flag_paused(self):
         return self.__flag_paused
 

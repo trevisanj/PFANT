@@ -13,7 +13,6 @@ import logging
 _multi_id_maker = IdMaker()
 _multi_id_maker.session_prefix_singular = "multi-session-"
 
-
 class MultiRunnable(Runnable):
     """
     Differential abundances X FWHM's runnable.
@@ -41,7 +40,7 @@ class MultiRunnable(Runnable):
         self.__status = RunnableStatus(self)
 
         # # Private variables
-        self.__logger = None
+        self.__logger = get_python_logger()
         self.__sid = SID(_multi_id_maker)
         self.__runnable_manager = None
 
@@ -76,19 +75,6 @@ class MultiRunnable(Runnable):
             self._flag_running = False
             self.__logger.debug(str(self.__status))
 
-    def __make_logger(self):
-        _fmtr = logging.Formatter('[%(levelname)-8s] %(message)s')
-        fn = os.path.join(self.__sid.dir, "python.log")
-        l = logging.Logger("python", level=misc.logging_level)
-        if misc.flag_log_file:
-            add_file_handler(l, fn)
-        if misc.flag_log_console:
-            ch = logging.StreamHandler()
-            ch.setFormatter(_fmtr)
-            l.addHandler(ch)
-        self.__logger = l
-
-
     def __run(self):
         # Called from run() to lower one indentation lever.
         # If something is not right here, just raise.
@@ -101,10 +87,9 @@ class MultiRunnable(Runnable):
         else:
             self.__sid.make_id()
 
-        self.__make_logger()
-
         custom_id_maker = IdMaker()
-        custom_id_maker.session_prefix_singular = os.path.join(self.__sid.dir, "session")
+        custom_id_maker.session_prefix_singular = \
+         os.path.join(self.__sid.dir, "session-")
 
         symbols = self.__file_abxfwhm.ab.keys()
         abdiffss = self.__file_abxfwhm.ab.values()
@@ -146,14 +131,14 @@ class MultiRunnable(Runnable):
             pfant = Pfant()
             pfant.conf.sid.id_maker = custom_id_maker
             pfant.conf.logger = self.__logger
-            pfant.conf.sid.make_id()
             pfant.conf.opt = copy.copy(self.__options)
             pfant.conf.file_main = self.__file_main
             pfant.conf.file_abonds = file_abonds_
-            pfant.conf.file_dissoc = file_abonds_
+            pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
             # todo replace j with a descriptive name, configurable in FileAbXFwhm
-            pfant.conf.opt.flprefix = "%s_%02d" % (self.__file_main.titrav, j)
-            pfant.conf.sid.id = pfant.conf.opt.flprefix
+            flprefix = "%s_%02d" % (self.__file_main.titrav, j)
+            pfant.conf.opt.flprefix = os.path.join(self.__sid.dir, flprefix)
+            pfant.conf.sid.id = flprefix
 
             self.__logger.debug(pfant.conf.opt.flprefix)
 
@@ -162,6 +147,9 @@ class MultiRunnable(Runnable):
         run_parallel(pfant_list, flag_console=False, runnable_manager=rm)
         if self._flag_killed:
             return
+
+        print "++++++++++++++FLAG_SUCCESS", rm.flag_success
+        print rm.num_failed, rm.num_finished
         if not rm.flag_success:
             raise RuntimeError("Not all pfant's succeeded running.")
 
@@ -175,12 +163,15 @@ class MultiRunnable(Runnable):
         nulbad_list = []
         sp_filenames_by_fwhm = {}  # dictionary containing a list of .sp filenames for each FWHM
         for pfant in pfant_list:
+            # prefix is sth like: multi-session-1/Sun_00
             prefix = pfant.conf.opt.flprefix
 
             for fwhm in fwhms:
                 nulbad = Nulbad()
+                nulbad.conf.sid.id_maker = custom_id_maker
+                nulbad.conf.logger = self.__logger
                 nulbad.conf.opt = copy.copy(self.__options)
-                nulbad.conf.opt.fn_flux = prefix + ".norm"
+                nulbad.conf.opt.fn_flux = pfant.conf.opt.flprefix+".norm"
                 nulbad.conf.opt.fwhm = fwhm
                 nulbad.conf.opt.fn_cv = "%s_%s.sp" % (prefix, fmt_fwhm(fwhm))
                 nulbad_list.append(nulbad)
@@ -191,7 +182,8 @@ class MultiRunnable(Runnable):
 
         # ## Saves files for lineplot.py (lists of spectra)
         for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():
-            with open("cv_%s.spl" % fmt_fwhm(fwhm), "w") as h:
+            spl_filename = os.path.join(self.__sid.dir, "cv_%s.spl" % fmt_fwhm(fwhm))
+            with open(spl_filename, "w") as h:
                 for sp_filename in sp_filenames:
                     h.write(sp_filename + "\n")
 
