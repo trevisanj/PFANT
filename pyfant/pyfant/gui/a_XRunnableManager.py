@@ -180,7 +180,7 @@ class XRunnableManager(QMainWindow):
         t.setInterval(1000)  # miliseconds
         signals = [t.timeout, self.rm.runnable_changed, self.rm.finished]
         self.changed_proxy = SignalProxy(signals,
-         delay=0, rateLimit=1, slot=self.__update, flag_connect=False)
+        delay=0, rateLimit=1, slot=self.__update, flag_connect=False)
         self.rm.runnable_added.connect(self.__populate, Qt.QueuedConnection)
 
         # ## Timer to flick the finish indicator
@@ -292,11 +292,11 @@ class XRunnableManager(QMainWindow):
 
     def __update(self):
         """Updates second column of table widget."""
-        print "UPDATE UPDATE UPDATE UPDATE UPDATE "
+        _logger.info("UPDATE UPDATE UPDATE UPDATE UPDATE ")
         t = time.time()
         self.__update_status()
         self.__update_table()
-        print "&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,)
+        _logger.info("&&&&&&&&&&&&&&& time to update: %g" % (time.time()-t,))
 
     def __update_table(self):
         with self.__lock_table:

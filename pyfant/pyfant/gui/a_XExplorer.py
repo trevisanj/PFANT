@@ -33,6 +33,10 @@ class _FileProps(object):
         self.flag_text = False
         # Is file (name to match os.path.isfile
         self.isfile = False
+        # Error message
+        self.error_message = ""
+        # Row index in table
+        self.row_index = None
 
     def get_color(self):
         """Returns None if background not to be changed, otherwise a QColor."""
@@ -46,11 +50,14 @@ class _FileProps(object):
 
     def get_summary(self):
         ret = "File not scanned yet"
-        if self.flag_scanned:
+        if not self.isfile:
+            ret = '<span style="color: #B38600">Directory</span>'
+        elif self.flag_scanned:
             aa = ["text file" if self.flag_text else "binary file"]
             if self.flag_error:
-                aa.append("<span style=\"font-weight: bold; color: %s\">"
-                          "not recognized as a PFANT data file</span>" % COLOR_ERROR)
+                emsg = self.error_message or "not recognized as a PFANT data file"
+                aa.append("<span style=\"font-weight: bold; color: %s\">%s</span>" %
+                          (COLOR_ERROR, emsg))
             else:
                 aa.append("<span style=\"color: %s\">PFANT type: <b>%s</b></span>" %
                           ("#006000", self.f.__class__.__name__))
@@ -64,17 +71,25 @@ class _FileProps(object):
         return ret
 
 class LoadThread(QThread):
-    def __init__(self, parent, props):
+    def __init__(self, parent, propss):
         QThread.__init__(self, parent)
-        self.props = props
+        self.propss = propss
 
     def run(self):
-        props = self.props
-        f = load_any_file(props.filepath)
-        props.f = f
-        props.flag_scanned = True
-        props.flag_error = f is None
-        props.flag_text = istextfile(props.filepath)
+        for props in self.propss:
+            if not props.isfile:
+                continue
+            f = None
+            try:
+                f = load_any_file(props.filepath)
+                props.f = f
+            except Exception, e:
+                # Suppresses exceptions
+                props.error_message = str(e)
+            finally:
+                props.flag_scanned = True
+                props.flag_error = f is None
+                props.flag_text = istextfile(props.filepath)
 
 #
 # class VisThread(QThread):
@@ -110,8 +125,10 @@ class XExplorer(QMainWindow):
         self.__vis_classes = []
         # List of (DataFile objects)/(None if not loaded)/(-1 if error loading)
         self.__propss = []
+        # # More internals
         self.__flag_loading = False
         self.__flag_visualizing = False
+        self.__load_thread = None
 
         # # Menu bar
         b = self.menuBar()
@@ -259,9 +276,9 @@ class XExplorer(QMainWindow):
 
     def on_load(self, _=None):
         if not self.__flag_loading:
-            p = self.__get_current_props()
-            if p and not p.isfile:
-                self.set_dir(p.filepath)
+            pp = self.__get_current_propss()
+            if len(pp) == 1 and not pp[0].isfile:
+                self.set_dir(pp[0].filepath)
             else:
                 self.__load()
 
@@ -302,19 +319,16 @@ class XExplorer(QMainWindow):
         files.sort()
         print "DIRS", dirs
         print "FILES", files
-        dir_ = [".."]+dirs+files
+        dir_ = [os.path.join(self.dir, "..")]+dirs+files
         print "ALL", all_
         print "DIRS", dirs
         print "FILES", files
         print "DIR_", dir_
 
-
-
-
-
-        for f in dir_:
+        for i, f in enumerate(dir_):
             filepath = f  #os.path.join(self.dir, f)
             p = _FileProps()
+            p.row_index = i
             p.isfile = os.path.isfile(filepath)
             p.filepath = filepath
             self.__propss.append(p)
@@ -416,11 +430,11 @@ class XExplorer(QMainWindow):
         self.labelStatus.setText(text)
 
     def __load(self):
-        p = self.__get_current_props()
-        if p:
+        pp = self.__get_current_propss()
+        if len(pp) > 0:
             self.__flag_loading = True
-            self.__set_status_text("Loading file, please wait...")
-            t = LoadThread(self, p)
+            self.__set_status_text("Loading file(s), please wait...")
+            t = self.__load_thread = LoadThread(self, pp)
             t.finished.connect(self.__finished_loading)
             t.start()
 
@@ -457,8 +471,10 @@ class XExplorer(QMainWindow):
         t = self.tableWidget
         row = t.currentRow()
         props = self.__get_current_props()
-        for j in range(t.columnCount()):
-            t.item(row, j).setBackground(props.get_color())
+        for props in self.__load_thread.propss:
+            i, c = props.row_index, props.get_color()
+            for j in range(t.columnCount()):
+                t.item(i, j).setBackground(c)
         self.__update_info()
 
     # def __finished_visualizing(self):

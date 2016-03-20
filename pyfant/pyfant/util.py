@@ -36,8 +36,10 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True, runnable_manager=
         rm = runnable_manager
     else:
         rm = RunnableManager(max_simultaneous=max_simultaneous)
+    flag_had_to_start = False
     if not rm.flag_start_called:
         rm.start()
+        flag_had_to_start = True
 
     rm.add_runnables(rr)
 
@@ -64,6 +66,8 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True, runnable_manager=
                 rm.kill_runnables()
     else:
         rm.wait_until_finished()
+        if flag_had_to_start:
+            rm.exit()
 
 
     print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+(" ALIVE" if rm.is_alive() else " DEAD")

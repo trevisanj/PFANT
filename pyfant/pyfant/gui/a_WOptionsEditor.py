@@ -139,6 +139,7 @@ class WOptionsEditor(QWidget):
         # # Central layout
 
         la = self.centralLayout = QVBoxLayout()
+        la.setMargin(0)
         self.setLayout(la)
 
         # ## Toolbar: checkboxes with executables
@@ -502,7 +503,7 @@ class WOptionsEditor(QWidget):
         lu.setMargin(0)
         lu.setSpacing(4)
         x = self.textEditDescr = QTextEdit(self)
-        x.setEnabled(False)
+        x.setReadOnly(True)
         # x.setGeometry(0, 0, 100, 0)
         # x.setWordWrap(True)
         x.setStyleSheet("QTextEdit {color: %s}" % COLOR_DESCR)

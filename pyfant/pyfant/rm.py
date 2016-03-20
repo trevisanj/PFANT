@@ -2,7 +2,7 @@
 __all__ = ["RunnableManager"]
 
 from .runnables import *
-from .misc import random_name, seconds2str, get_python_logger
+from .misc import random_name, seconds2str, get_python_logger, MyLock
 import threading
 import traceback
 import time
@@ -48,64 +48,79 @@ class RunnableManager(QObject, threading.Thread):
 
     @property
     def num_finished(self):
-        with self.__lock_finish:
+        with self.__lock:
             return self.__num_finished
 
     @property
     def time_finished(self):
-        with self.__lock_finish:
+        with self.__lock:
             return self.__time_finished
 
     @property
     def num_runnables(self):
-        return len(self.__runnables)
+        with self.__lock:
+            return len(self.__runnables)
 
     @property
     def num_failed(self):
-        return self.__num_failed
+        with self.__lock:
+            return self.__num_failed
 
     @property
     def time_started(self):
-        return self.__time_started
+        with self.__lock:
+            return self.__time_started
 
     @property
     def max_simultaneous(self):
-        return self.__max_simultaneous
+        with self.__lock:
+            return self.__max_simultaneous
 
     @property
     def flag_cancelled(self):
-        return self.__flag_cancelled
+        with self.__lock:
+            return self.__flag_cancelled
 
     @property
     def flag_exited(self):
-        return self.__time_started is not None and not self.is_alive()
+        with self.__lock:
+            return self.__time_started is not None and not self.is_alive()
 
     @property
     def flag_finished(self):
-        with self.__lock_finish:
-            return len(self.__idxs_to_run) == 0
+        with self.__lock:
+            return self.__num_finished == len(self.__runnables)
 
     @property
     def flag_start_called(self):
-        return self.__time_started is not None
+        with self.__lock:
+            return self.__time_started is not None
 
     @property
     def flag_paused(self):
-        return self.__flag_paused
+        with self.__lock:
+            return self.__flag_paused
 
     @property
     def flag_failed(self):
-        return self.__num_failed > 0
+        with self.__lock:
+            return self.__num_failed > 0
 
     @property
     def flag_auto_clean(self):
-        return self.__flag_auto_clean
+        with self.__lock:
+            return self.__flag_auto_clean
 
     @property
     def flag_success(self):
         """Success is defined as nothing left to run and no fails."""
-        with self.__lock_finish:
+        with self.__lock:
             return self.__num_failed == 0 and len(self.__idxs_to_run) == 0
+
+    @property
+    def time_per_runnable(self):
+        with self.__lock:
+            return self.__time_per_runnable
 
     def __init__(self, *args, **kwargs):
         self.__max_simultaneous = kwargs.pop("max_simultaneous", None)
@@ -134,10 +149,8 @@ class RunnableManager(QObject, threading.Thread):
         self.__runners = []
 
         # # Locks
-        self.__lock = threading.Lock()
-        self.__lock_finish = threading.Lock()
-
-
+        self.__lock = Lock()
+        # self.__lock = MyLock("RM Lock", True)
 
         # # Statistics
         # time the thread has started
@@ -145,7 +158,7 @@ class RunnableManager(QObject, threading.Thread):
         # time the last runnable has finished
         self.__time_finished = None
         # average time to run each runnable
-        self.time_per_runnable = 0
+        self.__time_per_runnable = 0
         
         for i in range(self.__max_simultaneous):
             t = _Runner(self)
@@ -156,17 +169,20 @@ class RunnableManager(QObject, threading.Thread):
         threading.Thread.start(self)
 
     def cancel(self):
-        self.__flag_cancelled = True
-        self.__flag_exit = True
+        with self.__lock:
+            self.__flag_cancelled = True
+            self.__flag_exit = True
 
     def pause(self):
         """Pauses the delegation of runnables to runners.
 
         *Attention*: messes with time estimate."""
-        self.__flag_paused = True
+        with self.__lock:
+            self.__flag_paused = True
 
     def resume(self):
-        self.__flag_paused = False
+        with self.__lock:
+            self.__flag_paused = False
 
     def get_runnables_copy(self):
         """Returns a copy of self.__runnables.
@@ -175,32 +191,11 @@ class RunnableManager(QObject, threading.Thread):
         the actual thread objects."""
         with self.__lock:
             return copy.copy(self.__runnables)
-            
+
     def get_times(self):
         """Returns (ellapsed, total, remaining)."""
-        inf = float("inf")
-        ella, tot, rema = 0, 0, 0
-        nr = self.num_runnables
-        if self.__time_started is None:
-            if nr > 0:
-                tot, rema = inf, inf
-        else:
-            ella = time.time()-self.__time_started
-            if nr > 0:
-                nf = self.__num_finished
-                if nf == 0:
-                    tot, rema = inf, inf
-                else:
-                    tpr = self.time_per_runnable
-                    tf = tpr*nf  # estimated time until last recorded finished
-                    tot = tpr*nr
-                    if not self.__flag_exit:
-                        rema = tpr*(nr-nf)-(ella-tf)
-                        if rema < 0:
-                            rema = 0
-                    else:
-                        rema = inf
-        return ella, tot, rema
+        with self.__lock:
+            return self.__unlocked_get_times()
 
     def add_runnables(self, runnables):
         with self.__lock:
@@ -211,20 +206,14 @@ class RunnableManager(QObject, threading.Thread):
         self.__flag_exit = True
         
     def kill_runnables(self):
-        for runner in self.__runners:
-            if runner.runnable and runner.runnable.flag_running:
-                runner.kill_runnable()
-
-    def kill_runnable(self, runnable):
-        flag_found = False
         with self.__lock:
             for runner in self.__runners:
-                if runner.runnable == runnable and runner.runnable.flag_running:
-                    flag_found = True
-                    runner.kill_runnable()
-                    break
-        if not flag_found:
-            raise RunnableManagerError("Runnable '%s' not running!" % runnable)
+                if runner.runnable and runner.runnable.flag_running:
+                    runner.__unlocked_kill_runnable()
+
+    def kill_runnable(self, runnable):
+        with self.__lock:
+            self.__unlocked_kill_runnable(runnable)
 
     def get_summary_report(self):
         """Returns list with information such as ellapsed time, remaining time etc."""
@@ -235,10 +224,10 @@ class RunnableManager(QObject, threading.Thread):
             if self.__num_failed > 0:
                 l.append("***failed: %d" % (self.__num_failed))
             if self.__time_started:
-                ella, tot, rema = self.get_times()
+                ella, tot, rema = self.__unlocked_get_times()
                 l.append("***time ellapsed: %s" % seconds2str(ella))
                 if self.__num_finished > 0:
-                    tpr = self.time_per_runnable
+                    tpr = self.__time_per_runnable
                     l.append("***time per runnable: %s" % seconds2str(tpr))
                     l.append("***time total estimate: %s" % seconds2str(tot))
                     l.append("***time remaining estimate: %s" % seconds2str(rema))
@@ -266,16 +255,64 @@ class RunnableManager(QObject, threading.Thread):
 
         return "\n".join(l)
 
-
     def wait_until_finished(self):
         if not self.is_alive():
             raise RuntimeError("Runnable manager not running")
         while True:
             if self.flag_finished:
-                print "FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD"
+                # todo cleanup
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
+                self.__logger.info(str(self))
                 self.exit()
                 break
-            print "\n".join(self.get_summary_report())
+            self.__logger.info("\n".join(self.get_summary_report()))
             time.sleep(1)
 
 
@@ -283,7 +320,7 @@ class RunnableManager(QObject, threading.Thread):
         """Retries all failed runnables."""
         if not self.flag_finished:
             raise RuntimeError("Can only retry when finished!")
-        with self.__lock, self.__lock_finish:
+        with self.__lock:
             temp = self.__num_failed
             self.__num_failed = 0
             self.__num_finished -= temp
@@ -301,13 +338,13 @@ class RunnableManager(QObject, threading.Thread):
         This is for monitoring purpose only and has no effect in the workings
         of the thread manager.
         """
-        with self.__lock_finish:
+        with self.__lock:
             if runner.runnable.flag_error:
                 self.__num_failed += 1
 
             self.__num_finished += 1
             t = time.time()
-            self.time_per_runnable = (t-self.__time_started)/self.__num_finished
+            self.__time_per_runnable = (t-self.__time_started)/self.__num_finished
             if self.__num_finished == len(self.__runnables):
                 self.__time_finished = t
         self.runnable_changed.emit()
@@ -370,11 +407,47 @@ class RunnableManager(QObject, threading.Thread):
     
         self.__logger.debug("TM exited")
 
-
     def __unlocked_add_runnables(self, runnables):
         n = len(self.__runnables)
         self.__runnables.extend(runnables)
         self.__idxs_to_run.extend(range(n, n + len(runnables)))
+
+
+    def __unlocked_kill_runnable(self, runnable):
+        flag_found = False
+        with self.__lock:
+            for runner in self.__runners:
+                if runner.runnable == runnable and runner.runnable.flag_running:
+                    flag_found = True
+                    runner.kill_runnable()
+                    break
+        if not flag_found:
+            raise RunnableManagerError("Runnable '%s' not running!" % runnable)
+
+    def __unlocked_get_times(self):
+        inf = float("inf")
+        ella, tot, rema = 0, 0, 0
+        nr = len(self.__runnables)
+        if self.__time_started is None:
+            if nr > 0:
+                tot, rema = inf, inf
+        else:
+            ella = time.time() - self.__time_started
+            if nr > 0:
+                nf = self.__num_finished
+                if nf == 0:
+                    tot, rema = inf, inf
+                else:
+                    tpr = self.__time_per_runnable
+                    tf = tpr * nf  # estimated time until last recorded finished
+                    tot = tpr * nr
+                    if not self.__flag_exit:
+                        rema = tpr * (nr - nf) - (ella - tf)
+                        if rema < 0:
+                            rema = 0
+                    else:
+                        rema = inf
+        return ella, tot, rema
 
 
 @froze_it

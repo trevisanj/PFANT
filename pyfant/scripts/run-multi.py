@@ -61,7 +61,6 @@ if __name__ == "__main__":
     # Parses command-line options
     # ***************************
 
-def run_multi():
     parser = argparse.ArgumentParser(
     description="Nulbadboy powered by pyfant.\n"+__doc__,
     formatter_class=SmartFormatter
@@ -132,7 +131,7 @@ def run_multi():
         f = pfant.conf.file_abonds
         pfant_list.append(pfant)
 
-    run_parallel(pfant_list, MAX_FORTRANS, flag_console=False)
+    run_parallel(pfant_list, MAX_FORTRANS, flag_console=True)
 
     # # Runs nulbad, saves .sp and .spl files
 
@@ -169,10 +168,10 @@ def run_multi():
 
     print "+++ cleaning up..."
 
-    for pfant in pfant_list:
-      pfant.conf.clean()
-    for nulbad in nulbad_list:
-      nulbad.conf.clean()
+    # for pfant in pfant_list:
+    #   pfant.conf.clean()
+    # for nulbad in nulbad_list:
+    #   nulbad.conf.clean()
 
 
 

@@ -5,7 +5,7 @@ __all__ = ["WFileAbonds"]
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from .guiaux import *
-from pyfant import FileAbonds, adjust_atomic_symbol
+from pyfant import FileAbonds, adjust_atomic_symbol, FileDissoc
 import copy
 
 ABONDS_HEADERS = ["Element", "Abundance", "Notes"]
@@ -34,7 +34,14 @@ class WFileAbonds(QWidget):
         self.flag_process_changes = False
         self.f = None # FileAbonds object
 
+        # Internals
+        d = self.__default_dissoc = FileDissoc()
+        d.init_default()
+
         la = self.formLayout = QVBoxLayout()
+        la.setMargin(0)
+        la.setSpacing(4)
+
         self.setLayout(la)
 
 
@@ -42,6 +49,8 @@ class WFileAbonds(QWidget):
 
         l = self.c29378 = QHBoxLayout()
         la.addLayout(l)
+        l.setMargin(0)
+        l.setSpacing(4)
         b = self.button_sort_a = QPushButton("Sort &alphabetically")
         l.addWidget(b)
         b.clicked.connect(self.on_sort_a)
@@ -53,6 +62,8 @@ class WFileAbonds(QWidget):
 
         l = self.c34985 = QHBoxLayout()
         la.addLayout(l)
+        l.setMargin(0)
+        l.setSpacing(4)
         b = self.button_insert = QPushButton("&Insert")
         l.addWidget(b)
         b.clicked.connect(self.on_insert)
@@ -93,7 +104,7 @@ class WFileAbonds(QWidget):
 
         x = self.textEditError = QTextEdit(self)
         l.addWidget(x)
-        x.setEnabled(False)
+        x.setReadOnly(True)
         x.setStyleSheet("QTextEdit {color: %s}" % COLOR_ERROR)
         x.setFont(MONO_FONT)
 
@@ -262,6 +273,11 @@ class WFileAbonds(QWidget):
         if len(x) > 2:
             raise RuntimeError(
                 "Element \"%s\" too big (maximum 2 characters" % x)
+
+        # hydrogen not allowed
+        if x == "H":
+            raise RuntimeError("Hydrogen not allowed (abundance of H = 12 is used as a reference throughout)")
+
         # makes sure elements symbols are unique in the table
         t = self.tableWidget
         n = t.rowCount()
@@ -273,8 +289,7 @@ class WFileAbonds(QWidget):
 
 
     def _update_file_abonds(self):
-        o = self.f
-        errors = []
+        errors, warnings = [], []
         o, t = self.f, self.tableWidget
         assert isinstance(t, QTableWidget)
         n = t.rowCount()
@@ -306,9 +321,25 @@ class WFileAbonds(QWidget):
             x = str((item.text())).strip()
             notes.append(x)
 
+        d = self.__default_dissoc
+        print "#################################"
+        print "#################################"
+        print "#################################"
+        print "#################################"
+        print d.elems
+        for elem, cclog in zip(d.elems, d.cclog):
+            if elem not in ele and elem != " H":
+                warnings.append("<b>Warning</b>: element \"%s\", required for "
+                 "dissociative equilibrium calculation, is missing. "
+                "Abundance adopted for \"%s\" will be %g" %
+                 (elem.strip(), elem.strip(), cclog+12))
+
         o.ele = ele
         o.abol = abol
         o.notes = notes
         self.flag_valid = len(errors) == 0
-        emsg = "<br>\n".join(errors)
+        emsg = ""
+        if len(errors) > 0 or len(warnings) > 0:
+            emsg = '<ul><li>'+("<li>".join(warnings+errors))
+
         self._set_error_text(emsg)

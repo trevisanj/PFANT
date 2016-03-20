@@ -153,8 +153,12 @@ class XMainAbonds(QMainWindow):
             self.ae.load(file_abonds)
 
         # ### Command-line options tab
+        w1 = QWidget()
+        l1 = QVBoxLayout(w1)
         w0 = self.oe  = WOptionsEditor()
-        tt.addTab(w0, self.tab_texts[2])
+        l1.addWidget(w0)
+        tt.addTab(w1, self.tab_texts[2])
+        tt.tabBar()
 
 
         # ### Final tabs setup

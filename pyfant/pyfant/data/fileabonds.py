@@ -56,8 +56,14 @@ class FileAbonds(DataFile):
         f = FileDissoc()
         f.init_default()
         for i, elem in enumerate(f.elems):
-            j = self.ele.index(elem)
-            f.cclog[i] = self.abol[j]-12
+            if elem != " H":
+                try:
+                    j = self.ele.index(elem)
+                    f.cclog[i] = self.abol[j]-12
+                except ValueError:
+                    # if dissoc element is not found in abonds, will use
+                    # value in default dissoc.dat
+                    pass
         return f
 
     def get_turbospectrum_str(self):

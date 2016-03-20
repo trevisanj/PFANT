@@ -27,10 +27,27 @@ class WFileMain(QWidget):
         self.flag_process_changes = False
         self.f = None # FileMain object
 
-        la = self.formLayout = QGridLayout()
-        la.setVerticalSpacing(4)
-        la.setHorizontalSpacing(5)
+
+        # # Central layout
+        la = self.centralLayout = QVBoxLayout()
+        la.setMargin(0)
         self.setLayout(la)
+
+        # ## Splitter with scroll area and descripton+error area
+        sp = self.splitter = QSplitter(Qt.Vertical)
+        la.addWidget(sp)
+
+
+        # ### Widget + grid layout to be first in splitter
+        w = self.c33441 = QWidget()
+        sp.addWidget(w)
+
+        lg = self.formLayout = QGridLayout()
+        w.setLayout(lg)
+        lg.setMargin(0)
+        lg.setVerticalSpacing(4)
+        lg.setHorizontalSpacing(5)
+        self.setLayout(lg)
         # field map: [(label widget, edit widget, field name, short description,
         #              field name color, long description), ...]
         pp = self._map = []
@@ -176,22 +193,29 @@ class WFileMain(QWidget):
             assert isinstance(label, QLabel)
             label.setText(enc_name_descr(name, short_descr, color))
             label.setAlignment(Qt.AlignRight)
-            la.addWidget(label, i, 0)
-            la.addWidget(edit, i, 1)
+            lg.addWidget(label, i, 0)
+            lg.addWidget(edit, i, 1)
             edit.setToolTip(long_descr)
 
 
+
+        # ### Second widget of splitter
+        # layout containing description area and a error label
+        wlu = QWidget()
+        lu = QVBoxLayout(wlu)
+        lu.setMargin(0)
+        lu.setSpacing(4)
         x = self.textEditDescr = QTextEdit(self)
-        x.setEnabled(False)
+        x.setReadOnly(True)
         # x.setGeometry(0, 0, 100, 0)
         # x.setWordWrap(True)
         x.setStyleSheet("QTextEdit {color: %s}" % COLOR_DESCR)
-        la.addWidget(x, la.rowCount(), 0, 1, 2)
-
+        lu.addWidget(x)
         x = self.labelError = QLabel(self)
         x.setStyleSheet("QLabel {color: %s}" % COLOR_ERROR)
+        lu.addWidget(self.labelError)
+        sp.addWidget(wlu)
 
-        la.addWidget(self.labelError, la.rowCount(), 0, 1, 2)
 
         self.setEnabled(False)  # disabled until load() is called
         style_checkboxes(self)

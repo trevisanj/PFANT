@@ -370,7 +370,7 @@ class Pfant(Executable):
         number of iterations in attribute ikeytot.
 
         """
-        p = self.conf.opt.fn_progress
+        p = self.conf.opt.fn_progress or "progress.txt"
         ret = self._status
         if (not self.ikey or self.ikey < self.ikeytot) and os.path.isfile(p):
             with open(p) as h:

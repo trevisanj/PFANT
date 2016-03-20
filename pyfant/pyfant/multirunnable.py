@@ -185,7 +185,7 @@ class MultiRunnable(Runnable):
             spl_filename = os.path.join(self.__sid.dir, "cv_%s.spl" % fmt_fwhm(fwhm))
             with open(spl_filename, "w") as h:
                 for sp_filename in sp_filenames:
-                    h.write(sp_filename + "\n")
+                    h.write(os.path.basename(sp_filename)+"\n")
 
         # ## Runs nulbads
         rm = self.__rm = RunnableManager()

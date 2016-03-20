@@ -48,6 +48,7 @@ class WFileAbXFwhm(QWidget):
         # # Central layout
 
         la = self.centralLayout = QVBoxLayout()
+        la.setMargin(0)
         self.setLayout(la)
 
         # ## Splitter with scroll area and descripton+error area

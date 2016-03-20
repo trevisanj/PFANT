@@ -12,7 +12,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
- "istextfile", "get_QApplication", "copy_default_file"]
+ "istextfile", "get_QApplication", "copy_default_file", "MyLock"]
 
 
 # # todo cleanup
@@ -46,6 +46,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
 import os.path
 import random
 import logging
+import inspect
 import sys
 from matplotlib import rc
 import re
@@ -53,11 +54,10 @@ from argparse import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import time
-from threading import Lock
 from functools import wraps
 import numpy as np
 import shutil
-
+from threading import Lock, current_thread
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ symbols = [
 SYMBOLS = [x.upper() for x in symbols]
 
 
-# #################################################################################################
+###############################################################################
 # # Classes
 
 def froze_it(cls):
@@ -777,3 +777,52 @@ def istextfile(filepath, blocksize=512):
         # occurrences of _text_characters from the block
         nontext = block.translate(None, _text_characters)
         return float(len(nontext)) / len(block) <= 0.30
+
+
+###############################################################################
+# # Debugging facilities
+
+def GetCurrentFunctionName(k=0):
+  """Returns the function name of the caller.
+
+  Arguments:
+    k=0 -- 1: caller of the caller,
+       2: caller of the caller of the caller etc
+
+  Obs: profiling shows that this function grabs a lot of execution time for itself."""
+  return inspect.stack()[1+k][3]
+
+
+class MyLock(object):
+    """Lock with verbosing, helps to find deadlocks"""
+
+    def __init__(self, name=None, flagVerbose=False):
+        if name is None:
+            name = random_name()
+        self.name = name
+        self.flagVerbose = flagVerbose
+        self.__lock = Lock()
+
+    def acquire(self, *args):
+        if self.__lock.locked():
+            self.__log("Tried to lock, but is already locked!!")
+        else:
+            pass
+            # self.__log("Will acquire lock")
+        self.__lock.acquire(*args)
+        self.__log("Acquired lock, good")
+
+    def release(self):
+        self.__lock.release()
+        self.__log("Released lock")
+
+    # For the "with" statement
+    def __exit__(self, *args):
+        self.release()
+    __enter__ = acquire
+
+    def __log(self, s):
+        if self.flagVerbose:
+            get_python_logger().info("--- MyLock %s --- %s (caller: %s; thread: %s)" %
+            (self.name, s, GetCurrentFunctionName(2), current_thread().name))
+
