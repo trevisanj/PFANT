@@ -14,7 +14,7 @@ As of 22/Mar/2016, the following the avaiable tools:
 
 
 Script name               | Purpose
-----------
+--------------------------|----------
 abed.py                   | ABundances file EDitor.
 ated.py                   | ATomic lines file EDitor
 cut-atoms.py              | Cuts atomic lines file to wavelength interval specified.

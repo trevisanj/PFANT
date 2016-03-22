@@ -37,7 +37,7 @@ if __name__ == "__main__":
     if args.markdown:
         mask = "%%-%ds | %%s" % module_len
         print mask % ("Script name", "Purpose")
-        print "---|---"
+        print "-"*(module_len+1)+"|"+"-"*10
         for f in ff:
             module_name, _ = os.path.splitext(f)
             _, filename = os.path.split(f)
