@@ -125,7 +125,7 @@ class WOptionsEditor(QWidget):
         # # Setup & accessible attributes
 
         # Whether all the values in the fields are valid or not
-        self.flag_valid = True
+        self.flag_valid = False
         self.f = None # Options object
         self.logger = get_python_logger()
 

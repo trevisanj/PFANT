@@ -96,6 +96,30 @@ class SID(object):
         self.__id, self.__dir = \
             self.__id_maker.make_id(self.__flag_split_dirs)
 
+    def clean(self, flag_remove_dir=True):
+        """Deletes directory with all files inside.
+
+        Arguments:
+          flag_remove_dif=True -- if not set, will only delete the contents,
+            keeping the directory
+        """
+
+        if flag_remove_dir:
+            logging.debug("About to remove directory '%s'" % self.__dir)
+            shutil.rmtree(self.__dir)
+        else:
+            # reference: http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
+            for the_file in os.listdir(self.__dir):
+                file_path = os.path.join(self.__dir, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except:
+                    self.logger.exception("Error removing '%s'" % the_file)
+
+
 # # Section id managhement
 # Part of code that finds new session id and creates corresponding directory
 
@@ -430,27 +454,6 @@ class Conf(object):
         """Returns name of atmospheric model file."""
         return FileMod.default_filename if self.opt.fn_modeles is None \
          else self.opt.fn_modeles
-
-    def clean(self, flag_remove_dir=True):
-        """Deletes directory with all files inside.
-
-        Arguments:
-          flag_remove_dif=True -- if not set, will only delete the contents,
-            keeping the directory
-        """
-
-        if flag_remove_dir:
-            logging.debug("About to remove directory '%s'" % self.__sid.dir)
-            shutil.rmtree(self.__sid.dir)
-        else:
-            # reference: http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
-            for the_file in os.listdir(self.__sid.dir):
-                file_path = os.path.join(self.__sid.dir, the_file)
-                try:
-                    if os.path.isfile(file_path):
-                        os.unlink(file_path)
-                except:
-                    self.logger.exception("Error removing '%s'" % the_file)
 
     def get_args(self):
         """

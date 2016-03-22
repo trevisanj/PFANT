@@ -3,16 +3,9 @@
 __all__ = ["XMulti"]
 
 from PyQt4.QtGui import *
-from pyfant import *
 from .guiaux import *
-from . import XRunnableManager
 from pyfant import *
-from .a_XMainAbonds import *
 import os.path
-import matplotlib.pyplot as plt
-import traceback
-import copy
-import syntax
 from .a_XPFANT import *
 from .a_WFileAbXFwhm import *
 
@@ -29,9 +22,10 @@ class XMulti(XPFANT):
         ## State variables
         XPFANT.__init__(self, *args, **kwargs)
 
-        # # Overriding previous configuration
+        # # Complementing previous configuration
 
         w = self.buttonSubmit.setText("&Submit single job")
+        self.ae.loaded.connect(self.on_file_abonds_loaded)
 
         # # Multi tab
 
@@ -39,11 +33,21 @@ class XMulti(XPFANT):
         tt.currentChanged.connect(self.on_tabWidget_current_changed)
 
         wm = self.multi_widget = QWidget()
-        tt.addTab(wm, "Multi mode (Alt+&4)")
+        TAB_TEXT_4 = "Multi mode (Alt+&4)"
+        tt.addTab(wm, TAB_TEXT_4)
 
         # ## Layout with all elements in Multi tab
         l = QVBoxLayout()
         wm.setLayout(l)
+
+        # ### Row with filename
+        l1 = self.c923788 = QHBoxLayout()
+        l.addLayout(l1)
+        w = QLabel("<b>File:<b>")
+        l1.addWidget(w)
+        w = self.label_fn_abxfwhm = QLabel()
+        l1.addWidget(w)
+        l1.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # ### Toolbar
         l1 = self.multiToolbarLayour = QHBoxLayout()
@@ -61,23 +65,52 @@ class XMulti(XPFANT):
         l1.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # ### Editor for multi setup
+
         editor = self.multi_editor = WFileAbXFwhm()
+        editor.edited.connect(self.on_multi_edited)
         l.addWidget(editor)
 
         # # Final adjustments
+
+        # ## Registers data in a_XMainAbonds lists to automatically perform Load/Save/Save as
+        self.tab_texts.append(TAB_TEXT_4)
+        self.flags_changed.append(False)
+        self.save_as_texts.append("Save abundances X FWHM's configuration as")
+        self.open_texts.append("Load abundandex X FWHM's file")
+        self.clss.append(FileAbXFwhm)
+        self.editors.append(self.multi_editor)
+        self.labels_fn.append(self.label_fn_abxfwhm)
+
         self.__update_lineEdit_multi_custom_id()
         tt.setCurrentIndex(3)
+        # ## Loads abxfwhm file
+        if os.path.isfile(FileAbXFwhm.default_filename):
+            f = FileAbXFwhm()
+            f.load()
+            self.multi_editor.load(f)
+        # ## calls slot to perform cross-check between FileAbonds and FileAbXFwhm
+        if self.ae.f:
+            self.on_file_abonds_loaded()
+        self._update_labels_fn()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for Qt library signals
 
     def on_run_multi(self):
-        errors = self._check_setup()
-        if len(errors) == 0:
-            # more error checking
-            if self.checkbox_multi_custom_id.isChecked():
-                if len(self.__get_multi_custom_session_id()) == 0:
-                    errors.append("Please inform custom session id.")
+        errors = self._check_single_setup()
+
+        # more error checking
+        if self.checkbox_multi_custom_id.isChecked():
+            if len(self.__get_multi_custom_session_id()) == 0:
+                errors.append("Please inform custom session id.")
+        if not self.multi_editor.f:
+            errors.append("abundances X FWHM's configuration not set")
+        else:
+            # forces validation because validity is linked to FileAbonds managed in other tab
+            self.multi_editor.f.validate()
+            if not self.multi_editor.flag_valid:
+                errors.append("error(s) in abundances X FWHM's configuration")
+
         if len(errors) == 0:
             try:
                 self.setEnabled(False)
@@ -98,10 +131,29 @@ class XMulti(XPFANT):
 
     def on_tabWidget_current_changed(self, index):
         self.__toggle_single_toolbar(index != 3)
+        if index == 3:
+            self.multi_editor.validate()
+
+    def on_abonds_edited(self):
+        """Overrides method to update multi_editor.file_abonds."""
+        XPFANT.on_abonds_edited(self)
+        self.multi_editor.file_abonds = self.ae.f
+
+    def on_multi_edited(self):
+        self._on_edited()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for signals emited by pyfant widgets
 
+    def on_file_abonds_loaded(self):
+        self.multi_editor.file_abonds = self.ae.f
+
+    def on_abonds_edited(self):
+        XPFANT.on_abonds_edited(self)
+        self.multi_editor.file_abonds = self.ae.f
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Protected methods
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Internals

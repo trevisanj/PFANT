@@ -31,7 +31,7 @@ class WFileAbXFwhm(QWidget):
         # # Setup & accessible attributes
 
         # Whether all the values in the fields are valid or not
-        self.flag_valid = True
+        self.flag_valid = False  # initialized to False because not loaded yet
         self.f = None # Options object
         self.logger = get_python_logger()
         # FileAbonds instance to check for existence of atomic symbols
@@ -97,6 +97,13 @@ class WFileAbXFwhm(QWidget):
         # this is called to perform file validation upon loading
         self.__update_data()
         self.setEnabled(True)
+
+    def validate(self):
+        """Forces validation of text in editor."""
+        if self.f:
+            self.__update_data()
+        else:
+            self.flag_valid = False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Qt override

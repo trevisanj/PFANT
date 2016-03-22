@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
         for i, combo in enumerate(pp):
             try:
-                combo.conf.clean()
+                combo.sid.clean()
             except Exception as E:
                 logger.info("Error cleaning session for %s: %s" % (combo.name, str(E)))
         # this part removes sessionxxxxx

@@ -15,13 +15,8 @@ misc.logging_level = logging.INFO
 if __name__ == "__main__":
     app = get_QApplication([])
 
-    # todo cleanup For testing
-    f = FileAbXFwhm()
-    f.init_default()
-
     form0 = XMulti()
 
-    form0.multi_editor.load(f)
     rm = RunnableManager()
     form1 = XRunnableManager(form0, rm)
     form1.flag_close_mpl_plots_on_close = False

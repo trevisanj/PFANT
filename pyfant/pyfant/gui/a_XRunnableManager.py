@@ -68,17 +68,21 @@ class XRunnableManager(QMainWindow):
         b2.clicked.connect(self.on_pause)
         b2.setCheckable(True)
         b2.setToolTip("Pause/Resume")
-        b3 = self.pushButtonCancel = QPushButton("&Cancel")
-        b3.clicked.connect(self.on_cancel)
-        b4 = self.pushButtonRetryFailed = QPushButton("Retry &failed")
-        b4.clicked.connect(self.on_retry_failed)
+        b3 = self.pushButtonCancel = QPushButton("&Kill running")
+        b3.setToolTip("Attempts to kill all running jobs")
+        b3.clicked.connect(self.on_kill)
+        b4 = self.pushButtonCancel = QPushButton("&Exit thread")
+        b4.setToolTip("Stops runnables manager thread (irreversible)")
+        b4.clicked.connect(self.on_exit)
+        b5 = self.pushButtonRetryFailed = QPushButton("Retry &failed")
+        b5.clicked.connect(self.on_retry_failed)
         # todo + note: assuming that there is no interest in adding new tasks later
         l = self.labelEnd = QLabel()
         l.setVisible(False)
 
         s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        bb = [b0, b1, b2, b3, b4, l]
+        bb = [b0, b1, b2, b3, b4, b5, l]
         l0 = self.layoutToolbar = QHBoxLayout()
         for b in bb:
             l0.addWidget(b)
@@ -239,15 +243,19 @@ class XRunnableManager(QMainWindow):
     def on_table(self):
         self.tableWidget.setVisible(self.pushButtonTable.isChecked())
 
-    def on_cancel(self):
+    def on_exit(self):
         self.rm.cancel()
+
+    def on_kill(self):
+        self.rm.kill_runnables()
 
     def on_retry_failed(self):
         try:
             self.rm.retry_failed()
         except Exception as e:
-            _logger.exception("Could not retry failed")
-            ShowError(str(e))
+            MSG = "Could not retry failed"
+            _logger.exception(MSG)
+            ShowError("%s: %s" % (MSG, str(e)))
 
     # def on_timer_timeout(self):
     #     print "on_timer_timeout"
@@ -260,7 +268,12 @@ class XRunnableManager(QMainWindow):
             self.__lfcs = 0
 
     def on_tableWidget_cellDoubleClicked(self, row=0, col=0):
-        self.__explore_directory()
+        try:
+            self.__explore_directory()
+        except Exception as e:
+            MSG = "Could explore directory"
+            _logger.exception(MSG)
+            ShowError("%s: %s" % (MSG, str(e)))
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
@@ -278,7 +291,7 @@ class XRunnableManager(QMainWindow):
             a.setColumnCount(2)
             a.setHorizontalHeaderLabels(["Session directory", "Status"])
             for i, runnable in enumerate(runnables):
-                title = runnable.session_dir
+                title = runnable.sid.dir
                 if title is None:
                     title = '...'
                 item = QTableWidgetItem(title)
@@ -310,7 +323,7 @@ class XRunnableManager(QMainWindow):
                 runnable = runnables[i]
 
                 item = a.item(i, 0)
-                title = runnable.session_dir
+                title = runnable.sid.dir
                 if title is None:
                     title = "..."
                 item.setText(title)
@@ -354,7 +367,7 @@ class XRunnableManager(QMainWindow):
 
     def __explore_directory(self):
         runnable = self.runnables[self.tableWidget.currentRow()]
-        dir_ = runnable.session_dir
+        dir_ = runnable.sid.dir
         if not self.__explorer_form:
             f = self.__explorer_form = XExplorer(self, dir_)
             f.flag_close_mpl_plots_on_close = False

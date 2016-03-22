@@ -25,11 +25,13 @@ class WFileAbonds(QWidget):
 
     # Emitted whenever any value changes
     edited = pyqtSignal()
+    # Emitted whenever a new file is loaded
+    loaded = pyqtSignal()
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         # Whether all the values in the fields are valid or not
-        self.flag_valid = True
+        self.flag_valid = False
         # Internal flag to prevent taking action when some field is updated programatically
         self.flag_process_changes = False
         self.f = None # FileAbonds object
@@ -130,6 +132,7 @@ class WFileAbonds(QWidget):
         # this is called to perform file validation upon loading
         self._update_file_abonds()
         self.setEnabled(True)
+        self.loaded.emit()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Qt override

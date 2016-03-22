@@ -38,7 +38,7 @@ class XMainAbonds(QMainWindow):
         self.tab_texts =  ["Main configuration (Alt+&1)",
                             "Abundances (Alt+&2)",
                             "Command-line options (Alt+&3)"]
-        self.flags_changed = [False, False]
+        self.flags_changed = [False, False, None]
         self.save_as_texts = ["Save main configuration as...",
                                "Save abundances as...",
                                None]
@@ -125,7 +125,7 @@ class XMainAbonds(QMainWindow):
         me = self.me = WFileMain()
         l0.addWidget(me)
         me.setFont(MONO_FONT)
-        me.edited.connect(self.on_edited)
+        me.edited.connect(self.on_main_edited)
         if file_main is not None:
             self.me.load(file_main)
         # me.setFocus()
@@ -148,7 +148,7 @@ class XMainAbonds(QMainWindow):
         ae = self.ae = WFileAbonds()
         l0.addWidget(ae)
         ae.setFont(MONO_FONT)
-        ae.edited.connect(self.on_edited)
+        ae.edited.connect(self.on_abonds_edited)
         if file_abonds is not None:
             self.ae.load(file_abonds)
 
@@ -165,9 +165,11 @@ class XMainAbonds(QMainWindow):
         tt.setCurrentIndex(0)
 
         # ### These sequences couldn't be set above because the widgets didn't exist yet
-        self.editors = [self.me, self.ae]
-        self.labels_fn = [self.label_fn_main, self.label_fn_abonds]
-
+        self.editors = [self.me, self.ae, None]
+        self.labels_fn = [self.label_fn_main, self.label_fn_abonds, None]
+        assert len(self.tab_texts) == len(self.flags_changed) == \
+         len(self.save_as_texts) == len(self.open_texts) == len(self.clss) == \
+         len(self.editors) == len(self.labels_fn)
 
         # # Loads default files
         if os.path.isfile(FileMain.default_filename):
@@ -178,7 +180,7 @@ class XMainAbonds(QMainWindow):
             f = FileAbonds()
             f.load()
             self.ae.load(f)
-        self.__update_labels_fn()
+        self._update_labels_fn()
 
         # # Initializes command-line options
         # At the moment, there is no way to save or load command-line options
@@ -199,29 +201,30 @@ class XMainAbonds(QMainWindow):
     # Index checks are because descendant classes may add more tabs
 
     def on_open(self):
-        if self.__get_index() <= 2:
+        if self.__tab_has_file_operations():
             self.__generic_open()
 
     def on_save(self):
-        if self.__get_index() <= 2:
+        if self.__tab_has_file_operations():
             self.__generic_save()
 
     def on_save_as(self):
-        if self.__get_index() <= 2:
+        if self.__tab_has_file_operations():
             self.__generic_save_as()
 
     def on_save_all(self):
-        index = self.__get_index()
+        index_save = self.__get_index()
         try:
-            self.tabWidget.setCurrentIndex(0)
-            if self.__generic_save():
-                self.tabWidget.setCurrentIndex(1)
-                self.__generic_save()
+            for index in range(self.tabWidget.count()):
+                self.tabWidget.setCurrentIndex(index)
+                if not self.__generic_save():
+                    # breaks if user cancels a "save as" operation
+                    break
         finally:
-            self.tabWidget.setCurrentIndex(index)
+            self.tabWidget.setCurrentIndex(index_save)
 
     def on_reset(self):
-        if self.__get_index() <= 2:
+        if self.__tab_has_file_operations():
             self.__generic_reset()
 
     def on_show_rm(self):
@@ -231,10 +234,50 @@ class XMainAbonds(QMainWindow):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for signals emited by pyfant widgets
 
-    def on_edited(self):
+    def on_main_edited(self):
+        self._on_edited()
+
+    def on_abonds_edited(self):
+        self._on_edited()
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Protected methods to be overriden or used by descendant classes
+
+    def _on_edited(self):
         index = self.__get_index()
         self.flags_changed[index] = True
         self.__update_tab_texts()
+
+    def _check_single_setup(self):
+        """Checks if setup parameters are valid.
+
+        The verifications here apply both to single and multi mode.
+        """
+        errors = []
+        if not self.me.f:
+            errors.append("main configuration not set")
+        if not self.ae.f:
+            errors.append("abundances not set")
+        if not self.me.flag_valid:
+            errors.append("error(s) in main configuration")
+        if not self.ae.flag_valid:
+            errors.append("error(s) in abundances")
+        if not self.oe.flag_valid:
+            errors.append("error(s) in command-line options")
+        return errors
+
+    def _update_labels_fn(self):
+        cwd = os.getcwd()
+        for editor, label in zip(self.editors, self.labels_fn):
+            if not label:
+                continue
+            if not editor.f:
+                text = "(not loaded)"
+            elif editor.f.filename:
+                text = os.path.relpath(editor.f.filename, ".")
+            else:
+                text = "(filename not set)"
+            label.setText(text)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Gear
@@ -244,8 +287,6 @@ class XMainAbonds(QMainWindow):
 
     def __generic_reset(self):
         index = self.__get_index()
-        if index >= 2:
-            return
         editor, text, cls = self.editors[index], self.open_texts[index], \
                                    self.clss[index]
         f = cls()
@@ -253,16 +294,15 @@ class XMainAbonds(QMainWindow):
         editor.load(f)
         self.flags_changed[index] = True
         self.__update_tab_texts()
-        self.__update_labels_fn()
+        self._update_labels_fn()
 
     def __generic_save(self):
+        """Returns False if user has cancelled a "save as" operation, otherwise True."""
         index = self.__get_index()
-        if index >= 2:
-            return False
         editor = self.editors[index]
         f = editor.f
         if not f:
-            return False
+            return True
         if f.filename:
             try:
                 f.save_as()
@@ -276,12 +316,11 @@ class XMainAbonds(QMainWindow):
             return self.__generic_save_as()
 
     def __generic_save_as(self):
+        """Returns False if user has cancelled operation, otherwise True."""
         index = self.__get_index()
-        if index >= 2:
-            return False
         editor, text = self.editors[index], self.save_as_texts[index]
         if not editor.f:
-            return False
+            return True
         if editor.f.filename:
             d = editor.f.filename
         else:
@@ -294,7 +333,7 @@ class XMainAbonds(QMainWindow):
             try:
                 editor.f.save_as(str(new_filename))
                 self.flags_changed[index] = False
-                self.__update_labels_fn()
+                self._update_labels_fn()
                 self.__update_tab_texts()
                 return True
             except Exception as e:
@@ -304,8 +343,6 @@ class XMainAbonds(QMainWindow):
 
     def __generic_open(self):
         index = self.__get_index()
-        if index >= 2:
-            return
         editor, text, cls, label = self.editors[index], self.open_texts[index], \
                                    self.clss[index], self.labels_fn[index]
         try:
@@ -318,24 +355,16 @@ class XMainAbonds(QMainWindow):
                 f = cls()
                 f.load(str(new_filename))
                 editor.load(f)
-                self.__update_labels_fn()
+                self._update_labels_fn()
                 self.__update_tab_texts()
         except Exception as e:
             ShowError(str(e))
             raise
 
+    def __tab_has_file_operations(self):
+        return self.flags_changed[self.__get_index()] is not None
+
     def __update_tab_texts(self):
         for index, (text, flag_changed) in enumerate(zip(self.tab_texts, self.flags_changed)):
             self.tabWidget.setTabText(index,
              text+(" (changed)" if flag_changed else ""))
-
-    def __update_labels_fn(self):
-        cwd = os.getcwd()
-        for editor, label in zip(self.editors, self.labels_fn):
-            if not label:
-                continue
-            if not editor.f:
-                text = "(not loaded)"
-            else:
-                text = os.path.relpath(editor.f.filename, ".")
-            label.setText(text)

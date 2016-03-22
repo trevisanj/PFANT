@@ -22,7 +22,7 @@ class WFileMain(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         # Whether all the values in the fields are valid or not
-        self.flag_valid = True
+        self.flag_valid = False
         # Internal flag to prevent taking action when some field is updated programatically
         self.flag_process_changes = False
         self.f = None # FileMain object

@@ -13,14 +13,36 @@ import logging
 _multi_id_maker = IdMaker()
 _multi_id_maker.session_prefix_singular = "multi-session-"
 
+
+
+@froze_it
+class MultiRunnableStatus(object):
+    def __init__(self, runnable):
+        assert isinstance(runnable, MultiRunnable)
+        self.runnable = runnable
+        self.stage = ""
+
+    def __str__(self):
+        l = []
+        if self.runnable.flag_finished:
+            l.append("finished")
+        if self.runnable.flag_running:
+            l.append("running - "+self.stage)
+        if self.runnable.flag_killed:
+            l.append("*killed*")
+        if self.runnable.flag_error:
+            l.append("*error*")
+        if self.runnable.error_message:
+            l.append("*" + str(self.runnable.error_message) + "*")
+        if len(l) > 0:
+            return " ".join(l)
+        return "?"
+
+
 class MultiRunnable(Runnable):
     """
     Differential abundances X FWHM's runnable.
     """
-
-    @property
-    def sid(self):
-        return self.__sid
 
     def __init__(self, file_main, file_abonds, options, file_abxfwhm,
                  custom_id=None):
@@ -37,7 +59,7 @@ class MultiRunnable(Runnable):
 
         # # Protected variables
         # ExecutableStatus instance
-        self.__status = RunnableStatus(self)
+        self.__status = MultiRunnableStatus(self)
 
         # # Private variables
         self.__logger = get_python_logger()
@@ -65,12 +87,10 @@ class MultiRunnable(Runnable):
         try:
             self.__run()
         except Exception as e:
-            print "CAIU AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
             self._error_message = e.__class__.__name__+": "+str(e)
             self._flag_error = True
             raise
         finally:
-            print "CCCCCCCCCCCCCCCccCAIU AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
             self._flag_finished = True
             self._flag_running = False
             self.__logger.debug(str(self.__status))
@@ -82,6 +102,7 @@ class MultiRunnable(Runnable):
         ####
         # # Preparation
         ####
+        self.__status.stage = "preparing"
         if self.__custom_id:
             self.__sid.id = self.__custom_id
         else:
@@ -110,7 +131,8 @@ class MultiRunnable(Runnable):
 
         ####
         # # Runs pfant, pfant creates several .norm files
-        self.__logger.info("+++ pfant phase...")
+        self.__status.stage = "pfant stage"
+        self.__logger.info("+++ pfant stage...")
         pfant_list = []
         for j in range(n_abdif):
             file_abonds_ = copy.deepcopy(self.__file_abonds)
@@ -148,14 +170,11 @@ class MultiRunnable(Runnable):
         if self._flag_killed:
             return
 
-        print "++++++++++++++FLAG_SUCCESS", rm.flag_success
-        print rm.num_failed, rm.num_finished
         if not rm.flag_success:
             raise RuntimeError("Not all pfant's succeeded running.")
 
         ####
         # # Runs nulbad, saves .sp and .spl files
-        self.__logger.info("+++ nulbad phase...")
         # function to convert given FWHM to string to use as part of a file name
         fmt_fwhm = lambda x: "%03d" % round(x * 100)
 
@@ -188,6 +207,8 @@ class MultiRunnable(Runnable):
                     h.write(os.path.basename(sp_filename)+"\n")
 
         # ## Runs nulbads
+        self.__status.stage = "nulbad stage"
+        self.__logger.info("+++ nulbad stage...")
         rm = self.__rm = RunnableManager()
         run_parallel(nulbad_list, flag_console=False, runnable_manager=rm)
         if self._flag_killed:
@@ -200,9 +221,9 @@ class MultiRunnable(Runnable):
         self.__logger.info("+++ NOT cleaning up...")
 
         # for pfant in pfant_list:
-        #     pfant.conf.clean()
+        #     pfant.sid.clean()
         # for nulbad in nulbad_list:
-        #     nulbad.conf.clean()
+        #     nulbad.sid.clean()
 
-    def _get_session_dir(self):
-        return self.__sid.dir
+    def _get_sid(self):
+        return self.__sid

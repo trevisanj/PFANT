@@ -60,7 +60,7 @@ class XPFANT(XMainAbonds):
 
     def on_submit(self):
         flag_ok = True
-        errors = self._check_setup()
+        errors = self._check_single_setup()
         if len(errors) == 0:
             # more error checking
             if self.checkbox_custom_id.isChecked():
@@ -102,21 +102,3 @@ class XPFANT(XMainAbonds):
 
     def __update_lineEdit_custom_id(self):
         self.lineEdit_custom_id.setEnabled(self.checkbox_custom_id.isChecked())
-
-    def _check_setup(self):
-        """Checks if setup parameters are valid.
-
-        The verifications here apply both to single and multi mode.
-        """
-        errors = []
-        if not self.me.f:
-            errors.append("main configuration not set")
-        if not self.ae.f:
-            errors.append("abundances not set")
-        if not self.me.flag_valid:
-            errors.append("error(s) in main configuration")
-        if not self.ae.flag_valid:
-            errors.append("error(s) in abundances")
-        if not self.oe.flag_valid:
-            errors.append("error(s) in command-line options")
-        return errors

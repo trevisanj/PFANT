@@ -14,10 +14,6 @@ from threading import Lock
 
 @froze_it
 class RunnableStatus(object):
-    """Combo version of ExecutableStatus.
-
-    Acts as a formatter.
-    """
 
     def __init__(self, runnable):
         assert isinstance(runnable, Runnable)
@@ -104,8 +100,8 @@ class Runnable(object):
         return self._flag_finished and not self._flag_error and not self._flag_killed
 
     @property
-    def session_dir(self):
-        return self._get_session_dir()
+    def sid(self):
+        return self._get_sid()
 
     def __init__(self):
         self.name = random_name()
@@ -140,10 +136,10 @@ class Runnable(object):
         self._flag_killed = False
         self._flag_error = False
         self._error_message = ""
-        if self.conf.sid.id:
-            self.conf.clean(False)
+        if self.sid.id:
+            self.sid.clean(False)
 
-    def _get_session_dir(self):
+    def _get_sid(self):
         raise NotImplementedError()
 
 
@@ -223,8 +219,8 @@ class Executable(Runnable):
     def get_status(self):
         return self._status
 
-    def _get_session_dir(self):
-        return self.__conf.sid.id
+    def _get_sid(self):
+        return self.__conf.sid
 
     def __run(self):
         """Called both from run() and run_from_combo()."""
@@ -553,5 +549,5 @@ class Combo(Runnable):
         for e in ee:
             e.reset()
 
-    def _get_session_dir(self):
-        return self.__conf.sid.dir
+    def _get_sid(self):
+        return self.__conf.sid

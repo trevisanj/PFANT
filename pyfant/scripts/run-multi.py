@@ -169,9 +169,9 @@ if __name__ == "__main__":
     print "+++ cleaning up..."
 
     # for pfant in pfant_list:
-    #   pfant.conf.clean()
+    #   pfant.sid.clean()
     # for nulbad in nulbad_list:
-    #   nulbad.conf.clean()
+    #   nulbad.sid.clean()
 
 
 

@@ -209,7 +209,7 @@ class RunnableManager(QObject, threading.Thread):
         with self.__lock:
             for runner in self.__runners:
                 if runner.runnable and runner.runnable.flag_running:
-                    runner.__unlocked_kill_runnable()
+                    runner.kill_runnable()
 
     def kill_runnable(self, runnable):
         with self.__lock:
@@ -260,56 +260,6 @@ class RunnableManager(QObject, threading.Thread):
             raise RuntimeError("Runnable manager not running")
         while True:
             if self.flag_finished:
-                # todo cleanup
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info("FFFFFFFIIIIINNNNNNIIIISSSSHHHEEEEDDDDDD")
-                self.__logger.info(str(self))
                 self.exit()
                 break
             self.__logger.info("\n".join(self.get_summary_report()))
@@ -324,7 +274,7 @@ class RunnableManager(QObject, threading.Thread):
             temp = self.__num_failed
             self.__num_failed = 0
             self.__num_finished -= temp
-            to_add = [x for x in self.__runnables if x.flag_error]
+            to_add = [x for x in self.__runnables if not x.flag_success]
             for runnable in to_add:
                 print "gonna reset %s" % runnable
                 runnable.reset()
@@ -339,7 +289,7 @@ class RunnableManager(QObject, threading.Thread):
         of the thread manager.
         """
         with self.__lock:
-            if runner.runnable.flag_error:
+            if not runner.runnable.flag_success:
                 self.__num_failed += 1
 
             self.__num_finished += 1
@@ -500,7 +450,7 @@ class _Runner(threading.Thread):
                         self.runnable.run()
                         if self.manager.flag_auto_clean and self.runnable.flag_success:
                             self.runnable.load_result()
-                            self.runnable.conf.clean()
+                            self.runnable.sid.clean()
 
                     except Exception as E:
                         # # todo cleanup
