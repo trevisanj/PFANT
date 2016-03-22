@@ -23,7 +23,8 @@ if __name__ == "__main__":
     description=__doc__,
     formatter_class=SmartFormatter
     )
-    # args = parser.parse_args()
+    parser.add_argument('--markdown', help='Generates MarkDown output', action="store_true")
+    args = parser.parse_args()
 
     # directory of this script
     base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -32,31 +33,42 @@ if __name__ == "__main__":
     ff.sort()
     
     module_len = max([len(os.path.split(f)[1]) for f in ff])
-    
-    N = 50
-    r = base_dir
-    if len(r) > N+3:
-        r = "..."+r[-N:]
-        
-    s = "Scripts in "+r
-    
-    print fmt_ascii_h1(s)
-    for f in ff:
-        module_name, _ = os.path.splitext(f)
-        _, filename = os.path.split(f)
 
+    if args.markdown:
+        mask = "%%-%ds | %%s" % module_len
+        print mask % ("Script name", "Purpose")
+        print "-"*10
+        for f in ff:
+            module_name, _ = os.path.splitext(f)
+            _, filename = os.path.split(f)
+            try:
+                script_ = imp.load_source('script_', f)  # module object
+                descr = script_.__doc__.strip()
+                descr = descr.split("\n")[0]  # first line of docstring
+            except Exception as e:
+                descr = "*%s*: %s" % (e.__class__.__name__, str(e))
+            print mask % (filename, descr)
+    else:
+        N = 50
+        r = base_dir
+        if len(r) > N+3:
+            r = "..."+r[-N:]
+        s = "Scripts in "+r
+        print fmt_ascii_h1(s)
+        for f in ff:
+            module_name, _ = os.path.splitext(f)
+            _, filename = os.path.split(f)
+            print filename+" "+("."*(module_len-len(filename))),
+            try:
+                script_ = imp.load_source('script_', f)  # module object
 
-        print filename+" "+("."*(module_len-len(filename))),
-        try:
-            script_ = imp.load_source('script_', f)  # module object
-            
-            descr = script_.__doc__.strip()
-            descr = descr.split("\n")[0]  # first line of docstring
-            ss = textwrap.wrap(descr, 79-module_len-1)
-            
-            print ss[0] if ss and len(ss) > 0 else "no doc"
-            for i in range(1, len(ss)):
-                print " "*(module_len+1), ss[i]
-        except Exception as e:
-            print "*%s*: %s" % (e.__class__.__name__, str(e))
+                descr = script_.__doc__.strip()
+                descr = descr.split("\n")[0]  # first line of docstring
+                ss = textwrap.wrap(descr, 79-module_len-1)
+
+                print ss[0] if ss and len(ss) > 0 else "no doc"
+                for i in range(1, len(ss)):
+                    print " "*(module_len+1), ss[i]
+            except Exception as e:
+                print "*%s*: %s" % (e.__class__.__name__, str(e))
 

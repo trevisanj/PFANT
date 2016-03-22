@@ -164,14 +164,13 @@ as described:
 
 ### Running the Fortran binaries
 
-Here are the commands to be typed in the shell, together with comments on
-the files that will be created by each of them (as configured in the Sun input data files)
+Type the following commands in your console:
 
 ```shell
 innewmarcs
 hydro2
 pfant
-nulbad
+nulbad --fwhm 0.12
 ```
 
 If everything went OK, you should have all these new files in your directory:
@@ -180,7 +179,7 @@ If everything went OK, you should have all these new files in your directory:
 - `flux.norm` -- normalized spectrum
 - `flux.spec` -- spectrum
 - `flux.cont` -- continuum
-- `flux.norm.nulbad` -- normalized spectrum convolved with Gaussian
+- `flux.norm.nulbad.0.12` -- normalized spectrum convolved with Gaussian
 
 ### Drawing some figures
 
@@ -220,9 +219,9 @@ used to change the default name for the corresponding file
 
 ```
 --option          |  Default name     | Description
-------------------+-----------------------------------------------------------
+------------------------------------------------------------------------------
 *** star-specific files ***
---fn_main         |      main.dat     | main configuration file
+--fn_main         | main.dat          | main configuration file
 --fn_abonds       | abonds.dat        | abundances
 --fn_dissoc       | dissoc.dat        | dissociation equilibrium data
 
@@ -302,21 +301,3 @@ newnewp025.mod                         |            |              |         |
 ```
 -x-x-x-x-x
 ```
-
-
-
-
-absoru2.dat
-atom4070g.dat
-atoms.dat
-gridsmap.dat
-hmap.dat
-mghc2cnr_cn3ch13chtiog3tio.dat
-molecules.dat
-newnewm050.mod
-newnewm100.mod
-newnewm150.mod
-newnewm200.mod
-newnewp000.mod
-newnewp025.mod
-partit.dat
