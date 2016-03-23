@@ -310,20 +310,12 @@ class XExplorer(QMainWindow):
         self.dir = os.path.relpath(dir_)
         self.__propss = []
 
-
-
         all_ = glob.glob(os.path.join(self.dir, "*"))
         dirs = filter(os.path.isdir, all_)
         dirs.sort()
         files = filter(os.path.isfile, all_)
         files.sort()
-        print "DIRS", dirs
-        print "FILES", files
         dir_ = [os.path.join(self.dir, "..")]+dirs+files
-        print "ALL", all_
-        print "DIRS", dirs
-        print "FILES", files
-        print "DIR_", dir_
 
         for i, f in enumerate(dir_):
             filepath = f  #os.path.join(self.dir, f)

@@ -80,9 +80,10 @@ class XMulti(XPFANT):
         self.clss.append(FileAbXFwhm)
         self.editors.append(self.multi_editor)
         self.labels_fn.append(self.label_fn_abxfwhm)
+        self.wilds.append("*.py")
 
         self.__update_lineEdit_multi_custom_id()
-        tt.setCurrentIndex(3)
+        # tt.setCurrentIndex(3)
         # ## Loads abxfwhm file
         if os.path.isfile(FileAbXFwhm.default_filename):
             f = FileAbXFwhm()

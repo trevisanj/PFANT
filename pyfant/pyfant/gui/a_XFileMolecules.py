@@ -222,11 +222,6 @@ class XFileMolecules(QMainWindow):
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
 
-        m = self.menu_help = b.addMenu("&Help")
-        ac = m.addAction("&Open help in browser")
-        ac.setShortcut("F1")
-        ac.triggered.connect(self.on_help)
-
         # * # * # * # * # * # * # *
         # Final adjustments
 

@@ -144,7 +144,6 @@ class FileAtoms(DataFile):
         # list of Atom objects
         self.atoms = []
 
-
     def cut(self, llzero, llfin):
         """Keeps only the lines with their llzero <= lambda_ <= llfin."""
         for i in reversed(xrange(len(self))):

@@ -1,0 +1,25 @@
+[ERROR   ] Combo failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 450, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 513, in run
+    self.conf.configure(self.__sequence)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/conf.py", line 363, in configure
+    self.__rename_outputs(sequence)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/conf.py", line 517, in __rename_outputs
+    o.load(fn)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filehmap.py", line 45, in _do_load
+    with open(filename, "r") as h:
+IOError: [Errno 2] No such file or directory: 'hmap.dat'
+[INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
+[INFO    ] &&&&&&&&&&&&&&& time to update: 0.000518084
+[INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
+[INFO    ] &&&&&&&&&&&&&&& time to update: 0.000416994
+[INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
+[INFO    ] &&&&&&&&&&&&&&& time to update: 0.000412941
+[INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
+[INFO    ] &&&&&&&&&&&&&&& time to update: 0.000411987
+[INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
+[INFO    ] &&&&&&&&&&&&&&& time to update: 0.000417948

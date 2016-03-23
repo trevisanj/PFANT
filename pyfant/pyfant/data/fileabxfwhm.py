@@ -10,10 +10,13 @@ import imp
 import numpy as np
 
 
-_COMMENT0 = """# specification of differential abundances for each chemical
-# - differential abundance: number to add to original value in abonds.dat
-# - all list of abundances for each element must have the same length"""
-_COMMENT1 = """# Convolutions specification for fwhm parameter:
+_COMMENT0 = """# Specification of differential abundances for each chemical.
+# Differential abundance is a number to add to original value in abonds.dat.
+# All lists of abundances for each element must have the same length."""
+_COMMENT1 = """# Name for each pfant run. They will be part of spectrum file names.
+# This is optional. If not used, sequential numbers will be used instead.
+# Example: pfant_names = ["A", "B", "C", "D"]"""
+_COMMENT2 = """# Convolutions specification for fwhm parameter:
 # [first value, last value, step]"""
 
 
@@ -26,9 +29,13 @@ This file is actually Python source. Here is a sample:
 %s
 ab = {"Ca": [-.3, 0, .3, .5],
       "Si": [-.3, 0, .3, .5]}
+
+%s
+pfant_names = []
+
 %s
 conv = [0.08, 0.6,  0.04]
-""" % (_COMMENT0, _COMMENT1)
+""" % (_COMMENT0, _COMMENT1, _COMMENT2)
 
     default_filename = "abxfwhm.py"
     attrs = ["ab", "conv"]
@@ -61,6 +68,18 @@ conv = [0.08, 0.6,  0.04]
         self.__rebuild_source()
 
     @property
+    def pfant_names(self):
+        """List of "names" for each pfant run.
+
+        Must be empty or be of same size as any list of self.ab"""
+        return self.__pfant_names
+
+    @pfant_names.setter
+    def pfant_names(self, x):
+        self.__pfant_names = x
+
+
+    @property
     def source(self):
         """Source code.
 
@@ -82,6 +101,7 @@ conv = [0.08, 0.6,  0.04]
         self.__source = ""
         self.__ab = None
         self.__conv = None
+        self.__pfant_names = None
 
     def get_fwhms(self):
         """Returns FWHM's as a numpy vector."""
@@ -90,7 +110,7 @@ conv = [0.08, 0.6,  0.04]
     def validate(self, file_abonds=None):
         # validates abundances specification
         flag_first = True
-        for symbol, mab in self.ab.iteritems():
+        for symbol, mab in self.__ab.iteritems():
             assert isinstance(mab, (list, tuple)), \
                 'Symbol "%s": differential abundances must be list or tuple' % symbol
             if flag_first:
@@ -101,6 +121,17 @@ conv = [0.08, 0.6,  0.04]
                     raise ValueError('Symbol "%s": should have %d differential abundance%s, not %d' %
                      (symbol.strip(), n, "s" if n != 1 else "", len(mab)))
                 # TODO: cross-check with ABONDS
+
+        if self.__pfant_names:
+            if not isinstance(self.__pfant_names, (list, tuple)):
+                raise RuntimeError('"pfant_names" must be a list or tuple.')
+            if len(self.__ab) > 0:
+                for v in self.__ab.itervalues():
+                    if len(v) != len(self.__pfant_names):
+                        raise RuntimeError('"pfant_names" must be empty or have size %d.' % len(v))
+                    break
+
+
         # validates if can use FWHM spect to make a vector
         try:
             fwhms = self.get_fwhms()
@@ -127,6 +158,9 @@ conv = [0.08, 0.6,  0.04]
         self.__ab = cfg.ab
         self.__adjust_atomic_symbols()
         self.__conv = cfg.conv
+        self.__pfant_names = None
+        if hasattr(cfg, "pfant_names"):
+            self.__pfant_names = cfg.pfant_names
         self.__source = x
 
     def __rebuild_source(self):

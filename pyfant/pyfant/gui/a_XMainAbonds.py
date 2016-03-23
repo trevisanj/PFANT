@@ -46,6 +46,7 @@ class XMainAbonds(QMainWindow):
                             "Load abundances file",
                             None]
         self.clss = [FileMain, FileAbonds, Options]
+        self.wilds = ["*.dat", "*.dat", None]
 
         # # Menu bar
         b = self.menuBar()
@@ -318,7 +319,8 @@ class XMainAbonds(QMainWindow):
     def __generic_save_as(self):
         """Returns False if user has cancelled operation, otherwise True."""
         index = self.__get_index()
-        editor, text = self.editors[index], self.save_as_texts[index]
+        editor, text, wild = self.editors[index], self.save_as_texts[index], \
+         self.wilds[index]
         if not editor.f:
             return True
         if editor.f.filename:
@@ -327,7 +329,7 @@ class XMainAbonds(QMainWindow):
             d = self.save_dir if self.save_dir is not None \
                 else self.load_dir if self.load_dir is not None \
                 else "."
-        new_filename = QFileDialog.getSaveFileName(self, text, d, "*.dat")
+        new_filename = QFileDialog.getSaveFileName(self, text, d, wild)
         if new_filename:
             self.save_dir, _ = os.path.split(str(new_filename))
             try:
@@ -343,13 +345,14 @@ class XMainAbonds(QMainWindow):
 
     def __generic_open(self):
         index = self.__get_index()
-        editor, text, cls, label = self.editors[index], self.open_texts[index], \
-                                   self.clss[index], self.labels_fn[index]
+        editor, text, cls, label, wild = self.editors[index], \
+         self.open_texts[index], self.clss[index], self.labels_fn[index], \
+         self.wilds[index]
         try:
             d = self.load_dir if self.load_dir is not None \
                 else self.save_dir if self.save_dir is not None \
                 else "."
-            new_filename = QFileDialog.getOpenFileName(self, text, d, "*.dat")
+            new_filename = QFileDialog.getOpenFileName(self, text, d, wild)
             if new_filename:
                 self.load_dir, _ = os.path.split(str(new_filename))
                 f = cls()

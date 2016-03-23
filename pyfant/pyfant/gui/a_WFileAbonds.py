@@ -279,7 +279,7 @@ class WFileAbonds(QWidget):
 
         # hydrogen not allowed
         if x == "H":
-            raise RuntimeError("Hydrogen not allowed (abundance of H = 12 is used as a reference throughout)")
+            raise RuntimeError("Hydrogen not allowed (abundance of H is internally fixed as =12)")
 
         # makes sure elements symbols are unique in the table
         t = self.tableWidget

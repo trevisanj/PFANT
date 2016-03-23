@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-"""X - Graphical interface for running the PFANT Fortran executable binaries."""
+"""XM - Graphical interface -- single and multi modes."""
 
-from pyfant.gui import XPFANT, XRunnableManager
+from pyfant.gui import XMulti, XRunnableManager
 from pyfant import *
 import sys
 from PyQt4.QtGui import *
@@ -14,7 +14,10 @@ misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
     app = get_QApplication([])
-    form0 = XPFANT()
+
+    form0 = XMulti()
+    # this would start with "multi" tab selected form0.tabWidget.setCurrentIndex(3)
+
     rm = RunnableManager()
     form1 = XRunnableManager(form0, rm)
     form1.flag_close_mpl_plots_on_close = False

@@ -1,7 +1,7 @@
 # pyfant scripts
 
-This directory contains a set of standalone scripts or application to facilitate
-everyday life.
+This directory contains a set of standalone tools and graphical interfaces to
+facilitate everyday life. 
 
 ## Usage
 

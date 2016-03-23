@@ -276,7 +276,6 @@ class RunnableManager(QObject, threading.Thread):
             self.__num_finished -= temp
             to_add = [x for x in self.__runnables if not x.flag_success]
             for runnable in to_add:
-                print "gonna reset %s" % runnable
                 runnable.reset()
                 self.__runnables.remove(runnable)
             self.__unlocked_add_runnables(to_add)

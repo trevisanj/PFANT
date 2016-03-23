@@ -1,0 +1,2309 @@
+[INFO    ] ***finished: 0/84
+***time ellapsed: 0.000356s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[INFO    ] ***finished: 51/84
+***failed: 51
+***time ellapsed: 1s
+***time per runnable: 0.0188s
+***time total estimate: 1.58s
+***time remaining estimate: 0.581s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[INFO    ] ***finished: 0/84
+***time ellapsed: 0.000405s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[INFO    ] ***finished: 51/84
+***failed: 51
+***time ellapsed: 1s
+***time per runnable: 0.0188s
+***time total estimate: 1.58s
+***time remaining estimate: 0.581s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 237, in __run
+    self.__popen = subprocess.Popen(cmd_words, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  File "/usr/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.7/subprocess.py", line 1327, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+[INFO    ] ***finished: 0/84
+***time ellapsed: 0.000392s
+[INFO    ] ***finished: 26/84
+***time ellapsed: 1s
+***time per runnable: 0.0378s
+***time total estimate: 3.18s
+***time remaining estimate: 2.18s
+[INFO    ] ***finished: 61/84
+***time ellapsed: 2s
+***time per runnable: 0.0322s
+***time total estimate: 2.71s
+***time remaining estimate: 0.702s
+[INFO    ] ***finished: 0/84
+***time ellapsed: 0.000395s
+[INFO    ] ***finished: 26/84
+***time ellapsed: 1s
+***time per runnable: 0.0365s
+***time total estimate: 3.07s
+***time remaining estimate: 2.07s
+[INFO    ] ***finished: 62/84
+***time ellapsed: 2s
+***time per runnable: 0.0322s
+***time total estimate: 2.7s
+***time remaining estimate: 0.702s
+[INFO    ] Printing page 1/84 ('session-000-original/flux.norm')
+[INFO    ] Printing page 2/84 ('session-001-A/flux.norm')
+[INFO    ] Printing page 3/84 ('session-002-HE/flux.norm')
+[INFO    ] Printing page 4/84 ('session-003-LI/flux.norm')
+[INFO    ] Printing page 5/84 ('session-004-BE/flux.norm')
+[INFO    ] Printing page 6/84 ('session-005-B/flux.norm')
+[INFO    ] Printing page 7/84 ('session-006-C/flux.norm')
+[INFO    ] Printing page 8/84 ('session-007-N/flux.norm')
+[INFO    ] Printing page 9/84 ('session-008-O/flux.norm')
+[INFO    ] Printing page 10/84 ('session-009-F/flux.norm')
+[INFO    ] Printing page 11/84 ('session-010-NE/flux.norm')
+[INFO    ] Printing page 12/84 ('session-011-NA/flux.norm')
+[INFO    ] Printing page 13/84 ('session-012-MG/flux.norm')
+[INFO    ] Printing page 14/84 ('session-013-AL/flux.norm')
+[INFO    ] Printing page 15/84 ('session-014-SI/flux.norm')
+[INFO    ] Printing page 16/84 ('session-015-P/flux.norm')
+[INFO    ] Printing page 17/84 ('session-016-S/flux.norm')
+[INFO    ] Printing page 18/84 ('session-017-CL/flux.norm')
+[INFO    ] Printing page 19/84 ('session-018-AR/flux.norm')
+[INFO    ] Printing page 20/84 ('session-019-K/flux.norm')
+[INFO    ] Printing page 21/84 ('session-020-CA/flux.norm')
+[INFO    ] Printing page 22/84 ('session-021-SC/flux.norm')
+[INFO    ] Printing page 23/84 ('session-022-TI/flux.norm')
+[INFO    ] Printing page 24/84 ('session-023-V/flux.norm')
+[INFO    ] Printing page 25/84 ('session-024-CR/flux.norm')
+[INFO    ] Printing page 26/84 ('session-025-MN/flux.norm')
+[INFO    ] Printing page 27/84 ('session-026-FE/flux.norm')
+[INFO    ] Printing page 28/84 ('session-027-CO/flux.norm')
+[INFO    ] Printing page 29/84 ('session-028-NI/flux.norm')
+[INFO    ] Printing page 30/84 ('session-029-CU/flux.norm')
+[INFO    ] Printing page 31/84 ('session-030-ZN/flux.norm')
+[INFO    ] Printing page 32/84 ('session-031-GA/flux.norm')
+[INFO    ] Printing page 33/84 ('session-032-GE/flux.norm')
+[INFO    ] Printing page 34/84 ('session-033-AS/flux.norm')
+[INFO    ] Printing page 35/84 ('session-034-SE/flux.norm')
+[INFO    ] Printing page 36/84 ('session-035-BR/flux.norm')
+[INFO    ] Printing page 37/84 ('session-036-KR/flux.norm')
+[INFO    ] Printing page 38/84 ('session-037-RB/flux.norm')
+[INFO    ] Printing page 39/84 ('session-038-SR/flux.norm')
+[INFO    ] Printing page 40/84 ('session-039-Y/flux.norm')
+[INFO    ] Printing page 41/84 ('session-040-ZR/flux.norm')
+[INFO    ] Printing page 42/84 ('session-041-NB/flux.norm')
+[INFO    ] Printing page 43/84 ('session-042-MO/flux.norm')
+[INFO    ] Printing page 44/84 ('session-043-RU/flux.norm')
+[INFO    ] Printing page 45/84 ('session-044-RH/flux.norm')
+[INFO    ] Printing page 46/84 ('session-045-PD/flux.norm')
+[INFO    ] Printing page 47/84 ('session-046-AG/flux.norm')
+[INFO    ] Printing page 48/84 ('session-047-CD/flux.norm')
+[INFO    ] Printing page 49/84 ('session-048-IN/flux.norm')
+[INFO    ] Printing page 50/84 ('session-049-SN/flux.norm')
+[INFO    ] Printing page 51/84 ('session-050-SB/flux.norm')
+[INFO    ] Printing page 52/84 ('session-051-TE/flux.norm')
+[INFO    ] Printing page 53/84 ('session-052-I/flux.norm')
+[INFO    ] Printing page 54/84 ('session-053-XE/flux.norm')
+[INFO    ] Printing page 55/84 ('session-054-CS/flux.norm')
+[INFO    ] Printing page 56/84 ('session-055-BA/flux.norm')
+[INFO    ] Printing page 57/84 ('session-056-LA/flux.norm')
+[INFO    ] Printing page 58/84 ('session-057-CE/flux.norm')
+[INFO    ] Printing page 59/84 ('session-058-PR/flux.norm')
+[INFO    ] Printing page 60/84 ('session-059-ND/flux.norm')
+[INFO    ] Printing page 61/84 ('session-060-SM/flux.norm')
+[INFO    ] Printing page 62/84 ('session-061-EU/flux.norm')
+[INFO    ] Printing page 63/84 ('session-062-GD/flux.norm')
+[INFO    ] Printing page 64/84 ('session-063-TB/flux.norm')
+[INFO    ] Printing page 65/84 ('session-064-DY/flux.norm')
+[INFO    ] Printing page 66/84 ('session-065-HO/flux.norm')
+[INFO    ] Printing page 67/84 ('session-066-ER/flux.norm')
+[INFO    ] Printing page 68/84 ('session-067-TM/flux.norm')
+[INFO    ] Printing page 69/84 ('session-068-YB/flux.norm')
+[INFO    ] Printing page 70/84 ('session-069-LU/flux.norm')
+[INFO    ] Printing page 71/84 ('session-070-HF/flux.norm')
+[INFO    ] Printing page 72/84 ('session-071-TA/flux.norm')
+[INFO    ] Printing page 73/84 ('session-072-W/flux.norm')
+[INFO    ] Printing page 74/84 ('session-073-RE/flux.norm')
+[INFO    ] Printing page 75/84 ('session-074-OS/flux.norm')
+[INFO    ] Printing page 76/84 ('session-075-IR/flux.norm')
+[INFO    ] Printing page 77/84 ('session-076-PT/flux.norm')
+[INFO    ] Printing page 78/84 ('session-077-AU/flux.norm')
+[INFO    ] Printing page 79/84 ('session-078-HG/flux.norm')
+[INFO    ] Printing page 80/84 ('session-079-TL/flux.norm')
+[INFO    ] Printing page 81/84 ('session-080-PB/flux.norm')
+[INFO    ] Printing page 82/84 ('session-081-BI/flux.norm')
+[INFO    ] Printing page 83/84 ('session-082-TH/flux.norm')
+[INFO    ] Printing page 84/84 ('session-083-U/flux.norm')
+[INFO    ] File separate-atoms.pdf successfully created.

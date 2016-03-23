@@ -143,8 +143,7 @@ class MultiRunnable(Runnable):
                     if file_abonds_.ele[k] == symbol:
                         abdif = abdiffss[i][j]
                         file_abonds_.abol[k] += abdif
-                        print j, " - ", symbol, "with abundance", \
-                        file_abonds_.abol[k]
+                        self.__logger.debug(j, " - ", symbol, "with abundance", file_abonds_.abol[k])
                         found = True
 
                 if not found:
@@ -157,8 +156,11 @@ class MultiRunnable(Runnable):
             pfant.conf.file_main = self.__file_main
             pfant.conf.file_abonds = file_abonds_
             pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
-            # todo replace j with a descriptive name, configurable in FileAbXFwhm
-            flprefix = "%s_%02d" % (self.__file_main.titrav, j)
+
+            pfant_name = self.__file_abxfwhm.pfant_names[j] \
+                if self.__file_abxfwhm.pfant_names \
+                else "%02d" % j
+            flprefix = "%s_%s" % (self.__file_main.titrav, pfant_name)
             pfant.conf.opt.flprefix = os.path.join(self.__sid.dir, flprefix)
             pfant.conf.sid.id = flprefix
 

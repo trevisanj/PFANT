@@ -4,6 +4,7 @@ from ..misc import *
 from ..errors import *
 import logging
 import sys
+import numpy as np
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
@@ -32,7 +33,7 @@ class SetOfLines(AttrsPart):
     def __len__(self):
         return len(self.lmbdam)
 
-    def filter(self, lzero, lfin):
+    def cut(self, lzero, lfin):
         """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
         l, s, j = [], [], []
         for _l, _s, _j in zip(self.lmbdam, self.sj, self.jj):
@@ -58,7 +59,6 @@ class Molecule(AttrsPart):
 
     def __init__(self):
         AttrsPart.__init__(self)
-        
         self.titulo = None
         self.fe = None
         self.do = None
@@ -78,11 +78,11 @@ class Molecule(AttrsPart):
         """Returns number of set-of-lines."""
         return len(self.sol)
 
-    def filter(self, lzero, lfin):
+    def cut(self, lzero, lfin):
         """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
 
         for set in self.sol:
-            set.filter(lzero, lfin)
+            set.cut(lzero, lfin)
 
 
 class FileMolecules(DataFile):
@@ -94,14 +94,25 @@ class FileMolecules(DataFile):
     """
 
     default_filename = "molecules.dat"
-
     attrs = ["titm", "number", "num_lines"]
-
 
     @property
     def num_lines(self):
         """Total number of spectral line, counting all molecules."""
         return sum(map(lambda x: x.num_lines, self.molecules))
+
+    @property
+    def lmbdam(self):
+        return np.hstack([np.hstack([x.lmbdam for x in m.sol]) for m in self.molecules])
+
+    @property
+    def sj(self):
+        return np.hstack([np.hstack([x.sj for x in m.sol]) for m in self.molecules])
+
+    @property
+    def jj(self):
+        return np.hstack([np.hstack([x.jj for x in m.sol]) for m in self.molecules])
+
 
     def __init__(self):
         DataFile.__init__(self)
@@ -115,7 +126,6 @@ class FileMolecules(DataFile):
 
     def __len__(self):
         return len(self.molecules)
-
 
     def _do_load(self, filename):
         """Clears internal lists and loads from file."""
@@ -216,12 +226,11 @@ class FileMolecules(DataFile):
             except Exception as e:
                 raise type(e)(("Error around %d%s row of file '%s'" % (r+1, ordinal_suffix(r+1), filename))+": "+str(e)), None, sys.exc_info()[2]
 
-    def filter(self, lzero, lfin):
+    def cut(self, lzero, lfin):
         """Reduces the number of lines to only the ones whose lmbdam is inside [lzero, lfin]"""
 
         for m in self.molecules:
-            m.filter(lzero, lfin)
-
+            m.cut(lzero, lfin)
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:

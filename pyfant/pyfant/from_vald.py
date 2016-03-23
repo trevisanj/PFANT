@@ -2,6 +2,8 @@
 VALD3-to-PFANT conversions
 """
 
+__all__ = ["vald3_to_atoms"]
+
 import csv
 from pyfant import adjust_atomic_symbol, Atom, FileAtoms, AtomicLine, \
  ordinal_suffix, symbols, get_python_logger
