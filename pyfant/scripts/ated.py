@@ -1,9 +1,7 @@
 #!/usr/bin/python
 
 """
-ATomic lines file EDitor
-
-See also ated.html or press F1 inside application.
+Atomic lines file editor
 """
 
 from pyfant.gui import XFileAtoms

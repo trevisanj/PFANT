@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""File Explorer - lists all files in directory and provides visualization options"""
+"""File Explorer - list and visualize data files."""
 
 from pyfant.gui import XExplorer
 from pyfant import *

@@ -72,8 +72,9 @@ class XMainAbonds(QMainWindow):
 
         m.addSeparator()
 
-        ac = m.addAction("Reset to default")
-        ac.setShortcut("Ctrl+R")
+        ac = m.addAction("Load &default")
+        ac.setStatusTip("Loads default")
+        ac.setShortcut("Ctrl+D")
         ac.triggered.connect(self.on_reset)
 
         m.addSeparator()

@@ -134,81 +134,45 @@ On Linux, you may try `PFANT/add-paths.py` to automatically apply the path setti
 
 ## Quick start
 
-This section will take you through the steps to calculate a synthetic spectrum
-from the Sun, then do some visualizations.
-
-
-### Create a new a directory to run the spectral synthesis
-
-1. Create a new directory, e.g., `/home/user/sun-synthesis`
-2. Enter this directory
-3. copy Sun-specific data files and link to other star-general data files
+Here is a sequence of shell commands from mounting a new "case" to plotting a synthetic spectrum:
 
 ```shell
-mkdir sun-synthesis
-cd sun-synthesis
-cp ...../PFANT/data/sun/* .
-link-to-data.py common  # will create several links
+mkdir mytest
+cd mytest
+copy-star.py sun-asplund-2009  # copies star-specific files to local directory
+link-to-data.py common         # creates symbolic links to other (not star-specific) data files 
+innewmarcs                     # creates "modeles.mod", an interpolated atmospheric model based on NEWMARCS (2005) model grids
+hydro2                         # calculates the hydrogen lines profiles (in this case, file "thalpha")
+pfant                          # spectral synthesis (will create "flux.spec", "flux.cont", "flux.norm")
+nulbad --fwhm 0.12             # convolves the synthetic spectrum with a Gaussian function
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.12 
 ```
 
-### Short description of the Fortran binaries
+### Graphical user interface (new!)
 
-The spectral synthesis pipeline is divided in four binaries, each one performing one step
-as described:
-
-1. `innewmarcs` - creates an interpolated atmospheric model based on NEWMARCS (2005)
-    model grids
-2. `hydro2` - calculates the hydrogen lines profiles
-3. `pfant` - spectral synthesis
-4. `nulbad` - convolves the synthetic spectrum with a Gaussian function
-
-### Running the Fortran binaries
-
-Type the following commands in your console:
+Now you can set up a star, run the Fortran binaries, and plot results from a
+graphical user interface (GUI):
 
 ```shell
-innewmarcs
-hydro2
-pfant
-nulbad --fwhm 0.12
+x.py
 ```
 
-If everything went OK, you should have all these new files in your directory:
-- `modeles.mod` -- atmospheric model
-- `thalpha` -- hydrogen line profile
-- `flux.norm` -- normalized spectrum
-- `flux.spec` -- spectrum
-- `flux.cont` -- continuum
-- `flux.norm.nulbad.0.12` -- normalized spectrum convolved with Gaussian
+- [See some screenshots](pyfant/screenshots.md) 
 
-### Drawing some figures
 
-#### Plot synthetic spectrum before and after the convolution:
+### All command-line tools
 
-```shell
-$ plot-spectra.py --ovl flux.norm flux.norm.nulbad
-```
-
-#### Plot interpolated atmospheric model
-```shell
-plot-mod-record.py modeles.mod
-```
-
-#### 3-D scatterplot NEWMARCS grid (teff, glog, metallicity) 
-```shell
-plot-mod-records.py newnewm050.mod
-```
-
-#### 3-D plot hydrogen line (wavelength, atmospheric layer)
-```shell
-plot-filetoh.py thalpha
-```
-
-#### More tools
+To get a realtime list of available command-line tools: 
 
 ```shell
 pyfant-scripts.py
 ```
+
+### ```pyfant``` Python package
+
+- [`pyfant` Python package overview](pyfant/README.md) 
+
+## More about the PFANT pipeline
 
 ### Input/output data files
 
@@ -293,7 +257,29 @@ newnewp025.mod                         |            |              |         |
                                              flux.norm.nulbad
 ```
 
-### More ...
+## Other topics
+
+### Converting VALD3 extended-format atomic lines
+
+The Vienna Atomic Line Database (VALD) (http://vald.astro.uu.se/) is a 
+collection of atomic and molecular transition parameters of astronomical interest.
+
+The ```pyfant``` package provides a tool to build an atomic lines file from a
+ VALD3 extended-format file.
+
+This is done in two steps. ```vald3-to-atoms.py``` does the actual conversion
+(which is quick) and saves a file, _e.g._, ```atoms.dat```
+
+The second step (which is time-consuming) is performed by ```tune-zinf.py``` and aims
+to tune an important parameter used by the ```pfant``` Fortran binary.
+
+It is recommended to use the tool ```cut-atoms.py``` to cut the file converted by
+```vald3-to-atoms.py``` to a wavelength region of interest before running ```tune-zinf.py```.
+
+For more information, see help for ```vald3-to-atoms.py```, ```tune-zinf.py```,
+```cut-atoms.py``` (call these scripts with ```--help``` option).
+
+### Developers
 
 - [`pyfant` Python package overview](pyfant/README.md) 
 - [Coding tools, structure of the source code, coding style, etc.](fortran/README.md)

@@ -12,7 +12,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
- "istextfile", "get_QApplication", "copy_default_file", "MyLock"]
+ "istextfile", "get_QApplication", "copy_default_file", "MyLock",
+ "get_data_dir", "get_data_subdirs"]
 
 
 # # todo cleanup
@@ -58,6 +59,7 @@ from functools import wraps
 import numpy as np
 import shutil
 from threading import Lock, current_thread
+import glob
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -257,6 +259,18 @@ def copy_default_file(filename):
     fullpath = path_to_default(filename)
     shutil.copy(fullpath, ".")
 
+def get_data_dir():
+    """returns absolute path to PFANT/data."""
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
+
+def get_data_subdirs():
+    """returns a list containing all subdirectories of PFANT/data (their names only, not full path)."""
+    dd = glob.glob(os.path.join(get_data_dir(), "*"))
+    ret = []
+    for d in dd:
+        if os.path.isdir(d):
+            ret.append(os.path.basename(d))
+    return ret
 
 # #################################################################################################
 # # Conversion routines

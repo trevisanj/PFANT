@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Creates symbolic links to PFANT data files to prevent copies of these data files.
+Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory.
 
 A star is specified by three data files whose typical names are:
 main.dat, abonds.dat, and dissoc.dat .
@@ -13,26 +13,26 @@ How it works: link-to-data.py will look inside a given directory and create
 symbolic links to files *.dat and *.mod.
 
 The following files will be skipped:
-  - main files, e.g. main.dat
-  - dissoc files, e.g., dissoc.dat
-  - abonds files, e.g., abonds.dat
-  - .mod files with a single model inside, e.g., modeles.mod
-  - hydrogen lines files
+  - main files, e.g. "main.dat"
+  - dissoc files, e.g., "dissoc.dat"
+  - abonds files, e.g., "abonds.dat"
+  - .mod files with a single model inside, e.g., "modeles.mod"
+  - hydrogen lines files, e.g., "thalpha", "thbeta"
 
 This script works in two different modes:
 
-a) it looks for files in a subdirectory of PFANT/data
-   (default mode)
-   Example:
+a) default mode: looks for files in a subdirectory of PFANT/data
    > link-to-data.py common
-   (will look inside the directory PFANT/data/common)
+   (will create links to filess inside PFANT/data/common)
 
-b) looks for files in a directory specified ("-p" option)
+b) "-l" option: lists subdirectories of PFANT/data
+
+c) "-p" option: looks for files in a directory specified.
    Examples:
    > link-to-data.py -p /home/user/pfant-common-data
    > link-to-data.py -p ../../pfant-common-data
 
-Note: in Windows, must run as administrator.
+Note: in Windows, this script must be run as administrator.
 """
 import argparse
 from pyfant import *
@@ -74,23 +74,35 @@ if __name__ == "__main__":
         description=__doc__,
         formatter_class=SmartFormatter
     )
-
+    parser.add_argument('-l', '--list', action='store_true',
+      help='lists subdirectories of '+get_data_dir())
     parser.add_argument('-p', '--path', action='store_true',
       help='system path mode')
-    parser.add_argument('directory', type=str, nargs=1,
+    parser.add_argument('directory', type=str, nargs="?",
      help='name of directory (either a subdirectory of PFANT/data or the path '
           'to a valid system directory (see modes of operation)')
 
     args = parser.parse_args()
-    # print args
+
+    if (not args.directory or len(args.directory) ==  0) and not args.list:
+        print "Directory name is required, except if '-l' option specified."
+        parser.print_usage()
+        sys.exit()
+
+    # "-l" mode
+    if args.list:
+        for dirname in get_data_subdirs():
+            print dirname
+        sys.exit()
 
     if args.path:
-        dir_ = args.directory[0]
+        dir_ = args.directory
     else:
         dir_ = os.path.abspath(os.path.join(
          os.path.dirname(os.path.realpath(sys.argv[0])),
-         '..', '..', 'data', args.directory[0]
+         '..', '..', 'data', args.directory
          ))
+
 
     star_classes = [FileMain, FileDissoc, FileAbonds]
 

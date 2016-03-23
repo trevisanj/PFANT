@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""ABundances file EDitor."""
+"""Abundances file editor."""
 
 from pyfant.gui import XFileAbonds
 from pyfant import *
