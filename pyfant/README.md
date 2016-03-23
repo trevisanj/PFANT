@@ -9,7 +9,7 @@ pyfant provides a Python interface to the PFANT Fortran binaries. Some features:
     - VALD3 conversion: ```vald3-to-atoms.py```
     - etc
      
-  - graphical user interfaces:
+  - graphical user interfaces ([see screenshots](screenshots.md)):
     - run Fortran binaries in parallel: ```x.py```
     - file explorer: ```explorer.py```
     - edit data files: ```ated.py```, ```mled.py```, ```mained.py```, ```abed.py```
