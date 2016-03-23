@@ -28,4 +28,11 @@
 ## Comparison between several convolutions (result of "multi mode")
 ![](screenshot8.png)
 
+## Atomic lines editor
+![](ated.png)
+
+## Molecular lines editor
+![](mled.png)
+
+
 
