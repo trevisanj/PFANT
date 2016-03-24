@@ -738,7 +738,7 @@ contains
 
     a0 = som1/config_zph
 
-    ! Changing value that was read from dfile:absoru2
+    ! ASK BLB Changing value that was read from dfile:absoru2
     absoru2_abmet = a0*asasol
 
     write(lll, *) 'in abonio ABMET=',absoru2_abmet

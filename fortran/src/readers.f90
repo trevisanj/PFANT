@@ -203,7 +203,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:main
+! Reading routines and variable declarations for main configuration file
 
 module reader_main
   use logging
@@ -261,7 +261,7 @@ contains
   end
 
   !=======================================================================================
-  ! Reads dfile:main to fill variables main_*
+  ! Reads main configuration file to fill variables main_*
 
   subroutine read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
@@ -548,12 +548,12 @@ contains
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
-            id_   ! TODO This could well be an input parameter, because it wouldn't have to rely on dfile:main and would become MUCH more flexible
+            id_
     type(modele_record) :: r
 
     ! TODO better to give error if main_inum is not set
     ! TODO Check if FORTRAN initializes variables to zero automatically: can I rely on this??
-    ! TODO Maybe implement variable main_FLAG to FLAG that dfile:main has been read already
+    ! TODO Maybe implement variable main_FLAG to FLAG that main configuration file has been read already
     id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
@@ -751,7 +751,7 @@ contains
   ! error checking: if it doesn't find a file that should exist, it will give an error
   !
   ! *Note* For compatibility, it will allow to pass if the filetoh list came from inside
-  ! dfile:main. This is assumed to have happened if the "clam" field of a given hmap
+  ! main configuration file. This is assumed to have happened if the "clam" field of a given hmap
   ! row is zero.
   !
   ! LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
@@ -955,7 +955,8 @@ contains
     END DO
 
 
-    read (UNIT_, '(2i2)') (absoru2_numset(ith), ith=1,2)
+    ! ASK BLB (actually TELL BLB) Was not reading the "listed des discontinuites H e HE pour TH>0.8 !!
+    ! this is wrong, see below read (UNIT_, '(2i2)') (absoru2_numset(ith), ith=1,2)
 
     ! spill check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
@@ -973,8 +974,10 @@ contains
     ! POUR H,HE ET HE+
     ! PREMIERE LISTE POUR TH.LE.0.8 ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
     do ith = 1,2
+      read(UNIT_, *) absoru2_numset(ith)
       nset = absoru2_numset(ith)
       read (UNIT_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
+      write(*,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
     end do
   end
 end
@@ -1656,7 +1659,6 @@ contains
         end if
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
-        ! BLB: Format: free
         ! BLB:
         ! BLB: LMBDAM -- wavelength in angstron
         ! BLB: Sj -- Honl-London factor calculated such that sum(S_j/(2*j+1)) = 1
@@ -1813,7 +1815,7 @@ module turbul
   real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 contains
   !======================================================================================================================
-  ! This routine synchronizes the velocity(ies) of microturbulence informed in dfile:main
+  ! This routine synchronizes the velocity(ies) of microturbulence informed in main configuration file
   ! with the number of layers in the atmospheric model, interpolating the velocities
   ! if necessary.
   !

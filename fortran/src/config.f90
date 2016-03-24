@@ -13,24 +13,6 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-! Command-line parsing and respective global variable declarations
-!   - Configuration globals with their default values
-!   - Routines to parse command-line arguments
-!
-! Prefixes:
-!   - "config_" have corresponding command-line options
-!   - "ex_config_" are unitialized and must be set by particular executable. Exception is "options"
-!
-! *Note* There are many variables in this module that have a unique relation with a
-!       command-line option. These variables will not be documented in comments, but
-!       in the help text associated with their command-line options (the reason is to
-!       avoid text duplication). There are two ways to access this documentation:
-!         - a) view the source code for subroutine config::init_options()
-!         - b) execute the program with the --help option
-!
-! TODO explain how to create new option, including that flag options (argumentless) are forbidden bcz pyfant is not prepared for them (for simplicity)
-
-
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -428,8 +410,6 @@ end module
 
 
 
-
-
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -440,7 +420,6 @@ end module
 !   - HANDLER_
 !   - config_ -- throughout configuration variables
 !   - execonf_ -- executable-specific variables
-
 
 module config
   use logging
@@ -468,8 +447,9 @@ module config
   !=====
   ! Variables configurable by command line
   !=====
-  ! Variable order is the roughly in the same sequence as that of running the executables.
-  ! I.e., executables are run in this order: innewmarcs, hydro2, pfant, nulbad
+  ! *Note* for option description, check subroutine init_options()
+  ! *Note* to add a new command-line option, follow the steps in "../README.md"
+  !        (those also cover how to update the Python code)
 
   !---
   ! all executables
@@ -670,16 +650,9 @@ contains
   ! - initializes all options for all executables
   ! - assertions to try to catch options initialization errors (e.g. repeated option(s))
   !
-  ! *Note* It is possible to break description lines using &lt;br&gt;
-  !
-  ! *Note* To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  ! &lt;br&gt;
-  !
-  ! @par Important:
-  ! If you add options here, you must change the config_NUM_OPTIONS constant
-  ! accordingly.
-  !
-  ! TODO where to put the explanation on option text formatting
+  ! *Note* The option description allows for some formatting (check existing code):
+  !        - <br> -- breaks line
+  !        - IND parameter -- inserts indentation for the 2nd, 3rd etc. lines of a paragraph
 
   subroutine init_options()
     ! Note that the order of calling add_option() doesn't matter for the program,

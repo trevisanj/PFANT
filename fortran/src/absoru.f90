@@ -1071,8 +1071,6 @@ contains
   ! Reference: 'VARDYA' APJ VOL.133,P.107,1961
   !
   ! *Author* A.M COLLE  18/01/1971
-  !
-  ! TODO top variable pa declared with 10 elements but should have absoru2_nr(j)+1
 
   subroutine ionipe(th,zlpe,calth)
     real*8, intent(in) :: th, & ! ?doc?
@@ -1083,8 +1081,8 @@ contains
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
     integer i, j, nrr
     real*8 kth
-    dimension phi(30), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
-     pa(10)
+    dimension phi(MAX_ABSORU2_NM), &  ! PHI(J) = DEGRE D'IONIZATION DE LELEMENT J POUR MULTIPLE IONISATION
+              pa(MAX_ABSORU2_NRR+1)
 
     kth = 6.956948e-13/th  ! 6.956948E-13 = 1.38024E-16*5040.39
     au_pe=exp(zlpe*2.302585)

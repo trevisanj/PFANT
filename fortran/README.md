@@ -258,8 +258,9 @@ Tags are case-insensitive.
  
 This section contains guidelines for implementing new features in the source code
 
-### How to append a new command-line option
+### How to create a new command-line option
 
+To add a new command-line option to the Fortran code:
 1. Open `config.f90`.
 2. Find string `module config`.
 3. Create a new variable starting with `config_` and set its default value. :bulb:
@@ -268,12 +269,17 @@ This section contains guidelines for implementing new features in the source cod
 6. Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
-7. That was the Fortran bit. Now to make `pyfant` aware of your new option,
-   open `PFANT/pyfant/pyfant/exes/execonf.py`.
-8. Add `self.xxxx = None` to `Config.__init__()` where `xxxx` is the name of your new
+         
+Python code: steps 7-10 are required to make `pyfant` aware of the new option.     
+7. open `PFANT/pyfant/pyfant/conf.py`.
+8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
    option, without the config_ prefix.
 
-In the steps with the :bulb: above, it is best to use existing code as a template.
-Look for an existing option that is of the same type (*i.e.*, float, logical etc.)
-of your new option, and copy-paste that code.
+To make the new option editable Options editor that appears in the `x.py` Graphical
+user interface (GUI):
+
+9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+10. You will need to make a few interventions inside the `__init__()` method,
+which should become clear from the existing code. 
+
 

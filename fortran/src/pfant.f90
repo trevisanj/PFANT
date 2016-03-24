@@ -1134,9 +1134,9 @@ contains
     ! Setup
     !=====
 
-    ! TODO ?doc? The reason why values read from file are being overwritten should be explained.
+    ! ASK BLB why overwriting absoru2_abhel?
     absoru2_abhel = modeles_nhe
-    ! ISSUE using modeles_asalog instead of main_afstar
+    ! ASK BLB why using modeles_asalog instead of main_afstar?
     absoru2_abmet = absoru2_abmet*10.**modeles_asalog
 
     tetaef = 5040/main_teff
@@ -1932,7 +1932,7 @@ if (n .eq. 1) then
       end do
       call ftlin3(2, lambdc, kcn, m_dtot, m_ttd, fttc)
       do d = 1,m_dtot
-        bk_kcd(d,n) = fttc(d)  ! TODO these vector copies... pointer operations could speed up considerably here (optimize)
+        bk_kcd(d,n) = fttc(d)
       end do
     end do
 

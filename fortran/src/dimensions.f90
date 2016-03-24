@@ -93,7 +93,8 @@ module dimensions
   integer, parameter :: MAX_ABSORU2_NM=30
 
   ! Maximum value for absoru2_NR(J)
-  integer, parameter :: MAX_ABSORU2_NRR=9  ! Maximum value for each element of absoru2_NUMSET
+  integer, parameter :: MAX_ABSORU2_NRR=9  ! Maximum value for each element of absoru2_numset
+                                           ! (maximum number of ionization degrees)
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
   !=====
