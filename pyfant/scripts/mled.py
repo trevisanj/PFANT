@@ -1,10 +1,6 @@
 #!/usr/bin/python
 
-"""
-Molecular Lines EDitor
-
-See also mled.html or press F1 inside application.
-"""
+"""Molecular lines file editor."""
 
 from pyfant.gui import *
 from pyfant import *

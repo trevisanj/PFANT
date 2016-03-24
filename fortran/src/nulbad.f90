@@ -16,10 +16,10 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!>
-!> Prefixes:
-!> @li rs_* -- calculated by read_spectrum()
-!> @li p_*  -- Gaussian function variables, calculated by cafconvh()
+!
+! Prefixes:
+!   - rs_* -- calculated by read_spectrum()
+!   - p_*  -- Gaussian function variables, calculated by cafconvh()
 module nulbad_calc
   use misc_math
   use logging
@@ -35,28 +35,28 @@ module nulbad_calc
   !^^^^^ PUBLIC  ^^^^^
   !vvvvv PRIVATE vvvvv
 
-  integer, parameter :: MAX_P_IFT = 1501 !< length of "convolution function" (odd number)
-  integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2!< "TAILLE MAX DE LA FCT DE CONV"
+  integer, parameter :: MAX_P_IFT = 1501 ! length of "convolution function" (odd number)
+  integer, parameter :: IPPTOT = (MAX_P_IFT-1)/2! "TAILLE MAX DE LA FCT DE CONV"
 
   real*8 :: &
-   p_tfi(MAX_P_IFT), &  !< x-axis values of gaussian function (calculated by nulbad::cafconvh())
-   p_fi(MAX_P_IFT)      !< y-axis values of gaussian function (calculated by nulbad::cafconvh())
-  integer, private :: p_ift !< Number of points of gaussian function (calculated by nulbad::cafconvh())
+   p_tfi(MAX_P_IFT), &  ! x-axis values of gaussian function (calculated by nulbad::cafconvh())
+   p_fi(MAX_P_IFT)      ! y-axis values of gaussian function (calculated by nulbad::cafconvh())
+  integer, private :: p_ift ! Number of points of gaussian function (calculated by nulbad::cafconvh())
 
   real*8, allocatable :: rs_ffnu(:), rs_lambd(:)
   integer :: rs_ktot
   character :: rs_titc*20
   real*8 :: &
-   rs_tetaeff, & !< ?doc?
-   rs_glog,    & !< ?doc?
-   rs_asalog,  & !< ?doc?
-   rs_amg,     & !< ?doc?
-   rs_l0,      & !< ?doc?
-   rs_lf,      & !< ?doc?
-   rs_dpas,    & !< ?doc?
-   rs_nhe_bid    !< ?doc?
+   rs_tetaeff, & ! ?doc?
+   rs_glog,    & ! ?doc?
+   rs_asalog,  & ! ?doc?
+   rs_amg,     & ! ?doc?
+   rs_l0,      & ! ?doc?
+   rs_lf,      & ! ?doc?
+   rs_dpas,    & ! ?doc?
+   rs_nhe_bid    ! ?doc?
 
-  integer, parameter :: UNIT_=199 !< unit for file I/O
+  integer, parameter :: UNIT_=199 ! unit for file I/O
 
   ! x_* values may come either from command line or dfile:main
   real*8 :: x_fwhm, x_pat
@@ -64,10 +64,10 @@ module nulbad_calc
 contains
 
   !=======================================================================================
-  !> Initialization of this module
-  !>
-  !> One of the tasks if the initialization of the x_* variables, whose values may be
-  !> either set from the command line or taken from dfile:main
+  ! Initialization of this module
+  !
+  ! One of the tasks if the initialization of the x_* variables, whose values may be
+  ! either set from the command line or taken from dfile:main
 
   subroutine nulbad_init()
     logical :: main_exists  ! whether or not main configuration file exists
@@ -130,7 +130,7 @@ contains
   end
 
   !=======================================================================================
-  !> Reads spectrum file
+  ! Reads spectrum file
 
   subroutine read_spectrum()
     ! variables with suffix "_bid" are read from file, but used for nothing
@@ -199,7 +199,7 @@ contains
   end
 
   !=======================================================================================
-  !> Main routine of this module
+  ! Main routine of this module
 
   subroutine nulbad_calc_()
     real*8, parameter :: C = 2.997929E+10
@@ -327,7 +327,7 @@ contains
   contains
 
     !=======================================================================================
-    !> Convolution: calculates alfl
+    ! Convolution: calculates alfl
 
     subroutine volut()
       integer i, imj, k, jjp1, iimj, j2p
@@ -357,14 +357,14 @@ contains
 
 
   !=======================================================================================
-  !>  ON CALCULE FI(tfi) la fonction de convolution EN p_ift PTS
-  !>
-  !> @verbatim
-  !> LA FONCTION DE CONVOLUTION PEUT AVOIR MAX_P_IFT PTS
-  !> SI L ON CHANGE CE NBRE DE PTS CHANGER AUSSI IPPTOT=750
-  !> DANS LES DATA QUELQUES LIGNES PLUS BAS.
-  !> (LA MOITIE DU NBRE TOT DE PTS POUR LE CALCUL DES AT)
-  !> @endverbatim
+  !  ON CALCULE FI(tfi) la fonction de convolution EN p_ift PTS
+  !
+  ! 
+  ! LA FONCTION DE CONVOLUTION PEUT AVOIR MAX_P_IFT PTS
+  ! SI L ON CHANGE CE NBRE DE PTS CHANGER AUSSI IPPTOT=750
+  ! DANS LES DATA QUELQUES LIGNES PLUS BAS.
+  ! (LA MOITIE DU NBRE TOT DE PTS POUR LE CALCUL DES AT)
+  ! 
 
   subroutine cafconvh()
     real*8 :: at(-IPPTOT:+IPPTOT)
@@ -448,23 +448,23 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> programme NULBT=NULBAD_SQ
-!>
-!>  lecture et convolution sortie fant93
-!>
-!>  Programme de lecture des flux en binaire, sortant de
-!>      Fantomol93 , calculs de 100A en 100A (ou inferieur a 100A)
-!>
-!>  (JT) Re-samples spectrum when the input (rs_dpas) and output (x_pat) steps differ.
-!>
-!> @verbatim
-!> Paula, julho de 2003:
-!> - modifiquei para nao normalizar o espectro
-!> - a opcao config_convol=F nao estava imprimindo o lambda, corrigi
-!> P.Coelho, dez 2003
-!> - se norm = .TRUE. (saida do pfant ja eh normalizada), nao altera o valor do fluxo.
-!>   (JT) ficou so a opcao "flam", opcao "norm" foi removida por razao de redundancia (IF (norm) dentro de IF (flam))
-!> @endverbatim
+! programme NULBT=NULBAD_SQ
+!
+!  lecture et convolution sortie fant93
+!
+!  Programme de lecture des flux en binaire, sortant de
+!      Fantomol93 , calculs de 100A en 100A (ou inferieur a 100A)
+!
+!  (JT) Re-samples spectrum when the input (rs_dpas) and output (x_pat) steps differ.
+!
+! 
+! Paula, julho de 2003:
+! - modifiquei para nao normalizar o espectro
+! - a opcao config_convol=F nao estava imprimindo o lambda, corrigi
+! P.Coelho, dez 2003
+! - se norm = .TRUE. (saida do pfant ja eh normalizada), nao altera o valor do fluxo.
+!   (JT) ficou so a opcao "flam", opcao "norm" foi removida por razao de redundancia (IF (norm) dentro de IF (flam))
+! 
 
 program nulbad
   use config

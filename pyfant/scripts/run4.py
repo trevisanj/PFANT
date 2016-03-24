@@ -1,10 +1,8 @@
 #!/usr/bin/python
 """
-Runs the four Fortran binaries in sequence: innewmarcs, hydro2, pfant, nulbad
+Runs the four Fortran binaries in sequence: innewmarcs, hydro2, pfant, nulbad.
 
-Any files created during the runs will be saved in a subdirectory named
-session-<i>, where i is an integer. Exception: python.log will be saved in
-current directory.
+Check session directory "session-<number>" for log files.
 """
 
 import argparse

@@ -13,32 +13,27 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_math
-!>
-!> Subroutine absoru_() and related sub-subroutines
-!>
-!> Original comment block:
-!> @verbatim
-!> PARTH : NBRE TOTAL DE NOYAUX PAR CM**3
-!> PG    : PRESSION TOTALE EN DYNES/CM**2
-!> ZMU   : POIDS MOLECULAIRE MOYEN
-!> RHO   : DENSITE (G-CM-3)
-!> TOC   : NOMBRE DE NOYAUX D'HYDROGENE PAR CM**3
-!> AC    : DEGRE D'IONISATION MOYEN
-!> AC1(1): ''        ''     DE H
-!> AC1(2): ''        ''     DE HE+
-!> AC1(3): ''        ''     DE HE
-!> AC2   : ''        ''     DES METAUX
-!> PHI(J): ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
-!> ZNH(M): POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
-!>
-!> VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
-!> @endverbatim
-!>
-!>
-!> Prefixes:
-!> @li absoru_ -- public variables used in other modules
-!> @li au_, at_ -- private variables shared among routines
+!
+! Subroutine absoru_() and related sub-subroutines
+!
+!   PARTH : NBRE TOTAL DE NOYAUX PAR CM**3
+!   PG    : PRESSION TOTALE EN DYNES/CM**2
+!   ZMU   : POIDS MOLECULAIRE MOYEN
+!   RHO   : DENSITE (G-CM-3)
+!   TOC   : NOMBRE DE NOYAUX D'HYDROGENE PAR CM**3
+!   AC    : DEGRE D'IONISATION MOYEN
+!   AC1(1): ''        ''     DE H
+!   AC1(2): ''        ''     DE HE+
+!   AC1(3): ''        ''     DE HE
+!   AC2   : ''        ''     DES METAUX
+!   PHI(J): ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
+!   ZNH(M): POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
+!
+! VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
+!
+! Prefixes:
+!   - absoru_ -- public variables used in other modules
+!   - au_, at_ -- private variables shared among routines
 
 module absoru
   use absoru_data
@@ -47,18 +42,18 @@ module absoru
 
   private  ! This statement makes all symbols private by default
 
-  !> Public subroutine
+  ! Public subroutine
   public absoru_
 
   !=====
   ! Variables calculated by absoru_()
   !=====
-  !> POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX).
-  !> @todo ISSUE Why 12? (MT): It seems that it should be longer.
+  ! POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX).
+  ! ISSUE Why 12? (MT): It seems that it should be longer.
   real*8, public, dimension(12) :: absoru_znh
-  !> Calculated by absoru_(). ?doc?
+  ! Calculated by absoru_(). ?doc?
   real*8, public, dimension(2) :: absoru_totkap
-  !> NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3. HYDRO2 uses this.
+  ! NOMBRE DE NOYAUX D'HYDROGENE PAR cm^3. HYDRO2 uses this.
   real*8, public :: absoru_toc
 
   !^^^^^ PUBLIC  ^^^^^
@@ -67,75 +62,74 @@ module absoru
   integer, dimension(2) :: au_jshyd
   integer au_jh, au_jfz
 
-  real*8 au_ahe, & !< ?doc?
-   au_ah, & !< ?doc?
-   au_ahep, & !< ?doc?
-   au_uh1, & !< ?doc?
-   au_zemh, & !< ?doc?
-   au_uhep1, & !< ?doc?
-   au_uhe1, & !< ?doc?
-   au_zeuhe1, & !< ?doc?
-   au_ul, & !< ?doc?
-   au_stimu, & !< ?doc?
-   au_znu1, & !< ?doc?
-   au_znu2, & !< ?doc?
-   au_znu3, & !< ?doc?
-   au_zmuze, & !< ?doc?
+  real*8 au_ahe, & ! ?doc?
+   au_ah, & ! ?doc?
+   au_ahep, & ! ?doc?
+   au_uh1, & ! ?doc?
+   au_zemh, & ! ?doc?
+   au_uhep1, & ! ?doc?
+   au_uhe1, & ! ?doc?
+   au_zeuhe1, & ! ?doc?
+   au_ul, & ! ?doc?
+   au_stimu, & ! ?doc?
+   au_znu1, & ! ?doc?
+   au_znu2, & ! ?doc?
+   au_znu3, & ! ?doc?
+   au_zmuze, & ! ?doc?
    au_pe
 
-  real*8 au_avm  !< MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
-  real*8 au_zmu  !< POIDS MOLECULAIRE MOYEN
-  real*8 au_pg   !< PRESSION TOTALE EN DYNES/cm**2
-  real*8 au_rho  !< DENSITE (G-CM-3)
-  real*8 au_ac   !< DEGRE D'IONISATION MOYEN
+  real*8 au_avm  ! MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
+  real*8 au_zmu  ! POIDS MOLECULAIRE MOYEN
+  real*8 au_pg   ! PRESSION TOTALE EN DYNES/cm**2
+  real*8 au_rho  ! DENSITE (G-CM-3)
+  real*8 au_ac   ! DEGRE D'IONISATION MOYEN
 
-  real*8 :: au_g2d(2, 19)  !< FACTEUR DE GAUNT BOUND FREE
-  real*8, dimension(5) :: au_zexpm  !< ?doc?
-  real*8, dimension(10) :: au_zexp !< ?doc?
-  real*8, dimension(20) :: au_zeuh, & !< ?doc?
-   au_zeuhep !< ?doc?
-  real*8, dimension(11) :: au_zk  !< ?doc?
-  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< ?doc?
-  real*8 :: au_ac2(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) !< DEGRE D'IONISATION DES METAUX
+  real*8 :: au_g2d(2, 19)  ! FACTEUR DE GAUNT BOUND FREE
+  real*8, dimension(5) :: au_zexpm  ! ?doc?
+  real*8, dimension(10) :: au_zexp ! ?doc?
+  real*8, dimension(20) :: au_zeuh, & ! ?doc?
+   au_zeuhep ! ?doc?
+  real*8, dimension(11) :: au_zk  ! ?doc?
+  real*8 :: au_zkm(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) ! ?doc?
+  real*8 :: au_ac2(MAX_ABSORU2_NM, MAX_ABSORU2_NRR) ! DEGRE D'IONISATION DES METAUX
 
-  real*8, dimension(3) :: au_ac1  !< Ionization degrees of H, He+ and He
-                                  !! @li au_AC1(1): DEGRE D'IONIZATION DE H
-                                  !! @li au_AC1(2): DEGRE D'IONIZATION DE HE+
-                                  !! @li au_AC1(3): DEGRE D'IONIZATION DE HE
+  real*8, dimension(3) :: au_ac1  ! Ionization degrees of H, He+ and He
+                                  !   - au_AC1(1): DEGRE D'IONIZATION DE H
+                                  !   - au_AC1(2): DEGRE D'IONIZATION DE HE+
+                                  !   - au_AC1(3): DEGRE D'IONIZATION DE HE
 
-  real*8, dimension(MAX_ABSORU2_NM) :: au_znu  !< ?doc?
+  real*8, dimension(MAX_ABSORU2_NM) :: au_znu  ! ?doc?
 
 
-  real*8 :: at_zzk(11,2) !> Calculated by athyhe()
+  real*8 :: at_zzk(11,2) ! Calculated by athyhe()
 
 contains
 
   !-------------------------------------------------------------------------------
-  !> @ingroup data
-  !> Calculates the "continuum absorption"
-  !>
-  !> Routine name has trailing underscore to differentiate from module name.
-  !>
-  !> @note 1/3 things that need to be changed to include scattering (other software
-  !>       e.g. Upsalla already have this)
-  !>
-  !> @note 1/3 atmospheric models 50e6 cannot be calculates, would tyake months.
-  !>        So, one idea is to include opacity model tables (Upsalla; MARCS model).
-  !>
-  !> A.M.Colle
+  ! Calculates the "continuum absorption"
+  !
+  ! Routine name has trailing underscore to differentiate from module name.
+  !
+  ! Note: (BLB) 1/3 things that need to be changed to include scattering (other software
+  !       e.g. Upsalla already have this)
+  !
+  ! Note: (BLB) 1/3 atmospheric models 50e6 cannot be calculated, would tyake months.
+  !        So, one idea is to include opacity model tables (Upsalla; MARCS model).
+  !
+  ! A.M.Colle
 
-  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu, flag_hydro2)
+  subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,flag_hydro2)
     real*8, intent(in) :: &
-     wl,       & !< ?doc?
-     th,       & !< ?doc?
-     zlpe        !< ?doc?
+     wl,       & ! ?doc?
+     th,       & ! ?doc?
+     zlpe        ! ?doc?
     integer, intent(in) :: &
-     callam, & !< ?doc?
-     calth,  & !< ?doc?
-     calpe,  & !< ?doc?
-     calmet, & !< innefective
-     calu      !< ?doc?
-    !> Affects value of MAX_WLH_I2: 1200 or 14110
+     callam, & ! ?doc?
+     calth,  & ! ?doc?
+     calpe,  & ! ?doc?
+     calmet, & ! innefective
+     calu      ! ?doc?
+    ! Affects value of MAX_WLH_I2: 1200 or 14110
     logical, intent(in) :: flag_hydro2
 
     real*8 zzkk(11,2), dif(2,3),scath(2),at_zzk(11,2),scat(2), &
@@ -235,14 +229,14 @@ contains
     9003 continue
     call ionipe (th,zlpe,calth)
 
-    !> @todo issue I gotta test variable spill and probably dimension variables
+    ! ISSUE I gotta test variable spill and probably dimension variables
     mm=absoru2_nmeta+1
     mmm=absoru2_nmeta+6
     scatel=9.559063e-13*au_pe*th
     ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
     ! =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 
-    !!#logging
+    !#logging
     !86 format ('0LAMBDA KKK   c1'7x'mg'7x'si1'7x'al1'8x'h-'7x'h2-'7x'h2+'9x'h'7x'he+'8x'he'5x'k total/',2a4)
     !write (lll,86) (absoru2_iunite(i),i=1,2)
     !call log_debug(lll)
@@ -284,13 +278,13 @@ contains
       end do
       absoru_totkap(i)=(absoru_totkap(i)+scatel+scat(1)+scat(2))
 
-      !!#logging
+      !#logging
       !87 format ('wl,kkk,zzkk,totkap =>',f9.1,i2,1p12e10.2)
       !write (lll,87) wl,kkk,(zzkk(m,i),m=1,mmm),absoru_totkap(i)
       !call log_debug(lll)
     end do
 
-    !!#logging
+    !#logging
     !89 format ('0SIG(E)='1PE11.4,' SIG(H)='E11.4,' SIG(H2)='E11.4,' DENSITE='E11.4,' NBR.NOYAU D H/CM3='E11.4, &
     !           ' LOG10PE='0PF5.2,' TETA='F5.2)
     !write (lll,89) scatel,scat(1),scat(2),au_rho,absoru_toc,zlpe,th
@@ -302,18 +296,18 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !>
-  !> Calculates the "Gaunth factor": multiplicative correction to the continuous absorption
-  !> (i.e., a statistical weight)
-  !>
-  !> "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930
-  !>
-  !> A.M COLLE   19/8/69
+  !
+  ! Calculates the "Gaunth factor": multiplicative correction to the continuous absorption
+  ! (i.e., a statistical weight)
+  !
+  ! "DETERMINATION DU FACTEUR DE GAUNT BOUND FREE POUR L HYDROGENE" @ref Gaunth1930
+  !
+  ! A.M COLLE   19/8/69
 
   subroutine gaunth(wl, flag_hydro2)
-    !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to sqrt() in hydro2
+    ! whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to sqrt() in hydro2
     logical, intent(in) :: flag_hydro2
-    real*8, intent(in) :: wl !< ?doc?
+    real*8, intent(in) :: wl ! ?doc?
     real*8 cond, delta, rk, zj, zp, zq
     integer i, j, jj, js
     real*8, parameter :: VARIAVEL = 1e-37
@@ -322,8 +316,8 @@ contains
     do 1410 i=1,au_jfz
       do j=1,19
         jj=j
-        if (abs(wl-au_zlh(j)) .le. 0.5) go to 1335
-        if (wl .lt. au_zlh(j)) go to 1333
+        if (abs(wl-AU_ZLH(j)) .le. 0.5) go to 1335
+        if (wl .lt. AU_ZLH(j)) go to 1333
       end do
 
       1333  continue
@@ -358,7 +352,7 @@ contains
       do 1410 j=js,19
         zj=j
         if (j.gt.7) go to 1400
-        cond=au_zlh(j)-wl
+        cond=AU_ZLH(j)-wl
         if (abs(cond).le.0.50) go to 1122
         if (cond.lt.0.0) go to 1410
 
@@ -448,29 +442,29 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> ?doc? subroutine has no description line
-  !>
-  !> @verbatim
-  !> HCBKTM=(H*C/K*T)*1.0E8
-  !> 0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
-  !> 0.0043890867=CONSTANTE DE RYDBERG POUR HE+*1.0E-8  MOORE 1950 (HE4
-  !> au_AHE =POUR HE 4*C/T**3
-  !> au_AH  =POUR H   C*Z**4/T**3  AVEC Z=1
-  !> au_AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
-  !> C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
-  !> ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
-  !> @endverbatim
-  !>
-  !> @author A.M COLLE   8/5/69
+  ! ?doc? subroutine has no description line
+  !
+  ! 
+  ! HCBKTM=(H*C/K*T)*1.0E8
+  ! 0.0010967876=CONSTANTE DE RYDBERG POUR H  *1.0E-8  ALLEN 1963
+  ! 0.0043890867=CONSTANTE DE RYDBERG POUR HE+*1.0E-8  MOORE 1950 (HE4
+  ! au_AHE =POUR HE 4*C/T**3
+  ! au_AH  =POUR H   C*Z**4/T**3  AVEC Z=1
+  ! au_AHEP=POUR HE+ C*Z**4/T**3  AVEC Z=2
+  ! C=64*PI**4*ME*E**10/(3*RAC(3)*C*H**3*K**3)
+  ! ME=9.10E-28,E**10=4.8E-10,K=1.38024E-16,H=6.6237E-27,C=2.99791E+10
+  ! 
+  !
+  ! *Author* A.M COLLE   8/5/69
 
   subroutine tempa(wl,th,calth,callam)
     implicit none
-    real*8, intent(in) :: wl, & !< ?doc?
-     th  !< ?doc?
+    real*8, intent(in) :: wl, & ! ?doc?
+     th  ! ?doc?
     real*8 comhe, hcbktm, uh, uhep
     integer j, k, l
-    integer, intent(in) :: callam, & !< ?doc?
-     calth  !< ?doc?
+    integer, intent(in) :: callam, & ! ?doc?
+     calth  ! ?doc?
 
     if (calth.eq.2) go to 1001
 
@@ -488,7 +482,7 @@ contains
       au_zeuh(j)=exp(uh-au_uh1)/j**3
     enddo
 
-    au_zeuh(20) = au_zeuh(20)*8000.  !> @todo ISSUE big why this (ask mt)? (MT): Why 20? Why 8000.?
+    au_zeuh(20) = au_zeuh(20)*8000.  ! ISSUE big why this (ask mt)? (MT): Why 20? Why 8000.?
     au_uhep1 = 4.389087e-3*hcbktm
     if (th .gt. 0.3) go to 5290
 
@@ -504,13 +498,13 @@ contains
     au_zeuhe1 = exp(-au_uhe1)
     if (th .gt. 0.8) go to 1001
 
-    comhe=-hcbktm*(1.0/au_zlhem(1))
+    comhe=-hcbktm*(1.0/AU_ZLHEM(1))
     do k = 1,5
-      au_zexpm(k)=exp(comhe+hcbktm*(1.0/au_zlhem(k)))*au_stwtm(k)
+      au_zexpm(k)=exp(comhe+hcbktm*(1.0/AU_ZLHEM(k)))*AU_STWTM(k)
     end do
 
     do l=3,10
-      au_zexp(l)= exp(comhe+hcbktm*(1.0/au_zlhe(l)))/l**3
+      au_zexp(l)= exp(comhe+hcbktm*(1.0/AU_ZLHE(l)))/l**3
     end do
 
     1001 if ((callam.eq.2).and.(calth.eq.2)) go to 5010
@@ -523,30 +517,30 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> @ingroup gr_data
-  !> SAHA's equation: ionization equilibrium: relative number of atoms in each
-  !> ionization state
-  !>
-  !> @verbatim
-  !> LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
-  !> LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
-  !> CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
-  !> 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
-  !> POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
-  !> @endverbatim
-  !>
-  !>     A.M COLLE   13/5/69
-  !>
-  !> @todo issue logic is different for PFANT and HYDRO2: solve conflict. For the time,
-  !>       there is a flag_hydro2. Actually it seems that the differences are in sparing
-  !>       a few exponential calculations where the argument to exp() is < -38 or -100.
-  !>       Come back to this later.
-  !>
-  !> @todo issue logic suggests a few "absoru2_nmeta+5" here should be "absoru2_nmeta+n"
+  ! @ingroup gr_data
+  ! SAHA's equation: ionization equilibrium: relative number of atoms in each
+  ! ionization state
+  !
+  ! 
+  ! LOI DE SAHA=LOG((absoru2_NR+1)/absoru2_NR)*modeles_PE= -POT.ION.*TH+5/2*LOG(T)-0.4772+FONC
+  ! LES FONCTIONS DE PARTITION (L0G(2UR+1)/UR) SONT INCLUSES DANS LES
+  ! CONSTANTES AJOUTEES A TEMPOR POUR H ET HE LES AUTRES SONT LUES
+  ! 31.303644,1.7200311,56.597541,125.26753,SONT RESPECTIVEMENT LES
+  ! POTENTIELS D'IONISATION DE (H,H-,HE,HE+)*2.3025851
+  ! 
+  !
+  !     A.M COLLE   13/5/69
+  !
+  ! ISSUE logic is different for PFANT and HYDRO2: solve conflict. For the time,
+  !       there is a flag_hydro2. Actually it seems that the differences are in sparing
+  !       a few exponential calculations where the argument to exp() is < -38 or -100.
+  !       Come back to this later.
+  !
+  ! ISSUE logic suggests a few "absoru2_nmeta+5" here should be "absoru2_nmeta+n"
 
   subroutine sahath(th, flag_hydro2)
-    real*8, intent(in) :: th  !< ?doc?
-    !> whether to use pfant or hydro2 logic
+    real*8, intent(in) :: th  ! ?doc?
+    ! whether to use pfant or hydro2 logic
     logical, intent(in) :: flag_hydro2
     real*8 :: tempo, tempor, potepo
     integer i, j, n, nrr
@@ -630,24 +624,24 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
-  !> L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE at_zzk SI WL= A UNE
-  !> DISCONTINUITE DE L'UN DE CES ABSORBANTS
-  !>
-  !> @author A.M COLLE  07/12/1970
-  !>
+  ! CE SSP CALCULE LE COEFFICIENT D'ABSORPTION PAR ATOME NEUTRE POUR
+  ! L'HYDROGENE ET L'HELIUM, ON SORT 2 VALEURS DE at_zzk SI WL= A UNE
+  ! DISCONTINUITE DE L'UN DE CES ABSORBANTS
+  !
+  ! *Author* A.M COLLE  07/12/1970
+  !
   ! Note variable named "zk_"
-  ! @li local "zk" renamed to "zk_"
-  ! @li old COMMON "zk" so far is a module variable named au_zk
+  !   - local "zk" renamed to "zk_"
+  !   - old COMMON "zk" so far is a module variable named au_zk
 
   subroutine athyhe(wl,th,callam,at_zzk, flag_hydro2)
-    real*8,  intent(in) :: wl, & !< ?doc?
-     th !< ?doc?
-    integer, intent(in) :: callam !< ?doc?
-    !> whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to exp() in hydro2
-    !> @todo issue decide upon a single logic, I think
+    real*8,  intent(in) :: wl, & ! ?doc?
+     th ! ?doc?
+    integer, intent(in) :: callam ! ?doc?
+    ! whether to use PFANT or HYDRO2 logic. The difference is just some extra care with small argument to exp() in hydro2
+    ! ISSUE decide upon a single logic, I think
     logical, intent(in) :: flag_hydro2
-    real*8,  intent(out) :: at_zzk(11,2) !< ?doc?
+    real*8,  intent(out) :: at_zzk(11,2) ! ?doc?
 
     real*8 althmb, althml, anu, any, bh, bhe, bhem, bhep, bkt, caeta, caro, difeta, &
      difro, dksq, fact, g3, gconst, rhog1, rhog2, rk, sigh, sighe, sighem, sighep, &
@@ -740,7 +734,7 @@ contains
     6190 althml=(wl/1.0e6)*(((-5.939*th+11.934)*th-3.2062)+(wl/1.0e3)* &
      ((-0.34592*th+7.0355)*th-0.40192))+((0.027039*th-0.011493)*th+0.0053666)
 
-    !> @todo ISSUE: check spill!!!!!!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
+    ! ISSUE: check spill!!!!!! if using index +1, perhaps I should dimension the relevant vectors with dimension MAX_absoru2_NMETA+1
     at_zzk(absoru2_nmeta+1,1) = althmb+althml
 
     ! -- II --  H2-
@@ -758,44 +752,44 @@ contains
     ! -- III --  H2+
     ! H2+ BATES: HARVARD JUIN 1964  (RESULTATS *1.0E+39)
 
-    2080 if ((th.lt.0.25).or.((zlamin.lt.au_winv(1)).or.(zlamin.gt.au_winv(46)))) go to 1012
+    2080 if ((th.lt.0.25).or.((zlamin.lt.AU_WINV(1)).or.(zlamin.gt.AU_WINV(46)))) go to 1012
 
     bkt=3.19286e-2/th  ! BKT=K*T EN RYDBERGS POUR H2+
 
     do j=1,46
       if (flag_hydro2) then
         ! #hydro2_mode
-        zut1 = au_u1(j)/bkt
-        zut2 = -au_u2(j)/bkt
+        zut1 = AU_U1(j)/bkt
+        zut2 = -AU_U2(j)/bkt
         if (zut2 .gt. -38) then
           ezut1 = exp(zut1)
           ezut2 = exp(zut2)
-          opnu(j)=2.51e-3*au_grdm(j)*(ezut1-ezut2)
+          opnu(j)=2.51e-3*AU_GRDM(j)*(ezut1-ezut2)
         else
           if(zut1 .gt. -38) then
             ezut1 = exp(zut1)
-            opnu(j) = 2.51e-3*au_grdm(j)*ezut1
+            opnu(j) = 2.51e-3*AU_GRDM(j)*ezut1
           else
             opnu(j) = 0
           end if
         end if
       else
-        opnu(j)=2.51e-3*au_grdm(j)*(exp(au_u1(j)/bkt)-(exp(-au_u2(j)/bkt)))
+        opnu(j)=2.51e-3*AU_GRDM(j)*(exp(AU_U1(j)/bkt)-(exp(-AU_U2(j)/bkt)))
       end if
     end do
 
     do j = 1,46
       jj=j
-      if (abs(zlamin-au_winv(j)) .le. 0.5) go to 1014
-      if (zlamin .lt. au_winv(j)) go to 1015
+      if (abs(zlamin-AU_WINV(j)) .le. 0.5) go to 1014
+      if (zlamin .lt. AU_WINV(j)) go to 1015
     end do
 
     1014 at_zzk(absoru2_nmeta+3,1)=opnu(jj)
     go to 1016
 
     ! INTERPOLATION LINEAIRE
-    1015 at_zzk(absoru2_nmeta+3,1)=(opnu(jj-1)*au_winv(jj)-opnu(jj)*au_winv(jj-1)+ &
-     (opnu(jj)-opnu(jj-1))*zlamin)/(au_winv(jj)-au_winv(jj-1))
+    1015 at_zzk(absoru2_nmeta+3,1)=(opnu(jj-1)*AU_WINV(jj)-opnu(jj)*AU_WINV(jj-1)+ &
+     (opnu(jj)-opnu(jj-1))*zlamin)/(AU_WINV(jj)-AU_WINV(jj-1))
     go to 1016
 
     1012 at_zzk(absoru2_nmeta+3,1)=0.0
@@ -812,7 +806,7 @@ contains
     ! SYMBOLES CF VARDYA APJ.SUP. VOL. 8,P.277,1964
     1017  if (th.gt.1.4) go to 1809
     do 1855 k=1,4
-      trhog(k)=sqrt(1.0+au_ul/au_yy(k))
+      trhog(k)=sqrt(1.0+au_ul/AU_YY(k))
       if (trhog(k).ge.1.01) go to 1820
       if (trhog(k).ne.1.0) tgaunt(k)=2.0/(trhog(k)-1.0)
       if (trhog(k).eq.1.0) go to 1856
@@ -825,19 +819,19 @@ contains
 
       1820 if (trhog(k).le.1.8) go to 1830
 
-      tempor=(trhog(k)-1.0)*sqrt(gconst/(au_yy(k)+au_ul))
+      tempor=(trhog(k)-1.0)*sqrt(gconst/(AU_YY(k)+au_ul))
       any=tempor**(-0.6666667)
       tgaunt(k)=(-0.01312*any+0.21775)*any+1.0
       go to 1855
 
-      1830 tempor=0.2171473*log(gconst/(au_yy(k)+au_ul))  ! 0.2171473=0.434294482/2
-      if ((tempor.lt.au_zletag(1)).or.(tempor.gt.au_zletag(18))) go to 1847
+      1830 tempor=0.2171473*log(gconst/(AU_YY(k)+au_ul))  ! 0.2171473=0.434294482/2
+      if ((tempor.lt.AU_ZLETAG(1)).or.(tempor.gt.AU_ZLETAG(18))) go to 1847
 
       ! INTERPOLATION A PARTIR DE LA TABLE 1 DE GRANT (1958)
       do ir=1,12
         jr=ir
-        if (abs(trhog(k)-au_rhog(ir)).le.1.0e-4) go to 1836
-        if  (trhog(k).lt.au_rhog(ir)) go to 1837
+        if (abs(trhog(k)-AU_RHOG(ir)).le.1.0e-4) go to 1836
+        if  (trhog(k).lt.AU_RHOG(ir)) go to 1837
       end do
 
       1836 caro=1.0
@@ -846,16 +840,16 @@ contains
       !
       go to 1838
 
-      1837 rhog1=au_rhog(jr-1)
+      1837 rhog1=AU_RHOG(jr-1)
       caro=trhog(k)-rhog1
 
-      1838  rhog2=au_rhog(jr)
+      1838  rhog2=AU_RHOG(jr)
       if (caro.eq.1.0) difro=1.0
       if (caro.ne.1.0) difro=rhog2-rhog1
       do ie=1,18
         je=ie
-        if (abs(tempor-au_zletag(ie)).le.1.0e-4) go to 1846
-        if  (tempor.lt.au_zletag(ie)) go to 1848
+        if (abs(tempor-AU_ZLETAG(ie)).le.1.0e-4) go to 1846
+        if  (tempor.lt.AU_ZLETAG(ie)) go to 1848
       end do
 
       1846 if (caro .eq. 1.0) go to 1850
@@ -866,10 +860,10 @@ contains
       !
       go to 1849
 
-      1848 zleta1=au_zletag(je-1)
+      1848 zleta1=AU_ZLETAG(je-1)
       caeta=tempor-zleta1
 
-      1849  zleta2=au_zletag(je)
+      1849  zleta2=AU_ZLETAG(je)
       if(caeta.eq.1.0)  difeta=1.0
       if(caeta.ne.1.0)  difeta=zleta2-zleta1
       go to 1851
@@ -888,7 +882,7 @@ contains
 
     g3=0.0
     do k=1,4
-      g3=g3+tgaunt(k)*au_aa(k)  ! G3: FACTEUR DE GAUNT FREE FREE
+      g3=g3+tgaunt(k)*AU_AA(k)  ! G3: FACTEUR DE GAUNT FREE FREE
     end do
     go to 4199
 
@@ -920,8 +914,8 @@ contains
       sighep=0.0
       do j=1,19
         jj=j
-        if (abs(wl-au_zlhep(j)).le.0.50) go to 1465
-        if (wl.lt.au_zlhep(j)) go to 1463
+        if (abs(wl-AU_ZLHEP(j)).le.0.50) go to 1465
+        if (wl.lt.AU_ZLHEP(j)) go to 1463
       end do
 
       1463 jjs=jj
@@ -962,12 +956,12 @@ contains
 
       sighem=0.0
       sighe=0.0
-      if ((wl-au_zlhem(5)).gt.0.50) go to 5740
+      if ((wl-AU_ZLHEM(5)).gt.0.50) go to 5740
 
       do k=1,5
         kk=k
-        if (abs(wl-au_zlhem(k)).le.0.50) go to 5490
-        if (wl.lt.au_zlhem(k)) go to 5470
+        if (abs(wl-AU_ZLHEM(k)).le.0.50) go to 5490
+        if (wl.lt.AU_ZLHEM(k)) go to 5470
       end do
 
       5470 kks=kk
@@ -981,8 +975,8 @@ contains
 
       5540 if ((jhem.eq.1).or.(i.eq.1)) go to 5541
       !
-      ! WL N'EST PAS = A UNE VALEUR DE au_ZLHEM
-      ! RAPPEL  au_ZLHEM=504,2601,3122,3422,3680 A.
+      ! WL N'EST PAS = A UNE VALEUR DE AU_ZLHEM
+      ! RAPPEL  AU_ZLHEM=504,2601,3122,3422,3680 A.
       !
       go to 5741
 
@@ -1002,13 +996,13 @@ contains
         ! GOLDBERG APJ. VOL. 90 P. 414 1939 ET UNDERHILL PUB. COP. OBS. N0.
         !
 
-        5621 if (abs(wl-au_zlhem(3+n)).gt.0.50) go to 5640
+        5621 if (abs(wl-AU_ZLHEM(3+n)).gt.0.50) go to 5640
         ! NIVEAUX 4 A 7 DE HE1
 
         anu=an(n)/wl+expon(n)
         go to 5730
 
-        5640 zk_=1.097224e-3*au_zlhem(3+n)*wl/(au_zlhem(3+n)-wl)
+        5640 zk_=1.097224e-3*AU_ZLHEM(3+n)*wl/(AU_ZLHEM(3+n)-wl)
         rk=sqrt(zk_)
         uk=1.0+cuk(n)*zk_
         anu=(cote(n)/(wl*(1.0-exp(-6.283185*rk)))*(zk_/uk   )**6*((1.0+zk_)/ &
@@ -1029,8 +1023,8 @@ contains
       5741 continue
       do l=3,9
         ll=l
-        if (abs(wl-au_zlhe(l)).le.0.50) go to 5810
-        if  (wl.lt.au_zlhe(l)) go to 5790
+        if (abs(wl-AU_ZLHE(l)).le.0.50) go to 5810
+        if  (wl.lt.AU_ZLHE(l)) go to 5790
       end do
 
       5790 lls=ll
@@ -1043,13 +1037,13 @@ contains
 
       5860 if ((i.eq.1).or.(jhe.eq.1)) go to 5861
       !
-      ! WL N'EST PAS = A UNE VALEUR DE au_ZLHE
+      ! WL N'EST PAS = A UNE VALEUR DE AU_ZLHE
       !
       go to 5871
 
       5861 continue
       do l=lls,9
-        sighe=sighe+au_zexp(l)*au_zeff4(l)
+        sighe=sighe+au_zexp(l)*AU_ZEFF4(l)
       end do
       bhe=sighe+(1807.240*au_zexp(10)-0.8072399*au_zeuhe1)/(2*au_uhe1)
 
@@ -1069,23 +1063,21 @@ contains
 
 
   !-------------------------------------------------------------------------------
-  !> Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
-  !>
-  !> SSP CALCULANT LES QUANTITES SUIVANTES: PARTH, au_PG, au_ZMU, au_RHO, absoru_toc,
-  !> au_AC, au_AC1, au_AC2, PHI, absoru_ZNH
-  !>
-  !> Reference: 'VARDYA' APJ VOL.133,P.107,1961
-  !>
-  !> @author A.M COLLE  18/01/1971
-  !>
-  !> @todo consider creating module variables to avoid passing parameter to subroutine
-  !>
-  !> @todo top variable pa declared with 10 elements but should have absoru2_nr(j)+1
+  ! Ionization degree by hydrogen atoms & electrons (???; to be confirmed) ISSUE
+  !
+  ! SSP CALCULANT LES QUANTITES SUIVANTES: PARTH, au_PG, au_ZMU, au_RHO, absoru_toc,
+  ! au_AC, au_AC1, au_AC2, PHI, absoru_ZNH
+  !
+  ! Reference: 'VARDYA' APJ VOL.133,P.107,1961
+  !
+  ! *Author* A.M COLLE  18/01/1971
+  !
+  ! TODO top variable pa declared with 10 elements but should have absoru2_nr(j)+1
 
   subroutine ionipe(th,zlpe,calth)
-    real*8, intent(in) :: th, & !< ?doc?
-     zlpe !< ?doc?
-    integer, intent(in) :: calth !< ?doc?
+    real*8, intent(in) :: th, & ! ?doc?
+     zlpe ! ?doc?
+    integer, intent(in) :: calth ! ?doc?
 
     real*8 any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
      sigm2, sigm3, tempor, tp1, tp2, w1, w2, w3, w4, w5, w6
@@ -1106,7 +1098,7 @@ contains
       sigm2=0.0
       pa(1)=1.0
 
-      !> @todo issue check this, I think the programmer was considering PA initialized to zero when this is not necessarily true. I am initializing it
+      ! ISSUE check this, I think the programmer was considering PA initialized to zero when this is not necessarily true. I am initializing it
       do i = 2, nrr
         pa(i) = 0
       end do

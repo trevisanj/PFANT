@@ -35,6 +35,7 @@ class XMulti(XPFANT):
         wm = self.multi_widget = QWidget()
         TAB_TEXT_4 = "Multi mode (Alt+&4)"
         tt.addTab(wm, TAB_TEXT_4)
+        tt.setTabToolTip(tt.count()-1, DESCR_MULTI)
 
         # ## Layout with all elements in Multi tab
         l = QVBoxLayout()

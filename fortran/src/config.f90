@@ -13,64 +13,62 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> Command-line parsing and respective global variable declarations
-!> @li Configuration globals with their default values
-!> @li Routines to parse command-line arguments
-!>z
-!> Prefixes:
-!> @li "config_" have corresponding command-line options
-!> @li "ex_config_" are unitialized and must be set by particular executable. Exception is "options"
-!>
-!> @note There are many variables in this module that have a unique relation with a
-!>       command-line option. These variables will not be documented in comments, but
-!>       in the help text associated with their command-line options (the reason is to
-!>       avoid text duplication). There are two ways to access this documentation:
-!>       @li a) view the source code for subroutine config::init_options()
-!>       @li b) execute the program with the --help option
-!>
-!> @todo explain how to create new option, including that flag options (argumentless) are forbidden bcz pyfant is not prepared for them (for simplicity)
+! Command-line parsing and respective global variable declarations
+!   - Configuration globals with their default values
+!   - Routines to parse command-line arguments
+!
+! Prefixes:
+!   - "config_" have corresponding command-line options
+!   - "ex_config_" are unitialized and must be set by particular executable. Exception is "options"
+!
+! *Note* There are many variables in this module that have a unique relation with a
+!       command-line option. These variables will not be documented in comments, but
+!       in the help text associated with their command-line options (the reason is to
+!       avoid text duplication). There are two ways to access this documentation:
+!         - a) view the source code for subroutine config::init_options()
+!         - b) execute the program with the --help option
+!
+! TODO explain how to create new option, including that flag options (argumentless) are forbidden bcz pyfant is not prepared for them (for simplicity)
 
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Command-line parser.
-!>
-!> Originally from the Fortran wiki @ref FortranWiki
+! Command-line parser.
+!
+! Originally from the Fortran wiki @ref FortranWiki
 
 module options2
   implicit none
 
-  integer, parameter :: MAX_LEN_DESCR = 500 !< Maximum length of option description
+  integer, parameter :: MAX_LEN_DESCR = 500 ! Maximum length of option description
 
   type option
-    !> Initials of executable(s) where option is applicable.
-    !> [i]nnewmarcs, [h]ydro2, [p]fant, [n]ulbad
+    ! Initials of executable(s) where option is applicable.
+    ! [i]nnewmarcs, [h]ydro2, [p]fant, [n]ulbad
     character(len=4) :: ihpn
-    !> Long name.
+    ! Long name.
     character(len=100) :: name
-    !> Corresponding short name.
+    ! Corresponding short name.
     character :: chr
-    !> Does the option require an argument?
+    ! Does the option require an argument?
     logical :: has_arg
-    !> Argument name, if required.
+    ! Argument name, if required.
     character(len=20) :: argname
-    !> Default value. For the purpose of displaying the help text only (not used to set
-    !> the default values of config_* variables; in fact, string versions of the default values
-    !> of these variables are used to fill this field)
+    ! Default value. For the purpose of displaying the help text only (not used to set
+    ! the default values of config_* variables; in fact, string versions of the default values
+    ! of these variables are used to fill this field)
     character(len=100) :: default_
-    !> Description.
-    !> @note The newline marker "<br>" is recognized.
+    ! Description.
+    ! *Note* The newline marker "<br>" is recognized.
     character(len=MAX_LEN_DESCR) :: descr
-    !> Whether the option appears or not in --help text
-    !> Some options may be secret
+    ! Whether the option appears or not in --help text
+    ! Some options may be secret
     logical :: appears
-!  contains
-!    procedure :: print => print_opt
   end type
 
 
-  !> Configurable unit to output command-line parsing errors
+  ! Configurable unit to output command-line parsing errors
   integer :: error_unit = 6
 
   !^^^^^ PUBLIC  ^^^^^
@@ -82,57 +80,57 @@ module options2
 
 contains
 
-  !> Parse command line options. Options and their arguments must come before
-  !> all non-option arguments. Short options have the form "-X", long options
-  !> have the form "--XXXX..." where "X" is any character.
+  ! Parse command line options. Options and their arguments must come before
+  ! all non-option arguments. Short options have the form "-X", long options
+  ! have the form "--XXXX..." where "X" is any character.
 
   subroutine getopt(options, optindex, arg, arglen, stat, &
       offset, remain)
     use iso_fortran_env, only: error_unit
 
-    !> Array, items are of option type. Each option may have either a long name
-    !> (accessible in  the form '--XXXX...'), a single-char short name ("-X"),
-    !> or both. Be careful not to repeat yourself, uniqueness of name is not
-    !> checked.
+    ! Array, items are of option type. Each option may have either a long name
+    ! (accessible in  the form '--XXXX...'), a single-char short name ("-X"),
+    ! or both. Be careful not to repeat yourself, uniqueness of name is not
+    ! checked.
     type(option), intent(in) :: options(:)
 
-    !> If stat is 0, contains the id (index) of the option that was parsed.
+    ! If stat is 0, contains the id (index) of the option that was parsed.
     integer, intent(out) :: optindex
 
-    !> If the parsed option requires an argument, arg contains
-    !> the first len(arg) (but at most MAX_LEN_DESCR) characters of that argument.
-    !> Otherwise its value is undefined. If the arguments length exceeds MAX_LEN_DESCR
-    !> characters and err is .true., a warning is issued.
+    ! If the parsed option requires an argument, arg contains
+    ! the first len(arg) (but at most MAX_LEN_DESCR) characters of that argument.
+    ! Otherwise its value is undefined. If the arguments length exceeds MAX_LEN_DESCR
+    ! characters and err is .true., a warning is issued.
     character(len=*), intent(out) :: arg
 
-    !> If the parsed option requires an argument, arglen contains
-    !> the actual length of that argument. Otherwise its value is undefined.
-    !> This can be used to make sure the argument was not truncated by the
-    !> limited length of arg.
+    ! If the parsed option requires an argument, arglen contains
+    ! the actual length of that argument. Otherwise its value is undefined.
+    ! This can be used to make sure the argument was not truncated by the
+    ! limited length of arg.
     integer, intent(out) :: arglen
 
-    !> Status indicator. Can have the following values:
-    !>   -  0: An option was successfully parsed.
-    !>   -  1: Parsing stopped because a '--' was encountered
-    !>         (not an error, but nothing was parsed).
-    !>   -  2: Parsing stopped because a non-option was encountered
-    !>         (not an error, but nothing was parsed).
-    !>   -  3: Parsing stopped because there are no arguments left
-    !>         (not an error, but nothing was parsed).
-    !>   .
-    !> Its value is never undefined.
+    ! Status indicator. Can have the following values:
+    !   -  0: An option was successfully parsed.
+    !   -  1: Parsing stopped because a '--' was encountered
+    !         (not an error, but nothing was parsed).
+    !   -  2: Parsing stopped because a non-option was encountered
+    !         (not an error, but nothing was parsed).
+    !   -  3: Parsing stopped because there are no arguments left
+    !         (not an error, but nothing was parsed).
+    !   .
+    ! Its value is never undefined.
     integer, intent(out) :: stat
 
-    !> If stat is 1, offset contains the number of the argument before the
-    !> first non-option argument, i.e. offset+n is the nth non-option argument.
-    !> If stat is not 1, offset contains the number of the argument that would
-    !> be parsed in the next call to getopt. This number can be greater than
-    !> the actual number of arguments.
+    ! If stat is 1, offset contains the number of the argument before the
+    ! first non-option argument, i.e. offset+n is the nth non-option argument.
+    ! If stat is not 1, offset contains the number of the argument that would
+    ! be parsed in the next call to getopt. This number can be greater than
+    ! the actual number of arguments.
     integer, intent(out), optional :: offset
 
-    !> If stat is 1, remain contains the number of remaining non-option
-    !> arguments, i.e. the non-option arguments are in the range
-    !> (offset+1:offset+remain). If stat is not 1, remain is undefined.
+    ! If stat is 1, remain contains the number of remaining non-option
+    ! arguments, i.e. the non-option arguments are in the range
+    ! (offset+1:offset+remain). If stat is not 1, remain is undefined.
     integer, intent(out), optional :: remain
 
     integer, save :: pos = 1, cnt = 0
@@ -280,18 +278,18 @@ contains
 
   !=======================================================================================
 
-  !> Print an option in the style of a man page. I.e.
-  !> <pre>
-  !> -o <arg>
-  !> --option <arg>
-  !>    [=default_value]
-  !>    description.................................................................
-  !>    ............................................................................
-  !> </pre>
+  ! Print an option in the style of a man page. I.e.
+  ! <pre>
+  ! -o <arg>
+  ! --option <arg>
+  !    [=default_value]
+  !    description.................................................................
+  !    ............................................................................
+  ! </pre>
   subroutine print_opt(opt, unit)
-    !> the option
+    ! the option
     type(option), intent(in) :: opt
-    !> logical unit number
+    ! logical unit number
     integer, intent(in) :: unit
 
     integer :: l0, l, c1, c2, idx, new_start
@@ -389,11 +387,11 @@ contains
 
   end subroutine
 
-  !> Logs error and halts
-  !> This routine was created to standardize the "giving error" behaviuor
+  ! Logs error and halts
+  ! This routine was created to standardize the "giving error" behaviuor
 
   subroutine give_error(lll)
-    !> Error message
+    ! Error message
     character(len=*) :: lll
 
     write(error_unit, *) lll
@@ -405,11 +403,11 @@ contains
   !=======================================================================================
 
 
-  !> Returns option name with single quotes.
-  !>
+  ! Returns option name with single quotes.
+  !
   function get_option_name(opt) result(res)
     character(len=:), allocatable :: res
-    !> Option, will be used only in case of error
+    ! Option, will be used only in case of error
     type(option), intent(in) :: opt
 
     if (len(opt%chr) > 0 .and. opt%chr .ne. ' ') then
@@ -436,12 +434,12 @@ end module
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-!> Configuration module for all executables
-!>
-!> Prefixes defined here:
-!> @li HANDLER_
-!> @li config_ -- throughout configuration variables
-!> @li execonf_ -- executable-specific variables
+! Configuration module for all executables
+!
+! Prefixes defined here:
+!   - HANDLER_
+!   - config_ -- throughout configuration variables
+!   - execonf_ -- executable-specific variables
 
 
 module config
@@ -454,16 +452,16 @@ module config
 
   ! Possible return values of option handler
   integer, parameter ::    &
-   HANDLER_OK = 0,         & !< option was handled successfully
-   HANDLER_ERROR = 1,      & !< error handling option, e.g. invalid argument
-   HANDLER_DONT_CARE = 2     !< handler not responsible for handling that option
+   HANDLER_OK = 0,         & ! option was handled successfully
+   HANDLER_ERROR = 1,      & ! error handling option, e.g. invalid argument
+   HANDLER_DONT_CARE = 2     ! handler not responsible for handling that option
 
 
   !=====
   ! Executable-specific options that must be set programatically
   !=====
-  !> Name of executable. Case doesn't matter. It will be converted to all uppercase or
-  !> lowercave, depending on the use.
+  ! Name of executable. Case doesn't matter. It will be converted to all uppercase or
+  ! lowercave, depending on the use.
   character*16 :: execonf_name = '?'
 
 
@@ -476,111 +474,111 @@ module config
   !---
   ! all executables
   !---
-  character*64 :: config_fn_main     = 'main.dat'      !< option: --fn_main
-  character*64 :: config_fn_progress = 'progress.txt'  !< option: --fn_progress
-  character*64 :: config_fn_logging = '?'         !< option: --logging_fn_dump
-  logical :: config_logging_console = .true., &  !< option --logging_console
-             config_logging_dump   = .false., & !< option --logging_dump
-             config_explain        = .false., & !< option --explain
-             config_no_molecules   = .false., & !< option --no_molecules
-             config_no_atoms       = .false., & !< option --no_atoms
-             config_no_h           = .false.    !< option --no_ah
+  character*64 :: config_fn_main     = 'main.dat'      ! option: --fn_main
+  character*64 :: config_fn_progress = 'progress.txt'  ! option: --fn_progress
+  character*64 :: config_fn_logging = '?'         ! option: --logging_fn_dump
+  logical :: config_logging_console = .true., &  ! option --logging_console
+             config_logging_dump   = .false., & ! option --logging_dump
+             config_explain        = .false., & ! option --explain
+             config_no_molecules   = .false., & ! option --no_molecules
+             config_no_atoms       = .false., & ! option --no_atoms
+             config_no_h           = .false.    ! option --no_ah
 
   !---
   ! innewmarcs, hydro2, pfant
   !---
-  character*64 :: config_fn_modeles = 'modeles.mod' !< option: --fn_modeles
+  character*64 :: config_fn_modeles = 'modeles.mod' ! option: --fn_modeles
 
   !
   ! hydro2, pfant
   !
   character*64 :: &
-   config_fn_hmap    = 'hmap.dat', &  !< option: --fn_hmap
-   config_fn_absoru2 = 'absoru2.dat'  !< option: --fn_absoru2
-  real*8 :: config_llzero = -1 !< option: --llzero
-  real*8 :: config_llfin  = -1 !< option: --llfin
-  real*8 :: config_pas    = -1 !< option: --pas
-  real*8 :: config_aint   = 10 !< option: --aint
-                               !!
-                               !! It was found that subroutine selekfh() time varies is 
-                               !! approximately proportional to aint**2. Therefore, this
-                               !! parameter is set to a low value, which makes it run much
-                               !! faster than the usual/historical 50. Also, this value is
-                               !! no longer read from dfile:main.
-                               !! Below is a table containing the results of a test
-                               !! perfomed in the 5000-5100 angstrom region:
-                               !! <pre>
-                               !! aint    synthesis time
-                               !! ----------------------
-                               !! 100              16.84
-                               !!  50               9.52
-                               !!  25               5.87
-                               !!  13               4.11
-                               !!  10               3.74
-                               !!   5               3.15
-                               !!   1               3.48
-                               !! </pre>
+   config_fn_hmap    = 'hmap.dat', &  ! option: --fn_hmap
+   config_fn_absoru2 = 'absoru2.dat'  ! option: --fn_absoru2
+  real*8 :: config_llzero = -1 ! option: --llzero
+  real*8 :: config_llfin  = -1 ! option: --llfin
+  real*8 :: config_pas    = -1 ! option: --pas
+  real*8 :: config_aint   = 10 ! option: --aint
+                               !
+                               ! It was found that subroutine selekfh() time varies is 
+                               ! approximately proportional to aint**2. Therefore, this
+                               ! parameter is set to a low value, which makes it run much
+                               ! faster than the usual/historical 50. Also, this value is
+                               ! no longer read from dfile:main.
+                               ! Below is a table containing the results of a test
+                               ! perfomed in the 5000-5100 angstrom region:
+                               ! <pre>
+                               ! aint    synthesis time
+                               ! ----------------------
+                               ! 100              16.84
+                               !  50               9.52
+                               !  25               5.87
+                               !  13               4.11
+                               !  10               3.74
+                               !   5               3.15
+                               !   1               3.48
+                               ! </pre>
 
   !---
   ! innewmarcs-only
   !---
   character*64 :: &
-   config_fn_moddat = 'modeles.dat', &      !< option: --fn_moddat
-   config_fn_gridsmap = 'gridsmap.dat'      !<
-  character*25 :: config_modcode = 'NoName' !< option: --modcode
+   config_fn_moddat = 'modeles.dat', &      ! option: --fn_moddat
+   config_fn_gridsmap = 'gridsmap.dat'      !
+  character*25 :: config_modcode = 'NoName' ! option: --modcode
 
   !---
   ! hydro2-only
   !---
-  !> Option: --zph
-  !> @note (historical note) This value was being read from an altered-format
-  !> dfile:absoru2 which was incompatible with the pfant executable. Therefore,
-  !> it has been assigned a default value and this command-line option was added
+  ! Option: --zph
+  ! *Note* (historical note) This value was being read from an altered-format
+  ! dfile:absoru2 which was incompatible with the pfant executable. Therefore,
+  ! it has been assigned a default value and this command-line option was added
   real*8 :: config_zph = 12
-  !> option: --kik; affects subroutine flin_()
+  ! option: --kik; affects subroutine flin_()
   integer :: config_kik = 0
-  !> option: --amores
-  !> @note Default value taken from M.Trevisan's pfant12.R script
+  ! option: --amores
+  ! *Note* Default value taken from M.Trevisan's pfant12.R script
   logical :: config_amores = .true.
-  !> option: --kq
-  !> @note Default taken from M.Trevisan's pfant12.R script
+  ! option: --kq
+  ! *Note* Default taken from M.Trevisan's pfant12.R script
   integer :: config_kq = 1
 
   !---
   ! pfant-only
   !---
   character*64 :: &
-   config_fn_dissoc        = 'dissoc.dat',        & !< option: --fn_dissoc
-   config_fn_partit        = 'partit.dat',        & !< option: --fn_partit
-   config_fn_abonds        = 'abonds.dat',        & !< option: --fn_abonds
-   config_fn_atoms     = 'atoms.dat',     & !< option: --fn_atoms
-   config_fn_molecules     = 'molecules.dat',     & !< option: --fn_molecules
-   config_fn_lines         = 'lines.pfant',       & !< option: --fn_lines
-   config_fn_log           = 'log.log',           & !< option: --fn_log
-   config_flprefix         = '?'                    !< option: --flprefix
-  integer :: config_interp = 1  !< option: --interp
+   config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
+   config_fn_partit        = 'partit.dat',        & ! option: --fn_partit
+   config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
+   config_fn_atoms     = 'atoms.dat',     & ! option: --fn_atoms
+   config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
+   config_fn_lines         = 'lines.pfant',       & ! option: --fn_lines
+   config_fn_log           = 'log.log',           & ! option: --fn_log
+   config_flprefix         = '?'                    ! option: --flprefix
+  integer :: config_interp = 1  ! option: --interp
 
   !---
   ! nulbad-only
   !---
   logical :: &
-   config_flam = .false., &                      !< option: --flam
-   config_convol = .true.                        !< option: --convol
+   config_flam = .false., &                      ! option: --flam
+   config_convol = .true.                        ! option: --convol
   ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
   ! take values within dfile:main
   real*8 :: &
-   config_fwhm = -1, &               !< option: --fwhm
-   config_pat = -1                   !< option: --pat
+   config_fwhm = -1, &               ! option: --fwhm
+   config_pat = -1                   ! option: --pat
   character*64 :: &
-    config_fn_flux = '?', &         !< option: --fn_flux
-    config_fn_cv = '?'              !< option: --fn_cv
+    config_fn_flux = '?', &         ! option: --fn_flux
+    config_fn_cv = '?'              ! option: --fn_cv
 
-  real*8 :: config_zinf = -1        !< option: --zinf
+  real*8 :: config_zinf = -1        ! option: --zinf
   !===== end of command-line variables declarations
 
 
 
-  !> Unit to write to "explain" file (file containing debugging information)
+  ! Unit to write to "explain" file (file containing debugging information)
   integer, parameter :: UNIT_EXPLAIN = 145
 
 
@@ -590,18 +588,18 @@ module config
   !=====
   ! Command-line options definition
   !=====
-  !> List of command-line options
+  ! List of command-line options
   type(option), private :: options(MAX_NUM_OPTIONS)
-  !> Maximum valid index of the options variable
+  ! Maximum valid index of the options variable
   integer, private :: num_options = 0
 
   !=====
   ! Other stuff
   !=====
 
-  !> indentation string to be used in help text at will
+  ! indentation string to be used in help text at will
   character(3), private, parameter :: IND = '.. '
-  !> Message to be used in help text at will.
+  ! Message to be used in help text at will.
   character(:), private, parameter :: FROM_MAIN = ' (read from main configuration file)'
 
   private :: validate_options, &
@@ -610,9 +608,9 @@ module config
 contains
 
   !=======================================================================================
-  !> Initialization of this module
-  !>
-  !> @note Must be called *after* module-specific initialization
+  ! Initialization of this module
+  !
+  ! *Note* Must be called *after* module-specific initialization
 
   subroutine config_init()
     if (execonf_name .eq. '?') &
@@ -637,13 +635,13 @@ contains
 
 
   !=======================================================================================
-  !> Creates option and adds to options variable
-  !>
-  !> @note character arguments are declared with len=*, truncation may occur when
-  !> option structure is created.
+  ! Creates option and adds to options variable
+  !
+  ! *Note* character arguments are declared with len=*, truncation may occur when
+  ! option structure is created.
 
   subroutine add_option(ihpn, name, chr, has_arg, argname, default_, descr, appears)
-    character(len=*), intent(in) :: ihpn  !< initials of executables where option is valid
+    character(len=*), intent(in) :: ihpn  ! initials of executables where option is valid
     character(len=*), intent(in) :: name, argname, default_, descr
     character(len=1), intent(in) :: chr
     logical, intent(in) :: has_arg
@@ -667,21 +665,21 @@ contains
   end
 
   !=======================================================================================
-  !> Initialization of command-line options
-  !>
-  !> - initializes all options for all executables
-  !> - assertions to try to catch options initialization errors (e.g. repeated option(s))
-  !>
-  !> @note It is possible to break description lines using &lt;br&gt;
-  !>
-  !> @note To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
-  !> &lt;br&gt;
-  !>
-  !> @par Important:
-  !> If you add options here, you must change the config_NUM_OPTIONS constant
-  !> accordingly.
-  !>
-  !> @todo where to put the explanation on option text formatting
+  ! Initialization of command-line options
+  !
+  ! - initializes all options for all executables
+  ! - assertions to try to catch options initialization errors (e.g. repeated option(s))
+  !
+  ! *Note* It is possible to break description lines using &lt;br&gt;
+  !
+  ! *Note* To indent 2nd, 3rd etc. lines of a paragraph, use the @c IND constant after a
+  ! &lt;br&gt;
+  !
+  ! @par Important:
+  ! If you add options here, you must change the config_NUM_OPTIONS constant
+  ! accordingly.
+  !
+  ! TODO where to put the explanation on option text formatting
 
   subroutine init_options()
     ! Note that the order of calling add_option() doesn't matter for the program,
@@ -765,7 +763,7 @@ contains
     !
     ! pfant-only
     !
-    !> @todo Find names for each file and update options help
+    ! TODO Find names for each file and update options help
     call add_option('p', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
     call add_option('p', 'fn_partit',        ' ', .true., 'file name', config_fn_partit, &
@@ -828,12 +826,12 @@ contains
 
 
   !=======================================================================================
-  !> Handles single option
-  !>
-  !> @note Must be called by executable-specific option handler when the latter does not
-  !>       recognize the option.
-  !>
-  !> @note If finds "-h" or "--help", will display help text and halt.
+  ! Handles single option
+  !
+  ! *Note* Must be called by executable-specific option handler when the latter does not
+  !       recognize the option.
+  !
+  ! *Note* If finds "-h" or "--help", will display help text and halt.
 
   function handle_option(opt, o_arg) result(res)
     type(option), intent(in) :: opt
@@ -999,18 +997,18 @@ contains
 
   ! Nobody wants to use this
   ! !=======================================================================================
-  ! !> Concatenates config_wdir with specific filename: <working directory>/<filename>.
-  ! !> Result is clean of leading/trailling spaces
+  ! ! Concatenates config_wdir with specific filename: <working directory>/<filename>.
+  ! ! Result is clean of leading/trailling spaces
   !
   ! function join_with_wdir(filename) result(res)
-  !   character(len=*), intent(in) :: filename  !< File name
+  !   character(len=*), intent(in) :: filename  ! File name
   !   character(len=:), allocatable :: res
   !
   !   res = wdir_trim // trim(filename)
   ! end
 
   !=======================================================================================
-  !> logging routine: prints variable and assigned value
+  ! logging routine: prints variable and assigned value
 
   subroutine parse_aux_log_assignment(varname, value)
     character(*), intent(in) :: varname, value
@@ -1018,29 +1016,29 @@ contains
   end
 
   !=======================================================================================
-  !> Assigns option argument to filename variable
-  !>
-  !> @todo Filename validation could be added here.
+  ! Assigns option argument to filename variable
+  !
+  ! TODO Filename validation could be added here.
 
   subroutine parse_aux_assign_fn(arg, dest, varname)
-    character(len=*), intent(in)  :: arg !< command-line option argument
-    character(len=*), intent(out) :: dest!< One of config_fn_* variables
-    !> name of vairable being assigned, for logging purpose
+    character(len=*), intent(in)  :: arg ! command-line option argument
+    character(len=*), intent(out) :: dest! One of config_fn_* variables
+    ! name of vairable being assigned, for logging purpose
     character(len=*), intent(in) :: varname
     dest = arg
     call parse_aux_log_assignment(varname, arg)
   end
 
   !=======================================================================================
-  !> Converts string to integer, halting the program if conversion fails.
-  !>
-  !> This function takes an option as argument in order to form a comprehensible
-  !> error message if the conversion to integer fails.
+  ! Converts string to integer, halting the program if conversion fails.
+  !
+  ! This function takes an option as argument in order to form a comprehensible
+  ! error message if the conversion to integer fails.
 
   integer function parse_aux_str2int(opt, s)
-    !> Option, will be used only in case of error
+    ! Option, will be used only in case of error
     type(option), intent(in) :: opt
-    !> String to be converted to integer
+    ! String to be converted to integer
     character(len=*), intent(in) :: s
 
     read(s, *, err=20) parse_aux_str2int
@@ -1054,15 +1052,15 @@ contains
   end
 
   !=======================================================================================
-  !> Converts string to real*8, halting the program if conversion fails.
-  !>
-  !> This function takes an option as argument in order to form a comprehensible
-  !> error message if the conversion to real fails.
+  ! Converts string to real*8, halting the program if conversion fails.
+  !
+  ! This function takes an option as argument in order to form a comprehensible
+  ! error message if the conversion to real fails.
 
   real*8 function parse_aux_str2real8(opt, s)
-    !> Option, will be used only in case of error
+    ! Option, will be used only in case of error
     type(option), intent(in) :: opt
-    !> String to be converted to integer
+    ! String to be converted to integer
     character(len=*), intent(in) :: s
 
     read(s, *, err=20) parse_aux_str2real8
@@ -1076,15 +1074,15 @@ contains
   end
 
   !=======================================================================================
-  !> Converts string to real*4, halting the program if conversion fails.
-  !>
-  !> This function takes an option as argument in order to form a comprehensible
-  !> error message if the conversion to real fails.
+  ! Converts string to real*4, halting the program if conversion fails.
+  !
+  ! This function takes an option as argument in order to form a comprehensible
+  ! error message if the conversion to real fails.
 
   real*4 function parse_aux_str2real4(opt, s)
-    !> Option, will be used only in case of error
+    ! Option, will be used only in case of error
     type(option), intent(in) :: opt
-    !> String to be converted to integer
+    ! String to be converted to integer
     character(len=*), intent(in) :: s
 
     read(s, *, err=20) parse_aux_str2real4
@@ -1098,19 +1096,19 @@ contains
   end
 
   !=======================================================================================
-  !> Converts string to logical, halting the program if conversion fails.
-  !>
-  !> This function takes an option as argument in order to form a comprehensible
-  !> error message if the conversion to logical  fails.
-  !>
-  !> Please check the source code for recognized representations of a logical value.
-  !>
-  !> @note Conversion is case insensitive.
+  ! Converts string to logical, halting the program if conversion fails.
+  !
+  ! This function takes an option as argument in order to form a comprehensible
+  ! error message if the conversion to logical  fails.
+  !
+  ! Please check the source code for recognized representations of a logical value.
+  !
+  ! *Note* Conversion is case insensitive.
 
   logical function parse_aux_str2logical(opt, s)
-    !> Option, will be used only in case of error
+    ! Option, will be used only in case of error
     type(option), intent(in) :: opt
-    !> String to be converted to logical
+    ! String to be converted to logical
     character(len=*), intent(in) :: s
 
     select case (to_lower(s))
@@ -1137,9 +1135,9 @@ contains
 
 
   !=======================================================================================
-  !> Parses and validates all command-line arguments.
-  !>
-  !> @note If finds "-h" or "--help", will display help text and halt.
+  ! Parses and validates all command-line arguments.
+  !
+  ! *Note* If finds "-h" or "--help", will display help text and halt.
 
   subroutine parse_args()
     integer o_len, o_stat, o_remain, o_offset, o_index
@@ -1173,7 +1171,7 @@ contains
 
 
   !=======================================================================================
-  !> Returns whether or not the option is applicable to the executable running.
+  ! Returns whether or not the option is applicable to the executable running.
 
   logical function exe_wants(opt) result(res)
     type(option), intent(in) :: opt
@@ -1184,10 +1182,10 @@ contains
   end
 
   !=======================================================================================
-  !> Writes help to particular unit
+  ! Writes help to particular unit
 
   subroutine show_help(unit)
-    !> logical unit number, e.g., 6=screen
+    ! logical unit number, e.g., 6=screen
     integer, intent(in) :: unit
 
     integer i
@@ -1207,10 +1205,10 @@ contains
   end
 
   !=======================================================================================
-  !> Performs a series of checks to avoid programming errors while defining the
-  !> command-line options
-  !>
-  !> This subroutine must be called at the end of the init_options() of a config module
+  ! Performs a series of checks to avoid programming errors while defining the
+  ! command-line options
+  !
+  ! This subroutine must be called at the end of the init_options() of a config module
 
   subroutine validate_options()
     integer i, j

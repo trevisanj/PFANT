@@ -5,7 +5,7 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
-           "style_checkboxes"]
+           "style_checkboxes", "DESCR_MULTI"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -51,6 +51,30 @@ observed spectrum acquired out of the center of the star disk.
     <li>True: 7-point integration
     <li>False: 6- or 26-point integration, depending on option --kik
 </ul>"""
+
+DESCR_MULTI = """
+Runs pfant for different abundances for each element, then run nulbad for each
+pfant result for different FWHMs.
+
+The configuration is read from a .py file.
+
+The user must specify a list of FWHM values for nulbad convolutions, and
+a dictionary containing element symbols and respective list containing n_abdif
+differential abundances to be used for each element.
+
+pfant will be run n_abdif times, each time adding to each element in ab the i-th
+value in the vector for the corresponding element.
+
+nulbad will run n_abdif*n_fwhms times, where n_fwhms is the number of different
+FWHMs specified.
+
+The result will be
+- several spectra saved as  "<star name><pfant name or counter>.sp"
+- several "spectra list" files saved as "cv_<FWHM>.spl". As the file indicates,
+  each ".spl" file will have the names of the spectrum files for a specific FWHM.
+  .spl files are subject to input for lineplot.py by E.Cantelli
+"""
+
 
 
 # Standard font to be use   d in all GUIs

@@ -16,14 +16,14 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Math routines used in hydro2_calc.f90 + MAX_* declarations
-!>
-!> @note Arrays passed to routines now have assumed-shape declarations + assertions against
-!> access beyond boundaries.
-!>
-!> @todo Routines that have the size of arrays passed to them now have assertions. This may
-!> slow down the calculations (depending on the number of calls to given routine)
-!> and may be subject to re-visit.
+! Math routines used in hydro2_calc.f90 + MAX_* declarations
+!
+! *Note* Arrays passed to routines now have assumed-shape declarations + assertions against
+! access beyond boundaries.
+!
+! TODO Routines that have the size of arrays passed to them now have assertions. This may
+! slow down the calculations (depending on the number of calls to given routine)
+! and may be subject to re-visit.
 
 module hydro2_math
   use misc_math
@@ -38,17 +38,17 @@ module hydro2_math
   ! these vectors
   integer, parameter :: MAX_MODIF_IH = 220
 
-  !> Maximum possible value for hjen() ii argument
+  ! Maximum possible value for hjen() ii argument
   integer, parameter :: MAX_MODIF_II = 300
 
 
 contains
   !=======================================================================================
-  !>  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
+  !  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
 
   subroutine hjen(a,vh,del,phi,ii)
     real*8, intent(in) :: a, vh(:), del
-    integer, intent(in) :: ii !< Length of vh and phi vectors
+    integer, intent(in) :: ii ! Length of vh and phi vectors
     real*8, intent(out) :: phi(:)
 
     real*8 :: v1(43),v2(43)
@@ -114,12 +114,12 @@ contains
 
 
   !=======================================================================================
-  !> ?doc?
-  !>
-  !> Output: t
+  ! ?doc?
+  !
+  ! Output: t
 
   subroutine malt(th, u, beta, gam, t, iii)
-    integer, intent(in) :: iii !< maximum valid index of th and u
+    integer, intent(in) :: iii ! maximum valid index of th and u
     real*8, intent(in), dimension(:) :: th, u
     real*8, intent(in) :: beta, gam
     real*8, intent(out) :: t
@@ -213,14 +213,14 @@ contains
     t = t1+t2+tb
 
   contains
-    !> ?doc?
+    ! ?doc?
 
     real*8 function f_as(vu_)
       real*8, intent(in) :: vu_
       f_as = to_*gam/(gam**2+(beta-vu_)**2)
     end
 
-    !> ?doc?
+    ! ?doc?
 
     real*8 function f_ta(x)
       real*8, intent(in) :: x
@@ -244,24 +244,24 @@ contains
 
 
   !=======================================================================================
-  !> INTERPOLATION PARABOLIQUE
-  !>  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
-  !>  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
-  !>
-  !>  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
-  !>
-  !> @note This routine is extremely similar to misc_math::ft2()
+  ! INTERPOLATION PARABOLIQUE
+  !  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
+  !  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
+  !
+  !  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
+  !
+  ! *Note* This routine is extremely similar to misc_math::ft2()
 
   subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
     integer, intent(in) :: &
-     n, & !< Last valid element of vectors x and y
-     itot !< Size valid element of vectors tt and ftt
+     n, & ! Last valid element of vectors x and y
+     itot ! Size valid element of vectors tt and ftt
     real*8, intent(in) :: &
-     x(:),     & !< ?doc?
-     y(:),     & !< ?doc?
-     tt(:)    !< ?doc?
+     x(:),     & ! ?doc?
+     y(:),     & ! ?doc?
+     tt(:)    ! ?doc?
     real*8, intent(out) :: &
-     ftt(:)   !< ?doc?
+     ftt(:)   ! ?doc?
     real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
     integer i, inv, j, k
     real*8 dxa, dxz, xx1, xxn
@@ -289,8 +289,8 @@ contains
         i=j
         if (t-x(j)) 3, 2, 1
       1 continue
-      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
-               !> seems it is overriding something that should give an error
+      go to 3  ! ISSUE differs from ft2() above (should be go to 10?),
+               ! seems it is overriding something that should give an error
 
       6 continue
       if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
@@ -298,8 +298,8 @@ contains
         i = j
         if (t-x(j)) 7,2,3
       7 continue
-      go to 3  !> @todo ISSUE differs from ft2() above (should be go to 10?),
-               !> seems it is overriding something that should give an error
+      go to 3  ! ISSUE differs from ft2() above (should be go to 10?),
+               ! seems it is overriding something that should give an error
 
       2 continue
       ft=y(j)
@@ -338,9 +338,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Declaration and initialization of x_* variables
-!>
-!> These variable values may come either from dfile:main or command-line options.
+! Declaration and initialization of x_* variables
+!
+! These variable values may come either from dfile:main or command-line options.
 
 module hydro2_x
   use logging
@@ -350,7 +350,7 @@ module hydro2_x
 
   real*8 :: x_llzero, x_llfin
 
-contains!> Initializes x_* variables
+contains! Initializes x_* variables
 
   subroutine hydro2_init_x()
 
@@ -378,9 +378,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Hydro2 main calculation
-!>
-!> (si modeles_tit va bien modeles_tiabs du modele = absoru2_titre de absoru)
+! Hydro2 main calculation
+!
+! (si modeles_tit va bien modeles_tiabs du modele = absoru2_titre de absoru)
 
 module hydro2_calc
   use logging
@@ -409,18 +409,18 @@ module hydro2_calc
   ! Hard-wired configuration
   !=====
 
-  integer, parameter :: LL = 2 !< OPTION DANS RAIEHU (old "IX"). If 1, sets m_jmax=1
-  integer, parameter :: J1 = 0 !< OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
+  integer, parameter :: LL = 2 ! OPTION DANS RAIEHU (old "IX"). If 1, sets m_jmax=1
+  integer, parameter :: J1 = 0 ! OPTION DANS RAIEHU (CONVOLUTION STARK-DOPPLER)
 
-  !> ?doc? configuration option
+  ! ?doc? configuration option
   logical, parameter :: IS_STARK = .TRUE.
 
 
   ! MASSE ET CHARGE DE L ATOME D HYDROGENE
-  !> ?doc?
-  !> Hydrogen mass?
+  ! ?doc?
+  ! Hydrogen mass?
   real*8, parameter :: CMU = 1.
-  !> Hydrogen charge?
+  ! Hydrogen charge?
   integer, parameter :: NZ = 1
 
 
@@ -429,13 +429,13 @@ module hydro2_calc
   ! p_* variables, shared between at least 2 of these: hydro2(), raiehu() and ameru()
   !=====
 
-  !> ?doc?
-  !>
-  !> @todo Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
-  !> gotta add parameter to absoru_data.f and absoru.f90
+  ! ?doc?
+  !
+  ! TODO Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
+  ! gotta add parameter to absoru_data.f and absoru.f90
   integer :: m_jmax = 46
 
-  !> POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
+  ! POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
   real*8 m_dlam(MAX_FILETOH_JMAX)
 
   data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
@@ -445,11 +445,11 @@ module hydro2_calc
 
 
 
-  integer, parameter :: IQM = 9  !< Apparently, (the number of discontinuities within m_dlam)
-  !< NUMEROS DES DISCONTINUITES DANS LES m_dlam
+  integer, parameter :: IQM = 9  ! Apparently, (the number of discontinuities within m_dlam)
+  ! NUMEROS DES DISCONTINUITES DANS LES m_dlam
   integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
 
-  !> This information is passed to hydro2_calc_() and copied into m_th
+  ! This information is passed to hydro2_calc_() and copied into m_th
   type(hmap_row) :: m_th
 
 
@@ -464,15 +464,15 @@ module hydro2_calc
   ! Variables that were unitialized, filling them with zeroes
   !=====
 
-  !> Maximum value for na/nb (superior/inferior level)
+  ! Maximum value for na/nb (superior/inferior level)
   integer, parameter :: MAX_LEVEL = 20
 
-  !> ?doc? (note: this was uninitialized, has been initialized to zero)
+  ! ?doc? (note: this was uninitialized, has been initialized to zero)
   real*8, parameter :: C(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
 
-  !> ?doc? (note: this was uninitialized, has been initialized to zero)
+  ! ?doc? (note: this was uninitialized, has been initialized to zero)
   integer :: nbmin = 0
-  !> ?doc? (note: this was uninitialized, has been initialized to zero)
+  ! ?doc? (note: this was uninitialized, has been initialized to zero)
   integer :: nbmax = 0
 
 contains
@@ -484,7 +484,7 @@ contains
   !
 
   subroutine hydro2_calc_(arg_th)
-    !> Hydrogen line specification
+    ! Hydrogen line specification
     type(hmap_row), intent(in) :: arg_th
 
     ! Enabled/disables lots of log_info() calls.
@@ -568,7 +568,7 @@ contains
     call log_debug(lll)
 
     do i = 1,modeles_ntot
-      !> @todo I probably changed the parameters of this routine
+      ! TODO I probably changed the parameters of this routine
       call absoru_(m_th%clam,modeles_teta(i),m_pelog(i),1,1,1,1,2,.true.)
       m_toth(i) = absoru_toc
       m_kc(i) = absoru_totkap(1)
@@ -689,20 +689,20 @@ contains
   ! #     # #     # #     # #    ##  #  #     #
   ! #     # ######  ####### #     # ### #######
 
-  !> Calcule l'abondance des elements en tenant compte
-  !> d'une eventuelle surabondance des elements alfa
-  !>
-  !> On entre avec les valeurs lues par lectur, le coef de deficience
-  !> et la surabondance des alfa on en deduit les abondances des
-  !> differents elements intervenant dans l'ionisation ZP et ABMET
-  !> l'abondance des elements lourds pour 1at d'H
-  !> Les elements alfa sont reconnus par leur masse
-  !>
-  !> @warning This routine overwrites variables absoru2_zp absoru2_abmet,
-  !>          which are initially read from dfile:absoru2
+  ! Calcule l'abondance des elements en tenant compte
+  ! d'une eventuelle surabondance des elements alfa
+  !
+  ! On entre avec les valeurs lues par lectur, le coef de deficience
+  ! et la surabondance des alfa on en deduit les abondances des
+  ! differents elements intervenant dans l'ionisation ZP et ABMET
+  ! l'abondance des elements lourds pour 1at d'H
+  ! Les elements alfa sont reconnus par leur masse
+  !
+  ! @warning This routine overwrites variables absoru2_zp absoru2_abmet,
+  !          which are initially read from dfile:absoru2
 
   SUBROUTINE abonio()
-    !> nbre d'elements alfa reconnus par leur masse ALFAM
+    ! nbre d'elements alfa reconnus par leur masse ALFAM
     integer, parameter :: NALF = 7
     real*8, parameter :: ALFAM(NALF) = (/16.,20.2,24.3,27.,28.,32.,40./)
 
@@ -757,16 +757,16 @@ contains
   ! #    #  #     #  #  #       #     # #     #
   ! #     # #     # ### ####### #     #  #####
 
-  !> L EST LE COEFFICIENT D'ABSORPTION PAR PARTICULE ABSORBANTE
-  !>
-  !> LL=1,CALCUL EN UN POINT SPECIFIE PAR SA LONGUEUR D'ONDE
-  !> SI DANS CE CAS,J1=2 ON SOMME LES COEFF. D'ABSORPTION DE PLUSIEURS
-  !> RAIES D'UNE MEME SERIE
-  !> LL=2,CALCUL EN UN OU PLUSIEURS POINTS SPECIFIES PAR DELTA LAMBDA
-  !>
-  !> SI DANS CE CAS,J1=1,LA CONVOLUTION FINALE EST SAUTEE.
-  !>
-  !> config_kq=1, CALCUL D UN PROFIL PUREMEMT QUASISTATIQUE POUR IONS + ELETRO
+  ! L EST LE COEFFICIENT D'ABSORPTION PAR PARTICULE ABSORBANTE
+  !
+  ! LL=1,CALCUL EN UN POINT SPECIFIE PAR SA LONGUEUR D'ONDE
+  ! SI DANS CE CAS,J1=2 ON SOMME LES COEFF. D'ABSORPTION DE PLUSIEURS
+  ! RAIES D'UNE MEME SERIE
+  ! LL=2,CALCUL EN UN OU PLUSIEURS POINTS SPECIFIES PAR DELTA LAMBDA
+  !
+  ! SI DANS CE CAS,J1=1,LA CONVOLUTION FINALE EST SAUTEE.
+  !
+  ! config_kq=1, CALCUL D UN PROFIL PUREMEMT QUASISTATIQUE POUR IONS + ELETRO
 
   subroutine raiehu()
 
@@ -906,7 +906,7 @@ contains
     15 k = 1
     ibou = 1
 
-    !> @todo issue nb being overwritten even before being used elsewhere
+    ! ISSUE nb being overwritten even before being used elsewhere
     m_th%nb = nb1
 
     !
@@ -917,13 +917,13 @@ contains
     xbdp = dble(xb)
     delta = dabs(m_th%clam-xbdp)
 
-    !> @todo issue c1 being overwritten even before being used elsewhere
-    !>
-    !> @todo issue c being used but nothing was ever assigned to this variable
-    !>
+    ! ISSUE c1 being overwritten even before being used elsewhere
+    !
+    ! ISSUE c being used but nothing was ever assigned to this variable. There are several variables in the same situation.
+    !
     m_th%c1 = c(m_th%nb)
 
-    !> @todo issue overwriting data vector???
+    ! ISSUE overwriting data vector???
     m_dlam(1) = delta
 
     cl2 = xb**2
@@ -1472,11 +1472,11 @@ contains
 
 
     !---------------------------------------------------------------------------------------
-    !> CONVOLUTION AVEC H(A,V),INTEGRATION PAR SIMPSON
-    !>
-    !> Contained inside raiehu() to share variables modif_*
-    !>
-    !> Calculates variable resc
+    ! CONVOLUTION AVEC H(A,V),INTEGRATION PAR SIMPSON
+    !
+    ! Contained inside raiehu() to share variables modif_*
+    !
+    ! Calculates variable resc
 
     subroutine conv4()
       integer, parameter :: N(6) = (/11,21,23,171,191,211/)
@@ -1541,10 +1541,10 @@ contains
 
 
     !---------------------------------------------------------------------------------------
-    !> PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
-    !> VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
-    !>
-    !> Result goes in variable ris
+    ! PRODUIT DE CONVOLUTION POUR LE CAS OU LE PROFIL STARK VARIE PLUS
+    ! VITE QUE LE PROFIL DOPPLER. INTEGRATION PAR SIMPSON
+    !
+    ! Result goes in variable ris
 
     subroutine conv2(j)
       integer, intent(in) :: j
@@ -1596,9 +1596,9 @@ contains
     end
 
     !-------------------------------------------------------------------------------------
-    !> NORMALISATION DU PROFIL DE STARK,INTEGRATION PAR SIMPSON
-    !>
-    !> Result goes in ax
+    ! NORMALISATION DU PROFIL DE STARK,INTEGRATION PAR SIMPSON
+    !
+    ! Result goes in ax
 
     subroutine pronor()
       real*8 :: h(IQM), anor, s, sig, som
@@ -1638,9 +1638,9 @@ contains
     end
 
     !-------------------------------------------------------------------------------------
-    !> PRODUIT DE CONVOLUTION EFFECTUE PAR GAUSS HERMITE (N=2)
-    !>
-    !> Results goes in variable ris
+    ! PRODUIT DE CONVOLUTION EFFECTUE PAR GAUSS HERMITE (N=2)
+    !
+    ! Results goes in variable ris
 
 
     subroutine conf(j)
@@ -1689,10 +1689,10 @@ contains
   ! #     # #     # #       #    #  #     #
   ! #     # #     # ####### #     #  #####
 
-  !> CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION
-  !> EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR
-  !> DANS LE MODELE,LAMB=LONGUEUR D'ONDE
-  !>
+  ! CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION
+  ! EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR
+  ! DANS LE MODELE,LAMB=LONGUEUR D'ONDE
+  !
 
   subroutine ameru()
     real*8, parameter :: CTE = 3.972257e+8, C1_ = 2.8546e+4
@@ -1779,10 +1779,10 @@ contains
   contains
 
     !-------------------------------------------------------------------------------------
-    !> INTERPOLATION DANS UN TABLEAU A DOUBLE ENTREE NOTE TAB
-    !>
-    !> TET=TABLE DE LA VARIABLE LIGNE.  ALP=TABLE DE LA VARIABLE COLONNE.
-    !> RESULTAT=VALEUR DE LA FONCTION POUR LES ENTREES X ET Y
+    ! INTERPOLATION DANS UN TABLEAU A DOUBLE ENTREE NOTE TAB
+    !
+    ! TET=TABLE DE LA VARIABLE LIGNE.  ALP=TABLE DE LA VARIABLE COLONNE.
+    ! RESULTAT=VALEUR DE LA FONCTION POUR LES ENTREES X ET Y
 
     real*8 function pipe(x,y)
       real*8, intent(in) :: x, y
@@ -1857,12 +1857,12 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL.
-  !> modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.m_kc COEFFT D'ABSORPTION
-  !> PAR NOYAU D'HYDROGENE.
-  !>
-  !>
-  !> Output goes
+  ! CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL.
+  ! modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.m_kc COEFFT D'ABSORPTION
+  ! PAR NOYAU D'HYDROGENE.
+  !
+  !
+  ! Output goes
 
   subroutine optic1()
     m_tauc(0)=0.
@@ -1873,11 +1873,11 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> Calculates m_fl and m_fc
-  !>
-  !> Similar to routines in flin.f90
-  !>
-  !>
+  ! Calculates m_fl and m_fc
+  !
+  ! Similar to routines in flin.f90
+  !
+  !
 
 
   subroutine fluxis(fl, fc)
@@ -1958,41 +1958,41 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Program to create files such as thalpha, thbeta etc -- matrices of (#layer)x(lambda) data
-!>
-!> The hydrogen lines files to be created are determined by overlapping a [llzero, llfin] interval with
-!> wavelengths listed in dfile:hmap. Here is a sample hmap.dat file:
-!>
-!> @code
-!> # filename / niv inf / niv sup / central lambda / kiex / c1
-!> thalpha   2 3 6562.817 10.199 2442.326
-!> thbeta    2 4 4861.342 10.199 249.628
-!> thgamma   2 5 4340.475 10.199 74.4776
-!> thdelta   2 6 4101.742 10.199 32.8903
-!> thepsilon 2 7 3970.070 10.199 17.72642
-!> @endcode
-!>
-!> or the parameters for a single file can be passed by command-line arguments. Run hydro2 --help for details.
-!>
-!> @verbatim
-!> HYD2
-!>
-!> MEUDON OBSERVATORY
-!>
-!> CALCUL DU PROFIL D UNE RAIE DE L HYDROGENE
-!>
-!> CE PROGRAMME A ETE ECRIT PAR F. PRADERIE (ANN D AP 1967)
-!> TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
-!> G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
-!> @endverbatim
-!>
-!> En sortie:
-!> @li Un fichier de trace compatible avec GRAFIC (Nom demande)
-!>
-!> (JT) Now the velocity of microturbulence may vary with atmospheric depth;
-!> uses dfile:main and subroutine turbul_(), same as pfant
-!>
-!> @endverbatim
+! Program to create files such as thalpha, thbeta etc -- matrices of (#layer)x(lambda) data
+!
+! The hydrogen lines files to be created are determined by overlapping a [llzero, llfin] interval with
+! wavelengths listed in dfile:hmap. Here is a sample hmap.dat file:
+!
+! @code
+! # filename / niv inf / niv sup / central lambda / kiex / c1
+! thalpha   2 3 6562.817 10.199 2442.326
+! thbeta    2 4 4861.342 10.199 249.628
+! thgamma   2 5 4340.475 10.199 74.4776
+! thdelta   2 6 4101.742 10.199 32.8903
+! thepsilon 2 7 3970.070 10.199 17.72642
+! @endcode
+!
+! or the parameters for a single file can be passed by command-line arguments. Run hydro2 --help for details.
+!
+! 
+! HYD2
+!
+! MEUDON OBSERVATORY
+!
+! CALCUL DU PROFIL D UNE RAIE DE L HYDROGENE
+!
+! CE PROGRAMME A ETE ECRIT PAR F. PRADERIE (ANN D AP 1967)
+! TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
+! G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
+! 
+!
+! En sortie:
+!   - Un fichier de trace compatible avec GRAFIC (Nom demande)
+!
+! (JT) Now the velocity of microturbulence may vary with atmospheric depth;
+! uses dfile:main and subroutine turbul_(), same as pfant
+!
+! 
 
 program hydro2
   use config

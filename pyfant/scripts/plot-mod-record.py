@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Plots one record of a binary .mod file (e.g., modeles.mod, newnewm050.mod)
+Plots one record of a binary .mod file (e.g., modeles.mod, newnewm050.mod).
 """
 
 import argparse

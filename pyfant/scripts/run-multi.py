@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Runs pfant for different abundances for each element, then run nulbad for each pfant result for different FWHMs.
+(OBSOLETE, use x.py) Runs pfant for different abundances for each element, then run nulbad for each pfant result for different FWHMs.
 
 The configuration is read from a .py file.
 

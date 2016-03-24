@@ -16,18 +16,18 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Equilibre dissociatif
-!>
-!> This module contains subroutine sat4(), which calculates the sat4_* variables
-!> used by other modules.
-!>
-!> Prefixes:
-!> @li sat4_ -- variables calculated by sat4() (or indirectly, die())
-!>
-!> @todo plot the sat4_*
+! Equilibre dissociatif
+!
+! This module contains subroutine sat4(), which calculates the sat4_* variables
+! used by other modules.
+!
+! Prefixes:
+!   - sat4_ -- variables calculated by sat4() (or indirectly, die())
+!
+! TODO plot the sat4_*
 
 !
-!> @todo consider eliminating the +-20 angstrom from calculations
+! TODO consider eliminating the +-20 angstrom from calculations
 
 module dissoc
   use config
@@ -36,22 +36,24 @@ module dissoc
 
   ! They will be pointer targets at molecules::point_ppa_pb()
   real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
-   sat4_pph,  & !< pressure: hydrogen ?doc?
-   sat4_ppc2, & !< pressure: 12carbon ?doc?
-   sat4_pn,   & !< pressure: nytrogen ?doc?
-   sat4_pc13, & !< pressure: 13carbon ?doc?
-   sat4_pmg,  & !< pressure: magnesium ?doc?
-   sat4_po,   & !< pressure: oxygen ?doc?
-   sat4_pti,  & !< pressure: titanium ?doc?
-   sat4_pfe     !< pressure: iron ?doc?
+   sat4_pph,  & ! pressure: hydrogen ?doc?
+   sat4_ppc2, & ! pressure: 12carbon ?doc?
+   sat4_pn,   & ! pressure: nytrogen ?doc?
+   sat4_pc13, & ! pressure: 13carbon ?doc?
+   sat4_pmg,  & ! pressure: magnesium ?doc?
+   sat4_po,   & ! pressure: oxygen ?doc?
+   sat4_pti,  & ! pressure: titanium ?doc?
+   sat4_pfe     ! pressure: iron ?doc?
 
   private :: die ! private subroutine
 
   integer, private, parameter :: &
-   Z_ELECTRON = 99,  &  !< Fictitious atomic number of electron
-   Z_H_STAR   = 100, &  !< Fictitious atomic number of "H*"
-   Z_H        = 1,   &  !< Atomic number of Hydrogen
-   Z_HE       = 2       !< Atomic number of Helium
+   Z_ELECTRON = 99,  &  ! Fictional atomic number of electron.
+                        ! *Note*: this is OK, Z=99 will never be used as a physical element
+   Z_H_STAR   = 100, &  ! Fictional atomic number of "H*"
+                        ! *Note*: this is OK, Z=99 will never be used as a physical element   
+   Z_H        = 1,   &  ! Atomic number of Hydrogen
+   Z_HE       = 2       ! Atomic number of Helium
 
   ! Note that indexes of these arrays are atomic numbers
   ! For example: m_ip(z) contains information related to atomic number z
@@ -67,13 +69,13 @@ module dissoc
    m_ppmol, & ! ?doc?
    m_apmlog   ! ?doc?
 
-  real*8, private :: m_pe !< Fictitious pressure of electron ?doc?
+  real*8, private :: m_pe ! Fictitious pressure of electron ?doc?
 
-  real*8, private, parameter :: ECONST = 4.342945e-1 !< ?doc?
+  real*8, private, parameter :: ECONST = 4.342945e-1 ! ?doc?
 contains
 
   !=======================================================================================
-  !> Subroutine d'equilibre dissociatif
+  ! Subroutine d'equilibre dissociatif
 
   subroutine sat4()
     real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
@@ -117,7 +119,6 @@ contains
       m_p(nelemi) = 1.0e-20
     1400 continue
 
-    !> @todo issue ?doc? if atomic number 99 was already in dissoc.dat?
     m_p(Z_ELECTRON) = 1.0e-10
 
     !
@@ -149,7 +150,8 @@ contains
       do 1184 i=1,dissoc_nmetal
         nelemi = dissoc_nelemx(i)
 
-        !> @todo issue is it OK to avoid log(0) by adding 1e-30 here??? (MT): m_p,m_kp=0 should be avoided.
+        ! *Note* 1e-30 added to terms to avoid log(0)
+        !        (MT): m_p,m_kp=0 should be avoided.
         plog   = log10(m_p(nelemi)+1.0e-30)
         kplog  = log10(m_kp(nelemi)+1.0e-30)
         pionl  = plog + kplog - pelog
@@ -239,7 +241,7 @@ contains
       1084 continue
     1020 continue
 
-    !!_logging__
+    !_logging__
     !do i=1,4
     !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
     !end do
@@ -276,11 +278,11 @@ contains
 
 
   !=======================================================================================
-  !> DIE9 ?what?
+  ! DIE9 ?what?
 
   subroutine die(tem, pg)
-    real*8, intent(in) :: tem, & !< ?doc?
-     pg !< ?doc?
+    real*8, intent(in) :: tem, & ! ?doc?
+     pg ! ?doc?
     real*8, dimension(MAX_DISSOC_Z) :: fx, dfx, z, prev
     real*8, dimension(MAX_DISSOC_NMETAL) :: wa
     real*8 aplogj, atomj, delta, df, dhh, EPSDIE, &
@@ -375,9 +377,9 @@ contains
     pph = sqrt(hkp *ph)
     fph = ph+2.0*phh+pph
 
-    !> @todo ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
-    !> THe current dissoc.dat has no Z=100 (neither 99).
-    !> Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
+    ! ISSUE Z=100 within dissoc.dat is only possible at the metals part (at the molecules part the Z slots have only 2 digits).
+    ! THe current dissoc.dat has no Z=100 (neither 99).
+    ! Is this a remaining fragment of code? My hint comes from the fact that Z_ELECTRON=99 is addressed several times, but Z_H_STAR=100 is not.
     m_p(Z_H_STAR) = pph
 
 
@@ -396,15 +398,16 @@ contains
 
     1401 continue
     do 1403 i=1,dissoc_nmetal
-      !> @todo ISSUE: what if some NELEMI=Z_ELECTRON=99? THen m_p(99) will no longer be equal to m_pe
+      ! ISSUE: what if some NELEMI=Z_ELECTRON=99? THen m_p(99) will no longer be equal to m_pe
       nelemi=dissoc_nelemx(i)
       m_p(nelemi) = m_fp(nelemi)*exp(-5.0*t/ECONST)
     1403 continue
-    m_p(Z_H) = ph   !> @todo ISSUE: overwriting m_p(1)
+    m_p(Z_H) = ph   ! ISSUE: overwriting m_p(1)
 
     ! Update: kept as-was
-    ! !> @note m_p was being divided by 100 over and over at each j (molecule). This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
-    ! !> @todo issue ask blb being divided by 100 is still an issue
+    ! *Note* m_p was being divided by 100 over and over at each j (molecule).
+    ! This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
+    ! ISSUE ask blb being divided by 100 is still an issue
     ! do m =1,MAX_DISSOC_Z
     !   m_p(m)=1.0e-2*m_p(m)
     ! end do
@@ -416,7 +419,7 @@ contains
     1040 continue
     do 1030 i =1,dissoc_nmetal
       nelemi = dissoc_nelemx(i)
-      fx(nelemi) = -m_fp(nelemi)+m_p(nelemi)*(1.0 + m_kp(nelemi)/m_pe)  !> @todo ISSUE if NELEMI=99, m_p(99) and m_pe are potentially not the same thing! Is this alright?
+      fx(nelemi) = -m_fp(nelemi)+m_p(nelemi)*(1.0 + m_kp(nelemi)/m_pe)  ! ISSUE if NELEMI=99, m_p(99) and m_pe are potentially not the same thing! Is this alright?
       dfx(nelemi) = 1.0 + m_kp(nelemi)/m_pe
     1030 continue
 
@@ -427,7 +430,7 @@ contains
       do 1042 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
-        !> @todo log(m_p()) called many times, should try to optimize
+        ! TODO log(m_p()) called many times, should try to optimize
         pmoljl = pmoljl + float(natomj)*log10(m_p(nelemj))
       1042 continue
 
@@ -451,7 +454,7 @@ contains
         natomj = dissoc_natom(m,j)
         atomj = float(natomj)
 
-        if (nelemj .eq. Z_ELECTRON) then  !> @todo ISSUE This bit suggests that Z=99 is allowed in the molecules part
+        if (nelemj .eq. Z_ELECTRON) then  ! ISSUE This bit suggests that Z=99 is allowed in the molecules part
           spnion = spnion + pmolj
         end if
 
@@ -530,11 +533,11 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Contains subroutines filter_molecules() and filter_atoms()
-!>
-!> Prefixes:
-!> @li km_f_ -- calculated by filter_molecules()
-!> @li atoms_f_ -- calculated by filter_atoms()
+! Contains subroutines filter_molecules() and filter_atoms()
+!
+! Prefixes:
+!   - km_f_ -- calculated by filter_molecules()
+!   - atoms_f_ -- calculated by filter_atoms()
 
 module filters
   use molecules_idxs
@@ -544,9 +547,9 @@ module filters
   implicit none
 
 
-  !> Analogue to atoms_zinf
-  !> All molecular lines will be calculated until this value (angstrom) to the
-  !> left and to the right of the line centre.
+  ! Analogue to atoms_zinf
+  ! All molecular lines will be calculated until this value (angstrom) to the
+  ! left and to the right of the line centre.
   real*8, parameter :: KM_ALARGM = 0.1
 
   !=====
@@ -557,22 +560,22 @@ module filters
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_f_lmbdam, & !< ?doc?
-    km_f_sj,     & !< ?doc?
-    km_f_jj,     & !< ?doc?
-    km_f_mm        !< Replicates km_mm(molidx) for all selected lines of molecule molidx.
-                   !< Redundant information but simplifies use. Used in synthesis::selekfh()
+    km_f_lmbdam, & ! ?doc?
+    km_f_sj,     & ! ?doc?
+    km_f_jj,     & ! ?doc?
+    km_f_mm        ! Replicates km_mm(molidx) for all selected lines of molecule molidx.
+                   ! Redundant information but simplifies use. Used in synthesis::selekfh()
 
   !------
   ! These two arrays contain indexes pointing at km_f_lmbdam, km_f_sj, km_f_jj, km_f_mm
   !------
 
-  !> Contains the index of the last line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
-  !> **for the current molecule** I_MOL
-  !>
-  !> Augmented: first row is 0 (ZERO) or repeats last element of previous column
-  !>
-  !> km_f_ln(i+1, j) represents to i-th transition of j-th molecule, 1=1,molidxs%n_on
+  ! Contains the index of the last line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
+  ! **for the current molecule** I_MOL
+  !
+  ! Augmented: first row is 0 (ZERO) or repeats last element of previous column
+  !
+  ! km_f_ln(i+1, j) represents to i-th transition of j-th molecule, 1=1,molidxs%n_on
   integer :: km_f_ln(MAX_NV_PER_MOL+1, NUM_MOL)
 
   !=====
@@ -583,33 +586,33 @@ module filters
   ! Very similar to above; differences are
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
-  integer atoms_f_nblend !< ?doc?
-  character*2 atoms_f_elem(MAX_ATOMS_F_NBLEND) !< atomic symbol (right-alignes, uppercase)
+  integer atoms_f_nblend ! ?doc?
+  character*2 atoms_f_elem(MAX_ATOMS_F_NBLEND) ! atomic symbol (right-alignes, uppercase)
   integer, dimension(MAX_ATOMS_F_NBLEND) :: &
-   atoms_f_ioni !< ?doc?
+   atoms_f_ioni ! ?doc?
   real*8, dimension(MAX_ATOMS_NBLEND) :: &
-   atoms_f_lambda,       & !< ?doc?
-   atoms_f_kiex,         & !< ?doc?
-   atoms_f_algf,         & !< ?doc?
-   atoms_f_ch,           & !< ?doc?
-   atoms_f_gr,           & !< ?doc?
-   atoms_f_ge,           & !< ?doc?
-   atoms_f_zinf,         & !< ?doc?
-   atoms_f_abondr_dummy, & !< ?doc?
-   atoms_f_gf,           & !< ?doc?
-   atoms_f_abonds_abo      !< ?doc?
+   atoms_f_lambda,       & ! ?doc?
+   atoms_f_kiex,         & ! ?doc?
+   atoms_f_algf,         & ! ?doc?
+   atoms_f_ch,           & ! ?doc?
+   atoms_f_gr,           & ! ?doc?
+   atoms_f_ge,           & ! ?doc?
+   atoms_f_zinf,         & ! ?doc?
+   atoms_f_abondr_dummy, & ! ?doc?
+   atoms_f_gf,           & ! ?doc?
+   atoms_f_abonds_abo      ! ?doc?
 
 contains
 
   !=======================================================================================
-  !> Sweeps km_* to populate a few km_f_* depending on the interval lzero-lfin
-  !>
-  !> @todo test
+  ! Sweeps km_* to populate a few km_f_* depending on the interval lzero-lfin
+  !
+  ! TODO test
 
   subroutine filter_molecules(lzero, lfin)
-    !> Lower edge of wavelength interval
+    ! Lower edge of wavelength interval
     real*8, intent(in) :: lzero
-    !> Upper edge of wavelength interval
+    ! Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     real*8 :: lambda
     integer molidx,          &  ! Counts molecule id, from 1 to NUM_MOL
@@ -694,14 +697,14 @@ contains
 
 
   !=======================================================================================
-  !> Selects only spectral lines within range lzero, lfin + performs "inner join".
-  !>
-  !> Populates variables atoms_f_*
+  ! Selects only spectral lines within range lzero, lfin + performs "inner join".
+  !
+  ! Populates variables atoms_f_*
 
   subroutine filter_atoms(lzero, lfin)
-    !> Lower edge of wavelength interval
+    ! Lower edge of wavelength interval
     real*8, intent(in) :: lzero
-    !> Upper edge of wavelength interval
+    ! Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     integer j, k
 
@@ -741,9 +744,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Contains subroutine kapmol_()
-!>
-!> Calculated variables have prefix "km_c_"
+! Contains subroutine kapmol_()
+!
+! Calculated variables have prefix "km_c_"
 
 module kapmol
   use molecules_idxs
@@ -754,9 +757,9 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm !< ?doc? in sync with km_f_sj etc
+    km_c_gfm ! ?doc? in sync with km_f_sj etc
 
-  real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj !< ?doc? in sync with km_f_sj etc
+  real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj ! ?doc? in sync with km_f_sj etc
 
   real*8, private, pointer, dimension(:) :: ppa, pb
   private point_ppa_pb
@@ -764,7 +767,7 @@ module kapmol
 contains
 
   !=======================================================================================
-  !> Calculates the molecular absorption coefficient.
+  ! Calculates the molecular absorption coefficient.
 
   subroutine kapmol_()
     real*8 t5040, psi
@@ -848,13 +851,13 @@ contains
 
 
   !=======================================================================================
-  !> Assigns address of variable PPA and PB depending on the molecule formula ID
-  !>
-  !> This was originally a vector copy element-by-element in old routine KAPMOL. However, as
-  !> PPA and PB contents are not changed after the assignment, it is reasonable to just point
-  !> to the source vectors (way faster).
-  !>
-  !> @sa reader_molecules::find_formula_id, reader_molecules::read_molecules
+  ! Assigns address of variable PPA and PB depending on the molecule formula ID
+  !
+  ! This was originally a vector copy element-by-element in old routine KAPMOL. However, as
+  ! PPA and PB contents are not changed after the assignment, it is reasonable to just point
+  ! to the source vectors (way faster).
+  !
+  ! @sa reader_molecules::find_formula_id, reader_molecules::read_molecules
 
   subroutine point_ppa_pb(formula_id)
     integer, intent(in) :: formula_id
@@ -905,13 +908,13 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Declaration and initialization of x_* variables
-!>
-!> This module deals with the variables whose values may come either from dfile:main or
-!> command-line arguments (the latter has precedence).
-!>
-!> Prefixes:
-!> @li x_ -- these variable values may come either from dfile:main or command-line options.
+! Declaration and initialization of x_* variables
+!
+! This module deals with the variables whose values may come either from dfile:main or
+! command-line arguments (the latter has precedence).
+!
+! Prefixes:
+!   - x_ -- these variable values may come either from dfile:main or command-line options.
 
 module pfant_x
   use reader_main
@@ -922,9 +925,9 @@ module pfant_x
   real*8 :: x_llzero, x_llfin, x_pas
 contains
 
-  !> Initializes x_* variables
-  !>
-  !> Note: to be called after read_main()
+  ! Initializes x_* variables
+  !
+  ! Note: to be called after read_main()
 
   subroutine pfant_init_x()
     if (config_flprefix .eq. '?') then
@@ -960,35 +963,35 @@ end
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-!>@verbatim
-!> Fantomol avec sous-programmes (MNP) -
-!> Calcul possible de 100 angstrom en 100 angstrom.
-!>@endverbatim
-!>
-!> @note Flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)
-!>
-!> @note Unit of flux: erg*s^-1*cm^-2/(Hz*ster), however (see next note)
-!>
-!> @note Actually what is called "flux" would be more accurately called "Specific intensity" [Gray Stellar Photospheres 3rd Ed. Eq 5.1]
-!>
-!> @note Flux absolu sortant a ete multiplie par 10**5
-!>
-!> @note Existing files are replaced
-!>
-!>
+!
+! Fantomol avec sous-programmes (MNP) -
+! Calcul possible de 100 angstrom en 100 angstrom.
+!
+!
+! *Note* Flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)
+!
+! *Note* Unit of flux: erg*s^-1*cm^-2/(Hz*ster), however (see next note)
+!
+! *Note* Actually what is called "flux" would be more accurately called "Specific intensity" [Gray Stellar Photospheres 3rd Ed. Eq 5.1]
+!
+! *Note* Flux absolu sortant a ete multiplie par 10**5
+!
+! *Note* Existing files are replaced
+!
+!
 
-!>
-!> @todo If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
-!>
-!> Variable patterns
-!> @verbatim
-!>        m_* module internal variables shared among routines
-!>       hy_* hydrogen line-related, calculated by calc_tauh()
-!> popadelh_* calculated by popadelh()
-!>  selekfh_* calculated by selekfh()
-!>       bk_* calculated by bk()
-!>    popul_* calculated by popul()
-!> @endverbatim
+!
+! TODO If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
+!
+! Variable patterns
+! 
+!        m_* module internal variables shared among routines
+!       hy_* hydrogen line-related, calculated by calc_tauh()
+! popadelh_* calculated by popadelh()
+!  selekfh_* calculated by selekfh()
+!       bk_* calculated by bk()
+!    popul_* calculated by popul()
+! 
 
 module synthesis
   use logging
@@ -1017,90 +1020,90 @@ module synthesis
   !=====
   ! The following variables have the prefix of the subroutine that is responsible for them.
 
-  !> Calculated by subroutine popul
+  ! Calculated by subroutine popul
   real*8, dimension(3,MAX_PARTIT_NPAR, MAX_MODELES_NTOT) :: popul_p
 
   ! Calculated by subroutine popadelh
   real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw, &
-   popadelh_zinf  !< limit distance from center of line to calculate the Voigt profile
-                  !! This information was once in dfile:atoms and being set manually;
-                  !! now it is calculated automatically.
+   popadelh_zinf  ! limit distance from center of line to calculate the Voigt profile
+                  ! This information was once in dfile:atoms and being set manually;
+                  ! now it is calculated automatically.
 
   real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
    popadelh_pop, popadelh_a, popadelh_delta
 
 
 
-  !! Calculated by subroutine popadelh
+  ! Calculated by subroutine popadelh
   !real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
   ! popadelh_pop, popadelh_a, popadelh_delta, &
-  ! popadelh_zinf  !< limit distance from center of line to calculate the Voigt profile
-  !                !! This information was once in dfile:atoms and being set manually;
-  !                !! now it is calculated automatically.
+  ! popadelh_zinf  ! limit distance from center of line to calculate the Voigt profile
+  !                ! This information was once in dfile:atoms and being set manually;
+  !                ! now it is calculated automatically.
 
 
 
 
-  !> Calculated by subroutine selekfh
+  ! Calculated by subroutine selekfh
   real*8, dimension(MAX_DTOT) :: selekfh_fl, selekfh_fcont
 
-  !> Calculated by subroutine bk
+  ! Calculated by subroutine bk
   real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b, bk_b1, bk_b2
-  !> Calculated by subroutine bk
+  ! Calculated by subroutine bk
   real*8, dimension(MAX_MODELES_NTOT) :: bk_kc, bk_kc1, bk_kc2, bk_phn, bk_ph2
-  !> Calculated by subroutine bk
+  ! Calculated by subroutine bk
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
-  !> Calculated by subroutine bk
+  ! Calculated by subroutine bk
   real*8, dimension(MAX_DTOT) :: bk_fc
 
   ! Calculated by calc_tauh(), hydrogen lines-related
   real*8, public :: hy_tauh(MAX_MODELES_NTOT, MAX_DTOT)
   integer, public :: &
-   hy_dhp, & !< maximum value of dhpy
-   hy_dhm    !< minimum value of dhmy
+   hy_dhp, & ! maximum value of dhpy
+   hy_dhm    ! minimum value of dhmy
 
   ! Calculated by calc_tauhi(), auxiliary of calc_tauh()
   integer :: &
-   m_dhmi, & !< Calculated by subroutine calc_tauhi
-   m_dhpi    !< Calculated by subroutine calc_tauhi
+   m_dhmi, & ! Calculated by subroutine calc_tauhi
+   m_dhpi    ! Calculated by subroutine calc_tauhi
 
   !=====
   ! Constants available to all subroutines within this module
   !=====
 
-  real*8, parameter :: & !< ?doc?
-    C = 2.997929E+10,  & !< ?doc?
-    H = 6.6252E-27,    & !< ?doc?
-   KB = 1.38046E-16,   & !< ?doc?
-   C1 = 4.8298E+15,    & !< ?doc?
-   C2 = 8.8525E-13,    & !< ?doc?
-   C4 = 2.1179E+8,     & !< ?doc?
-   C6 = 3.76727E+11,   & !< ?doc?
-   DEUXR = 1.6634E+8     !< ?doc?
+  real*8, parameter :: & ! ?doc?
+    C = 2.997929E+10,  & ! ?doc?
+    H = 6.6252E-27,    & ! ?doc?
+   KB = 1.38046E-16,   & ! ?doc?
+   C1 = 4.8298E+15,    & ! ?doc?
+   C2 = 8.8525E-13,    & ! ?doc?
+   C4 = 2.1179E+8,     & ! ?doc?
+   C6 = 3.76727E+11,   & ! ?doc?
+   DEUXR = 1.6634E+8     ! ?doc?
 
   real*8, parameter :: &
-   C5 = 2.*PI* (3.*PI**2/2.44)**0.4   !< ?doc?
+   C5 = 2.*PI* (3.*PI**2/2.44)**0.4   ! ?doc?
 
 
   !=====
   ! Module variables initialized in subroutine synthesis_() and shared among other routines.
   !=====
   real*8 :: &
-   m_lzero, &                 !< initial lambda of current ikey-th iteration
-   m_lfin, &                  !< final lambda of current ikey-th iteration
-   m_lambd, &                 !< lambda 1/2
+   m_lzero, &                 ! initial lambda of current ikey-th iteration
+   m_lfin, &                  ! final lambda of current ikey-th iteration
+   m_lambd, &                 ! lambda 1/2
    m_ttd(MAX_DTOT), &
-   m_ecart(MAX_ATOMS_F_NBLEND), & !< MT: some sort of delta lambda
+   m_ecart(MAX_ATOMS_F_NBLEND), & ! MT: some sort of delta lambda
    m_gfal(MAX_ATOMS_F_NBLEND), &
    m_ecartm(MAX_KM_F_MBLEND)
   integer :: &
-    m_dtot,    &  !< number of different wavelenghts for which flux will be calculated at each ikey-iteration
-    m_ilzero      !< closest integer multiple of 100 that is <= m_lzero
+    m_dtot,    &  ! number of different wavelenghts for which flux will be calculated at each ikey-iteration
+    m_ilzero      ! closest integer multiple of 100 that is <= m_lzero
 
 contains
 
   !======================================================================================================================
-  !> @todo make file replacing clear somewhere because it was not the original behaviour
+  ! TODO make file replacing clear somewhere because it was not the original behaviour
 
   subroutine synthesis_()
     ! Units for output files
@@ -1131,9 +1134,9 @@ contains
     ! Setup
     !=====
 
-    !> @todo ?doc? The reason why values read from file are being overwritten should be explained.
+    ! TODO ?doc? The reason why values read from file are being overwritten should be explained.
     absoru2_abhel = modeles_nhe
-    !> @todo issue using modeles_asalog instead of main_afstar
+    ! ISSUE using modeles_asalog instead of main_afstar
     absoru2_abmet = absoru2_abmet*10.**modeles_asalog
 
     tetaef = 5040/main_teff
@@ -1385,14 +1388,14 @@ contains
     ! their parent subroutine synthesis_().
     ! http://www.personal.psu.edu/jhm/f90/statements/contains.html
 
-    !> Used to write the "spectrum", "continuum", and "normalized".
-    !> Their writing pattern is very similar. THe header is the same,
-    !> only the "ITEM" changes from file to file.
+    ! Used to write the "spectrum", "continuum", and "normalized".
+    ! Their writing pattern is very similar. THe header is the same,
+    ! only the "ITEM" changes from file to file.
 
     subroutine write_spec_item(unit_, item)
-      !> unit number, either UNIT_SPEC, UNIT_CONT, UNIT_NORM
+      ! unit number, either UNIT_SPEC, UNIT_CONT, UNIT_NORM
       integer, intent(in) :: unit_
-      !> either selekfh_fl, selekfh_fcont, or fn
+      ! either selekfh_fl, selekfh_fcont, or fn
       real*8, intent(in) :: item(:)
       real*8 amg
       amg = 0
@@ -1421,11 +1424,11 @@ contains
   end subroutine synthesis_
 
   !======================================================================================================================
-  !> Calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
-  !> la table des fonctions de partition ,a tous les niv du modele
-  !>
-  !> 40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
-  !> Partit donnee pour 33 temperatures au plus ds la table.
+  ! Calcule la pop du niv fond de l'ion pour tous les partit_NPAR atomes de
+  ! la table des fonctions de partition ,a tous les niv du modele
+  !
+  ! 40 elements, 50 niveaux de modele, 3 niv d'ionisation par elem.
+  ! Partit donnee pour 33 temperatures au plus ds la table.
 
   subroutine popul()
     real*8 u(3), alistu(MAX_MODELES_NTOT*2), ue(MAX_MODELES_NTOT), tt(MAX_MODELES_NTOT*2), &
@@ -1433,7 +1436,7 @@ contains
     integer j, k, kmax, l, n
 
     do n = 1, modeles_ntot
-      t = 5040./modeles_teta(n)  !> @todo I think the program deserves a modeles_T5040 because this is calculated everywhere!!!
+      t = 5040./modeles_teta(n)  ! TODO I think the program deserves a modeles_T5040 because this is calculated everywhere!!
       ue(n) = C1*KB*t/modeles_pe(n)*t**1.5
       do j = 1, partit_npar
         kmax = partit_jkmax(j)
@@ -1460,7 +1463,7 @@ contains
         x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modeles_teta(n))
         tki2= partit_ki2(j) * modeles_teta(n)
 
-        !> @todo ?doc? ask blb why 77? Needs some comment on it.
+        ! TODO ?doc? ask blb why 77? Needs some comment on it.
         if (tki2 .ge. 77.) then
           y = 0.
           popul_p(3,j,n) = 0.
@@ -1477,9 +1480,9 @@ contains
 
 
   !======================================================================================================================
-  !> Calcule la population au niveau inferieur de la transition
-  !> la largeur doppler popadelh_delta et le coefficient d'elargissement
-  !> le "popadelh_a" utilise dans le calcul de H(popadelh_a,v)
+  ! Calcule la population au niveau inferieur de la transition
+  ! la largeur doppler popadelh_delta et le coefficient d'elargissement
+  ! le "popadelh_a" utilise dans le calcul de H(popadelh_a,v)
 
   subroutine popadelh()
     implicit none
@@ -1509,7 +1512,7 @@ contains
       ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
       ! See also read_atoms(), variable atoms_gr, which is also overwritten.
       if(atoms_f_ch(k) .lt. 1.e-37)  then
-        !> @todo optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
+        ! TODO optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
 
         kies = (12398.54/atoms_f_lambda(k)) + atoms_f_kiex(k)
         if (ioo .eq. 1) then
@@ -1596,7 +1599,7 @@ contains
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
         popadelh_a(k,n) = a
 
-!! TODO CLEANUP
+! TODO CLEANUP
 !        if (isnan(a)) then
 !          write(*,*) 'popaedlh: a is nan'
 !          write(*,*) 'gamma = ', gamma
@@ -1631,7 +1634,7 @@ contains
 !          ! popadelh_zinf(k, n) = x*1e8*delta
 !          popadelh_zinf(k) = x*1e8*delta
 !
-!!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
+!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
 !          ! write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
 !          ! todo cleanup write(45,*) popadelh_a(k,n)
 !          ! todo cleanup write(46,*) popadelh_zinf(k, n)
@@ -1643,13 +1646,13 @@ contains
 
 
   !======================================================================================================================
-  !> Sets the Voigt profile using Hjertings' constants; calculates the flux and continuum
-  !>
-  !> @note Most of the calculation time is spent inside this routine
-  !>
-  !> @note Convolution for molecules uses Gaussian profile.
-  !>
-  !> @todo MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
+  ! Sets the Voigt profile using Hjertings' constants; calculates the flux and continuum
+  !
+  ! *Note* Most of the calculation time is spent inside this routine
+  !
+  ! *Note* Convolution for molecules uses Gaussian profile.
+  !
+  ! TODO MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
 
   subroutine selekfh()
     integer d, k, l, n
@@ -1734,7 +1737,7 @@ integer count_
 
 
 
-!! TODO CLEANUP
+! TODO CLEANUP
 
 
 if (n .eq. 1) then
@@ -1760,12 +1763,12 @@ if (n .eq. 1) then
 !            end if
 
             ! todo cleanup
-            !!! trick to write one atmospheric layer to a different file
+            !! trick to write one atmospheric layer to a different file
             ! write(n+100,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
 
 
             !if (n .eq. 50) then
-              !!! trick to write one atmospheric layer to a different file
+              !! trick to write one atmospheric layer to a different file
             !  write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
             !end if
 
@@ -1842,10 +1845,10 @@ if (n .eq. 1) then
 
 
   !======================================================================================================================
-  !> Calculates the flux in the continuum.
-  !> @todo There is a lot of calculation here that is independent from m_lzero and m_lfin (optimize?)
-  !>
-  !> @todo log_pe not used yet
+  ! Calculates the flux in the continuum.
+  ! TODO There is a lot of calculation here that is independent from m_lzero and m_lfin (optimize?)
+  !
+  ! TODO log_pe not used yet
 
   subroutine bk()
     real*8 nu, llzero, llfin, nu1, nu2, &
@@ -1876,7 +1879,7 @@ if (n .eq. 1) then
     ahnu2 = H*nu2
     c32 =(2*ahnu2) * (nu2/C)**2
     do n = 1,modeles_ntot
-      !> @todo: calculate this "T" somewhere else, this is calculated all the time (optimize)
+      ! TODO: calculate this "T" somewhere else, this is calculated all the time (optimize)
       t = 5040./modeles_teta(n)
       alph_n = exp(-ahnu2/(KB*t))
       bk_b2(n) = c32 * (alph_n/(1.-alph_n))
@@ -1929,7 +1932,7 @@ if (n .eq. 1) then
       end do
       call ftlin3(2, lambdc, kcn, m_dtot, m_ttd, fttc)
       do d = 1,m_dtot
-        bk_kcd(d,n) = fttc(d)  !> @todo these vector copies... pointer operations could speed up considerably here (optimize)
+        bk_kcd(d,n) = fttc(d)  ! TODO these vector copies... pointer operations could speed up considerably here (optimize)
       end do
     end do
 
@@ -1946,7 +1949,7 @@ if (n .eq. 1) then
 
 
   !=======================================================================================
-  !> Hydrogen lines-related calculation: calculates hy_tauh, hy_dhp, hy_dhm
+  ! Hydrogen lines-related calculation: calculates hy_tauh, hy_dhp, hy_dhm
 
   subroutine calc_tauh()
     integer :: im, dhmy(MAX_FILETOH_NUM_FILES), dhpy(MAX_FILETOH_NUM_FILES), ih, iht, imy
@@ -1985,14 +1988,14 @@ if (n .eq. 1) then
       hy_dhm = mini(dhmy, imy, 1, imy)
       hy_dhp = maxi(dhpy, imy, 1, imy)
 
-      !!!!!do n = 1,modeles_ntot
-      !!!!!  do d = 1,dtot
-      !!!!!    tauh(n, d) = 0.0
-      !!!!!    do im = 1,imy
-      !!!!!      tauh(n, d) = tauh(d,n)+tauhy(im,d,n)
-      !!!!!    end do
-      !!!!!  end do
-      !!!!!end do
+      !!!do n = 1,modeles_ntot
+      !!!  do d = 1,dtot
+      !!!    tauh(n, d) = 0.0
+      !!!    do im = 1,imy
+      !!!      tauh(n, d) = tauh(d,n)+tauhy(im,d,n)
+      !!!    end do
+      !!!  end do
+      !!!end do
     else
       hy_dhm = 0
       hy_dhp = 0
@@ -2000,12 +2003,12 @@ if (n .eq. 1) then
   end
 
   !=======================================================================================
-  !> Adds contribution of single file to hy_tauh; also calculates m_dhmi and m_dhpi
-  !>
-  !> @todo top test the pointers
+  ! Adds contribution of single file to hy_tauh; also calculates m_dhmi and m_dhpi
+  !
+  ! TODO top test the pointers
 
   subroutine calc_tauhi(i_file)
-    integer, intent(in) :: i_file !< index pointing to element of the filetoh_* arrays
+    integer, intent(in) :: i_file ! index pointing to element of the filetoh_* arrays
     integer d, j, jj, jma1, n, &
      jjmax, &
      now_jmax ! jmax of file i_file
@@ -2064,17 +2067,17 @@ if (n .eq. 1) then
   contains
 
     !-------------------------------------------------------------------------------------
-    !> Interpolaton specially for hydrogen lines calculation.
-    !>
-    !> Linear interpolation.
-    !>
-    !> @note When seen in pfant output (e.g. flux.norm), the hydrogen line is
-    !> a sequence of joined convex lines. This is probably due to hy_tauh undergoing
-    !> something like -log(hy_tauh). These small convex lines are more easily noticed
-    !> if a hydrogen line is calculated alone, without other abundances.
-    !>
-    !> @note This routine is very similar to misc_math::ftlin3()*.
-    !>
+    ! Interpolaton specially for hydrogen lines calculation.
+    !
+    ! Linear interpolation.
+    !
+    ! *Note* When seen in pfant output (e.g. flux.norm), the hydrogen line is
+    ! a sequence of joined convex lines. This is probably due to hy_tauh undergoing
+    ! something like -log(hy_tauh). These small convex lines are more easily noticed
+    ! if a hydrogen line is calculated alone, without other abundances.
+    !
+    ! *Note* This routine is very similar to misc_math::ftlin3()*.
+    !
 
     subroutine ftlin3h()
       real*8 dy, ft, t, t0, t1, t2, u0
@@ -2148,17 +2151,17 @@ end module
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> PFANT main executable: spectral synthesis
-!>
-!> Creates three files such as (flux.spec, flux.cont, flux.norm).
-!> These files can be inputted into nulbad
-!> or visualized with plot_spectra.py
-!>
-!> Takes as input most of the data files.
-!>
-!> @verbatim
-!> @note Flux absolu sortant a ete multiplie par 10**5
-!> @endverbatim
+! PFANT main executable: spectral synthesis
+!
+! Creates three files such as (flux.spec, flux.cont, flux.norm).
+! These files can be inputted into nulbad
+! or visualized with plot_spectra.py
+!
+! Takes as input most of the data files.
+!
+! 
+! *Note* Flux absolu sortant a ete multiplie par 10**5
+! 
 
 program pfant
   use config

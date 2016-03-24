@@ -1,7 +1,5 @@
 #!/usr/bin/python
-"""
-Plots hydrogen lines
-"""
+"""Plots hydrogen lines."""
 
 import argparse
 from pyfant import *

@@ -1,18 +1,30 @@
 #!/usr/bin/python
 
-"""XM - Graphical interface -- single and multi modes."""
-
 from pyfant.gui import XMulti, XRunnableManager
 from pyfant import *
+from pyfant.gui import guiaux
 import sys
 from PyQt4.QtGui import *
 import argparse
 import logging
 
 
+__doc__ = """XM - Graphical interface -- single and multi modes.\n\n
+Multi mode
+----------
+"""+guiaux.DESCR_MULTI+\
+"---------\n\n"
+
+
 misc.logging_level = logging.INFO
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+     description=__doc__,
+     formatter_class=SmartFormatter
+     )
+    args = parser.parse_args()
+
     app = get_QApplication([])
 
     form0 = XMulti()

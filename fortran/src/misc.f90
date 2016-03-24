@@ -16,30 +16,30 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Miscellanea of routines.
-!>
+! Miscellanea of routines.
+!
 module misc
   use logging
   use dimensions
   implicit none
 
-  !> Maximum number of rows in a file with comments, e.g. hmap.dat.
-  !> Used in misc.f90
+  ! Maximum number of rows in a file with comments, e.g. hmap.dat.
+  ! Used in misc.f90
   integer, parameter :: MAX_FILE_ROWS=1000
 contains
 
-  !> Checks if hydrogen line interval overlaps with calculation interval
-  !>
-  !> Overlap is checked for these two intervals:
-  !> @verbatim
-  !> [clam-H_LINE_WIDTH, clam+H_LINE_WIDTH]  and
-  !>
-  !> [llzero-LAMBDA_STRETCH, llfin+LAMBDA_STRETCH]
+  ! Checks if hydrogen line interval overlaps with calculation interval
+  !
+  ! Overlap is checked for these two intervals:
+  ! 
+  ! [clam-H_LINE_WIDTH, clam+H_LINE_WIDTH]  and
+  !
+  ! [llzero-LAMBDA_STRETCH, llfin+LAMBDA_STRETCH]
   logical function h_line_is_inside(clam, llzero, llfin) result(res)
     real*8, intent(in) :: &
-     clam,   & !< central lambda of a hydrogen line
-     llzero, & !< lower boundary of calculation interval, probably taken from dfile:main
-     llfin     !< lower boundary of calculation interval, probably taken from dfile:main
+     clam,   & ! central lambda of a hydrogen line
+     llzero, & ! lower boundary of calculation interval, probably taken from dfile:main
+     llfin     ! lower boundary of calculation interval, probably taken from dfile:main
 
     res = .false.
     if (clam+H_LINE_WIDTH .ge. llzero-LAMBDA_STRETCH .and. &
@@ -48,12 +48,12 @@ contains
     end if
   end
 
-  !> Adjusts a 2-character string containing atomic symbol to right-aligned uppercase
-  !>
-  !> This is used to prevent against left-alignment/lovercase  in specifying the atomic
-  !> symbols in several input data files.
-  !>
-  !> ExampleL: "O ", " o", "o ", all will result in " O"
+  ! Adjusts a 2-character string containing atomic symbol to right-aligned uppercase
+  !
+  ! This is used to prevent against left-alignment/lovercase  in specifying the atomic
+  ! symbols in several input data files.
+  !
+  ! ExampleL: "O ", " o", "o ", all will result in " O"
 
   function adjust_atomic_symbol(elem) result(res)
     character(len=*), intent(in) :: elem
@@ -64,12 +64,12 @@ contains
     res = to_upper(adjustr(elem))
   end
 
-  !> Converts a string to lower case.
-  !>
-  !> @note Works on A-Z letters only (does not handle letter modifiers such as acute,
-  !>       tilde etc)
-  !>
-  !> Source: http://stackoverflow.com/questions/10759375/how-can-i-write-a-to-upper-or-to-lower-function-in-f90
+  ! Converts a string to lower case.
+  !
+  ! *Note* Works on A-Z letters only (does not handle letter modifiers such as acute,
+  !       tilde etc)
+  !
+  ! Source: http://stackoverflow.com/questions/10759375/how-can-i-write-a-to-upper-or-to-lower-function-in-f90
 
   pure function to_lower(x) result (string)
       character(*), intent(in) :: x
@@ -85,12 +85,12 @@ contains
       end do
   end function to_lower
 
-  !> Converts a string to upper case.
-  !>
-  !> @note Works on a-z letters only (does not handle letter modifiers such as acute,
-  !>       tilde etc)
-  !>
-  !> Source: http://stackoverflow.com/questions/10759375/how-can-i-write-a-to-upper-or-to-lower-function-in-f90
+  ! Converts a string to upper case.
+  !
+  ! *Note* Works on a-z letters only (does not handle letter modifiers such as acute,
+  !       tilde etc)
+  !
+  ! Source: http://stackoverflow.com/questions/10759375/how-can-i-write-a-to-upper-or-to-lower-function-in-f90
 
   pure function to_upper(x) result (string)
       character(*), intent(in) :: x
@@ -106,9 +106,9 @@ contains
       end do
   end
 
-  !> Converts an integer to string
-  !>
-  !> @note @c x is limited to 80 digits
+  ! Converts an integer to string
+  !
+  ! *Note* @c x is limited to 80 digits
 
   pure function int2str(x) result (string)
     integer, intent(in) :: x
@@ -120,11 +120,11 @@ contains
   end function
 
 
-  !> Converts a real*8 number to string
+  ! Converts a real*8 number to string
 
   pure function real82str(x, dec) result (string)
     real*8, intent(in) :: x
-    !> Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
+    ! Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
     integer, intent(in), optional :: dec
     character(:), allocatable :: string
     character(80) :: ch
@@ -138,11 +138,11 @@ contains
     string = trim(adjustl(ch))
   end function
 
-  !> Converts a real*4 number to string
+  ! Converts a real*4 number to string
 
   pure function real42str(x, dec) result (string)
     real*4, intent(in) :: x
-    !> Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
+    ! Number of decimal places (optional). If not passed, will use Fortran "*" formatting.
     integer, intent(in), optional :: dec
     character(:), allocatable :: string
     character(80) :: ch
@@ -157,10 +157,10 @@ contains
   end function
 
 
-  !> Converts a logical value to string
-  !>
-  !> @li .true. is converted to "T"
-  !> @li .false. is converted to "F"
+  ! Converts a logical value to string
+  !
+  !   - .true. is converted to "T"
+  !   - .false. is converted to "F"
 
   pure function logical2str(x) result (string)
     logical, intent(in) :: x
@@ -174,7 +174,7 @@ contains
   end function
 
   !=======================================================================================
-  !> Converts a logical value to 0/1
+  ! Converts a logical value to 0/1
 
   pure function logical2int(x) result (y)
     logical, intent(in) :: x
@@ -188,9 +188,9 @@ contains
   end function
 
   !=======================================================================================
-  !> Converts an integer to logical. Accepts only 0 or 1
-  !>
-  !> If argument is not (0 or 1), halts the program
+  ! Converts an integer to logical. Accepts only 0 or 1
+  !
+  ! If argument is not (0 or 1), halts the program
 
   function int2logical(x) result (y)
     integer, intent(in) :: x
@@ -205,19 +205,19 @@ contains
     end if
   end function
 
-  !=======================================================================================  !> Trims spaces at the right and adds a final slash, if the latter is not present.
-  !>
-  !> Examples:
-  !> @verbatim
-  !> input             --> result
-  !> --------------------------------
-  !> "qwe/asd        " --> "qwe/asd/"
-  !> "qwe/asd/       " --> "qwe/asd/"
-  !> "qwe/asd/"        --> "qwe/asd/"
-  !> @endverbatim
+  !=======================================================================================  ! Trims spaces at the right and adds a final slash, if the latter is not present.
+  !
+  ! Examples:
+  ! 
+  ! input             --> result
+  ! --------------------------------
+  ! "qwe/asd        " --> "qwe/asd/"
+  ! "qwe/asd/       " --> "qwe/asd/"
+  ! "qwe/asd/"        --> "qwe/asd/"
+  ! 
 
   function trim_and_add_slash(x) result(y)
-    character(1) :: BACKSLASH = char(92)  ! Doxygen doesn't like a backslash appearing in the code
+    character(1) :: BACKSLASH = '\'
     character(*), intent(in) :: x
     character(:), allocatable :: y
     integer i, n
@@ -230,21 +230,21 @@ contains
   end
 
   !=======================================================================================
-  !> Creates a logical vector indicating which rows should be skipped in a text file.
-  !>
-  !> This subroutine opens a text file and sweeps it until the end, then closes it.
-  !> If row i starts with a "#" or is blank, skip_row(i) will be .true., otherwise
-  !> .false.
-  !>
-  !> n is the total number of rows in file.
+  ! Creates a logical vector indicating which rows should be skipped in a text file.
+  !
+  ! This subroutine opens a text file and sweeps it until the end, then closes it.
+  ! If row i starts with a "#" or is blank, skip_row(i) will be .true., otherwise
+  ! .false.
+  !
+  ! n is the total number of rows in file.
 
   subroutine map_file_comments(path_to_file, skip_row, n)
     integer, parameter :: UNIT_=195
     character(len=*), intent(in) :: path_to_file
-    !> element i  (i=1,n) will be .true. if row i is a comment line (starts with "#"),
-    !> or is blank
+    ! element i  (i=1,n) will be .true. if row i is a comment line (starts with "#"),
+    ! or is blank
     logical, intent(out) :: skip_row(MAX_FILE_ROWS)
-    !> Number of rows in text file
+    ! Number of rows in text file
     integer, intent(out) :: n
 
     integer :: n_temp
@@ -281,27 +281,27 @@ contains
   end
 
 
-  !> Parses string into array of integers
-  !>
-  !> Examples of valid strings:
-  !> @verbatim
-  !> '[1, 2, 3, 4]'
-  !> '1, 2, 3, 4'
-  !> '1  2 3     4'
-  !> 'kdjd1sdkljfsd2shjdfkl3sdfklsdfjkl4sdlk'
-  !> @endverbatim
-  !> The examples above all result in <code>(1, 2, 3, 4)</code>.
-  !>
-  !> Very tolerant: everything that is not 0-9 is considered a separator
+  ! Parses string into array of integers
+  !
+  ! Examples of valid strings:
+  ! 
+  ! '[1, 2, 3, 4]'
+  ! '1, 2, 3, 4'
+  ! '1  2 3     4'
+  ! 'kdjd1sdkljfsd2shjdfkl3sdfklsdfjkl4sdlk'
+  ! 
+  ! The examples above all result in <code>(1, 2, 3, 4)</code>.
+  !
+  ! Very tolerant: everything that is not 0-9 is considered a separator
 
 
   subroutine parse_int_array(str, molidxs, n)
     use logging
-    !> String to be parsed, e.g. '[3, 4, 5]'
+    ! String to be parsed, e.g. '[3, 4, 5]'
     character(*), intent(in) :: str
-    !> Integer numbers found in string
+    ! Integer numbers found in string
     integer, intent(out) :: molidxs(:)
-    !> Number of integer numbers found
+    ! Number of integer numbers found
     integer, intent(out) :: n
     integer, parameter :: UNINIT=-1, SEP=0, NUM=1
     integer i_len, i, state, break_point, ascii
@@ -350,36 +350,36 @@ end module misc
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> Module containing quicksort for array of real numbers
-!>
-!> @verbatim
-!> ! Quick sort routine from:
-!> Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
-!> Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
-!> Modified by Alan Miller to include an associated integer array which gives
-!> the positions of the elements in the original order.
-!> @endverbatim
+! Module containing quicksort for array of real numbers
+!
+! 
+! ! Quick sort routine from:
+! Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
+! Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
+! Modified by Alan Miller to include an associated integer array which gives
+! the positions of the elements in the original order.
+! 
 
 module qsort
   implicit none
 contains
 
   !=======================================================================================
-  !> Credits (verbatim from @ref http://jblevins.org/mirror/amiller/qsort.f90):
-  !> @verbatim
-  !> Quick sort routine from:
-  !> Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
-  !> Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
-  !> Modified by Alan Miller to include an associated integer array which gives
-  !> the positions of the elements in the original order.
-  !> @endverbatim
-  !>
-  !> Further changed by JT to use argument "n" instead of size(list).
+  ! Credits (verbatim from @ref http://jblevins.org/mirror/amiller/qsort.f90):
+  ! 
+  ! Quick sort routine from:
+  ! Brainerd, W.S., Goldberg, C.H. & Adams, J.C. (1990) "Programmer's Guide to
+  ! Fortran 90", McGraw-Hill  ISBN 0-07-000248-7, pages 149-150.
+  ! Modified by Alan Miller to include an associated integer array which gives
+  ! the positions of the elements in the original order.
+  ! 
+  !
+  ! Further changed by JT to use argument "n" instead of size(list).
 
   RECURSIVE SUBROUTINE quick_sort(list, order, n)
     REAL*8, DIMENSION (:), INTENT(IN OUT)  :: list
     INTEGER, DIMENSION (:), INTENT(OUT)  :: order
-    !> Operation is restricted to elements 1 to n
+    ! Operation is restricted to elements 1 to n
     INTEGER, INTENT(IN) :: n
 
     ! Local variable
@@ -394,9 +394,9 @@ contains
   CONTAINS
 
     !-------------------------------------------------------------------------------------
-    !> Quick sort auxiliary internal.
-    !>
-    !> Does the actual hard work (the main routine is mostly initialization).
+    ! Quick sort auxiliary internal.
+    !
+    ! Does the actual hard work (the main routine is mostly initialization).
 
     RECURSIVE SUBROUTINE quick_sort_1(left_end, right_end)
 
@@ -449,7 +449,7 @@ contains
 
 
     !-------------------------------------------------------------------------------------
-    !> Quick sort auxiliary internal, does the swapping
+    ! Quick sort auxiliary internal, does the swapping
 
     SUBROUTINE interchange_sort(left_end, right_end)
 
@@ -485,9 +485,9 @@ end
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-!> Maintains a list of molecules that are on/off
-!>
-!> Has routines to maintain the list and retrieve information.
+! Maintains a list of molecules that are on/off
+!
+! Has routines to maintain the list and retrieve information.
 
 module molecules_idxs
   use logging
@@ -496,12 +496,12 @@ module molecules_idxs
   implicit none
 
   type molidx_list
-    integer :: n_off, & !< number "off"
-               n_on     !< number "on"
+    integer :: n_off, & ! number "off"
+               n_on     ! number "on"
 
     integer, dimension(NUM_MOL) :: &
-      on,  & !< molecule ids "on"
-      off    !< molecule ids "off"
+      on,  & ! molecule ids "on"
+      off    ! molecule ids "off"
   end type
 
   type(molidx_list) :: molidxs
@@ -511,13 +511,13 @@ module molecules_idxs
 
   ! There is a calling order to be observed. These flags + assertions inforce that
   logical, private :: &
-   flag_molecules_idxs_init = .false.   !< molecules_idxs_init() has been called?
+   flag_molecules_idxs_init = .false.   ! molecules_idxs_init() has been called?
 
   private make_molidxs_on
 contains
 
-  !> Module initialization:
-  !> Must be called at some point of system startup.
+  ! Module initialization:
+  ! Must be called at some point of system startup.
 
   subroutine molecules_idxs_init()
     call make_molidxs_on()
@@ -525,9 +525,9 @@ contains
   end
 
   !=======================================================================================
-  !> Returns molecule id given index
-  !>
-  !> Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
+  ! Returns molecule id given index
+  !
+  ! Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
 
   function get_molidx(i_mol)
     integer i_mol, get_molidx
@@ -547,10 +547,10 @@ contains
   end
 
   !=======================================================================================
-  !> Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is "on"
-  !> or "off"
-  !>
-  !> Can be called anytime
+  ! Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is "on"
+  ! or "off"
+  !
+  ! Can be called anytime
 
   function molecule_is_on(molidx)
     integer molidx, j
@@ -570,7 +570,7 @@ contains
   end
 
   !=======================================================================================
-  !> Parses string into integer array and adds molecule ids to list of "off" molecules
+  ! Parses string into integer array and adds molecule ids to list of "off" molecules
 
   subroutine set_molidxs_off(str)
     character(*), intent(in) :: str
@@ -585,10 +585,10 @@ contains
   end
 
   !=======================================================================================
-  !> Adds molecule id to list of "off" molecules
+  ! Adds molecule id to list of "off" molecules
 
   subroutine add_molidx_off(molidx)
-    integer, intent(in) :: molidx !< molecule id
+    integer, intent(in) :: molidx ! molecule id
 
     if (.not. flag_molecules_idxs_init) then
       call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
@@ -613,7 +613,7 @@ contains
   end
 
   !=======================================================================================
-  !> Fills molidxs%on and molidxs%n_on based on their complements.
+  ! Fills molidxs%on and molidxs%n_on based on their complements.
 
   subroutine make_molidxs_on()
     integer i_mol, j, molidx
@@ -647,21 +647,21 @@ module welcome
   use logging
   use misc
 contains
-  !> Returns string representing current PFANT version
+  ! Returns string representing current PFANT version
 
   function pfant_version() result(v)
     character(:), allocatable :: v
     v = ' v16.2.8-beta'
   end
 
-  !> Displays welcome message
-  !>
-  !> Banner created by patorjk.com Text to ASCII Art Generator (TAAG) @ref IvritFont.
-  !>
-  !> @note This is considered logging at INFO level; therefore nothing will be outputted
-  !>       if the logging level is greater than this.
-  !>
-  !> @todo this is just an idea: I could make a bigger sky and select a random rectangle of it. At least 2x visible width and height to get uniform probability of given pixel being in the rectangle
+  ! Displays welcome message
+  !
+  ! Banner created by patorjk.com Text to ASCII Art Generator (TAAG) @ref IvritFont.
+  !
+  ! *Note* This is considered logging at INFO level; therefore nothing will be outputted
+  !       if the logging level is greater than this.
+  !
+  ! TODO this is just an idea: I could make a bigger sky and select a random rectangle of it. At least 2x visible width and height to get uniform probability of given pixel being in the rectangle
 
   subroutine print_welcome(unit_)
     integer, intent(in) :: unit_
@@ -671,7 +671,7 @@ contains
 
   !  write(unit_,*) ' '
   !  write(unit_,*) ' '
-  !! Shadow
+  ! Shadow
   !  write(unit_,*) '   _ \   ____|  \      \  | __ __| '
   !  write(unit_,*) '  |   |  |     _ \      \ |    |   '
   !  write(unit_,*) '  ___/   __|  ___ \   |\  |    |   '
@@ -679,7 +679,7 @@ contains
   !  write(unit_,*) '                                   '
   !  write(unit_,*) ' '
   !  write(unit_,*) ' '
-  !! Italic
+  ! Italic
   !  write(unit_,*) '     ____  _________    _   ________'
   !  write(unit_,*) '    / __ \/ ____/   |  / | / /_  __/'
   !  write(unit_,*) '   / /_/ / /_  / /| | /  |/ / / /   '
@@ -687,7 +687,7 @@ contains
   !  write(unit_,*) ' /_/   /_/   /_/  |_/_/ |_/ /_/     '
   !  write(unit_,*) ' '
   !  write(unit_,*) ' '
-  !! Glenyn
+  ! Glenyn
   !  write(unit_,*) ' '
   !  write(unit_,*) ' ____ ____ ___  __   ____ '
   !  write(unit_,*) ' | . \|  _\|  \ | \|\|_ _\'
@@ -782,9 +782,9 @@ end
 !'        @        `  `                                                 ` '
 !'                    @                                                   '
 
-!> Allows printing with coordinates on a "canvas"
-!>
-!> ASCII image is mounted, then printed on-screen at once
+! Allows printing with coordinates on a "canvas"
+!
+! ASCII image is mounted, then printed on-screen at once
 
 module ascii_canvas
   use logging
@@ -795,8 +795,8 @@ module ascii_canvas
 
   type canvas
     character(len=MAX_DIM) :: rows(MAX_DIM)
-    integer :: nr !< number of rows
-    integer :: nc !< number of columns
+    integer :: nr ! number of rows
+    integer :: nc ! number of columns
   contains
     procedure :: init => canvas_init
     procedure :: paint => canvas_paint
@@ -805,7 +805,7 @@ module ascii_canvas
 
 contains
 
-  !> Initializes with given number of rows and columns
+  ! Initializes with given number of rows and columns
 
   subroutine canvas_init(this, nr, nc)
     class(canvas) :: this
@@ -826,7 +826,7 @@ contains
     end do
   end
 
-  !> "paints" string in canvas
+  ! "paints" string in canvas
 
   subroutine canvas_paint(this, lin, col, str)
     class(canvas) :: this
@@ -861,10 +861,10 @@ contains
     !write(*,*) '$',this%rows,'$'
 
   contains
-    !> Does the "painting"
+    ! Does the "painting"
 
     subroutine replace_part(row)
-      character(len=*) :: row !< row of the canvas
+      character(len=*) :: row ! row of the canvas
       integer :: len_eff
 
       len_eff = min(len(str), this%nc-col+1)
@@ -887,13 +887,13 @@ contains
   end
   end
 
-  !> prints to given unit
+  ! prints to given unit
 
   subroutine canvas_print(this, flag_frame, level)
     class(canvas) :: this
-    !> Whether to print a "frame" around (optional). Default: .false.
+    ! Whether to print a "frame" around (optional). Default: .false.
     logical, intent(in), optional :: flag_frame
-    !> Logging level (optional). Default: LOGGING_INFO
+    ! Logging level (optional). Default: LOGGING_INFO
     integer, intent(in), optional :: level
 
     logical :: flag_frame_

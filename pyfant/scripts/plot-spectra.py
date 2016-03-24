@@ -2,7 +2,7 @@
 """
 Utility to quickly visualize spectra.
 
-It works in four different modes:
+It can work in four different modes:
 
 a) stack of sub-plots, one for each spectrum (default mode)
    Example:

@@ -43,9 +43,9 @@ module innewmarcs_calc
 contains
 
   !=======================================================================================
-  !> Main routine of this module
-  !>
-  !> @note ASCII file is always opened in status "unknown"
+  ! Main routine of this module
+  !
+  ! *Note* ASCII file is always opened in status "unknown"
 
   subroutine innewmarcs_calc_()
     integer, parameter :: UNIT_MOD = 20, UNIT_DAT = 21  ! file units
@@ -53,7 +53,7 @@ contains
      aa, bb, cc, dd, &   ! input records
      ee, ff, z1, z2, zz  ! records that are calculated by interpol()
 
-    character*5 :: tira = ' Ple '  !> @todo ask Elvis what does "Ple" mean?
+    character*5 :: tira = ' Ple '  ! TODO ask Elvis what does "Ple" mean?
     character*20 tir    ! titre du modele interpole
     character*65 nomfiple
     real*4 bid0, vvt, tostand, t0, t1, tau, to0, tttt
@@ -128,7 +128,7 @@ contains
       call close_mod_file()
 
       ! sets the alpha abundance of the models for each iabon
-      !> @todo issue assumption: asalalf is the same for aa, bb, cc, dd????
+      ! *Note* assumes that asalalf is the same for all records.
       ralfa(iabon)=dd%asalalf  ! takes asalalf from record d
 
       ! write(6,*) ' '
@@ -159,8 +159,8 @@ contains
 
       ntot(iabon) = min0(aa%ntot, bb%ntot, cc%ntot, dd%ntot)
 
-      !!!! write(lll,*) '   ntot(',iabon,')=', ntot(iabon)
-      !!!! call log_debug(lll)
+      !! write(lll,*) '   ntot(',iabon,')=', ntot(iabon)
+      !! call log_debug(lll)
 
       ! interpolation sur log g   pour les 2 valeurs de teta
       t0 = rglog(1,2)-rglog(1,1)
@@ -219,10 +219,10 @@ contains
       if(ntot(1) .gt. 0) call rangmod(z1, ntot(1), nz1)
       if(ntot(2) .gt. 0) call rangmod(z2, ntot(2), nz2)
 
-      !> @todo issue look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right
-      !> I changed this
-      !>       if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1)
-      !>       if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2)
+      ! ISSUE look at original lines: ZP1 repeated, doesn't look right; ntot(2) repeated, doesn't look right
+      ! (JT) I changed this to match what seemed more logical. The plotted results oldXnew are pretty much the same
+      !       if(ntot(2).gt.0)call rangmod(ZH1,ZT1,ZE1,ZP1,ZR1,NTOT(1),nz1)
+      !       if(ntot(2).gt.0)call rangmod(ZH2,ZT2,ZE2,ZP1,ZR2,NTOT(2),nz2)
 
       nntot = min0(ntot(1), ntot(2))
 
@@ -232,11 +232,11 @@ contains
       t0 = asalog2-asalog1
       t1 = main_asalog-asalog1
 
-      !!!! call log_debug(' interpolation sur l''abondance avec')
-      !!!! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
-      !!!! call log_debug(lll)
-      !!!! write(lll,*) ' t0=', t0, '       t1=',t1
-      !!!! call log_debug(lll)
+      !! call log_debug(' interpolation sur l''abondance avec')
+      !! write(lll,*) ' asalog2=',asalog2,'       asalog1=',asalog1
+      !! call log_debug(lll)
+      !! write(lll,*) ' t0=', t0, '       t1=',t1
+      !! call log_debug(lll)
 
       call interpol(t0, t1, z1, z2, zz, nntot)
 
@@ -281,9 +281,9 @@ contains
      sngl(main_glog), &
      sngl(main_asalog), &
      asalalf,        &
-     dd%nhe,         &  !> @todo issue  note: takes nhe from last record. Correct?
+     dd%nhe,         &  ! ISSUE  note: takes nhe from last record. Correct?
      tir,            &
-     dd%tiabs,       &  !> @todo issue  note: takes tiabs from last record. Correct?
+     dd%tiabs,       &  ! ISSUE  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
     write(UNIT_MOD,rec=main_inum+1) 9999  ! 4 bytes, i guess
 
@@ -311,14 +311,14 @@ contains
   end
 
 
-  !> Fill variables nomfipl, asalog1, asalog2 based on main_asalog
-  !>
-  !> Note that intervals are open on upper boundary, i.e.,
-  !> @verbatim
-  !> [ gridsmap_asalog(i), gridsmap_asalog(i+1) [
-  !>
-  !> (1 <= i < gridsmap_num_files)
-  !> @endverbatim
+  ! Fill variables nomfipl, asalog1, asalog2 based on main_asalog
+  !
+  ! Note that intervals are open on upper boundary, i.e.,
+  ! 
+  ! [ gridsmap_asalog(i), gridsmap_asalog(i+1) [
+  !
+  ! (1 <= i < gridsmap_num_files)
+  ! 
 
   subroutine find_two_grid_files()
     integer i, n
@@ -365,7 +365,7 @@ contains
 
 
   !=======================================================================================
-  !> Interpolation ?doc?
+  ! Interpolation ?doc?
 
   subroutine interpol(t0, t1, r1, r2, rr, ntot)
     real*4, intent(in) :: t0, t1
@@ -399,9 +399,9 @@ contains
 
 
   !=======================================================================================
-  !> Enlever les n premieres couches a un modele
-  !>
-  !> Note that ntot may or may not be rr%ntot
+  ! Enlever les n premieres couches a un modele
+  !
+  ! Note that ntot may or may not be rr%ntot
 
   subroutine rangmod(rr, ntot, n)
     type(modele_record), intent(inout) :: rr
@@ -422,16 +422,16 @@ contains
 
 
   !=======================================================================================
-  !> On cherche les numeros des 4 modeles de la table entre lesquels
-  !> le programme devra interpoler. On donne les limites en T et g
-  !> des modeles.
-  !> Les modeles doivent etre ranges en temperature croissante
-  !> a l'interieur de chaque temp les gravites doivent croitre
-  !>
-  !> Outputs are in module variables id11, id12, id21, id22
-  !>
-  !> @note This routine has been re-designed to sweep the whole models file to mount the
-  !> tables (there was a table hard-coded before)
+  ! On cherche les numeros des 4 modeles de la table entre lesquels
+  ! le programme devra interpoler. On donne les limites en T et g
+  ! des modeles.
+  ! Les modeles doivent etre ranges en temperature croissante
+  ! a l'interieur de chaque temp les gravites doivent croitre
+  !
+  ! Outputs are in module variables id11, id12, id21, id22
+  !
+  ! *Note* This routine has been re-designed to sweep the whole models file to mount the
+  ! tables (there was a table hard-coded before)
 
   subroutine locatab(path)
     character(len=*), intent(in) :: path
@@ -443,13 +443,13 @@ contains
                  ing(MAX_NG), & ! number of glog for each temperature
                  jg1(MAX_NG), &
                  jg2(MAX_NG)
-    !!!!!!!             idta(MAX_NT), & ! index of first record for each tempearture
-    !!!!!!!             inga(MAX_NT)    ! number of glog for each temperature
+    !!!!             idta(MAX_NT), & ! index of first record for each tempearture
+    !!!!             inga(MAX_NT)    ! number of glog for each temperature
 
     real*8 :: rteff(MAX_NT), rglog(MAX_NG)
-    !!!!!!! ,r1teff(MAX_NT)
-    !!!!!!! real*8 :: agloga1(MAX_NG),agloga2(MAX_NG),agloga3(MAX_NG),agloga4(MAX_NG), &
-    !!!!!!! agloga5(MAX_NG),agloga6(MAX_NT),agloga7(MAX_NT)
+    !!!! ,r1teff(MAX_NT)
+    !!!! real*8 :: agloga1(MAX_NG),agloga2(MAX_NG),agloga3(MAX_NG),agloga4(MAX_NG), &
+    !!!! agloga5(MAX_NG),agloga6(MAX_NT),agloga7(MAX_NT)
 
     real*8 :: aglog(MAX_NT,MAX_NG)
 
@@ -593,9 +593,9 @@ contains
 
 
   !=======================================================================================
-  !> Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot
-  !>
-  !> Lit sur le fichier de type .mod nh,teta,pe,pg,t5l,ntot
+  ! Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot
+  !
+  ! Lit sur le fichier de type .mod nh,teta,pe,pg,t5l,ntot
 
   subroutine readerbn(rec_id, r)
     integer, intent(in) :: rec_id
@@ -612,23 +612,23 @@ contains
       r%pg(i) = alog10(r%pg(i))
     end do
 
-    !!!! call log_debug('        log NH           TETA          log PE         log PG     To(5000)')
-    !!!! do i = 1, 3
-    !!!!   write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%t5l(i)
-    !!!!   call log_debug(lll)
-    !!!! end do
-    !!!! call log_debug('     ETC.....')
+    !! call log_debug('        log NH           TETA          log PE         log PG     To(5000)')
+    !! do i = 1, 3
+    !!   write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%t5l(i)
+    !!   call log_debug(lll)
+    !! end do
+    !! call log_debug('     ETC.....')
   end
 end
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| PROGRAM |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!> INNEWMARCS
-!>
-!> Interpolation d'un modele dans les grilles de modeles de
-!> NEWMARCS (2005) en fonction de Teff, log g et [Fe/H].
-!>
+! INNEWMARCS
+!
+! Interpolation d'un modele dans les grilles de modeles de
+! NEWMARCS (2005) en fonction de Teff, log g et [Fe/H].
+!
 
 program innewmarcs
   use config

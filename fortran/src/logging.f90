@@ -13,28 +13,28 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-!> @ingroup gr_io
-!> Routines to write text to screen and/or log file.
-!>
-!> Usage:
-!> - Set logging_LEVEL (optional, defaults to DEBUG)
-!> - Call CRITICAL() / ERROR() / WARNING() / INFO() / DEBUG()
-!>
-!> Logging message will only be shown if logging_LEVEL is <= corresponding level of subroutine called.
-!> E.g., corresponding level of subroutine DEBUG() is LOGGING_DEBUG
+! @ingroup gr_io
+! Routines to write text to screen and/or log file.
+!
+! Usage:
+! - Set logging_LEVEL (optional, defaults to DEBUG)
+! - Call CRITICAL() / ERROR() / WARNING() / INFO() / DEBUG()
+!
+! Logging message will only be shown if logging_LEVEL is <= corresponding level of subroutine called.
+! E.g., corresponding level of subroutine DEBUG() is LOGGING_DEBUG
 module logging
   implicit none
 
-  !> variable declared for convenience, to be used to log formatted output as in example:
-  !> @code
-  !> write(lll,*) ...
-  !> call log_info(lll)
-  !> @endcode
+  ! variable declared for convenience, to be used to log formatted output as in example:
+  ! @code
+  ! write(lll,*) ...
+  ! call log_info(lll)
+  ! @endcode
   character*512 lll
 
   ! Logging levels copied from Python (except LOGGING_HALT)
   integer, parameter ::   &
-   LOGGING_HALT     = 60, &  !< Maximum logging level; logging just before system halts
+   LOGGING_HALT     = 60, &  ! Maximum logging level; logging just before system halts
    LOGGING_CRITICAL = 50, &
    LOGGING_ERROR    = 40, &
    LOGGING_WARNING  = 30, &
@@ -51,17 +51,17 @@ module logging
   !=====
   ! Configurable variables
   !=====
-  !> Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
-  !> logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
+  ! Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
+  ! logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
   integer :: logging_level = LOGGING_INFO
-  !> Full path to file to record progress indication
+  ! Full path to file to record progress indication
   character*256 :: logging_fn_progress = 'progress.txt'
-  !> If set to .true., will display messages do standard output (usually the screen)
+  ! If set to .true., will display messages do standard output (usually the screen)
   logical :: logging_console = .true.
-  !> If set to .true., will echo logged messages into dump file specified by logging_fn_dump,
-  !> besides logging to standard output.
+  ! If set to .true., will echo logged messages into dump file specified by logging_fn_dump,
+  ! besides logging to standard output.
   logical :: logging_dump = .false.
-  !> Full path to file to record logging messages indication
+  ! Full path to file to record logging messages indication
   character*256 :: logging_fn_dump = 'fortran_messages.log'
 
 
@@ -74,18 +74,18 @@ module logging
 contains
 
   !---------------------------------------------------------------------------------------
-  !> Logs message at HALT level and halts program execution with error code -1.
-  !>
-  !> Error code -1 allows a program that calls PFANT to know that PFANT stopped
-  !> due to an error situation (normal program execution ends with error code 0).
+  ! Logs message at HALT level and halts program execution with error code -1.
+  !
+  ! Error code -1 allows a program that calls PFANT to know that PFANT stopped
+  ! due to an error situation (normal program execution ends with error code 0).
 
   subroutine pfant_halt(s, is_bug, is_assertion)
-    !> Log message
+    ! Log message
     character(len=*), intent(in) :: s
-    !> (default=.false.) Whether halting program because of a bug.
+    ! (default=.false.) Whether halting program because of a bug.
     logical, optional, intent(in) :: is_bug
-    !> (default=.false.) Whether halting program because of assertion error.
-    !> If .true., will print "assertion error" before the message
+    ! (default=.false.) Whether halting program because of assertion error.
+    ! If .true., will print "assertion error" before the message
     logical, optional, intent(in) :: is_assertion
     logical is_bug_, is_assertion_
     if (.not. present(is_bug)) then
@@ -105,9 +105,9 @@ contains
       call do_logging('(*assertion error*) '//s, LOGGING_HALT)
     end if
 
-    !> @todo actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
-    !> @todo actually, as a third thought, I may use this not necessarily meaning bug, but ask kindly for the used to tell us what happened to help us improve the software.
-    !> @todo the time to solve this is when I tackle all the error situations systematically
+    ! TODO actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
+    ! TODO actually, as a third thought, I may use this not necessarily meaning bug, but ask kindly for the used to tell us what happened to help us improve the software.
+    ! TODO the time to solve this is when I tackle all the error situations systematically
     if (is_bug_) then
       call do_logging('*************************************', LOGGING_HALT)
       call do_logging('* This is a bug! ********************', LOGGING_HALT)
@@ -119,11 +119,11 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as HALT. Logs unconditionally (independent of logging level).
-  !>
-  !> This allows the calling routine to log halt-level messages before calling
-  !> pfant_halt(). As a rule, always call pftant_halt() after 1 or more calls to
-  !> log_halt().
+  ! Logs message as HALT. Logs unconditionally (independent of logging level).
+  !
+  ! This allows the calling routine to log halt-level messages before calling
+  ! pfant_halt(). As a rule, always call pftant_halt() after 1 or more calls to
+  ! log_halt().
 
   subroutine log_halt(s)
     character(len=*), intent(in) :: s
@@ -132,18 +132,18 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> Generic logging with level passed as argument.
-  !>
-  !> This routine also provides an additional flag_dress argument, which allows to switch
-  !> off logging message "dressing" ("dressing" here means the addition of extra
-  !> information such as the logging level, date/time etc)
+  ! Generic logging with level passed as argument.
+  !
+  ! This routine also provides an additional flag_dress argument, which allows to switch
+  ! off logging message "dressing" ("dressing" here means the addition of extra
+  ! information such as the logging level, date/time etc)
 
   subroutine log_any(s, level, flag_dress)
     character(len=*), intent(in) :: s
     integer, intent(in) :: level
-    !> If .true., adds information to string, e.g., logging level.
-    !> If .false., logs exactly what is in "s", without dressing with more info.
-    !> Default: .true.
+    ! If .true., adds information to string, e.g., logging level.
+    ! If .false., logs exactly what is in "s", without dressing with more info.
+    ! Default: .true.
     logical, intent(in), optional :: flag_dress
     logical :: flag_dress_
 
@@ -156,7 +156,7 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as CRITICAL
+  ! Logs message as CRITICAL
 
   subroutine log_critical(s)
     character(len=*), intent(in) :: s
@@ -166,7 +166,7 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as ERROR
+  ! Logs message as ERROR
 
   subroutine log_error(s)
     character(len=*), intent(in) :: s
@@ -176,7 +176,7 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as WARNING
+  ! Logs message as WARNING
 
   subroutine log_warning(s)
     character(len=*), intent(in) :: s
@@ -186,7 +186,7 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as INFO
+  ! Logs message as INFO
 
   subroutine log_info(s)
     character(len=*), intent(in) :: s
@@ -196,7 +196,7 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs message as DEBUG
+  ! Logs message as DEBUG
 
   subroutine log_debug(s)
     character(len=*), intent(in) :: s
@@ -206,16 +206,16 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  !> Logs progress
-  !>
-  !> uses log_info() to write to screen + writes information into
-  !> logging::logging_fn_progress
-  !>
-  !> If cannot create file, does not bother (warns)
+  ! Logs progress
+  !
+  ! uses log_info() to write to screen + writes information into
+  ! logging::logging_fn_progress
+  !
+  ! If cannot create file, does not bother (warns)
 
   subroutine log_progress(i, n)
-    integer, intent(in) :: i, & !< current iteration
-                           n    !< number of iterations
+    integer, intent(in) :: i, & ! current iteration
+                           n    ! number of iterations
     real*8 perc
     integer, parameter :: UNIT_ = 199
     perc = 100.*i/n
@@ -243,17 +243,17 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  !> Asserts i1 <= i2; if not, halts showing message
-  !>
-  !> This routine is called to make sure that we won't try to access an element beyond the
-  !> maximum allocated for an array, since Fortran doesn't care about that.
+  ! Asserts i1 <= i2; if not, halts showing message
+  !
+  ! This routine is called to make sure that we won't try to access an element beyond the
+  ! maximum allocated for an array, since Fortran doesn't care about that.
 
   subroutine assert_le(i1, i2, title, name1, name2)
     integer, intent(in) :: i1, i2
     character(len=*), intent(in) :: &
-     title, & !< title of caller routine, e.g., "integra()"
-     name1, & !< name of argument corresponding to the value in i1
-     name2    !< name of argument corresponding to the value in i2
+     title, & ! title of caller routine, e.g., "integra()"
+     name1, & ! name of argument corresponding to the value in i1
+     name2    ! name of argument corresponding to the value in i2
 
     if (i1 .gt. i2) then
       write(lll,10) title, name1, name2, i1, i2
@@ -266,13 +266,13 @@ contains
   !=======================================================================================
 
   !---------------------------------------------------------------------------------------
-  !> Internal routine, MUST NOT be called from outside
+  ! Internal routine, MUST NOT be called from outside
 
   subroutine do_logging(s, level, flag_dress)
     character(len=*), intent(in) :: s
-    !> If .true., adds information to string, e.g., logging level.
-    !> If .false., logs exactly what is in "s", without dressing with more info.
-    !> Default: .true.
+    ! If .true., adds information to string, e.g., logging level.
+    ! If .false., logs exactly what is in "s", without dressing with more info.
+    ! Default: .true.
     logical, intent(in), optional :: flag_dress
     character(len=8) :: t
     integer level
@@ -315,7 +315,7 @@ contains
     flag_first_call = .false.
 
   contains
-    !> Writes (dressed or undressed) to unit of choice
+    ! Writes (dressed or undressed) to unit of choice
 
     subroutine do_writing(unit_)
       integer :: unit_
