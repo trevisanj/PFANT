@@ -1,6 +1,5 @@
 # PFANT
 
-`test markup`
 In the *main configuration file* there are values.
 
 In the `main configuration file` there are values.
@@ -8,6 +7,11 @@ In the `main configuration file` there are values.
 In the _main configuration file_ there are values.
 
 In the **main configuration file** there are values.
+
+In the < main configuration file > there are values.
+
+In the 'main configuration file' there are values.
+
 
 ## Welcome
 
