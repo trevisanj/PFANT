@@ -10,6 +10,8 @@ In the **main configuration file** there are values.
 
 In the < main configuration file > there are values.
 
+In the <main configuration file> there are values.
+
 In the 'main configuration file' there are values.
 
 
