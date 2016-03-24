@@ -6,6 +6,9 @@ PFANT is a spectral synthesis software written in Fortran for use in Astrophysic
 
 Analogue softwares include TurboSpectrum and MOOG.
 
+Other README pages:
+  - [Fortran source code overview](fortran/README.md)
+  - [`pyfant` Python package overview](pyfant/README.md) 
 
 ### History
 
@@ -168,10 +171,6 @@ To get a realtime list of available command-line tools:
 pyfant-scripts.py
 ```
 
-### ```pyfant``` Python package
-
-- [`pyfant` Python package overview](pyfant/README.md) 
-
 ## More about the PFANT pipeline
 
 ### Input/output data files
@@ -279,10 +278,11 @@ It is recommended to use the tool ```cut-atoms.py``` to cut the file converted b
 For more information, see help for ```vald3-to-atoms.py```, ```tune-zinf.py```,
 ```cut-atoms.py``` (call these scripts with ```--help``` option).
 
-### Developers
 
-- [`pyfant` Python package overview](pyfant/README.md) 
-- [Coding tools, structure of the source code, coding style, etc.](fortran/README.md)
+# Other README pages
+  - [Fortran source code overview](fortran/README.md)
+  - [`pyfant` Python package overview](pyfant/README.md) 
+
 
 ```
 -x-x-x-x-x
