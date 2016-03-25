@@ -6,9 +6,11 @@ PFANT is a spectral synthesis software written in Fortran for use in Astrophysic
 
 Analogue softwares include TurboSpectrum and MOOG.
 
-Other README pages:
-  - [Fortran source code overview](fortran/README.md)
-  - [`pyfant` Python package overview](pyfant/README.md) 
+This guide provides a quick start with instructions on how to install and run Fortran
+binaries and Python scripts.
+
+Further down it also describes the PFANT "pipeline", _i.e._,
+the sequence from input data files to a convolved synthetic spectrum.
 
 ### History
 
@@ -173,6 +175,40 @@ pyfant-scripts.py
 
 ## More about the PFANT pipeline
 
+```
+                        +---------------------------+---------------------main.dat
+  gridsmap.dat          |                           |                        |
+newnewm150.mod          v                           v                        |
+newnewm100.mod    +----------+                  +------+                     |
+newnewm050.mod+-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
+newnewp000.mod    +----------+         +        +------+           |         |
+newnewp025.mod                         |            |              |         |
+                                       |            v              |         |
+                                       |         thalpha           |         |
+                                       |         thbeta        absoru2.dat   |
+                                       |         thgamma       hmap.dat      |
+                                       |         thdelta           |         |
+                                       |         thepsilon         |         |
+                                       |            |              |         |
+                         abonds.dat    |            v              |         |
+                         dissoc.dat    +-------->+-----+           |         |
+                          atoms.dat              |pfant|<----------+         |
+                      molecules.dat+------------>+-----+<--------------------+
+                         partit.dat                 |                        |
+                                                    v                        |
+                                                flux.norm                    |
+                                                flux.spec                    |
+                                                flux.cont                    |
+                                                    |                        |
+                                                    v                        |
+                                                 +------+                    |
+                                                 |nulbad|<-------------------+
+                                                 +------+
+                                                    |
+                                                    v
+                                             flux.norm.nulbad
+```
+
 ### Input/output data files
 
 The following table summarizes the files needed for spectral synthesis.
@@ -220,42 +256,6 @@ flux.cont         | continuum flux (multiplied by 10**5)
 flux.norm.nulbad  | convolved flux
 ```
 
-### PFANT pipeline
-
-```
-                        +---------------------------+---------------------main.dat
-  gridsmap.dat          |                           |                        |
-newnewm150.mod          v                           v                        |
-newnewm100.mod    +----------+                  +------+                     |
-newnewm050.mod+-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
-newnewp000.mod    +----------+         +        +------+           |         |
-newnewp025.mod                         |            |              |         |
-                                       |            v              |         |
-                                       |         thalpha           |         |
-                                       |         thbeta        absoru2.dat   |
-                                       |         thgamma       hmap.dat      |
-                                       |         thdelta           |         |
-                                       |         thepsilon         |         |
-                                       |            |              |         |
-                         abonds.dat    |            v              |         |
-                         dissoc.dat    +-------->+-----+           |         |
-                          atoms.dat              |pfant|<----------+         |
-                      molecules.dat+------------>+-----+<--------------------+
-                         partit.dat                 |                        |
-                                                    v                        |
-                                                flux.norm                    |
-                                                flux.spec                    |
-                                                flux.cont                    |
-                                                    |                        |
-                                                    v                        |
-                                                 +------+                    |
-                                                 |nulbad|<-------------------+
-                                                 +------+
-                                                    |
-                                                    v
-                                             flux.norm.nulbad
-```
-
 ## Other topics
 
 ### Converting VALD3 extended-format atomic lines
@@ -279,8 +279,9 @@ For more information, see help for ```vald3-to-atoms.py```, ```tune-zinf.py```,
 ```cut-atoms.py``` (call these scripts with ```--help``` option).
 
 
-# Other README pages
-  - [Fortran source code overview](fortran/README.md)
+# Other pages
+  - [Fortran source code overview](fortran/README.md) (for Fortran developers
+    interested in changing the source code)
   - [`pyfant` Python package overview](pyfant/README.md) 
 
 
