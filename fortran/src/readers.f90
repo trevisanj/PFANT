@@ -388,10 +388,19 @@ module reader_modeles
     ! Size of variables nh, teta, pe, pg, t5l
     integer*4 :: ntot
 
-    real*4 :: teff, glog, asalog, asalalf, nhe
+    real*4 :: teff,    & ! Teff (Kelvin)   
+              glog,    & ! log10(g) (g in [cm/s2])
+              asalog,  & ! [Fe/H]
+              asalalf, & ! [alpha/Fe]
+              nhe        ! abundance of Helium: 10**([He/H]-12)
+                         ! e.g., Sun: 10**(10.93-12) ~= 0.0851
 
     real*4, dimension(MAX_MODELES_NTOT) :: &
-     nh, teta, pe, pg, t5l
+     nh,   & ! ?doc?
+     teta, & ! 5040./temperature (temperature in K)
+     pe,   & ! electron pressure [dyn/cm2]
+     pg,   & ! gas pressure [dyn/cm2]
+     t5l   & ! log(tau(5000 A))
 
     character*20 :: tit, tiabs
   end type
@@ -488,8 +497,8 @@ contains
 
     read(UNIT_MOD, rec=rec_id) &
      record%ntot,    &
-     record%teff,   &
-     record%glog,   &
+     record%teff,    &
+     record%glog,    &
      record%asalog,  &
      record%asalalf, &
      record%nhe,     &

@@ -1125,7 +1125,7 @@ contains
 
     ! ASK BLB why overwriting absoru2_abhel?
     absoru2_abhel = modeles_nhe
-    ! ASK BLB why using modeles_asalog instead of main_afstar?
+    ! ASK BLB why using modeles_asalog instead of main_afstar? why multiplying this?
     absoru2_abmet = absoru2_abmet*10.**modeles_asalog
 
     !-----

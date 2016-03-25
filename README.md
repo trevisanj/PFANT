@@ -252,7 +252,7 @@ flux.norm         | normalized flux
 flux.spec         | un-normalized flux (multiplied by 10**5)
 flux.cont         | continuum flux (multiplied by 10**5)
 
-*** created by nulbad ***
+*** created by nulbad *** 
 flux.norm.nulbad  | convolved flux
 ```
 
