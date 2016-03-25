@@ -20,10 +20,6 @@
 !
 ! *Note* Arrays passed to routines now have assumed-shape declarations + assertions against
 ! access beyond boundaries.
-!
-! TODO Routines that have the size of arrays passed to them now have assertions. This may
-! slow down the calculations (depending on the number of calls to given routine)
-! and may be subject to re-visit.
 
 module hydro2_math
   use misc_math
@@ -340,7 +336,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Declaration and initialization of x_* variables
 !
-! These variable values may come either from dfile:main or command-line options.
+! These variable values may come either from *main file* or command-line options.
 
 module hydro2_x
   use logging
@@ -568,7 +564,6 @@ contains
     call log_debug(lll)
 
     do i = 1,modeles_ntot
-      ! TODO I probably changed the parameters of this routine
       call absoru_(m_th%clam,modeles_teta(i),m_pelog(i),1,1,1,1,2,.true.)
       m_toth(i) = absoru_toc
       m_kc(i) = absoru_totkap(1)
@@ -699,7 +694,7 @@ contains
   ! Les elements alfa sont reconnus par leur masse
   !
   ! @warning This routine overwrites variables absoru2_zp absoru2_abmet,
-  !          which are initially read from dfile:absoru2
+  !          which are initially read from *absoru2 file*
 
   SUBROUTINE abonio()
     ! nbre d'elements alfa reconnus par leur masse ALFAM
@@ -738,7 +733,7 @@ contains
 
     a0 = som1/config_zph
 
-    ! ASK BLB Changing value that was read from dfile:absoru2
+    ! ASK BLB Changing value that was read from *absoru2 file*
     absoru2_abmet = a0*asasol
 
     write(lll, *) 'in abonio ABMET=',absoru2_abmet
@@ -1961,7 +1956,7 @@ end
 ! Program to create files such as thalpha, thbeta etc -- matrices of (#layer)x(lambda) data
 !
 ! The hydrogen lines files to be created are determined by overlapping a [llzero, llfin] interval with
-! wavelengths listed in dfile:hmap. Here is a sample hmap.dat file:
+! wavelengths listed in *hmap file*. Here is a sample hmap.dat file:
 !
 ! @code
 ! # filename / niv inf / niv sup / central lambda / kiex / c1
@@ -1990,7 +1985,7 @@ end
 !   - Un fichier de trace compatible avec GRAFIC (Nom demande)
 !
 ! (JT) Now the velocity of microturbulence may vary with atmospheric depth;
-! uses dfile:main and subroutine turbul_(), same as pfant
+! uses *main file* and subroutine turbul_(), same as pfant
 !
 ! 
 

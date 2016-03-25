@@ -58,7 +58,7 @@ module nulbad_calc
 
   integer, parameter :: UNIT_=199 ! unit for file I/O
 
-  ! x_* values may come either from command line or dfile:main
+  ! x_* values may come either from command line or *main file*
   real*8 :: x_fwhm, x_pat
   character*128 :: x_fn_flux, x_fn_cv, x_flprefix
 contains
@@ -67,7 +67,7 @@ contains
   ! Initialization of this module
   !
   ! One of the tasks if the initialization of the x_* variables, whose values may be
-  ! either set from the command line or taken from dfile:main
+  ! either set from the command line or taken from *main file*
 
   subroutine nulbad_init()
     logical :: main_exists  ! whether or not main configuration file exists
@@ -84,7 +84,7 @@ contains
     ! Assigns x_*
     !=====
     ! values in config_* variables have preference, but if they are uninitialized, will
-    ! pick values from dfile:main
+    ! pick values from *main file*
     x_fwhm = config_fwhm
     x_pat = config_pat
     x_fn_flux = config_fn_flux
@@ -371,8 +371,6 @@ contains
     real*8 :: sigma, aa, totlarg, z
     integer i, ifd
     real*8, parameter :: SQRT_2 = sqrt(2.)
-
-    ! todo sum_
     real*8 sum_
 
 

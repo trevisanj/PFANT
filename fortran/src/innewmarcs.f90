@@ -45,7 +45,7 @@ contains
   !=======================================================================================
   ! Main routine of this module
   !
-  ! *Note* ASCII file is always opened in status "unknown"
+  ! **Note** ASCII file is always opened in status "unknown"
 
   subroutine innewmarcs_calc_()
     integer, parameter :: UNIT_MOD = 20, UNIT_DAT = 21  ! file units
@@ -53,7 +53,7 @@ contains
      aa, bb, cc, dd, &   ! input records
      ee, ff, z1, z2, zz  ! records that are calculated by interpol()
 
-    character*5 :: tira = ' Ple '  ! TODO ask Elvis what does "Ple" mean?
+    character*5 :: tira = ' Ple '
     character*20 tir    ! titre du modele interpole
     character*65 nomfiple
     real*4 bid0, vvt, tostand, t0, t1, tau, to0, tttt
@@ -128,7 +128,7 @@ contains
       call close_mod_file()
 
       ! sets the alpha abundance of the models for each iabon
-      ! *Note* assumes that asalalf is the same for all records.
+      ! **Note** assumes that asalalf is the same for all records.
       ralfa(iabon)=dd%asalalf  ! takes asalalf from record d
 
       ! write(6,*) ' '
@@ -430,7 +430,7 @@ contains
   !
   ! Outputs are in module variables id11, id12, id21, id22
   !
-  ! *Note* This routine has been re-designed to sweep the whole models file to mount the
+  ! **Note** This routine has been re-designed to sweep the whole models file to mount the
   ! tables (there was a table hard-coded before)
 
   subroutine locatab(path)
@@ -453,7 +453,7 @@ contains
 
     real*8 :: aglog(MAX_NT,MAX_NG)
 
-    integer i, j, jjt, jt1, jt2, n, ng, ngg, nt
+    integer i, jjt, jt1, jt2, n, ng, ngg, nt
 
     type(modele_record) :: r  ! filled by read_mod_record()
     integer inum, num_rec

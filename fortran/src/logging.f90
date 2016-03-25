@@ -105,9 +105,6 @@ contains
       call do_logging('(*assertion error*) '//s, LOGGING_HALT)
     end if
 
-    ! TODO actually as a second thought, I might always print some message as the following, drop this is_bug option, and always ask kindly for error (STOP) situations to be reported
-    ! TODO actually, as a third thought, I may use this not necessarily meaning bug, but ask kindly for the used to tell us what happened to help us improve the software.
-    ! TODO the time to solve this is when I tackle all the error situations systematically
     if (is_bug_) then
       call do_logging('*************************************', LOGGING_HALT)
       call do_logging('* This is a bug! ********************', LOGGING_HALT)

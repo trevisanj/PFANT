@@ -23,11 +23,6 @@
 !
 ! Prefixes:
 !   - sat4_ -- variables calculated by sat4() (or indirectly, die())
-!
-! TODO plot the sat4_*
-
-!
-! TODO consider eliminating the +-20 angstrom from calculations
 
 module dissoc
   use config
@@ -430,7 +425,6 @@ contains
       do 1042 m =1,mmaxj
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
-        ! TODO log(m_p()) called many times, should try to optimize
         pmoljl = pmoljl + float(natomj)*log10(m_p(nelemj))
       1042 continue
 
@@ -576,13 +570,13 @@ module filters
   ! Augmented: first row is 0 (ZERO) or repeats last element of previous column
   !
   ! km_f_ln(i+1, j) represents to i-th transition of j-th molecule, 1=1,molidxs%n_on
-  integer :: km_f_ln(MAX_NV_PER_MOL+1, NUM_MOL)
+  integer :: km_f_ln(MAX_KM_NV_PER_MOL+1, NUM_MOL)
 
   !=====
   ! atoms_f_*Variables filled by filter_atoms()
   !=====
 
-  ! dfile:atoms, filtered variables
+  ! *atoms file*, filtered variables
   ! Very similar to above; differences are
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
@@ -606,8 +600,6 @@ contains
 
   !=======================================================================================
   ! Sweeps km_* to populate a few km_f_* depending on the interval lzero-lfin
-  !
-  ! TODO test
 
   subroutine filter_molecules(lzero, lfin)
     ! Lower edge of wavelength interval
@@ -824,9 +816,9 @@ contains
           ! l is index within km_f_lmbdam, km_f_sj and km_f_jj
           do l= l_ini, l_fin
             ! PC2003: default value for CSC does not exist physically
-            csc = exp(-H*C/KB*modeles_teta(n)/5040.*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*   &
+            csc = exp(-H*C/KB*t5040*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*   &
                   (2.-cro)*(2.*km_f_jj(l)+1.)*                                             &
-                  exp(H*C/KB*modeles_teta(n)/5040.*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))
+                  exp(H*C/KB*t5040*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))
 
             km_c_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
           end do
@@ -910,11 +902,11 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Declaration and initialization of x_* variables
 !
-! This module deals with the variables whose values may come either from dfile:main or
+! This module deals with the variables whose values may come either from *main file* or
 ! command-line arguments (the latter has precedence).
 !
 ! Prefixes:
-!   - x_ -- these variable values may come either from dfile:main or command-line options.
+!   - x_ -- these variable values may come either from *main file* or command-line options.
 
 module pfant_x
   use reader_main
@@ -980,9 +972,6 @@ end
 !
 !
 
-!
-! TODO If I find any of the constants being used in another module, I shall move them to a separate module called "constants"
-!
 ! Variable patterns
 ! 
 !        m_* module internal variables shared among routines
@@ -1026,7 +1015,7 @@ module synthesis
   ! Calculated by subroutine popadelh
   real*8, dimension(MAX_ATOMS_F_NBLEND) :: popadelh_corch, popadelh_cvdw, &
    popadelh_zinf  ! limit distance from center of line to calculate the Voigt profile
-                  ! This information was once in dfile:atoms and being set manually;
+                  ! This information was once in *atoms file* and being set manually;
                   ! now it is calculated automatically.
 
   real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
@@ -1038,7 +1027,7 @@ module synthesis
   !real*8, dimension(MAX_ATOMS_F_NBLEND,MAX_MODELES_NTOT) :: &
   ! popadelh_pop, popadelh_a, popadelh_delta, &
   ! popadelh_zinf  ! limit distance from center of line to calculate the Voigt profile
-  !                ! This information was once in dfile:atoms and being set manually;
+  !                ! This information was once in *atoms file* and being set manually;
   !                ! now it is calculated automatically.
 
 
@@ -1103,7 +1092,7 @@ module synthesis
 contains
 
   !======================================================================================================================
-  ! TODO make file replacing clear somewhere because it was not the original behaviour
+  ! Spectral synthesis subroutine
 
   subroutine synthesis_()
     ! Units for output files
@@ -1120,7 +1109,7 @@ contains
      ikey,    & ! ikey-th config_aint-large calculation interval
      ikeytot    ! total number of config_aint-large calculation intervals
 
-    real*8 l0, lf, alzero, tetaef, xlfin, xlzero
+    real*8 l0, lf, alzero, xlfin, xlzero
 
     ! auxiliary variables to time the different parts
     real :: start, finish, start0, finish0
@@ -1138,8 +1127,6 @@ contains
     absoru2_abhel = modeles_nhe
     ! ASK BLB why using modeles_asalog instead of main_afstar?
     absoru2_abmet = absoru2_abmet*10.**modeles_asalog
-
-    tetaef = 5040/main_teff
 
     !-----
     ! Output files opened here and left open until the end
@@ -1236,13 +1223,6 @@ contains
       m_ilzero = floor(m_lzero/100)*100
       alzero = m_lzero-m_ilzero
       do d = 1, m_dtot
-        ! todo cleanup
-!        if (d .eq. 1) then
-!          m_ttd(d) = alzero
-!        else
-!          m_ttd(d) = alzero+x_pas*(d-1)
-!        end if
-
         m_ttd(d) = alzero+x_pas*(d-1)
       end do
 
@@ -1404,17 +1384,17 @@ contains
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
        modeles_tit,            &  ! fixed
-       tetaef,                 &  ! fixed
+       5040/main_teff,         &  ! fixed
        main_glog,              &  ! fixed
        main_asalog,            &  ! fixed
        modeles_nhe,            &  ! fixed
        amg,                    &  ! fixed
        l0,                     &  ! fixed
        lf,                     &  ! fixed
-       m_lzero+x_pas*(i1-1),                &  ! changes (value changes with each iteration)
-       m_lzero+x_pas*(i2-1),                 &  ! changes
-       i2-i1+1,                   &  ! old nulbad, not used
-       x_pas,               &  ! fixed
+       m_lzero+x_pas*(i1-1),   &  ! changes (value changes with each iteration)
+       m_lzero+x_pas*(i2-1),   &  ! changes
+       i2-i1+1,                &  ! old nulbad, not used
+       x_pas,                  &  ! fixed
        main_echx,              &  ! fixed
        main_echy,              &  ! fixed
        main_fwhm                  ! fixed
@@ -1436,7 +1416,7 @@ contains
     integer j, k, kmax, l, n
 
     do n = 1, modeles_ntot
-      t = 5040./modeles_teta(n)  ! TODO I think the program deserves a modeles_T5040 because this is calculated everywhere!!
+      t = 5040./modeles_teta(n)
       ue(n) = C1*KB*t/modeles_pe(n)*t**1.5
       do j = 1, partit_npar
         kmax = partit_jkmax(j)
@@ -1463,7 +1443,7 @@ contains
         x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modeles_teta(n))
         tki2= partit_ki2(j) * modeles_teta(n)
 
-        ! TODO ?doc? ask blb why 77? Needs some comment on it.
+        ! ASK BLB Why 77?
         if (tki2 .ge. 77.) then
           y = 0.
           popul_p(3,j,n) = 0.
@@ -1489,7 +1469,7 @@ contains
     character*1 isi, iss
     integer j, k, ioo, iopi, n
     real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel, &
-     a, delta, x
+     a, delta
     data isi/' '/, iss/' '/
 
     do k = 1, atoms_f_nblend
@@ -1509,11 +1489,9 @@ contains
       popadelh_cvdw(k) = 0
       ioo = atoms_f_ioni(k)
 
-      ! If "ch" variable from dfile:atoms is zero, overwrites it with a calculated value.
+      ! If "ch" variable from *atoms file* is zero, overwrites it with a calculated value.
       ! See also read_atoms(), variable atoms_gr, which is also overwritten.
       if(atoms_f_ch(k) .lt. 1.e-37)  then
-        ! TODO optimize create atoms_partit_ki1, atoms_partit_ki2 to be filled by inner join upon reading atoms
-
         kies = (12398.54/atoms_f_lambda(k)) + atoms_f_kiex(k)
         if (ioo .eq. 1) then
           kii = partit_ki1(j)
@@ -1569,22 +1547,6 @@ contains
           popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
         end if
 
-! todo cleanup
-!        IF (isnan(popadelh_pop(k, n))) then
-!          write(*,*) 'isnan(popadelh_pop(k, n)'
-!
-!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
-!write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
-!write(*,*) 'sat4_po(n) = ', sat4_po(n)
-!write(*,*) 'sat4_pph(n) = ', sat4_pph(n)
-!write(*,*) 'popul_p(ioo,j,n) = ', popul_p(ioo,j,n)
-!write(*,*) 'top = ', top
-!write(*,*) 'tap = ', tap
-!stop
-!end if
-
-
-
         delta = (1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         popadelh_delta(k,n) = delta
 
@@ -1598,47 +1560,6 @@ contains
 
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
         popadelh_a(k,n) = a
-
-! TODO CLEANUP
-!        if (isnan(a)) then
-!          write(*,*) 'popaedlh: a is nan'
-!          write(*,*) 'gamma = ', gamma
-!          write(*,*) 'KB = ', KB
-!          write(*,*) 't = ', t
-!          write(*,*) 'atoms_f_gr(k) ', atoms_f_gr(k)
-!          write(*,*) 'atoms_f_ge(k) ', atoms_f_ge(k)
-!          write(*,*) 'modeles_pe(n) ', modeles_pe(n)
-!          write(*,*) 'gh ', gh
-!          write(*,*) 'bk_phn(n) ', bk_phn(n)
-!          write(*,*) 'bk_ph2(n) ', bk_ph2(n)
-!          write(*, *) 'C5', C5
-!          write(*, *) 'C6', C6
-!          write(*, *) 'iopi', iopi
-!          write(*, *) 'atoms_f_ch(k)', atoms_f_ch(k)
-!          write(*, *) 'vrel', vrel
-!          write(*, *) 'popadelh_corch(k)', popadelh_corch(k)
-!          write(*, *) 'C5*atoms_f_ch(k)**0.4*vrel**0.6', C5*atoms_f_ch(k)**0.4*vrel**0.6
-!          write(*, *) 'C5*atoms_f_ch(k)', C5*atoms_f_ch(k)
-!          write(*, *) 'atoms_f_ch(k)**0.4', atoms_f_ch(k)**0.4
-!          write(*, *) 'vrel**0.6', vrel**0.6
-!
-!          stop
-!        end if
-!
-!        if (n .eq. modeles_ntot) then
-!          ! zinf(k) will be calculated for the last atmospheric layer, whether there is the most
-!          ! broadening
-!          x = (31.9*a+5.1)*50
-!          ! To convert the "x" argument of hjenor() to a wavelength, I do the inverse of what is done
-!          ! just before calling hjenor() in subroutine selekfh() below
-!          ! popadelh_zinf(k, n) = x*1e8*delta
-!          popadelh_zinf(k) = x*1e8*delta
-!
-!          write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k, n), '; delta=', delta
-!          ! write(*,*) 'x=', x, '; a=', a, '; zinf=', popadelh_zinf(k), '; delta=', delta
-!          ! todo cleanup write(45,*) popadelh_a(k,n)
-!          ! todo cleanup write(46,*) popadelh_zinf(k, n)
-!        end if
       end do
     end do
   end
@@ -1652,7 +1573,8 @@ contains
   !
   ! *Note* Convolution for molecules uses Gaussian profile.
   !
-  ! TODO MT+JT Decision on variable MM: logic suggests that there should be one MM per molecule, so we are going to make
+  ! *Note* (MT)+(JT) Decision on variable MM: logic suggests that there should be one MM per molecule, so now using km_f_mm
+  !                  instead of old scalar MM
 
   subroutine selekfh()
     integer d, k, l, n
@@ -1669,13 +1591,6 @@ contains
      deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
      phi, t, v, vm, &
      kam, kappam, kappa, kak
-
-
-!todo cleanup
-integer count_
-
-
-
 
 
     if (atoms_f_nblend .ne. 0) then
@@ -1718,11 +1633,7 @@ integer count_
         ! atomes
         if(config_no_atoms) go to 260
         do  k = 1, atoms_f_nblend
-! todo cleanup
           if(abs(ecar(k)) .gt. atoms_f_zinf(k)) then
-!          if(abs(ecar(k)) .gt. popadelh_zinf(k, n)) then
-!          if(abs(ecar(k)) .gt. popadelh_zinf(k)) then
-!          if(abs(ecar(k)) .gt. 30) then   ! I think zinf won't be greater than 25, right
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
@@ -1734,46 +1645,7 @@ integer count_
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
-
-
-
-! TODO CLEANUP
-
-
-if (n .eq. 1) then
-    count_ = count_+1
-    end if
-
-
-!            if (isnan(kak)) then
-!              write(*,*) 'KAK IS NAN KAK IS NAN KAK IS NAN KAK I'
-!              write(*,*) 'v = ', v
-!              write(*,*) 'a = ', popadelh_a(k,n)
-!              write(*,*) 'delta = ', popadelh_delta(k,n)
-!              write(*,*) 'phi = ', phi
-!
-!write(*,*) 'popadelh_pop(k,n) = ', popadelh_pop(k,n)
-!write(*,*) 'm_gfal(k) = ', m_gfal(k)
-!write(*,*) 'atoms_f_abonds_abo(k) = ', atoms_f_abonds_abo(k)
-!
-!
-!
-!
-!              stop
-!            end if
-
-            ! todo cleanup
-            !! trick to write one atmospheric layer to a different file
-            ! write(n+100,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
-
-
-            !if (n .eq. 50) then
-              !! trick to write one atmospheric layer to a different file
-            !  write(48,*) ecar(k), popadelh_a(k,n), v, popadelh_delta(k,n), phi, m_gfal(k), popadelh_pop(k,n), kak
-            !end if
-
           end if
-
           kappa = kappa + kak
         end do   !  fin bcle sur k
 
@@ -1782,7 +1654,8 @@ if (n .eq. 1) then
         ! molecules
         if (config_no_molecules) go to 250
         do l = 1, km_f_mblend
-          ! todo exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
+          ! TODO exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
+          !      changing this may be easier to import from TurboSpectrum molecular data
           if(abs(ecarm(l)) .gt. KM_ALARGM)  then
             kam = 0.
           else
@@ -1826,29 +1699,12 @@ if (n .eq. 1) then
 
       ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
       selekfh_fcont(d) = flin1(kci, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
-
-      ! todo cleanup
-      ! write(49,*) ecar(1), popadelh_a(1,50), v, popadelh_delta(1,50), phi, &
-      ! m_gfal(1), popadelh_pop(1,50), kak, kap(50), kci(50), bi(50), selekfh_fl(d)
-
-      ! LETS SEE kap for three lines
-      ! QWE = 50
-
-      ! todo cleanup
-      !write(50,*) kap(QWE), kci(QWE), bi(QWE), selekfh_fl(d)
-
-    end do  ! fin bcle sur d
-
-    !todo cleanup
-    print *, 'olha soh  dtot=', m_dtot, '; count_=', count_
+    end do
   end
 
 
   !======================================================================================================================
   ! Calculates the flux in the continuum.
-  ! TODO There is a lot of calculation here that is independent from m_lzero and m_lfin (optimize?)
-  !
-  ! TODO log_pe not used yet
 
   subroutine bk()
     real*8 nu, llzero, llfin, nu1, nu2, &
@@ -1879,7 +1735,6 @@ if (n .eq. 1) then
     ahnu2 = H*nu2
     c32 =(2*ahnu2) * (nu2/C)**2
     do n = 1,modeles_ntot
-      ! TODO: calculate this "T" somewhere else, this is calculated all the time (optimize)
       t = 5040./modeles_teta(n)
       alph_n = exp(-ahnu2/(KB*t))
       bk_b2(n) = c32 * (alph_n/(1.-alph_n))
@@ -2004,8 +1859,6 @@ if (n .eq. 1) then
 
   !=======================================================================================
   ! Adds contribution of single file to hy_tauh; also calculates m_dhmi and m_dhpi
-  !
-  ! TODO top test the pointers
 
   subroutine calc_tauhi(i_file)
     integer, intent(in) :: i_file ! index pointing to element of the filetoh_* arrays
@@ -2189,8 +2042,8 @@ program pfant
 
   !---
   ! (intermission)
-  ! After reading dfile:dissoc and dfile:main,
-  ! initializes variables whose values may come either from dfile:main or
+  ! After reading *dissoc file* and *main file*,
+  ! initializes variables whose values may come either from *main file* or
   ! command-line option
   !---
   call pfant_init_x()

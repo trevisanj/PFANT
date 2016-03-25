@@ -2,7 +2,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:dissoc
+! Reading routines and variable declarations for *dissoc file*
 
 module reader_dissoc
   use logging
@@ -203,7 +203,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for main configuration file
+! Reading routines and variable declarations for *main file*
 
 module reader_main
   use logging
@@ -261,13 +261,12 @@ contains
   end
 
   !=======================================================================================
-  ! Reads main configuration file to fill variables main_*
+  ! Reads *main file* to fill variables main_*
 
   subroutine read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer, parameter :: UNIT_ = 4
-    integer ih, i
-    character*64 filetoh_temp
+    integer i
     logical ecrit_obsolete
     real*8 temp
 
@@ -290,6 +289,7 @@ contains
     ! - 1) number of atmospheric layers
     ! - 2) vector of optical depths
     ! - 3) vector of velocities of microturbulence
+    !
     ! *Note* the number of layers does not need to match that of modeles.mod because an interpolation
     !        will take place in turbul_() to "synchronize" these two vectors
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
@@ -367,9 +367,9 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:modeles
+! Reading routines and variable declarations for *modeles file*
 !
-! TODO (MT) dfile:modeles could become an ASCII file
+! TODO (MT) *modeles file* could become an ASCII file (JT) To make it editable?
 
 module reader_modeles
   use logging
@@ -412,7 +412,7 @@ module reader_modeles
    modeles_pg,   & ! ?doc?
    modeles_t5l     ! ?doc?
 
-   ! Unit to open dfile:modeles
+   ! Unit to open *modeles file*
    integer, parameter :: UNIT_MOD = 198
 
    ! Whether the file is open
@@ -536,7 +536,7 @@ contains
 
 
   !=======================================================================================
-  ! Reads single record from file dfile:modeles into variables modeles_*
+  ! Reads single record from file *modeles file* into variables modeles_*
   !
   ! SI L ON DESIRE IMPOSER UN MODELE ON MET EN main_inum LE NUM DU MODELE
   ! SUR LE FICHIER ACCES DIRECT
@@ -551,18 +551,12 @@ contains
             id_
     type(modele_record) :: r
 
-    ! TODO better to give error if main_inum is not set
-    ! TODO Check if FORTRAN initializes variables to zero automatically: can I rely on this??
-    ! TODO Maybe implement variable main_FLAG to FLAG that main configuration file has been read already
     id_ = 1
     if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
 
     call open_mod_file(path_to_file)
     call read_mod_record(id_, r)
     call close_mod_file()
-
-    ! TODO there was an intention here to *look for a model* that matches parameters in main.dat.
-    ! hydro2 has the correct reader. but I am not sure it is implemented right. BLB mentionet to MT her intention to make this work as a feature.
 
     ! consistency check: these were already present in the 2015- code
     ddt  = abs(main_teff-r%teff)
@@ -613,7 +607,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:hmap
+! Reading routines and variable declarations for *hmap file*
 
 module reader_hmap
   use logging
@@ -622,7 +616,7 @@ module reader_hmap
   use reader_main
   implicit none
 
-  ! Structure to store one row of dfile:hmap
+  ! Structure to store one row of *hmap file*
   type hmap_row
     ! file name
     character*64 fn
@@ -638,16 +632,16 @@ module reader_hmap
     real*8 c1
   end type
 
-  ! Array to store all rows in dfile:hmap
+  ! Array to store all rows in *hmap file*
   type(hmap_row) :: hmap_rows(MAX_FILETOH_NUM_FILES)
 
-  ! Number of rows in dfile:hmap
+  ! Number of rows in *hmap file*
   integer :: hmap_n
 
 contains
 
   !=======================================================================================
-  ! Reads dfile:hmap to fill variables hmap_*
+  ! Reads *hmap file* to fill variables hmap_*
   !
 
   subroutine read_hmap(path_to_file)
@@ -730,12 +724,7 @@ module reader_filetoh
   ! ?doc?
   integer filetoh_jmax(MAX_FILETOH_NUM_FILES)
 
-  ! This variable was a constant hard-coded as
-  ! @code
-  ! /3750.150, 3770.630, 3797.900, 3835.390, 3889.050, 3970.076, 4101.748, 4340.468, 4861.332, 6562.817/
-  ! @endcode
-  ! Now it is opening the files and taking the initial lambda for each file instead
-  ! TODO line is symmetric; check if left-side is assumed
+  ! List of lambdas for the hydrogen lines (read from *hmap file*)
   real*8, dimension(MAX_FILETOH_NUM_FILES) :: filetoh_llhy
   ! Number of filetoh files that were actually found in disk
   integer :: filetoh_num_files = 0
@@ -750,13 +739,7 @@ contains
   ! [llzero, llfin] is the calculation lambda interval. Here this interval is used for
   ! error checking: if it doesn't find a file that should exist, it will give an error
   !
-  ! *Note* For compatibility, it will allow to pass if the filetoh list came from inside
-  ! main configuration file. This is assumed to have happened if the "clam" field of a given hmap
-  ! row is zero.
-  !
   ! LECTURE DE LA PROFONDEUR OPTIQUE DANS LA RAIE D H
-
-  ! TODO not tested; also the calctauh in synthesis needs testing
 
   subroutine read_filetoh(llzero, llfin)
     real*8, intent(in) :: llzero, llfin
@@ -783,7 +766,7 @@ contains
         end if
 
       else
-        ! list of nydrogen line files came from dfile:man and we don't know their central lambda unless we open the file
+        ! list of nydrogen line files came from *main file* and we don't know their central lambda unless we open the file
       end if
 
       if (flag_inside) then
@@ -841,7 +824,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:absoru2
+! Reading routines and variable declarations for *absoru2 file*
 
 module reader_absoru2
   use logging
@@ -878,7 +861,7 @@ module reader_absoru2
 
 contains
   !=======================================================================================
-  ! Reads file dfile:absoru2 to fill variables absoru2_*
+  ! Reads file *absoru2 file* to fill variables absoru2_*
   !
   ! *Note* Variables absoru2_ZP, absoru2_XI, and absoru2_PF
   !       undergo transformation after their values are read from file.
@@ -987,7 +970,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:abonds
+! Reading routines and variable declarations for *abonds file*
 
 module reader_abonds
   use logging
@@ -1017,16 +1000,12 @@ contains
   !   - 2-character atomic element symbol (?)
   !   - absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
   !
-  ! *Attention* The end of the file is signalled by two rows containing only "1" each at
+  ! The end of the file is signalled by two rows containing only "1" each at
   ! column 1 and nothing else at the others, i.e.,
   ! 
   ! .......(last data row).......
   ! 1
   ! 1
-  ! 
-  !
-  ! TODO Test one row!!
-  ! TODO use READ()'s "END=" option
 
   subroutine read_abonds(path_to_file)
     implicit none
@@ -1073,7 +1052,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:partit
+! Reading routines and variable declarations for *partit file*
 
 module reader_partit
   use logging
@@ -1099,7 +1078,7 @@ module reader_partit
 
 contains
   !=======================================================================================
-  ! Reads file dfile:partit to fill variables partit_*
+  ! Reads file *partit file* to fill variables partit_*
   !
   ! LECTURE DES FCTS DE PARTITION
   !
@@ -1171,7 +1150,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:gridsmap (used by innewmarcs)
+! Reading routines and variable declarations for *gridsmap file* (used by innewmarcs)
 !
 !   - gridsmap -
 
@@ -1190,7 +1169,7 @@ module reader_gridsmap
 
 contains
   !=======================================================================================
-  ! Reads map of models: dfile:gridsmap
+  ! Reads map of models: *gridsmap file*
   !
   ! The information it contains is
   ! just a list of .mod files. Files needn't be sorted. Metallicities are taken from the
@@ -1262,7 +1241,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reader and variable declarations for dfile:atoms
+! Reader and variable declarations for *atoms file*
 
 module reader_atoms
   use dimensions
@@ -1271,9 +1250,9 @@ module reader_atoms
   implicit none
 
   !=====
-  ! Variables filled by read_atoms() (file dfile:atoms)
+  ! Variables filled by read_atoms() (file *atoms file*)
   !=====
-  ! dfile:atoms, file originals
+  ! *atoms file*, file originals
   integer atoms_nblend ! ?doc?
   ! atomic symbol. Must be right-aligned and uppercase
   character*2 atoms_elem(MAX_ATOMS_NBLEND)
@@ -1293,7 +1272,7 @@ module reader_atoms
 
 contains
   !=======================================================================================
-  ! Reads file dfile:atoms to fill variables atoms_* (double underscore)
+  ! Reads file *atoms file* to fill variables atoms_* (double underscore)
   !
   ! Depends on abonds_*, so must be called after READ_ABONDS()
   !
@@ -1323,9 +1302,6 @@ contains
     character(len=*) :: filename
     integer finrai, k, j
     logical flag_found
-
-
-    real*8 zinf, kiex
 
     if (.not. flag_read_abonds) then
       call pfant_halt('read_abonds() must be called before read_atoms()')
@@ -1359,24 +1335,6 @@ contains
        atoms_ge(k), &
        atoms_zinf(k), &
        atoms_abondr_dummy(k), finrai
-
-
-! todo cleanup
-      if (.false.) then
-        kiex = atoms_kiex(k)
-        zinf = 100*exp(atoms_algf(k))/atoms_kiex(k)
-        ! write(*, *) atoms_elem(k), &
-        !  atoms_ioni(k), &
-        !  atoms_lambda(k),  &
-        !  ' algf=', atoms_algf(k), &
-        !  ' kiex=',atoms_kiex(k), &
-        !  ' zinf= ', zinf
-
-        ! write(44,*) atoms_lambda(k), atoms_algf(k), atoms_kiex(k), zinf
-
-        atoms_zinf(k) = zinf
-      end if
-
 
       ! (MT) If the "radiative broadening" is zero,
       ! it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
@@ -1441,7 +1399,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for dfile:molecules
+! Reading routines and variable declarations for *molecules file*
 !
 
 module reader_molecules
@@ -1452,7 +1410,7 @@ module reader_molecules
   implicit none
 
   ! Number of different "chemical molecules" that the system supports. Differs from number of
-  ! molecules listes in dfile:molecules because in the latter the same molecule is
+  ! molecules listes in *molecules file* because in the latter the same molecule is
   ! repeated, such as "CN AZUL, CN AX, CN BX", but in this case the formula is always CN
   integer, parameter :: NUM_FORMULAE = 10
   ! Molecule formulae
@@ -1486,14 +1444,14 @@ module reader_molecules
    km_formula_id       ! Formula ID of molecule (between 1 and NUM_FORMULAE)
 
 
-  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
+  real*8, dimension(MAX_KM_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
 
 
   ! "Index of Last Lambda Of Set-Of-Lines"
   ! Points to km_lmbdam, km_sj, km_jj.
   ! This is mounted at reading to help with the filtering and avoid
   ! allocating 2 dimensions for (lm__lmbdam, km_sj, km_jj)
-  real*8, dimension(MAX_NV_PER_MOL, NUM_MOL) :: km_ln
+  real*8, dimension(MAX_KM_NV_PER_MOL, NUM_MOL) :: km_ln
 
   real*8,  dimension(MAX_KM_LINES_TOTAL) :: &
    km_lmbdam, &
@@ -1502,7 +1460,7 @@ module reader_molecules
 
 contains
   !=======================================================================================
-  ! Reads file dfile:molecules to fill variables km_*
+  ! Reads file *molecules file* to fill variables km_*
   !
   ! Reads molecular lines
   !
@@ -1511,8 +1469,6 @@ contains
   !       pre-allocated, and I have to read the whole file anyway, so it is much easier
   !       programming-wise (and not time-costly either) to filter
   !       molecules in filter_molecules() when they are already in memory.
-  !
-  ! TODO TOP PRIORITY Number of molecules ON: consider km_number; search for km_number; also wrong references to NUM_MOL, search for NUM_MOL
 
   subroutine read_molecules(filename)
     character(len=*) :: filename
@@ -1563,18 +1519,15 @@ contains
 
     ! spill check
     do molidx = 1, km_number
-      if (km_nv(molidx) .gt. MAX_NV_PER_MOL) then
+      if (km_nv(molidx) .gt. MAX_KM_NV_PER_MOL) then
           call pfant_halt('read_molecules(): molecule id '//int2str(molidx)//&
-           ' has nv = '//int2str(km_nv(molidx))//' (maximum is MAX_NV_PER_MOL='//&
-           int2str(MAX_NV_PER_MOL)//')')
+           ' has nv = '//int2str(km_nv(molidx))//' (maximum is MAX_KM_NV_PER_MOL='//&
+           int2str(MAX_KM_NV_PER_MOL)//')')
         end if
     end do
 
     i_line = 0
     do molidx = 1, km_number
-
-      ! TODO check spill in each element in km_NV
-
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
@@ -1716,7 +1669,7 @@ contains
 
   ! Finds formula id given title of molecule
   !
-  ! The title is exists inside the dfile:molecules as the first row of a new molecule.
+  ! The title is exists inside the *molecules file* as the first row of a new molecule.
   ! The title must contain one of the formula listed in the FORMULAE constant, otherwise
   ! the program will crash.
   !
@@ -1815,7 +1768,7 @@ module turbul
   real*8, dimension(MAX_MODELES_NTOT) :: turbul_vt
 contains
   !======================================================================================================================
-  ! This routine synchronizes the velocity(ies) of microturbulence informed in main configuration file
+  ! This routine synchronizes the velocity(ies) of microturbulence informed in *main file*
   ! with the number of layers in the atmospheric model, interpolating the velocities
   ! if necessary.
   !

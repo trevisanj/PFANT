@@ -45,7 +45,7 @@ module dimensions
   integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
 
   !=====
-  ! Dimensions related to dfile:dissoc
+  ! Dimensions related to *dissoc file*
   !=====
 
   ! Maximum number of metal rows in dissoc.dat
@@ -61,17 +61,17 @@ module dimensions
   integer, parameter :: MAX_DISSOC_Z = 100
 
   !=====
-  ! Dimensions related to dfile:modeles
+  ! Dimensions related to *modeles file*
   !=====
 
   ! Maximum possible value of modeles_ntot
   integer, parameter :: MAX_MODELES_NTOT=50
 
   !=====
-  ! Dimensions related to dfile:partit
+  ! Dimensions related to *partit file*
   !=====
 
-  ! Maximum number of "items" in dfile:partit:
+  ! Maximum number of "items" in *partit file*:
   !   - Maximum value for partit_npar
   !   - Second dimension of partit_tabu
   integer, parameter :: MAX_PARTIT_NPAR=85
@@ -79,14 +79,14 @@ module dimensions
   integer, parameter :: MAX_PARTIT_KMAX=63
 
   !=====
-  ! Dimensions related to dfile:abonds
+  ! Dimensions related to *abonds file*
   !=====
 
   ! Maximum number of abundances in abonds.dat
   integer, parameter :: MAX_ABONDS_NABOND=100
 
   !=====
-  ! Dimensions related to dfile:absoru
+  ! Dimensions related to *absoru2 file*
   !=====
 
   ! Maximum value for absoru2_NM
@@ -98,27 +98,25 @@ module dimensions
   integer, parameter :: MAX_ABSORU2_NUMSET_I=41
 
   !=====
-  ! Dimensions related to dfile:atoms
+  ! Dimensions related to *atoms file*
   !=====
 
   integer, parameter :: &
-   MAX_ATOMS_NBLEND=100000, & ! Half of the maximum the number of rows in dfile:atoms
+   MAX_ATOMS_NBLEND=100000, & ! Half of the maximum the number of rows in *atoms file*
    MAX_ATOMS_F_NBLEND=20000      ! Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
-  ! Dimensions related to dfile:molecules
+  ! Dimensions related to *molecules file*
   !=====
 
-  ! Maximum Number of molecules in dfile:molecules
-  ! TODO change name to MAX_KM_STH
+  ! Maximum Number of molecules in *molecules file*
   integer, parameter :: NUM_MOL=21
 
   ! Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
-  ! TODO change name to MAX_KM_NV_PER_MOL
-  integer, parameter :: MAX_NV_PER_MOL=200
+  integer, parameter :: MAX_KM_NV_PER_MOL=200
 
   integer, parameter :: &
-   MAX_KM_LINES_TOTAL=1400000, & ! Maximum number of spectral lines in dfile:molecules
+   MAX_KM_LINES_TOTAL=1400000, & ! Maximum number of spectral lines in *molecules file*
                                    ! pertaining all molecules
    MAX_KM_F_MBLEND=200000 ! Maximum number of spectral lines that can be filtered in at a
                         ! filtering operation performed by filter_molecules()

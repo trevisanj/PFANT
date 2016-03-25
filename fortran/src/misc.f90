@@ -38,8 +38,8 @@ contains
   logical function h_line_is_inside(clam, llzero, llfin) result(res)
     real*8, intent(in) :: &
      clam,   & ! central lambda of a hydrogen line
-     llzero, & ! lower boundary of calculation interval, probably taken from dfile:main
-     llfin     ! lower boundary of calculation interval, probably taken from dfile:main
+     llzero, & ! lower boundary of calculation interval, probably taken from *main file*
+     llfin     ! lower boundary of calculation interval, probably taken from *main file*
 
     res = .false.
     if (clam+H_LINE_WIDTH .ge. llzero-LAMBDA_STRETCH .and. &
@@ -201,6 +201,7 @@ contains
     elseif (x .eq. 1) then
       y = .true.
     else
+      y = .false.  ! no effect, just to shut up compiler "maybe uninitialized" message
       call pfant_halt('int2logical() accepts only 0/1, not '//int2str(x))
     end if
   end function

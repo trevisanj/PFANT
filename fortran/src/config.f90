@@ -484,7 +484,7 @@ module config
                                ! approximately proportional to aint**2. Therefore, this
                                ! parameter is set to a low value, which makes it run much
                                ! faster than the usual/historical 50. Also, this value is
-                               ! no longer read from dfile:main.
+                               ! no longer read from *main file*.
                                ! Below is a table containing the results of a test
                                ! perfomed in the 5000-5100 angstrom region:
                                ! <pre>
@@ -512,7 +512,7 @@ module config
   !---
   ! Option: --zph
   ! *Note* (historical note) This value was being read from an altered-format
-  ! dfile:absoru2 which was incompatible with the pfant executable. Therefore,
+  ! *absoru2 file* which was incompatible with the pfant executable. Therefore,
   ! it has been assigned a default value and this command-line option was added
   real*8 :: config_zph = 12
   ! option: --kik; affects subroutine flin_()
@@ -545,7 +545,7 @@ module config
    config_flam = .false., &                      ! option: --flam
    config_convol = .true.                        ! option: --convol
   ! These variables are "uninitialized". If left so, nulbad_calc::nulbad_init() will
-  ! take values within dfile:main
+  ! take values within *main file*
   real*8 :: &
    config_fwhm = -1, &               ! option: --fwhm
    config_pat = -1                   ! option: --pat
@@ -736,7 +736,6 @@ contains
     !
     ! pfant-only
     !
-    ! TODO Find names for each file and update options help
     call add_option('p', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
      'input file name - dissociative equilibrium')
     call add_option('p', 'fn_partit',        ' ', .true., 'file name', config_fn_partit, &
@@ -755,7 +754,7 @@ contains
      'If set, skips the calculation of atomic lines')
     call add_option('p', 'no_h',' ', .true., 'T/F', logical2str(config_no_h), &
      'If set, skips the calculation of hydrogen lines')
-    call add_option('p', 'zinf', ' ', .true., 'real value', '(zinf per-line in dfile:atoms)', &
+    call add_option('p', 'zinf', ' ', .true., 'real value', '(zinf per-line in *atoms file*)', &
      'distance from center of line to consider in atomic line calculation.<br>'//&
      IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout

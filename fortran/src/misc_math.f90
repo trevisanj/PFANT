@@ -36,7 +36,7 @@
 ! using function <code>size()</code>, allows for placing assertions inside the
 ! routines.
 !
-! *Note* However, assertions may slow down the code. Once the code is tested enough,
+! **Note** However, assertions may slow down the code. Once the code is tested enough,
 ! assertions should be taken out from routines that are called many times. *However*,
 ! assertions are good documentation, so don't delete them; rather, comment them out.!
 
@@ -61,7 +61,7 @@ contains
   !
   ! The code seems to originate from Appendix A of [1]
   !
-  ! @par References
+  ! **References**
   ! [1] Drayson, S. Roland. "Rapid computation of the Voigt profile." Journal of
   ! Quantitative Spectroscopy and Radiative Transfer 16.7 (1976): 611-614.
   !
@@ -423,10 +423,6 @@ contains
   ! ***TETA3      "        lineaire    sur les 2 derniers pts
   ! (ici seul TETA3 est utilise)
   ! 
-  !
-  ! TODO reference
-  !
-  ! TODO Function used in specific context, called by BK only. I don't know if not better there.
 
   real*8 function fteta0(pg, teta, n)
     ! Size of vectors pf and teta; example source is reader_modeles::modeles_ntot
@@ -464,14 +460,15 @@ contains
 
   !---------------------------------------------------------------------------------------
   ! INTERPOLATION D UNE LISTE A PAS NON CONSTANT
-  ! TODO improve documentation ?doc?
+  !
+  ! Returns: f*(t), approximation of f(t)
 
   real*8 function ft(t,n,x,f)
     integer, intent(in) :: n ! Size of vectors x and f
     real*8, intent(in) :: &
-     t,    & ! ?doc?
-     x(:), & ! ?doc?
-     f(:)    ! ?doc?
+     t,    & ! point of interest in the x-axis
+     x(:), & ! x-values
+     f(:)    ! f(x)-values
     real*8 t0, t1, t2, u0, u1, u2, a, b, c, d, e
     integer i, j
 
@@ -506,11 +503,9 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  ! TODO ?doc?
+  ! Linear interpolation
   !
-  ! TODO This routine is very similar to filetoh::ftlin3h(). Explain why ftlin3h() exists, what the differences are, etc.
-  !
-  ! TODO actually all these ft routines are similar. I don't know what to do. A lot of code duplication, but each routine is a bit different
+  ! *Note* This routine is very similar to ftlin3h().
 
   subroutine ftlin3(n, x, y, itot, tt, ftt)
     integer, intent(in) :: &
@@ -578,7 +573,6 @@ contains
 
   !---------------------------------------------------------------------------------------
   ! interpolation
-  ! @ todo ?doc? maybe will be found in BLB's book "Numerical Recipes"
 
   real*8 function faitk30(xx, x, y, n)
     integer, intent(in) :: n ! Size of vectors x and y
@@ -617,7 +611,7 @@ contains
   ! DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
   ! AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
   !
-  ! TODO ft2_hydro2() is very similar!
+  ! *Note* ft2_hydro2() is very similar!
 
   subroutine ft2(n,x,y,itot,tt,ftt)
     integer, intent(in) :: &
@@ -681,7 +675,7 @@ contains
     end do
     return
 
-    ! TODO Document this error situation
+    ! Some value within tt is out of x boundaries
     10 continue
     100 format(5x,'ft2(): On sort de la table d interpolation avec t=',e15.7)
     write(lll,100) t
@@ -756,12 +750,9 @@ end module misc_math
 ! est different de 0 (On pose to(0)=0)   -Avril 1988-
 !
 ! *Note* in flin_(), MT+JT ipoint was being set to 7 regardless of ptdisk. This has been
-!       changed and now works as described: kik .true.: ptdisk .true. -> ipoint = 7; else 6
+!        changed and now works as described: kik .true.: ptdisk .true. -> ipoint = 7; else 6
 !
 ! *Author* Roger Cayrel
-!
-! TODO gotta check, to is never used, but I am pretty sure it used to be, in the original,
-! I may have deleted sth
 
 module flin
   use misc_math
@@ -910,9 +901,8 @@ contains
       ! Formule a 26 pts (ne marche que pour le flux!)
       ! (13pts +pts milieu)
 
-      ! TODO test this error condition, better: put this verification in somewhere at startup, but has to be after READ_main()
       if(ptdisk) then
-        call pfant_halt('Le sp flin_ ne peut calculer l intensite en 1 pt '// &
+        call pfant_halt('Le sp flin_ ne peut calculer l''intensite en 1 pt '// &
          'du disque avec la formule a 26pts (utiliser 6pts/7pts: kik=0)', is_assertion=.true.)
       end if
       tolim = 5.487  ! Le modele doit aller au moins a une prof tolim
