@@ -30,6 +30,8 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
     # gets all scripts in script directory
     ff = glob.glob(os.path.join(base_dir, "*.py"))
+    # discards scripts whose file name starts with a "_"
+    ff = [f for f in ff if not os.path.basename(f).startswith("_")]
     ff.sort()
     
     module_len = max([len(os.path.split(f)[1]) for f in ff])

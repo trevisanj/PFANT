@@ -23,3 +23,381 @@ IOError: [Errno 2] No such file or directory: 'hmap.dat'
 [INFO    ] &&&&&&&&&&&&&&& time to update: 0.000411987
 [INFO    ] UPDATE UPDATE UPDATE UPDATE UPDATE 
 [INFO    ] &&&&&&&&&&&&&&& time to update: 0.000417948
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 166, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 166, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 166, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 166, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 170, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 171, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 167, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 169, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 173, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 169, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 171, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 175, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 171, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 175, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 171, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 176, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 176, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 176, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './sun.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 176, in _do_load
+    r.tit = struct.unpack("20s", h.readline()[:20])[0]
+error: unpack requires a string argument of length 20
+[ERROR   ] Error loading file './modeles.mod'
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/pynewmarcs.py", line 38, in <module>
+    f.load(file)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
