@@ -14,9 +14,7 @@
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
 ! Declarations of constants (PARAMETER) used throughout.
-!
 !   - *all* dimensions of arrays
-!   - *all* file I/O UNITs used anywhere (must be declared to avoid unit conflict)
 
 module dimensions
   implicit none

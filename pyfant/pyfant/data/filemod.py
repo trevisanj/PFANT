@@ -102,9 +102,9 @@ class FileMod(DataFile):
 
         # This routine will read almost any binary, so we perform some range checks
         if not (1 < rec.ntot <= 1000):
-            raise RuntimeError("ntot invalid")
+            raise RuntimeError("record #%d: ntot invalid: %d" % (inum, rec.ntot))
         if not (100 < rec.teff < 100000):
-            raise RuntimeError("teff invalid")
+            raise RuntimeError("record #%d: teff invalid %g" % (inum, rec.teff))
 
         v = np.frombuffer(x, dtype='<f4', count=rec.ntot*5, offset=64)
         w = np.reshape(v, (rec.ntot, 5))
@@ -114,8 +114,25 @@ class FileMod(DataFile):
         self.records.append(rec)
 
   def _do_save_as(self, filename):
-    """Saves to file."""
-    raise NotImplementedError("Maybe tomorrow")
+      """Saves to file."""
+
+      with open(filename, "wab") as h:
+          ostrh = struct.Struct('<i 5f 20s 20s')  # header
+          #ostrf = struct.Struct("<f4")            # float
+
+          for i, r in enumerate(self.records):
+              h.write(ostrh.pack(r.ntot, r.teff, r.glog, r.asalog,
+               r.asalalf, r.nhe, r.tit, r.tiabs))
+              ny = 5*r.ntot
+              y = np.reshape(np.vstack([r.nh, r.teta, r.pe, r.pg, r.t5l]).T, ny)
+              h.write(struct.pack("<"+"f"*ny, *y))
+              #h.seek((i+1)*1200)
+              h.write("\x00"*(1200-ny*4-64))  # fills record with \x0 to have 1200 bytes
+              #h.tell()
+              #break
+          # h.seek(len(self.records)*1200)
+          h.write(struct.pack("<i", 9999))
+          h.write("\x00"*1196)
 
   def init_default(self):
     raise RuntimeError("Not applicable")
@@ -149,7 +166,7 @@ class FileMarcs(DataFile):
         r = ModRecord()
         with open(filename, "r") as h:
             _skip = lambda: h.readline()
-            r.tit = struct.unpack("20s", h.readline()[:20])
+            r.tit = struct.unpack("20s", h.readline()[:20])[0]
             r.tiabs = ""
             r.teff = float(struct.unpack("7s", h.readline()[:7])[0])
             _skip()  # flux row
@@ -179,3 +196,5 @@ class FileMarcs(DataFile):
                 r.t5l[i], t, r.pe[i], r.pg[i] = map(float,
                  struct.unpack("9x 8s 11x 8s 12s 12s", qwe[:60]))
                 r.teta[i] = 5040./t
+
+        self.record = r

@@ -189,6 +189,7 @@ if __name__ == "__main__":
             combo.conf.flag_output_to_dir = True
             combo.conf.opt.zinf = args.max
             combo.conf.opt.no_molecules = True
+            combo.conf.opt.no_opa = True
             combo.conf.opt.no_h = True
             # Note that half of the line (needs to)/(will be) calculated
             combo.conf.opt.llzero = line.lambda_-args.max

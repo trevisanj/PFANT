@@ -76,7 +76,7 @@ contains
 
     ! MAX_P_IFT must be an odd number
     if (mod(MAX_P_IFT, 2) .eq. 0) then
-      call pfant_halt('MAX_P_IFT='//int2str(MAX_P_IFT)//' must be an odd number', &
+      call log_and_halt('MAX_P_IFT='//int2str(MAX_P_IFT)//' must be an odd number', &
        is_assertion=.true.)
     end if
 
@@ -91,7 +91,7 @@ contains
     x_fn_cv = config_fn_cv
     if (config_fwhm .eq. -1) then
       if(.not. main_exists) &
-        call pfant_halt('--fwhm option not set and '''//&
+        call log_and_halt('--fwhm option not set and '''//&
          trim(config_fn_main)//''' does not exist')
       call assure_read_main(config_fn_main)
       x_fwhm = main_fwhm
@@ -100,7 +100,7 @@ contains
 
     if (config_flprefix .eq. '?' .and. config_fn_flux .eq. '?') then
       if(.not. main_exists) &
-        call pfant_halt('Neither --flprefix nor --fn_flux was set and '''//&
+        call log_and_halt('Neither --flprefix nor --fn_flux was set and '''//&
          trim(config_fn_main)//''' does not exist')
       ! Note: x_flprefix only used to make x_fn_flux, in case the latter is not specified
       !       through --fn_flux option.
@@ -404,7 +404,7 @@ contains
       ' 3 DEMI-LARGEUR DU CENTRE; ', &
       ' SOIT:',F7.3,' ANGSTROM; ', &
       ' ELARGISSEZ LE PAS DU CALCUL')
-    call pfant_halt(lll)
+    call log_and_halt(lll)
 
     40 continue
     ifd = i-1
@@ -417,7 +417,7 @@ contains
       137  FORMAT(5X,'LA FCTION PAR LAQUELLE VOUS VOULEZ CONVOLER A ', &
        ' PLUS DE ',i4,' PTS (ift=)',i4,': -CHANGEZ LE PAS-. (LE NBRE DE PTS TOTAL ', &
        ' SUR LA FCTION S OBTIENT EN MULTIPLIANT PAR 6 LE NBRE DE PTS SUR LA DEMI LARGEUR')
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     do i = 1,p_ift

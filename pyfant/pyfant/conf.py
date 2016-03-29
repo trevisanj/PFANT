@@ -226,8 +226,9 @@ class Options(object):
         self.flprefix = None
         self.molidxs_off = None
         self.no_molecules = None
-        self.no_atoms = None
         self.no_h = None
+        self.no_atoms = None
+        self.no_opa = None
         self.zinf = None
         self.pas = None
         self.aint = None

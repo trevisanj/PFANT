@@ -512,9 +512,9 @@ contains
      n, & ! Size of vectors x and y
      itot ! Size of vectors tt and ftt
     real*8, intent(in) :: &
-     x(:),     & ! ?doc?
-     y(:),     & ! ?doc?
-     tt(:)    ! ?doc?
+     x(:),     & ! given data: x-axis values
+     y(:),     & ! given data: y-axis values
+     tt(:)    ! x-axis values of wanted values
     real*8, intent(out) :: &
      ftt(:)   ! ?doc?
 
@@ -566,7 +566,7 @@ contains
     10 continue
     100 format('ftlin3(): On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
     write(lll,100) t, (x(i),i=1,n)
-    call pfant_halt(lll)
+    call log_and_halt(lll)
   end
 
 
@@ -679,7 +679,7 @@ contains
     10 continue
     100 format(5x,'ft2(): On sort de la table d interpolation avec t=',e15.7)
     write(lll,100) t
-    call pfant_halt(lll)
+    call log_and_halt(lll)
   end
 
 
@@ -902,7 +902,7 @@ contains
       ! (13pts +pts milieu)
 
       if(ptdisk) then
-        call pfant_halt('Le sp flin_ ne peut calculer l''intensite en 1 pt '// &
+        call log_and_halt('Le sp flin_ ne peut calculer l''intensite en 1 pt '// &
          'du disque avec la formule a 26pts (utiliser 6pts/7pts: kik=0)', is_assertion=.true.)
       end if
       tolim = 5.487  ! Le modele doit aller au moins a une prof tolim
@@ -931,7 +931,7 @@ contains
       end do
       return
     else
-      call pfant_halt('Bad kik (must be 0 or 1)')
+      call log_and_halt('Bad kik (must be 0 or 1)')
     end if  !(fin du if kik)
   contains
     ! Error verification, called twice
@@ -940,7 +940,7 @@ contains
       ! Indicates where it was called from, used in error message: facilitates debugging
       integer, intent(in) :: i_call
       if(to_(ntot) .lt. tolim) then
-        call pfant_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
+        call log_and_halt('Modele too short (call #'//int2str(i_call)//'): ntot=' //&
          int2str(ntot) //'; to_(' //&
          int2str(ntot) // ') = ' // real82str(to_(ntot), 7) // ' (must be >= '//&
           real82str(tolim, 3) // ')')

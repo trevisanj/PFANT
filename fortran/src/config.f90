@@ -461,6 +461,7 @@ module config
              config_logging_dump   = .false., & ! option --logging_dump
              config_explain        = .false., & ! option --explain
              config_no_molecules   = .false., & ! option --no_molecules
+             config_no_opa         = .true., & ! option --no_opa
              config_no_atoms       = .false., & ! option --no_atoms
              config_no_h           = .false.    ! option --no_ah
 
@@ -531,8 +532,9 @@ module config
    config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & ! option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
-   config_fn_atoms     = 'atoms.dat',     & ! option: --fn_atoms
+   config_fn_atoms         = 'atoms.dat',         & ! option: --fn_atoms
    config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
+   config_fn_opa           = 'opa.dat',           & ! option: --fn_opa
    config_fn_lines         = 'lines.pfant',       & ! option: --fn_lines
    config_fn_log           = 'log.log',           & ! option: --fn_log
    config_flprefix         = '?'                    ! option: --flprefix
@@ -594,7 +596,7 @@ contains
 
   subroutine config_init()
     if (execonf_name .eq. '?') &
-     call pfant_halt('Executable name not set', is_assertion=.true.)
+     call log_and_halt('Executable name not set', is_assertion=.true.)
 
     write(*,*) to_upper(execonf_name)//pfant_version()
     write(*,*) ''
@@ -631,7 +633,7 @@ contains
     num_options = num_options+1
 
     if (num_options .gt. MAX_NUM_OPTIONS) then
-      call pfant_halt('Reached maximum number of command-line options, increase '//&
+      call log_and_halt('Reached maximum number of command-line options, increase '//&
        'value of MAX_NUM_OPTIONS', is_assertion=.true.)
     end if
 
@@ -746,6 +748,8 @@ contains
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
+    call add_option('p', 'fn_opa', ' ', .true., 'file name', config_fn_opa, &
+     'input file name - MARCS ".opa" opacities file')
     call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
@@ -754,6 +758,8 @@ contains
      'If set, skips the calculation of atomic lines')
     call add_option('p', 'no_h',' ', .true., 'T/F', logical2str(config_no_h), &
      'If set, skips the calculation of hydrogen lines')
+    call add_option('p', 'no_opa',' ', .true., 'T/F', logical2str(config_no_opa), &
+     'If set, skips the calculation of opacities based on MARCS opacities file')
     call add_option('p', 'zinf', ' ', .true., 'real value', '(zinf per-line in *atoms file*)', &
      'distance from center of line to consider in atomic line calculation.<br>'//&
      IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
@@ -918,6 +924,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_atoms, 'config_fn_atoms')
       case ('fn_molecules')
         call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
+      case ('fn_opa')
+        call parse_aux_assign_fn(o_arg, config_fn_opa, 'config_fn_opa')
 !            case ('fn_lines')
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
@@ -929,6 +937,9 @@ contains
       case ('no_molecules')
         config_no_molecules = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_no_molecules', logical2str(config_no_molecules))
+      case ('no_opa')
+        config_no_opa = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_no_opa', logical2str(config_no_opa))
       case ('no_atoms')
         config_no_atoms = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_no_atoms', logical2str(config_no_atoms))
@@ -967,20 +978,8 @@ contains
   !   8   8b  d8 8b  d8 8        d8
   !   8   `Y88P' `Y88P' 8888 `Y88P'  Tools
 
-  ! Nobody wants to use this
-  ! !=======================================================================================
-  ! ! Concatenates config_wdir with specific filename: <working directory>/<filename>.
-  ! ! Result is clean of leading/trailling spaces
-  !
-  ! function join_with_wdir(filename) result(res)
-  !   character(len=*), intent(in) :: filename  ! File name
-  !   character(len=:), allocatable :: res
-  !
-  !   res = wdir_trim // trim(filename)
-  ! end
-
   !=======================================================================================
-  ! logging routine: prints variable and assigned value
+  ! Prints variable and assigned value
 
   subroutine parse_aux_log_assignment(varname, value)
     character(*), intent(in) :: varname, value
@@ -995,7 +994,7 @@ contains
   subroutine parse_aux_assign_fn(arg, dest, varname)
     character(len=*), intent(in)  :: arg ! command-line option argument
     character(len=*), intent(out) :: dest! One of config_fn_* variables
-    ! name of vairable being assigned, for logging purpose
+    ! name of variable being assigned, for logging purpose
     character(len=*), intent(in) :: varname
     dest = arg
     call parse_aux_log_assignment(varname, arg)
@@ -1017,7 +1016,7 @@ contains
     go to 30
 
     20 continue
-    call pfant_halt('Error parsing option '//get_option_name(opt)//&
+    call log_and_halt('Error parsing option '//get_option_name(opt)//&
      ': invalid integer argument: '''//trim(s)//'''')
 
     30 continue
@@ -1039,7 +1038,7 @@ contains
     go to 30
 
     20 continue
-    call pfant_halt('Error parsing option '//get_option_name(opt)//&
+    call log_and_halt('Error parsing option '//get_option_name(opt)//&
      ': invalid real argument: '''//trim(s)//'''')
 
     30 continue
@@ -1061,7 +1060,7 @@ contains
     go to 30
 
     20 continue
-    call pfant_halt('Error parsing option '//get_option_name(opt)//&
+    call log_and_halt('Error parsing option '//get_option_name(opt)//&
      ': invalid real argument: '''//trim(s)//'''')
 
     30 continue
@@ -1095,7 +1094,7 @@ contains
         return
     end select
 
-    call pfant_halt('Error parsing option '//get_option_name(opt)//&
+    call log_and_halt('Error parsing option '//get_option_name(opt)//&
      ': invalid logical argument: '''//trim(s)//'''')
   end
 
@@ -1129,9 +1128,9 @@ contains
             res = handle_option(opt, o_arg)
             select case(res)
               case(HANDLER_DONT_CARE)
-                call pfant_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
+                call log_and_halt('Forgot to handle option '//get_option_name(opt), is_assertion=.true.)
               case (HANDLER_ERROR)
-                call pfant_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
+                call log_and_halt('Invalid argument for option '//get_option_name(opt)//': "'//o_arg//'"')
             end select
           else
             ! Executable will ignore options that are not meant for it
@@ -1194,10 +1193,10 @@ contains
       chr = options(i)%chr
       do j = i+1, num_options
         if (name .eq. options(j)%name) then
-          call pfant_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
+          call log_and_halt('Repeated long option: "'//trim(name)//'"', is_assertion=.true.)
         end if
         if (chr .ne. ' ' .and. chr .eq. options(j)%chr) then
-          call pfant_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
+          call log_and_halt('Repeated short option: "'//chr//'"', is_assertion=.true.)
         end if
       end do
     end do

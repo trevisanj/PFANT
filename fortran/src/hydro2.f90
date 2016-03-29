@@ -325,7 +325,7 @@ contains
     10 write(lll,100) X(1),X(N),T
     100 format(5X,'ft2_hydro2(): ON SORT DE LA TABLE D INTERPOLATION :', &
      /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
-    call pfant_halt(lll)
+    call log_and_halt(lll)
   end
 end
 
@@ -608,7 +608,7 @@ contains
 
     if(m_tauc(modeles_ntot).lt.3.89) then
       write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89'
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     call fluxis(fl,fc)
@@ -1667,7 +1667,7 @@ contains
       go to 11
 
       10 continue
-      call pfant_halt('conf() says: "impossible"')  ! note: wasn't halting before 2015+
+      call log_and_halt('conf() says: "impossible"')  ! note: wasn't halting before 2015+
       11 return
     end
 
@@ -1923,7 +1923,7 @@ contains
       call log_halt(' Modele trop court ')
       write(lll,103) modeles_ntot,m_tauc(modeles_ntot)
       103 format(i10,5x,'modeles_t5l=',f10.4)
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
     !
     fc = 0

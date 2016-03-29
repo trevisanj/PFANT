@@ -54,6 +54,10 @@ class _Option(AttrsPart):
         else:
             self.edit.setText(str(value))
 
+    def update_edit_with_default(self):
+        if self.default is not None:
+            self.__update_edit(self.default)
+
     def update_gui(self, options):
         assert isinstance(options, Options)
         attr = options.__getattribute__(self.name)
@@ -62,7 +66,9 @@ class _Option(AttrsPart):
         if self.flag_never_used and flag_check:
             self.flag_never_used = False
         if attr is None:
-            self.__clear_edit()
+            pass
+            # todo not sure if clearing edit of not
+            # self.__clear_edit()
         else:
             self.__update_edit(attr)
 
@@ -243,6 +249,7 @@ class WOptionsEditor(QWidget):
         self.w_no_molecules = QCheckBox()
         self.w_no_atoms = QCheckBox()
         self.w_no_h = QCheckBox()
+        self.w_no_opa = QCheckBox()
         self.w_zinf = QLineEdit()
         self.w_pas = QLineEdit()
         self.w_aint = QLineEdit()
@@ -361,7 +368,7 @@ class WOptionsEditor(QWidget):
         o = self.__add_option(self.w_kik, 'hp', 'kik', 0,
          'option affecting the flux integration',
          '<ul>'+
-         '<li>0: integration using 6/7 points depending on option --ptdisk;'+
+         '<li>0: integration using 6/7 points depending on <em>ptdisk</em> parameter in main configuration file;'+
          '<li>1: 26-point integration</ul>')
         o.possible_values = [0, 1]
 
@@ -401,6 +408,9 @@ class WOptionsEditor(QWidget):
         self.__add_option(self.w_no_h, 'p', 'no_h', False,
          'Skip hydrogen lines?',
          'If set, skips the calculation of hydrogen lines.')
+        self.__add_option(self.w_no_opa, 'p', 'no_opa', True,
+         'Skip opacities?',
+         'If set, skips the calculation of opacities based on MARCS ".opa" opacities file.')
         o = self.__add_option(self.w_zinf, 'p', 'zinf', 0.5,
          '(zinf per-line in dfile:atoms)',
          'This is the distance from center of line to consider in atomic line calculation.<br><br>'+
@@ -491,9 +501,12 @@ class WOptionsEditor(QWidget):
                     edit.stateChanged.connect(self.on_edited)
                 else:
                     edit.textEdited.connect(self.on_edited)
+
+                # todo No consensus yet if it is better to show the default values
+                option.update_edit_with_default()
             except:
                 self.logger.exception("Processing option '%s'" % option.name)
-                raise\
+                raise
 
 
         # ### Second widget of splitter
@@ -561,6 +574,8 @@ class WOptionsEditor(QWidget):
     # # Slots
 
     def on_edited(self):
+        if not self.flag_process_changes:
+            return
         #self._update_file_main()
         option = self.__find_option_by_edit(self.sender())
         self.flag_process_changes = False
@@ -621,7 +636,8 @@ class WOptionsEditor(QWidget):
             ret = self.__find_option_by_in_use_checkbox(widget)
             if not ret:
                 ret = self.__find_option_by_edit(widget)
-        ret = self.__find_option_by_edit(widget)
+        else:
+            ret = self.__find_option_by_edit(widget)
         return ret
 
     def __find_option_by_in_use_checkbox(self, checkbox):
@@ -647,8 +663,6 @@ class WOptionsEditor(QWidget):
                 option.update_gui(self.f)
         finally:
             self.flag_process_changes = True
-
-
 
     def __update_data(self):
         emsg, flag_error = "", False

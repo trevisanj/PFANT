@@ -46,7 +46,7 @@ module dissoc
    Z_ELECTRON = 99,  &  ! Fictional atomic number of electron.
                         ! *Note*: this is OK, Z=99 will never be used as a physical element
    Z_H_STAR   = 100, &  ! Fictional atomic number of "H*"
-                        ! *Note*: this is OK, Z=99 will never be used as a physical element   
+                        ! *Note*: this is OK, Z=99 will never be used as a physical element
    Z_H        = 1,   &  ! Atomic number of Hydrogen
    Z_HE       = 2       ! Atomic number of Helium
 
@@ -649,7 +649,7 @@ contains
 
           ! spill check
           if (i_filtered .gt. MAX_KM_F_MBLEND) then
-            call pfant_halt('filter_molecules(): number of filtered lines '//&
+            call log_and_halt('filter_molecules(): number of filtered lines '//&
              'exceeded maximum of MAX_KM_F_MBLEND='//int2str(MAX_KM_F_MBLEND), .true.)
           end if
 
@@ -707,7 +707,7 @@ contains
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (k .gt. MAX_ATOMS_F_NBLEND) then
-          call pfant_halt('filter_atoms(): exceeded maximum of MAX_ATOMS_F_NBLEND='//&
+          call log_and_halt('filter_atoms(): exceeded maximum of MAX_ATOMS_F_NBLEND='//&
            int2str(MAX_ATOMS_F_NBLEND)//' spectral lines')
         end if
 
@@ -856,7 +856,7 @@ contains
 
     if (formula_id .gt. NUM_FORMULAE) then
       write (lll, *) 'point_ppa_pb(): invalid formula id (', formula_id, ') must be maximum ', NUM_FORMULAE
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     select case (formula_id)
@@ -891,7 +891,7 @@ contains
         ppa => sat4_pti
         pb  => sat4_po
       case default
-        call pfant_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
+        call log_and_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
     end select
   end
 end
@@ -973,14 +973,14 @@ end
 !
 
 ! Variable patterns
-! 
+!
 !        m_* module internal variables shared among routines
 !       hy_* hydrogen line-related, calculated by calc_tauh()
 ! popadelh_* calculated by popadelh()
 !  selekfh_* calculated by selekfh()
 !       bk_* calculated by bk()
 !    popul_* calculated by popul()
-! 
+!
 
 module synthesis
   use logging
@@ -1044,6 +1044,11 @@ module synthesis
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
   ! Calculated by subroutine bk
   real*8, dimension(MAX_DTOT) :: bk_fc
+  ! Opacity-related
+  real*8, dimension(MAX_DTOT) :: m_lambda ! lambda for each point
+  real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: &
+   opa_sca, &  ! opacities calculated by interpolation of the available MARCs model (scattering)
+   opa_abs     ! opacities calculated by interpolation of the available MARCs model (absorption)
 
   ! Calculated by calc_tauh(), hydrogen lines-related
   real*8, public :: hy_tauh(MAX_MODELES_NTOT, MAX_DTOT)
@@ -1096,24 +1101,14 @@ contains
 
   subroutine synthesis_()
     ! Units for output files
-    integer, parameter :: &
-     UNIT_SPEC  = 17, &
-     UNIT_CONT  = 19, &
-     UNIT_NORM  = 20, &
-     UNIT_LINES = 32, &
-     UNIT_LOG   = 31
-
+    integer unit_spec, unit_cont, unit_norm, unit_lines, unit_log
     real*8 fn(MAX_DTOT)
-
     integer i, i1, i2, k, d, &
      ikey,    & ! ikey-th config_aint-large calculation interval
      ikeytot    ! total number of config_aint-large calculation intervals
-
-    real*8 l0, lf, alzero, xlfin, xlzero
-
+    real*8 l0, lf, alzero, xlfin, xlzero, incr
     ! auxiliary variables to time the different parts
     real :: start, finish, start0, finish0
-
     ! output filenames with relative path included
     character(len=:), allocatable :: fn_spec, fn_cont, fn_norm
 
@@ -1135,11 +1130,11 @@ contains
     fn_spec = trim(x_flprefix)//'.spec'
     fn_cont = trim(x_flprefix)//'.cont'
     fn_norm = trim(x_flprefix)//'.norm'
-    open(unit=UNIT_SPEC, file=fn_spec, status='replace')  ! spectrum
-    open(unit=UNIT_CONT, file=fn_cont, status='replace')  ! continuum
-    open(unit=UNIT_NORM, file=fn_norm, status='replace')  ! normalized
-    !--- open(unit=UNIT_LINES,file=config_fn_lines, status='replace')               ! outfile:lines
-    !--- open(unit=UNIT_LOG,  file=config_fn_log, status='replace')                 ! log.log
+    open(newunit=unit_spec, file=fn_spec, status='replace')  ! spectrum
+    open(newunit=unit_cont, file=fn_cont, status='replace')  ! continuum
+    open(newunit=unit_norm, file=fn_norm, status='replace')  ! normalized
+    !--- open(newunit=unit_lines,file=config_fn_lines, status='replace')               ! outfile:lines
+    !--- open(newunit=unit_log,  file=config_fn_log, status='replace')                 ! log.log
 
 
     !=====
@@ -1215,7 +1210,7 @@ contains
 
       ! spill check
       if(m_dtot .gt. MAX_DTOT) then
-        call pfant_halt('dtot = '//int2str(m_dtot)//' exceeds maximum of MAX_DTOT='//&
+        call log_and_halt('dtot = '//int2str(m_dtot)//' exceeds maximum of MAX_DTOT='//&
          int2str(MAX_DTOT))
       end if
 
@@ -1223,10 +1218,11 @@ contains
       m_ilzero = floor(m_lzero/100)*100
       alzero = m_lzero-m_ilzero
       do d = 1, m_dtot
-        m_ttd(d) = alzero+x_pas*(d-1)
+        incr = x_pas*(d-1)
+        m_ttd(d) = alzero+incr
+        m_lambda(d) = m_lzero+incr ! lambda for each point
       end do
 
-      !#logging
       call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
         ' /\/\/\')
       501 format(2x,2x,'m_lzero=',f10.3,2x,'m_lfin=',&
@@ -1244,6 +1240,10 @@ contains
       call cpu_time(finish)
       call log_info("BK() Time = "//real42str(finish-start, 3)//" seconds.")
 
+      ! opacities
+      if (.not. config_no_opa) then
+        call calc_opa()
+      end if
 
       ! hydrogen lines
       if (.not. config_no_h) then
@@ -1322,9 +1322,9 @@ contains
       ! Writes results for current iteration into open files
       ! call write_lines_fort91()                        ! outfile:lines and fort.91
       ! call write_log()                                ! log.log
-      call write_spec_item(UNIT_SPEC, selekfh_fl)     ! spectrum
-      call write_spec_item(UNIT_CONT, selekfh_fcont)  ! continuum
-      call write_spec_item(UNIT_NORM, fn)             ! normalized
+      call write_spec_item(unit_spec, selekfh_fl)     ! spectrum
+      call write_spec_item(unit_cont, selekfh_fcont)  ! continuum
+      call write_spec_item(unit_norm, fn)             ! normalized
 
       call cpu_time(finish)
       call log_debug("SAVING Time = "//real42str(finish-start, 3)//" seconds.")
@@ -1343,11 +1343,11 @@ contains
       !if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
     end do  ! main loop
 
-    close(UNIT_SPEC)
-    close(UNIT_CONT)
-    close(UNIT_NORM)
-    !--- close(UNIT_LOG)
-    !--- close(UNIT_LINES)
+    close(unit_spec)
+    close(unit_cont)
+    close(unit_norm)
+    !--- close(unit_log)
+    !--- close(unit_lines)
 
     !#logging
     call log_info('Note: flux sortant est en nu: Fnu x lambda')
@@ -1459,6 +1459,15 @@ contains
   end subroutine
 
 
+  subroutine calc_opa()
+    integer n
+    do n = 1, modeles_ntot
+      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      call ftlin3(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+    end do
+  end
+
+
   !======================================================================================================================
   ! Calcule la population au niveau inferieur de la transition
   ! la largeur doppler popadelh_delta et le coefficient d'elargissement
@@ -1481,7 +1490,7 @@ contains
 
       104 format('Manque les fcts de partition du ', a2)
       write(lll,104) atoms_f_elem(k)
-      call pfant_halt(lll)
+      call log_and_halt(lll)
 
       15 continue
 
@@ -1499,7 +1508,7 @@ contains
           kii = partit_ki2(j)
         else
           ! Better to give error than to silently do wrong calculations
-          call pfant_halt('popadelh() found invalid ionization level: '//int2str(ioo), is_assertion=.true.)
+          call log_and_halt('popadelh() found invalid ionization level: '//int2str(ioo), is_assertion=.true.)
         end if
 
         if(popadelh_corch(k) .lt. 1.e-37)   then
@@ -1519,7 +1528,7 @@ contains
           write(*,*) 'atoms_f_elem(k) = ', atoms_f_elem(k)
           write(*,*) 'atoms_f_lambda(k) = ', atoms_f_lambda(k)
           call log_halt('popadelh(): atoms_f_ch(k)  calculated is lower than ZERO')
-          call pfant_halt('******'//real82str(atoms_f_ch(k))//'******')
+          call log_and_halt('******'//real82str(atoms_f_ch(k))//'******')
         end if
       end if
 
@@ -1590,8 +1599,10 @@ contains
     real*8 :: &
      deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
      phi, t, v, vm, &
-     kam, kappam, kappa, kak
+     kam, kappam, kappa, kak, &
+     kappa_opa  ! opacities aditive term
 
+    kappa_opa = 0
 
     if (atoms_f_nblend .ne. 0) then
       do k = 1,atoms_f_nblend
@@ -1610,7 +1621,6 @@ contains
         ecarm(k) = km_f_lmbdam(k)-m_lzero + x_pas
       end do
     end if
-
 
     do d = 1, m_dtot
       ! Shifts the ecar and ecarm delta lambda vectors
@@ -1668,26 +1678,36 @@ contains
         end do   !  fin bcle sur l
 
         250 continue
-        kappt(n) = kappa+kappam
+
+        ! opacities
+
+        if (.not. config_no_opa) then
+            kappa_opa = opa_abs(d, n)+opa_sca(d, n)
+        end if
+
+
+        do l = 1, km_f_mblend
+          ! TODO exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
+          !      changing this may be easier to import from TurboSpectrum molecular data
+          if(abs(ecarm(l)) .gt. KM_ALARGM)  then
+            kam = 0.
+          else
+            deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
+            vm = abs(ecarm(l)*1.e-08/deltam(l,n))
+            phi = (exp(-vm**2))/(RPI*deltam(l,n))
+            kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
+          end if
+          kappam = kappam + kam
+        end do   !  fin bcle sur l
+
+
+        kappt(n) = kappa+kappam+kappa_opa
         kci(n) = bk_kcd(d,n)
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
       end do
 
       bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
-
-      !if (d .eq. 1 .or. d .eq. m_dtot) then
-      !  150 format(' d=',i5,2x,'kci(1)=',e14.7,2x,'kci(ntot)=',e14.7,10x,'kappa(1)=',e14.7,2x,'kappa(ntot)=',e14.7)
-      !  152 format(10x,'kappam(1)=',e14.7,2x,'kappam(ntot)=',e14.7)
-      !  151 format(' d=',i5,2x,'bi(0)=',e14.7,2x,'bi(1)=',e14.7,2x,'bi(ntot)=',e14.7)
-      !
-      !  write(lll,151) d,bi(0),bi(1),bi(modeles_ntot)
-      !  call log_debug(lll)
-      !  write(lll,150) d,kci(1),kci(modeles_ntot),kappa(1),kappa(modeles_ntot)
-      !  call log_debug(lll)
-      !  !write(lll,152)kappam(1),kappam(modeles_ntot)
-      !  !call log_debug(lll)
-      !end if
 
       if (config_no_h .or. (d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
@@ -2012,9 +2032,9 @@ end module
 !
 ! Takes as input most of the data files.
 !
-! 
+!
 ! *Note* Flux absolu sortant a ete multiplie par 10**5
-! 
+!
 
 program pfant
   use config
@@ -2052,6 +2072,7 @@ program pfant
   call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
+  if (.not. config_no_opa) call read_opa(config_fn_opa)
   call read_abonds(config_fn_abonds)
   if (.not. config_no_atoms) then
     call read_atoms(config_fn_atoms)
@@ -2068,7 +2089,7 @@ program pfant
   if (.not. config_no_molecules) call read_molecules(config_fn_molecules)
 
   if (abs(modeles_asalog-main_afstar) > 0.01) then
-    call pfant_halt('asalog from model ('//real82str(modeles_asalog, 2)//&
+    call log_and_halt('asalog from model ('//real82str(modeles_asalog, 2)//&
      ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
   end if
 

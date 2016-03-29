@@ -46,7 +46,7 @@ contains
   ! TODO PROPOSE: use READ()'s "END=" option
 
   subroutine read_dissoc(path_to_file)
-    integer, parameter :: UNIT_=199
+    integer myunit
     integer i, j, k, m, mmaxj
     character(len=*) :: path_to_file
     character*2 symbol, symbol_
@@ -56,17 +56,17 @@ contains
     integer*4 natomm, nelemm
     dimension natomm(5), nelemm(5)
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     ! row 01
-    read(UNIT_,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
+    read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
     ! rows 02 to NMETAL+1: 6-column rows
     !
     !
     !
     do i = 1, dissoc_nmetal
-      read (UNIT_, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
+      read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
        symbol_, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
 
@@ -78,12 +78,12 @@ contains
         case (1)
           if (symbol .ne. ' H') then
             write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
-            call pfant_halt(lll)
+            call log_and_halt(lll)
           end if
         case (2)
           if (symbol .ne. 'HE') then
             write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
-            call pfant_halt(lll)
+            call log_and_halt(lll)
           end if
       end select
 
@@ -91,7 +91,7 @@ contains
 
       ! spill check
       if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
-        call pfant_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
+        call log_and_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
          int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
       end if
     end do
@@ -109,7 +109,7 @@ contains
     1010 continue
     j = j+1
 
-    read(UNIT_, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
+    read(myunit, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
                  dissoc_mol(j), &
                  (dissoc_c(j, k), k=1,5), &
                  dissoc_mmax(j), &
@@ -132,7 +132,7 @@ contains
     if (mmaxj .gt. 4) then
       write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
        '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     ! consistency check
@@ -148,7 +148,7 @@ contains
       if (.not. flag_found) then
         write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
          '" atomic number ', nelemm(m), 'not in atoms list above'
-        call pfant_halt(lll)
+        call log_and_halt(lll)
       end if
     end do
 
@@ -164,7 +164,7 @@ contains
     write(lll,*) 'Last molecule considered in dissoc file is ', dissoc_mol(dissoc_nmol)
     call log_debug(lll)
 
-    close(unit=UNIT_)
+    close(unit=myunit)
     flag_read_dissoc = .true.
   end
 
@@ -192,7 +192,7 @@ contains
     end do
 
     if (.not. flag_ignore_) then
-      call pfant_halt('Atomic symbol "'//symbol_//'" not found in dissoc metals table')
+      call log_and_halt('Atomic symbol "'//symbol_//'" not found in dissoc metals table')
     end if
     find_atomic_symbol_dissoc = 0
   end
@@ -265,22 +265,22 @@ contains
 
   subroutine read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
-    integer, parameter :: UNIT_ = 4
+    integer myunit
     integer i
     logical ecrit_obsolete
     real*8 temp
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     ! row 01: object name, e.g. "sun"
-    read(UNIT_, '(a15)') main_titrav
+    read(myunit, '(a15)') main_titrav
 
     ! row 02
     ! ecrit is obsolete
-    read(UNIT_, *) ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
+    read(myunit, *) ecrit_obsolete, main_pas, main_echx, main_echy, main_fwhm
 
     ! row 03
-    read(UNIT_, *) main_vvt(1)
+    read(myunit, *) main_vvt(1)
     main_ivtot = 1
 
     ! rows 03.(1-3): (three conditional rows that MUST exist if and only if main_VVT(1) > 900)
@@ -293,47 +293,47 @@ contains
     ! *Note* the number of layers does not need to match that of modeles.mod because an interpolation
     !        will take place in turbul_() to "synchronize" these two vectors
     if(main_vvt(1) .gt. 900)  then   ! vt variable avec la profondeur
-      read(UNIT_, *) main_ivtot
+      read(myunit, *) main_ivtot
       if (main_ivtot .gt. MAX_MODELES_NTOT) then
         write (lll, *) 'main_ivtot .gt. MAX_MODELES_NTOT (', &
          main_ivtot, ' .gt. ', MAX_MODELES_NTOT, ')'
-         call pfant_halt(lll)
+         call log_and_halt(lll)
       end if
 
-      read(UNIT_,*) (main_tolv(i), i=1, main_ivtot)
-      read(UNIT_,*) (main_vvt(i) ,i=1, main_ivtot)
+      read(myunit,*) (main_tolv(i), i=1, main_ivtot)
+      read(myunit,*) (main_vvt(i) ,i=1, main_ivtot)
     end if
 
     ! row 04
-    read(UNIT_, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
+    read(myunit, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
 
     ! row 05
-    read(UNIT_, *) main_ptdisk, main_mu
+    read(myunit, *) main_ptdisk, main_mu
 
     ! row 06
-    read(UNIT_, *) main_afstar
+    read(myunit, *) main_afstar
 
     ! ISSUE decide whether to use asalog of afstar throughout the source code
     !       For the time, in order to avoid mistakes I am forcing them to match
     if (abs(main_asalog-main_afstar) .gt. 0.001) then
-      call pfant_halt('asalog ('//real82str(main_asalog, 2)//&
+      call log_and_halt('asalog ('//real82str(main_asalog, 2)//&
        ') does not match afstar ('//real82str(main_afstar, 2)//') in file '''//trim(path_to_file)//'''')
     end if
 
 
     ! row 07: XXCOR(i)
     ! (JT) Should be a column in dissoc.dat !!! (MT) I agree (JT) The "xxcor" feature is now obsolete
-    read(UNIT_, *) ! skips the line
+    read(myunit, *) ! skips the line
 
     ! row 08 -- part of a file name
     ! This line will define the names of three output files:
     !   <fn_flux>.cont
     !   <fn_flux>.norm
     !   <fn_flux>.spec
-    read(UNIT_, '(a)') main_flprefix
+    read(myunit, '(a)') main_flprefix
 
     ! row 09
-    read(UNIT_, *) main_llzero, main_llfin, main_aint_obsolete
+    read(myunit, *) main_llzero, main_llfin, main_aint_obsolete
     ! Some interpolation routines don't deal well with lambda having decimal places, therefore
     ! gonna round them
     main_llzero = floor(main_llzero)
@@ -345,22 +345,24 @@ contains
     ! call log_info(lll)
 
     if (main_llzero .ge. main_llfin) then
-      call pfant_halt('llzero must be lower than llfin!')
+      call log_and_halt('llzero must be lower than llfin!')
     end if
 
 
     ! config_aint has to be divisible by main_pas
     temp = config_aint/main_pas
     if (abs(temp-nint(temp)) .gt. 1.e-10) then
-        call pfant_halt('pas='//real82str(main_pas, 3)//' (delta-lambda) must be a '//&
+        call log_and_halt('pas='//real82str(main_pas, 3)//' (delta-lambda) must be a '//&
          'sub-multiple of aint='//real82str(config_aint, 1)//' (the latter is '//&
          'configurable through command-line option "--aint").')
     end if
 
-    close(unit=UNIT_)
+    close(unit=myunit)
     flag_read_main = .true.
   end
 end
+
+
 
 
 
@@ -377,9 +379,6 @@ module reader_modeles
   use reader_main
   implicit none
 
-  ! Attention: one has to specify sizes of all the variables here, because
-  ! this may change with compiler
-
   ! Structure to store atmospheric model read from binary file.
   ! Binary file follows "NewMarcs" structure containing real numbers stored as real*4.
   ! Hence the real*4 declarations.
@@ -388,19 +387,20 @@ module reader_modeles
     ! Size of variables nh, teta, pe, pg, t5l
     integer*4 :: ntot
 
-    real*4 :: teff,    & ! Teff (Kelvin)   
+    real*4 :: teff,    & ! Teff (Kelvin)
               glog,    & ! log10(g) (g in [cm/s2])
               asalog,  & ! [Fe/H]
               asalalf, & ! [alpha/Fe]
               nhe        ! abundance of Helium: 10**([He/H]-12)
                          ! e.g., Sun: 10**(10.93-12) ~= 0.0851
 
+
     real*4, dimension(MAX_MODELES_NTOT) :: &
-     nh,   & ! ?doc?
+     nh,   & ! density of the hydrogen column
      teta, & ! 5040./temperature (temperature in K)
      pe,   & ! electron pressure [dyn/cm2]
      pg,   & ! gas pressure [dyn/cm2]
-     t5l   & ! log(tau(5000 A))
+     t5l     ! log(tau(5000 A))
 
     character*20 :: tit, tiabs
   end type
@@ -421,11 +421,11 @@ module reader_modeles
    modeles_pg,   & ! ?doc?
    modeles_t5l     ! ?doc?
 
-   ! Unit to open *modeles file*
-   integer, parameter :: UNIT_MOD = 198
+   ! Stores unit number of open *modeles file*
+   integer, private :: unit_mod
 
    ! Whether the file is open
-   logical :: flag_open = .false.
+   logical, private :: flag_open = .false.
 
    integer, parameter :: MOD_RECL = 1200 ! record length
 
@@ -444,8 +444,6 @@ contains
     get_num_records = size/MOD_RECL-1
   end
 
-
-
   !=======================================================================================
   ! Opens existing models binary file
 
@@ -453,11 +451,9 @@ contains
     character(len=*), intent(in) :: path_to_file
 
     if (flag_open) then
-      call pfant_halt('There is already a models file open', is_assertion=.true.)
+      call log_and_halt('There is already a models file open', is_assertion=.true.)
     end if
-
-    open(unit=UNIT_MOD, access='direct',status='old', file=path_to_file, recl=MOD_RECL)
-
+    open(newunit=unit_mod, access='direct',status='old', file=path_to_file, recl=MOD_RECL)
     flag_open = .true.
   end
 
@@ -466,11 +462,9 @@ contains
 
   subroutine close_mod_file()
     if (.not. flag_open) then
-      call pfant_halt('No models is open', is_assertion=.true.)
+      call log_and_halt('No models is open', is_assertion=.true.)
     end if
-
-    close(UNIT_MOD)
-
+    close(unit_mod)
     flag_open = .false.
   end
 
@@ -495,7 +489,7 @@ contains
     ! Record is read twice; second time bid "grabs" everything that was read before
     real*4 bid(16)
 
-    read(UNIT_MOD, rec=rec_id) &
+    read(unit=unit_mod, rec=rec_id) &
      record%ntot,    &
      record%teff,    &
      record%glog,    &
@@ -508,16 +502,16 @@ contains
     ! The last record of the binary file is a "flag" record. If it contains a 9999,
     ! It is the last record of the file.
     if (record%ntot .eq. 9999) then
-      call pfant_halt('Le modele desire ne est pas sur le fichier')
+      call log_and_halt('Le modele desire ne est pas sur le fichier')
     end if
 
     ! spill check: Checks if exceeds maximum number of elements allowed
     if (record%ntot .gt. MAX_MODELES_NTOT) then
-      call pfant_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
+      call log_and_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
-    read(UNIT_MOD, rec=rec_id) bid, &
+    read(unit_mod, rec=rec_id) bid, &
          (record%nh(i),   &
           record%teta(i), &
           record%pe(i),   &
@@ -540,7 +534,6 @@ contains
     call log_debug(lll)
     write(lll, *) 'read_mod_record(): tiabs=', record%tiabs
     call log_debug(lll)
-
   end
 
 
@@ -551,9 +544,6 @@ contains
   ! SUR LE FICHIER ACCES DIRECT
 
   subroutine read_modele(path_to_file)
-    implicit none
-    integer UNIT_
-    parameter(UNIT_=199)
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
@@ -576,20 +566,20 @@ contains
     ! r%nhe comes straight from the newmarcs grid file and is not calculated.
     ! if (abs(main_nhe-r%nhe) .gt. 0.001) then
     !  write(lll, *) 'modele nhe (', r%nhe, ') does not match main nhe (', main_nhe, ')'
-    !  call pfant_halt(lll)
+    !  call log_and_halt(lll)
     ! end if
 
     if(ddt .gt. 1.0) then
       write(lll,*) 'read_modele(): abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
     if(ddg .gt. 0.01) then
       write(lll,*) 'read_modele(): abs(main_glog-(model glog)) = ', ddg, ' > 0.01'
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
     if(ddab .gt. 0.01) then
       write(lll,*) 'read_modele(): abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     ! ready to copy (& convert) variables to their counterparts
@@ -610,6 +600,103 @@ contains
     modeles_tiabs = r%tiabs
   end
 end
+
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Reading routine and type declaration for MARCS *opacities file*
+!
+! Based on "http://marcs.astro.uu.se/documents/auxiliary/readopa.f
+! (updated to Fortran2008)
+
+module reader_opa
+  use logging
+  implicit none
+
+  ! Structure to store the opacities file
+
+  integer, parameter :: OPA_MDP = 56, & ! Maximum number of Depth Points
+                                        ! (i.e., atmospheric layers) allowed in opacity model
+                        OPA_MWAV = 1071 ! Maximum number of WAVelengths
+
+  type file_opa
+
+    ! number of depth points
+    integer ndp
+    ! standard wavelength for the continuous optical depth (tau)
+    ! scale and for the total standard opacity (ops)
+    real*8 swave
+    ! number of wavelengths for which continuous absorption and
+    ! scattering opacities are given. These are chosen so that
+    ! linear interpolation should suffice for any wavelength
+    integer nwav
+    ! wav(j): wavelengths for which opacities are given
+    real*8 wav(OPA_MWAV)
+    ! **Model structure**
+    ! rad(k): radius, normalized on the outermost point, k=1. For use with
+    !          spherical radiative transfer.
+    !          For plane-parallel models rad == 1.0.
+    ! tau(k): continuumm optical depth at the standard wavelength swave
+    ! t(k)  : temperature (K)
+    ! pe(k) : electron pressure (dyn/cm2)
+    ! pg(k) : total gas pressure (dyn/cm2)
+    ! rho(k): densigy (g/cm3)
+    ! xi(k) : microturbulence parameter (km/s)
+    ! ops(k): continuumm opacity at the standard wavelength (cm2/g)
+    real*8, dimension(OPA_MDP) :: rad, tau, t, pe, pg, rho, xi, ops
+    ! **Wavelength dependent opacities**
+    ! abs(j,k): specific continuous absorption opacity (cm2/g)
+    ! sca(j,k): specific continuous scattering opacity (cm2/g)
+    real*8, dimension(OPA_MWAV, OPA_MDP) :: abs, sca
+  end type
+
+  ! Structure where read_opa() will store its values
+  type(file_opa) :: opa
+contains
+
+  ! reads a MARCS opacity data file and stores the data in ẗhe *opa* module variable
+
+  subroutine read_opa(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+    integer myunit, i, k
+    character mcode*4
+
+    open(newunit=myunit,file=path_to_file, status='old')
+
+
+    read(myunit, '(1x,a4,i5,f10.0)') mcode, opa%ndp, opa%swave
+    ! Validates "magic characters"
+    if (mcode .ne. 'MRXF') &
+      call log_and_halt('Invalid opacities file: "'//trim(path_to_file)//'"')
+    call assert_le(opa%ndp, OPA_MDP, 'read_opa()', 'ndp', 'MDP')
+
+    read(myunit, *) opa%nwav
+    call assert_le(opa%nwav, OPA_MWAV, 'read_opa()', 'nwav', 'MWAV')
+
+    read(myunit, *) (opa%wav(i), i=1, opa%nwav)
+
+    do k = 1, opa%ndp
+      read(myunit,*) opa%rad(k), opa%tau(k), opa%t(k),  opa%pe(k), &
+                     opa%pg(k),  opa%rho(k), opa%xi(k), opa%ops(k)
+      read(myunit,*) (opa%abs(i,k), opa%sca(i, k), i=1,opa%nwav)
+
+      do i = 1, opa%nwav
+        ! absorption and scattering multiplied by standard value as in original readopa.f
+        opa%abs(i,k) = opa%abs(i,k)*opa%ops(k)
+        opa%sca(i,k) = opa%sca(i,k)*opa%ops(k)
+      enddo
+    enddo
+
+    ! Skips abundances
+    ! read(*,*) abund
+  end
+end
+
+
 
 
 
@@ -655,7 +742,7 @@ contains
 
   subroutine read_hmap(path_to_file)
     character(len=*), intent(in) :: path_to_file
-    integer, parameter :: UNIT_ = 199
+    integer myunit
     logical :: skip_row(MAX_FILE_ROWS)
     integer :: num_rows, i
 
@@ -669,14 +756,14 @@ contains
 
     call map_file_comments(path_to_file, skip_row, num_rows)
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     hmap_n = 0
     do i = 1, num_rows
       if (skip_row(i)) then
-        read(UNIT_,*)   ! skips comment row
+        read(myunit,*)   ! skips comment row
       else
-        read(UNIT_, *) t_fn, t_na, t_nb, t_clam, t_kiex, t_c1
+        read(myunit, *) t_fn, t_na, t_nb, t_clam, t_kiex, t_c1
 
         hmap_n = hmap_n+1
 
@@ -688,7 +775,7 @@ contains
         hmap_rows(hmap_n)%c1 = t_c1
       end if
     end do
-    close(unit=UNIT_)
+    close(unit=myunit)
 
 
     !#logging
@@ -701,6 +788,9 @@ contains
     end do
   end
 end
+
+
+
 
 
 
@@ -752,8 +842,7 @@ contains
 
   subroutine read_filetoh(llzero, llfin)
     real*8, intent(in) :: llzero, llfin
-    integer unit_
-    parameter(unit_=199)
+    integer myunit
     integer i, j, n, i_file
     character(len=:), allocatable :: fn_now
     real*8 :: clam
@@ -779,17 +868,17 @@ contains
       end if
 
       if (flag_inside) then
-        open(err=111, unit=unit_,file=fn_now,status='old')
+        open(err=111, unit=myunit,file=fn_now,status='old')
 
         i = i+1
 
-        read(unit_,'(a80)') filetoh_titre(i)
-        read(unit_,'(a11)') filetoh_ttt(i)
-        read(unit_,*) filetoh_jmax(i)
-        read(unit_,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
-        read(unit_,'(5e12.4)') ((filetoh_th(i,j,n),&
+        read(myunit,'(a80)') filetoh_titre(i)
+        read(myunit,'(a11)') filetoh_ttt(i)
+        read(myunit,*) filetoh_jmax(i)
+        read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
+        read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),&
          j=1,filetoh_jmax(i)), n=1,modeles_ntot)
-        close(unit_)
+        close(myunit)
 
         ! Takes first lambda of file as a reference
         clam = filetoh_lambdh(i, 1)
@@ -812,7 +901,7 @@ contains
            F7.1,'-',F5.1,',',F7.1,'+',F5.1,'], but cannot open file "',A,'"')
           write(lll,130) clam, H_LINE_WIDTH, clam, H_LINE_WIDTH, llzero, LAMBDA_STRETCH, &
            llfin, LAMBDA_STRETCH, fn_now
-          call pfant_halt(lll)
+          call log_and_halt(lll)
         end if
         call log_warning('Error opening file "' // fn_now // '"')
       end if
@@ -827,6 +916,19 @@ contains
     ! about hydrogen lines files not found, so bewhare (--hmap is the preferred mode anyway)
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -882,35 +984,34 @@ contains
 
   subroutine read_absoru2(path_to_file)
     implicit none
-    integer UNIT_
-    parameter(UNIT_=199)
+    integer myunit
     character(len=*) :: path_to_file
     character*3 neant
     integer nion, i, ith, j, nrr, nset
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     ! ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
     ! ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
-    read (UNIT_,'(2e15.7)') absoru2_abmet, absoru2_abhel
+    read (myunit,'(2e15.7)') absoru2_abmet, absoru2_abhel
 
 
     ! NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
     ! NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
     ! IUNITE=' GR.MAT.' SI ON VEUT CALCULER KAPPA PAR GRAMME DE MATIERE
     ! IUNITE=' NOYAU H'  ''    ''    ''       ''      NOYAU D'HYDROGENE
-    read (UNIT_,'(2i2,a8,a)') absoru2_nm, absoru2_nmeta, absoru2_iunite, absoru2_titre
+    read (myunit,'(2i2,a8,a)') absoru2_nm, absoru2_nmeta, absoru2_iunite, absoru2_titre
 
     ! spill check: checks if exceeds maximum number of elements allowed
     if (absoru2_nm .gt. MAX_ABSORU2_NM) then
-      call pfant_halt('read_absoru2(): nm='//int2str(absoru2_nm)//&
+      call log_and_halt('read_absoru2(): nm='//int2str(absoru2_nm)//&
          ' exceeded maximum of MAX_ABSORU2_NM='//int2str(MAX_ABSORU2_NM))
     end if
 
 
     ! LECTURE DE LA TABLE D'IONISATION CHOISIE
     do j = 1, absoru2_nm
-      read (UNIT_, '(3x,i3,2e16.5)') absoru2_nr(j), absoru2_zp(j), absoru2_zm(j)
+      read (myunit, '(3x,i3,2e16.5)') absoru2_nr(j), absoru2_zp(j), absoru2_zm(j)
       absoru2_zp(j) = 10**absoru2_zp(j)
 
       ! NR=DEGRE MAXIMUM D'IONISATION CONSIDERE
@@ -921,13 +1022,13 @@ contains
       ! checks if exceeds maximum number of elements allowed
       if (nrr .gt. MAX_ABSORU2_NRR) then
         write(lll,*) 'read_absoru2(): j = ', j, 'nr=', nrr, ' exceeded maximum of', MAX_ABSORU2_NRR
-        call pfant_halt(lll)
+        call log_and_halt(lll)
       end if
 
       do i = 1, nrr
         ! neant="nothing"
         ! NION is also not used
-        read (UNIT_, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
+        read (myunit, '(a3,a2,i1,2e16.5)') neant, absoru2_nomet(j), &
          nion, absoru2_xi(j,i), absoru2_pf(j,i)
 
         ! makes sure the atomic symbol looks OK (even thou this variable is not used so far)
@@ -948,16 +1049,16 @@ contains
 
 
     ! ASK BLB (actually TELL BLB) Was not reading the "listed des discontinuites H e HE pour TH>0.8 !!
-    ! this is wrong, see below read (UNIT_, '(2i2)') (absoru2_numset(ith), ith=1,2)
+    ! this is wrong, see below read (myunit, '(2i2)') (absoru2_numset(ith), ith=1,2)
 
     ! spill check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(1) .gt. MAX_ABSORU2_NUMSET_I) then
-      call pfant_halt('read_absoru2(): numset(1) = '//int2str(absoru2_numset(1))//&
+      call log_and_halt('read_absoru2(): numset(1) = '//int2str(absoru2_numset(1))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
     ! spill check: Checks if exceeds maximum number of elements allowed
     if (absoru2_numset(2) .gt. MAX_ABSORU2_NUMSET_I) then
-      call pfant_halt('read_absoru2(): numset(2) = '//int2str(absoru2_numset(2))//&
+      call log_and_halt('read_absoru2(): numset(2) = '//int2str(absoru2_numset(2))//&
        ' exceeded maximum of MAX_ABSORU2_NUMSET_I='//int2str(MAX_ABSORU2_NUMSET_I))
     end if
 
@@ -966,9 +1067,9 @@ contains
     ! POUR H,HE ET HE+
     ! PREMIERE LISTE POUR TH.LE.0.8 ITH=1,DEUXIEME LISTE POUR TH.GT.0.8
     do ith = 1,2
-      read(UNIT_, *) absoru2_numset(ith)
+      read(myunit, *) absoru2_numset(ith)
       nset = absoru2_numset(ith)
-      read (UNIT_,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
+      read (myunit,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
       write(*,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
     end do
   end
@@ -1011,30 +1112,29 @@ contains
   !
   ! The end of the file is signalled by two rows containing only "1" each at
   ! column 1 and nothing else at the others, i.e.,
-  ! 
+  !
   ! .......(last data row).......
   ! 1
   ! 1
 
   subroutine read_abonds(path_to_file)
     implicit none
-    integer UNIT_, finab, k, j
-    parameter(UNIT_=199)
+    integer myunit, finab, j
     character(len=*) :: path_to_file
     real*8 fstar
 
     if (.not. flag_read_main) then
-      call pfant_halt('read_main() must be called before read_abonds()')
+      call log_and_halt('read_main() must be called before read_abonds()')
     end if
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     fstar = 10**main_afstar
 
     j = 1
     finab = 0
     do while (finab .lt. 1)
-      read(UNIT_, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
+      read(myunit, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
 
       if (finab .lt. 1) then
         abonds_ele(j) = adjust_atomic_symbol(abonds_ele(j))
@@ -1051,10 +1151,31 @@ contains
     end do
     abonds_nabond = j-2
 
-    close(unit=UNIT_)
+    close(unit=myunit)
     flag_read_abonds = .true.
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1092,29 +1213,28 @@ contains
   ! LECTURE DES FCTS DE PARTITION
   !
   ! Rows in this file alternate between:
-  ! 
+  !
   ! 1) 8-column row
   !    col 8 -- signals end-of-file. If 1, it ignores the row and
   !             stops reading
   !
   ! 2) Series of rows to fill in partit_TABU(J, :, :)
-  ! 
+  !
 
   subroutine read_partit(path_to_file)
     implicit none
-    integer UNIT_
-    parameter(UNIT_=199)
+    integer myunit
     character(len=*) :: path_to_file
 
     integer finpar, j, kmax, l, k
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
 
     j = 1
     finpar = 0
     do while (finpar .lt. 1)
-      read (UNIT_, '(a2, 2f5.2, i3, 3f10.2, 34x, i1)') &
+      read (myunit, '(a2, 2f5.2, i3, 3f10.2, 34x, i1)') &
        partit_el(j), &
        partit_tini(j), &
        partit_pa(j), &
@@ -1127,7 +1247,7 @@ contains
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (j .gt. MAX_PARTIT_NPAR) then
-          call pfant_halt('read_partit(): par exceeded maximum of MAX_PARTIT_NPAR='//&
+          call log_and_halt('read_partit(): par exceeded maximum of MAX_PARTIT_NPAR='//&
            int2str(MAX_PARTIT_NPAR))
         end if
 
@@ -1137,12 +1257,12 @@ contains
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (kmax .gt. MAX_PARTIT_KMAX) then
-          call pfant_halt('read_partit(): par number '//int2str(j)//'; kmax='//&
+          call log_and_halt('read_partit(): par number '//int2str(j)//'; kmax='//&
            int2str(kmax)//' exceeded maximum of MAX_PARTIT_KMAX='//int2str(MAX_PARTIT_KMAX))
         end if
 
 
-        read(UNIT_, '(13f6.4)') ((partit_tabu(j, l, k), l=1, 3), k=1, kmax)
+        read(myunit, '(13f6.4)') ((partit_tabu(j, l, k), l=1, 3), k=1, kmax)
 
         j = j+1
       end if
@@ -1153,6 +1273,17 @@ contains
     return
   end
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1192,17 +1323,17 @@ contains
     character(len=*), intent(in) :: path_to_file
     character*64 :: t_fn0
     character(len=:), allocatable :: t_fn
-    integer, parameter :: UNIT_ = 199
+    integer myunit
     type(modele_record) :: rec
     character*64 :: temp_fn(MAX_GRIDSMAP_NUM_FILES)
     real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
     integer :: order(MAX_GRIDSMAP_NUM_FILES), i
 
-    open(unit=UNIT_,file=path_to_file, status='old')
+    open(newunit=myunit,file=path_to_file, status='old')
 
     gridsmap_num_files = 0
     do while (.true.)
-      read(UNIT_, '(a)', end=10) t_fn0
+      read(myunit, '(a)', end=10) t_fn0
 
       t_fn = adjustl(trim(t_fn0))  ! Tolerant with lines starting with spaces
 
@@ -1240,9 +1371,24 @@ contains
       call log_info(lll)
     end do
 
-    close(unit=UNIT_)
+    close(unit=myunit)
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1286,7 +1432,7 @@ contains
   ! Depends on abonds_*, so must be called after READ_ABONDS()
   !
   ! This file has 2 types of alternating rows:
-  ! 
+  !
   !   odd row
   !     col 1 -- 2-letter atoms_elem atomic symbol
   !     col 2 -- atoms_ioni
@@ -1300,43 +1446,42 @@ contains
   !     col 6 --
   !     col 7 --
   !     col 8 -- signals end-of-file. If "1", reading stops
-  ! 
+  !
   !
   !  *Note* The line that has the end-of-file flag set is also taken into account.
 
   subroutine read_atoms(filename)
     implicit none
-    integer unit_
-    parameter(unit_=199)
+    integer myunit
     character(len=*) :: filename
     integer finrai, k, j
     logical flag_found
 
     if (.not. flag_read_abonds) then
-      call pfant_halt('read_abonds() must be called before read_atoms()')
+      call log_and_halt('read_abonds() must be called before read_atoms()')
     end if
 
-    open(unit=unit_,file=filename, status='old')
+    open(newunit=myunit,file=filename, status='old')
 
     k = 1
     do while (.true.)
       ! spill check: checks if exceeds maximum number of elements allowed
       if (k .gt. MAX_ATOMS_NBLEND) then
-        call pfant_halt('read_atoms(): exceeded maximum of MAX_ATOMS_NBLEND='//&
+        call log_and_halt('read_atoms(): exceeded maximum of MAX_ATOMS_NBLEND='//&
          int2str(MAX_ATOMS_NBLEND)//' spectral lines')
       end if
-      read(unit_, '(a2, i1, 1x, f10.3)') atoms_elem(k), &
+      read(myunit, '(a2, i1, 1x, f10.3)') atoms_elem(k), &
                                          atoms_ioni(k), &
                                          atoms_lambda(k)
       if (atoms_ioni(k) .ne. 1 .and. atoms_ioni(k) .ne. 2) then
         ! Only ionization levels 1 and 2 are accepted because subroutine popadelh() only considers these levels
 
-        call pfant_halt('read_atoms(): error in line '//int2str(k*2-1)//' of file '//trim(filename)//&
+        call log_and_halt('read_atoms(): error in line '//int2str(k*2-1)//' of file '//trim(filename)//&
          ': invalid ionization level: '//int2str(atoms_ioni(k)))
       end if
       atoms_elem(k) = adjust_atomic_symbol(atoms_elem(k))
 
-      read(unit_, *) &
+      read(myunit, *) &
        atoms_kiex(k), &
        atoms_algf(k), &
        atoms_ch(k), &
@@ -1366,7 +1511,7 @@ contains
       if (.not. flag_found) then
         write(lll,*)  'read_atoms(): element "', atoms_elem(k), &
          ' (spectral line number ', k, ') cannot be found in abundance file'
-        call pfant_halt(lll)
+        call log_and_halt(lll)
       end if
       atoms_abonds_abo(k) = abonds_abo(j)
 
@@ -1399,7 +1544,7 @@ contains
 !~  GO TO 9
 !~10  NBLEND=K-1
 
-    close(unit=unit_)
+    close(unit=myunit)
   end
 end
 
@@ -1481,28 +1626,26 @@ contains
 
   subroutine read_molecules(filename)
     character(len=*) :: filename
-
-    integer unit_, i, &
+    integer myunit, i, &
      molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
      i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
      nnv, iz, &
      numlin , &  ! Temporary variable
      j_set,   &
      j_line
-    parameter(unit_=199)
 
-    open(unit=unit_,file=filename, status='old')
+    open(newunit=myunit,file=filename, status='old')
 
 
     ! row 01:
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured
 
-    read(unit_,*) km_number
+    read(myunit,*) km_number
 
     ! spill check
     if (km_number .gt. NUM_MOL) then
-      call pfant_halt("Number of molecules ("//int2str(km_number)// &
+      call log_and_halt("Number of molecules ("//int2str(km_number)// &
        ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
     end if
 
@@ -1513,8 +1656,8 @@ contains
 
 
     ! row 02: string containing list of names of all molecules
-    read(unit_,'(a)') km_titm
-    !~READ(UNIT_,'(20A4)') km_TITM
+    read(myunit,'(a)') km_titm
+    !~READ(myunit,'(20A4)') km_TITM
 
     !write(lll, *) 'titm--------------', km_titm
     !call log_debug(lll)
@@ -1524,12 +1667,12 @@ contains
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(unit_,*) (km_nv(molidx), molidx=1,km_number)
+    read(myunit,*) (km_nv(molidx), molidx=1,km_number)
 
     ! spill check
     do molidx = 1, km_number
       if (km_nv(molidx) .gt. MAX_KM_NV_PER_MOL) then
-          call pfant_halt('read_molecules(): molecule id '//int2str(molidx)//&
+          call log_and_halt('read_molecules(): molecule id '//int2str(molidx)//&
            ' has nv = '//int2str(km_nv(molidx))//' (maximum is MAX_KM_NV_PER_MOL='//&
            int2str(MAX_KM_NV_PER_MOL)//')')
         end if
@@ -1540,7 +1683,7 @@ contains
       ! BLB:
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
-      read(unit_,'(a)') km_titulo(molidx)
+      read(myunit,'(a)') km_titulo(molidx)
       km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
 
       !write(lll,*) 'molecule index ', molidx
@@ -1565,19 +1708,19 @@ contains
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
 
-      read(unit_,*) km_fe(molidx), km_do(molidx), km_mm(molidx), &
+      read(myunit,*) km_fe(molidx), km_do(molidx), km_mm(molidx), &
        km_am(molidx), km_bm(molidx), km_ua(molidx), &
        km_ub(molidx), km_te(molidx), km_cro(molidx)
 
 
       ! *Note * there is only a blank row at this position
       ! and these variables are not in use in the program.
-      read(unit_,'(2x,i3, 5f10.6, 10x, f6.3)') km_ise(molidx), &
+      read(myunit,'(2x,i3, 5f10.6, 10x, f6.3)') km_ise(molidx), &
        km_a0(molidx), km_a1(molidx), km_a2(molidx), &
        km_a3(molidx), km_a4(molidx), km_als(molidx)
 
       ! ?doc?
-      read(unit_,*) km_s(molidx)
+      read(myunit,*) km_s(molidx)
 
       nnv = km_nv(molidx)
 
@@ -1596,11 +1739,11 @@ contains
       ! BLB: fact -- factor of adjustment for fitting bottom of lines
       ! BLB:         In general: 1. 1. 1. 1. ...
       ! BLB:         Sometimes used for isotopic determinations
-      read(unit_,*) (km_qqv(i, molidx), i=1,nnv)
-      read(unit_,*) (km_ggv(i, molidx), i=1,nnv)
-      read(unit_,*) (km_bbv(i, molidx), i=1,nnv)
-      read(unit_,*) (km_ddv(i, molidx), i=1,nnv)
-      read(unit_,*) (km_fact(i, molidx),i=1,nnv)
+      read(myunit,*) (km_qqv(i, molidx), i=1,nnv)
+      read(myunit,*) (km_ggv(i, molidx), i=1,nnv)
+      read(myunit,*) (km_bbv(i, molidx), i=1,nnv)
+      read(myunit,*) (km_ddv(i, molidx), i=1,nnv)
+      read(myunit,*) (km_fact(i, molidx),i=1,nnv)
 
       do i = 1,nnv
         km_ddv(i, molidx)=1.e-6*km_ddv(i, molidx)
@@ -1615,7 +1758,7 @@ contains
 
         ! spill check: checks if exceeds maximum number of elements allowed
         if (i_line .gt. MAX_KM_LINES_TOTAL) then
-          call pfant_halt('read_molecules(): exceeded maximum number of total '//&
+          call log_and_halt('read_molecules(): exceeded maximum number of total '//&
             'spectral lines  MAX_KM_LINES_TOTAL= '//int2str(MAX_KM_LINES_TOTAL)//&
             ' (at molecule id '//int2str(molidx)//')')
         end if
@@ -1643,7 +1786,7 @@ contains
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule
-        read(unit_,*) km_lmbdam(i_line), km_sj(i_line), km_jj(i_line), iz, numlin
+        read(myunit,*) km_lmbdam(i_line), km_sj(i_line), km_jj(i_line), iz, numlin
 
         !~km_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
 
@@ -1659,7 +1802,7 @@ contains
 
       ! consistency check: J_SET must match NNV
       if(j_set .ne. nnv) then
-        call pfant_halt('read_molecules():  incorrect number of set-of-lines: '//&
+        call log_and_halt('read_molecules():  incorrect number of set-of-lines: '//&
          int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&
          int2str(molidx)//')')
       end if
@@ -1673,7 +1816,7 @@ contains
 
     km_lines_total = i_line
 
-    close(unit_)
+    close(myunit)
   end
 
   ! Finds formula id given title of molecule
@@ -1714,7 +1857,7 @@ contains
     end do
 
     if (num_found .eq. 0) then
-      call pfant_halt('No valid molecule formula was found in "'//title_upper//'"')
+      call log_and_halt('No valid molecule formula was found in "'//title_upper//'"')
     elseif (num_found .gt. 1) then
       ! joins molecule names separated by comma
       ! Fortran formatting does most of the job, ...
@@ -1724,7 +1867,7 @@ contains
       n = len(trim(s_matches))
       s_matches2 = s_matches(1:n-1)
 
-      call pfant_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
+      call log_and_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
     end if
 
     find_formula_id = idx_found(1)
@@ -1751,6 +1894,7 @@ module readers
   use reader_gridsmap
   use reader_atoms
   use reader_molecules
+  use reader_opa
 end
 
 

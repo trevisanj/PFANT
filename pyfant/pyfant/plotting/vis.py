@@ -1,5 +1,5 @@
 __all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
-           "get_suitable_vis_classes", "VisAtoms", "VisMolecules"]
+           "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa"]
 
 from pyfant.data import *
 import numpy as np
@@ -223,3 +223,74 @@ class VisMolecules(Vis):
         form = XFileMolecules(self.parent_form)
         form.load(r)
         form.show()
+
+
+class VisOpa(Vis):
+    """
+    Visualizer for FileOpa class
+
+    Plots vectors ???
+    """
+
+    input_classes = (FileOpa,)
+
+    def _do_use(self, obj):
+        assert isinstance(obj, FileOpa)
+
+        # 8 subplots sharing same x-axis
+        aa = ["rad", "tau", "t", "pe", "pg", "rho", "xi", "ops"]
+        titles = ["spherical radiative transfer",
+                  "continuumm optical depth at %g angstrom" % obj.swave,
+                  "temperature (K)",
+                  "electron pressure (dyn/cm2)",
+                  "total gas pressure (dyn/cm2)",
+                  "densigy (g/cm3)",
+                  "microturbulence parameter (km/s)",
+                  "continuumm opacity at %g angstrom (cm2/g)" % obj.swave]
+
+        f, axarr = plt.subplots(nrows=4, ncols=2, sharex=True)
+        x = np.linspace(1, obj.ndp, obj.ndp)
+        i = 0
+        for m in range(4):
+            for n in range(2):
+                a = aa[i]
+                ax = axarr[m, n]
+                ax.plot(x, obj.__getattribute__(a))
+                ax.set_title("%s: %s" % (a, titles[i]))
+
+                i += 1
+        axarr[3, 0].set_xlabel("Layer #")
+        axarr[3, 1].set_xlabel("Layer #")
+
+        f.canvas.set_window_title("%s -- %s" % (self.title, 'one-value-per-model'))
+        plt.tight_layout()
+
+        #################
+        # 3D plots
+        vars = ["abs", "sca"]
+        titles = ["specific continuous absorption opacity (cm2/g)",
+                  "specific continuous scattering opacity (cm2/g)"]
+
+        for var, title in zip(vars, titles):
+            attr = obj.__getattribute__(var)
+            x = np.log10(obj.wav)
+
+            fig = plt.figure()
+            if self.parent_form:
+                fig.canvas.setParent(self.parent_form)
+            ax = fig.gca(projection='3d')
+            fig.canvas.set_window_title('%s -- %s' % (self.title, var))
+
+            for k in range(obj.ndp):
+                y = np.ones(len(x)) * (k + 1)
+                z = attr[:, k]
+                ax.plot(x, y, z, label='a', color='k')
+                # ax.set_xscale("log")
+                # ax.semilogx(x, y, z, label='a', color='k')
+
+            ax.set_xlabel('log10(wavelength)')
+            ax.set_ylabel('Layer #')
+            ax.set_zlabel(var)
+            ax.set_title("%s: %s" % (var, title))
+
+        plt.show()

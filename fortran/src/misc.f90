@@ -59,7 +59,7 @@ contains
     character(len=*), intent(in) :: elem
     character(len=2) :: res
     if (len(elem) .ne. 2) &
-      call pfant_halt('adjust_atomic_symbol(): got '//int2str(len(elem))//&
+      call log_and_halt('adjust_atomic_symbol(): got '//int2str(len(elem))//&
        '-char string (wants 2-char string)', is_assertion=.true.)
     res = to_upper(adjustr(elem))
   end
@@ -202,7 +202,7 @@ contains
       y = .true.
     else
       y = .false.  ! no effect, just to shut up compiler "maybe uninitialized" message
-      call pfant_halt('int2logical() accepts only 0/1, not '//int2str(x))
+      call log_and_halt('int2logical() accepts only 0/1, not '//int2str(x))
     end if
   end function
 
@@ -262,7 +262,7 @@ contains
       n_temp = n_temp+1
 
       if (n_temp .gt. MAX_FILE_ROWS) &
-        call pfant_halt('Increase MAX_FILE_ROWS (='//int2str(MAX_FILE_ROWS)//')')
+        call log_and_halt('Increase MAX_FILE_ROWS (='//int2str(MAX_FILE_ROWS)//')')
 
       s_temp = trim(adjustl(s_temp0))  ! tolerant with rows starting with spaces
 
@@ -534,14 +534,14 @@ contains
     integer i_mol, get_molidx
 
     if (.not. flag_molecules_idxs_init) then
-      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
+      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     ! spill check
     if (i_mol .gt. molidxs%n_on) then
       write (lll, *) 'get_molidx(): invalid molecule index i_mol (', &
        i_mol, ') must be maximum ', molidxs%n_on
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
 
     get_molidx = molidxs%on(i_mol)
@@ -558,7 +558,7 @@ contains
     logical molecule_is_on
 
     if (.not. flag_molecules_idxs_init) then
-      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
+      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     molecule_is_on = .true.
@@ -592,12 +592,12 @@ contains
     integer, intent(in) :: molidx ! molecule id
 
     if (.not. flag_molecules_idxs_init) then
-      call pfant_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
+      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
     end if
 
     ! spill check
     if (molidx .gt. NUM_MOL .or. molidx .lt. 1) then
-      call pfant_halt('Invalid molecule id: '//int2str(molidx)//' (valid: 1 to '//&
+      call log_and_halt('Invalid molecule id: '//int2str(molidx)//' (valid: 1 to '//&
        int2str(NUM_MOL)//')')
     end if
 

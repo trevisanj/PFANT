@@ -378,16 +378,16 @@ contains
     t2=t1/t0
     do n=1,ntot
       u0 = r2%nh(n)-r1%nh(n)
-      rr%nh(n) = r1%nh(n) + (u0*t2)
+      rr%nh(n) = r1%nh(n) + u0*t2
 
       u0 = r2%teta(n)-r1%teta(n)
-      rr%teta(n)= r1%teta(n) + (u0*t2)
+      rr%teta(n)= r1%teta(n) + u0*t2
 
       u0 = r2%pe(n)-r1%pe(n)
-      rr%pe(n)= r1%pe(n) + (u0*t2)
+      rr%pe(n)= r1%pe(n) + u0*t2
 
       u0 = r2%pg(n)-r1%pg(n)
-      rr%pg(n) = r1%pg(n) + (u0*t2)
+      rr%pg(n) = r1%pg(n) + u0*t2
 
       rr%t5l(n) = r1%t5l(n)
 

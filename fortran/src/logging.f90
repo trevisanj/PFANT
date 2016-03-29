@@ -13,8 +13,8 @@
 ! You should have received a copy of the GNU General Public License
 ! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
 
-! @ingroup gr_io
-! Routines to write text to screen and/or log file.
+! module "logging":
+!   - Logging facility: routines to write text to screen and/or log file.
 !
 ! Usage:
 ! - Set logging_LEVEL (optional, defaults to DEBUG)
@@ -22,14 +22,14 @@
 !
 ! Logging message will only be shown if logging_LEVEL is <= corresponding level of subroutine called.
 ! E.g., corresponding level of subroutine DEBUG() is LOGGING_DEBUG
+
 module logging
   implicit none
 
-  ! variable declared for convenience, to be used to log formatted output as in example:
-  ! @code
-  ! write(lll,*) ...
-  ! call log_info(lll)
-  ! @endcode
+  ! variable declared for convenience, to be used to log formatted output as the
+  ! following example:
+  !     write(lll,*) ...
+  !     call log_info(lll)
   character*512 lll
 
   ! Logging levels copied from Python (except LOGGING_HALT)
@@ -51,8 +51,8 @@ module logging
   !=====
   ! Configurable variables
   !=====
-  ! Possible values: logging::LOGGING_HALT, logging::LOGGING_CRITICAL, logging::LOGGING_ERROR,
-  ! logging::LOGGING_WARNING, logging::LOGGING_INFO (default), logging::LOGGING_DEBUG
+  ! Possible values: LOGGING_HALT, LOGGING_CRITICAL, LOGGING_ERROR,
+  ! LOGGING_WARNING, LOGGING_INFO (default), LOGGING_DEBUG
   integer :: logging_level = LOGGING_INFO
   ! Full path to file to record progress indication
   character*256 :: logging_fn_progress = 'progress.txt'
@@ -70,16 +70,18 @@ module logging
 
   private :: do_logging
 
+  integer, private :: unit_dump
+
+
   save
 contains
-
   !---------------------------------------------------------------------------------------
   ! Logs message at HALT level and halts program execution with error code -1.
   !
   ! Error code -1 allows a program that calls PFANT to know that PFANT stopped
   ! due to an error situation (normal program execution ends with error code 0).
 
-  subroutine pfant_halt(s, is_bug, is_assertion)
+  subroutine log_and_halt(s, is_bug, is_assertion)
     ! Log message
     character(len=*), intent(in) :: s
     ! (default=.false.) Whether halting program because of a bug.
@@ -119,7 +121,7 @@ contains
   ! Logs message as HALT. Logs unconditionally (independent of logging level).
   !
   ! This allows the calling routine to log halt-level messages before calling
-  ! pfant_halt(). As a rule, always call pftant_halt() after 1 or more calls to
+  ! log_and_halt(). As a rule, always call pftant_halt() after 1 or more calls to
   ! log_halt().
 
   subroutine log_halt(s)
@@ -206,7 +208,7 @@ contains
   ! Logs progress
   !
   ! uses log_info() to write to screen + writes information into
-  ! logging::logging_fn_progress
+  ! logging_fn_progress
   !
   ! If cannot create file, does not bother (warns)
 
@@ -214,22 +216,22 @@ contains
     integer, intent(in) :: i, & ! current iteration
                            n    ! number of iterations
     real*8 perc
-    integer, parameter :: UNIT_ = 199
+    integer myunit
     perc = 100.*i/n
 
     !#assertion
     if (n .gt. 9999) then
-      call pfant_halt('Cannot log progress for number of iterations > 9999', &
+      call log_and_halt('Cannot log progress for number of iterations > 9999', &
        is_assertion=.true.)
     end if
 
     write (lll,'(''$-$-$ progress: '', f5.1, ''% ('', i4, ''/'', i4, '') $-$-$'')') &
      perc, i, n
     call log_info(lll)
-    open(unit=UNIT_, file=logging_fn_progress, status='replace', err=10)
+    open(newunit=myunit, file=logging_fn_progress, status='replace', err=10)
 
-    write(UNIT_, '(i4, ''/'', i4)') i, n
-    close(UNIT_)
+    write(myunit, '(i4, ''/'', i4)') i, n
+    close(myunit)
     goto 11
 
     10 continue
@@ -255,7 +257,7 @@ contains
     if (i1 .gt. i2) then
       write(lll,10) title, name1, name2, i1, i2
       10 format(A,': ',A,' > ',A,' (',I5,' > ',I5,')')
-      call pfant_halt(lll)
+      call log_and_halt(lll)
     end if
   end
 
@@ -273,7 +275,6 @@ contains
     logical, intent(in), optional :: flag_dress
     character(len=8) :: t
     integer level
-    integer, parameter :: UNIT_DUMP = 179
     logical, save :: flag_first_call = .true.
     logical :: flag_dress_
 
@@ -303,10 +304,10 @@ contains
 
     if (logging_dump) then
       if (flag_first_call) then
-        open(unit=UNIT_DUMP, file=logging_fn_dump, status='unknown')
+        open(newunit=unit_dump, file=logging_fn_dump, status='unknown')
       end if
 
-      call do_writing(UNIT_DUMP)
+      call do_writing(unit_dump)
     end if
 
     flag_first_call = .false.
