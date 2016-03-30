@@ -62,7 +62,7 @@ module dimensions
   ! Dimensions related to *modeles file*
   !=====
 
-  ! Maximum possible value of modeles_ntot
+  ! Maximum possible value of modele%ntot
   integer, parameter :: MAX_MODELES_NTOT=50
 
   !=====

@@ -376,7 +376,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Hydro2 main calculation
 !
-! (si modeles_tit va bien modeles_tiabs du modele = absoru2_titre de absoru)
+! (si modele%tit va bien modele%tiabs du modele = absoru2_titre de absoru)
 
 module hydro2_calc
   use logging
@@ -535,12 +535,12 @@ contains
     end if
 
 
-    call log_debug('   sortie de READER   modeles_pg(1 a 5)')
-    write(lll,*)(modeles_pg(I),I=1,5)
+    call log_debug('   sortie de READER   modele%pg(1 a 5)')
+    write(lll,*)(modele%pg(I),I=1,5)
     call log_debug(lll)
 
-    do  i=1,modeles_ntot
-      m_pelog(i)=log10(modeles_pe(i))
+    do  i=1,modele%ntot
+      m_pelog(i)=log10(modele%pe(i))
       ! (JT) Now uses turbul_vt
       ! m_vt(i)=x_vvt*1.e+5
     end do
@@ -548,12 +548,12 @@ contains
     call abonio()
 
     if(ECRIT) then
-      call log_debug(modeles_tit)
+      call log_debug(modele%tit)
       write(lll,201)
-      201 format(13X,'modeles_nh',1X,'modeles_teta', 1X,'LOG PE',12X,'m_tau')
+      201 format(13X,'modele%nh',1X,'modele%teta', 1X,'LOG PE',12X,'m_tau')
       call log_debug(lll)
-      do i=1,modeles_ntot
-        write(lll,202) i,modeles_nh(i),modeles_teta(i),m_pelog(i),modeles_t5l(i)
+      do i=1,modele%ntot
+        write(lll,202) i,modele%nh(i),modele%teta(i),m_pelog(i),modele%t5l(i)
         202 format( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
         call log_debug(lll)
       end do
@@ -563,12 +563,12 @@ contains
     write(lll,*)'appel de ABSORU pour clam=', m_th%clam
     call log_debug(lll)
 
-    do i = 1,modeles_ntot
-      call absoru_(m_th%clam,modeles_teta(i),m_pelog(i),1,1,1,1,2,.true.)
+    do i = 1,modele%ntot
+      call absoru_(m_th%clam,modele%teta(i),m_pelog(i),1,1,1,1,2,.true.)
       m_toth(i) = absoru_toc
       m_kc(i) = absoru_totkap(1)
       m_hyn(i) = absoru_znh(absoru2_nmeta+4)
-      ne(i) = modeles_teta(i)*modeles_pe(i)/cste
+      ne(i) = modele%teta(i)*modele%pe(i)/cste
     end do
 
 
@@ -582,21 +582,21 @@ contains
     if(ECRIT) then
       write(lll,'(1H1,40X,''CALCUL DE m_tau SELECTIF'')')
       call log_info(lll)
-      do  i=1,modeles_ntot, 5
+      do  i=1,modele%ntot, 5
         write(lll,'(''NIVEAU '',I5,'' -- m_tau='')') i
         call log_debug(lll)
         write (lll,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
         call log_debug(lll)
       end do
-      write(lll,'(10X,A)') modeles_tit
+      write(lll,'(10X,A)') modele%tit
       call log_info(lll)
 
       write(lll,121)
-      121 format(7X,'m_tau',5X,'modeles_nh',1X,'modeles_teta LOGPE  KC/NOYAU_DE_H',&
+      121 format(7X,'m_tau',5X,'modele%nh',1X,'modele%teta LOGPE  KC/NOYAU_DE_H',&
        '            VT           NE         TOTH')
       call log_debug(lll)
-      do i = 1, modeles_ntot
-        write(lll,11) modeles_t5l(i),modeles_nh(i),modeles_teta(i),m_pelog(i),m_kc(i),&
+      do i = 1, modele%ntot
+        write(lll,11) modele%t5l(i),modele%nh(i),modele%teta(i),m_pelog(i),m_kc(i),&
          turbul_vt(i),ne(i),m_toth(i),i
         11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
         call log_debug(lll)
@@ -606,8 +606,8 @@ contains
     call log_debug('   APPEL OPTIC1  ')
     call optic1()
 
-    if(m_tauc(modeles_ntot).lt.3.89) then
-      write(lll,*) 'Maximum value of tauc (=',m_tauc(modeles_ntot), ') is lower than 3.89'
+    if(m_tauc(modele%ntot).lt.3.89) then
+      write(lll,*) 'Maximum value of tauc (=',m_tauc(modele%ntot), ') is lower than 3.89'
       call log_and_halt(lll)
     end if
 
@@ -617,10 +617,10 @@ contains
     end do
 
     call log_info(' Parametres du modele')
-    write(lll,70) main_teff,main_glog,main_asalog,modeles_asalalf,modeles_nhe
+    write(lll,70) main_teff,main_glog,main_asalog,modele%asalalf,modele%nhe
     70 format(' TEFF=',F7.0,3X,'LOG G=',F5.2, 3X,'[M/H]=',F6.2,3X,'[alfa/A]=',f6.2,'  NHE=',F6.3)
     call log_info(lll)
-    write (lll,*) modeles_tit
+    write (lll,*) modele%tit
     call log_info(lll)
     call log_info(' ')
     write(lll,'('' Absorption calculee avec table '',A)') absoru2_titre
@@ -660,12 +660,12 @@ contains
     zut2 = 1.
     zut3 = 0.0001
 
-    write(17,100) modeles_tit,main_teff,main_glog,main_asalog,modeles_nhe
+    write(17,100) modele%tit,main_teff,main_glog,main_asalog,modele%nhe
     100 format(1X,A,2X,F6.0,3(1X,F6.2))
-    write(17,'(I6,2F6.1,2X,2F8.4)') modeles_ntot, zut1, zut1, zut2, zut3
+    write(17,'(I6,2F6.1,2X,2F8.4)') modele%ntot, zut1, zut1, zut2, zut3
     write(17,'(i4)')m_jmax
     write(17,'(5f14.3)')((m_dlam(jj)+m_th%clam),jj=1,m_jmax)
-    write(17,'(5e12.4)')((m_tau(jj,n),jj=1,m_jmax),n=1,modeles_ntot)
+    write(17,'(5e12.4)')((m_tau(jj,n),jj=1,m_jmax),n=1,modele%ntot)
 
     if (ECRIT) then
       call log_info('TRAVAIL TERMINE')
@@ -707,7 +707,7 @@ contains
 
     call log_debug(ENTERING//' abonio')
 
-    coefalf = 10**modeles_asalalf
+    coefalf = 10**modele%asalalf
     asasol = 10**main_asalog
 
     do j = 1,absoru2_nm
@@ -884,7 +884,7 @@ contains
 
     !
     !     CALCUL D'UN BLEND
-    14 do 55 i = 1,modeles_ntot
+    14 do 55 i = 1,modele%ntot
       55 stoc(i)=0.
 
     if ((nbmax.eq.0).and.(nbmin.eq.0)) go to 15
@@ -989,11 +989,11 @@ contains
     205 modif_ih = i4
     call log_debug('VOUS ENTREZ DANS LA BOUCLE LA PLUS EXTERIEURE QUI '//&
      'PORTE SUR L INDICE DU NIVEAU DU MODELE')
-    do 17 i = 1,modeles_ntot
+    do 17 i = 1,modele%ntot
       write(lll,*)'      CALCUL AU NIVEAU',i,' DU MODELE'
       call log_debug(lll)
-      t = 5040.39/modeles_teta(i)
-      cne = modeles_teta(i)*exp(2.3026*m_pelog(i))/ckp
+      t = 5040.39/modele%teta(i)
+      cne = modele%teta(i)*exp(2.3026*m_pelog(i))/ckp
       cam = cne**0.6666667
       cam1 = cne**0.1666667
       fo = 1.2532e-9*cam
@@ -1004,8 +1004,8 @@ contains
       ddop = 0.8325*alfad
       rsurl = 0.0898*cam1*t**(-0.5)
       kp = 0
-      delie = 4.736e-06*cl2/(br*(br-1.)*modeles_teta(i))
-      delom = zr*cl2*0.3503192e-4/(b2*modeles_teta(i))
+      delie = 4.736e-06*cl2/(br*(br-1.)*modele%teta(i))
+      delom = zr*cl2*0.3503192e-4/(b2*modele%teta(i))
       delp = 2.9953e-15*cl2*cne**0.5
       lim = 1.23e-18*cl2*b2*cam
       dd1 = log10(delom/delp)
@@ -1396,7 +1396,7 @@ contains
       if (.not. IS_STARK) go to 4011
       write(lll,'(''1'',''STARK='')')
       call log_debug(lll)
-      do 4010 i = 1,modeles_ntot,5
+      do 4010 i = 1,modele%ntot,5
         write(6,'('' COUCHE'',I4)') i
         call log_debug(lll)
         write(6,'(8X,10E12.5)') (bidon(k,i),k=1,m_jmax)
@@ -1410,14 +1410,14 @@ contains
     if (k1.eq.1) go to 1027
 
     !     SEQUENCE POUR CALCUL DE BLEND
-    do 54 i = 1,modeles_ntot
+    do 54 i = 1,modele%ntot
       54 stoc(i)=stoc(i)+m_al(1,i)
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(6,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(m_al(1,i),i=1,modeles_ntot)
+    write(6,'(8(1P,E15.7))')(m_al(1,i),i=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
@@ -1442,14 +1442,14 @@ contains
     go to 16
     3 m_th%nb = m_th%nb-1
     go to 16
-    48 do 4 i = 1,modeles_ntot
+    48 do 4 i = 1,modele%ntot
     4 m_al(1,i)=stoc(i)
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(lll,'(10X,''COEF. SOMME (BLEND)'')')
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(m_al(1,I),I=1,modeles_ntot)
+    write(6,'(8(1P,E15.7))')(m_al(1,I),I=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
@@ -1685,7 +1685,7 @@ contains
   ! #     # #     # ####### #     #  #####
 
   ! CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION
-  ! EXPONENTIELLE.modeles_teta=5040./T,m_pelog=LOG10PE,modeles_nh=VARIABLE DE PROFONDEUR
+  ! EXPONENTIELLE.modele%teta=5040./T,m_pelog=LOG10PE,modele%nh=VARIABLE DE PROFONDEUR
   ! DANS LE MODELE,LAMB=LONGUEUR D'ONDE
   !
 
@@ -1713,23 +1713,23 @@ contains
 
     !***************************
     4000 continue
-    do 1000 i = 1,modeles_ntot
+    do 1000 i = 1,modele%ntot
       pe = exp(2.302585*m_pelog(i))
-      temp = 2.5*log(5040.39/modeles_teta(i))
-      zkh = exp(-31.30364 *modeles_teta(i)+temp-1.098794 )
+      temp = 2.5*log(5040.39/modele%teta(i))
+      zkh = exp(-31.30364 *modele%teta(i)+temp-1.098794 )
       f1 = 1./(1.+zkh/pe)
-      f2 = exp(-C1_*modeles_teta(i)/m_th%clam)
+      f2 = exp(-C1_*modele%teta(i)/m_th%clam)
       f3 = 1.-f2
 
-      if ((modeles_teta(i).ge.0.7).or.(m_pelog(i).le.-3.)) go to 5
+      if ((modele%teta(i).ge.0.7).or.(m_pelog(i).le.-3.)) go to 5
 
-      uv = pipe(modeles_teta(i),m_pelog(i))
+      uv = pipe(modele%teta(i),m_pelog(i))
       u = exp(2.302585 *uv)
       go to 6
 
       5 u = 2.
 
-      6 f = pds*f1*f3/u*10.**(-m_th%kiex*modeles_teta(i))
+      6 f = pds*f1*f3/u*10.**(-m_th%kiex*modele%teta(i))
 
       m_bpl(i)=CTE*f2/(f3*m_th%clam**3)
 
@@ -1751,7 +1751,7 @@ contains
     write(lll,*)' Calcul de la fonction de Plank au niveau zero'
     call log_debug(lll)
 
-    tet0 = fteta0(modeles_pg,modeles_teta,modeles_ntot)   ! on extrapole modeles_teta pour modeles_nh=0
+    tet0 = fteta0(modele%pg,modele%teta,modele%ntot)   ! on extrapole modele%teta pour modele%nh=0
     f20 = exp(-C1_*tet0/m_th%clam)
     f30 = 1-f20
     m_bpl(0) = CTE*f20/(f30*m_th%clam**3)
@@ -1760,12 +1760,12 @@ contains
     ! CALCUL DE m_tau
     p(0)=0
     do  j = 1,m_jmax
-      do i = 1,modeles_ntot
+      do i = 1,modele%ntot
         y(i)=m_al(j,i)
       end do
-      p(1)=modeles_nh(1)*(y(1)-(y(2)-y(1)) / (modeles_nh(2)-modeles_nh(1))*modeles_nh(1)/2.)
-      call integra(modeles_nh,y,p,modeles_ntot,p(1))
-      do i = 0,modeles_ntot
+      p(1)=modele%nh(1)*(y(1)-(y(2)-y(1)) / (modele%nh(2)-modele%nh(1))*modele%nh(1)/2.)
+      call integra(modele%nh,y,p,modele%ntot,p(1))
+      do i = 0,modele%ntot
         m_tau(j,i)=p(i)*1.e-24
       end do
     end do
@@ -1853,7 +1853,7 @@ contains
 
   !---------------------------------------------------------------------------------------
   ! CALCUL DE LA PROFONDEUR OPTIQUE m_tauc.FORMULES VOIR THESE CAYREL.
-  ! modeles_nh VARIABLE DE PROFONDEUR DANS LE MODELE.m_kc COEFFT D'ABSORPTION
+  ! modele%nh VARIABLE DE PROFONDEUR DANS LE MODELE.m_kc COEFFT D'ABSORPTION
   ! PAR NOYAU D'HYDROGENE.
   !
   !
@@ -1861,8 +1861,8 @@ contains
 
   subroutine optic1()
     m_tauc(0)=0.
-    m_tauc(1)=modeles_nh(1)*(m_kc(1) - (m_kc(2)-m_kc(1))/(modeles_nh(2)-modeles_nh(1))*modeles_nh(1)/2.)
-    call integra(modeles_nh,m_kc,m_tauc,modeles_ntot,m_tauc(1))
+    m_tauc(1)=modele%nh(1)*(m_kc(1) - (m_kc(2)-m_kc(1))/(modele%nh(2)-modele%nh(1))*modele%nh(1)/2.)
+    call integra(modele%nh,m_kc,m_tauc,modele%ntot,m_tauc(1))
   end
 
 
@@ -1919,27 +1919,27 @@ contains
     end if
 
     tolim = tt(ipoint)
-    if (m_tauc(modeles_ntot).lt.tolim) then
+    if (m_tauc(modele%ntot).lt.tolim) then
       call log_halt(' Modele trop court ')
-      write(lll,103) modeles_ntot,m_tauc(modeles_ntot)
-      103 format(i10,5x,'modeles_t5l=',f10.4)
+      write(lll,103) modele%ntot,m_tauc(modele%ntot)
+      103 format(i10,5x,'modele%t5l=',f10.4)
       call log_and_halt(lll)
     end if
     !
     fc = 0
     do k = 1,ipoint
-      bbc = faitk30(tt(k),m_tauc,m_bpl,modeles_ntot)
+      bbc = faitk30(tt(k),m_tauc,m_bpl,modele%ntot)
       fc = fc+cc(k)*bbc
     end do
 
     do j = 1,m_jmax
       fl_ = 0
-      do i = 0,modeles_ntot
+      do i = 0,modele%ntot
         t(i)=m_tau(j,i)+m_tauc(i)
       end do
 
       do k = 1,ipoint
-        bb = faitk30(tt(k),t,m_bpl,modeles_ntot)
+        bb = faitk30(tt(k),t,m_bpl,modele%ntot)
         fl_ = fl_+cc(k)*bb
       end do
       fl(j)=fl_

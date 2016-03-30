@@ -232,7 +232,7 @@ module reader_main
    main_teff,   & ! effective temperature of the star
    main_glog,   & ! log10 of gravity
    main_asalog, & ! log10 of metallicity. Must match main_afstar
-   main_nhe       ! only used to check if matches with modeles_nhe
+   main_nhe       ! only used to check if matches with modele%nhe
   ! "Full-width-half-maximum" of Gaussian function for
   ! convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
@@ -387,14 +387,14 @@ module reader_modeles
     ! Size of variables nh, teta, pe, pg, t5l
     integer*4 :: ntot
 
-    real*4 :: teff,    & ! Teff (Kelvin)
+    real*8 :: teff,    & ! Teff (Kelvin)
               glog,    & ! log10(g) (g in [cm/s2])
               asalog,  & ! [Fe/H]
               asalalf, & ! [alpha/Fe]
               nhe        ! abundance of Helium: 10**([He/H]-12)
                          ! e.g., Sun: 10**(10.93-12) ~= 0.0851
 
-    real*4, dimension(MAX_MODELES_NTOT) :: &
+    real*8, dimension(MAX_MODELES_NTOT) :: &
      nh,   & ! density of the hydrogen column
      teta, & ! 5040./temperature (temperature in K)
      pe,   & ! electron pressure [dyn/cm2]
@@ -404,23 +404,8 @@ module reader_modeles
     character*20 :: tit, tiabs
   end type
 
-  type(modele_record) modeles
-
-  integer modeles_ntot ! ?doc?
-  character*20 modeles_tit   ! titre du modele interpolé
-  character*20 modeles_tiabs ! ?doc? I just want to see this string at testing
-  real*8 modeles_teff,   & ! ?doc?
-         modeles_glog,   & ! ?doc?
-         modeles_asalog,  & ! ?doc?
-         modeles_asalalf, & ! ?doc?
-         modeles_nhe        ! ?doc?
-  ! Check type modele_record  for descriptions of the following variables
-  real*8, dimension(MAX_MODELES_NTOT) :: &
-   modeles_nh,   &
-   modeles_teta, &
-   modeles_pe,   &
-   modeles_pg,   &
-   modeles_t5l    
+  ! Public variable that will contain the model loaded by read_modele()
+  type(modele_record) modele
 
    ! Stores unit number of open *modeles file*
    integer, private :: unit_mod
@@ -484,6 +469,10 @@ contains
   subroutine read_mod_record(rec_id, record)
     integer, intent(in) :: rec_id       ! record identifier (>= 1)
     type(modele_record), intent(out) :: record
+    ! Gotta use single precision  variables to read file because the real numbers are all
+    ! stored with 4 bytes only (not 8)
+    real*4 teff, glog, asalog, asalalf, nhe
+    real*4, dimension(max_modeles_ntot) :: nh, teta, pe, pg, t5l
 
     integer i
 
@@ -492,11 +481,11 @@ contains
 
     read(unit=unit_mod, rec=rec_id) &
      record%ntot,    &
-     record%teff,    &
-     record%glog,    &
-     record%asalog,  &
-     record%asalalf, &
-     record%nhe,     &
+     teff,    &
+     glog,    &
+     asalog,  &
+     asalalf, &
+     nhe,     &
      record%tit,     &
      record%tiabs
 
@@ -512,12 +501,25 @@ contains
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
+    record%teff = teff
+    record%teff = teff
+    record%glog = glog
+    record%asalog = asalog
+    record%asalalf = asalalf
+    record%nhe = nhe
+
     read(unit_mod, rec=rec_id) bid, &
-         (record%nh(i),   &
-          record%teta(i), &
-          record%pe(i),   &
-          record%pg(i),   &
-          record%t5l(i), i=1,record%ntot)
+         (nh(i),   &
+          teta(i), &
+          pe(i),   &
+          pg(i),   &
+          t5l(i), i=1,record%ntot)
+
+    record%nh = nh
+    record%teta = teta
+    record%pe = pe
+    record%pg = pg
+    record%t5l = t5l
 
     write(lll, *) 'read_mod_record(): ntot=', record%ntot
     call log_debug(lll)
@@ -584,21 +586,21 @@ contains
     end if
 
     ! ready to copy (& convert) variables to their counterparts
-    modeles_ntot    = r%ntot     ! integer(4)-to-integer(?)
-    modeles_teff   = r%teff    ! real(4) to real(8)
-    modeles_glog   = r%glog    ! "
-    modeles_asalog  = r%asalog   ! "
-    modeles_asalalf = r%asalalf  ! "
-    modeles_nhe     = r%nhe      ! "
-    do i = 1, modeles_ntot
-      modeles_nh(i)   = r%nh(i)   ! real(4) to real(8)
-      modeles_teta(i) = r%teta(i) ! "
-      modeles_pe(i)   = r%pe(i)   ! "
-      modeles_pg(i)   = r%pg(i)   ! "
-      modeles_t5l(i)  = r%t5l(i)  ! "
+    modele%ntot    = r%ntot     ! integer(4)-to-integer(?)
+    modele%teff   = r%teff    ! real(4) to real(8)
+    modele%glog   = r%glog    ! "
+    modele%asalog  = r%asalog   ! "
+    modele%asalalf = r%asalalf  ! "
+    modele%nhe     = r%nhe      ! "
+    do i = 1, modele%ntot
+      modele%nh(i)   = r%nh(i)   ! real(4) to real(8)
+      modele%teta(i) = r%teta(i) ! "
+      modele%pe(i)   = r%pe(i)   ! "
+      modele%pg(i)   = r%pg(i)   ! "
+      modele%t5l(i)  = r%t5l(i)  ! "
     end do
-    modeles_tit = r%tit
-    modeles_tiabs = r%tiabs
+    modele%tit = r%tit
+    modele%tiabs = r%tiabs
   end
 end
 
@@ -878,7 +880,7 @@ contains
         read(myunit,*) filetoh_jmax(i)
         read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
         read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),&
-         j=1,filetoh_jmax(i)), n=1,modeles_ntot)
+         j=1,filetoh_jmax(i)), n=1,modele%ntot)
         close(myunit)
 
         ! Takes first lambda of file as a reference
@@ -951,9 +953,9 @@ module reader_absoru2
 
   character*2 :: absoru2_nomet(MAX_ABSORU2_NM) ! NOM DE L'ELEMENT; not used
   real*8 absoru2_abmet, & ! ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
-                          ! (read from file, then multiplied by modeles_asalog)
+                          ! (read from file, then multiplied by modele%asalog)
          absoru2_abhel    ! ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
-                          ! (read from file but overwritten by modeles_nhe in synthesis_())
+                          ! (read from file but overwritten by modele%nhe in synthesis_())
   character*68 absoru2_titre ! ?doc?
 
   ! Two possibilities
@@ -1934,7 +1936,7 @@ contains
     call log_debug('entree des turbul')
     if(main_ivtot .eq. 1)   then
       call log_debug('vt constant')
-      do n = 1, modeles_ntot
+      do n = 1, modele%ntot
         turbul_vt(n) = main_vvt(1)*1e5
       end do
     else
@@ -1948,23 +1950,23 @@ contains
       call log_debug(lll)
 
       if(config_interp .eq. 1) then
-        call ftlin3(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
+        call ftlin3(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%t5l, turbul_vt)
       elseif (config_interp .eq. 2) then
         ! ISSUE config_interp was hard-switched to 1, config_interp=2 needs testing.
         ! However, now nulbad is using ft2() to re-sample the spectrum and it is working fine!!
-        call ft2(main_ivtot, main_tolv, main_vvt, modeles_ntot, modeles_t5l, turbul_vt)
+        call ft2(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%t5l, turbul_vt)
       end if
 
 
-      nt2 = modeles_ntot-2
+      nt2 = modele%ntot-2
       do n = 1, nt2, 3
         102 format(3(i5,2f8.3,5x))
-        write(lll,102) n,modeles_t5l(n),turbul_vt(n),(n+1), modeles_t5l(n+1), &
-         turbul_vt(n+1),(n+2),modeles_t5l(n+2),turbul_vt(n+2)
+        write(lll,102) n,modele%t5l(n),turbul_vt(n),(n+1), modele%t5l(n+1), &
+         turbul_vt(n+1),(n+2),modele%t5l(n+2),turbul_vt(n+2)
         call log_debug(lll)
       end do
 
-      do n = 1, modeles_ntot
+      do n = 1, modele%ntot
         turbul_vt(n) = turbul_vt(n)*1e5
       end do
     end if

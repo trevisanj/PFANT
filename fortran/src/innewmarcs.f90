@@ -281,7 +281,7 @@ contains
      sngl(main_glog), &
      sngl(main_asalog), &
      asalalf,        &
-     dd%nhe,         &  ! ISSUE  note: takes nhe from last record. Correct?
+     sngl(dd%nhe),   &  ! ISSUE  note: takes nhe from last record. Correct?
      tir,            &
      dd%tiabs,       &  ! ISSUE  note: takes tiabs from last record. Correct?
      (a(k),k=1,nntot*5)
@@ -607,9 +607,9 @@ contains
     write(lll,'(f10.0,4f10.2,5a4)') r%teff, r%glog, r%asalog, r%asalalf, r%nhe, r%tit
 
     do i=1,r%ntot
-      r%nh(i) = alog10(r%nh(i))
-      r%pe(i) = alog10(r%pe(i))
-      r%pg(i) = alog10(r%pg(i))
+      r%nh(i) = log10(r%nh(i))
+      r%pe(i) = log10(r%pe(i))
+      r%pg(i) = log10(r%pg(i))
     end do
 
     !! call log_debug('        log NH           TETA          log PE         log PG     To(5000)')

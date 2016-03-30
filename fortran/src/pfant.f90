@@ -119,10 +119,10 @@ contains
     !
     !*****INPUT E
 
-    do 1020 ito = 1,modeles_ntot
-      theta = modeles_teta(ito)
+    do 1020 ito = 1,modele%ntot
+      theta = modele%teta(ito)
       tem = 5040.0/theta
-      pg = modeles_pg(ito)
+      pg = modele%pg(ito)
       pglog = log10(pg)
 
       call die(tem,pg)
@@ -238,7 +238,7 @@ contains
 
     !_logging__
     !do i=1,4
-    !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modeles_ntot)
+    !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modele%ntot)
     !end do
 
     iz = find_atomic_symbol_dissoc('H ')
@@ -259,7 +259,7 @@ contains
     sat4_pfe = xp(:, iz)
 
 
-!original      do itx = 1,modeles_ntot
+!original      do itx = 1,modele%ntot
 !original        sat4_pph(itx)=xp(itx,1)
 !original        sat4_ppc2(itx)=xp(itx,3)
 !original        sat4_pn(itx)=xp(itx,4)
@@ -796,9 +796,9 @@ contains
       !======
       ! This part of the code calculates km_PNVL
       rm = am*bm/mm
-      do n = 1,modeles_ntot
-        t5040 = modeles_teta(n)/5040
-        psi = do_*modeles_teta(n)+2.5*log10(modeles_teta(n))-1.5*log10(rm)-&
+      do n = 1,modele%ntot
+        t5040 = modele%teta(n)/5040
+        psi = do_*modele%teta(n)+2.5*log10(modele%teta(n))-1.5*log10(rm)-&
               log10(ua*ub)-13.670
         psi = 10.**psi
 
@@ -1119,9 +1119,9 @@ contains
     !=====
 
     ! ASK BLB why overwriting absoru2_abhel?
-    absoru2_abhel = modeles_nhe
-    ! ASK BLB why using modeles_asalog instead of main_afstar? why multiplying this?
-    absoru2_abmet = absoru2_abmet*10.**modeles_asalog
+    absoru2_abhel = modele%nhe
+    ! ASK BLB why using modele%asalog instead of main_afstar? why multiplying this?
+    absoru2_abmet = absoru2_abmet*10.**modele%asalog
 
     !-----
     ! Output files opened here and left open until the end
@@ -1383,11 +1383,11 @@ contains
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
       write(unit_, 1130)       &
        ikeytot,                &  ! fixed (same value for all iterations)
-       modeles_tit,            &  ! fixed
+       modele%tit,            &  ! fixed
        5040/main_teff,         &  ! fixed
        main_glog,              &  ! fixed
        main_asalog,            &  ! fixed
-       modeles_nhe,            &  ! fixed
+       modele%nhe,            &  ! fixed
        amg,                    &  ! fixed
        l0,                     &  ! fixed
        lf,                     &  ! fixed
@@ -1415,9 +1415,9 @@ contains
      aa, bb, uuu, x, y, t, tki2
     integer j, k, kmax, l, n
 
-    do n = 1, modeles_ntot
-      t = 5040./modeles_teta(n)
-      ue(n) = C1*KB*t/modeles_pe(n)*t**1.5
+    do n = 1, modele%ntot
+      t = 5040./modele%teta(n)
+      ue(n) = C1*KB*t/modele%pe(n)*t**1.5
       do j = 1, partit_npar
         kmax = partit_jkmax(j)
         tt(1) = partit_tini(j)
@@ -1427,28 +1427,28 @@ contains
             alistu(k) = partit_tabu(j,l,k)
           end do
 
-          if (modeles_teta(n) .lt. tt(kmax-1) ) then
+          if (modele%teta(n) .lt. tt(kmax-1) ) then
             ! interpolation parabolique
-            uuu = ft(modeles_teta(n),kmax,tt,alistu)
+            uuu = ft(modele%teta(n),kmax,tt,alistu)
           else
             ! interpolation lineaire entre 2 derniers pts
             aa = (alistu(kmax)-alistu(kmax-1)) / partit_pa(j)
             bb = alistu(kmax-1) - aa * tt(kmax-1)
-            uuu = aa*modeles_teta(n) + bb
+            uuu = aa*modele%teta(n) + bb
           end if
 
           u(l) = exp(2.302585*uuu)
         end do
 
-        x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modeles_teta(n))
-        tki2= partit_ki2(j) * modeles_teta(n)
+        x=u(1) / (u(2)*ue(n)) * 10.**(partit_ki1(j)*modele%teta(n))
+        tki2= partit_ki2(j) * modele%teta(n)
 
         ! ASK BLB Why 77?
         if (tki2 .ge. 77.) then
           y = 0.
           popul_p(3,j,n) = 0.
         else
-          y = u(3)*ue(n)/u(2) * 10.**(-partit_ki2(j)*modeles_teta(n))
+          y = u(3)*ue(n)/u(2) * 10.**(-partit_ki2(j)*modele%teta(n))
           popul_p(3,j,n) = (1./u(3))*(y/(1.+x+y))
         end if
         popul_p(2,j,n) = (1./u(2))*(1./(1.+x+y))
@@ -1464,7 +1464,7 @@ contains
 
     ! write(10,*) (m_lambda(i), i=1,opa%nwav)
     write(10,*) (opa%wav(i), i=1,opa%nwav)
-    do n = 1, opa%ndp  ! modeles_ntot
+    do n = 1, opa%ndp  ! modele%ntot
       ! todo cleanup
       write(11, *) (opa%sca(i,n),i=1,opa%nwav)
       write(12, *) (opa%abs(i,n),i=1,opa%nwav)
@@ -1472,7 +1472,7 @@ contains
 
 
     write(13,*) (m_lambda(i), i=1,m_dtot)
-    do n = 1, opa%ndp  ! modeles_ntot
+    do n = 1, opa%ndp  ! modele%ntot
       !call   ft2(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
       print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
       call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
@@ -1570,14 +1570,14 @@ contains
         iopi = 2
       end if
 
-      do n = 1, modeles_ntot
-        t = 5040./modeles_teta(n)
+      do n = 1, modele%ntot
+        t = 5040./modele%teta(n)
         nul = C* 1.e+8 /atoms_f_lambda(k)
         ahnul = H*nul
         alphl(n) = exp(-ahnul/(KB*t))
 
         tap = 1.-alphl(n)
-        top = 10.**(-atoms_f_kiex(k)*modeles_teta(n))
+        top = 10.**(-atoms_f_kiex(k)*modele%teta(n))
 
         if(atoms_f_elem(k) .eq. ' O') then
           ! #NOXIG: oxygen is treated differently
@@ -1595,7 +1595,7 @@ contains
         else
           gh = atoms_f_ch(k) + popadelh_corch(k)*t
         end if
-        gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modeles_pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
+        gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modele%pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
 
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
         popadelh_a(k,n) = a
@@ -1665,10 +1665,10 @@ contains
         end do
       end if
 
-      do n = 1,modeles_ntot
+      do n = 1,modele%ntot
         kappa = 0.
         kappam = 0.
-        t = 5040./modeles_teta(n)
+        t = 5040./modele%teta(n)
 
         ! atomes
         if(config_no_atoms) go to 260
@@ -1741,14 +1741,14 @@ contains
 
       if (config_no_h .or. (d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
-        selekfh_fl(d) = flin1(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
+        selekfh_fl(d) = flin1(kap, bi, modele%nh, modele%ntot, main_ptdisk, main_mu, config_kik)
       else
         ! with hydrogen lines
-        selekfh_fl(d) = flinh(kap, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
+        selekfh_fl(d) = flinh(kap, bi, modele%nh, modele%ntot, main_ptdisk, main_mu, config_kik, hy_tauh(:, d))
       end if
 
       ! Dez 03-P. Coelho - calculate the continuum and normalized spectra
-      selekfh_fcont(d) = flin1(kci, bi, modeles_nh, modeles_ntot, main_ptdisk, main_mu, config_kik)
+      selekfh_fcont(d) = flin1(kci, bi, modele%nh, modele%ntot, main_ptdisk, main_mu, config_kik)
     end do
   end
 
@@ -1773,52 +1773,52 @@ contains
     ahnu1 = h*nu1
     c31 = (2*ahnu1) * (nu1/C)**2
 
-    do n = 1,modeles_ntot
-      t = 5040./modeles_teta(n)
+    do n = 1,modele%ntot
+      t = 5040./modele%teta(n)
       alph_n = exp(-ahnu1/(KB*t))
       bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-      call absoru_(llzero,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      call absoru_(llzero,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
       bk_kc1(n) = absoru_totkap(1)
     end do
 
     nu2 = C* 1.e+8 /m_lfin
     ahnu2 = H*nu2
     c32 =(2*ahnu2) * (nu2/C)**2
-    do n = 1,modeles_ntot
-      t = 5040./modeles_teta(n)
+    do n = 1,modele%ntot
+      t = 5040./modele%teta(n)
       alph_n = exp(-ahnu2/(KB*t))
       bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-      call absoru_(llfin,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      call absoru_(llfin,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
       bk_kc2(n) = absoru_totkap(1)
     end do
 
     nu = C* 1.e+8 /m_lambd
     ahnu = H*nu
     c3 =(2*ahnu) * (nu/C)**2
-    do n=1,modeles_ntot
-      t=5040./modeles_teta(n)
+    do n=1,modele%ntot
+      t=5040./modele%teta(n)
       alph_n = exp(-ahnu/(KB*t))
       bk_b(n) = c3 * (alph_n/(1.-alph_n))
-      call absoru_(m_lambd,modeles_teta(n),log10(modeles_pe(n)),1,1,1,1,2, .false.)
+      call absoru_(m_lambd,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
       bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
       bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
       bk_kc(n) = absoru_totkap(1)
     end do
 
-    tet0 = fteta0(modeles_pg, modeles_teta, modeles_ntot)     !on extrapole modeles_teta pour modeles_nh=0
+    tet0 = fteta0(modele%pg, modele%teta, modele%ntot)     !on extrapole modele%teta pour modele%nh=0
     t = 5040./tet0
 
     alph01 = exp(-ahnu1/(KB*t))
     bk_b1(0) = c31 * (alph01/(1.-alph01))
-    fc1 = flin1(bk_kc1,bk_b1,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    fc1 = flin1(bk_kc1,bk_b1,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
 
     alph02 = exp(-ahnu2/(KB*t))
     bk_b2(0) = c32 * (alph02/(1.-alph02))
-    fc2 = flin1(bk_kc2,bk_b2,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    fc2 = flin1(bk_kc2,bk_b2,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
 
     alph0 = exp(-ahnu/(KB*t))
     bk_b(0) = c3 * (alph0/(1.-alph0))
-    bk_fc = flin1(bk_kc,bk_b,modeles_nh,modeles_ntot,main_ptdisk,main_mu,config_kik)
+    bk_fc = flin1(bk_kc,bk_b,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
 
     ! lambdc(1) and lambdc(2) forced to be equal to m_ttd(1) and m_ttd(m_tdod)
     ! because I was experiencing numerical errors here
@@ -1827,11 +1827,11 @@ contains
     ! Sorry but I don't know why exactly. But works this way
     lambdc(1) = m_ttd(1) ! m_lzero-m_ilzero
     lambdc(2) = m_ttd(m_dtot)  !  m_lfin-m_ilzero
-    do n=1,modeles_ntot
+    do n=1,modele%ntot
       kcj(1,n)=bk_kc1(n)
       kcj(2,n)=bk_kc2(n)
     end do
-    do n = 1, modeles_ntot
+    do n = 1, modele%ntot
       do j = 1, 2
         kcn(j) = kcj(j, n)
       end do
@@ -1844,9 +1844,9 @@ contains
     !#logging
     153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
     154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
-    write(lll,153) bk_kcd(1,1),bk_kcd(1,modeles_ntot)
+    write(lll,153) bk_kcd(1,1),bk_kcd(1,modele%ntot)
     call log_debug(lll)
-    write(lll,154) bk_kcd(m_dtot,1),bk_kcd(m_dtot,modeles_ntot)
+    write(lll,154) bk_kcd(m_dtot,1),bk_kcd(m_dtot,modele%ntot)
     call log_debug(lll)
 
     call log_debug(LEAVING//'bk()')
@@ -1893,7 +1893,7 @@ contains
       hy_dhm = mini(dhmy, imy, 1, imy)
       hy_dhp = maxi(dhpy, imy, 1, imy)
 
-      !!!do n = 1,modeles_ntot
+      !!!do n = 1,modele%ntot
       !!!  do d = 1,dtot
       !!!    tauh(n, d) = 0.0
       !!!    do im = 1,imy
@@ -1943,7 +1943,7 @@ contains
     do jj = now_jmax+1, jjmax
       llambdh(jj) = now_lambdh(jj-jma1)
     end do
-    do n = 1, modeles_ntot
+    do n = 1, modele%ntot
       do jj = 1, now_jmax
         tth(jj, n) = now_th(now_jmax+1-jj, n)
       end do
@@ -1956,7 +1956,7 @@ contains
       allh(j) = llambdh(j)-m_ilzero
     end do
 
-    do n = 1,modeles_ntot
+    do n = 1,modele%ntot
       do j = 1,jjmax
         tauhn(j) = tth(j,n)
       end do
@@ -2118,8 +2118,8 @@ program pfant
   end if
   if (.not. config_no_molecules) call read_molecules(config_fn_molecules)
 
-  if (abs(modeles_asalog-main_afstar) > 0.01) then
-    call log_and_halt('asalog from model ('//real82str(modeles_asalog, 2)//&
+  if (abs(modele%asalog-main_afstar) > 0.01) then
+    call log_and_halt('asalog from model ('//real82str(modele%asalog, 2)//&
      ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
   end if
 

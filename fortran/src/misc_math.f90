@@ -425,11 +425,11 @@ contains
   ! 
 
   real*8 function fteta0(pg, teta, n)
-    ! Size of vectors pf and teta; example source is reader_modeles::modeles_ntot
+    ! Size of vectors pf and teta; example source is reader_modeles::modele%ntot
     integer, intent(in) :: n
     real*8, intent(in) :: &
-      pg(:), & ! Example source is reader_modeles::modeles_pg
-      teta(:)  ! Example source is reader_modeles::modeles_teta
+      pg(:), & ! Example source is reader_modeles::modele%pg
+      teta(:)  ! Example source is reader_modeles::modele%teta
     real*8, dimension(5) :: pp1,tt1,pp2,tt2
     integer i
     real*8 teta3
@@ -828,9 +828,9 @@ contains
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
     ! ?doc?
     real*8, intent(in) :: b(0:MAX_MODELES_NTOT)
-    ! Source is probably @ref reader_modeles::modeles_nh
+    ! Source is probably @ref reader_modeles::modele%nh
     real*8, intent(in) :: nh(MAX_MODELES_NTOT)
-    ! Source is probably @ref reader_modeles::modeles_ntot
+    ! Source is probably @ref reader_modeles::modele%ntot
     integer, intent(in) :: ntot
     ! Source is probably @ref reader_main::main_pfdisk
     !   - if .TRUE. : 7 points
