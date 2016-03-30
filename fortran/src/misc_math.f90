@@ -564,8 +564,8 @@ contains
     return
 
     10 continue
-    100 format('ftlin3(): On sort de la table d interpolation avec t=',e15.7, '. liste des x: ', 8e15.7)
-    write(lll,100) t, (x(i),i=1,n)
+    100 format('ftlin3(): On sort de la table d interpolation avec t=',e15.7, '. x(1)=', e15.7, '; x(n)=', e15.7)
+    write(lll,100) t, x(1), x(n)
     call log_and_halt(lll)
   end
 

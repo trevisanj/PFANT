@@ -394,7 +394,6 @@ module reader_modeles
               nhe        ! abundance of Helium: 10**([He/H]-12)
                          ! e.g., Sun: 10**(10.93-12) ~= 0.0851
 
-
     real*4, dimension(MAX_MODELES_NTOT) :: &
      nh,   & ! density of the hydrogen column
      teta, & ! 5040./temperature (temperature in K)
@@ -405,6 +404,7 @@ module reader_modeles
     character*20 :: tit, tiabs
   end type
 
+  type(modele_record) modeles
 
   integer modeles_ntot ! ?doc?
   character*20 modeles_tit   ! titre du modele interpolé
@@ -414,12 +414,13 @@ module reader_modeles
          modeles_asalog,  & ! ?doc?
          modeles_asalalf, & ! ?doc?
          modeles_nhe        ! ?doc?
+  ! Check type modele_record  for descriptions of the following variables
   real*8, dimension(MAX_MODELES_NTOT) :: &
-   modeles_nh,   & ! ?doc?
-   modeles_teta, & ! ?doc?
-   modeles_pe,   & ! ?doc?
-   modeles_pg,   & ! ?doc?
-   modeles_t5l     ! ?doc?
+   modeles_nh,   &
+   modeles_teta, &
+   modeles_pe,   &
+   modeles_pg,   &
+   modeles_t5l    
 
    ! Stores unit number of open *modeles file*
    integer, private :: unit_mod

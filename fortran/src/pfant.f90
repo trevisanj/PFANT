@@ -1046,7 +1046,7 @@ module synthesis
   real*8, dimension(MAX_DTOT) :: bk_fc
   ! Opacity-related
   real*8, dimension(MAX_DTOT) :: m_lambda ! lambda for each point
-  real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: &
+  real*8, dimension(MAX_DTOT, OPA_MDP) :: &
    opa_sca, &  ! opacities calculated by interpolation of the available MARCs model (scattering)
    opa_abs     ! opacities calculated by interpolation of the available MARCs model (absorption)
 
@@ -1460,11 +1460,41 @@ contains
 
 
   subroutine calc_opa()
-    integer n
-    do n = 1, modeles_ntot
-      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
-      call ftlin3(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+    integer n, i
+
+    ! write(10,*) (m_lambda(i), i=1,opa%nwav)
+    write(10,*) (opa%wav(i), i=1,opa%nwav)
+    do n = 1, opa%ndp  ! modeles_ntot
+      ! todo cleanup
+      write(11, *) (opa%sca(i,n),i=1,opa%nwav)
+      write(12, *) (opa%abs(i,n),i=1,opa%nwav)
     end do
+
+
+    write(13,*) (m_lambda(i), i=1,m_dtot)
+    do n = 1, opa%ndp  ! modeles_ntot
+      !call   ft2(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
+      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
+      ! todo cleanup
+      write(14, *) (opa_sca(i,n),i=1,m_dtot)
+
+
+
+      !call   ft2(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+      print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      call ftlin3(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+      print *, "___B___"
+
+
+      ! todo cleanup
+      write(15, *) (opa_abs(i,n),i=1,m_dtot)
+
+    end do
+
+
+    !stop 'clean up this'
   end
 
 
