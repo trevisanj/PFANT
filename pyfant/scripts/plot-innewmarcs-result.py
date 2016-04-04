@@ -39,7 +39,7 @@ def parse_explain_file(filename):
 
 
 FN_EXPLAIN = 'innewmarcs_explain.txt'
-VARS = ['nh', 'teta', 'pe', 'pg', 't5l']
+VARS = ['nh', 'teta', 'pe', 'pg', 'log_tau_ross']
 
 
 if __name__ == "__main__":
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     plt.title(args.var)
     plt.legend(loc=0)
 
-    # Another figure
+    # Scatter figure
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     markers = cycle("ov^<>p*+x")
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     ax.set_xlabel('teff')
     ax.set_ylabel('glog')
     ax.set_zlabel('asalog')
-    fig.canvas.set_window_title(args.var)
+    fig.canvas.set_window_title('teff-glog-asalog scatterplot')
     plt.legend(loc=0)
 
     # Another figure
@@ -125,7 +125,8 @@ if __name__ == "__main__":
 
         plt.xlabel('Layer')
         plt.ylabel(y_var_name)
-        plt.title(args.var)
+        plt.gca().set_zlabel(args.var)
+        plt.title("Layer X %s X %s" % (y_var_name, args.var))
         plt.legend(loc=0)
 
     plt.show()

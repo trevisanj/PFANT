@@ -31,14 +31,14 @@ module dissoc
 
   ! They will be pointer targets at molecules::point_ppa_pb()
   real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
-   sat4_pph,  & ! pressure: hydrogen ?doc?
-   sat4_ppc2, & ! pressure: 12carbon ?doc?
-   sat4_pn,   & ! pressure: nytrogen ?doc?
-   sat4_pc13, & ! pressure: 13carbon ?doc?
-   sat4_pmg,  & ! pressure: magnesium ?doc?
-   sat4_po,   & ! pressure: oxygen ?doc?
-   sat4_pti,  & ! pressure: titanium ?doc?
-   sat4_pfe     ! pressure: iron ?doc?
+   sat4_pph,  & ! pressure: hydrogen
+   sat4_ppc2, & ! pressure: 12carbon
+   sat4_pn,   & ! pressure: nytrogen
+   sat4_pc13, & ! pressure: 13carbon
+   sat4_pmg,  & ! pressure: magnesium
+   sat4_po,   & ! pressure: oxygen
+   sat4_pti,  & ! pressure: titanium
+   sat4_pfe     ! pressure: iron
 
   private :: die ! private subroutine
 
@@ -64,7 +64,7 @@ module dissoc
    m_ppmol, & ! ?doc?
    m_apmlog   ! ?doc?
 
-  real*8, private :: m_pe ! Fictitious pressure of electron ?doc?
+  real*8, private :: m_pe ! Electron pressure
 
   real*8, private, parameter :: ECONST = 4.342945e-1 ! ?doc?
 contains
@@ -746,6 +746,8 @@ module kapmol
   use dissoc
   use reader_molecules
   use filters
+  use misc_math
+  implicit none
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
@@ -768,10 +770,7 @@ contains
     real*8 qv, gv, bv, dv, facto
     integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx
 
-    real*8, parameter :: H  = 6.6252E-27,   &
-                         C  = 2.997929E+10, &
-                         KB = 1.38046E-16,  &
-                         C2 = 8.8525E-13
+    real*8, parameter :: C2 = 8.8525E-13
 
     call log_debug(ENTERING//' kapmol()')
 
@@ -959,21 +958,17 @@ end
 ! Fantomol avec sous-programmes (MNP) -
 ! Calcul possible de 100 angstrom en 100 angstrom.
 !
+! **Notes**
+! - Flux absolu sortant a ete multiplie par 10**5
+! - Flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)
+! - Existing files are replaced
 !
-! *Note* Flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)
-!
-! *Note* Unit of flux: erg*s^-1*cm^-2/(Hz*ster), however (see next note)
-!
-! *Note* Actually what is called "flux" would be more accurately called "Specific intensity" [Gray Stellar Photospheres 3rd Ed. Eq 5.1]
-!
-! *Note* Flux absolu sortant a ete multiplie par 10**5
-!
-! *Note* Existing files are replaced
-!
+! (MT) Unit of flux: erg*s^-1*cm^-2/(Hz*ster), however (see next note)
+! Actually what is called "flux" would be more accurately called "Specific intensity"
+! [Gray Stellar Photospheres 3rd Ed. Eq 5.1]
 !
 
-! Variable patterns
-!
+! **Variable prefixes**
 !        m_* module internal variables shared among routines
 !       hy_* hydrogen line-related, calculated by calc_tauh()
 ! popadelh_* calculated by popadelh()
@@ -1033,17 +1028,15 @@ module synthesis
 
 
 
-  ! Calculated by subroutine selekfh
+  ! Calculated by selekfh()
   real*8, dimension(MAX_DTOT) :: selekfh_fl, selekfh_fcont
 
   ! Calculated by subroutine bk
-  real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b, bk_b1, bk_b2
+  real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b1, bk_b2
   ! Calculated by subroutine bk
-  real*8, dimension(MAX_MODELES_NTOT) :: bk_kc, bk_kc1, bk_kc2, bk_phn, bk_ph2
+  real*8, dimension(MAX_MODELES_NTOT) :: bk_phn, bk_ph2
   ! Calculated by subroutine bk
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
-  ! Calculated by subroutine bk
-  real*8, dimension(MAX_DTOT) :: bk_fc
   ! Opacity-related
   real*8, dimension(MAX_DTOT) :: m_lambda ! lambda for each point
   real*8, dimension(MAX_DTOT, OPA_MDP) :: &
@@ -1065,10 +1058,7 @@ module synthesis
   ! Constants available to all subroutines within this module
   !=====
 
-  real*8, parameter :: & ! ?doc?
-    C = 2.997929E+10,  & ! ?doc?
-    H = 6.6252E-27,    & ! ?doc?
-   KB = 1.38046E-16,   & ! ?doc?
+  real*8, parameter :: &
    C1 = 4.8298E+15,    & ! ?doc?
    C2 = 8.8525E-13,    & ! ?doc?
    C4 = 2.1179E+8,     & ! ?doc?
@@ -1238,7 +1228,7 @@ contains
       call cpu_time(start)
       call bk()
       call cpu_time(finish)
-      call log_info("BK() Time = "//real42str(finish-start, 3)//" seconds.")
+      ! call log_info("BK() Time = "//real42str(finish-start, 3)//" seconds.")
 
       ! opacities
       if (.not. config_no_opa) then
@@ -1473,23 +1463,34 @@ contains
 
     write(13,*) (m_lambda(i), i=1,m_dtot)
     do n = 1, opa%ndp  ! modele%ntot
+    ! ft2 does not perform well here, ftlin3 is ok
       !call   ft2(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
-      print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
-      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
-      print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
+
+
       ! todo cleanup
-      write(14, *) (opa_sca(i,n),i=1,m_dtot)
+
+      ! print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
+
+
+      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+
+
+      ! print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
+
+
+      ! todo cleanup
+      !  write(14, *) (opa_sca(i,n),i=1,m_dtot)
 
 
 
       !call   ft2(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
-      print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      ! print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
       call ftlin3(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
-      print *, "___B___"
+      ! print *, "___B___"
 
 
       ! todo cleanup
-      write(15, *) (opa_abs(i,n),i=1,m_dtot)
+      !  write(15, *) (opa_abs(i,n),i=1,m_dtot)
 
     end do
 
@@ -1552,6 +1553,7 @@ contains
         atoms_f_ch(k) = popadelh_cvdw(k) * popadelh_corch(k)
         if (atoms_f_ch(k)  .lt. 0) then
           ! ch cannot be < 0, as it will be powered to 0.4 later
+          ! If this happens, "gh" below will be NaN, and hjenor() will crash with a segmentation fault.
           write(*,*) 'popadelh_cvdw(k) = ', popadelh_cvdw(k)
           write(*,*) 'popadelh_corch(k) = ', popadelh_corch(k)
           write(*,*) 'atoms_f_kiex(k) = ', atoms_f_kiex(k)
@@ -1598,7 +1600,17 @@ contains
         gamma = atoms_f_gr(k)+(atoms_f_ge(k)*modele%pe(n)+gh*(bk_phn(n)+1.0146*bk_ph2(n)))/(KB*t)
 
         a = gamma*(1.e-8*atoms_f_lambda(k))**2 / (C6*popadelh_delta(k,n))
+
+        ! if (isnan(a)) then
+        !   call log_halt('popadelh(): A is not a number!')
+        !   call log_halt('atomic "ch" = '//real82str(atoms_f_ch(k)))
+        !   call log_halt('gh = '//real82str(gh))
+        ! end if
+
+
         popadelh_a(k,n) = a
+
+
       end do
     end do
   end
@@ -1631,6 +1643,7 @@ contains
      phi, t, v, vm, &
      kam, kappam, kappa, kak, &
      kappa_opa  ! opacities aditive term
+
 
     kappa_opa = 0
 
@@ -1670,6 +1683,7 @@ contains
         kappam = 0.
         t = 5040./modele%teta(n)
 
+
         ! atomes
         if(config_no_atoms) go to 260
         do  k = 1, atoms_f_nblend
@@ -1688,6 +1702,8 @@ contains
           end if
           kappa = kappa + kak
         end do   !  fin bcle sur k
+
+
 
         260 continue
 
@@ -1712,29 +1728,20 @@ contains
         ! opacities
 
         if (.not. config_no_opa) then
-            kappa_opa = opa_abs(d, n)+opa_sca(d, n)
+            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))
         end if
 
-
-        do l = 1, km_f_mblend
-          ! TODO exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
-          !      changing this may be easier to import from TurboSpectrum molecular data
-          if(abs(ecarm(l)) .gt. KM_ALARGM)  then
-            kam = 0.
-          else
-            deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
-            vm = abs(ecarm(l)*1.e-08/deltam(l,n))
-            phi = (exp(-vm**2))/(RPI*deltam(l,n))
-            kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
-          end if
-          kappam = kappam + kam
-        end do   !  fin bcle sur l
+! todo cleanup        write(20, *) bk_kcd(d,n), kappa_opa
 
 
-        kappt(n) = kappa+kappam+kappa_opa
-        kci(n) = bk_kcd(d,n)
+        kappt(n) = kappa+kappam  ! +kappa_opa
+
+
+        ! TODO document this
+
+        kci(n) = bk_kcd(d,n) + kappa_opa*1.6602e-24  ! (opa_abs(d, n)+opa_sca(d, n))
         kap(n) = kappt(n)+kci(n)
-        bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
+        bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)        
       end do
 
       bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
@@ -1755,70 +1762,52 @@ contains
 
   !======================================================================================================================
   ! Calculates the flux in the continuum.
+  !
+  ! Issue ASK BLB Only two values are calculated for each "ikey" iteration and the intermediate values are filled by
+  !               linear interpolation. The continuum is dependent on aint.
 
   subroutine bk()
-    real*8 nu, llzero, llfin, nu1, nu2, &
-     alph_n ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
+    real*8 nu, nu1, nu2, &
+     alph1, alph2 ! old ALPH, which was a vector, but I realized it is used only inside loop, no need for vector
     real*8, dimension(2, MAX_MODELES_NTOT) :: kcj
     real*8, dimension(2) :: kcn, lambdc
+    real*8, dimension(MAX_MODELES_NTOT) :: kc1, kc2
     real*8 :: fttc(MAX_DTOT)
-    real*8 c3, c31, c32, fc1, fc2, t, tet0, ahnu, ahnu1, ahnu2, alph0, alph01, alph02
+    real*8 c31, c32, t, tet0, ahnu, ahnu1, ahnu2, alph01, alph02
     integer d, j, n
 
     call log_debug(ENTERING//'bk()')
 
-    llzero = m_lzero
-    llfin  = m_lfin
     nu1 = C* 1.e+8 /m_lzero
-    ahnu1 = h*nu1
+    ahnu1 = H*nu1
     c31 = (2*ahnu1) * (nu1/C)**2
-
-    do n = 1,modele%ntot
-      t = 5040./modele%teta(n)
-      alph_n = exp(-ahnu1/(KB*t))
-      bk_b1(n) = c31 * (alph_n/(1.-alph_n))
-      call absoru_(llzero,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
-      bk_kc1(n) = absoru_totkap(1)
-    end do
-
     nu2 = C* 1.e+8 /m_lfin
     ahnu2 = H*nu2
-    c32 =(2*ahnu2) * (nu2/C)**2
-    do n = 1,modele%ntot
-      t = 5040./modele%teta(n)
-      alph_n = exp(-ahnu2/(KB*t))
-      bk_b2(n) = c32 * (alph_n/(1.-alph_n))
-      call absoru_(llfin,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
-      bk_kc2(n) = absoru_totkap(1)
-    end do
-
+    c32 = (2*ahnu2) * (nu2/C)**2
     nu = C* 1.e+8 /m_lambd
     ahnu = H*nu
-    c3 =(2*ahnu) * (nu/C)**2
-    do n=1,modele%ntot
-      t=5040./modele%teta(n)
-      alph_n = exp(-ahnu/(KB*t))
-      bk_b(n) = c3 * (alph_n/(1.-alph_n))
-      call absoru_(m_lambd,modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
+    do n = 1,modele%ntot
+      t = 5040./modele%teta(n)
+      alph1 = exp(-ahnu1/(KB*t))
+      bk_b1(n) = c31 * (alph1/(1.-alph1))
+      alph2 = exp(-ahnu2/(KB*t))
+      bk_b2(n) = c32 * (alph2/(1.-alph2))
+
+      call absoru_(m_lzero, modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
+      kc1(n) = absoru_totkap(1)
+      call absoru_(m_lfin, modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
+      kc2(n) = absoru_totkap(1)
+      call absoru_(m_lambd, modele%teta(n),log10(modele%pe(n)),1,1,1,1,2, .false.)
       bk_phn(n) = absoru_znh(absoru2_nmeta+4) *KB * t
       bk_ph2(n) = absoru_znh(absoru2_nmeta+2) *KB * t
-      bk_kc(n) = absoru_totkap(1)
     end do
 
     tet0 = fteta0(modele%pg, modele%teta, modele%ntot)     !on extrapole modele%teta pour modele%nh=0
     t = 5040./tet0
-
     alph01 = exp(-ahnu1/(KB*t))
     bk_b1(0) = c31 * (alph01/(1.-alph01))
-    fc1 = flin1(bk_kc1,bk_b1,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
-
     alph02 = exp(-ahnu2/(KB*t))
     bk_b2(0) = c32 * (alph02/(1.-alph02))
-    fc2 = flin1(bk_kc2,bk_b2,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
-
-    alph0 = exp(-ahnu/(KB*t))
-    bk_b(0) = c3 * (alph0/(1.-alph0))
-    bk_fc = flin1(bk_kc,bk_b,modele%nh,modele%ntot,main_ptdisk,main_mu,config_kik)
 
     ! lambdc(1) and lambdc(2) forced to be equal to m_ttd(1) and m_ttd(m_tdod)
     ! because I was experiencing numerical errors here
@@ -1828,20 +1817,16 @@ contains
     lambdc(1) = m_ttd(1) ! m_lzero-m_ilzero
     lambdc(2) = m_ttd(m_dtot)  !  m_lfin-m_ilzero
     do n=1,modele%ntot
-      kcj(1,n)=bk_kc1(n)
-      kcj(2,n)=bk_kc2(n)
+      kcj(1,n) = kc1(n)
+      kcj(2,n) = kc2(n)
     end do
     do n = 1, modele%ntot
       do j = 1, 2
         kcn(j) = kcj(j, n)
       end do
-      call ftlin3(2, lambdc, kcn, m_dtot, m_ttd, fttc)
-      do d = 1,m_dtot
-        bk_kcd(d,n) = fttc(d)
-      end do
+      call ftlin3(2, lambdc, kcj(:, n), m_dtot, m_ttd, bk_kcd(:, n))
     end do
 
-    !#logging
     153 format(' bk_kcd(1,1)=',e14.7,2x,'bk_kcd(1,ntot)=',e14.7)
     154 format(' bk_kcd(dtot,1)=',e14.7,2x,'bk_kcd(dtot,ntot)=',e14.7)
     write(lll,153) bk_kcd(1,1),bk_kcd(1,modele%ntot)

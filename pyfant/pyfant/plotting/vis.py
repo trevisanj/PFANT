@@ -1,12 +1,15 @@
 __all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
-           "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa"]
+           "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa",
+           "VisMarcs", "VisMarcsSaveAsMod"]
 
 from pyfant.data import *
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
-from ..misc import *
+# from ..misc import *
+from PyQt4.QtGui import *
+
 
 def get_suitable_vis_classes(obj):
     """Retuns a list of Vis classes that can handle obj."""
@@ -28,6 +31,8 @@ class Vis(object):
 
     # Set the classes accepted by the use() method
     input_classes = ()
+    # Fill string with a verb and object, e.g. "plot first record"
+    action = ""
 
     def __init__(self):
         self.title = None
@@ -55,17 +60,19 @@ class VisPrint(Vis):
     """Prints object to screen."""
 
     input_classes = (object,)
+    action = "print to console"
 
     def _do_use(self, obj):
         print obj
 
 class VisModRecord(Vis):
     """
-    Plots vectors (nh, teta, pe, pg, t5l) of ".mod" file in 5 subplots sharing
+    Plots vectors (nh, teta, pe, pg, log_tau_ross) of ".mod" file in 5 subplots sharing
     the same x-axis.
     """
 
     input_classes = (FileMod,)
+    action = "visualize first model in file"
 
     def __init__(self):
         Vis.__init__(self)
@@ -78,24 +85,67 @@ class VisModRecord(Vis):
         assert isinstance(obj, FileMod)
 
         r = obj.records[self.inum-1]
+        _plot_mod_record(self.title, r)
 
 
-        f, axarr = plt.subplots(5, sharex=True)
-        f.canvas.set_window_title(self.title)
-        x = np.linspace(1, r.ntot)
-        axarr[0].plot(x, r.nh)
-        axarr[0].set_ylabel('nh')
-        axarr[1].plot(x, r.teta)
-        axarr[1].set_ylabel('teta')
-        axarr[2].plot(x, r.pe)
-        axarr[2].set_ylabel('pe')
-        axarr[3].plot(x, r.pg)
-        axarr[3].set_ylabel('pg')
-        axarr[4].plot(x, r.t5l)
-        axarr[4].set_ylabel('t5l')
-        axarr[4].set_xlabel("Atmospheric layer #")
-        plt.tight_layout()
-        plt.show()
+class VisMarcs(Vis):
+    """
+    Similar to VisModRecord but accepts FileMarcs
+    """
+
+    input_classes = (FileMarcs,)
+    action = "visualize model"
+
+    def __init__(self):
+        Vis.__init__(self)
+
+    def _do_use(self, obj):
+        _plot_mod_record(self.title, obj.record)
+
+class VisMarcsSaveAsMod(Vis):
+    """
+    Asks user for file name and saves as a binary .mod file
+    """
+
+    input_classes = (FileMarcs,)
+    action = 'save as a binary ".mod" file'
+
+    def __init__(self):
+        Vis.__init__(self)
+
+    def _do_use(self, obj):
+        d = "."  # todo find a way to pass current directory in a_Xexplorer (not pwd)
+        new_filename = QFileDialog.getSaveFileName(None,
+         self.action.capitalize(), d, "*.mod")
+        if new_filename:
+            f = FileMod()
+            f.records = [obj.record]
+            f.save_as(str(new_filename))
+        return False
+
+
+
+def _plot_mod_record(title, r):
+    f, axarr = plt.subplots(5, sharex=True)
+    f.canvas.set_window_title(title)
+    x = np.linspace(1, r.ntot, r.ntot)
+
+    axarr[0].plot(x, r.nh)
+    axarr[0].set_ylabel('nh')
+    axarr[1].plot(x, r.teta)
+    axarr[1].set_ylabel('teta')
+    axarr[2].plot(x, r.pe)
+    axarr[2].set_ylabel('pe')
+    axarr[3].plot(x, r.pg)
+    axarr[3].set_ylabel('pg')
+    axarr[4].plot(x, r.log_tau_ross)
+    axarr[4].set_ylabel('log_tau_ross')
+    axarr[4].set_xlabel("Atmospheric layer #")
+    for i in range(5):
+        ax = axarr[i]
+        ax.set_xlim([.5, r.ntot+.5])
+    plt.tight_layout()
+    plt.show()
 
 
 
@@ -103,10 +153,11 @@ class VisModRecords(Vis):
     """
     Plots vectors
     (teff, glog, asalog, asalalf, nhe) in 2D (record #)x(value) plots, and
-    (nh, teta, pe, pg, t5l) (layer #)x(record #)x(value) 3D plots
+    (nh, teta, pe, pg, log_tau_ross) (layer #)x(record #)x(value) 3D plots
     """
 
     input_classes = (FileMod,)
+    action = "visualize all models in file"
 
     def _do_use(self, m):
         nr = len(m)
@@ -130,7 +181,7 @@ class VisModRecords(Vis):
         plt.tight_layout()
         #################
         # 3D plots
-        vars = ['nh', 'teta', 'pe', 'pg', 't5l']
+        vars = ['nh', 'teta', 'pe', 'pg', 'log_tau_ross']
         for var in vars:
 
             fig = plt.figure()
@@ -156,6 +207,7 @@ class VisSpectrum(Vis):
     """Plots single spectrum."""
 
     input_classes = (FileSpectrum,)
+    action = "plot spectrum"
 
     def _do_use(self, m):
         s = m.spectrum
@@ -187,6 +239,7 @@ class VisFileToH(Vis):
     """
 
     input_classes = (FileToH,)
+    action = "visualize hydrogen lines profiles"
 
     def _do_use(self, r):
         fig = plt.figure()
@@ -208,6 +261,8 @@ class VisFileToH(Vis):
 class VisAtoms(Vis):
     """Opens the mled window."""
     input_classes = (FileAtoms,)
+    action = "open atomic lines editor"
+
     def _do_use(self, r):
         from pyfant.gui import XFileAtoms
         form = XFileAtoms(self.parent_form)
@@ -218,6 +273,8 @@ class VisAtoms(Vis):
 class VisMolecules(Vis):
     """Opens the ated window."""
     input_classes = (FileMolecules,)
+    action = "open molecular lines editor"
+
     def _do_use(self, r):
         from pyfant.gui import XFileMolecules
         form = XFileMolecules(self.parent_form)
@@ -233,6 +290,7 @@ class VisOpa(Vis):
     """
 
     input_classes = (FileOpa,)
+    actions = "visualize opacities file"
 
     def _do_use(self, obj):
         assert isinstance(obj, FileOpa)

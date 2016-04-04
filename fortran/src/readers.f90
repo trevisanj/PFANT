@@ -243,8 +243,8 @@ module reader_main
             main_inum     ! record id within modeles.mod
 
   character*15 main_titrav                ! Title, e.g. "Sun"
-  real*8 :: main_vvt(MAX_MODELES_NTOT), & ! ?doc?
-            main_tolv(MAX_MODELES_NTOT)   ! ?doc?
+  real*8 :: main_vvt(MAX_MODELES_NTOT), & ! microturbulence velocities
+            main_tolv(MAX_MODELES_NTOT)   ! log(tau(Rosseland)) for each velocity in main_vvt
 contains
 
   !=======================================================================================
@@ -377,6 +377,7 @@ module reader_modeles
   use logging
   use dimensions
   use reader_main
+  use misc
   implicit none
 
   ! Structure to store atmospheric model read from binary file.
@@ -384,7 +385,7 @@ module reader_modeles
   ! Hence the real*4 declarations.
 
   type modele_record
-    ! Size of variables nh, teta, pe, pg, t5l
+    ! Size of variables nh, teta, pe, pg, log_tau_ross
     integer*4 :: ntot
 
     real*8 :: teff,    & ! Teff (Kelvin)
@@ -399,7 +400,7 @@ module reader_modeles
      teta, & ! 5040./temperature (temperature in K)
      pe,   & ! electron pressure [dyn/cm2]
      pg,   & ! gas pressure [dyn/cm2]
-     t5l     ! log(tau(5000 A))
+     log_tau_ross     ! log(tau(Rosseland))
 
     character*20 :: tit, tiabs
   end type
@@ -472,7 +473,7 @@ contains
     ! Gotta use single precision  variables to read file because the real numbers are all
     ! stored with 4 bytes only (not 8)
     real*4 teff, glog, asalog, asalalf, nhe
-    real*4, dimension(max_modeles_ntot) :: nh, teta, pe, pg, t5l
+    real*4, dimension(max_modeles_ntot) :: nh, teta, pe, pg, log_tau_ross
 
     integer i
 
@@ -501,6 +502,10 @@ contains
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
+    ! replaces \x00 character by space
+    call replace_char(record%tit, char(0), ' ')
+    call replace_char(record%tiabs, char(0), ' ')
+
     record%teff = teff
     record%teff = teff
     record%glog = glog
@@ -513,13 +518,13 @@ contains
           teta(i), &
           pe(i),   &
           pg(i),   &
-          t5l(i), i=1,record%ntot)
+          log_tau_ross(i), i=1,record%ntot)
 
     record%nh = nh
     record%teta = teta
     record%pe = pe
     record%pg = pg
-    record%t5l = t5l
+    record%log_tau_ross = log_tau_ross
 
     write(lll, *) 'read_mod_record(): ntot=', record%ntot
     call log_debug(lll)
@@ -597,7 +602,7 @@ contains
       modele%teta(i) = r%teta(i) ! "
       modele%pe(i)   = r%pe(i)   ! "
       modele%pg(i)   = r%pg(i)   ! "
-      modele%t5l(i)  = r%t5l(i)  ! "
+      modele%log_tau_ross(i)  = r%log_tau_ross(i)  ! "
     end do
     modele%tit = r%tit
     modele%tiabs = r%tiabs
@@ -1950,19 +1955,19 @@ contains
       call log_debug(lll)
 
       if(config_interp .eq. 1) then
-        call ftlin3(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%t5l, turbul_vt)
+        call ftlin3(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%log_tau_ross, turbul_vt)
       elseif (config_interp .eq. 2) then
         ! ISSUE config_interp was hard-switched to 1, config_interp=2 needs testing.
         ! However, now nulbad is using ft2() to re-sample the spectrum and it is working fine!!
-        call ft2(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%t5l, turbul_vt)
+        call ft2(main_ivtot, main_tolv, main_vvt, modele%ntot, modele%log_tau_ross, turbul_vt)
       end if
 
 
       nt2 = modele%ntot-2
       do n = 1, nt2, 3
         102 format(3(i5,2f8.3,5x))
-        write(lll,102) n,modele%t5l(n),turbul_vt(n),(n+1), modele%t5l(n+1), &
-         turbul_vt(n+1),(n+2),modele%t5l(n+2),turbul_vt(n+2)
+        write(lll,102) n,modele%log_tau_ross(n),turbul_vt(n),(n+1), modele%log_tau_ross(n+1), &
+         turbul_vt(n+1),(n+2),modele%log_tau_ross(n+2),turbul_vt(n+2)
         call log_debug(lll)
       end do
 

@@ -6,14 +6,14 @@ This script can work in three different modes:
 
 a) default mode: it looks for files in a subdirectory of PFANT/data
    Example:
-   > link-to-data.py common
+   > copy-star.py common
    (will look inside the directory PFANT/data/common)
 
 b) "-l" option: lists subdirectories of PFANT/data
 
 c) "-p" option: looks for files in a directory specified:
-   > link-to-data.py -p /home/user/pfant-common-data
-   > link-to-data.py -p ../../pfant-common-data
+   > copy-star.py -p /home/user/pfant-common-data
+   > copy-star.py -p ../../pfant-common-data
 
 Note: in Windows, this script must be run as administrator.
 """
@@ -49,12 +49,17 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if len(sys.argv) == 1:
+        args.list = True  # makes "-l" the default behaviour
+
     if (not args.directory or len(args.directory) ==  0) and not args.list:
         print "Directory name is required, except if '-l' option specified."
         parser.print_usage()
         sys.exit()
 
+    # "-l" mode
     if args.list:
+        print fmt_ascii_h1("Subdirectories of '%s" % get_data_dir())
         for dirname in get_data_subdirs():
             print dirname
         sys.exit()

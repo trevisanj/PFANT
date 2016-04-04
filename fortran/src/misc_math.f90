@@ -47,17 +47,23 @@ module misc_math
 
   ! Mathematical constants used throughout. Better to use these than define them every
   ! time they are needed inside a routine
-  real*8, parameter :: PI = acos(-1.) ! "pi" constant
-  real*8, parameter :: RPI = sqrt(PI) ! square root of pi, approx 1.772453851
+  real*8, parameter :: PI = acos(-1.), & ! 3.14169265...
+                       RPI = sqrt(PI), & ! square root of pi, approx 1.772453851
+                       H = 6.6252E-27, & ! Plank constant in erg*s
+                                         ! ISSUE actual value may be 6.6260E-27
+                       C = 2.997929E+10,&! speed of light in cm/s
+                       KB = 1.38046E-16  ! Boltzmann's constant in erg/K
+                         
+                                           
 
 contains
   ! Computes the Voigt function.
   !
-  ! 
+  !
   ! COMPUTES THE VOIGHT FUNCTION  Y/PI*INTEGRAL FROM
   ! - TO + INFINITY OF  EXP(-T*T)/(Y*Y+(X-T)*(X-T)) DT
   ! LA FONCTION EST ENSUITE NORMALISEE
-  ! 
+  !
   !
   ! The code seems to originate from Appendix A of [1]
   !
@@ -70,9 +76,9 @@ contains
 
   function hjenor(y,x,del) result (phi)
     real*8, intent(in) :: &
-     y,   & ! ?doc? "Relative importance of the Lorentzian and Gaussian contributions" (?) [2]
-     x,   & ! ?doc? The actual variable here (?)
-     del    ! ?doc? Normalization term (?)
+     y,   & ! "Relative importance of the Lorentzian and Gaussian contributions" (?) [2]
+     x,   & ! **The actual variable** here
+     del    ! Normalization term
     real*8 :: phi ! Result value
     real*8 voigt ! un-normalized Voigt function value
     real*8 vv,uu
@@ -90,7 +96,6 @@ contains
     real*8 c0, dx, v, u, y2
     integer i, j, min, max, n
     save :: flag_first, b, ri, xn, yn, d0, d1, d2, d3, d4, hn, h, xx, hh, nby2, c
-
 
     if (flag_first) then
       ! print *, 'first'
@@ -139,7 +144,7 @@ contains
 
     ! REGION II CONTINUED FRACTION .COMPUTE NUMBER OF TERMS NEEDED
     ! write(6,*)'region II'
-    if (y.lt.1.45) go to 107
+    if (y .lt. 1.45) go to 107
     i = int(y+y)
     go to 108
 
@@ -149,7 +154,8 @@ contains
     108 continue
     j = int(x+x+1.85)
     max = int(xn(j)*yn(i)+.46)
-    min=min0(16,21-2*max)
+    min = min0(16,21-2*max)
+
 
     ! EVALUATED CONTINUED FRACTION
     uu=y
@@ -159,7 +165,8 @@ contains
       uu=y+u*uu
       vv=x-u*vv
     109 continue
-    voigt=uu/(uu*uu+vv*vv)/1.772454
+
+    voigt=uu/(uu*uu+vv*vv)/RPI
     go to 10
 
     110 continue
@@ -208,7 +215,7 @@ contains
     ! write(6,*)'region IIIa',voigt
 
     10 continue
-    phi = voigt /  (1.772454 * del)
+    phi = voigt /  (RPI * del)
   end
 
 
@@ -358,11 +365,10 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
-  ! CALCUL DE CH VAN DER WAALS  APPROXIMATIONS D UNSOLD (1955)
+  ! CALCUL DE CH VAN DER WAALS,  APPROXIMATIONS D'UNSOLD (1955)
   !
-  ! 
   ! SI IS1 ET IS2 SONT EGAUX A S P D F FORMULE 82-54, SINON 82-55
-  ! 
+  !
 
   real*8 function calch(kii, iz, kiex1, is1, kiex2, is2)
     real*8, intent(in) :: &
@@ -414,15 +420,13 @@ contains
 
 
   !---------------------------------------------------------------------------------------
-  ! INTERPOLATION D UNE LISTE A PAS NON CONSTANT
-  !
   ! EXTRAPOLE TETA(PG) POUR PG=0
-  ! 
+  !
   ! ***TETA1 extrapolation parabolique sur les 3 derniers pts
   ! ***TETA2      "             "      sur les pts 2 3 et 4
   ! ***TETA3      "        lineaire    sur les 2 derniers pts
   ! (ici seul TETA3 est utilise)
-  ! 
+  !
 
   real*8 function fteta0(pg, teta, n)
     ! Size of vectors pf and teta; example source is reader_modeles::modele%ntot

@@ -25,7 +25,7 @@ import os
 _classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileMod,
             FileSpectrumNulbad,FileSpectrumPfant, FileToH, FileAbonds,
             FileSpectrumXY, FileAtoms, FileMolecules, FileSpectrumFits,
-            FileOpa]
+            FileOpa, FileMarcs]
 
 _classes_sp = [FileMod, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
                FileSpectrumFits]

@@ -29,7 +29,8 @@
 !   PHI(J): ''        ''     DE L ELEMENT J POUR MULTIPLE IONISATION
 !   ZNH(M): POPULATION POUR CHAQUE ABSORBANT M (H,HE OU METAUX)
 !
-! VOIR ARTICLE DE 'VARDYA' APJ VOL.133,P.107,1961
+! References:
+!   Vardya, M.S., Astrophysics Journal, Vol.133, pp.107-129, 1961
 !
 ! Prefixes:
 !   - absoru_ -- public variables used in other modules
@@ -79,7 +80,7 @@ module absoru
    au_pe
 
   real*8 au_avm  ! MASSE ATOMIQUE MOYENNE DES ELEMENTS PLUS LOURDS QUE L'HELIUM
-  real*8 au_zmu  ! POIDS MOLECULAIRE MOYEN
+  ! real*8 au_zmu  ! POIDS MOLECULAIRE MOYEN
   real*8 au_pg   ! PRESSION TOTALE EN DYNES/cm**2
   real*8 au_rho  ! DENSITE (G-CM-3)
   real*8 au_ac   ! DEGRE D'IONISATION MOYEN
@@ -124,10 +125,10 @@ contains
      th,       & ! ?doc?
      zlpe        ! ?doc?
     integer, intent(in) :: &
-     callam, & ! ?doc?
-     calth,  & ! ?doc?
-     calpe,  & ! ?doc?
-     calmet, & ! innefective
+     callam, & ! flag ?doc?
+     calth,  & ! flag ?doc?
+     calpe,  & ! flag ?doc?
+     calmet, & ! innefective flag
      calu      ! ?doc?
     ! Affects value of MAX_WLH_I2: 1200 or 14110
     logical, intent(in) :: flag_hydro2
@@ -153,7 +154,7 @@ contains
     end do
     au_avm = sum2/sum1
 
-    ! au_ZNU1,au_ZNU2,au_ZNU3=SUCCESSIVEMENT FRACTION D'(H,HE,METAL) PAR NOMBRE T
+    ! au_ZNU1,au_ZNU2,au_ZNU3: SUCCESSIVEMENT FRACTION D'(H,HE,METAUX) PAR NOMBRE T
 
     do i = 1,absoru2_nm
       au_znu(i) = absoru2_zp(i)/sum1
@@ -249,7 +250,7 @@ contains
       end do
     end do
 
-    absoru_totkap(2)=0.
+    absoru_totkap(2) = 0.
     if (calu.eq.1) unit=au_rho
     If (calu.eq.2) unit=absoru_toc ! RAPPEL  absoru_toc=NBRE DE NOYAUX DE H PAR CM3
 
@@ -273,9 +274,9 @@ contains
         if (m.eq.(absoru2_nmeta+2)) zzkk(m,i)=zzkk(m,i)*au_pe
 
         4221 continue
-        absoru_totkap(i)=absoru_totkap(i)+zzkk(m,i)
+        absoru_totkap(i) = absoru_totkap(i)+zzkk(m,i)
       end do
-      absoru_totkap(i)=(absoru_totkap(i)+scatel+scat(1)+scat(2))
+      absoru_totkap(i) = (absoru_totkap(i)+scatel+scat(1)+scat(2))
 
       !87 format ('wl,kkk,zzkk,totkap =>',f9.1,i2,1p12e10.2)
       !write (lll,87) wl,kkk,(zzkk(m,i),m=1,mmm),absoru_totkap(i)
@@ -1158,7 +1159,7 @@ contains
     absoru_znh(absoru2_nmeta+6)=au_znu2*parth/(1.0+w5+w6)
     absoru_znh(absoru2_nmeta+5)=absoru_znh(absoru2_nmeta+6)*w5
     au_rho=1.6602e-24*parth*au_zmuze  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
-    au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
-                                          ! 8.313697e+7: constante des gaz
+    ! not used au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
+    !                                       ! 8.313697e+7: constante des gaz
   end subroutine ionipe
 end module absoru

@@ -26,6 +26,7 @@ module nulbad_calc
   use config
   use dimensions
   use reader_main
+  use misc_math
   implicit none
 
   public nulbad_calc_
@@ -47,14 +48,14 @@ module nulbad_calc
   integer :: rs_ktot
   character :: rs_titc*20
   real*8 :: &
-   rs_tetaeff, & ! ?doc?
-   rs_glog,    & ! ?doc?
-   rs_asalog,  & ! ?doc?
-   rs_amg,     & ! ?doc?
-   rs_l0,      & ! ?doc?
-   rs_lf,      & ! ?doc?
-   rs_dpas,    & ! ?doc?
-   rs_nhe_bid    ! ?doc?
+   rs_tetaeff, & ! 5040./teff
+   rs_glog,    & ! g log
+   rs_asalog,  & ! metallicity
+   rs_amg,     & ! used to be xxcor(8) but now just zero
+   rs_l0,      & ! initial wavelength
+   rs_lf,      & ! final wavelength
+   rs_dpas,    & ! calculation "delta lambda"
+   rs_nhe_bid    ! abundance of helium
 
   integer, parameter :: UNIT_=199 ! unit for file I/O
 
@@ -202,7 +203,6 @@ contains
   ! Main routine of this module
 
   subroutine nulbad_calc_()
-    real*8, parameter :: C = 2.997929E+10
     integer :: d, &
                dmj, &
                dtotc, &

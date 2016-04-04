@@ -37,7 +37,7 @@ module dimensions
 
   ! Maximum number of "filetoh" files
   integer, parameter :: MAX_FILETOH_NUM_FILES=13
-  ! ?doc?
+  ! maximum number of atmospheric layers for hydrogen lines (one line is calculated per layer)
   integer, parameter :: MAX_FILETOH_JMAX=50
   ! Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1 @endcode
   integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
@@ -62,8 +62,8 @@ module dimensions
   ! Dimensions related to *modeles file*
   !=====
 
-  ! Maximum possible value of modele%ntot
-  integer, parameter :: MAX_MODELES_NTOT=50
+  ! Maximum possible value of modele%ntot. This used to be 50, but MARCS Sun models have 56 layers.
+  integer, parameter :: MAX_MODELES_NTOT=70
 
   !=====
   ! Dimensions related to *partit file*

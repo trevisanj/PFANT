@@ -1,5 +1,5 @@
 """
-Loads modeles.mod file and plots vectors nh, teta, pe, pg, t5l
+Loads modeles.mod file and plots vectors nh, teta, pe, pg, log_tau_ross
 """
 
 from pyfant import *
@@ -24,8 +24,8 @@ axarr[2].plot(x, r.pe)
 axarr[2].set_title('pe')
 axarr[3].plot(x, r.pg)
 axarr[3].set_title('pg')
-axarr[4].plot(x, r.t5l)
-axarr[4].set_title('t5l')
+axarr[4].plot(x, r.log_tau_ross)
+axarr[4].set_title('log_tau_ross')
 
 axarr[4].set_xlabel("Atmospheric layer #")
 plt.tight_layout()

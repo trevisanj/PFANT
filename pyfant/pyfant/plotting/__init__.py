@@ -9,4 +9,5 @@ this sub-package structure, which is likely to remain disorganized.
 
 """
 from .plotsp import *
+from .plotgrid import *
 from .vis import *

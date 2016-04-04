@@ -206,7 +206,8 @@ contains
     end if
   end function
 
-  !=======================================================================================  ! Trims spaces at the right and adds a final slash, if the latter is not present.
+  !=======================================================================================
+  ! Trims spaces at the right and adds a final slash, if the latter is not present.
   !
   ! Examples:
   ! 
@@ -228,6 +229,22 @@ contains
       if (y(i:i) .eq. BACKSLASH) y(i:i) = '/'
     end do
     if (y(n:n) .ne. '/') y = y // '/'
+  end
+
+
+  !=======================================================================================
+  ! Replaces one character by another in string
+  !
+  ! The input argument is changed itself
+  ! 
+
+  subroutine replace_char(x, search, replace)
+    character(*), intent(inout) :: x
+    character(1), intent(in) :: search, replace
+    integer i
+    do i = 1, len(x)
+      if (x(i:i) .eq. search) x(i:i) = replace
+    end do
   end
 
   !=======================================================================================

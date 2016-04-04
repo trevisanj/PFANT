@@ -84,6 +84,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
+    args = parser.parse_args()
+
+    if len(sys.argv) == 1:
+        args.list = True  # makes "-l" the default behaviour
+
     if (not args.directory or len(args.directory) ==  0) and not args.list:
         print "Directory name is required, except if '-l' option specified."
         parser.print_usage()
@@ -91,6 +97,7 @@ if __name__ == "__main__":
 
     # "-l" mode
     if args.list:
+        print fmt_ascii_h1("Subdirectories of '%s" % get_data_dir())
         for dirname in get_data_subdirs():
             print dirname
         sys.exit()

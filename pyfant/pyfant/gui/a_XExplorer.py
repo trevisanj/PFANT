@@ -89,7 +89,7 @@ class LoadThread(QThread):
             finally:
                 props.flag_scanned = True
                 props.flag_error = f is None
-                props.flag_text = istextfile(props.filepath)
+                props.flag_text = is_text_file(props.filepath)
 
 #
 # class VisThread(QThread):
@@ -198,7 +198,7 @@ class XExplorer(QMainWindow):
         s0.addWidget(w)
         l = self.c49378 = QVBoxLayout(w)
         l.setMargin(0)
-        y = self.c88888 = QLabel("<b>Visualization &options</b>")
+        y = self.c88888 = QLabel("<b>&Actions available for selected file(s)</b>")
         l.addWidget(y)
         x = self.listWidgetVis = QListWidget(self)
         x.installEventFilter(self)
@@ -265,7 +265,11 @@ class XExplorer(QMainWindow):
 
     def on_listWidgetVis_itemDoubleClicked(self, item):
         # Assuming that double-click will also select the row
-        self.__visualize()
+        try:
+            self.__visualize()
+        except Exception as e:
+            ShowError(str(e))
+            raise
 
     def selectionChanged(self, *args):
         self.__update_info()
@@ -401,7 +405,7 @@ class XExplorer(QMainWindow):
                     if x == "txt":
                         text = "View plain text"
                     else:
-                        text = x.__name__
+                        text = x.action.capitalize()
                     item = QListWidgetItem(text)
                     z.addItem(item)
 
@@ -411,11 +415,15 @@ class XExplorer(QMainWindow):
         elif len(pp) >= 2:
             ff = [p.f for p in pp]
             flag_spectra = all([isinstance(f, FileSpectrum) for f in ff])
+            flag_mod = all([isinstance(f, FileMod) and len(f.records) > 1 for f in ff])
             if flag_spectra:
                 z.addItem(QListWidgetItem("View spectra stacked"))
                 classes.append("sta")
                 z.addItem(QListWidgetItem("View spectra overlapped"))
                 classes.append("ovl")
+            elif flag_mod:
+                z.addItem(QListWidgetItem("View model grid"))
+                classes.append("modgrid")
 
 
     def __set_status_text(self, text):
@@ -443,6 +451,13 @@ class XExplorer(QMainWindow):
                 pp = self.__get_current_propss()
                 spectra = [p.f.spectrum for p in pp]
                 plot_spectra(spectra)
+            elif vis_class == "modgrid":
+                print "CMONCMONCMONCMONCMONCMONCMONCMONCMONCMONCMON"
+
+
+                pp = self.__get_current_propss()
+                models = [p.f for p in pp]
+                plot_mod_grid(models)
             else:
                 props = self.__get_current_props()
                 if vis_class == "txt":

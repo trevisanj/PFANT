@@ -136,15 +136,15 @@ contains
       ! write(6,*) ' rglog(1,i)', (rglog(1,i),i=1,2)
       ! write(6,*) ' rglog(2,i)', (rglog(2,i),i=1,2)
 
-      to0 = amax1(aa%t5l(1), bb%t5l(1), cc%t5l(1), dd%t5l(1))
-      nna = int((to0-aa%t5l(1))*10+0.1)
-      nnb = int((to0-bb%t5l(1))*10+0.1)
-      nnc = int((to0-cc%t5l(1))*10+0.1)
-      nnd = int((to0-dd%t5l(1))*10+0.1)
+      to0 = amax1(aa%log_tau_ross(1), bb%log_tau_ross(1), cc%log_tau_ross(1), dd%log_tau_ross(1))
+      nna = int((to0-aa%log_tau_ross(1))*10+0.1)
+      nnb = int((to0-bb%log_tau_ross(1))*10+0.1)
+      nnc = int((to0-cc%log_tau_ross(1))*10+0.1)
+      nnd = int((to0-dd%log_tau_ross(1))*10+0.1)
 
       ! write(lll,*) ' to0max=', to0
       ! call log_debug(lll)
-      ! write(lll,*) aa%t5l(1),bb%t5l(1),cc%t5l(1),dd%t5l(1)
+      ! write(lll,*) aa%log_tau_ross(1),bb%log_tau_ross(1),cc%log_tau_ross(1),dd%log_tau_ross(1)
       ! call log_debug(lll)
       ! write(lll,*) ' couches a oter'
       ! call log_debug(lll)
@@ -204,13 +204,13 @@ contains
       !     interpolation sur l'abondance
       !     les 2 modeles doivent commencer au meme niveau en log to
       !     et avoir la meme longueur
-      to0 = amax1(z1%t5l(1), z2%t5l(1))
-      nz1 = int((to0-z1%t5l(1))*10+0.1)
-      nz2 = int((to0-z2%t5l(1))*10+0.1)
+      to0 = amax1(z1%log_tau_ross(1), z2%log_tau_ross(1))
+      nz1 = int((to0-z1%log_tau_ross(1))*10+0.1)
+      nz2 = int((to0-z2%log_tau_ross(1))*10+0.1)
 
       ! write(lll,*)' to0max=', to0
       ! call log_debug(lll)
-      ! write(lll,*) z1%t5l(1),z2%t5l(1)
+      ! write(lll,*) z1%log_tau_ross(1),z2%log_tau_ross(1)
       ! call log_debug(lll)
       ! call log_debug(' couches a oter:')
       ! write(lll,*) nz1, nz2
@@ -271,7 +271,7 @@ contains
       a(k+1)=zz%teta(n) ! T
       a(k+2)=zz%pe(n)   ! Pe
       a(k+3)=zz%pg(n)   ! Pg
-      a(k+4)=zz%t5l(n)  ! log to
+      a(k+4)=zz%log_tau_ross(n)  ! log to
     end do
 
     ! Writes binary file
@@ -299,9 +299,9 @@ contains
      bid0,              &
      bid0
     do n = 1,nntot
-      tau=10**zz%t5l(n)
+      tau=10**zz%log_tau_ross(n)
       tttt=5040/zz%teta(n)
-      write(UNIT_DAT,'(e15.5,f10.0,3e15.6)') zz%t5l(n), tttt, zle(n), zlp(n), vvt
+      write(UNIT_DAT,'(e15.5,f10.0,3e15.6)') zz%log_tau_ross(n), tttt, zle(n), zlp(n), vvt
     end do
 
     close(unit=UNIT_MOD)
@@ -314,11 +314,11 @@ contains
   ! Fill variables nomfipl, asalog1, asalog2 based on main_asalog
   !
   ! Note that intervals are open on upper boundary, i.e.,
-  ! 
+  !
   ! [ gridsmap_asalog(i), gridsmap_asalog(i+1) [
   !
   ! (1 <= i < gridsmap_num_files)
-  ! 
+  !
 
   subroutine find_two_grid_files()
     integer i, n
@@ -365,7 +365,7 @@ contains
 
 
   !=======================================================================================
-  ! Interpolation ?doc?
+  ! Linear interpolation for the five vectors: nh, teta, pe, pg, log_tau_ross
 
   subroutine interpol(t0, t1, r1, r2, rr, ntot)
     real*4, intent(in) :: t0, t1
@@ -389,10 +389,10 @@ contains
       u0 = r2%pg(n)-r1%pg(n)
       rr%pg(n) = r1%pg(n) + u0*t2
 
-      rr%t5l(n) = r1%t5l(n)
+      rr%log_tau_ross(n) = r1%log_tau_ross(n)
 
       ! if(n.le.5) then
-      !   write(6,'(i4,5f14.4)')n,rr%nh(n),rr%teta(n),rr%pe(n),rr%pg(n),rr%t5l(n)
+      !   write(6,'(i4,5f14.4)')n,rr%nh(n),rr%teta(n),rr%pe(n),rr%pg(n),rr%log_tau_ross(n)
       ! end if
     end do
   end
@@ -415,7 +415,7 @@ contains
       rr%teta(k) = rr%teta(k+n)
       rr%pe(k) = rr%pe(k+n)
       rr%pg(k) = rr%pg(k+n)
-      rr%t5l(k) = rr%t5l(k+n)
+      rr%log_tau_ross(k) = rr%log_tau_ross(k+n)
     end do
   end
 
@@ -440,18 +440,18 @@ contains
                           MAX_NG=20     ! Maximum number of different glog or each temperature
 
     integer*4 :: idt(MAX_NT), & ! index of first record for each tempearture
-                 ing(MAX_NG), & ! number of glog for each temperature
-                 jg1(MAX_NG), &
-                 jg2(MAX_NG)
+                 ing(MAX_NG), & ! number of glogs for each temperature
+                 jg11, jg12, jg21, jg22
     !!!!             idta(MAX_NT), & ! index of first record for each tempearture
     !!!!             inga(MAX_NT)    ! number of glog for each temperature
 
-    real*8 :: rteff(MAX_NT), rglog(MAX_NG)
+    real*8 :: rteff(MAX_NT), rglog(MAX_NG), &
+     a, b, v  ! temporary variables to facilitate logging
     !!!! ,r1teff(MAX_NT)
     !!!! real*8 :: agloga1(MAX_NG),agloga2(MAX_NG),agloga3(MAX_NG),agloga4(MAX_NG), &
     !!!! agloga5(MAX_NG),agloga6(MAX_NT),agloga7(MAX_NT)
 
-    real*8 :: aglog(MAX_NT,MAX_NG)
+    real*8 :: aglog(MAX_NT, MAX_NG)
 
     integer i, jjt, jt1, jt2, n, ng, ngg, nt
 
@@ -522,61 +522,59 @@ contains
     ! sera suivi d'ordres equivalent si plusieurs abond donc autres IABON
     ! etc...
 
-    do i=1,nt
+    do i = 1,nt
       jt2 = i
-      if(main_teff .lt. rteff(i)) go to 11
+      if(main_teff .lt. rteff(i)) exit
     end do
 
-    11 continue
     if (jt2 .eq. 1) jt2 = 2
-
     jt1 = jt2-1
+
     write(lll,*) 'Indices de temperatures', jt1,jt2
     call log_debug(lll)
+    a = rteff(jt1)
+    b = rteff(jt2)
+    v = main_teff
+    if (a .gt. v .or. b .lt. v) &
+     call log_warning('Teff '//real82str(v, 1)//'outside interval ['//&
+     real82str(a, 1)//', '//real82str(b, 1)//']')
 
-    do jjt=jt1,jt2
-      ngg=ing(jjt)
 
-      write(lll,*)'jtt=',jjt,'   ngg=',ngg
-      call log_debug(lll)
-      write(lll,*) 'Nbre de gravite pour la temp ngg=',ngg
-      call log_debug(lll)
-
-      do i=1,ngg
-        rglog(i)=aglog(jjt,i)
-      end do
-
-      write(lll,*) ' rglog(i) pour jjt=', jjt
-      call log_debug(lll)
-      write(lll,'(10f5.1)') (rglog(i),i=1,ngg)
-      call log_debug(lll)
-
-      do i = 1,ngg
-        jg2(jjt)=i
-        if(main_glog .lt. rglog(i)) go to 12
-      end do
-
-      12 continue
-      if (jg2(jjt) .eq. 1) jg2(jjt) = 2
-
-      jg1(jjt)=jg2(jjt)-1
-
-      write(lll,*) ' jjt jg1 jg2', jjt, jg1(jjt), jg2(jjt)
-      call log_debug(lll)
+    ! Looks for 2 glogs inside a row of rteff(jt1)
+    do i = 1, ing(jt1)
+      jg12 = i
+      if(main_glog .lt. aglog(jt1, jg12)) exit
     end do
+    if (jg12 .eq. 1) jg12 = 2
+    jg11 = jg12-1
+    a = aglog(jt1, jg11)
+    b = aglog(jt1, jg12)
+    v = main_glog
+    if (a .gt. v .or. b .lt. v) &
+     call log_warning('Glog '//real82str(v, 1)//'outside interval ['//&
+     real82str(a, 1)//', '//real82str(b, 1)//']')
 
 
-    write(lll,*) ' jjt, idt jg1(jjt), jg2(jjt) ',jt1,idt(jt1), jg1(jt1), jg2(jt1)
-    call log_debug(lll)
-    write(lll,*) ' jjt, idt jg1(jjt), jg2(jjt) ',jt2,idt(jt2), jg1(jt2) , jg2(jt2)
-    call log_debug(lll)
+    ! Looks for 2 glogs inside a row of rteff(jt1)
+    do i = 1, ing(jt2)
+      jg22 = i
+      if(main_glog .lt. aglog(jt2, jg22)) exit
+    end do
+    if (jg22 .eq. 1) jg22 = 2
+    jg21 = jg22-1
+    a = aglog(jt2, jg21)
+    b = aglog(jt2, jg22)
+    v = main_glog
+    if (a .gt. v .or. b .lt. v) &
+     call log_warning('Glog '//real82str(v, 1)//' is outside interval ['//&
+     real82str(a, 1)//', '//real82str(b, 1)//']')
 
 
     ! ID des modeles dans la table
-    id11 = idt(jt1)+jg1(jt1)-1
-    id12 = idt(jt1)+jg2(jt1)-1
-    id21 = idt(jt2)+jg1(jt2)-1
-    id22 = idt(jt2)+jg2(jt2)-1
+    id11 = idt(jt1)+jg11-1
+    id12 = idt(jt1)+jg12-1
+    id21 = idt(jt2)+jg21-1
+    id22 = idt(jt2)+jg22-1
     call log_info('Dans cette table les modeles entre lesquels on va interpoler ont les numeros:')
     write(lll,*)  id11,id12,id21,id22
     call log_info(lll)
@@ -593,9 +591,9 @@ contains
 
 
   !=======================================================================================
-  ! Lit sur disque acces direct nh,teta,pe,pg,t5l,ntot
+  ! Lit sur disque acces direct nh,teta,pe,pg,log_tau_ross,ntot
   !
-  ! Lit sur le fichier de type .mod nh,teta,pe,pg,t5l,ntot
+  ! Lit sur le fichier de type .mod nh,teta,pe,pg,log_tau_ross,ntot
 
   subroutine readerbn(rec_id, r)
     integer, intent(in) :: rec_id
@@ -614,7 +612,7 @@ contains
 
     !! call log_debug('        log NH           TETA          log PE         log PG     To(5000)')
     !! do i = 1, 3
-    !!   write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%t5l(i)
+    !!   write(lll,'(e16.4,f15.4,2e16.4,f12.4)') r%nh(i), r%teta(i), r%pe(i), r%pg(i), r%log_tau_ross(i)
     !!   call log_debug(lll)
     !! end do
     !! call log_debug('     ETC.....')

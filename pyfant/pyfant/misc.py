@@ -12,7 +12,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "X", "HR", "log_noisy", "fmt_ascii_h1", "fmt_error", "print_error", "menu",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
- "istextfile", "get_QApplication", "copy_default_file", "MyLock",
+ "is_text_file", "get_QApplication", "copy_default_file", "MyLock",
  "get_data_dir", "get_data_subdirs"]
 
 
@@ -772,7 +772,7 @@ _text_characters = (
         b''.join(int2byte(i) for i in range(32, 127)) +
         b'\n\r\t\f\b')
 
-def istextfile(filepath, blocksize=512):
+def is_text_file(filepath, blocksize=512):
     """ Uses heuristics to guess whether the given file is text or binary,
         by reading a single block of bytes from the file.
         If more than 30% of the chars in the block are non-text, or there

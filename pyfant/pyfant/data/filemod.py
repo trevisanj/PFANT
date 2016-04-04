@@ -21,7 +21,7 @@ class ModRecord(AttrsPart):
     default_filename = "modeles.mod"
 
     attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
-           "nh", "teta", "pe", "pg", "t5l"]
+           "nh", "teta", "pe", "pg", "log_tau_ross"]
     less_attrs = ["ntot", "teff", "glog"]
 
     def __init__(self):
@@ -38,7 +38,7 @@ class ModRecord(AttrsPart):
         self.teta = None
         self.pe = None
         self.pg = None
-        self.t5l = None
+        self.log_tau_ross = None
 
     def __repr__(self):
         return "/"+self.one_liner_str()+"/"
@@ -71,7 +71,7 @@ class FileMod(DataFile):
   def _do_load(self, filename):
     REC_SIZE = 1200
 
-    if istextfile(filename):
+    if is_text_file(filename):
         raise RuntimeError("File must be binary")
 
     b = os.path.getsize(filename)
@@ -109,7 +109,7 @@ class FileMod(DataFile):
         v = np.frombuffer(x, dtype='<f4', count=rec.ntot*5, offset=64)
         w = np.reshape(v, (rec.ntot, 5))
 
-        rec.nh, rec.teta, rec.pe, rec.pg, rec.t5l = [w[:, i] for i in range(5)]
+        rec.nh, rec.teta, rec.pe, rec.pg, rec.log_tau_ross = [w[:, i] for i in range(5)]
 
         self.records.append(rec)
 
@@ -124,7 +124,7 @@ class FileMod(DataFile):
               h.write(ostrh.pack(r.ntot, r.teff, r.glog, r.asalog,
                r.asalalf, r.nhe, r.tit, r.tiabs))
               ny = 5*r.ntot
-              y = np.reshape(np.vstack([r.nh, r.teta, r.pe, r.pg, r.t5l]).T, ny)
+              y = np.reshape(np.vstack([r.nh, r.teta, r.pe, r.pg, r.log_tau_ross]).T, ny)
               h.write(struct.pack("<"+"f"*ny, *y))
               #h.seek((i+1)*1200)
               h.write("\x00"*(1200-ny*4-64))  # fills record with \x0 to have 1200 bytes
@@ -161,12 +161,12 @@ class FileMarcs(DataFile):
         return 1
 
     def _do_load(self, filename):
-        if not istextfile(filename):
+        if not is_text_file(filename):
             raise RuntimeError("File must be a text file")
         r = ModRecord()
         with open(filename, "r") as h:
             _skip = lambda: h.readline()
-            r.tit = struct.unpack("20s", h.readline()[:20])[0]
+            r.tit = h.readline().strip()
             r.tiabs = ""
             r.teff = float(struct.unpack("7s", h.readline()[:7])[0])
             _skip()  # flux row
@@ -177,7 +177,11 @@ class FileMarcs(DataFile):
             _skip()  # "1 cm radius for plane-parallel models"
             _skip()  # "Luminosity"
             _skip()  # "convection parameters"
-            _skip()  # "X, Y and Z"
+
+            # Reads hydrogen mass fraction to use later to calculate the nh vector
+            # X, Y and Z are the mass fractions of H, He, and metals respectively (X+Y+Z=1)
+            h_frac = float(h.readline()[:8])
+
             _skip()  # "Logarithmic chemical number abundances, H always 12.00"
             # reads He abundance to calculate "nhe"
             r.nhe = 10**(float(struct.unpack("7x 7s", h.readline()[:14])[0])-12)
@@ -187,14 +191,24 @@ class FileMarcs(DataFile):
             _skip()  # "Model structure"
             _skip()  # header "k lgTauR  lgTau5    Depth     T        Pe          Pg         Prad       Pturb"
 
-            r.nh, r.teta, r.pe, r.pg, r.t5l = np.zeros(n), np.zeros(n), \
-             np.zeros(n), np.zeros(n), np.zeros(n)
+            r.teta, r.pe, r.pg, r.log_tau_ross = np.zeros(n), np.zeros(n), \
+             np.zeros(n), np.zeros(n)
 
+            # reads log(tau(Rosseland)), T, Pe, Pg
             for i in range(n):
-                # TODO NH
                 qwe = h.readline()
-                r.t5l[i], t, r.pe[i], r.pg[i] = map(float,
-                 struct.unpack("9x 8s 11x 8s 12s 12s", qwe[:60]))
+                r.log_tau_ross[i], t, r.pe[i], r.pg[i] = map(float,
+                 struct.unpack("3x 6s 19x 8s 12s 12s", qwe[:60]))
                 r.teta[i] = 5040./t
+
+            # reads rhox to use in nh calculation
+            _skip()  # hreader "k lgTauR    KappaRoss   Density   Mu      Vconv   Fconv/F      RHOX"
+            rhox = np.zeros(n)
+            for i in range(n):
+                rhox[i] = float(h.readline()[60:72])
+
+            # calculates nh using the formula in "transosmarcsok3.f"
+            r.nh = rhox*(6.022142e23*h_frac)
+
 
         self.record = r

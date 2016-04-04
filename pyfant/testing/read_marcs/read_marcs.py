@@ -1,5 +1,5 @@
 """
-Reads models from MARCS table and plots vectors (nh, teta, pe, pg, t5l)
+Reads models from MARCS table and plots vectors (nh, teta, pe, pg, log_tau_ross)
 
 This is something I discovered about these files: for different 1200-byte
 records,
@@ -7,7 +7,7 @@ records,
 - glog is saw-line
 - asalog, asalalf and nhe are constant
 
-So, each record has (nh, teta, pe, pg, t5l) vectors for a given (teff, glog)
+So, each record has (nh, teta, pe, pg, log_tau_ross) vectors for a given (teff, glog)
 
 """
 
@@ -48,7 +48,7 @@ axarr[0].set_title(filename)
 plt.tight_layout()
 
 
-vars = ['nh', 'teta', 'pe', 'pg', 't5l']
+vars = ['nh', 'teta', 'pe', 'pg', 'log_tau_ross']
 
 
 for var in vars:

@@ -464,7 +464,7 @@ module hydro2_calc
   integer, parameter :: MAX_LEVEL = 20
 
   ! ?doc? (note: this was uninitialized, has been initialized to zero)
-  real*8, parameter :: C(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
+  real*8, parameter :: C_(MAX_LEVEL) = (/0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0./)
 
   ! ?doc? (note: this was uninitialized, has been initialized to zero)
   integer :: nbmin = 0
@@ -553,7 +553,7 @@ contains
       201 format(13X,'modele%nh',1X,'modele%teta', 1X,'LOG PE',12X,'m_tau')
       call log_debug(lll)
       do i=1,modele%ntot
-        write(lll,202) i,modele%nh(i),modele%teta(i),m_pelog(i),modele%t5l(i)
+        write(lll,202) i,modele%nh(i),modele%teta(i),m_pelog(i),modele%log_tau_ross(i)
         202 format( 2X,I5,3X,1P,E13.5,0P,2F10.4,5X,1P,E12.5)
         call log_debug(lll)
       end do
@@ -596,7 +596,7 @@ contains
        '            VT           NE         TOTH')
       call log_debug(lll)
       do i = 1, modele%ntot
-        write(lll,11) modele%t5l(i),modele%nh(i),modele%teta(i),m_pelog(i),m_kc(i),&
+        write(lll,11) modele%log_tau_ross(i),modele%nh(i),modele%teta(i),m_pelog(i),m_kc(i),&
          turbul_vt(i),ne(i),m_toth(i),i
         11 format(E12.5,2X, E13.5,2F9.4,E16.5,4X,F10.0,2E13.5,I8)
         call log_debug(lll)
@@ -916,7 +916,7 @@ contains
     !
     ! ISSUE c being used but nothing was ever assigned to this variable. There are several variables in the same situation.
     !
-    m_th%c1 = c(m_th%nb)
+    m_th%c1 = C_(m_th%nb)
 
     ! ISSUE overwriting data vector???
     m_dlam(1) = delta
@@ -1922,7 +1922,7 @@ contains
     if (m_tauc(modele%ntot).lt.tolim) then
       call log_halt(' Modele trop court ')
       write(lll,103) modele%ntot,m_tauc(modele%ntot)
-      103 format(i10,5x,'modele%t5l=',f10.4)
+      103 format(i10,5x,'modele%log_tau_ross=',f10.4)
       call log_and_halt(lll)
     end if
     !
