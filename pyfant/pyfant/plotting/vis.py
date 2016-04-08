@@ -72,20 +72,26 @@ class VisModRecord(Vis):
     """
 
     input_classes = (FileMod,)
-    action = "visualize first model in file"
+    action = "visualize model in file"
 
     def __init__(self):
         Vis.__init__(self)
         # 1-based (first is 1 (as in Fortran), not 0) record index in .mod file
-        self.inum = 1
+        self.inum = None
 
     def _do_use(self, obj):
-        # plt.subplots() will create the figure anyway, so no point in passing figure as argument
-
         assert isinstance(obj, FileMod)
+        n = len(obj.records)
 
-        r = obj.records[self.inum-1]
-        _plot_mod_record(self.title, r)
+        if n > 1 and self.inum is None:
+            inum, ok = QInputDialog.getInt(None, "Record number",
+             "Enter record number (1 to %d)" % n, 1, 1, n)
+            if ok:
+                self.inum = inum
+
+        if self.inum is not None:
+            r = obj.records[self.inum-1]
+            _plot_mod_record("%s - %s" % (self.title, repr(r)), r)
 
 
 class VisMarcs(Vis):

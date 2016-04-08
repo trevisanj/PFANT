@@ -1158,7 +1158,7 @@ contains
     au_ac1(3)=w5/s
     absoru_znh(absoru2_nmeta+6)=au_znu2*parth/(1.0+w5+w6)
     absoru_znh(absoru2_nmeta+5)=absoru_znh(absoru2_nmeta+6)*w5
-    au_rho=1.6602e-24*parth*au_zmuze  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
+    au_rho = 1.6602e-24*parth*au_zmuze  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
     ! not used au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
     !                                       ! 8.313697e+7: constante des gaz
   end subroutine ionipe

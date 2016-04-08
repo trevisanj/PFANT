@@ -293,10 +293,10 @@ contains
     tostand = 5000 ! ?
     write(UNIT_DAT,'(a30,i8,f10.0,f8.2,2f5.0)') &
      config_modcode, &
-     nntot,             &
-     tostand,           &
-     main_glog,    &
-     bid0,              &
+     nntot,     &
+     tostand,   &
+     main_glog, &
+     bid0,      &
      bid0
     do n = 1,nntot
       tau=10**zz%log_tau_ross(n)
@@ -555,7 +555,7 @@ contains
      real82str(a, 1)//', '//real82str(b, 1)//']')
 
 
-    ! Looks for 2 glogs inside a row of rteff(jt1)
+    ! Looks for 2 glogs inside a row of rteff(jt2)
     do i = 1, ing(jt2)
       jg22 = i
       if(main_glog .lt. aglog(jt2, jg22)) exit
@@ -587,6 +587,28 @@ contains
     end if
 
     call log_debug(LEAVING//'Sortie de locatab')
+
+  contains
+    ! Auxiliary routine: checks if v is inside [a, b]
+    !
+    ! If v is outside [a, b], it will log a warning or halt the program,
+    ! depending on config_allow
+
+    subroutine check_interval(name, a, b, v)
+      real*8, intent(in) :: a, b, v
+      character(*), intent(in) :: name ! meaning of a/b/v, e.g., "teff", "glog", to figure
+                                       ! in log message
+      if (a .gt. v .or. b .lt. v) then
+        write (lll, *) name//real82str(v, 1)//' is outside interval ['//&
+         real82str(a, 1)//', '//real82str(b, 1)//']'
+        print *, "AAAAAAAAAAAAAAAAA", config_allow
+        if (config_allow) then
+          call log_warning(lll)
+        else
+          call log_and_halt(lll)
+        end if
+      end if
+    end
   end
 
 

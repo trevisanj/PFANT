@@ -505,8 +505,9 @@ module config
   !---
   character*64 :: &
    config_fn_moddat = 'modeles.dat', &      ! option: --fn_moddat
-   config_fn_gridsmap = 'gridsmap.dat'      !
+   config_fn_gridsmap = 'gridsmap.dat'      ! option: --fn_gridsmap
   character*25 :: config_modcode = 'NoName' ! option: --modcode
+  logical :: config_allow = .false.         ! option: --allow
 
   !---
   ! hydro2-only
@@ -722,6 +723,8 @@ contains
      '"Model name"', .false.)
     call add_option('i', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
      'input file name - file containing list of MARCS models file names')
+    call add_option('i', 'allow', ' ', .true., 'T/F', logical2str(config_allow), &
+     'allow (teff, glog, asalog) point out of model grid?')
 
     !
     ! hydro2-only
@@ -967,6 +970,9 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_flux, 'config_fn_flux')
       case ('fn_gridsmap')
         call parse_aux_assign_fn(o_arg, config_fn_gridsmap, 'config_fn_gridsmap')
+      case ('allow')
+        config_allow = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_allow', logical2str(config_allow))
 
       case default
         res = HANDLER_DONT_CARE

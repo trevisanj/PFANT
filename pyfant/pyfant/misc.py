@@ -140,7 +140,16 @@ class AttrsPart(object):
         assert self.attrs is not None, "Forgot to set attrs class variable"
 
         s_format = "{:>%d} = {}" % max([len(x) for x in self.attrs])
-        s = "\n".join([s_format.format(x, self.__getattribute__(x)) for x in self.attrs])
+        l = []
+        for x in self.attrs:
+            y = self.__getattribute__(x)
+            if isinstance(y, list):
+                # list gets special treatment
+                l.append(("** %s **\n" % x)+("\n".join([repr(z) for z in y])))
+            else:
+                l.append(s_format.format(x, self.__getattribute__(x)))
+
+        s = "\n".join(l)
         return s
 
     def one_liner_str(self):
