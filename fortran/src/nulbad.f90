@@ -21,12 +21,7 @@
 !   - rs_* -- calculated by read_spectrum()
 !   - p_*  -- Gaussian function variables, calculated by cafconvh()
 module nulbad_calc
-  use misc_math
-  use logging
-  use config
-  use dimensions
-  use reader_main
-  use misc_math
+  use pfantlib
   implicit none
 
   public nulbad_calc_
@@ -465,9 +460,7 @@ end
 ! 
 
 program nulbad
-  use config
-  use logging
-  use welcome
+  use pfantlib
   use nulbad_calc
   implicit none
 

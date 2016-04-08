@@ -22,8 +22,7 @@
 ! access beyond boundaries.
 
 module hydro2_math
-  use misc_math
-  use misc
+  use pfantlib
   implicit none
 
 
@@ -339,9 +338,7 @@ end
 ! These variable values may come either from *main file* or command-line options.
 
 module hydro2_x
-  use logging
-  use reader_main
-  use config
+  use pfantlib
   implicit none
 
   real*8 :: x_llzero, x_llfin
@@ -379,13 +376,9 @@ end
 ! (si modele%tit va bien modele%tiabs du modele = absoru2_titre de absoru)
 
 module hydro2_calc
-  use logging
-  use readers
-  use misc_math
+  use pfantlib
   use hydro2_x
   use hydro2_math
-  use absoru
-  use turbul
 
   implicit none
 
@@ -1990,16 +1983,9 @@ end
 ! 
 
 program hydro2
-  use config
+  use pfantlib
   use hydro2_x
-  use reader_absoru2
-  use reader_modeles
-  use reader_hmap
   use hydro2_calc
-  use logging
-  use dimensions
-  use misc
-  use turbul
   implicit none
   integer i, cnt_in, in_idxs(MAX_FILETOH_NUM_FILES)
   type(hmap_row) :: th

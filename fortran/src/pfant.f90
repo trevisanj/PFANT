@@ -25,8 +25,7 @@
 !   - sat4_ -- variables calculated by sat4() (or indirectly, die())
 
 module dissoc
-  use config
-  use readers
+  use pfantlib
   implicit none
 
   ! They will be pointer targets at molecules::point_ppa_pb()
@@ -534,10 +533,7 @@ end
 !   - atoms_f_ -- calculated by filter_atoms()
 
 module filters
-  use molecules_idxs
-  use dimensions
-  use reader_atoms
-  use reader_molecules
+  use pfantlib
   implicit none
 
 
@@ -741,12 +737,9 @@ end
 ! Calculated variables have prefix "km_c_"
 
 module kapmol
-  use molecules_idxs
-  use dimensions
+  use pfantlib
   use dissoc
-  use reader_molecules
   use filters
-  use misc_math
   implicit none
 
   ! Valid elements of these are from 1 to km_f_mblend
@@ -908,8 +901,7 @@ end
 !   - x_ -- these variable values may come either from *main file* or command-line options.
 
 module pfant_x
-  use reader_main
-  use config
+  use pfantlib
   implicit none
 
   character*128 :: x_flprefix
@@ -978,16 +970,10 @@ end
 !
 
 module synthesis
-  use logging
-  use config
-  use flin
-  use misc_math
-  use absoru
+  use pfantlib
   use dissoc
   use filters
   use kapmol
-  use readers
-  use turbul
   use pfant_x
   implicit none
 
@@ -2052,13 +2038,9 @@ end module
 !
 
 program pfant
-  use config
-  use logging
+  use pfantlib
   use synthesis
-  use welcome
-  use readers
   use pfant_x
-  use misc
   implicit none
   integer i
 

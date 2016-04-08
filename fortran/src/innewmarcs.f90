@@ -17,10 +17,7 @@
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 module innewmarcs_calc
-  use dimensions
-  use reader_modeles
-  use config
-  use reader_gridsmap
+  use pfantlib
   implicit none
 
   public innewmarcs_calc_
@@ -263,7 +260,6 @@ contains
 
     tir=tira//main_titrav
     in = 0
-
     do n = 1,nntot
       in = in+1
       k = (in-1)*5+1
@@ -274,17 +270,17 @@ contains
       a(k+4)=zz%log_tau_ross(n)  ! log to
     end do
 
+
     ! Writes binary file
-    write(UNIT_MOD, rec=main_inum) &
-     nntot,          &
-     sngl(main_teff), &
-     sngl(main_glog), &
-     sngl(main_asalog), &
-     asalalf,        &
-     sngl(dd%nhe),   &  ! ISSUE  note: takes nhe from last record. Correct?
-     tir,            &
-     dd%tiabs,       &  ! ISSUE  note: takes tiabs from last record. Correct?
-     (a(k),k=1,nntot*5)
+    zz%teff = main_teff
+    zz%glog = main_glog
+    zz%asalog = main_asalog
+    zz%ntot = nntot
+    zz%asalalf = asalalf
+    zz%tit = tir
+    zz%tiabs = dd%tiabs
+    zz%nhe = dd%nhe
+    call write_mod_record(UNIT_MOD, main_inum, zz)
     write(UNIT_MOD,rec=main_inum+1) 9999  ! 4 bytes, i guess
 
     ! Writes ASCII file
@@ -651,11 +647,8 @@ end
 !
 
 program innewmarcs
-  use config
-  use logging
-  use welcome
+  use pfantlib
   use innewmarcs_calc
-  use reader_gridsmap
   implicit none
 
   execonf_name = 'inneWmarcs'
