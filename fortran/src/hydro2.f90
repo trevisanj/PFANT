@@ -1448,7 +1448,7 @@ contains
     !***************************
     go to 1027
     1025 write(lll,1046) I,J
-    1046 format('      RZERO/LAMBDA SUP. A 0.8     I=',I4,'     J=',I4,'ON SORT DU SSP'/)
+    1046 format('      RZERO/LAMBDA SUP. A 0.8     I=',I4,'     J=',I4,'ON SORT DU SSP')
     call log_debug(lll)
 
 

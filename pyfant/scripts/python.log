@@ -401,3 +401,651 @@ Traceback (most recent call last):
   File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 172, in _do_load
     raise RuntimeError("File must be a text file")
 RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 142, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm200.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './uhu.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp000.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm100.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm150.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './ahhmuleke.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewp025.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './modeles.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file
+[ERROR   ] Error loading file './newnewm050.mod', skipping...
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/scripts/create-mog.py", line 46, in <module>
+    f.load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/datafile.py", line 42, in load
+    self._do_load(filename)
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/data/filemod.py", line 133, in _do_load
+    raise RuntimeError("File must be a text file")
+RuntimeError: File must be a text file

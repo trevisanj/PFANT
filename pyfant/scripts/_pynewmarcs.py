@@ -39,7 +39,7 @@ if __name__ == "__main__":
     records = []
     for file in files:
         try:
-            f = FileMarcs()
+            f = FileMarcsMod()
             f.load(file)
             records.append(f.record)
         except:

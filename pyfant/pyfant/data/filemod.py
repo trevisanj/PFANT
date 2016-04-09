@@ -1,4 +1,4 @@
-__all__ = ["FileMod", "ModRecord", "FileMarcs"]
+__all__ = ["FileMod", "ModRecord", "FileMarcsMod", "FileMarcsOpa", "FileMog", "MogRecord"]
 from .datafile import *
 from ..misc import *
 import struct
@@ -18,11 +18,10 @@ class ModRecord(AttrsPart):
 
     Attributes match reader_modeles.f90:modeles_* (minus the "modeles_" prefix)
     """
-    default_filename = "modeles.mod"
 
     attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
            "nh", "teta", "pe", "pg", "log_tau_ross"]
-    less_attrs = ["ntot", "teff", "glog"]
+    less_attrs = ["teff", "glog", "asalog"]
 
     def __init__(self):
         AttrsPart.__init__(self)
@@ -42,6 +41,10 @@ class ModRecord(AttrsPart):
 
     def __repr__(self):
         return "/"+self.one_liner_str()+"/"
+
+
+MOD_REC_SIZE = 1200
+
 
 class FileMod(DataFile):
   """
@@ -69,68 +72,33 @@ class FileMod(DataFile):
     return len(self.records)
 
   def _do_load(self, filename):
-    REC_SIZE = 1200
 
     if is_text_file(filename):
         raise RuntimeError("File must be binary")
 
     b = os.path.getsize(filename)
 
-    if b < 2400:
+    if b < MOD_REC_SIZE:
         raise RuntimeError("File too small")
 
-    num_rec = b/REC_SIZE-1
+    num_rec = b/MOD_REC_SIZE-1
     self.records = []
     with open(filename, "rb") as h:
-      ostr = struct.Struct('<i 5f 20s 20s')
 
       for inum in range(1, num_rec+1):
-        pos = REC_SIZE*(inum-1)  # position of beginning of record requested
-
-        rec = ModRecord()
-
+        pos = MOD_REC_SIZE*(inum-1)  # position of beginning of record requested
         h.seek(pos)
-        x = h.read(REC_SIZE)
-        [rec.ntot,
-         rec.teff,
-         rec.glog,
-         rec.asalog,
-         rec.asalalf,
-         rec.nhe,
-         rec.tit,
-         rec.tiabs] = ostr.unpack(x[:64])
-
-        # This routine will read almost any binary, so we perform some range checks
-        if not (1 < rec.ntot <= 1000):
-            raise RuntimeError("record #%d: ntot invalid: %d" % (inum, rec.ntot))
-        if not (100 < rec.teff < 100000):
-            raise RuntimeError("record #%d: teff invalid %g" % (inum, rec.teff))
-
-        v = np.frombuffer(x, dtype='<f4', count=rec.ntot*5, offset=64)
-        w = np.reshape(v, (rec.ntot, 5))
-
-        rec.nh, rec.teta, rec.pe, rec.pg, rec.log_tau_ross = [w[:, i] for i in range(5)]
-
+        x = h.read(MOD_REC_SIZE)
+        rec = ModRecord()
+        _decode_mod_record(x, rec, inum)
         self.records.append(rec)
 
   def _do_save_as(self, filename):
       """Saves to file."""
 
       with open(filename, "wab") as h:
-          ostrh = struct.Struct('<i 5f 20s 20s')  # header
-          #ostrf = struct.Struct("<f4")            # float
-
-          for i, r in enumerate(self.records):
-              h.write(ostrh.pack(r.ntot, r.teff, r.glog, r.asalog,
-               r.asalalf, r.nhe, r.tit, r.tiabs))
-              ny = 5*r.ntot
-              y = np.reshape(np.vstack([r.nh, r.teta, r.pe, r.pg, r.log_tau_ross]).T, ny)
-              h.write(struct.pack("<"+"f"*ny, *y))
-              #h.seek((i+1)*1200)
-              h.write("\x00"*(1200-ny*4-64))  # fills record with \x0 to have 1200 bytes
-              #h.tell()
-              #break
-          # h.seek(len(self.records)*1200)
+          for i, rec in enumerate(self.records):
+              _encode_mod_record(rec, h)
           h.write(struct.pack("<i", 9999))
           h.write("\x00"*1196)
 
@@ -140,7 +108,7 @@ class FileMod(DataFile):
 
 
 
-class FileMarcs(DataFile):
+class FileMarcsMod(DataFile):
     """
     Represents *ASCII* file (althought ".mod" extension) from MARCS homepage.
 
@@ -212,3 +180,287 @@ class FileMarcs(DataFile):
 
 
         self.record = r
+
+
+class FileMarcsOpa(DataFile):
+    """MARCS ".opa" (opacity model) file format.
+
+    Reference: http://marcs.astro.uu.se
+    """
+
+    attrs = ["ndp", "swave", "nwav"]
+
+    def __init__(self):
+        DataFile.__init__(self)
+
+        # # Global properties of the opacity model file
+        # the 4-byte standard model code 'MRXF'
+        self.mcode = None
+        # number of depth points (=56)
+        self.ndp = None
+        # standard wavelength for the continuous optical depth (tau)
+        # scale and for the total standard opacity (ops)
+        self.swave = None
+        # number of wavelengths for which continuous absorption and
+        # scattering opacities are given. These are chosen so that
+        # linear interpolation should suffice for any wavelength
+        # (=1071)
+        self.nwav = None
+        # wav(j): wavelengths for which opacities are given
+        self.wav = None
+
+        # # Model structure
+        # rad(k): radius, normalized on the outermost point, k=1. For use with
+        # spherical radiative transfer. For plane-parallel models rad == 1.0.
+        self.rad = None
+        # tau(k): continuumm optical depth at the standard wavelength swave
+        self.tau = None
+        # t(k): temperature (K)
+        self.t = None
+        # pe(k): electron pressure (dyn/cm2)
+        self.pe = None
+        # pg(k)  = total gas pressure (dyn/cm2)
+        self.pg = None
+        # rho(k) = densigy (g/cm3)
+        self.rho = None
+        # xi(k)  = microturbulence parameter (km/s)
+        self.xi = None
+        # ops(k) = continuumm opacity at the standard wavelength (cm2/g)
+        self.ops = None
+
+        # # Wavelength-dependent opacities
+        # abs(j,k) = specific continuous absorption opacity (cm2/g)
+        self.abs = None
+        # sca(j,k) = specific continuous scattering opacity (cm2/g)
+        self.sca = None
+
+
+    def cut(self, llzero, llfin):
+        """Keeps only region within lambda interval [llzero, llfin]."""
+        mask = np.logical_and(llzero <= self.wav, self.wav <= llfin)
+        self.sca = self.sca[mask, :]
+        self.abs = self.abs[mask, :]
+        self.wav = self.wav[mask]
+        self.nwav = len(self.wav)
+
+    def _do_load(self, filename):
+        """Loads from file.
+
+        Based on http://marcs.astro.uu.se/documents/auxiliary/readopa.f
+        """
+
+        with open(filename, "r") as h:
+            self.mcode, self.ndp, self.swave = struct.unpack("1x 4s 5s 10s", readline_strip(h))
+            if self.mcode != "MRXF":
+                # Does not satisfy magic string
+                raise RuntimeError("Model code '%s' is not 'MRXF'" % self.mcode)
+            self.ndp = int(self.ndp)
+            self.swave = float(self.swave)
+
+            self.nwav = int(h.readline())
+
+            v, n_rows = multirow_str_vector(h, self.nwav)
+            self.wav = np.array(map(float, v))
+
+            self.rad, self.tau, self.t, self.pe, self.pg, self.rho, self.xi, \
+            self.ops = np.zeros(self.ndp), np.zeros(self.ndp), np.zeros(self.ndp), \
+                       np.zeros(self.ndp), np.zeros(self.ndp), np.zeros(self.ndp), \
+                       np.zeros(self.ndp), np.zeros(self.ndp)
+            self.abs = np.zeros((self.nwav, self.ndp))
+            self.sca = np.zeros((self.nwav, self.ndp))
+            for k in range(self.ndp):
+                self.rad[k], self.tau[k], self.t[k], self.pe[k], self.pg[k], \
+                self.rho[k], self.xi[k], self.ops[k] = float_vector(h)
+                v, n_rows = multirow_str_vector(h, 2*self.nwav)
+                abs_sca = np.array(map(float, v))
+                # This multiplication is performed as in original readopa.f
+                self.abs[:, k] = abs_sca[0::2]*self.ops[k]
+                self.sca[:, k] = abs_sca[1::2]*self.ops[k]
+
+
+                # CLIP = 200
+                # self.nwav = CLIP
+                # self.wav = self.wav[:CLIP]
+                # self.abs = self.abs[:CLIP, :]
+                # self.sca = self.sca[:CLIP, :]
+                # print "FILEOPAFILEOPAFILEOPAFILEOPAFILEOPA"
+
+
+
+class MogRecord(AttrsPart):
+    """
+    Represents a single record of a ".mog" file
+
+    The attributes are almost a concatenation of ModRecord with FileMarcsOpa
+    attributes, except for redundant attributes, i.e.:
+      - ntot = ndp (ntot kept)
+      - pe, pg
+    """
+
+    attrs = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit", "tiabs",
+           "nh", "teta", "pe", "pg", "log_tau_ross", "swave", "nwav"]
+    less_attrs = ["teff", "glog", "asalog"]
+
+    def __init__(self):
+        AttrsPart.__init__(self)
+        self.ntot = None
+        self.teff = None
+        self.glog = None
+        self.asalog = None
+        self.asalalf = None
+        self.nhe = None
+        self.tit = None
+        self.tiabs = None
+        self.nh = None
+        self.teta = None
+        self.pe = None
+        self.pg = None
+        self.log_tau_ross = None
+
+        # These attributes exist in FileMarcsOpa as well, please check it for
+        # descriptions.
+        # Remaining attributes of FileMarcsOpa are not relevant
+        self.swave = None
+        self.nwav = None
+        self.wav = None
+        self.ops = None
+        self.abs = None
+        self.sca = None
+
+    def __repr__(self):
+        return "/"+self.one_liner_str()+"/"
+
+
+    def from_marcs_files(self, file_mod, file_opa):
+        """Copies attributes from a FileMarcsMod and a FileMarcsOpa."""
+
+        aa = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit",
+              "tiabs", "nh", "teta", "pe", "pg", "log_tau_ross"]
+        rec = file_mod.record
+        for a in aa:
+            self.__setattr__(a, rec.__getattribute__(a))
+        aa = ["swave", "nwav", "wav", "ops", "abs", "sca"]
+        for a in aa:
+            self.__setattr__(a, file_opa.__getattribute__(a))
+
+
+
+# Record size is record size in modeles.mod plus opacity part
+# 13432 = 4+4+     (swave, nwav)
+#         56*4     (ops)
+#         1071*(1+2*56)*4 (wav, abs, sca)
+OPA_REC_SIZE = 484324
+MOG_REC_SIZE = MOD_REC_SIZE+OPA_REC_SIZE
+
+class FileMog(DataFile):
+    """
+    Represents a ".mod" (model grid) file.
+
+    This file contains all the fields in modeles.mod, plus the opacity information
+    """
+    default_filename = "modelgrid.mog"
+
+    attrs = ["records"]
+
+    def __init__(self):
+        DataFile.__init__(self)
+        self.records = None
+
+    def __len__(self):
+        if self.records is None:
+            raise RuntimeError("File not loaded yet, len() is undefined")
+        return len(self.records)
+
+    def _do_load(self, filename):
+
+        if is_text_file(filename):
+            raise RuntimeError("File must be binary")
+
+        b = os.path.getsize(filename)
+
+        if b % MOG_REC_SIZE != 0:
+            raise RuntimeError("Incorrect file size! Must be a multiple of %d" % MOG_REC_SIZE)
+
+        num_rec = b/MOG_REC_SIZE
+        self.records = []
+        with open(filename, "rb") as h:
+            for inum in range(1, num_rec+1):
+                pos = MOG_REC_SIZE*(inum-1)  # position of beginning of record requested
+                h.seek(pos)
+                x = h.read(MOG_REC_SIZE)
+                rec = MogRecord()
+                _decode_mod_record(x, rec, inum)
+
+                h.seek(pos+MOD_REC_SIZE)
+                x = h.read(MOG_REC_SIZE)
+
+                ostr = struct.Struct('<f i')
+                [rec.swave,
+                 rec.nwav] = ostr.unpack(x[:8])
+
+                rec.ops = np.frombuffer(x, dtype='<f4', count=rec.ntot,
+                                        offset=8)
+                rec.wav = np.frombuffer(x, dtype='<f4', count=rec.nwav,
+                                        offset=8+rec.ntot*4)
+                rec.abs = np.frombuffer(x, dtype='<f4', count=rec.nwav*rec.ntot,
+                 offset=8+(rec.ntot+rec.nwav)*4).reshape((rec.nwav, rec.ntot)).T
+                rec.sca = np.frombuffer(x, dtype='<f4', count=rec.nwav*rec.ntot,
+                 offset=8+(rec.ntot+2*rec.nwav)*4).reshape((rec.nwav, rec.ntot)).T
+                self.records.append(rec)
+
+    def _do_save_as(self, filename):
+        """Saves to file."""
+
+        with open(filename, "wab") as h:
+            for i, rec in enumerate(self.records):
+                _encode_mod_record(rec, h)
+
+                ostr = struct.Struct('<f i')
+                h.write(ostr.pack(rec.swave, rec.nwav))
+                h.write(struct.pack("<"+"f"*rec.ntot, *rec.ops))
+                s_temp ="<"+"f"*(rec.nwav*rec.ntot)
+                h.write(struct.pack("<"+"f"*rec.nwav, *rec.wav))
+                h.write(struct.pack(s_temp, *rec.abs.T.flatten()))
+                h.write(struct.pack(s_temp, *rec.sca.T.flatten()))
+
+
+    def init_default(self):
+        raise RuntimeError("Not applicable")
+
+
+_ostr = struct.Struct('<i 5f 20s 20s')  # header
+
+def _decode_mod_record(x, rec, inum):
+    """Decodes "x", binary record as in modeles.mod into "rec" attributes.
+    Argument "inum" (record number) is for error reporting."""
+    assert isinstance(rec, (ModRecord, MogRecord))
+    [rec.ntot,
+     rec.teff,
+     rec.glog,
+     rec.asalog,
+     rec.asalalf,
+     rec.nhe,
+     rec.tit,
+     rec.tiabs] = _ostr.unpack(x[:64])
+
+    # This routine will read almost any binary, so we perform some range checks
+    if not (1 < rec.ntot <= 1000):
+        raise RuntimeError("record #%d: ntot invalid: %d" % (inum, rec.ntot))
+    if not (100 < rec.teff < 100000):
+        raise RuntimeError("record #%d: teff invalid %g" % (inum, rec.teff))
+
+    v = np.frombuffer(x, dtype='<f4', count=rec.ntot*5, offset=64)
+    w = np.reshape(v, (rec.ntot, 5))
+
+    rec.nh, rec.teta, rec.pe, rec.pg, rec.log_tau_ross = [w[:, i] for i in range(5)]
+
+def _encode_mod_record(rec, h):
+    """Encodes record into open file."""
+    assert isinstance(rec, (ModRecord, MogRecord))
+    h.write(_ostr.pack(rec.ntot, rec.teff, rec.glog, rec.asalog,
+                       rec.asalalf, rec.nhe, rec.tit, rec.tiabs))
+    ny = 5 * rec.ntot
+    y = np.reshape(np.vstack([rec.nh, rec.teta, rec.pe, rec.pg, rec.log_tau_ross]).T,
+                   ny)
+    h.write(struct.pack("<" + "f" * ny, *y))
+    h.write("\x00" * (MOD_REC_SIZE-ny*4-64))  # fills record with \x0 to have 1200 bytes

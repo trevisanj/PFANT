@@ -1,6 +1,4 @@
-"""
-Routines used by plot-spectra.py
-"""
+
 from pyfant import *
 from mpl_toolkits.mplot3d import Axes3D  # yes, required
 from pyfant import *

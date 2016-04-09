@@ -1914,7 +1914,7 @@ contains
      ftt(:)   ! ?doc?
 
     real*8 ft, dy, t0, t1, t2, u0, t
-    integer i, j, jj, k
+    integer j, jj, k
 
     call assert_le(n, size(x), 'ftlin3()', 'n', 'size(x)')
     call assert_le(n, size(y), 'ftlin3()', 'n', 'size(y)')
@@ -4172,11 +4172,11 @@ contains
   ! Writes record to open ".mod" binary file
 
   subroutine write_mod_record(unit_, inum, r)
-    integer, intent(in) :: unit_, & ! unit number of open ".mod" binary file
-     inum ! record number (first=1)
+    integer, intent(in) :: unit_ ! unit of an open file
+    integer, intent(in) :: inum ! record number (first=1)
     type(modele_record), intent(in) :: r ! record to be written
     real*4 :: a(MAX_MODELES_NTOT*5)
-    integer n, i, k
+    integer n, k
 
     k = 1
     do n = 1,r%ntot
@@ -4188,21 +4188,18 @@ contains
       k = k+5
     end do
 
-    write(UNIT_MOD, rec=inum) &
-     r%ntot,        &
-     sngl(r%teff),  &
-     sngl(r%glog),  &
-     sngl(r%asalog),&
-     r%asalalf,     &
-     sngl(r%nhe),   &
-     r%tit,         &
-     r%tiabs,       &
+    write(unit_, rec=inum) &
+     r%ntot,         &
+     sngl(r%teff),   &
+     sngl(r%glog),   &
+     sngl(r%asalog), &
+     sngl(r%asalalf),&
+     sngl(r%nhe),    &
+     r%tit,          &
+     r%tiabs,        &
      (a(k),k=1,r%ntot*5)
     return
   end
-
-
-
 end
 
 
@@ -4316,20 +4313,150 @@ contains
 
     open(newunit=myunit,file=path_to_file, status='replace')
 
-    write(myunit, '(1x,a4,i5,f10.0)') OPA_MAGIC_CHARS, r%ndp, r%swave
-    write(myunit, *) r%nwav
-    write(myunit, *) (r%wav(i), i=1, r%nwav)
+    write(myunit, '(1x,a4,i5,f10.2)') OPA_MAGIC_CHARS, r%ndp, r%swave
+    write(myunit, '(i6)') r%nwav
+    write(myunit, '(1x,10f11.2)') (r%wav(i), i=1, r%nwav)
     do k = 1, r%ndp
       abs = r%abs(:, k)/r%ops(k)
       sca = r%sca(:, k)/r%ops(k)
 
-      write(myunit,'(8E11.4)') r%rad(k), r%tau(k), r%t(k),  r%pe(k), &
+      write(myunit,'(1x,1p8e11.4,0p)') r%rad(k), r%tau(k), r%t(k),  r%pe(k), &
        r%pg(k),  r%rho(k), r%xi(k), r%ops(k)
-      write(myunit,'(6E11.4)') (abs(i), sca(i), i=1,r%nwav)
+      write(myunit,'(1x,1p6e11.4,0p)') (abs(i), sca(i), i=1,r%nwav)
 
     enddo
 
-    write (myunit, *) r%abund
+    write (myunit, '(10f8.3)') r%abund
+  end
+end
+
+
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Read/write routines for the ".mog" file type complete (teff, glog, [Fe/H]) model grid
+! with opacities included
+
+module reader_mog
+  use logging
+  use dimensions
+  use reader_main
+  use misc
+  use reader_opa
+  use reader_modeles
+  implicit none
+
+  ! Structure starting just like modele_record, then with opacity information
+
+  type mog_record
+    ! The following fields: see "type modele_record" for description
+    integer*4 :: ntot
+    real*8 :: teff, glog, asalog, asalalf, nhe
+    real*8, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
+    character*20 :: tit, tiabs
+
+    ! Opacity information
+    ! Incomplete copy of "type opa_record"
+    real*8 swave
+    integer nwav
+    real*8 wav(OPA_MWAV)
+    real*8, dimension(OPA_MDP) :: ops
+    real*8, dimension(OPA_MWAV, OPA_MDP) :: abs, sca
+  end type
+
+  integer, parameter :: MOG_RECL = 1200+484324 ! record length
+
+contains
+  !=======================================================================================
+  ! Returns number of records in file
+
+  integer function get_mog_num_records(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+    integer :: size
+    inquire(FILE=path_to_file, SIZE=size)
+    get_mog_num_records = size/MOG_RECL
+  end
+
+  !=======================================================================================
+  ! Reads a model grid file and returns an array of mog_record
+
+  function read_mog(path_to_file) result(ret)
+    character(len=*), intent(in) :: path_to_file
+    type(mog_record), allocatable :: ret(:)
+    integer myunit, num_rec,  iid, i, j, nwav
+    real*4 teff, glog, asalog, asalalf, nhe
+    real*4, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
+    real*4 swave
+    real*4 wav(OPA_MWAV)
+    real*4, dimension(OPA_MDP) :: ops
+    real*4, dimension(OPA_MWAV, OPA_MDP) :: abs_, sca
+    ! Record is read several times. These "bid" variables work as "offsets"
+    character(1) bid(64), bid2(MOD_RECL), bid3(MOD_RECL+8)
+
+    num_rec = get_mog_num_records(path_to_file)
+    allocate(ret(num_rec))
+    open(newunit=myunit, access='direct',status='old', file=path_to_file, recl=MOG_RECL)
+
+    do iid = 1, num_rec
+      print *, 'Record ', iid
+      read(myunit, rec=iid) &
+       ret(iid)%ntot,    &
+       teff,    &
+       glog,    &
+       asalog,  &
+       asalalf, &
+       nhe,     &
+       ret(iid)%tit,     &
+       ret(iid)%tiabs
+
+      ! replaces \x00 character by space
+      call replace_char(ret(iid)%tit, char(0), ' ')
+      call replace_char(ret(iid)%tiabs, char(0), ' ')
+
+      ret(iid)%teff = teff
+      ret(iid)%teff = teff
+      ret(iid)%glog = glog
+      ret(iid)%asalog = asalog
+      ret(iid)%asalalf = asalalf
+      ret(iid)%nhe = nhe
+
+      read(myunit, rec=iid) bid, &
+           (nh(i),   &
+            teta(i), &
+            pe(i),   &
+            pg(i),   &
+            log_tau_ross(i), i=1,ret(iid)%ntot)
+
+      ret(iid)%nh = nh
+      ret(iid)%teta = teta
+      ret(iid)%pe = pe
+      ret(iid)%pg = pg
+      ret(iid)%log_tau_ross = log_tau_ross
+
+
+      read(myunit, rec=iid) bid2, swave, ret(iid)%nwav
+
+      ret(iid)%swave = swave
+
+      print *, 'nwav', ret(iid)%nwav
+      print *, 'ntot', ret(iid)%ntot
+
+      read(myunit, rec=iid) bid3, (ops(j), j=1,ret(iid)%ntot), &
+       (wav(i), i=1,ret(iid)%nwav), &
+       ((abs_(i,j), i=1,ret(iid)%nwav), j=1,ret(iid)%ntot), &
+       ((sca(i,j), i=1,ret(iid)%nwav), j=1,ret(iid)%ntot)
+
+       ret(iid)%ops = ops
+       ret(iid)%wav = wav
+       ret(iid)%abs = abs_
+       ret(iid)%sca = sca
+    end do
+
+    close(myunit)
   end
 end
 
@@ -4425,6 +4552,8 @@ contains
     end do
   end
 end
+
+
 
 
 
@@ -5532,6 +5661,7 @@ module readers
   use reader_atoms
   use reader_molecules
   use reader_opa
+  use reader_mog
 end
 
 

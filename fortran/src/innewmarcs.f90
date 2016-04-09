@@ -58,7 +58,6 @@ contains
     ! Variables that must be real*4, as they are going to be written to .mod file
     real*4 asalalf
     real*4, dimension(MAX_MODELES_NTOT) :: zle, zlp
-    real*4 :: a(MAX_MODELES_NTOT*5)  ! modele resultant
     real*4 :: rteff(2,2), rglog(2,2), ralfa(2)
 
     character(len=:), allocatable :: path  ! full path to .mod file
@@ -259,17 +258,6 @@ contains
     end do
 
     tir=tira//main_titrav
-    in = 0
-    do n = 1,nntot
-      in = in+1
-      k = (in-1)*5+1
-      a(k)  =zz%nh(n)   ! NH
-      a(k+1)=zz%teta(n) ! T
-      a(k+2)=zz%pe(n)   ! Pe
-      a(k+3)=zz%pg(n)   ! Pg
-      a(k+4)=zz%log_tau_ross(n)  ! log to
-    end do
-
 
     ! Writes binary file
     zz%teff = main_teff

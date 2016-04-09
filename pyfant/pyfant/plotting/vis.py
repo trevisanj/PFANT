@@ -1,6 +1,6 @@
 __all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
            "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa",
-           "VisMarcs", "VisMarcsSaveAsMod"]
+           "VisMarcs", "VisMarcsSaveAsMod", "VisMog"]
 
 from pyfant.data import *
 import numpy as np
@@ -83,6 +83,8 @@ class VisModRecord(Vis):
         assert isinstance(obj, FileMod)
         n = len(obj.records)
 
+        if n == 1 and self.inum is None:
+            self.inum = 1
         if n > 1 and self.inum is None:
             inum, ok = QInputDialog.getInt(None, "Record number",
              "Enter record number (1 to %d)" % n, 1, 1, n)
@@ -96,10 +98,10 @@ class VisModRecord(Vis):
 
 class VisMarcs(Vis):
     """
-    Similar to VisModRecord but accepts FileMarcs
+    Similar to VisModRecord but accepts FileMarcsMod
     """
 
-    input_classes = (FileMarcs,)
+    input_classes = (FileMarcsMod,)
     action = "visualize model"
 
     def __init__(self):
@@ -113,7 +115,7 @@ class VisMarcsSaveAsMod(Vis):
     Asks user for file name and saves as a binary .mod file
     """
 
-    input_classes = (FileMarcs,)
+    input_classes = (FileMarcsMod,)
     action = 'save as a binary ".mod" file'
 
     def __init__(self):
@@ -209,6 +211,28 @@ class VisModRecords(Vis):
         plt.show()
 
 
+class VisMog(Vis):
+    __doc__ = """Scatterplot in the (teff, glog, [Fe/H]) 3D space."""
+
+    input_classes = (FileMog,)
+    action = __doc__
+
+    def _do_use(self, m):
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        teff, glog, asalog = [], [], []
+        for r in m.records:
+            teff.append(r.teff)
+            glog.append(r.glog)
+            asalog.append(r.asalog)
+        ax.scatter(teff, glog, asalog, c='r', s=60, marker='o')
+        ax.set_xlabel('teff')
+        ax.set_ylabel('glog')
+        ax.set_zlabel('asalog')
+        fig.canvas.set_window_title(self.title+" -- teff-glog-asalog scatterplot")
+        plt.show()
+
+
 class VisSpectrum(Vis):
     """Plots single spectrum."""
 
@@ -290,16 +314,16 @@ class VisMolecules(Vis):
 
 class VisOpa(Vis):
     """
-    Visualizer for FileOpa class
+    Visualizer for FileMarcsOpa class
 
     Plots vectors ???
     """
 
-    input_classes = (FileOpa,)
+    input_classes = (FileMarcsOpa,)
     actions = "visualize opacities file"
 
     def _do_use(self, obj):
-        assert isinstance(obj, FileOpa)
+        assert isinstance(obj, FileMarcsOpa)
 
         # 8 subplots sharing same x-axis
         aa = ["rad", "tau", "t", "pe", "pg", "rho", "xi", "ops"]

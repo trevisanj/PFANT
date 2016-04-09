@@ -3,34 +3,14 @@
 #
 
 SRCS_f90d1 = \
-config.f90 \
-pfant.f90 \
-misc.f90 \
-dimensions.f90 \
-absoru.f90 \
-readers.f90 \
-misc_math.f90 \
-logging.f90 
-
-SRCS_fd1 = \
-absoru_data.f 
+pfantlib.f90 \
+pfant.f90 
 
 OBJS_f90d1 = \
-config.o \
-pfant.o \
-misc.o \
-dimensions.o \
-absoru.o \
-readers.o \
-misc_math.o \
-logging.o 
-
-OBJS_fd1 = \
-absoru_data.o 
+pfantlib.o \
+pfant.o 
 
 SRC_DIR_f90d1 = src/
-
-SRC_DIR_fd1 = src/
 OBJS_DIR = obj-linux/src/
 EXE_DIR = bin/
 
@@ -41,12 +21,12 @@ CFLAGS = -Wall -O2  -J$(OBJS_DIR) $(IDIR)
 LFLAGS = -s 
 LIBS = 
 
-VPATH = $(SRC_DIR_f90d1):$(OBJS_DIR):$(SRC_DIR_fd1):$(OBJS_DIR)
-OBJS = $(addprefix $(OBJS_DIR), $(OBJS_f90d1) $(OBJS_fd1))
+VPATH = $(SRC_DIR_f90d1):$(OBJS_DIR)
+OBJS = $(addprefix $(OBJS_DIR), $(OBJS_f90d1))
 
 all : $(EXE)
 
-$(EXE) : $(OBJS_f90d1) $(OBJS_fd1)
+$(EXE) : $(OBJS_f90d1)
 	@mkdir -p $(EXE_DIR)
 	$(FC) -o $(EXE_DIR)$(EXE) $(OBJS) $(LFLAGS) $(LIBS)
 
@@ -54,52 +34,14 @@ $(OBJS_f90d1):
 	@mkdir -p $(OBJS_DIR)
 	$(FC) $(CFLAGS) -c $(SRC_DIR_f90d1)$(@:.o=.f90) -o $(OBJS_DIR)$@
 
-$(OBJS_fd1):
-	@mkdir -p $(OBJS_DIR)
-	$(FC) $(CFLAGS) -c $(SRC_DIR_fd1)$(@:.o=.f) -o $(OBJS_DIR)$@
-
 clean :
 	rm -f $(OBJS_DIR)*.*
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-config.o: \
-    config.f90 \
-    logging.o \
-    misc.o
+pfantlib.o: \
+    pfantlib.f90
 pfant.o: \
     pfant.f90 \
-    absoru.o \
-    config.o \
-    dimensions.o \
-    misc_math.o \
-    logging.o \
-    misc.o \
-    readers.o
-misc.o: \
-    misc.f90 \
-    dimensions.o \
-    logging.o
-dimensions.o: \
-    dimensions.f90
-absoru.o: \
-    absoru.f90 \
-    absoru_data.o \
-    readers.o
-readers.o: \
-    readers.f90 \
-    config.o \
-    dimensions.o \
-    logging.o \
-    misc.o \
-    misc_math.o
-misc_math.o: \
-    misc_math.f90 \
-    dimensions.o \
-    logging.o \
-    misc.o
-logging.o: \
-    logging.f90
-absoru_data.o: \
-    absoru_data.f
+    pfantlib.o
 
