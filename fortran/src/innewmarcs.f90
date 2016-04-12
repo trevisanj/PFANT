@@ -207,31 +207,31 @@ contains
     end do
     n_asalogs = ia
 
-    call search(v_asalogs, ia, asalog, i1, i2)
+    call search('asalog', v_asalogs, ia, asalog, i1, i2)
     zs(1:4) = i1
     zs(5:8) = i2
 
-    call search(v_teffs(:,zs(1)), n_teffs(zs(1)), teff, i1, i2)
+    call search('teff', v_teffs(:,zs(1)), n_teffs(zs(1)), teff, i1, i2)
     ys(1:2) = i1
     ys(3:4) = i2
 
-    call search(v_teffs(:,zs(5)), n_teffs(zs(5)), teff, i1, i2)
+    call search('teff', v_teffs(:,zs(5)), n_teffs(zs(5)), teff, i1, i2)
     ys(5:6) = i1
     ys(7:8) = i2
 
-    call search(v_glogs(:,ys(1),zs(1)), n_glogs(ys(1),zs(1)), glog, i1, i2)
+    call search('glog', v_glogs(:,ys(1),zs(1)), n_glogs(ys(1),zs(1)), glog, i1, i2)
     xs(1) = i1
     xs(2) = i2
 
-    call search(v_glogs(:,ys(3),zs(3)), n_glogs(ys(3),zs(3)), glog, i1, i2)
+    call search('glog', v_glogs(:,ys(3),zs(3)), n_glogs(ys(3),zs(3)), glog, i1, i2)
     xs(3) = i1
     xs(4) = i2
 
-    call search(v_glogs(:,ys(5),zs(5)), n_glogs(ys(5),zs(5)), glog, i1, i2)
+    call search('glog', v_glogs(:,ys(5),zs(5)), n_glogs(ys(5),zs(5)), glog, i1, i2)
     xs(5) = i1
     xs(6) = i2
 
-    call search(v_glogs(:,ys(7),zs(7)), n_glogs(ys(7),zs(7)), glog, i1, i2)
+    call search('glog', v_glogs(:,ys(7),zs(7)), n_glogs(ys(7),zs(7)), glog, i1, i2)
     xs(7) = i1
     xs(8) = i2
 
@@ -247,7 +247,9 @@ contains
   !=======================================================================================
   ! Search routine: finds interval containing x
 
-  subroutine search(v, n, x, i1, i2)
+  subroutine search(name, v, n, x, i1, i2)
+    character(*), intent(in) :: name  ! meaning of a/b/x, e.g., "teff", "glog", to figure
+                                      ! in log message
     real*8, intent(in) :: v(:) ! vector to search inside
     real*8, intent(in) :: x
     integer, intent(in) :: n  ! valid values within v range from 1 to n
@@ -280,7 +282,7 @@ contains
       end if
     end if
 
-    call check_interval('NAME', v(1), v(n), x)
+    call check_interval(name, v(1), v(n), x)
   end
 
   !=======================================================================================
@@ -291,8 +293,7 @@ contains
 
   subroutine check_interval(name, a, b, x)
     real*8, intent(in) :: a, b, x
-    character(*), intent(in) :: name ! meaning of a/b/x, e.g., "teff", "glog", to figure
-                                     ! in log message
+    character(*), intent(in) :: name ! for logging purposes
     if (a-x .gt. K_EQ .or. x-b .gt. K_EQ) then
       write (lll, *) name//' '//real82str(x, 1)//' is outside interval ['//&
        real82str(a, 1)//', '//real82str(b, 1)//']'
