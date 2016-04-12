@@ -1,8 +1,3 @@
- locatab: 'newnewp000.mod', 73
- locatab: 'newnewp000.mod', 74
- locatab: 'newnewp000.mod', 78
- locatab: 'newnewp000.mod', 79
- locatab: 'newnewp025.mod', 70
- locatab: 'newnewp025.mod', 71
- locatab: 'newnewp025.mod', 74
- locatab: 'newnewp025.mod', 75
+ innewmarcs grid file: 'grid.mod'
+ innewmarcs output file: 'modeles.mod'
+ innewmarcs indexes: '  16  17  23  24 100 101 108 109'

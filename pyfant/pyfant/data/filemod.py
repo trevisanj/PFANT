@@ -1,4 +1,5 @@
-__all__ = ["FileMod", "ModRecord", "FileMarcsMod", "FileMarcsOpa", "FileMog", "MogRecord"]
+__all__ = ["FileModBin", "ModRecord", "FileModTxt", "FileOpa", "FileMoo",
+           "MooRecord"]
 from .datafile import *
 from ..misc import *
 import struct
@@ -46,7 +47,7 @@ class ModRecord(AttrsPart):
 MOD_REC_SIZE = 1200
 
 
-class FileMod(DataFile):
+class FileModBin(DataFile):
   """
   Represents atmospheric model file, e.g. "modeles.mod" (infile:modeles)
 
@@ -106,9 +107,7 @@ class FileMod(DataFile):
     raise RuntimeError("Not applicable")
 
 
-
-
-class FileMarcsMod(DataFile):
+class FileModTxt(DataFile):
     """
     Represents *ASCII* file (althought ".mod" extension) from MARCS homepage.
 
@@ -182,7 +181,7 @@ class FileMarcsMod(DataFile):
         self.record = r
 
 
-class FileMarcsOpa(DataFile):
+class FileOpa(DataFile):
     """MARCS ".opa" (opacity model) file format.
 
     Reference: http://marcs.astro.uu.se
@@ -287,11 +286,11 @@ class FileMarcsOpa(DataFile):
 
 
 
-class MogRecord(AttrsPart):
+class MooRecord(AttrsPart):
     """
     Represents a single record of a ".mog" file
 
-    The attributes are almost a concatenation of ModRecord with FileMarcsOpa
+    The attributes are almost a concatenation of ModRecord with FileOpa
     attributes, except for redundant attributes, i.e.:
       - ntot = ndp (ntot kept)
       - pe, pg
@@ -317,9 +316,9 @@ class MogRecord(AttrsPart):
         self.pg = None
         self.log_tau_ross = None
 
-        # These attributes exist in FileMarcsOpa as well, please check it for
+        # These attributes exist in FileOpa as well, please check it for
         # descriptions.
-        # Remaining attributes of FileMarcsOpa are not relevant
+        # Remaining attributes of FileOpa are not relevant
         self.swave = None
         self.nwav = None
         self.wav = None
@@ -332,7 +331,7 @@ class MogRecord(AttrsPart):
 
 
     def from_marcs_files(self, file_mod, file_opa):
-        """Copies attributes from a FileMarcsMod and a FileMarcsOpa."""
+        """Copies attributes from a FileModTxt and a FileOpa."""
 
         aa = ["ntot", "teff", "glog", "asalog", "asalalf", "nhe", "tit",
               "tiabs", "nh", "teta", "pe", "pg", "log_tau_ross"]
@@ -351,14 +350,22 @@ class MogRecord(AttrsPart):
 #         1071*(1+2*56)*4 (wav, abs, sca)
 OPA_REC_SIZE = 484324
 MOG_REC_SIZE = MOD_REC_SIZE+OPA_REC_SIZE
+# Number of layers and wavelengths must have these fixed values because
+# the ".mog" file I/O operations both in Python and Fortran are assuming thi.
+# THe main reason for the assumption is that Fortran reads much faster when
+# the READ() statement reads into whole array instead of implied DO.
+#
+# These fixed values seem to be part of the file specification anyway.
+NTOT = 56    # must be 56
+NWAV = 1071  # must be 1071
 
-class FileMog(DataFile):
+class FileMoo(DataFile):
     """
-    Represents a ".mod" (model grid) file.
+    Represents a ".moo" (model, including opacities) file.
 
     This file contains all the fields in modeles.mod, plus the opacity information
     """
-    default_filename = "modelgrid.mog"
+    default_filename = "grid.moo"
 
     attrs = ["records"]
 
@@ -379,7 +386,8 @@ class FileMog(DataFile):
         b = os.path.getsize(filename)
 
         if b % MOG_REC_SIZE != 0:
-            raise RuntimeError("Incorrect file size! Must be a multiple of %d" % MOG_REC_SIZE)
+            raise RuntimeError("Incorrect file size! Must be a multiple of %d" %
+                               MOG_REC_SIZE)
 
         num_rec = b/MOG_REC_SIZE
         self.records = []
@@ -388,8 +396,12 @@ class FileMog(DataFile):
                 pos = MOG_REC_SIZE*(inum-1)  # position of beginning of record requested
                 h.seek(pos)
                 x = h.read(MOG_REC_SIZE)
-                rec = MogRecord()
+                rec = MooRecord()
                 _decode_mod_record(x, rec, inum)
+
+                if rec.ntot != NTOT:
+                    raise RuntimeError("Number of layers be %d, not %d" %
+                                       (NTOT, rec.ntot))
 
                 h.seek(pos+MOD_REC_SIZE)
                 x = h.read(MOG_REC_SIZE)
@@ -397,6 +409,10 @@ class FileMog(DataFile):
                 ostr = struct.Struct('<f i')
                 [rec.swave,
                  rec.nwav] = ostr.unpack(x[:8])
+
+                if rec.nwav != NWAV:
+                    raise RuntimeError("Number of wavelengths must be %d, not %d" %
+                                       (NWAV, rec.nwav))
 
                 rec.ops = np.frombuffer(x, dtype='<f4', count=rec.ntot,
                                         offset=8)
@@ -413,12 +429,19 @@ class FileMog(DataFile):
 
         with open(filename, "wab") as h:
             for i, rec in enumerate(self.records):
+                assert rec.ntot == NTOT, \
+                    "Number of layers be %d, not %d" % (NTOT, rec.ntot)
+                assert rec.nwav == NWAV, \
+                    "Number of wavelengths must be %d, not %d" % (NWAV, rec.nwav)
+
                 _encode_mod_record(rec, h)
 
                 ostr = struct.Struct('<f i')
                 h.write(ostr.pack(rec.swave, rec.nwav))
                 h.write(struct.pack("<"+"f"*rec.ntot, *rec.ops))
                 s_temp ="<"+"f"*(rec.nwav*rec.ntot)
+
+
                 h.write(struct.pack("<"+"f"*rec.nwav, *rec.wav))
                 h.write(struct.pack(s_temp, *rec.abs.T.flatten()))
                 h.write(struct.pack(s_temp, *rec.sca.T.flatten()))
@@ -433,7 +456,7 @@ _ostr = struct.Struct('<i 5f 20s 20s')  # header
 def _decode_mod_record(x, rec, inum):
     """Decodes "x", binary record as in modeles.mod into "rec" attributes.
     Argument "inum" (record number) is for error reporting."""
-    assert isinstance(rec, (ModRecord, MogRecord))
+    assert isinstance(rec, (ModRecord, MooRecord))
     [rec.ntot,
      rec.teff,
      rec.glog,
@@ -456,7 +479,7 @@ def _decode_mod_record(x, rec, inum):
 
 def _encode_mod_record(rec, h):
     """Encodes record into open file."""
-    assert isinstance(rec, (ModRecord, MogRecord))
+    assert isinstance(rec, (ModRecord, MooRecord))
     h.write(_ostr.pack(rec.ntot, rec.teff, rec.glog, rec.asalog,
                        rec.asalalf, rec.nhe, rec.tit, rec.tiabs))
     ny = 5 * rec.ntot

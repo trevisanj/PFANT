@@ -9,4 +9,3 @@ from .plotting import *
 from .util import *
 from .from_vald import *
 from .multirunnable import *
-# @todo script to generate gridsmap.dat

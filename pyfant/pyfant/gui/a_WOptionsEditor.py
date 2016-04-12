@@ -216,6 +216,7 @@ class WOptionsEditor(QWidget):
 
         self.w_logging_level = QLineEdit()
         self.w_logging_console = QCheckBox()
+        self.w_allow = QCheckBox()
         self.w_logging_file = QCheckBox()
         self.w_fn_logging = QLineEdit()
         self.w_fn_main = QLineEdit()
@@ -232,7 +233,6 @@ class WOptionsEditor(QWidget):
         self.w_fn_moddat = QLineEdit()
         self.w_modcode = QLineEdit()
         self.w_tirb = QLineEdit()
-        self.w_fn_gridsmap = QLineEdit()
         self.w_ptdisk = QLineEdit()
         self.w_kik = QLineEdit()
         self.w_amores = QCheckBox()
@@ -307,22 +307,27 @@ class WOptionsEditor(QWidget):
         #
         # innewmarcs, hydro2, pfant
         #
-        self.__add_option(self.w_fn_modeles, 'ihp', 'fn_modeles', FileMod.default_filename,
+        self.__add_option(self.w_fn_modeles, 'ihp', 'fn_modeles', FileModBin.default_filename,
          'atmospheric model file name',
          'This is a binary file containing information about atmospheric model. '
          'This file is created by innewmarcs.')
 
         #
+        # innewmarcs, pfant
+        #
+        self.__add_option(self.w_no_opa, 'ip', 'no_opa', True,
+         'Skip opacities?',
+         'If set, skips the calculation of opacities based on MARCS ".opa" opacities file.')
+
+        #
         # innewmarcs-only
         #
-
-        # (*) self.__add_option(self.w_fn_moddat, 'i', 'fn_moddat', 'file name', 'modeles.dat',
-        # (*)  'ASCII file containing information about atmospheric model (created by innewmarcs)')
         # (*) self.__add_option(self.w_modcode, 'i', 'modcode', 'string up to 25 characters', 'NoName',
         # (*)  '"Model name"')
-        self.__add_option(self.w_fn_gridsmap, 'i', 'fn_gridsmap', 'gridsmap.dat',
-         'input file name -- list of MARCS models file names',
-         'This file contains a list of MARCS models file names.')
+        self.__add_option(self.w_allow, 'i', 'allow', False,
+         'Allow point out of model grid?', 'If this option is disabled, target '
+         ' (glog, teff, asalog) point for interpolation must lie inside the 3D '
+         'model grid.')
 
         #
         # hydro2-only
@@ -408,9 +413,6 @@ class WOptionsEditor(QWidget):
         self.__add_option(self.w_no_h, 'p', 'no_h', False,
          'Skip hydrogen lines?',
          'If set, skips the calculation of hydrogen lines.')
-        self.__add_option(self.w_no_opa, 'p', 'no_opa', True,
-         'Skip opacities?',
-         'If set, skips the calculation of opacities based on MARCS ".opa" opacities file.')
         o = self.__add_option(self.w_zinf, 'p', 'zinf', 0.5,
          '(zinf per-line in dfile:atoms)',
          'This is the distance from center of line to consider in atomic line calculation.<br><br>'+

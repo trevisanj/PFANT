@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 
 filename = 'newnewm150.mod'
-m = FileMod()
+m = FileModBin()
 m.load(filename)
 
 nr = len(m)

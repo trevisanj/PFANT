@@ -405,7 +405,7 @@ class XExplorer(QMainWindow):
                     if x == "txt":
                         text = "View plain text"
                     else:
-                        text = x.action.capitalize()
+                        text = x.action
                     item = QListWidgetItem(text)
                     z.addItem(item)
 
@@ -415,7 +415,7 @@ class XExplorer(QMainWindow):
         elif len(pp) >= 2:
             ff = [p.f for p in pp]
             flag_spectra = all([isinstance(f, FileSpectrum) for f in ff])
-            flag_mod = all([isinstance(f, FileMod) and len(f.records) > 1 for f in ff])
+            flag_mod = all([isinstance(f, FileModBin) and len(f.records) > 1 for f in ff])
             if flag_spectra:
                 z.addItem(QListWidgetItem("View spectra stacked"))
                 classes.append("sta")

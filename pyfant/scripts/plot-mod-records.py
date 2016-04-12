@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-   description=VisModRecords.__doc__,
+   description=VisModCurves.__doc__,
    formatter_class=SmartFormatter
    )
 
@@ -17,10 +17,10 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
 
-  m = FileMod()
+  m = FileModBin()
   m.load(args.fn)
 
 
-  v = VisModRecords()
+  v = VisModCurves()
   v.title = args.fn
   v.use(m)

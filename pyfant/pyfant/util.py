@@ -22,12 +22,12 @@ import os
 # Fortran.
 #
 # note: leave FileAbonds to the end because it is too general
-_classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileMod,
+_classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileModBin,
             FileSpectrumNulbad,FileSpectrumPfant, FileToH, FileAbonds,
             FileSpectrumXY, FileAtoms, FileMolecules, FileSpectrumFits,
-            FileMarcsOpa, FileMarcsMod, FileMog]
+            FileOpa, FileModTxt, FileMoo]
 
-_classes_sp = [FileMod, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
+_classes_sp = [FileModBin, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
                FileSpectrumFits]
 
 def load_any_file(filename):

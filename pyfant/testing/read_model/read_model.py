@@ -6,7 +6,7 @@ from pyfant import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-f = FileMod()
+f = FileModBin()
 f.load('modeles.mod')
 
 print f

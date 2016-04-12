@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
 
-  m = FileMod()
+  m = FileModBin()
   m.load(args.fn)
 
   v = VisModRecord()

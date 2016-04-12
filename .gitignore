@@ -5,3 +5,4 @@ workspace.xml
 .metadata
 .idea
 gmon.out
+python.log

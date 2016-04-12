@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument('fn_main', type=str, help='main configuration file name',
      nargs="?", default=FileMain.default_filename)
     parser.add_argument('fn_modeles', type=str, help='output file name', nargs="?",
-    default=FileMod.default_filename)
+    default=FileModBin.default_filename)
 
     args = parser.parse_args()
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     records = []
     for file in files:
         try:
-            f = FileMarcsMod()
+            f = FileModTxt()
             f.load(file)
             records.append(f.record)
         except:
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     records.sort(key=lambda r: r.asalog*1e10+r.teff*100+r.glog)
 
-    g = FileMod()
+    g = FileModBin()
     g.records = records
     g.save_as("uhu.mod")
 

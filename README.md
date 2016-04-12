@@ -177,7 +177,7 @@ pyfant-scripts.py
 
 ```
                         +---------------------------+---------------------main.dat
-  gridsmap.dat          |                           |                        |
+   modlist.dat          |                           |                        |
 newnewm150.mod          v                           v                        |
 newnewm100.mod    +----------+                  +------+                     |
 newnewm050.mod+-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
@@ -230,8 +230,8 @@ used to change the default name for the corresponding file
 --fn_molecules    | molecules.dat     | molecular lines
 --fn_partit       | partit.dat        | partition functions
                   | hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
-                  |   /gridsmap.dat   | list of NEWMARCS grids
-                  |  / newnewm150.mod | NEWMARCS grid listed in gridsmap.dat
+                  |   /   modlist.dat | list of NEWMARCS grids
+                  |  / newnewm150.mod | NEWMARCS grid listed in modlist.dat
                   | -  newnewm100.mod | "
                   |  \ newnewm050.mod | "
                   |  | newnewp000.mod | "

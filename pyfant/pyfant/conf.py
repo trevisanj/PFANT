@@ -6,7 +6,7 @@ executables.
 __all__ = ["Options", "Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
            "FOR_NULBAD", "IdMaker", "SID"]
 
-from pyfant.data import DataFile, FileHmap, FileMod, FileMain
+from pyfant.data import DataFile, FileHmap, FileModBin, FileMain
 import shutil
 import os
 from .misc import *
@@ -193,6 +193,10 @@ class Options(object):
         self.asalog = None
         self.inum = None
 
+        # innewmarcs, pfant
+        self.fn_moo = None
+        self.fn_modgrid = None
+
         # hydro2, pfant
         self.fn_absoru2 = None
         self.fn_hmap = None
@@ -201,10 +205,9 @@ class Options(object):
 
         # innewmarcs
         self.open_status = None
-        self.fn_moddat = None
-        self.fn_gridsmap = None
         self.modcode = None
         self.tirb = None
+        self.allow = None
 
         # hydro2
         self.zph = None
@@ -453,7 +456,7 @@ class Conf(object):
 
     def get_fn_modeles(self):
         """Returns name of atmospheric model file."""
-        return FileMod.default_filename if self.opt.fn_modeles is None \
+        return FileModBin.default_filename if self.opt.fn_modeles is None \
          else self.opt.fn_modeles
 
     def get_args(self):
@@ -504,7 +507,7 @@ class Conf(object):
             # ** innewmarcs -> hydro2
             # **            -> pfant
             # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
-            self.opt.fn_modeles = self.__sid.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileMod.default_filename)
+            self.opt.fn_modeles = self.__sid.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileModBin.default_filename)
 
         if FOR_HYDRO2 in sequence:
             # ** hydro2 -> pfant

@@ -13,7 +13,7 @@ def plot_mod_grid(ff, title=None):
     ax = fig.gca(projection='3d')
     teff, glog, asalog = [], [], []
     for f in ff:
-        assert isinstance(f, FileMod)
+        assert isinstance(f, FileModBin)
         for r in f.records:
             teff.append(r.teff)
             glog.append(r.glog)

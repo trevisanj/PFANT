@@ -11,16 +11,15 @@ mghc2cnr_cn3ch13chtiog3tio.dat | molecular lines (12 molecules) (before 2005)
 absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
-gridsmap.dat   | list of MARCS atmospheric model grid files
-newnew*.mod    | MARCS atmospheric model grid files
-
+grid.mod       | grid of MARCS atmospheric models
+grid.moo       | grid of MARCS atmospheric models with opacities included
 
 ## Suggestion on how to use these files
 
 Instead of making copies of these files, create symbolic links to them by using the following shell command:
 
 ```shell
-link-to-data.py common
+link.py common
 ```
 
 ## References

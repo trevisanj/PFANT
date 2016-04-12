@@ -68,11 +68,14 @@ module dimensions
   integer, parameter :: MAX_DISSOC_Z = 100
 
   !=====
-  ! Dimensions related to *modeles file*
+  ! Dimensions related to *mod file*
   !=====
 
-  ! Maximum possible value of modele%ntot. This used to be 50, but MARCS Sun models have 56 layers.
-  integer, parameter :: MAX_MODELES_NTOT=70
+  ! Maximum possible value of modele%ntot. This used to be 50, but MARCS Sun models have 
+  ! 56 layers. The maximum possible is really 56, because the model record is 1200-byte long,
+  ! fitting maximum 56 layers of data. If MARCS website changes to accomodate more layers,
+  ! everything will neew to be redimensioned (but it is easy)
+  integer, parameter :: MAX_MODELES_NTOT=56
 
   !=====
   ! Dimensions related to *partit file*
@@ -1820,11 +1823,11 @@ contains
   !
 
   real*8 function fteta0(pg, teta, n)
-    ! Size of vectors pf and teta; example source is reader_modeles::modele%ntot
+    ! Size of vectors pf and teta; example source is modele%ntot
     integer, intent(in) :: n
     real*8, intent(in) :: &
-      pg(:), & ! Example source is reader_modeles::modele%pg
-      teta(:)  ! Example source is reader_modeles::modele%teta
+      pg(:), & ! Example source is modele%pg
+      teta(:)  ! Example source is modele%teta
     real*8, dimension(5) :: pp1,tt1,pp2,tt2
     integer i
     real*8 teta3
@@ -1903,15 +1906,12 @@ contains
   ! *Note* This routine is very similar to ftlin3h().
 
   subroutine ftlin3(n, x, y, itot, tt, ftt)
-    integer, intent(in) :: &
-     n, & ! Size of vectors x and y
-     itot ! Size of vectors tt and ftt
-    real*8, intent(in) :: &
-     x(:),     & ! given data: x-axis values
-     y(:),     & ! given data: y-axis values
-     tt(:)    ! x-axis values of wanted values
-    real*8, intent(out) :: &
-     ftt(:)   ! ?doc?
+    integer, intent(in) :: n      ! Size of vectors x and y
+    real*8, intent(in) :: x(:), & ! x-axis values of "known data"
+                          y(:)    ! y-axis values of "known data"
+    integer, intent(in) :: itot   ! Size of vectors tt and ftt
+    real*8, intent(in) :: tt(:)   ! x-axis values of "wanted values"
+    real*8, intent(out) :: ftt(:) ! y-axis values that will be calculated
 
     real*8 ft, dy, t0, t1, t2, u0, t
     integer j, jj, k
@@ -2223,11 +2223,11 @@ contains
     real*8, intent(in) :: kap(MAX_MODELES_NTOT)
     ! ?doc?
     real*8, intent(in) :: b(0:MAX_MODELES_NTOT)
-    ! Source is probably @ref reader_modeles::modele%nh
+    ! Source is probably modele%nh
     real*8, intent(in) :: nh(MAX_MODELES_NTOT)
-    ! Source is probably @ref reader_modeles::modele%ntot
+    ! Source is probably modele%ntot
     integer, intent(in) :: ntot
-    ! Source is probably @ref reader_main::main_pfdisk
+    ! Source is probably main_ptdisk
     !   - if .TRUE. : 7 points
     !   - .FALSE.   : 6 points
     logical, intent(in) :: ptdisk
@@ -2374,8 +2374,8 @@ module options2
 
   type option
     ! Initials of executable(s) where option is applicable.
-    ! [i]nnewmarcs, [h]ydro2, [p]fant, [n]ulbad
-    character(len=4) :: ihpn
+    ! [i]nnewmarcs, in[o]pamarcs, [h]ydro2, [p]fant, [n]ulbad
+    character(len=5) :: ihpn
     ! Long name.
     character(len=100) :: name
     ! Corresponding short name.
@@ -2808,7 +2808,6 @@ module config
              config_logging_dump   = .false., & ! option --logging_dump
              config_explain        = .false., & ! option --explain
              config_no_molecules   = .false., & ! option --no_molecules
-             config_no_opa         = .true., & ! option --no_opa
              config_no_atoms       = .false., & ! option --no_atoms
              config_no_h           = .false.    ! option --no_ah
 
@@ -2816,6 +2815,12 @@ module config
   ! innewmarcs, hydro2, pfant
   !---
   character*64 :: config_fn_modeles = 'modeles.mod' ! option: --fn_modeles
+
+  !---
+  ! innewmarcs, pfant
+  !---
+  logical :: config_no_opa = .true. ! option --no_opa
+
 
   !
   ! hydro2, pfant
@@ -2851,8 +2856,8 @@ module config
   ! innewmarcs-only
   !---
   character*64 :: &
-   config_fn_moddat = 'modeles.dat', &      ! option: --fn_moddat
-   config_fn_gridsmap = 'gridsmap.dat'      ! option: --fn_gridsmap
+   config_fn_modgrid = 'grid.mod', &        ! option: --fn_modgrid
+   config_fn_moo = 'grid.moo'        ! option: --fn_moo
   character*25 :: config_modcode = 'NoName' ! option: --modcode
   logical :: config_allow = .false.         ! option: --allow
 
@@ -3064,14 +3069,21 @@ contains
     !
     ! innewmarcs-only
     !
-    call add_option('i', 'fn_moddat',' ', .true., 'file name', config_fn_moddat, &
-     'ASCII file containing information about atmospheric model (created by innewmarcs)', .false.)
-    call add_option('i', 'modcode',' ', .true., 'string up to 25 characters', config_modcode, &
-     '"Model name"', .false.)
-    call add_option('i', 'fn_gridsmap',       ' ', .true., 'file name', config_fn_gridsmap, &
-     'input file name - file containing list of MARCS models file names')
+    call add_option('i', 'fn_modgrid', ' ', .true., 'file name', config_fn_modgrid, &
+     'input file name - atmospheric model grid')
+    call add_option('i', 'fn_moo', ' ', .true., 'file name', config_fn_moo, &
+     'input file name - complete atmospheric model grid with opacities included')
     call add_option('i', 'allow', ' ', .true., 'T/F', logical2str(config_allow), &
      'allow (teff, glog, asalog) point out of model grid?')
+
+
+
+    !
+    ! innewmarcs, pfant
+    !
+    call add_option('ip', 'no_opa',' ', .true., 'T/F', logical2str(config_no_opa), &
+     'If set, skips the calculation of opacities based on MARCS opacities file')
+
 
     !
     ! hydro2-only
@@ -3108,8 +3120,6 @@ contains
      'If set, skips the calculation of atomic lines')
     call add_option('p', 'no_h',' ', .true., 'T/F', logical2str(config_no_h), &
      'If set, skips the calculation of hydrogen lines')
-    call add_option('p', 'no_opa',' ', .true., 'T/F', logical2str(config_no_opa), &
-     'If set, skips the calculation of opacities based on MARCS opacities file')
     call add_option('p', 'zinf', ' ', .true., 'real value', '(zinf per-line in *atoms file*)', &
      'distance from center of line to consider in atomic line calculation.<br>'//&
      IND//'If this option is used, will bypass the zinf defined for each atomic line<br>'//&
@@ -3213,8 +3223,6 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
       case ('fn_modeles')
         call parse_aux_assign_fn(o_arg, config_fn_modeles, 'fn_modeles')
-      case ('fn_moddat')
-        call parse_aux_assign_fn(o_arg, config_fn_moddat, 'fn_moddat')
       case ('modcode')
         call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
       case ('kik')
@@ -3315,8 +3323,10 @@ contains
         call parse_aux_log_assignment('config_flam', logical2str(config_flam))
       case ('fn_flux')
         call parse_aux_assign_fn(o_arg, config_fn_flux, 'config_fn_flux')
-      case ('fn_gridsmap')
-        call parse_aux_assign_fn(o_arg, config_fn_gridsmap, 'config_fn_gridsmap')
+      case ('fn_modgrid')
+        call parse_aux_assign_fn(o_arg, config_fn_modgrid, 'config_fn_modgrid')
+      case ('fn_moo')
+        call parse_aux_assign_fn(o_arg, config_fn_moo, 'config_fn_moo')
       case ('allow')
         config_allow = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_allow', logical2str(config_allow))
@@ -3796,10 +3806,9 @@ module reader_main
   ! convolution of calculated spectrum; used only by nulbad executable
   real*8 :: main_fwhm
 
-  integer   main_ivtot, & ! Number of velocities of microturbulence informed (1 in great majority of cases)
-                          ! = 1 -- "vt" constant
-                          ! > 1 -- "vt" variable
-            main_inum     ! record id within modeles.mod
+  integer   main_ivtot ! Number of velocities of microturbulence informed (1 in great majority of cases)
+                       ! = 1 -- "vt" constant
+                       ! > 1 -- "vt" variable
 
   character*15 main_titrav                ! Title, e.g. "Sun"
   real*8 :: main_vvt(MAX_MODELES_NTOT), & ! microturbulence velocities
@@ -3825,7 +3834,7 @@ contains
   subroutine read_main(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer myunit
-    integer i
+    integer i, inum_obsolete
     logical ecrit_obsolete
     real*8 temp
 
@@ -3864,7 +3873,7 @@ contains
     end if
 
     ! row 04
-    read(myunit, *) main_teff, main_glog, main_asalog, main_nhe, main_inum
+    read(myunit, *) main_teff, main_glog, main_asalog, main_nhe, inum_obsolete
 
     ! row 05
     read(myunit, *) main_ptdisk, main_mu
@@ -3928,22 +3937,47 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for *modeles file*
+! Atmospheric models
 !
-! TODO (MT) *modeles file* could become an ASCII file (JT) To make it editable?
+! This module contains routines to deal with three types of files:
+!
+!   ".mod": binary file containing one or more atmospheric models.
+!           Such a file can be created either
+!           by innewmarcs (single-model file, e.g., "modeles.mod"), or
+!           by create-grid.py (multi-model file aka model grid, e.g., "grid.mod").
 
-module reader_modeles
+!   ".moo": binary file containing one or more atmospheric models,
+!           *including opacity information*, e.g., "grid.moo"
+!           Such a file is created by create-grid.py.
+!
+!   ".opa": this is MARCS text format. Here we can either read or write such files.
+!           innewmarcs uses the routine write_opa() to create an interpolated opacity file
+!           compliant with the MARCS ".opa" standard.
+!
+
+module reader_models
   use logging
   use dimensions
   use reader_main
   use misc
   implicit none
 
+
+  integer, parameter :: MOD_RECL = 1200 ! record length
+  ! Restrictions on vector and record sizes. They could be lifted if the MARCS models get
+  ! updated, but at the moment it is the simplest form:
+  ! - allows to easily know the number of records based on the file size
+  ! - allows for faster file reading
+  integer, parameter :: MOO_RECL = 1200+484324, & ! record length
+                        MOO_NTOT = 56, &  ! number of layers *must be 56*
+                        MOO_NWAV = 1071   ! number of wavelengths *must be 1071
+
+
   ! Structure to store atmospheric model read from binary file.
   ! Binary file follows "NewMarcs" structure containing real numbers stored as real*4.
   ! Hence the real*4 declarations.
-
-  type modele_record
+  type moo_record
+    ! # "Standard model" information
     ! Size of variables nh, teta, pe, pg, log_tau_ross
     integer*4 :: ntot
 
@@ -3962,24 +3996,54 @@ module reader_modeles
      log_tau_ross     ! log(tau(Rosseland))
 
     character*20 :: tit, tiabs
+
+
+    ! # Opacity information
+    ! standard wavelength for the continuous optical depth (tau)
+    ! scale and for the total standard opacity (ops)
+    real*8 swave
+    ! number of wavelengths for which continuous absorption and
+    ! scattering opacities are given. These are chosen so that
+    ! linear interpolation should suffice for any wavelength
+    integer nwav
+    ! wav(j): wavelengths for which opacities are given
+    real*8 wav(MOO_NWAV)
+    ! **Model structure**
+    ! rad(k): radius, normalized on the outermost point, k=1. For use with
+    !          spherical radiative transfer.
+    !          For plane-parallel models rad == 1.0.
+    ! tau(k): continuumm optical depth at the standard wavelength swave
+    ! t(k)  : temperature (K)
+    ! rho(k): densigy (g/cm3)
+    ! xi(k) : microturbulence parameter (km/s)
+    ! ops(k): continuumm opacity at the standard wavelength (cm2/g)
+    real*8, dimension(MAX_MODELES_NTOT) :: rad, tau, t, rho, xi, ops
+    ! **Wavelength dependent opacities**
+    ! abs(j,k): specific continuous absorption opacity (cm2/g)
+    ! sca(j,k): specific continuous scattering opacity (cm2/g)
+    real*8, dimension(MOO_NWAV, MAX_MODELES_NTOT) :: abs, sca
+
+    real*8 :: abund(92)  ! Abundances of atomic elements from 1 to 92
+
   end type
 
   ! Public variable that will contain the model loaded by read_modele()
-  type(modele_record) modele
+  type(moo_record) modele
 
-   ! Stores unit number of open *modeles file*
+   ! Stores unit number of open *mod file*
    integer, private :: unit_mod
 
    ! Whether the file is open
    logical, private :: flag_open = .false.
 
-   integer, parameter :: MOD_RECL = 1200 ! record length
-
+  ! "Magic characters" to identify a file as a MARCS opacity file.
+  ! This is part of the file specs in MARCS documentation.
+  character(4), parameter :: OPA_MAGIC_CHARS = "MRXF"
 contains
   !=======================================================================================
   ! Returns number of records in file
 
-  integer function get_num_records(path_to_file)
+  integer function get_mod_num_records(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer :: size
 
@@ -3987,19 +4051,27 @@ contains
 
     ! Note the "-1": last 1200 bytes are used as a end-of-file flag with only an integer
     ! value of 9999 recorded
-    get_num_records = size/MOD_RECL-1
+    get_mod_num_records = size/MOD_RECL-1
   end
 
   !=======================================================================================
   ! Opens existing models binary file
 
-  subroutine open_mod_file(path_to_file)
-    character(len=*), intent(in) :: path_to_file
+  subroutine open_mod_file(path_to_file, status_)
+    character(*), intent(in) :: path_to_file
+    character(*), intent(in), optional :: status_ ! default: "old"
+    character(:), allocatable :: status__
+
+    if (present(status_)) then
+      status__ = status_
+    else
+      status__ = 'old'
+    end if
 
     if (flag_open) then
       call log_and_halt('There is already a models file open', is_assertion=.true.)
     end if
-    open(newunit=unit_mod, access='direct',status='old', file=path_to_file, recl=MOD_RECL)
+    open(newunit=unit_mod, access='direct',status=status__, file=path_to_file, recl=MOD_RECL)
     flag_open = .true.
   end
 
@@ -4021,14 +4093,14 @@ contains
   ! This routine is constructed in a way that it can be used by read_modele() and
   ! also within the inewmarcs module.
   !
-  ! *Note* Output goes within "record". This could be made as a function and return the
+  ! *Note* Output goes within "rec". This could be made as a function and return the
   !       record, but then it wouldn't be so clear how the compiler would work out the
   !       memory, i.e., would the whole structure be copied into the variable declared at
   !       the caller?? Better to avoid doubts: we know that args are passed by reference.
 
-  subroutine read_mod_record(rec_id, record)
+  subroutine read_mod_record(rec_id, rec)
     integer, intent(in) :: rec_id       ! record identifier (>= 1)
-    type(modele_record), intent(out) :: record
+    type(moo_record), intent(out) :: rec
     ! Gotta use single precision  variables to read file because the real numbers are all
     ! stored with 4 bytes only (not 8)
     real*4 teff, glog, asalog, asalalf, nhe
@@ -4040,88 +4112,83 @@ contains
     real*4 bid(16)
 
     read(unit=unit_mod, rec=rec_id) &
-     record%ntot,    &
+     rec%ntot,    &
      teff,    &
      glog,    &
      asalog,  &
      asalalf, &
      nhe,     &
-     record%tit,     &
-     record%tiabs
+     rec%tit,     &
+     rec%tiabs
 
     ! The last record of the binary file is a "flag" record. If it contains a 9999,
     ! It is the last record of the file.
-    if (record%ntot .eq. 9999) then
+    if (rec%ntot .eq. 9999) then
       call log_and_halt('Le modele desire ne est pas sur le fichier')
     end if
 
     ! spill check: Checks if exceeds maximum number of elements allowed
-    if (record%ntot .gt. MAX_MODELES_NTOT) then
-      call log_and_halt('read_mod_record(): ntot = '//int2str(record%ntot)//&
+    if (rec%ntot .gt. MAX_MODELES_NTOT) then
+      call log_and_halt('read_mod_record(): ntot = '//int2str(rec%ntot)//&
        ' exceeded maximum of MAX_MODELES_NTOT='//int2str(MAX_MODELES_NTOT))
     end if
 
     ! replaces \x00 character by space
-    call replace_char(record%tit, char(0), ' ')
-    call replace_char(record%tiabs, char(0), ' ')
+    call replace_char(rec%tit, char(0), ' ')
+    call replace_char(rec%tiabs, char(0), ' ')
 
-    record%teff = teff
-    record%teff = teff
-    record%glog = glog
-    record%asalog = asalog
-    record%asalalf = asalalf
-    record%nhe = nhe
+    rec%teff = teff
+    rec%teff = teff
+    rec%glog = glog
+    rec%asalog = asalog
+    rec%asalalf = asalalf
+    rec%nhe = nhe
 
     read(unit_mod, rec=rec_id) bid, &
          (nh(i),   &
           teta(i), &
           pe(i),   &
           pg(i),   &
-          log_tau_ross(i), i=1,record%ntot)
+          log_tau_ross(i), i=1,rec%ntot)
 
-    record%nh = nh
-    record%teta = teta
-    record%pe = pe
-    record%pg = pg
-    record%log_tau_ross = log_tau_ross
+    rec%nh = nh
+    rec%teta = teta
+    rec%pe = pe
+    rec%pg = pg
+    rec%log_tau_ross = log_tau_ross
 
-    write(lll, *) 'read_mod_record(): ntot=', record%ntot
+    write(lll, *) 'read_mod_record(): ntot=', rec%ntot
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): teff=', record%teff
+    write(lll, *) 'read_mod_record(): teff=', rec%teff
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): glog=', record%glog
+    write(lll, *) 'read_mod_record(): glog=', rec%glog
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): asalog=', record%asalog
+    write(lll, *) 'read_mod_record(): asalog=', rec%asalog
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): asalalf=', record%asalalf
+    write(lll, *) 'read_mod_record(): asalalf=', rec%asalalf
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): nhe=', record%nhe
+    write(lll, *) 'read_mod_record(): nhe=', rec%nhe
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): tit=', record%tit
+    write(lll, *) 'read_mod_record(): tit=', rec%tit
     call log_debug(lll)
-    write(lll, *) 'read_mod_record(): tiabs=', record%tiabs
+    write(lll, *) 'read_mod_record(): tiabs=', rec%tiabs
     call log_debug(lll)
   end
 
 
   !=======================================================================================
-  ! Reads single record from file *modeles file* into variables modeles_*
+  ! Reads single record from file *mod file* into variables modeles_*
   !
-  ! SI L ON DESIRE IMPOSER UN MODELE ON MET EN main_inum LE NUM DU MODELE
-  ! SUR LE FICHIER ACCES DIRECT
 
   subroutine read_modele(path_to_file)
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
     integer i, &
             id_
-    type(modele_record) :: r
-
-    id_ = 1
-    if (main_inum .gt. 0) id_ = main_inum  ! Selects record number
+    type(moo_record) :: r
 
     call open_mod_file(path_to_file)
-    call read_mod_record(id_, r)
+    call read_mod_record(1, r)
     call close_mod_file()
 
     ! consistency check: these were already present in the 2015- code
@@ -4168,13 +4235,27 @@ contains
   end
 
 
+
   !---------------------------------------------------------------------------------------
-  ! Writes record to open ".mod" binary file
+  ! Creates single-model file such as "modeles.mod"
+
+  subroutine write_modele(path_to_file, r)
+    character(len=*), intent(in) :: path_to_file
+    type(moo_record), intent(in) :: r
+    integer k
+    call open_mod_file(path_to_file, 'replace')
+    call write_mod_record(unit_mod, 1, r)
+    write(unit_mod, rec=2) 9999
+    call close_mod_file()
+  end
+
+  !---------------------------------------------------------------------------------------
+  ! Writes record to an open ".mod" binary file
 
   subroutine write_mod_record(unit_, inum, r)
     integer, intent(in) :: unit_ ! unit of an open file
     integer, intent(in) :: inum ! record number (first=1)
-    type(modele_record), intent(in) :: r ! record to be written
+    type(moo_record), intent(in) :: r ! record to be written
     real*4 :: a(MAX_MODELES_NTOT*5)
     integer n, k
 
@@ -4200,71 +4281,135 @@ contains
      (a(k),k=1,r%ntot*5)
     return
   end
-end
+
+
+  !---------------------------------------------------------------------------------------
+  ! Reads entire model grid into array of moo_record
+
+  subroutine read_mod_grid(path_to_file, recs)
+    character(len=*), intent(in) :: path_to_file
+    type(moo_record), allocatable, intent(out) :: recs(:)
+    integer num_rec, iid
+
+    num_rec = get_mod_num_records(path_to_file)
+    allocate(recs(num_rec))
+    call open_mod_file(path_to_file)
+    do iid = 1, num_rec
+      call read_mod_record(iid, recs(iid))
+    end do
+    call close_mod_file()
+  end
 
 
 
+  !=======================================================================================
+  ! Returns number of records in file
+
+  integer function get_moo_num_records(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+    integer :: size
+    inquire(FILE=path_to_file, SIZE=size)
+    get_moo_num_records = size/MOO_RECL
+  end
+
+  !=======================================================================================
+  ! Reads a model grid file and returns an array of moo_record
+
+  subroutine read_moo(path_to_file, recs)
+    character(len=*), intent(in) :: path_to_file
+    type(moo_record), allocatable :: recs(:)
+    integer myunit, num_rec,  iid, i, j, nwav
+    real*4 teff, glog, asalog, asalalf, nhe
+    real*4, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
+    real*4 swave
+    real*4 wav(MOO_NWAV)
+    real*4, dimension(MAX_MODELES_NTOT) :: ops
+    real*4, dimension(MOO_NWAV, MAX_MODELES_NTOT) :: abs_, sca
+    ! Variable used to skip a few characters
+    character bid(MOD_RECL)
+
+    num_rec = get_moo_num_records(path_to_file)
+    allocate(recs(num_rec))
+    open(newunit=myunit, form='unformatted', access='stream',status='old', file=path_to_file)
+    do iid = 1, num_rec
+      ! print *, 'Record ', iid
+
+      read(myunit) &
+       recs(iid)%ntot,    &
+       teff,    &
+       glog,    &
+       asalog,  &
+       asalalf, &
+       nhe,     &
+       recs(iid)%tit,     &
+       recs(iid)%tiabs
+
+      if (recs(iid)%ntot .ne. MOO_NTOT) &
+        call log_and_halt('read_moo(): (record #'//int2str(iid)//') Number of depth layers must be '//&
+         int2str(MOO_NTOT)//', not '//int2str(recs(iid)%ntot))
+
+      ! replaces \x00 character by space
+      call replace_char(recs(iid)%tit, char(0), ' ')
+      call replace_char(recs(iid)%tiabs, char(0), ' ')
+
+      recs(iid)%teff = teff
+      recs(iid)%teff = teff
+      recs(iid)%glog = glog
+      recs(iid)%asalog = asalog
+      recs(iid)%asalalf = asalalf
+      recs(iid)%nhe = nhe
+
+      read(myunit) &
+           (nh(i),   &
+            teta(i), &
+            pe(i),   &
+            pg(i),   &
+            log_tau_ross(i), i=1,recs(iid)%ntot)
+
+      recs(iid)%nh = nh
+      recs(iid)%teta = teta
+      recs(iid)%pe = pe
+      recs(iid)%pg = pg
+      recs(iid)%log_tau_ross = log_tau_ross
+
+      ! skips unused characters at the end of the MOD_RECL-sized record
+      read(myunit) bid(1:(MOD_RECL-5*4*recs(iid)%ntot-64))
+
+      ! now the opacity part
+      read(myunit) swave, recs(iid)%nwav
+
+      if (recs(iid)%nwav .ne. MOO_NWAV) &
+        call log_and_halt('read_moo(): Number of opacity wavelengths layers must be '//&
+         int2str(MOO_NWAV)//', not '//int2str(recs(iid)%nwav))
+
+      recs(iid)%swave = swave
+
+      ! print *, 'nwav', recs(iid)%nwav
+      ! print *, 'ntot', recs(iid)%ntot
 
 
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routine and type declaration for MARCS *opacities file*
-!
-! Based on "http://marcs.astro.uu.se/documents/auxiliary/readopa.f
-! (updated to Fortran2008)
 
-module reader_opa
-  use logging
-  implicit none
+      ! This statement is much faster than the one commented below
+      read(myunit) &
+       ops, wav, abs_, sca
+      !-- Reading as follows does not req
+      !-- read(myunit) &
+      !--  (ops(j), j=1,recs(iid)%ntot), &
+      !--  (wav(i), i=1,recs(iid)%nwav), &
+      !--  ((abs_(i,j), i=1,recs(iid)%nwav), j=1,recs(iid)%ntot), &
+      !--  ((sca(i,j), i=1,recs(iid)%nwav), j=1,recs(iid)%ntot)
 
-  ! Structure to store the opacities file
+      recs(iid)%ops = ops
+      recs(iid)%wav = wav
+      recs(iid)%abs = abs_
+      recs(iid)%sca = sca
+    end do
 
-  integer, parameter :: OPA_MDP = 56, & ! Maximum number of Depth Points
-                                        ! (i.e., atmospheric layers) allowed in opacity model
-                        OPA_MWAV = 1071 ! Maximum number of WAVelengths
+    close(myunit)
+  end
 
-  type opa_record
-    ! number of depth points (equivalent to modele_record%ntot)
-    integer ndp
-    ! standard wavelength for the continuous optical depth (tau)
-    ! scale and for the total standard opacity (ops)
-    real*8 swave
-    ! number of wavelengths for which continuous absorption and
-    ! scattering opacities are given. These are chosen so that
-    ! linear interpolation should suffice for any wavelength
-    integer nwav
-    ! wav(j): wavelengths for which opacities are given
-    real*8 wav(OPA_MWAV)
-    ! **Model structure**
-    ! rad(k): radius, normalized on the outermost point, k=1. For use with
-    !          spherical radiative transfer.
-    !          For plane-parallel models rad == 1.0.
-    ! tau(k): continuumm optical depth at the standard wavelength swave
-    ! t(k)  : temperature (K)
-    ! pe(k) : electron pressure (dyn/cm2)
-    ! pg(k) : total gas pressure (dyn/cm2)
-    ! rho(k): densigy (g/cm3)
-    ! xi(k) : microturbulence parameter (km/s)
-    ! ops(k): continuumm opacity at the standard wavelength (cm2/g)
-    real*8, dimension(OPA_MDP) :: rad, tau, t, pe, pg, rho, xi, ops
-    ! **Wavelength dependent opacities**
-    ! abs(j,k): specific continuous absorption opacity (cm2/g)
-    ! sca(j,k): specific continuous scattering opacity (cm2/g)
-    real*8, dimension(OPA_MWAV, OPA_MDP) :: abs, sca
-
-    real*8 :: abund(92)  ! Abundances of atomic elements from 1 to 92
-  end type
-
-  ! Structure where read_opa() will store its values
-  type(opa_record) :: opa
-
-  ! "Magic characters" to identify a file as a MARCS opacity file.
-  ! This is part of the file specs in MARCS documentation.
-  character(4), parameter :: OPA_MAGIC_CHARS = "MRXF"
-contains
-
-  ! reads a MARCS opacity data file and stores the data in ẗhe *opa* module variable
+  !---------------------------------------------------------------------------------------
+  ! reads a MARCS opacity data file and stores the data inTO ẗhe *modele* module variable
 
   subroutine read_opa(path_to_file)
     character(len=*), intent(in) :: path_to_file
@@ -4274,31 +4419,31 @@ contains
     open(newunit=myunit,file=path_to_file, status='old')
 
 
-    read(myunit, '(1x,a4,i5,f10.0)') mcode, opa%ndp, opa%swave
+    read(myunit, '(1x,a4,i5,f10.0)') mcode, modele%ntot, modele%swave
     ! Validates "magic characters"
     if (mcode .ne. OPA_MAGIC_CHARS) &
       call log_and_halt('Invalid opacities file: "'//trim(path_to_file)//'"')
-    call assert_le(opa%ndp, OPA_MDP, 'read_opa()', 'ndp', 'MDP')
+    call assert_le(modele%ntot, MAX_MODELES_NTOT, 'read_opa()', 'ndp', 'MDP')
 
-    read(myunit, *) opa%nwav
-    call assert_le(opa%nwav, OPA_MWAV, 'read_opa()', 'nwav', 'MWAV')
+    read(myunit, *) modele%nwav
+    call assert_le(modele%nwav, MOO_NWAV, 'read_opa()', 'nwav', 'MWAV')
 
-    read(myunit, *) (opa%wav(i), i=1, opa%nwav)
+    read(myunit, *) (modele%wav(i), i=1, modele%nwav)
 
-    do k = 1, opa%ndp
-      read(myunit,*) opa%rad(k), opa%tau(k), opa%t(k),  opa%pe(k), &
-                     opa%pg(k),  opa%rho(k), opa%xi(k), opa%ops(k)
-      read(myunit,*) (opa%abs(i,k), opa%sca(i, k), i=1,opa%nwav)
+    do k = 1, modele%ntot
+      read(myunit,*) modele%rad(k), modele%tau(k), modele%t(k),  modele%pe(k), &
+                     modele%pg(k),  modele%rho(k), modele%xi(k), modele%ops(k)
+      read(myunit,*) (modele%abs(i,k), modele%sca(i, k), i=1,modele%nwav)
 
-      do i = 1, opa%nwav
+      do i = 1, modele%nwav
         ! absorption and scattering multiplied by standard value as in original readopa.f
-        opa%abs(i,k) = opa%abs(i,k)*opa%ops(k)
-        opa%sca(i,k) = opa%sca(i,k)*opa%ops(k)
+        modele%abs(i,k) = modele%abs(i,k)*modele%ops(k)
+        modele%sca(i,k) = modele%sca(i,k)*modele%ops(k)
       enddo
     enddo
 
     ! Reads abundances (but doesn't use them for anything)
-    read(myunit,*) opa%abund
+    read(myunit,*) modele%abund
   end
 
   !---------------------------------------------------------------------------------------
@@ -4306,17 +4451,17 @@ contains
 
   subroutine write_opa(path_to_file, r)
     character(len=*), intent(in) :: path_to_file
-    type(opa_record), intent(in) :: r
+    type(moo_record), intent(in) :: r
     integer myunit, i, k
     character mcode*4
-    real*8, dimension(OPA_MWAV) :: abs, sca
+    real*8, dimension(MOO_NWAV) :: abs, sca
 
     open(newunit=myunit,file=path_to_file, status='replace')
 
-    write(myunit, '(1x,a4,i5,f10.2)') OPA_MAGIC_CHARS, r%ndp, r%swave
+    write(myunit, '(1x,a4,i5,f10.2)') OPA_MAGIC_CHARS, r%ntot, r%swave
     write(myunit, '(i6)') r%nwav
     write(myunit, '(1x,10f11.2)') (r%wav(i), i=1, r%nwav)
-    do k = 1, r%ndp
+    do k = 1, r%ntot
       abs = r%abs(:, k)/r%ops(k)
       sca = r%sca(:, k)/r%ops(k)
 
@@ -4328,139 +4473,8 @@ contains
 
     write (myunit, '(10f8.3)') r%abund
   end
+
 end
-
-
-
-
-
-
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Read/write routines for the ".mog" file type complete (teff, glog, [Fe/H]) model grid
-! with opacities included
-
-module reader_mog
-  use logging
-  use dimensions
-  use reader_main
-  use misc
-  use reader_opa
-  use reader_modeles
-  implicit none
-
-  ! Structure starting just like modele_record, then with opacity information
-
-  type mog_record
-    ! The following fields: see "type modele_record" for description
-    integer*4 :: ntot
-    real*8 :: teff, glog, asalog, asalalf, nhe
-    real*8, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
-    character*20 :: tit, tiabs
-
-    ! Opacity information
-    ! Incomplete copy of "type opa_record"
-    real*8 swave
-    integer nwav
-    real*8 wav(OPA_MWAV)
-    real*8, dimension(OPA_MDP) :: ops
-    real*8, dimension(OPA_MWAV, OPA_MDP) :: abs, sca
-  end type
-
-  integer, parameter :: MOG_RECL = 1200+484324 ! record length
-
-contains
-  !=======================================================================================
-  ! Returns number of records in file
-
-  integer function get_mog_num_records(path_to_file)
-    character(len=*), intent(in) :: path_to_file
-    integer :: size
-    inquire(FILE=path_to_file, SIZE=size)
-    get_mog_num_records = size/MOG_RECL
-  end
-
-  !=======================================================================================
-  ! Reads a model grid file and returns an array of mog_record
-
-  function read_mog(path_to_file) result(ret)
-    character(len=*), intent(in) :: path_to_file
-    type(mog_record), allocatable :: ret(:)
-    integer myunit, num_rec,  iid, i, j, nwav
-    real*4 teff, glog, asalog, asalalf, nhe
-    real*4, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
-    real*4 swave
-    real*4 wav(OPA_MWAV)
-    real*4, dimension(OPA_MDP) :: ops
-    real*4, dimension(OPA_MWAV, OPA_MDP) :: abs_, sca
-    ! Record is read several times. These "bid" variables work as "offsets"
-    character(1) bid(64), bid2(MOD_RECL), bid3(MOD_RECL+8)
-
-    num_rec = get_mog_num_records(path_to_file)
-    allocate(ret(num_rec))
-    open(newunit=myunit, access='direct',status='old', file=path_to_file, recl=MOG_RECL)
-
-    do iid = 1, num_rec
-      print *, 'Record ', iid
-      read(myunit, rec=iid) &
-       ret(iid)%ntot,    &
-       teff,    &
-       glog,    &
-       asalog,  &
-       asalalf, &
-       nhe,     &
-       ret(iid)%tit,     &
-       ret(iid)%tiabs
-
-      ! replaces \x00 character by space
-      call replace_char(ret(iid)%tit, char(0), ' ')
-      call replace_char(ret(iid)%tiabs, char(0), ' ')
-
-      ret(iid)%teff = teff
-      ret(iid)%teff = teff
-      ret(iid)%glog = glog
-      ret(iid)%asalog = asalog
-      ret(iid)%asalalf = asalalf
-      ret(iid)%nhe = nhe
-
-      read(myunit, rec=iid) bid, &
-           (nh(i),   &
-            teta(i), &
-            pe(i),   &
-            pg(i),   &
-            log_tau_ross(i), i=1,ret(iid)%ntot)
-
-      ret(iid)%nh = nh
-      ret(iid)%teta = teta
-      ret(iid)%pe = pe
-      ret(iid)%pg = pg
-      ret(iid)%log_tau_ross = log_tau_ross
-
-
-      read(myunit, rec=iid) bid2, swave, ret(iid)%nwav
-
-      ret(iid)%swave = swave
-
-      print *, 'nwav', ret(iid)%nwav
-      print *, 'ntot', ret(iid)%ntot
-
-      read(myunit, rec=iid) bid3, (ops(j), j=1,ret(iid)%ntot), &
-       (wav(i), i=1,ret(iid)%nwav), &
-       ((abs_(i,j), i=1,ret(iid)%nwav), j=1,ret(iid)%ntot), &
-       ((sca(i,j), i=1,ret(iid)%nwav), j=1,ret(iid)%ntot)
-
-       ret(iid)%ops = ops
-       ret(iid)%wav = wav
-       ret(iid)%abs = abs_
-       ret(iid)%sca = sca
-    end do
-
-    close(myunit)
-  end
-end
-
-
 
 
 
@@ -4567,7 +4581,7 @@ end
 
 module reader_filetoh
   use dimensions
-  use reader_modeles
+  use reader_models
   use reader_hmap
   implicit none
 
@@ -4628,7 +4642,6 @@ contains
         else
           flag_inside = .false.  ! hydrogen line if outside calculation interval, skips it
         end if
-
       else
         ! list of nydrogen line files came from *main file* and we don't know their central lambda unless we open the file
       end if
@@ -5039,114 +5052,6 @@ contains
     return
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for *gridsmap file* (used by innewmarcs)
-!
-!   - gridsmap -
-
-
-module reader_gridsmap
-  use reader_modeles
-  use qsort
-  use logging
-  implicit none
-
-  ! Variables related to the reference models
-  integer, parameter:: MAX_GRIDSMAP_NUM_FILES = 10
-  integer gridsmap_num_files
-  real*4, dimension(MAX_GRIDSMAP_NUM_FILES) :: gridsmap_asalog
-  character*64, dimension(MAX_GRIDSMAP_NUM_FILES) :: gridsmap_fn
-
-contains
-  !=======================================================================================
-  ! Reads map of models: *gridsmap file*
-  !
-  ! The information it contains is
-  ! just a list of .mod files. Files needn't be sorted. Metallicities are taken from the
-  ! first record of each file and the files are sorted in ascending order of metallicity
-  !
-  ! This this is necessary because Fortran doesn't have a cross-platform solution for
-  ! listing the files in a directory.
-  !
-
-  subroutine read_gridsmap(path_to_file)
-    character(len=*), intent(in) :: path_to_file
-    character*64 :: t_fn0
-    character(len=:), allocatable :: t_fn
-    integer myunit
-    type(modele_record) :: rec
-    character*64 :: temp_fn(MAX_GRIDSMAP_NUM_FILES)
-    real*8 :: temp_asalog(MAX_GRIDSMAP_NUM_FILES) ! have to declare as real8 for the quicksort routine
-    integer :: order(MAX_GRIDSMAP_NUM_FILES), i
-
-    open(newunit=myunit,file=path_to_file, status='old')
-
-    gridsmap_num_files = 0
-    do while (.true.)
-      read(myunit, '(a)', end=10) t_fn0
-
-      t_fn = adjustl(trim(t_fn0))  ! Tolerant with lines starting with spaces
-
-      if (len(t_fn) .eq. 0) cycle
-      if (t_fn(1:1) .eq. '#') cycle  ! Comment lines starting with a '#'
-
-      ! Opens .mod file to get metallicity from its first record
-      ! (metallicity should be the same for all records)
-      call open_mod_file(t_fn)
-      call read_mod_record(1, rec)
-      call close_mod_file()
-
-      gridsmap_num_files = gridsmap_num_files+1
-      temp_asalog(gridsmap_num_files) = dble(rec%asalog)
-      temp_fn(gridsmap_num_files) = t_fn  ! writes to temp because order will change
-    end do
-
-    10 continue  ! reached EOF
-
-    ! sorts temp_asalog
-    call quick_sort(temp_asalog, order, gridsmap_num_files)
-
-    ! now mounts gridsmap_fn in sync with gridsmap_asalog
-    do i = 1, gridsmap_num_files
-      gridsmap_asalog(i) = real(temp_asalog(i))
-      gridsmap_fn(i) = temp_fn(order(i))
-    end do
-
-    !#logging
-    call log_info('reader_gridsmap():')
-    call log_info('List of model grid files: # asalog filename')
-    do i = 1, gridsmap_num_files
-      11 format(26x,i1,' ', f6.3,' ',a)
-      write(lll, 11) i, gridsmap_asalog(i), gridsmap_fn(i)
-      call log_info(lll)
-    end do
-
-    close(unit=myunit)
-  end
-end
-
-
-
-
-
-
-
 
 
 
@@ -5640,29 +5545,6 @@ contains
   end
 end
 
-
-
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
-! Imports all reader_* modules
-
-module readers
-  use reader_main
-  use reader_dissoc
-  use reader_modeles
-  use reader_hmap
-  use reader_filetoh
-  use reader_absoru2
-  use reader_abonds
-  use reader_partit
-  use reader_gridsmap
-  use reader_atoms
-  use reader_molecules
-  use reader_opa
-  use reader_mog
-end
 
 
 
@@ -6960,7 +6842,7 @@ end module absoru
 module turbul
   use dimensions
   use reader_main
-  use reader_modeles
+  use reader_models
   use config
   use misc_math
   implicit none
@@ -7042,7 +6924,18 @@ module pfantlib
   use misc_math
   use flin
   use config
-  use readers
+
+  use reader_main
+  use reader_dissoc
+  use reader_models
+  use reader_hmap
+  use reader_filetoh
+  use reader_absoru2
+  use reader_abonds
+  use reader_partit
+  use reader_atoms
+  use reader_molecules
+
   use absoru
   use turbul
 end

@@ -1,6 +1,6 @@
-__all__ = ["VisPrint", "VisModRecord", "VisModRecords", "VisSpectrum", "VisFileToH",
+__all__ = ["VisPrint", "VisModRecord", "VisModCurves", "VisSpectrum", "VisFileToH",
            "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa",
-           "VisMarcs", "VisMarcsSaveAsMod", "VisMog"]
+           "VisMarcs", "VisMarcsSaveAsMod", "VisGrid", "VisVector"]
 
 from pyfant.data import *
 import numpy as np
@@ -71,8 +71,8 @@ class VisModRecord(Vis):
     the same x-axis.
     """
 
-    input_classes = (FileMod,)
-    action = "visualize model in file"
+    input_classes = (FileModBin,)
+    action = "Visualize model in file"
 
     def __init__(self):
         Vis.__init__(self)
@@ -80,7 +80,7 @@ class VisModRecord(Vis):
         self.inum = None
 
     def _do_use(self, obj):
-        assert isinstance(obj, FileMod)
+        assert isinstance(obj, FileModBin)
         n = len(obj.records)
 
         if n == 1 and self.inum is None:
@@ -98,10 +98,10 @@ class VisModRecord(Vis):
 
 class VisMarcs(Vis):
     """
-    Similar to VisModRecord but accepts FileMarcsMod
+    Similar to VisModRecord but accepts FileModTxt
     """
 
-    input_classes = (FileMarcsMod,)
+    input_classes = (FileModTxt,)
     action = "visualize model"
 
     def __init__(self):
@@ -115,7 +115,7 @@ class VisMarcsSaveAsMod(Vis):
     Asks user for file name and saves as a binary .mod file
     """
 
-    input_classes = (FileMarcsMod,)
+    input_classes = (FileModTxt,)
     action = 'save as a binary ".mod" file'
 
     def __init__(self):
@@ -126,7 +126,7 @@ class VisMarcsSaveAsMod(Vis):
         new_filename = QFileDialog.getSaveFileName(None,
          self.action.capitalize(), d, "*.mod")
         if new_filename:
-            f = FileMod()
+            f = FileModBin()
             f.records = [obj.record]
             f.save_as(str(new_filename))
         return False
@@ -157,36 +157,19 @@ def _plot_mod_record(title, r):
 
 
 
-class VisModRecords(Vis):
+class VisModCurves(Vis):
     """
     Plots vectors
     (teff, glog, asalog, asalalf, nhe) in 2D (record #)x(value) plots, and
     (nh, teta, pe, pg, log_tau_ross) (layer #)x(record #)x(value) 3D plots
     """
 
-    input_classes = (FileMod,)
-    action = "visualize all models in file"
+    input_classes = (FileMoo, FileModBin)
+    action = "(nh, teta, pe, pg, log_tau_ross) per layer curves in 3D"
 
     def _do_use(self, m):
         nr = len(m)
 
-        # 5 subplots sharing same x-axis
-        # Plotting teff, glog, ...
-        aa = ['teff', 'glog', 'asalog', 'asalalf', 'nhe']
-        f, axarr = plt.subplots(len(aa), sharex=True)
-        x = np.linspace(1, nr, nr)
-        rr = m.records
-        for i, a in enumerate(aa):
-            v = []
-            for r in rr:
-                v.append(r.__getattribute__(a))
-
-            axarr[i].plot(x, v)
-
-            axarr[i].set_ylabel(a)
-        axarr[4].set_xlabel("Record #")
-        f.canvas.set_window_title("%s -- %s" % (self.title, 'one-value-per-model'))
-        plt.tight_layout()
         #################
         # 3D plots
         vars = ['nh', 'teta', 'pe', 'pg', 'log_tau_ross']
@@ -197,6 +180,7 @@ class VisModRecords(Vis):
                 fig.canvas.setParent(self.parent_form)
             ax = fig.gca(projection='3d')
             fig.canvas.set_window_title('%s -- %s' % (self.title, var))
+            rr = m.records
 
             for i, r in enumerate(rr):
                 x = np.linspace(1, r.ntot, r.ntot)
@@ -211,25 +195,58 @@ class VisModRecords(Vis):
         plt.show()
 
 
-class VisMog(Vis):
-    __doc__ = """Scatterplot in the (teff, glog, [Fe/H]) 3D space."""
+class VisGrid(Vis):
+    __doc__ = """(glog, teff, [Fe/H]) 3D scatterplot"""
 
-    input_classes = (FileMog,)
+    input_classes = (FileMoo, FileModBin)
     action = __doc__
 
     def _do_use(self, m):
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        teff, glog, asalog = [], [], []
+        asalog, teff, glog = [], [], []
         for r in m.records:
+            asalog.append(r.asalog)
             teff.append(r.teff)
             glog.append(r.glog)
+
+        # teff-glog-asalog scatterplot
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.scatter(asalog, teff, glog, c='r', s=60, marker='o')
+        ax.set_xlabel('asalog')
+        ax.set_ylabel('teff')
+        ax.set_zlabel('glog')
+        fig.canvas.set_window_title(self.title+" -- asalog-teff-glog scatterplot")
+        plt.tight_layout()
+        plt.show()
+
+
+class VisVector(Vis):
+    __doc__ = """(glog, teff, [Fe/H]) same-x-axis stacked subplots"""
+
+    input_classes = (FileMoo, FileModBin)
+    action = __doc__
+
+    def _do_use(self, m):
+        asalog, teff, glog = [], [], []
+        for r in m.records:
             asalog.append(r.asalog)
-        ax.scatter(teff, glog, asalog, c='r', s=60, marker='o')
-        ax.set_xlabel('teff')
-        ax.set_ylabel('glog')
-        ax.set_zlabel('asalog')
-        fig.canvas.set_window_title(self.title+" -- teff-glog-asalog scatterplot")
+            teff.append(r.teff)
+            glog.append(r.glog)
+
+        # 3 subplots sharing same x-axis
+        aa = ['asalog', 'teff', 'glog']
+        f, axarr = plt.subplots(len(aa), sharex=True)
+        nr = len(asalog)
+        x = np.linspace(1, nr, nr)
+        rr = m.records
+        for i, a in enumerate(aa):
+            v = eval(a)
+            axarr[i].plot(x, v)
+            axarr[i].set_ylabel(a)
+        axarr[len(aa)-1].set_xlabel("Record #")
+        f.canvas.set_window_title("%s -- %s" % (self.title, 'one-value-per-model'))
+        plt.tight_layout()
+
         plt.show()
 
 
@@ -314,16 +331,16 @@ class VisMolecules(Vis):
 
 class VisOpa(Vis):
     """
-    Visualizer for FileMarcsOpa class
+    Visualizer for FileOpa class
 
     Plots vectors ???
     """
 
-    input_classes = (FileMarcsOpa,)
-    actions = "visualize opacities file"
+    input_classes = (FileOpa,)
+    action = "Visualize opacities file"
 
     def _do_use(self, obj):
-        assert isinstance(obj, FileMarcsOpa)
+        assert isinstance(obj, FileOpa)
 
         # 8 subplots sharing same x-axis
         aa = ["rad", "tau", "t", "pe", "pg", "rho", "xi", "ops"]

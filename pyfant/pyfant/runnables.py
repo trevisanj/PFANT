@@ -9,7 +9,7 @@ from .conf import *
 import os
 from .misc import *
 from .errors import *
-from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileMod
+from pyfant import FileSpectrumPfant, FileSpectrumNulbad, FileModBin
 from threading import Lock
 
 @froze_it
@@ -312,11 +312,11 @@ class Innewmarcs(Executable):
         Executable.__init__(self)
         self._exe_path = "innewmarcs"
 
-        # FileMod object
+        # FileModBin object
         self.modeles = None
 
     def load_result(self):
-        file_mod = FileMod()
+        file_mod = FileModBin()
         filepath = self.conf.get_fn_modeles()
         file_mod.load(filepath)
         self.modeles = file_mod

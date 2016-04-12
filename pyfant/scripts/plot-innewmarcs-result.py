@@ -28,13 +28,11 @@ def parse_explain_file(filename):
             s = h.readline().strip()
             if not s:
                 break
-            m = re.match(r"(\w+):\s*(.*)", s)
+            m = re.match(r"(.+):\s*(.*)", s)
             if not m:
                 raise RuntimeError('Error parsing file "%s"' % filename)
             token, s_data = m.groups()
-            if not token in tokens:
-                tokens[token] = []
-            tokens[token].append(eval(s_data))
+            tokens[token] = eval(s_data)
     return tokens
 
 
@@ -49,21 +47,23 @@ if __name__ == "__main__":
      )
     parser.add_argument('--inum', type=int, default=1, help='Record number (>= 1)')
     parser.add_argument('--var', type=str, help='Variable to plot', default=VARS[0], choices=VARS)
-    parser.add_argument('fn', type=str, help='.mod binary file name created by innewmarcs', default='modeles.mod', nargs='?')
 
     args = parser.parse_args()
 
 
-    locatab = parse_explain_file(FN_EXPLAIN)["locatab"]
+    tokens = parse_explain_file(FN_EXPLAIN)
+    fn_grid = tokens['innewmarcs grid file']
+    fn_output = tokens['innewmarcs output file']
+    indexes = np.array(np.matrix(tokens['innewmarcs indexes'])).flatten()
     records = []  # ModRecord, name
-    for fn, inum in locatab:
-        m = FileMod()
-        m.load(fn)
-        record_name = '%s#%s' % (os.path.basename(fn), inum)
-        records.append((m.records[inum-1], record_name))
+    m = FileModBin()
+    m.load(fn_grid)
+    for i in indexes:
+        record_name = '%s#%d' % (fn_grid, i)
+        records.append((m.records[i-1], record_name))
 
-    mod = FileMod()
-    mod.load(args.fn)
+    mod = FileModBin()
+    mod.load(fn_output)
     rm = mod.records[0]
 
     print_record = lambda record, name: print(name, '; teff=', record.teff, '; glog=', record.glog, '; asalog=', record.asalog)
@@ -72,14 +72,14 @@ if __name__ == "__main__":
     plt.figure()
     for record, name in records:
         print_record(record, name)
-        plt.plot(record.__getattribute__(args.var), label=name)
-    name = args.fn
+        plt.plot(record.log_tau_ross, record.__getattribute__(args.var), label=name)
+    name = fn_output
     v = rm.__getattribute__(args.var)
     if any(np.isnan(v)):
         print("NaN ALERT!!!")
     print_record(rm, name)
-    plt.plot(v, label=name, linewidth=2, linestyle='--')
-    plt.xlabel('Layer')
+    plt.plot(rm.log_tau_ross, v, label=name, linewidth=2, linestyle='--')
+    plt.xlabel('log_tau_ross')
     plt.title(args.var)
     plt.legend(loc=0)
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                    label=name, marker=markers.next())
     ax.scatter([rm.teff], [rm.glog], [rm.asalog],
                c=ax._get_lines.color_cycle.next(), s=60,
-               label=args.fn, marker=markers.next())
+               label=fn_output, marker=markers.next())
     ax.set_xlabel('teff')
     ax.set_ylabel('glog')
     ax.set_zlabel('asalog')
@@ -109,21 +109,20 @@ if __name__ == "__main__":
         for record, name in records:
             print_record(record, name)
             v = record.__getattribute__(args.var)
-            if x is None:
-                x = np.arange(0, len(v))
+            x = record.log_tau_ross
             y_var = record.__getattribute__(y_var_name)
             y = np.ones((len(x),))*y_var
             ax.plot(x, y, v, label=name)
 
-        name = args.fn
+        name = fn_output
         v = rm.__getattribute__(args.var)
-        x = np.arange(0, len(v))
+        x = rm.log_tau_ross
         y_var = rm.__getattribute__(y_var_name)
         y = np.ones((len(x),))*y_var
         print_record(rm, name)
         plt.plot(x, y, v, label=name, linewidth=2, linestyle='--')
 
-        plt.xlabel('Layer')
+        plt.xlabel('log_tau_ross')
         plt.ylabel(y_var_name)
         plt.gca().set_zlabel(args.var)
         plt.title("Layer X %s X %s" % (y_var_name, args.var))
