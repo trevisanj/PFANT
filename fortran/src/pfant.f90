@@ -1025,7 +1025,7 @@ module synthesis
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
   ! Opacity-related
   real*8, dimension(MAX_DTOT) :: m_lambda ! lambda for each point
-  real*8, dimension(MAX_DTOT, OPA_MDP) :: &
+  real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: &
    opa_sca, &  ! opacities calculated by interpolation of the available MARCs model (scattering)
    opa_abs     ! opacities calculated by interpolation of the available MARCs model (absorption)
 
@@ -1438,19 +1438,19 @@ contains
   subroutine calc_opa()
     integer n, i
 
-    ! write(10,*) (m_lambda(i), i=1,opa%nwav)
-    write(10,*) (opa%wav(i), i=1,opa%nwav)
-    do n = 1, opa%ndp  ! modele%ntot
+    ! write(10,*) (m_lambda(i), i=1,modele%nwav)
+    write(10,*) (modele%wav(i), i=1,modele%nwav)
+    do n = 1, modele%ntot  ! modele%ntot
       ! todo cleanup
-      write(11, *) (opa%sca(i,n),i=1,opa%nwav)
-      write(12, *) (opa%abs(i,n),i=1,opa%nwav)
+      write(11, *) (modele%sca(i,n),i=1,modele%nwav)
+      write(12, *) (modele%abs(i,n),i=1,modele%nwav)
     end do
 
 
     write(13,*) (m_lambda(i), i=1,m_dtot)
-    do n = 1, opa%ndp  ! modele%ntot
+    do n = 1, modele%ntot  ! modele%ntot
     ! ft2 does not perform well here, ftlin3 is ok
-      !call   ft2(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      !call   ft2(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
 
       ! todo cleanup
@@ -1458,7 +1458,7 @@ contains
       ! print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
 
 
-      call ftlin3(opa%nwav, opa%wav, opa%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      call ftlin3(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
 
       ! print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
@@ -1469,9 +1469,9 @@ contains
 
 
 
-      !call   ft2(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+      !call   ft2(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
       ! print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-      call ftlin3(opa%nwav, opa%wav, opa%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+      call ftlin3(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
       ! print *, "___B___"
 
 
@@ -1714,18 +1714,13 @@ contains
         ! opacities
 
         if (.not. config_no_opa) then
-            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))
+            ! TODO document this
+            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))*1.6602e-24
         end if
 
-! todo cleanup        write(20, *) bk_kcd(d,n), kappa_opa
+        kappt(n) = kappa+kappam
 
-
-        kappt(n) = kappa+kappam  ! +kappa_opa
-
-
-        ! TODO document this
-
-        kci(n) = bk_kcd(d,n) + kappa_opa*1.6602e-24  ! (opa_abs(d, n)+opa_sca(d, n))
+        kci(n) = bk_kcd(d,n) + kappa_opa
         kap(n) = kappt(n)+kci(n)
         bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)        
       end do
