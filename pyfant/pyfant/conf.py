@@ -196,6 +196,7 @@ class Options(object):
         # innewmarcs, pfant
         self.fn_moo = None
         self.fn_modgrid = None
+        self.no_opa = None
 
         # hydro2, pfant
         self.fn_absoru2 = None
@@ -231,7 +232,6 @@ class Options(object):
         self.no_molecules = None
         self.no_h = None
         self.no_atoms = None
-        self.no_opa = None
         self.zinf = None
         self.pas = None
         self.aint = None
