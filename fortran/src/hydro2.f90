@@ -1,18 +1,3 @@
-! This file is part of PFANT.
-!
-! PFANT is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! PFANT is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
-
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -31,10 +16,10 @@ module hydro2_math
 
   ! Variables that were declared with dimension 220. modif_ih is the last valid index of
   ! these vectors
-  integer, parameter :: MAX_MODIF_IH = 220
+  integer, parameter :: MAX_MODIF_IH = 500
 
   ! Maximum possible value for hjen() ii argument
-  integer, parameter :: MAX_MODIF_II = 300
+  integer, parameter :: MAX_MODIF_II = 500
 
 
 contains
@@ -323,7 +308,7 @@ contains
 
     10 write(lll,100) X(1),X(N),T
     100 format(5X,'ft2_hydro2(): ON SORT DE LA TABLE D INTERPOLATION :', &
-     /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
+     5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
     call log_and_halt(lll)
   end
 end
@@ -415,37 +400,60 @@ module hydro2_calc
 
 
   !=====
-  ! p_* variables, shared between at least 2 of these: hydro2(), raiehu() and ameru()
+  ! m_* variables, shared between at least 2 of these: hydro2(), raiehu() and ameru()
   !=====
 
-  ! ?doc?
-  !
-  ! TODO Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
-  ! gotta add parameter to absoru_data.f and absoru.f90
-  integer :: m_jmax = 46
-
+  ! number of calculation points (semi-line including the center)
+  integer, parameter :: NUM_POINTS = 78
+  ! Also number of calculation points, but this is made =1 later below if LL=2
+  integer :: m_jmax = NUM_POINTS
   ! POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
-  real*8 m_dlam(MAX_FILETOH_JMAX)
+  real*8 :: m_dlam(NUM_POINTS)
+!  data m_dlam / 0.,   2.,  4.,  6.,   8., 10., 12., 14.,  16.,  18., 20.,22.,24.,26., &
+!                28., 30.,  32., 34.,  36, 38., 40., 42., 44., 46., &
+!                48., 50.,  52., 54., 56., 58., 60., 62., 64., 66., &
+!                68., 70./
+  data m_dlam / 0.,  0.01, .02, .03, .04, .05, .06, .08, .1, .125, &
+               .15,  .175, .20, .25, .30, .35, .40, .50, .60, .70, &
+               .80,  .90,   1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, &
+                2.,  2.5,   3., 3.5,  4., 4.5,  5.,  6.,  7.,  8., &
+                9.,  10.,  12., 14., 16., 18., 20., 22., 24., 26., &
+                28., 30.,  32., 34.,  36, 38., 40., 42., 44., 46., &
+                48., 50.,  52., 54., 56., 58., 60., 62., 64., 66., &
+                68., 70.,  75., 80., 85., 90., 95.,100./
 
-  data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
-   .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
-   1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
-   15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
-
-
-
-  integer, parameter :: IQM = 9  ! Apparently, (the number of discontinuities within m_dlam)
+  integer, parameter :: IQM = 10  ! Apparently, (the number of discontinuities within m_dlam)
   ! NUMEROS DES DISCONTINUITES DANS LES m_dlam
-  integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
+  ! integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,45,51,0/)
+  integer ij(IQM+1)
+
+  ! will use this to fill in IJ automatically
+  ! real*8, parameter :: V_DISCONT(IQM) = (/0.06, 0.1, 0.2, 0.4, 1.6, 2., 5., 10., 70./)
+  real*8, parameter :: V_DISCONT(IQM) = (/0.06, 0.1, 0.2, 0.4, 1.6, 2., 5., 10., 70., 100./)
+
+
+
+!  integer, parameter :: NUM_POINTS = 46
+!  integer :: m_jmax = NUM_POINTS
+!  ! POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
+!  real*8 m_dlam(NUM_POINTS)
+!  data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
+!   .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
+!   1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
+!   15.,17.5,20.,25.,30.,35./
+!  integer, parameter :: IQM = 9  ! Apparently, (the number of discontinuities within m_dlam)
+!  ! NUMEROS DES DISCONTINUITES DANS LES m_dlam
+!  integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
+
+
 
   ! This information is passed to hydro2_calc_() and copied into m_th
   type(hmap_row) :: m_th
 
 
-  real*8 :: m_tau(MAX_FILETOH_JMAX,0:MAX_MODELES_NTOT)
-  real*8 :: m_al(MAX_FILETOH_JMAX, MAX_MODELES_NTOT)
+  real*8 :: m_tau(NUM_POINTS,0:MAX_MODELES_NTOT)
+  real*8 :: m_al(NUM_POINTS, MAX_MODELES_NTOT)
   real*8, dimension(0:MAX_MODELES_NTOT) :: m_bpl, m_tauc
-  real*8, dimension(MAX_FILETOH_JMAX) :: r
   real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, m_pelog, m_hyn
 
 
@@ -468,9 +476,7 @@ contains
 
 
   !=======================================================================================
-  ! Note: all write(6, ...) have been converted to logging at INFO level. Some of them
-  !       could be later removed or changed to DEBUG level.
-  !
+  ! Calculates the hydrogen lines
 
   subroutine hydro2_calc_(arg_th)
     ! Hydrogen line specification
@@ -479,13 +485,35 @@ contains
     ! Enabled/disables lots of log_info() calls.
     ! This was originally being asked as "SORTIES INTERMEDIARIES (T/F)".
     ! This could be made into a config option or removed completely, if someone wishes either.
-    logical, parameter :: ECRIT = .TRUE.
+    logical, parameter :: ECRIT = .true.
 
-    real*8, dimension(MAX_MODELES_NTOT) :: ne, fl
+
+    real*8, dimension(NUM_POINTS) :: r, fl
+    real*8, dimension(MAX_MODELES_NTOT) :: ne
     real*8 :: fc, zut1, zut2, zut3
-
     integer :: i, iq, j, jj, n
+    logical :: found
 
+
+    ! Fills in variable "ij" based on delta-lambdas of discontinuities
+    ij = 0  ! initializes with zeroes
+    do i = 1, IQM
+      found = .false.
+      do j = 1, NUM_POINTS
+        if (abs(m_dlam(j)-V_DISCONT(i)) .lt. 1e-3) then
+          ij(i) = j
+          ! todo cleanup print *, 'found ', m_dlam(j), ' at ', j
+          found = .true.
+          exit
+        end if
+      end do
+      if ( .not. found) then
+        write(lll, '(a, f6.2, a)') 'hydro2_calc(): delta lambda ', V_DISCONT(i), ' not found in m_dlam'
+        call log_and_halt(lll)
+      end if
+    end do
+    write(lll, '(a, '//int2str(IQM)//'i3)') 'Indices of the discontinuities: ij=', ij(1:IQM)
+    call log_info(lll)
 
     ! Note that elements within structure are copied
     ! http://h21007.www2.hp.com/portal/download/files/unprot/fortran/docs/lrm/lrm0076.htm
@@ -578,8 +606,8 @@ contains
       do  i=1,modele%ntot, 5
         write(lll,'(''NIVEAU '',I5,'' -- m_tau='')') i
         call log_debug(lll)
-        write (lll,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
-        call log_debug(lll)
+        !write (6,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
+        !call log_debug(lll)
       end do
       write(lll,'(10X,A)') modele%tit
       call log_info(lll)
@@ -686,8 +714,8 @@ contains
   ! l'abondance des elements lourds pour 1at d'H
   ! Les elements alfa sont reconnus par leur masse
   !
-  ! @warning This routine overwrites variables absoru2_zp absoru2_abmet,
-  !          which are initially read from *absoru2 file*
+  ! **warning** This routine overwrites variables absoru2_zp absoru2_abmet,
+  !             which are initially read from *absoru2 file*
 
   SUBROUTINE abonio()
     ! nbre d'elements alfa reconnus par leur masse ALFAM
@@ -777,8 +805,8 @@ contains
     !=====
     ! Other local variables
     !=====
-    real*8, dimension(MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: bidon
-    real*8, dimension(MAX_FILETOH_JMAX) :: al_, alfa, lv, vx, x, xdp, resc
+    real*8, dimension(NUM_POINTS, MAX_MODELES_NTOT) :: bidon
+    real*8, dimension(NUM_POINTS) :: al_, alfa, lv, vx, x, xdp, resc
     real*8, dimension(MAX_MODELES_NTOT) :: stoc, az
     real*8, dimension(MAX_IL) ::res
     real*8, dimension(MAX_M) :: q
@@ -844,7 +872,7 @@ contains
     z3 = z2*zr
     z5 = z3*z2
     zdem = zr**2.5
-    rzr = r*zr
+    rzr = R*zr
     a2 = ar**2
     go to (1,2),LL
 
@@ -901,7 +929,7 @@ contains
     !     REPRISE DE LA SEQUENCE NORMALE
     16 br = m_th%nb
     b2 = br**2
-    xb = b2*a2*1.0e+8/(r*(b2-a2))
+    xb = b2*a2*1.0e+8/(R*(b2-a2))
     xbdp = dble(xb)
     delta = dabs(m_th%clam-xbdp)
 
@@ -944,13 +972,15 @@ contains
     ! CALCUL DE QUANTITES NECESSAIRES A CONV4 INDEPENDANTES DU MODELE ET DU
     ! PROFIL
     pas = 0.001
-    modif_var(1)=0.
+    modif_var(1) = 0.
     id = 2
     i4 = 11
     ical = 0
 
+
+    ! this creates an unevenly spaced x-axis values for interpolations, from 0.0 to 100.
     260 do 250 i = id,i4
-      modif_var(i)=modif_var(i-1)+pas
+      modif_var(i) = modif_var(i-1)+pas
     250 continue
 
     ical = ical+1
@@ -973,13 +1003,24 @@ contains
     pas = 0.25
     go to 260
 
-    204 i4 = 211
+    204 i4 = 351  !(JT) this was 211
     pas = 0.5
     go to 260
 
+    !205 i4 = 321 
+    !pas = 1.
+    !go to 260
+
     !
     !     CALCUL DE QUANTITES DEPENDANT DU MODELE
+
     205 modif_ih = i4
+
+! todo cleanup
+! print *, modif_var(1:i4)
+! print *, '----', i4
+! stop -100
+
     call log_debug('VOUS ENTREZ DANS LA BOUCLE LA PLUS EXTERIEURE QUI '//&
      'PORTE SUR L INDICE DU NIVEAU DU MODELE')
     do 17 i = 1,modele%ntot
@@ -1191,7 +1232,7 @@ contains
         go to 1036
 
         1039 if (IND.eq.1) go to 88
-        write(6,'(''   GAMMA.LT.10 GAMMA='',E17.7)') gam
+        write(lll,'(''   GAMMA.LT.10 GAMMA='',E17.7)') gam
         call log_debug(lll)
 
         !     INTERPOLATION DANS T1 OU T2 POUR CONSTRUCTION DU PROFIL QUASISTAT.
@@ -1250,9 +1291,9 @@ contains
         lv(j)=m_al(j,i)
         l1 = m_jmax-j+1
         vx(l1)=alfa(j)
-        1013 al_(l1)=log10(lv(j))
+        1013 al_(l1) = log10(lv(j))
 
-      if (.not.config_amores) go to 4013
+      if (.not. config_amores) go to 4013
 
       call pronor() ! calculates ax
 
@@ -1286,7 +1327,7 @@ contains
 
       1057 if (.not.IS_STARK) go to 71
       if (IND.eq.0) then
-        write(6,'(''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
+        write(lll,'(''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
         call log_debug(lll)
       end if
 
@@ -1331,7 +1372,7 @@ contains
         1075 m_al(j,i)=ris
         if (IND.eq.1) go to 1011
         if (ib.eq.1) go to 1080
-        write(6,'(''   CONV2='',1P,E16.5)')m_al(j,i)
+        write(lll,'(''   CONV2='',1P,E16.5)')m_al(j,i)
         call log_debug(lll)
         go to 1011
         1080 write(lll,'(''   CONF ='',1P,E16.5)') m_al(j,i)
@@ -1343,7 +1384,15 @@ contains
       ! ERA POUR CHAQUE POINT DU PROFIL
       ! ON RESSERRE LA TABLE DE PHI,POUR V COMPRIS ENTRE 1 ET 4,SOIT modif_var COMPR
       ! ENTRE DLD/2 ET 2*DLD
-      4100 call ft2_hydro2(m_jmax,m_dlam,lv,modif_ih,modif_var,modif_f1)
+
+      4100 continue
+
+
+print *, 'modif_ih', modif_ih, '; modif_var(end)', modif_var(modif_ih)
+! stop -100
+
+      call ft2_hydro2(m_jmax,m_dlam,lv,modif_ih,modif_var,modif_f1)
+
       ! call log_debug(' VOUS PASSEZ AU NIVEAU SUIVANT')
       b1 = dld/2
       b2 = 2*dld
@@ -1390,9 +1439,9 @@ contains
       write(lll,'(''1'',''STARK='')')
       call log_debug(lll)
       do 4010 i = 1,modele%ntot,5
-        write(6,'('' COUCHE'',I4)') i
+        write(lll,'('' COUCHE'',I4)') i
         call log_debug(lll)
-        write(6,'(8X,10E12.5)') (bidon(k,i),k=1,m_jmax)
+        write(lll,'(8X,10E12.5)') (bidon(k,i),k=1,m_jmax)
         call log_debug(lll)
       4010 continue
       4011 continue
@@ -1408,9 +1457,9 @@ contains
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
-    write(6,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
+    write(lll,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(m_al(1,i),i=1,modele%ntot)
+    write(lll,'(8(1P,E15.7))')(m_al(1,i),i=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
@@ -1442,7 +1491,7 @@ contains
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(lll,'(10X,''COEF. SOMME (BLEND)'')')
     call log_debug(lll)
-    write(6,'(8(1P,E15.7))')(m_al(1,I),I=1,modele%ntot)
+    write(lll,'(8(1P,E15.7))')(m_al(1,I),I=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
@@ -1467,7 +1516,8 @@ contains
     ! Calculates variable resc
 
     subroutine conv4()
-      integer, parameter :: N(6) = (/11,21,23,171,191,211/)
+      ! This needs to be updated according to the logic at labels 201-206 in raiehu()    
+      integer, parameter :: N(6) = (/11,21,23,171,191,351/)
       real*8, parameter :: PAS(6) = (/0.001,0.01,0.045,0.1,0.25,0.5/)
 
       real*8, dimension(MAX_MODIF_IH) :: ac, phit
@@ -1486,7 +1536,17 @@ contains
           ac(i)=abs(bol-qy*modif_var(i))
         50 continue
 
+! todo cleanup
+! print *, '41004100410041004100410041004100410041004100 B4'
+!print *, modif_ii
+!print *, modif_v(1:modif_ii)
+!print *, modif_phi(1:modif_ii)
+!print *, modif_ih
+!print *, ac(1:modif_ih)
         call ft2_hydro2(modif_ii,modif_v,modif_phi,modif_ih,ac,phit)
+
+! print *, '41004100410041004100410041004100410041004100 AFTER'
+
 
         i = 1
         k = 1
@@ -1538,13 +1598,13 @@ contains
       integer, intent(in) :: j
 
       real*8 :: h(10), q, bol, s, som, s1, s2, sig
-      real*8, dimension(MAX_FILETOH_JMAX) :: v, ac, f
+      real*8, dimension(NUM_POINTS) :: v, ac, f
       integer :: ir, n, i, i1, k, k1, k2, k3, k4
 
       bol = m_dlam(j)/dld
       h(1) = m_dlam(2)
       do 10 i = 2,IQM
-         i1 = IJ(i-1)
+         i1 = ij(i-1)
          10 h(i)=m_dlam(i1+1)-m_dlam(i1)
 
       do 11 n = 1, m_jmax
@@ -1570,7 +1630,7 @@ contains
         sig = f(k1)+f(k2)+4.*f(k2-1)
         if (k4.lt.k3) go to 16
         do 13 k = k3,k4,2
-        13 sig = sig+4.*f(k)+2.*f(k+1)
+          13 sig = sig+4.*f(k)+2.*f(k+1)
         16 s = sig*h(i)/3.
         12 som = som+s
 
@@ -1863,13 +1923,11 @@ contains
   !---------------------------------------------------------------------------------------
   ! Calculates m_fl and m_fc
   !
-  ! Similar to routines in flin.f90
+  ! Similar to routine in flin in pfantlib.f90
   !
-  !
-
 
   subroutine fluxis(fl, fc)
-    real*8, intent(out), dimension(MAX_MODELES_NTOT) :: fl
+    real*8, intent(out), dimension(NUM_POINTS) :: fl
     real*8, intent(out) :: fc
 
     real*8 :: cc(26),tt(26)
@@ -1899,14 +1957,14 @@ contains
       if (config_kik.eq.0) then
         ipoint = 6
         do i = 1,ipoint
-          cc(i)=cca(i)
-          tt(i)=tta(i)
+          cc(i) = CCA(i)
+          tt(i) = TTA(i)
         end do
       else
         ipoint = 26
         do i = 1,ipoint
-          cc(i)=ccb(i)
-          tt(i)=ttb(i)
+          cc(i) = CCB(i)
+          tt(i) = TTB(i)
         end do
       end if
     end if
@@ -1962,7 +2020,7 @@ end
 !
 ! or the parameters for a single file can be passed by command-line arguments. Run hydro2 --help for details.
 !
-! 
+!
 ! HYD2
 !
 ! MEUDON OBSERVATORY
@@ -1972,7 +2030,7 @@ end
 ! CE PROGRAMME A ETE ECRIT PAR F. PRADERIE (ANN D AP 1967)
 ! TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
 ! G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
-! 
+!
 !
 ! En sortie:
 !   - Un fichier de trace compatible avec GRAFIC (Nom demande)
@@ -1980,7 +2038,7 @@ end
 ! (JT) Now the velocity of microturbulence may vary with atmospheric depth;
 ! uses *main file* and subroutine turbul_(), same as pfant
 !
-! 
+!
 
 program hydro2
   use pfantlib

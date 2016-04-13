@@ -36,8 +36,8 @@ module dimensions
   ! amount to stretch calculation interval (both to the left and to the right)
   !
   real*8, parameter :: LAMBDA_STRETCH = 0.
-  ! assumed width of a hydrogen line
-  real*8, parameter :: H_LINE_WIDTH = 35.
+  ! assumed width of a hydrogen line (from center to end of tail)
+  real*8, parameter :: H_LINE_WIDTH = 100.
 
 
   !=====
@@ -46,9 +46,9 @@ module dimensions
 
   ! Maximum number of "filetoh" files
   integer, parameter :: MAX_FILETOH_NUM_FILES=13
-  ! maximum number of atmospheric layers for hydrogen lines (one line is calculated per layer)
-  integer, parameter :: MAX_FILETOH_JMAX=50
-  ! Tied with other constant by relation: @code MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1 @endcode
+  ! maximum number of points of each hydrogen line calculated (half of the line, from peak to either bottom)
+  integer, parameter :: MAX_FILETOH_JMAX=100
+  ! Tied with other constant by relation: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
   integer, parameter :: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
 
   !=====
@@ -2831,7 +2831,7 @@ module config
   real*8 :: config_llzero = -1 ! option: --llzero
   real*8 :: config_llfin  = -1 ! option: --llfin
   real*8 :: config_pas    = -1 ! option: --pas
-  real*8 :: config_aint   = 10 ! option: --aint
+  real*8 :: config_aint   = -1 ! option: --aint
                                !
                                ! It was found that subroutine selekfh() time varies is
                                ! approximately proportional to aint**2. Therefore, this
@@ -3796,7 +3796,7 @@ module reader_main
    main_afstar, & ! log10 of metallicity. Must match main_asalog
    main_llzero, & ! lower boundary of calculation interval
    main_llfin,  & ! upper boundary of calculation interval
-   main_aint_obsolete,   & ! length of each calculation sub-interval, *no longer used*
+   main_aint,   & ! length of each calculation sub-interval, *no longer used*
                            ! (now config_aint (which has a default value) is used instead)
    main_teff,   & ! effective temperature of the star
    main_glog,   & ! log10 of gravity
@@ -3901,15 +3901,15 @@ contains
     read(myunit, '(a)') main_flprefix
 
     ! row 09
-    read(myunit, *) main_llzero, main_llfin, main_aint_obsolete
+    read(myunit, *) main_llzero, main_llfin, main_aint
     ! Some interpolation routines don't deal well with lambda having decimal places, therefore
     ! gonna round them
     main_llzero = floor(main_llzero)
     main_llfin = ceiling(main_llfin)
-    main_aint_obsolete = floor(main_aint_obsolete)
+    main_aint = floor(main_aint)
 
     ! 101 format('read_main(): llzero=',f8.2,'; llfin=',f8.2,'; aint=',f6.2)
-    ! write(lll,101) main_llzero, main_llfin, main_aint_obsolete
+    ! write(lll,101) main_llzero, main_llfin, main_aint
     ! call log_info(lll)
 
     if (main_llzero .ge. main_llfin) then
@@ -4623,7 +4623,7 @@ contains
   subroutine read_filetoh(llzero, llfin)
     real*8, intent(in) :: llzero, llfin
     integer myunit
-    integer i, j, n, i_file
+    integer i, j, n, i_file, ntot
     character(len=:), allocatable :: fn_now
     real*8 :: clam
     logical :: must_exist, flag_inside
@@ -4652,11 +4652,16 @@ contains
         i = i+1
 
         read(myunit,'(a80)') filetoh_titre(i)
-        read(myunit,'(a11)') filetoh_ttt(i)
+        read(myunit,'(i6)') ntot
+        if (ntot .ne. modele%ntot) then
+          call log_and_halt('read_filetoh(): file "'//trim(fn_now)//&
+           '": number of atmospheric layers must be '//int2str(modele%ntot)//&
+           ', not '//int2str(ntot))
+        end if
         read(myunit,*) filetoh_jmax(i)
         read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
-        read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),&
-         j=1,filetoh_jmax(i)), n=1,modele%ntot)
+        read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
+        write(14, '(53e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
         close(myunit)
 
         ! Takes first lambda of file as a reference
@@ -4849,7 +4854,6 @@ contains
       read(myunit, *) absoru2_numset(ith)
       nset = absoru2_numset(ith)
       read (myunit,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
-      write(*,'(8f10.1)') (absoru2_wi(i,ith),i=1,nset)
     end do
   end
 end

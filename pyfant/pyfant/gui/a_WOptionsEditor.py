@@ -244,6 +244,8 @@ class WOptionsEditor(QWidget):
         self.w_fn_partit = QLineEdit()
         self.w_fn_abonds = QLineEdit()
         self.w_fn_atoms = QLineEdit()
+        self.w_fn_moo = QLineEdit()
+        self.w_fn_modgrid = QLineEdit()
         self.w_fn_molecules = QLineEdit()
         self.w_molidxs_off = QLineEdit()
         self.w_no_molecules = QCheckBox()
@@ -324,6 +326,17 @@ class WOptionsEditor(QWidget):
         #
         # (*) self.__add_option(self.w_modcode, 'i', 'modcode', 'string up to 25 characters', 'NoName',
         # (*)  '"Model name"')
+        self.__add_option(self.w_fn_modgrid, 'i', 'fn_modgrid', "grid.mod",
+         'atmospheric model grid (<b>without opacities</b>)',
+         'This is a binary file containing a grid of atmospheric models for interpolation.'
+         '<p>Whether this file or the one specified by <em>--fn_moo</em> will be used '
+         'will depend on the <em>--opa</em>option.')
+        self.__add_option(self.w_fn_moo, 'i', 'fn_moo', FileMoo.default_filename,
+         'atmospheric model grid (<b>with opacities</b>)',
+         'This is a binary file containing a grid of atmospheric models for interpolation, '
+         'opacities included.'
+         '<p>Whether this file or the one specified by <em>--fn_modgrid</em> will be used '
+         'will depend on the <em>--opa</em>option.')
         self.__add_option(self.w_allow, 'i', 'allow', False,
          'Allow point out of model grid?', 'If this option is disabled, target '
          ' (glog, teff, asalog) point for interpolation must lie inside the 3D '

@@ -905,7 +905,7 @@ module pfant_x
   implicit none
 
   character*128 :: x_flprefix
-  real*8 :: x_llzero, x_llfin, x_pas
+  real*8 :: x_llzero, x_llfin, x_pas, x_aint
 contains
 
   ! Initializes x_* variables
@@ -936,6 +936,12 @@ contains
       call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
     else
       x_pas = config_pas
+    end if
+    if (config_aint .eq. -1) then
+      x_aint = main_aint
+      call parse_aux_log_assignment('x_aint', real82str(x_aint, 0))
+    else
+      x_aint = config_aint
     end if
   end
 end
@@ -1080,8 +1086,8 @@ contains
     integer unit_spec, unit_cont, unit_norm, unit_lines, unit_log
     real*8 fn(MAX_DTOT)
     integer i, i1, i2, k, d, &
-     ikey,    & ! ikey-th config_aint-large calculation interval
-     ikeytot    ! total number of config_aint-large calculation intervals
+     ikey,    & ! ikey-th aint-large calculation interval
+     ikeytot    ! total number of aint-large calculation intervals
     real*8 l0, lf, alzero, xlfin, xlzero, incr
     ! auxiliary variables to time the different parts
     real :: start, finish, start0, finish0
@@ -1132,21 +1138,21 @@ contains
 
     ! initial calculation sub-interval
     xlzero = x_llzero-LAMBDA_STRETCH
-    xlfin = xlzero+config_aint+LAMBDA_STRETCH
+    xlfin = xlzero+x_aint+LAMBDA_STRETCH
 
     ! discovers the number of iterations
     if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) then
       ikeytot = 1
     else
       do i = 2,25000
-        xlfin = xlfin+config_aint
+        xlfin = xlfin+x_aint
         if(xlfin .ge. (x_llfin+LAMBDA_STRETCH)) exit
       end do
       ikeytot = i
     end if
 
     !m_lzero = x_llzero-LAMBDA_STRETCH
-    !m_lfin = m_lzero+config_aint+LAMBDA_STRETCH
+    !m_lfin = m_lzero+x_aint+LAMBDA_STRETCH
     ikey = 1
 
 
@@ -1169,7 +1175,7 @@ contains
       if (ikey .eq. 1) then
         m_lzero = l0
       else
-        m_lzero = x_llzero+config_aint*(ikey-1)
+        m_lzero = x_llzero+x_aint*(ikey-1)
       end if
 
       ! Note0: The last value of flux in iteration ikey equals
@@ -1178,7 +1184,7 @@ contains
       if (ikey .eq. ikeytot) then
         m_lfin = lf+x_pas
       else
-        m_lfin = x_llzero+config_aint*ikey-x_pas+x_pas
+        m_lfin = x_llzero+x_aint*ikey-x_pas+x_pas
       end if
 
       ! Note: (m_lfin-m_lzero) is constant except in the last iteration where m_lfin may be corrected
@@ -1314,8 +1320,8 @@ contains
       ikey = ikey+1
       if (ikey .gt. ikeytot) exit  ! main loop smooth exit
 
-      !m_lzero = m_lzero+config_aint
-      !m_lfin = m_lfin+config_aint
+      !m_lzero = m_lzero+x_aint
+      !m_lfin = m_lfin+x_aint
       !if(m_lfin .gt. (x_llfin+LAMBDA_STRETCH)) m_lfin = x_llfin+LAMBDA_STRETCH
     end do  ! main loop
 
@@ -1832,7 +1838,8 @@ contains
     do ih = 1,filetoh_num_files
       allhy = filetoh_llhy(ih)-m_lzero
 
-      if (((allhy .gt. 0) .and. (allhy .le. (config_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
+      ! TODO top priority H_LINE_WIDTH do be taken from file!!!
+      if (((allhy .gt. 0) .and. (allhy .le. (x_aint+H_LINE_WIDTH+LAMBDA_STRETCH))) .or. &
           ((allhy .lt. 0.) .and. (allhy .ge. (-H_LINE_WIDTH)))) then
         im = im+1
         iht = ih
@@ -1840,7 +1847,7 @@ contains
         !#logging
         712 format(1x,'im=',i3,2x,'lambda h=',f8.3,2x,'filename=',a,2x,'ih=',i5)
         write(lll,712) im, filetoh_llhy(ih), ''''//trim(filetoh_filenames(iht))//'''', iht
-        call log_info(lll)
+        call log_debug(lll)
 
         call calc_tauhi(ih)
 
@@ -1871,6 +1878,9 @@ contains
       hy_dhm = 0
       hy_dhp = 0
     end if
+
+    !write(20, '(50e12.4)') hy_tauh(1:modele%ntot, 1:m_dtot)
+    !stop -100
   end
 
   !=======================================================================================
@@ -1897,6 +1907,7 @@ contains
     ! write(*,*) 'CALCULATING TAUHI FOR FILE ', filetoh_filenames(i_file)
 
     now_jmax   = filetoh_jmax(i_file)
+    print *, now_jmax
     now_th     => filetoh_th(i_file, :, :)
     now_lambdh => filetoh_lambdh(i_file, :)
 

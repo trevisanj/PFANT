@@ -230,15 +230,12 @@ used to change the default name for the corresponding file
 --fn_molecules    | molecules.dat     | molecular lines
 --fn_partit       | partit.dat        | partition functions
                   | hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
-                  |   /   modlist.dat | list of NEWMARCS grids
-                  |  / newnewm150.mod | NEWMARCS grid listed in modlist.dat
-                  | -  newnewm100.mod | "
-                  |  \ newnewm050.mod | "
-                  |  | newnewp000.mod | "
-                  |   \newnewp025.mod | "
+                  | grid.mod or       | MARCS atmospheric model grid (models only)
+                  | grid.moo          | MARCS atmospheric model grid (models with opacities)
 
 *** created by innewmarcs ***
 --fn_modeles      | modeles.mod       | atmospheric model (binary file)
+--fn_opa          | opa.dat           | atmospheric model: opacities
 
 *** created by hydro2 ***
                   | thalpha           | hydrogen lines files

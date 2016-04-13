@@ -164,17 +164,16 @@ class WFileMain(QWidget):
         x.setBuddy(y)
         pp.append((x, y, "&llfin", "upper boundary of synthesis interval (&Aring;)", COLOR_CONFIG, LLZERO_LLFIN))
 
-        # "aint" made obsolete, value in main.dat no longer used by pfant
-        # x = self.label_aint = QLabel()
-        # y = self.lineEdit_aint = QLineEdit()
-        # y.installEventFilter(self)
-        # y.textEdited.connect(self.on_edited)
-        # y.setValidator(QDoubleValidator(0, 10, 5))
-        # x.setBuddy(y)
-        # pp.append((x, y, "&aint", "length of sub-interval (&Aring;)", COLOR_CONFIG,
-        #  "This is length of each calculation sub-interval "
-        #  "(the calculation interval ["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"] is split in sub-intervals of roughly "+enc_name("aint", COLOR_CONFIG)+" &Aring;)."
-        #  "<br><br>Note: "+enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+enc_name("pas", COLOR_CONFIG)+"."))
+        x = self.label_aint = QLabel()
+        y = self.lineEdit_aint = QLineEdit()
+        y.installEventFilter(self)
+        y.textEdited.connect(self.on_edited)
+        y.setValidator(QDoubleValidator(0, 10, 5))
+        x.setBuddy(y)
+        pp.append((x, y, "&aint", "length of sub-interval (&Aring;)", COLOR_CONFIG,
+        "This is length of each calculation sub-interval "
+        "(the calculation interval ["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"] is split in sub-intervals of roughly "+enc_name("aint", COLOR_CONFIG)+" &Aring;)."
+        "<br><br>Note: "+enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+enc_name("pas", COLOR_CONFIG)+"."))
 
         x = self.label_fwhm = QLabel()
         y = self.lineEdit_fwhm = QLineEdit()
@@ -279,7 +278,7 @@ class WFileMain(QWidget):
             self.lineEdit_pas.setText(str(o.pas))
             self.lineEdit_llzero.setText(str(o.llzero))
             self.lineEdit_llfin.setText(str(o.llfin))
-            # self.lineEdit_aint.setText(str(o.aint))
+            self.lineEdit_aint.setText(str(o.aint))
             self.lineEdit_fwhm.setText(str(o.fwhm))
         finally:
             self.flag_process_changes = True
@@ -326,8 +325,8 @@ class WFileMain(QWidget):
             o.llzero = float(self.lineEdit_llzero.text())
             ss = "llfin"
             o.llfin = float(self.lineEdit_llfin.text())
-            # ss = "aint"
-            # o.aint = float(self.lineEdit_aint.text())
+            ss = "aint"
+            o.aint = float(self.lineEdit_aint.text())
             ss = "fwhm"
             o.fwhm = float(self.lineEdit_fwhm.text())
 
