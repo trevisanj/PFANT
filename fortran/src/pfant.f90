@@ -1232,24 +1232,22 @@ contains
         call cpu_time(start)
         call calc_tauh()
         call cpu_time(finish)
-        call log_info("CALC_TAUH() Time = "//real42str(finish-start, 3)//" seconds.")
+        call log_debug("CALC_TAUH() Time = "//real42str(finish-start, 3)//" seconds.")
       end if
 
       if (.not. config_no_atoms) then
         ! -- V --
         ! Quantites dependant de la raie et du modele
-        call cpu_time(start)
+        !call cpu_time(start)
         call filter_atoms(m_lzero, m_lfin)
-        call cpu_time(finish)
-        call log_info("FILTER_ATOMS() Time = "//real42str(finish-start, 3)//" seconds.")
+        !call cpu_time(finish)
+        !call log_debug("FILTER_ATOMS() Time = "//real42str(finish-start, 3)//" seconds.")
 
         if (atoms_f_nblend .gt. 0) then
-          call cpu_time(start)
-
+          !call cpu_time(start)
           call popadelh()
-
-          call cpu_time(finish)
-          call log_info("POPADELH() Time = "//real42str(finish-start, 3)//" seconds.")
+          !call cpu_time(finish)
+          !call log_debug("POPADELH() Time = "//real42str(finish-start, 3)//" seconds.")
 
 
           ! -- VI --
@@ -1262,15 +1260,15 @@ contains
       end if
 
       if (.not. config_no_molecules) then
-        call cpu_time(start)
+        !call cpu_time(start)
         call filter_molecules(m_lzero, m_lfin)
-        call cpu_time(finish)
-        call log_debug("FILTER_MOLECULES() Time = "//real42str(finish-start, 3)//" seconds.")
+        !call cpu_time(finish)
+        !call log_debug("FILTER_MOLECULES() Time = "//real42str(finish-start, 3)//" seconds.")
 
-        call cpu_time(start)
+        !call cpu_time(start)
         call kapmol_()
-        call cpu_time(finish)
-        call log_debug("KAPMOL_() Time = "//real42str(finish-start, 3)//" seconds.")
+        !call cpu_time(finish)
+        !call log_debug("KAPMOL_() Time = "//real42str(finish-start, 3)//" seconds.")
       end if
 
       call cpu_time(start)
@@ -1721,7 +1719,8 @@ contains
 
         if (.not. config_no_opa) then
             ! TODO document this
-            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))*1.6602e-24
+            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))*2.e-24  !1.6606e-24
+            ! kappa_opa = (opa_abs(d, n)+opa_sca(d, n))/absoru_toc ! *1.6606e-24
         end if
 
         kappt(n) = kappa+kappam

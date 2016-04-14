@@ -101,8 +101,8 @@ def froze_it(cls):
 
     def frozensetattr(self, key, value):
         if self._frozen and not hasattr(self, key):
-            raise AttributeError("Class {} is frozen. Cannot set {} = {}"
-                  .format(cls.__name__, key, value))
+            raise AttributeError("Attribute '{}' of class '{}' does not exist!"
+                  .format(key, cls.__name__))
         else:
             object.__setattr__(self, key, value)
 

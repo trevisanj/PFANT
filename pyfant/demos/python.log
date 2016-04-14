@@ -2307,3 +2307,318 @@ OSError: [Errno 2] No such file or directory
 [INFO    ] Printing page 83/84 ('session-082-TH/flux.norm')
 [INFO    ] Printing page 84/84 ('session-083-U/flux.norm')
 [INFO    ] File separate-atoms.pdf successfully created.
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 276, in __run
+    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+FailedError: pfant failed (returncode=2)
+[INFO    ] ***finished: 0/2
+***time ellapsed: 0.000319s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 276, in __run
+    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+FailedError: pfant failed (returncode=2)
+[INFO    ] ***finished: 1/2
+***failed: 1
+***time ellapsed: 1s
+***time per runnable: 0.125s
+***time total estimate: 0.249s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 0.000338s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 1s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 2s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 1.39s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 3s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0.386s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 4.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 5.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 6.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 7.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 8.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 9.01s
+***time per runnable: 1.7s
+***time total estimate: 3.39s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 0.000315s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 1s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 2s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 1.4s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 3s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0.394s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 4.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 5.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 6.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 7.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 8.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 9.01s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 10s
+***time per runnable: 1.7s
+***time total estimate: 3.4s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 0.000384s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 1s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 2s
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 276, in __run
+    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+FailedError: pfant failed (returncode=-2)
+[ERROR   ] Pfant failed
+Traceback (most recent call last):
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/rm.py", line 449, in run
+    self.runnable.run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 200, in run
+    self.__run()
+  File "/home/j/Documents/projects/pfant/PFANT/pyfant/pyfant/runnables.py", line 276, in __run
+    raise FailedError("%s failed (returncode=%s)" % (self.__class__.__name__.lower(), self.__popen.returncode))
+FailedError: pfant failed (returncode=-2)
+[INFO    ] ***finished: 0/2
+***time ellapsed: 0.000328s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 1s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 2s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 3.01s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 4.01s
+[INFO    ] ***finished: 0/2
+***time ellapsed: 5.01s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 6.01s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 4.25s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 7.01s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 3.24s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 8.01s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 2.24s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 9.01s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 1.24s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 10s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0.239s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 11s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 12s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 13s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 14s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 15s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 16s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 17s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 18s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 19s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 20s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 21s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 22.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 23.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 24.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 25.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 26.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 27.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 28.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 29.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 30.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 31.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 32.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 33.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 34.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 35.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 36.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s
+[INFO    ] ***finished: 1/2
+***time ellapsed: 37.1s
+***time per runnable: 5.13s
+***time total estimate: 10.3s
+***time remaining estimate: 0s

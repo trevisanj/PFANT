@@ -151,6 +151,22 @@ class WOptionsEditor(QWidget):
         # ## Toolbar: checkboxes with executables
         l1 = self.layout_exes = QHBoxLayout()
         la.addLayout(l1)
+
+        w = self.label_filter = QLabel("<b>Fil&ter:</b>")
+        l1.addWidget(w)
+        w = self.lineEdit_filter = QLineEdit()
+        self.label_filter.setBuddy(w)
+        w.textEdited.connect(self.on_filter)
+        l1.addWidget(w)
+        w.setFixedWidth(100)
+
+        w = self.line12312 = QFrame() # vertical line
+        l1.addWidget(w)
+        # w.setGeometry(QRect(240, 240, 3, 61))
+        w.setFrameShape(QFrame.VLine)
+        w.setFrameShadow(QFrame.Sunken)
+        w.setFixedWidth(3)
+
         w0 = self.checkbox_i = QCheckBox("innewmarcs")
         w1 = self.checkbox_h = QCheckBox("hydro2")
         w2 = self.checkbox_p = QCheckBox("pfant")
@@ -165,7 +181,7 @@ class WOptionsEditor(QWidget):
         l1.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # ## Toolbar: checkbox for main configuration file override
-        l1 = self.layout_main = QHBoxLayout()
+        l1 = self.layout23432 = QHBoxLayout()
         la.addLayout(l1)
         w = self.checkbox_main = QCheckBox("Show options that override main configuration file")
         w.setStyleSheet("QCheckBox {color: %s}" % COLOR_CONFIG)
@@ -497,7 +513,7 @@ class WOptionsEditor(QWidget):
                         label.setToolTip("This option is used by %s." % _EXE_NAMES[letter   ])
 
                     option.other_widgets.append(label)
-                    lo.addWidget(label, i, 3+j)
+                    lo.addWidget(label, i, 3+j, Qt.AlignCenter)
                 label = option.label = \
                     QLabel(option.get_label_text())
                 label.setAlignment(Qt.AlignRight)
@@ -625,6 +641,11 @@ class WOptionsEditor(QWidget):
         w = XText(self, line, "Command line")
         w.show()
 
+    def on_filter(self):
+        if not self.flag_process_changes:
+            return
+        self.__update_visible_options()
+
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
@@ -715,11 +736,18 @@ class WOptionsEditor(QWidget):
         flag_main_goes = self.checkbox_main.isChecked()
         flag_devel_goes = self.checkbox_devel.isChecked()
         hidden_set_count = 0 # whether there will be set options hidden
-
+        s_filter = str(self.lineEdit_filter.text()).upper()
+        flag_filter = len(s_filter) > 0
         for option in self.omap:
             flag_visible = (flag_main_goes or not option.flag_main) and \
              (flag_devel_goes or not option.flag_devel) and \
              any([letter in option.ihpn for letter in ll])
+
+            if flag_visible and flag_filter:
+                flag_visible = s_filter in option.name.upper() or \
+                 s_filter in option.short_descr.upper() or \
+                 s_filter in option.long_descr.upper()
+
             option.checkbox.setVisible(flag_visible)
             option.label.setVisible(flag_visible)
             option.edit.setVisible(flag_visible)

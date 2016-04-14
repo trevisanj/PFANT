@@ -388,14 +388,15 @@ class VisOpa(Vis):
 
             for k in range(obj.ndp):
                 y = np.ones(len(x)) * (k + 1)
-                z = attr[:, k]
+                # z = attr[:, k]
+                z = np.log10(attr[:, k])
                 ax.plot(x, y, z, label='a', color='k')
                 # ax.set_xscale("log")
                 # ax.semilogx(x, y, z, label='a', color='k')
 
             ax.set_xlabel('log10(wavelength)')
             ax.set_ylabel('Layer #')
-            ax.set_zlabel(var)
+            ax.set_zlabel('log10(%s)' % var)
             ax.set_title("%s: %s" % (var, title))
 
         plt.show()

@@ -240,6 +240,7 @@ class FileSpectrumXY(FileSpectrum):
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:
+            print "xxxxxxxxxxxxxxxxxx", self.spectrum.x
             for x, y in zip(self.spectrum.x, self.spectrum.y):
                 write_lf(h, "%.10g %.10g" % (x, y))
 

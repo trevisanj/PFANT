@@ -233,11 +233,11 @@ used to change the default name for the corresponding file
                   | grid.mod or       | MARCS atmospheric model grid (models only)
                   | grid.moo          | MARCS atmospheric model grid (models with opacities)
 
-*** created by innewmarcs ***
+** created by innewmarcs **
 --fn_modeles      | modeles.mod       | atmospheric model (binary file)
 --fn_opa          | opa.dat           | atmospheric model: opacities
 
-*** created by hydro2 ***
+** created by hydro2 **
                   | thalpha           | hydrogen lines files
                   | thbeta            | "
                   | thgamma           | "

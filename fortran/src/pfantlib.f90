@@ -3625,6 +3625,8 @@ contains
     integer*4 natomm, nelemm
     dimension natomm(5), nelemm(5)
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_dissoc(): reading file '''//trim(path_to_file)//'''...')
     open(newunit=myunit,file=path_to_file, status='old')
 
     ! row 01
@@ -3838,6 +3840,9 @@ contains
     logical ecrit_obsolete
     real*8 temp
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_main(): reading file '''//trim(path_to_file)//'''...')
+
     open(newunit=myunit,file=path_to_file, status='old')
 
     ! row 01: object name, e.g. "sun"
@@ -3982,7 +3987,7 @@ module reader_models
     integer*4 :: ntot
 
     real*8 :: teff,    & ! Teff (Kelvin)
-              glog,    & ! log10(g) (g in [cm/s2])
+              glog,    & ! log10(g) (g in [cm/s^2])
               asalog,  & ! [Fe/H]
               asalalf, & ! [alpha/Fe]
               nhe        ! abundance of Helium: 10**([He/H]-12)
@@ -4187,6 +4192,8 @@ contains
             id_
     type(moo_record) :: r
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_modele(): reading file '''//trim(path_to_file)//'''...')
     call open_mod_file(path_to_file)
     call read_mod_record(1, r)
     call close_mod_file()
@@ -4291,6 +4298,9 @@ contains
     type(moo_record), allocatable, intent(out) :: recs(:)
     integer num_rec, iid
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_mod_grid(): reading file '''//trim(path_to_file)//'''...')
+
     num_rec = get_mod_num_records(path_to_file)
     allocate(recs(num_rec))
     call open_mod_file(path_to_file)
@@ -4328,8 +4338,13 @@ contains
     ! Variable used to skip a few characters
     character bid(MOD_RECL)
 
+
     num_rec = get_moo_num_records(path_to_file)
     allocate(recs(num_rec))
+
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_moo(): reading file '''//trim(path_to_file)//'''...')
+
     open(newunit=myunit, form='unformatted', access='stream',status='old', file=path_to_file)
     do iid = 1, num_rec
       ! print *, 'Record ', iid
@@ -4416,8 +4431,10 @@ contains
     integer myunit, i, k
     character mcode*4
 
-    open(newunit=myunit,file=path_to_file, status='old')
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_opa(): reading file '''//trim(path_to_file)//'''...')
 
+    open(newunit=myunit,file=path_to_file, status='old')
 
     read(myunit, '(1x,a4,i5,f10.0)') mcode, modele%ntot, modele%swave
     ! Validates "magic characters"
@@ -4532,6 +4549,9 @@ contains
     real*8 t_kiex
     real*8 t_c1
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_hmap(): reading file '''//trim(path_to_file)//'''...')
+
     call map_file_comments(path_to_file, skip_row, num_rows)
 
     open(newunit=myunit,file=path_to_file, status='old')
@@ -4557,12 +4577,12 @@ contains
 
 
     !#logging
-    call log_info('reader_hmap():')
-    call log_info('filename         na nb c.lambda     kiex       c1')
+    call log_debug('reader_hmap():')
+    call log_debug('filename         na nb c.lambda     kiex       c1')
     do i = 1, hmap_n
       11 format(a,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
       write(lll, 11) hmap_rows(i)
-      call log_info(lll)
+      call log_debug(lll)
     end do
   end
 end
@@ -4647,7 +4667,9 @@ contains
       end if
 
       if (flag_inside) then
-        open(err=111, unit=myunit,file=fn_now,status='old')
+      ! this logging message is important in case of errors to know which file it was
+      call log_info('read_filetoh(): reading file '''//trim(fn_now)//'''...')
+      open(err=111, unit=myunit,file=fn_now,status='old')
 
         i = i+1
 
@@ -4773,12 +4795,14 @@ contains
     character*3 neant
     integer nion, i, ith, j, nrr, nset
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_absoru2(): reading file '''//trim(path_to_file)//'''...')
+
     open(newunit=myunit,file=path_to_file, status='old')
 
     ! ABMET=ABONDANCE TOTALE DES METAUX (NMET/NH)
     ! ABHEL=ABONDANCE NORMALE D'HELIUM (NHE/NH)
     read (myunit,'(2e15.7)') absoru2_abmet, absoru2_abhel
-
 
     ! NM=NBR. D'ELEMENTS(+LOURD QUE HE)CONSIDERES DANS LA TABLE D'IONISATION
     ! NMETA=NOMBRE D'ABSORBANTS METALLIQUES CONSIDERES
@@ -4909,6 +4933,9 @@ contains
     if (.not. flag_read_main) then
       call log_and_halt('read_main() must be called before read_abonds()')
     end if
+
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_abonds(): reading file '''//trim(path_to_file)//'''...')
 
     open(newunit=myunit,file=path_to_file, status='old')
 
@@ -5785,9 +5812,9 @@ contains
 
   subroutine absoru_(wl,th,zlpe,callam,calth,calpe,calmet,calu,flag_hydro2)
     real*8, intent(in) :: &
-     wl,       & ! ?doc?
-     th,       & ! ?doc?
-     zlpe        ! ?doc?
+     wl,       & ! wavelength
+     th,       & ! teta = 5040./teff
+     zlpe        ! log of electron pressure (log(pe), pe given in dyn/cm^2)
     integer, intent(in) :: &
      callam, & ! flag ?doc?
      calth,  & ! flag ?doc?
@@ -5898,7 +5925,7 @@ contains
     mm=absoru2_nmeta+1
     mmm=absoru2_nmeta+6
     scatel=9.559063e-13*au_pe*th
-    ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-1
+    ! 9.559063E-13=4.81815E-9/5040.39 ET 4.81815E-9=6.625E-25/1.38024E-16
     ! =ELECTRON SCATTERING/(K*T)  UNSOLD P. 180 1955
 
     !86 format ('0LAMBDA KKK   c1'7x'mg'7x'si1'7x'al1'8x'h-'7x'h2-'7x'h2+'9x'h'7x'he+'8x'he'5x'k total/',2a4)
@@ -6738,7 +6765,7 @@ contains
 
   subroutine ionipe(th,zlpe,calth)
     real*8, intent(in) :: th, & ! ?doc?
-     zlpe ! ?doc?
+     zlpe ! log of electron pressure
     integer, intent(in) :: calth ! ?doc?
 
     real*8 any, cond, den, fun1, fun2, pa, parth, ph, phi, ppar, s, sigm1, &
@@ -6827,6 +6854,13 @@ contains
     au_rho = 1.6602e-24*parth*au_zmuze  ! 1.6602E-24: MASSE DE L'UNITE DE POIDS
     ! not used au_zmu=au_rho*41904.28e+7/(th*au_pg)  ! 41904.275E+7: 8.313697E+7*5040.39, OU
     !                                       ! 8.313697e+7: constante des gaz
+
+
+!print *, 'absoru_toc=', absoru_toc
+!print *, 'parth=', parth
+!print *, 'au_rho=', au_rho
+
+
   end subroutine ionipe
 end module absoru
 

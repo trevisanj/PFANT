@@ -12,7 +12,7 @@ from . import XRunnableManager
 from pyfant import *
 import os
 import os.path
-
+import re
 
 
 ################################################################################
@@ -227,7 +227,17 @@ class XMainAbonds(QMainWindow):
 
     def on_reset(self):
         if self.__tab_has_file_operations():
-            self.__generic_reset()
+            idx = self.__get_index()
+            editor = self.editors[idx]
+            flag_ok = True
+            if editor.f:
+                descr = self.__get_tab_description()
+                r = QMessageBox.question(self, "Load default", "Current setup "
+                 "for %s will be overwritten with a 'default' setup.\n\n"
+                 "Confirm?" % descr,QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+                flag_ok = r == QMessageBox.Yes
+            if flag_ok:
+                self.__generic_reset()
 
     def on_show_rm(self):
         if self._manager_form:
@@ -285,7 +295,18 @@ class XMainAbonds(QMainWindow):
     # Gear
 
     def __get_index(self):
+        """Returns index of current selected tab."""
         return self.tabWidget.currentIndex()
+
+    def __get_tab_description(self):
+        """Returns "description" of current tab (tab text without shortcut info)."""
+        idx = self.__get_index()
+        text = self.tab_texts[idx]
+        if "(" in text:
+            text = text[:text.index("(")-1]
+        text = text[0].lower() + text[1:]
+        return text
+
 
     def __generic_reset(self):
         index = self.__get_index()

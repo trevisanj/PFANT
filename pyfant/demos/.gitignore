@@ -6,3 +6,7 @@
 *.grid
 *.moo
 session*
+*.cont
+*.norm
+*.spec
+fort.*

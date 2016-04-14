@@ -277,14 +277,6 @@ class FileOpa(DataFile):
                 self.sca[:, k] = abs_sca[1::2]*self.ops[k]
 
 
-                # CLIP = 200
-                # self.nwav = CLIP
-                # self.wav = self.wav[:CLIP]
-                # self.abs = self.abs[:CLIP, :]
-                # self.sca = self.sca[:CLIP, :]
-                # print "FILEOPAFILEOPAFILEOPAFILEOPAFILEOPA"
-
-
 
 class MooRecord(AttrsPart):
     """

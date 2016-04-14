@@ -9,6 +9,9 @@ import os.path
 from .a_XPFANT import *
 from .a_WFileAbXFwhm import *
 
+WINDOW_WIDTH = 700
+WINDOW_HEIGHT = 768
+
 
 ################################################################################
 class XMulti(XPFANT):
@@ -72,6 +75,7 @@ class XMulti(XPFANT):
         l.addWidget(editor)
 
         # # Final adjustments
+        self.setGeometry(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
         # ## Registers data in a_XMainAbonds lists to automatically perform Load/Save/Save as
         self.tab_texts.append(TAB_TEXT_4)

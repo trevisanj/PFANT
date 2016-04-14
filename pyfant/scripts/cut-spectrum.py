@@ -9,6 +9,7 @@ The interval is [llzero, llfin]
 import argparse
 from pyfant import *
 import logging
+import sys
 
 misc.logging_level = logging.INFO
 
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     file_sp = load_spectrum(args.fn_input[0])
     if not file_sp:
         print "File '%s' not recognized as a spectrum file." % args.fn_input[0]
+        sys.exit()
 
     sp = file_sp.spectrum
     m = min(sp.x)
