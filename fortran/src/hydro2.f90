@@ -1,3 +1,18 @@
+! This file is part of PFANT.
+!
+! PFANT is free software: you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PFANT is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with PFANT.  If not, see <http://www.gnu.org/licenses/>.
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -5,6 +20,351 @@
 !
 ! *Note* Arrays passed to routines now have assumed-shape declarations + assertions against
 ! access beyond boundaries.
+
+module hydro2_math
+  use pfantlib
+  implicit none
+
+
+  ! Dimensions of some constants and variables
+  integer, parameter :: MAX_IL = 20, MAX_M = 5
+
+  ! Variables that were declared with dimension 220. modif_ih is the last valid index of
+  ! these vectors
+  integer, parameter :: MAX_MODIF_IH = 220
+
+  ! Maximum possible value for hjen() ii argument
+  integer, parameter :: MAX_MODIF_II = 300
+
+
+contains
+  !=======================================================================================
+  !  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
+
+  subroutine hjen(a,vh,del,phi,ii)
+    real*8, intent(in) :: a, vh(:), del
+    integer, intent(in) :: ii ! Length of vh and phi vectors
+    real*8, intent(out) :: phi(:)
+
+    real*8 :: v1(43),v2(43)
+    real*8, parameter :: &
+     H11(41) = (/ &
+      -1.128380,-1.105960,-1.040480,-0.937030,-0.803460, &
+      -0.649450,-0.485520,-0.321920,-0.167720,-0.030120, &
+      +0.085940,+0.177890, 0.245370, 0.289810, 0.313940, &
+       0.321300, 0.315730, 0.300940, 0.280270, 0.256480, &
+       0.231726, 0.207528, 0.184882, 0.164341, 0.146128, &
+       0.130236, 0.116515, 0.104739, 0.094653, 0.086005, &
+       0.078565, 0.072129, 0.066526, 0.061615, 0.057281, &
+       0.053430, 0.049988, 0.046894, 0.044098, 0.041561, &
+       0.039250/), &
+     H12(43) = (/ &
+       0.0440980,0.0392500,0.0351950,0.0317620,0.0288240, &
+       0.0262880,0.0240810,0.0221460,0.0204410,0.0189290, &
+       0.0175820,0.0163750,0.0152910,0.0143120,0.0134260, &
+       0.0126200,0.0118860,0.0112145,0.0105990,0.0100332, &
+       0.0095119,0.0090306,0.0085852,0.0081722,0.0077885, &
+       0.0074314,0.0070985,0.0067875,0.0064967,0.0062243, &
+       0.0059688,0.0057287,0.0055030,0.0052903,0.0050898, &
+       0.0049006,0.0047217,0.0045526,0.0043924,0.0042405, &
+       0.0040964,0.0039595,0.0038308/)
+
+    real*8 :: h1, v, w
+    integer :: i, k
+
+    call assert_le(ii, size(vh), 'hjen()', 'ii', 'size(vh)')
+    call assert_le(ii, size(phi), 'hjen()', 'ii', 'size(phi)')
+
+    ! SI V>3.9 LE CALCUL DE EXP(-V**2) EST INUTILE
+    do 100 k = 1,ii
+      v = vh(k)
+      if (v-12)1,1,2
+
+      2 w = 1./(2*v**2)
+      h1 = 2.*w*(1.+w*(3.+15.*w*(1.+7.*w)))
+      h1 = h1/RPI
+      go to 10
+
+      1 v1(1)=0.
+      v2(1)=03.8
+
+      do 5 i = 1,42
+        v1(i+1)=v1(i)+0.1
+        v2(i+1)=v2(i)+0.2
+      5 continue
+
+      if (v-3.9)3,3,4
+
+      4 h1 = ft(v,43,v2,H12)
+
+      10 phi(k) = (a*h1)/(RPI*del)
+      go to 100
+
+      3 h1 = ft(v,41,v1,H11)
+      phi(k) = (exp(-v**2)+a*h1)/(RPI*del)
+    100 continue
+  END
+
+
+
+
+  !=======================================================================================
+  ! ?doc?
+  !
+  ! Output: t
+
+  subroutine malt(th, u, beta, gam, t, iii)
+    integer, intent(in) :: iii ! maximum valid index of th and u
+    real*8, intent(in), dimension(:) :: th, u
+    real*8, intent(in) :: beta, gam
+    real*8, intent(out) :: t
+
+    real*8, dimension(150) :: asm ! Can't track down why 150
+
+    real*8 :: ah, aso, avu, h1, h2, pp, sig, sigma, sigma1, t1, t2, tb, to_, vu
+    integer :: i, ih1, ih2, im, in, ir
+
+    call assert_le(iii, size(th), 'malt()', 'iii', 'size(th)')
+    call assert_le(iii, size(u), 'malt()', 'iii', 'size(u)')
+
+    t1 = f_ta(dble(1.))
+    t2 = f_ta(dble(-1.))
+    vu = 0.
+    sigma = 0.
+    avu = vu
+    to_ = ft(avu,MAX_IL,u,th)
+    aso = f_as(dble(0.))
+    pp = beta+gam
+
+    if (pp-20.) 48,47,47  ! dunno if "20." is same as MAX_IL, but I think not, hope not
+
+    47 h1 = pp/100.
+    h2 = 0.
+    go to 606
+
+    48 if (pp-15.)50,49,49
+
+    49 ih1 = 100
+    ih2 = 10
+    go to 55
+
+    50 if (pp-10.)52,51,51
+
+    51 ih1 = 76
+    ih2 = 20
+    go to 55
+
+    52 if (pp-5.)54,53,53
+
+    53 ih1 = 50
+    ih2 = 30
+    go to 55
+
+    54 ih1 = 30
+    ih2 = 40
+
+    55 h1 = pp/ih1
+    h2 = (20.-pp)/ih2
+
+    606 ah = h1
+    in = 1
+    im = ih1-1
+    ir = ih1
+
+    59 do 56 i = in,ir
+      vu = vu+ah
+      avu = abs(vu)
+      to_ = ft(avu,MAX_IL,u,th)
+      56 asm(i)=f_as(vu)
+
+    do 57 i = in,im,2
+      sig = (1.333333*asm(i)+0.6666667*asm(i+1))*abs(ah)
+      57 sigma = sig+sigma
+
+    if (in-1)81,81,58
+
+    81 if (pp-20.)60,58,58
+
+    60 sigma = asm(ir)*(h2-h1)/3.+sigma
+    ah = h2
+    in = ih1+1
+    im = ih2+ih1-1
+    ir = im+1
+    go to 59
+
+    58 sigma = sigma-asm(ir)*abs(ah)/3.
+    if (ah) 63,62,62
+
+    62 sigma1 = sigma
+    vu = 0.
+    sigma = 0.
+    im = 40
+    in = 2
+    ir = im+1
+    ah=-0.5
+    go to 59
+
+    63 tb = (sigma+sigma1+aso*(h1+0.5)/3.)/PI
+    t = t1+t2+tb
+
+  contains
+    ! ?doc?
+
+    real*8 function f_as(vu_)
+      real*8, intent(in) :: vu_
+      f_as = to_*gam/(gam**2+(beta-vu_)**2)
+    end
+
+    ! ?doc?
+
+    real*8 function f_ta(x)
+      real*8, intent(in) :: x
+      real*8 :: aa, bb, q, rm, en, bca, aca, rca, fac, phi
+      bb = 2.*beta*x
+      aa = beta**2+gam**2
+      q = sqrt(aa)
+      rm = sqrt(2.*q-bb)
+      en = sqrt(2.*q+bb)
+      bca = bb**2
+      aca = aa**2
+      rca = sqrt(20.)
+      fac = (bca-aa)/(aca*q)
+      phi = bb/(4.*aca*rm)-fac/(4.*rm)
+      f_ta = (3.*gam/PI)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*log((20.+rca*rm+q)/&
+       (20.-rca*rm+q))+(fac/(2.*en))*(PI/2.-atan((20.-q)/(rca*en)))+&
+       (bb/(2.*aca*en))*(PI-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
+    end
+
+  end
+
+
+  !=======================================================================================
+  ! INTERPOLATION PARABOLIQUE
+  !  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
+  !  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
+  !
+  !  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
+  !
+  ! *Note* This routine is extremely similar to misc_math::ft2()
+
+  subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
+    integer, intent(in) :: &
+     n, & ! Last valid element of vectors x and y
+     itot ! Size valid element of vectors tt and ftt
+    real*8, intent(in) :: &
+     x(:),     & ! ?doc?
+     y(:),     & ! ?doc?
+     tt(:)    ! ?doc?
+    real*8, intent(out) :: &
+     ftt(:)   ! ?doc?
+    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
+    integer i, inv, j, k
+    real*8 dxa, dxz, xx1, xxn
+
+    call assert_le(n, size(x), 'ft2_hydro2()', 'n', 'size(x)')
+    call assert_le(n, size(y), 'ft2_hydro2()', 'n', 'size(y)')
+    call assert_le(itot, size(tt), 'ft2_hydro2()', 'itot', 'size(tt)')
+    call assert_le(itot, size(ftt), 'ft2_hydro2()', 'itot', 'size(ftt)')
+
+    inv = -1
+    if(x(n).lt.x(1) ) inv=1
+
+    ! DXA ET DXZ  : LIMITES SUPPORTABLES D EXTRAPOLATION
+    dxa=(x(2)-x(1))/10
+    dxz=(x(n)-x(n-1))/10
+    xx1=x(1)-dxa
+    xxn=x(n)+dxz
+
+    do k = 1,itot
+      t = tt(k)
+      if (inv) 5, 6, 6
+      5 continue
+      if ((t.lt.xx1) .or. (t.gt.xxn)) go to 10
+      do 1 j=1,n
+        i=j
+        if (t-x(j)) 3, 2, 1
+      1 continue
+      go to 3  ! ISSUE differs from ft2() above (should be go to 10?),
+               ! seems it is overriding something that should give an error
+
+      6 continue
+      if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
+      do 7 j=1,n
+        i = j
+        if (t-x(j)) 7,2,3
+      7 continue
+      go to 3  ! ISSUE differs from ft2() above (should be go to 10?),
+               ! seems it is overriding something that should give an error
+
+      2 continue
+      ft=y(j)
+      go to 4
+
+3     continue
+      if(i .eq. 1) i = 2
+      if(i .ge. n) i = n-1
+      t0=t-x(i-1)
+      t1=t-x(i)
+      t2=t-x(i+1)
+      u0=x(i+1)-x(i-1)
+      u1=x(i+1)-x(i)
+      u2=x(i)-x(i-1)
+      a=t0/u0
+      b=t1/u1
+      c=t2/u2
+      d=t0/u1
+      e=t1/u0
+      ft=y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
+
+      4 continue
+      ftt(k) = ft
+    end do
+    return
+
+    10 write(lll,100) X(1),X(N),T
+    100 format(5X,'ft2_hydro2(): ON SORT DE LA TABLE D INTERPOLATION :', &
+     /5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
+    call log_and_halt(lll)
+  end
+end
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Declaration and initialization of x_* variables
+!
+! These variable values may come either from *main file* or command-line options.
+
+module hydro2_x
+  use pfantlib
+  implicit none
+
+  real*8 :: x_llzero, x_llfin
+
+contains! Initializes x_* variables
+
+  subroutine hydro2_init_x()
+
+    ! duplicated in innewmarcs
+    x_llzero = config_llzero
+    if (config_llzero .eq. -1) then
+      x_llzero = main_llzero
+      call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
+    else
+      x_llzero = config_llzero
+    end if
+
+    x_llfin = config_llfin
+    if (config_llfin .eq. -1) then
+      x_llfin = main_llfin
+      call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
+    else
+      x_llfin = config_llfin
+    end if
+  end
+end
 
 
 
@@ -17,17 +377,17 @@
 
 module hydro2_calc
   use pfantlib
+  use hydro2_x
+  use hydro2_math
 
   implicit none
 
-  public hydro2_calc_, hydro2_init_x
+  public hydro2_calc_
 
   private
 
   ! command-line option: config_zph (default=12) because it will no longer be taken from file
 
-  ! variables that may come either from main.dat or command-line option
-  real*8, public :: x_llzero, x_llfin
 
 
 
@@ -55,89 +415,37 @@ module hydro2_calc
 
 
   !=====
-  ! m_* variables, shared between at least 2 of these: hydro2(), raiehu() and ameru()
+  ! p_* variables, shared between at least 2 of these: hydro2(), raiehu() and ameru()
   !=====
 
-  ! number of calculation points (semi-line including the center)
-  integer, parameter :: NUM_POINTS = 78
-  ! Also number of calculation points, but this is made =1 later below if LL=2
-  integer :: m_jmax = 55
+  ! ?doc?
+  !
+  ! TODO Gotta investigate if this m_jmax has the same meaning as many 46 in absoru_data.f and absoru.f90
+  ! gotta add parameter to absoru_data.f and absoru.f90
+  integer :: m_jmax = 46
+
   ! POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
-  real*8 :: m_dlam(NUM_POINTS)
-!  data m_dlam / 0.,   2.,  4.,  6.,   8., 10., 12., 14.,  16.,  18., 20.,22.,24.,26., &
-!                28., 30.,  32., 34.,  36, 38., 40., 42., 44., 46., &
-!                48., 50.,  52., 54., 56., 58., 60., 62., 64., 66., &
-!                68., 70./
-  data m_dlam / 0.,  0.01, .02, .03, .04, .05, .06, .08, .1, .125, &
-               .15,  .175, .20, .25, .30, .35, .40, .50, .60, .70, &
-               .80,  .90,   1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, &
-                2.,  2.5,   3., 3.5,  4., 4.5,  5.,  6.,  7.,  8., &
-                9.,  10.,  12., 14., 16., 18., 20., 22., 24., 26., &
-                28., 30.,  32., 34.,  36, 38., 40., 42., 44., 46., &
-                48., 50.,  52., 54., 56., 58., 60., 62., 64., 66., &
-                68., 70.,  75., 80., 85., 90., 95., 100./
+  real*8 m_dlam(50)
 
-  integer, parameter :: MAX_IQM = 15
-  integer :: m_iqm  ! the number of discontinuities within m_dlam
+  data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
+   .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
+   1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
+   15.,17.5,20.,25.,30.,35.,0.,0.,0.,0./
+
+
+
+  integer, parameter :: IQM = 9  ! Apparently, (the number of discontinuities within m_dlam)
   ! NUMEROS DES DISCONTINUITES DANS LES m_dlam
-  ! integer, parameter :: m_ij(m_iqm+1) = (/7,9,13,17,29,31,37,45,51,0/)
-  integer m_ij(0:MAX_IQM)
-
-  ! will use this to fill in m_ij automatically
-  ! real*8, parameter :: V_DISCONT(m_iqm) = (/0.06, 0.1, 0.2, 0.4, 1.6, 2., 5., 10., 70./)
-  !real*8, parameter :: V_DISCONT(m_iqm) = (/0.06, 0.1, 0.2, 0.4, 1.6, 2., 5., 10., 70., 100./)
-
-
-
-!  integer, parameter :: NUM_POINTS = 46
-!  integer :: m_jmax = NUM_POINTS
-!  ! POINTS DE LA RAIE OU ON EFFECTUE LE CALCUL
-!  real*8 m_dlam(NUM_POINTS)
-!  data m_dlam /0.,0.01,.02,.03,.04,.05,.06,.08,.1,.125,.15,.175, &
-!   .20,.25,.30,.35,.40,.50,.60,.70,.80,.90,1.,1.1,1.2,1.3, &
-!   1.4,1.5,1.6,1.8,2.,2.5,3.,3.5,4.,4.5,5.,7.5,10.,12.5, &
-!   15.,17.5,20.,25.,30.,35./
-!  integer, parameter :: m_iqm = 9  ! Apparently, (the number of discontinuities within m_dlam)
-!  ! NUMEROS DES DISCONTINUITES DANS LES m_dlam
-!  integer, parameter :: m_ij(m_iqm+1) = (/7,9,13,17,29,31,37,43,46,0/)
-
-
-
-  ! Dimensions of some constants and variables
-  integer, parameter :: MAX_IL = 20, MAX_M = 5
-
-
-  integer, parameter :: MODIF_FACTOR = 10  ! modif_var will have m_jmax*FACTOR+1 points
-
-
-  ! Variables that were declared with dimension 220
-  integer, parameter :: MAX_MODIF_II = 2000 ! (NUM_POINTS-1)*MODIF_FACTOR+1+300
-
-!  integer, parameter :: modif_n(MODIF_N_N) = (/11,21,23,171,191,351/)
-!  real*8, parameter :: modif_pas(MODIF_N_N) = (/0.001,0.01,0.045,0.1,0.25,0.5/)
-
-  !=====
-  ! Old common "MODIF"
-  !=====
-
-  integer :: modif_n(MAX_IQM)
-  real*8 :: modif_pas(MAX_IQM)
-
-
-  real*8, dimension(MAX_MODIF_II) :: modif_var, &  ! this is an delta-lambda list
-                                                   ! FACTOR times more resolved than m_dlam
-   modif_f1, modif_phi, modif_v
-  integer :: modif_ih, modif_ii
-
-
+  integer, parameter :: IJ(IQM+1) = (/7,9,13,17,29,31,37,43,46,0/)
 
   ! This information is passed to hydro2_calc_() and copied into m_th
   type(hmap_row) :: m_th
 
 
-  real*8 :: m_tau(NUM_POINTS,0:MAX_MODELES_NTOT)
-  real*8 :: m_al(NUM_POINTS, MAX_MODELES_NTOT)
+  real*8 :: m_tau(MAX_FILETOH_JMAX,0:MAX_MODELES_NTOT)
+  real*8 :: m_al(MAX_FILETOH_JMAX, MAX_MODELES_NTOT)
   real*8, dimension(0:MAX_MODELES_NTOT) :: m_bpl, m_tauc
+  real*8, dimension(MAX_FILETOH_JMAX) :: r
   real*8, dimension(MAX_MODELES_NTOT) :: m_kc, m_toth, m_pelog, m_hyn
 
 
@@ -157,102 +465,12 @@ module hydro2_calc
   integer :: nbmax = 0
 
 contains
-  !---------------------------------------------------------------------------------------------
-  ! Initializes x_* variables
-
-  subroutine hydro2_init_x()
-
-    ! duplicated in innewmarcs
-    x_llzero = config_llzero
-    if (config_llzero .eq. -1) then
-      x_llzero = main_llzero
-      call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
-    else
-      x_llzero = config_llzero
-    end if
-
-    x_llfin = config_llfin
-    if (config_llfin .eq. -1) then
-      x_llfin = main_llfin
-      call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
-    else
-      x_llfin = config_llfin
-    end if
-  end
-
-  !--------------------------------------------------------------------------------------
-  ! Figures out "m_ij" and "m_iqm" based on delta-lambdas
-
-  subroutine build_ij()
-    integer :: j, i
-    real*8 :: delta_now, delta_last, d
-    logical :: new_discontinuity
-
-    m_iqm = 0 ! counter of discontinuities
-    m_ij(0) = 0
-    modif_ih = 1    ! counter for modif_var, in the end will have value FACTOR*(m_jmax-1)+1
-    modif_var(1) = 0
-    delta_last = 0
-    do  j = 2, m_jmax+1
-      new_discontinuity = .false.
-
-
-      if (j .eq. (m_jmax+1)) then
-        ! the last index of m_dlam is also registered as a discontinuity
-        new_discontinuity = .true.
-      else
-        delta_now = m_dlam(j)-m_dlam(j-1)
-        d = delta_now/MODIF_FACTOR
-
-        do i = 1, MODIF_FACTOR
-          modif_ih = modif_ih+1
-          modif_var(modif_ih) = modif_var(modif_ih-1)+d
-        end do
-
-        if (delta_last .ne. 0) then
-          if (delta_now-delta_last .gt. 0.0001) then
-            new_discontinuity = .true.
-          end if
-        end if
-
-        delta_last = delta_now
-      end if
-
-      if (new_discontinuity) then
-        ! found discontinuity
-        m_iqm = m_iqm+1
-        m_ij(m_iqm) = j-1
-        modif_n(m_iqm) = (j-1)*MODIF_FACTOR+1
-        modif_pas(m_iqm) = delta_last/MODIF_FACTOR
-
-      print *, 'NEW NEW NEWNEW NEW NEWNEW NEW NEW', m_iqm, m_ij(m_iqm)
-
-      end if
-
-
-
-    end do
-    print *, 'Indices of the discontinuities: m_ij=', m_ij
-    call log_info(lll)
-    print *, 'modif_n=', modif_n(1:m_iqm)
-    print *, 'modif_pas=', modif_pas(1:m_iqm)
-    call log_info(lll)
-
-
-    if (modif_ih .ne. MODIF_FACTOR*(m_jmax-1)+1) &
-     call log_and_halt('build_i(): modif_ih should be '&
-      //int2str(int(MODIF_FACTOR*m_jmax+1))//', but it is '//int2str(modif_ih))
-!     stop -100
-
-  end
-
-
-
-
 
 
   !=======================================================================================
-  ! Calculates the hydrogen lines
+  ! Note: all write(6, ...) have been converted to logging at INFO level. Some of them
+  !       could be later removed or changed to DEBUG level.
+  !
 
   subroutine hydro2_calc_(arg_th)
     ! Hydrogen line specification
@@ -261,15 +479,13 @@ contains
     ! Enabled/disables lots of log_info() calls.
     ! This was originally being asked as "SORTIES INTERMEDIARIES (T/F)".
     ! This could be made into a config option or removed completely, if someone wishes either.
-    logical, parameter :: ECRIT = .true.
+    logical, parameter :: ECRIT = .TRUE.
 
-
-    real*8, dimension(NUM_POINTS) :: r, fl
-    real*8, dimension(MAX_MODELES_NTOT) :: ne
+    real*8, dimension(MAX_MODELES_NTOT) :: ne, fl
     real*8 :: fc, zut1, zut2, zut3
+
     integer :: i, iq, j, jj, n
 
-    call build_ij()
 
     ! Note that elements within structure are copied
     ! http://h21007.www2.hp.com/portal/download/files/unprot/fortran/docs/lrm/lrm0076.htm
@@ -299,12 +515,12 @@ contains
     !call log_info('    H gamma 2 5 4340.475 10.15   74.4776')
 
     if(ECRIT)   then
-      write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,m_iqm
+      write(lll,72) m_th%na,m_th%nb,m_th%clam,m_th%c1,m_th%kiex,J1,IQM
       72 format('  NA=',I4,' NB=',I4,' CLAM=',F14.3,' C1=',E12.7, ' X=',E12.7,&
-       ' J1=',I4,' m_iqm=',I4,10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
+       ' J1=',I4,' IQM=',I4,10X,'SI J1=0, CONVOLUTION PAR PROFIL DOPPLER')
       call log_info(lll)
-      write(lll,86) (m_ij(iq),iq=1,m_iqm)
-      86 format('  m_ij    =',10I5)
+      write(lll,86) (IJ(iq),iq=1,IQM)
+      86 format('  IJ    =',10I5)
       call log_info(lll)
 
       if(config_amores) call log_info(' AMORTISSEMENT RESONANCE')
@@ -345,32 +561,31 @@ contains
       m_toth(i) = absoru_toc
       m_kc(i) = absoru_totkap(1)
       m_hyn(i) = absoru_znh(absoru2_nmeta+4)
-
       ne(i) = modele%teta(i)*modele%pe(i)/cste
     end do
 
 
     call raiehu()
 
-    call log_debug(' VOUS CALCULEZ LE TAU SELECTIF')
+    call log_debug(' VOUS CALCULEZ LE m_tau SELECTIF')
     write(lll,*) 'APPEL AMERU pour CLAM=',m_th%clam
     call log_debug(lll)
     call ameru()
 
     if(ECRIT) then
-      write(lll,'(1H1,40X,''CALCUL DE TAU SELECTIF'')')
+      write(lll,'(1H1,40X,''CALCUL DE m_tau SELECTIF'')')
       call log_info(lll)
       do  i=1,modele%ntot, 5
-        write(lll,'(''NIVEAU '',I5,'' -- TAU='')') i
+        write(lll,'(''NIVEAU '',I5,'' -- m_tau='')') i
         call log_debug(lll)
-        !write (6,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
-        !call log_debug(lll)
+        write (lll,'('//int2str(m_jmax)//'F10.3)') (m_tau(j,i),j=1,m_jmax)
+        call log_debug(lll)
       end do
       write(lll,'(10X,A)') modele%tit
       call log_info(lll)
 
       write(lll,121)
-      121 format(7X,'TAU',5X,'NH',1X,'TETA LOGPE  KC/NOYAU_DE_H',&
+      121 format(7X,'m_tau',5X,'modele%nh',1X,'modele%teta LOGPE  KC/NOYAU_DE_H',&
        '            VT           NE         TOTH')
       call log_debug(lll)
       do i = 1, modele%ntot
@@ -471,8 +686,8 @@ contains
   ! l'abondance des elements lourds pour 1at d'H
   ! Les elements alfa sont reconnus par leur masse
   !
-  ! **warning** This routine overwrites variables absoru2_zp absoru2_abmet,
-  !             which are initially read from *absoru2 file*
+  ! @warning This routine overwrites variables absoru2_zp absoru2_abmet,
+  !          which are initially read from *absoru2 file*
 
   SUBROUTINE abonio()
     ! nbre d'elements alfa reconnus par leur masse ALFAM
@@ -499,9 +714,9 @@ contains
 
       if (ialfa .gt. 0) then
         ! Overwrites value read from file if ialfa > 0
-        absoru2_zp(j) = absoru2_zp(j) * coefalf
+        absoru2_zp(J) = absoru2_zp(J) * coefalf
       end if
-    end do
+    end do   ! fin de la bcle sur j
 
     som1 = 0
 
@@ -548,14 +763,22 @@ contains
     ! Verbose flag that was kept, but set internally, not as a parameter as originally
     ! SI IND=0,ON ECRIT LE DETAIL DES APPROX. PAR LESQUELLES m_al EST CALCU
     ! SI IND=1, PAS D'ECRITURE
-    integer, parameter :: IND = 0
+    integer, parameter :: IND = 1
 
+
+    !=====
+    ! Old common "MODIF"
+    !=====
+    real*8 :: &
+     modif_var(MAX_MODIF_IH),modif_f1(MAX_MODIF_IH), &
+     modif_phi(MAX_MODIF_II),modif_v(MAX_MODIF_II)
+    integer :: modif_ih, modif_ii
 
     !=====
     ! Other local variables
     !=====
-    real*8, dimension(NUM_POINTS, MAX_MODELES_NTOT) :: bidon
-    real*8, dimension(NUM_POINTS) :: al_, alfa, lv, vx, x, xdp, resc
+    real*8, dimension(MAX_FILETOH_JMAX, MAX_MODELES_NTOT) :: bidon
+    real*8, dimension(MAX_FILETOH_JMAX) :: al_, alfa, lv, vx, x, xdp, resc
     real*8, dimension(MAX_MODELES_NTOT) :: stoc, az
     real*8, dimension(MAX_IL) ::res
     real*8, dimension(MAX_M) :: q
@@ -563,9 +786,9 @@ contains
      bcte, beta, bic, bom, br, br4, cab, cam, cam1, cam2, ceg, ci, cl2, cne, corr, corr1,&
      corr2, ct, cty, dan, dcte, dd, dd1, ddop, delie, delom, delp, delta, din, dld, &
      dmoin, ds, ecte, ens, f, fac, g, gam, gam1, gams, fo, ho
-    integer :: i, ib, ibou, ig, ik, ik1, ikd, ikf, ikt, il, iy, iz, j, k, &
+    integer :: i, i4, ib, ibou, ical, id, ig, ik, ik1, ikd, ikf, ikt, il, iy, iz, j, k, &
      k1, kp, l1, m, n, n2, nb1
-    real*8 :: pak, qbeta, qrsurl, rac, rad, ris, rj, rj2, rnt, rsurl, rvar, rzr, s, &
+    real*8 :: pak, pas, qbeta, qrsurl, rac, rad, ris, rj, rj2, rnt, rsurl, rvar, rzr, s, &
      s1, t, tdeg, tdens, tempor, timp, truc, tv, xb, z2, z3, z5, zdem, zr
 
 
@@ -621,7 +844,7 @@ contains
     z3 = z2*zr
     z5 = z3*z2
     zdem = zr**2.5
-    rzr = R*zr
+    rzr = r*zr
     a2 = ar**2
     go to (1,2),LL
 
@@ -634,9 +857,9 @@ contains
     do 70 j = n,n2
       rj = j
       rj2 = rj**2
-      x(j) = rj2*a2*1.0e+8/(rzr*(rj2-a2))
-      xdp(j) = dble(x(j))
-      m_dlam(j) = dabs(m_th%clam-xdp(j))
+      x(j)=rj2*a2*1.0e+8/(rzr*(rj2-a2))
+      xdp(j)=dble(x(j))
+      m_dlam(j)=dabs(m_th%clam-xdp(j))
     70 continue
 
 
@@ -678,7 +901,7 @@ contains
     !     REPRISE DE LA SEQUENCE NORMALE
     16 br = m_th%nb
     b2 = br**2
-    xb = b2*a2*1.0e+8/(R*(b2-a2))
+    xb = b2*a2*1.0e+8/(r*(b2-a2))
     xbdp = dble(xb)
     delta = dabs(m_th%clam-xbdp)
 
@@ -718,62 +941,45 @@ contains
     din = b2a2/ho
     dan = g/(b2a2*ho)
 
-!    ! CALCUL DE QUANTITES NECESSAIRES A CONV4 INDEPENDANTES DU MODELE ET DU
-!    ! PROFIL
-!    pas = 0.001
-!    modif_var(1) = 0.
-!    id = 2
-!    i4 = 11
-!    ical = 0
+    ! CALCUL DE QUANTITES NECESSAIRES A CONV4 INDEPENDANTES DU MODELE ET DU
+    ! PROFIL
+    pas = 0.001
+    modif_var(1)=0.
+    id = 2
+    i4 = 11
+    ical = 0
 
-!    ! this creates an unevenly spaced x-axis values for interpolations, from 0.0 to 100.
-!    260 do 250 i = id,i4
-!      modif_var(i) = modif_var(i-1)+pas
-!    250 continue
+    260 do 250 i = id,i4
+      modif_var(i)=modif_var(i-1)+pas
+    250 continue
 
-!    ical = ical+1
-!    id = i4+1
-!    go to(200,201,202,203,204,205),ical
+    ical = ical+1
+    id = i4+1
+    go to(200,201,202,203,204,205),ical
 
-!    200 i4 = 21
-!    pas = 0.01
-!    go to 260
+    200 i4 = 21
+    pas = 0.01
+    go to 260
 
-!    201 i4 = 23
-!    pas = 0.045
-!    go to 260
+    201 i4 = 23
+    pas = 0.045
+    go to 260
 
-!    202 i4 = 171
-!    pas = 0.10
-!    go to 260
+    202 i4 = 171
+    pas = 0.10
+    go to 260
 
-!    203 i4 = 191
-!    pas = 0.25
-!    go to 260
+    203 i4 = 191
+    pas = 0.25
+    go to 260
 
-!    204 i4 = 351  !(JT) this was 211
-!    pas = 0.5
-!    go to 260
+    204 i4 = 211
+    pas = 0.5
+    go to 260
 
-!    !205 i4 = 321
-!    !pas = 1.
-!    !go to 260
-
-!    !
-!    !     CALCUL DE QUANTITES DEPENDANT DU MODELE
-
-!    205 modif_ih = i4
-
-
-! todo cleanup
-!write (45, '(e14.6)') (modif_var(i), i=1,modif_ih)
-!stop -100
-
-! todo cleanup
-! print *, modif_var(1:i4)
-! print *, '----', i4
-! stop -100
-
+    !
+    !     CALCUL DE QUANTITES DEPENDANT DU MODELE
+    205 modif_ih = i4
     call log_debug('VOUS ENTREZ DANS LA BOUCLE LA PLUS EXTERIEURE QUI '//&
      'PORTE SUR L INDICE DU NIVEAU DU MODELE')
     do 17 i = 1,modele%ntot
@@ -831,18 +1037,16 @@ contains
 
       94 if (LL-1) 19,19,20
 
-
-
       !     CALCUL AUX DIFFERENTS POINTS DU PROFIL
 
       19 m_jmax = 1  ! this is OK, this is not executed as long as LL>=2
 
+
       call log_debug(' VOUS ENTEZ DANS LA BOUCLE INTERIEURE QUI PORTE SUR L INDICE DE POINT DU PROFIL')
       20 do 1010 j = 1,m_jmax
-        alfa(j) = m_dlam(j)/fo
+        alfa(j)=m_dlam(j)/fo
         beta = alfa(j)/cab
         iz = 1
-
         if (alfa(j).lt.1.e-07) go to 23
 
         s1 = ct/alfa(j)**2.5
@@ -850,7 +1054,6 @@ contains
 
         rac = m_dlam(j)**0.5
         corr = log(delom/m_dlam(j))/dd
-
 
         23 if (m_dlam(j)-lim) 21,22,22
 
@@ -988,7 +1191,7 @@ contains
         go to 1036
 
         1039 if (IND.eq.1) go to 88
-        write(lll,'(''   GAMMA.LT.10 GAMMA='',E17.7)') gam
+        write(6,'(''   GAMMA.LT.10 GAMMA='',E17.7)') gam
         call log_debug(lll)
 
         !     INTERPOLATION DANS T1 OU T2 POUR CONSTRUCTION DU PROFIL QUASISTAT.
@@ -1035,8 +1238,7 @@ contains
 
         1036 ci = t/cab
 
-        27 m_al(j,i) = fac*ci
-
+        27 m_al(j,i)=fac*ci
         if (IND.eq.1) go to 1010
         ! WRITE (6,1043) J,m_dlam(J),ALFA(J),BETA,m_al(J,I)
       1010 continue
@@ -1048,9 +1250,9 @@ contains
         lv(j)=m_al(j,i)
         l1 = m_jmax-j+1
         vx(l1)=alfa(j)
-        1013 al_(l1) = log10(lv(j))
+        1013 al_(l1)=log10(lv(j))
 
-      if (.not. config_amores) go to 4013
+      if (.not.config_amores) go to 4013
 
       call pronor() ! calculates ax
 
@@ -1075,7 +1277,7 @@ contains
       1051 ds = alfa(j)
       go to 1057
 
-      1052 if (j .eq. 2) go to 6000
+      1052 if (j.eq.2) go to 6000
 
       ds = ft(truc,m_jmax,al_,vx)
       go to 1057
@@ -1084,7 +1286,7 @@ contains
 
       1057 if (.not.IS_STARK) go to 71
       if (IND.eq.0) then
-        write(lll,'(''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
+        write(6,'(''   DEMI LARGEUR DU PROFIL STARK  DS='',E17.7)') ds
         call log_debug(lll)
       end if
 
@@ -1111,7 +1313,7 @@ contains
 
       28 do 1006 j = 1,m_jmax
         lv(j) = lv(j)*ax
-        1006 bidon(j,i) = lv(j)
+        1006 bidon(j,i)=lv(j)
 
       tempor = alfa(m_jmax)-0.7071068*alfad
       atest = 4.*aldp
@@ -1126,10 +1328,10 @@ contains
 
         1074 call conv2(j)
 
-        1075 m_al(j,i) = ris
+        1075 m_al(j,i)=ris
         if (IND.eq.1) go to 1011
         if (ib.eq.1) go to 1080
-        write(lll,'(''   CONV2='',1P,E16.5)')m_al(j,i)
+        write(6,'(''   CONV2='',1P,E16.5)')m_al(j,i)
         call log_debug(lll)
         go to 1011
         1080 write(lll,'(''   CONF ='',1P,E16.5)') m_al(j,i)
@@ -1141,196 +1343,42 @@ contains
       ! ERA POUR CHAQUE POINT DU PROFIL
       ! ON RESSERRE LA TABLE DE PHI,POUR V COMPRIS ENTRE 1 ET 4,SOIT modif_var COMPR
       ! ENTRE DLD/2 ET 2*DLD
-
-      4100 continue
-
-
- !print *, 'modif_ih', modif_ih, '; modif_var(end)', modif_var(modif_ih)
-!!  stop -100
-
-!print *, "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-!write(52,'(e14.5)') modif_var(1:modif_ih)
-
-
-      call ft2_hydro2(m_jmax,m_dlam,lv,modif_ih,modif_var,modif_f1)
-
-
-!print *, "#################################"
-
-
+      4100 call ft2_hydro2(m_jmax,m_dlam,lv,modif_ih,modif_var,modif_f1)
       ! call log_debug(' VOUS PASSEZ AU NIVEAU SUIVANT')
-
-
-
-  !    b1 = dld/2
-  !    b2 = 2*dld
-  !    cty = 2./dld
-  !    do 229 ik = 1,modif_ih
-  !      if (modif_var(ik).lt.b1) go to 219
-!
-  !      ikd = ik-1
-  !      go to 228
-!
-  !      219 modif_v(ik)=modif_var(ik)*cty
-  !    229 continue
-!
-  !    228 do 227 ik = ikd,modif_ih
-  !      if (modif_var(ik).lt.b2) go to 227
-  !      ikf = ik
-  !      go to 226
-  !    227 continue
-!
-  !    226 ikt = 4*(ikf-ikd)
-  !    pak = (modif_var(ikf)-modif_var(ikd))/float(ikt)
-  !    pak = pak*cty
-  !    do 225 ik = 1,ikt
-  !      modif_ii = ik+ikd
-  !      modif_v(modif_ii)=modif_v(ikd)+pak*float(ik)
-  !    225 continue
-  !    ikf = ikf+1
-  !    do 218 ik = ikf,modif_ih
-  !      modif_ii = modif_ii+1
-  !      modif_v(modif_ii)=cty*modif_var(ik)
-  !    218 continue
-  !    modif_ii = modif_ii+1
-  !    modif_v(modif_ii) = modif_v(modif_ii-1)+5*cty
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  !    b1 = dld/2
-  !    b2 = 2*dld
-  !    cty = 2./dld
-  !    do 229 ik = 1,modif_ih
-  !      if (modif_var(ik).lt.b1) go to 219
-!
-  !      ikd = ik-1
-  !      go to 228
-!
-  !      219 modif_v(ik)=modif_var(ik)*cty
-  !    229 continue
-!
-  !    228 do 227 ik = ikd,modif_ih
-  !      if (modif_var(ik).lt.b2) go to 227
-  !      ikf = ik
-  !      go to 226
-  !    227 continue
-!
-  !    226 ikt = 4*(ikf-ikd)
-  !    pak = (modif_var(ikf)-modif_var(ikd))/float(ikt)
-  !    pak = pak*cty
-  !    do 225 ik = 1,ikt
-  !      modif_ii = ik+ikd
-  !      modif_v(modif_ii)=modif_v(ikd)+pak*float(ik)
-  !    225 continue
-  !    ikf = ikf+1
-  !    do 218 ik = ikf,modif_ih
-  !      modif_ii = modif_ii+1
-  !      modif_v(modif_ii)=cty*modif_var(ik)
-  !    218 continue
-  !    modif_ii = modif_ii+1
-  !    modif_v(modif_ii) = modif_v(modif_ii-1)+5*cty
-
-
-
-
-
-modif_ii = modif_ih
-modif_v = 2./dld*modif_var
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-print *, '777777777777777777777777777777', modif_ih, modif_ii
-! stop -100
-
-
-
-! todo cleanup
-if (i .eq. 1) then
-  write(46,'(e20.10)') (modif_v(ik),ik=1,modif_ii)
-end if
-!stop -100
-!print *, modif_v(374)
-!print *, modif_v(375)
-!print *, modif_v(376)
-!print *, modif_v(377)
-!print *, modif_v(378)
-!print *, modif_v(379)
-!print *, modif_ii
-
-
+      b1 = dld/2
+      b2 = 2*dld
+      cty = 2./dld
+      do 229 ik = 1,modif_ih
+        if (modif_var(ik).lt.b1) go to 219
+
+        ikd = ik-1
+        go to 228
+
+        219 modif_v(ik)=modif_var(ik)*cty
+      229 continue
+
+      228 do 227 ik = ikd,modif_ih
+        if (modif_var(ik).lt.b2) go to 227
+        ikf = ik
+        go to 226
+      227 continue
+
+      226 ikt = 4*(ikf-ikd)
+      pak = (modif_var(ikf)-modif_var(ikd))/float(ikt)
+      pak = pak*cty
+      do 225 ik = 1,ikt
+        modif_ii = ik+ikd
+        modif_v(modif_ii)=modif_v(ikd)+pak*float(ik)
+      225 continue
+      ikf = ikf+1
+      do 218 ik = ikf,modif_ih
+        modif_ii = modif_ii+1
+        modif_v(modif_ii)=cty*modif_var(ik)
+      218 continue
+      modif_ii = modif_ii+1
+      modif_v(modif_ii) = modif_v(modif_ii-1)+5*cty
       call hjen(az(i), modif_v, dld, modif_phi, modif_ii)
-
-
-!if (i .eq. 1) then
-!  write(47,'('//int2str(modif_ii)//'e20.10)') modif_phi(1:modif_ii)
-!  print *, 'delta=', dld, 'a=', az(i)
-!  print *, 'modif_ii=', modif_ii
-!  stop -100
-!end if
-
       call conv4()
-
-
-!if (i .eq. 1) then
-!  write(47,'(e20.10)') (modif_phi(ik),ik=1,modif_ii)
-!  write(48,'('//int2str(m_jmax)//'e20.10)') (resc(k), k=1,m_jmax)
-!  print *, 'delta=', dld, 'a=', az(i)
-!  print *, 'modif_ii=', modif_ii
-!  print *, 'aaaaaaaaaaaaaaaaaaaaaaaaaa'
-  ! stop -100
-!end if
-
       do 1017 k = 1,m_jmax
         m_al(k,i)=resc(k)
       1017 continue
@@ -1342,9 +1390,9 @@ end if
       write(lll,'(''1'',''STARK='')')
       call log_debug(lll)
       do 4010 i = 1,modele%ntot,5
-        write(lll,'('' COUCHE'',I4)') i
+        write(6,'('' COUCHE'',I4)') i
         call log_debug(lll)
-        write(lll,'(8X,A, E12.5, A, E12.5)') 'bidon(1,i)=', bidon(1,i), '; bidon(m_jmax,i)=', bidon(m_jmax,i)
+        write(6,'(8X,10E12.5)') (bidon(k,i),k=1,m_jmax)
         call log_debug(lll)
       4010 continue
       4011 continue
@@ -1360,9 +1408,9 @@ end if
 
     !***************************
     !  IMPRESSIONS SUPPLEMENTAIRES
-    write(lll,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
+    write(6,'(5X,''NA='',I5,5X,''NB='',I5)')m_th%na,m_th%nb
     call log_debug(lll)
-    write(lll,'(8(1P,E15.7))')(m_al(1,i),i=1,modele%ntot)
+    write(6,'(8(1P,E15.7))')(m_al(1,i),i=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
@@ -1394,13 +1442,13 @@ end if
     !  IMPRESSIONS SUPPLEMENTAIRES
     write(lll,'(10X,''COEF. SOMME (BLEND)'')')
     call log_debug(lll)
-    write(lll,'(8(1P,E15.7))')(m_al(1,I),I=1,modele%ntot)
+    write(6,'(8(1P,E15.7))')(m_al(1,I),I=1,modele%ntot)
     call log_debug(lll)
 
     !***************************
     go to 1027
     1025 write(lll,1046) I,J
-    1046 format('raiehu(): error: RZERO/LAMBDA SUP. A 0.8     I=',I4,'     J=',I4,'ON SORT DU SSP')
+    1046 format('      RZERO/LAMBDA SUP. A 0.8     I=',I4,'     J=',I4,'ON SORT DU SSP')
     call log_debug(lll)
 
 
@@ -1419,11 +1467,10 @@ end if
     ! Calculates variable resc
 
     subroutine conv4()
-      ! This needs to be updated according to the logic at labels 201-206 in raiehu()
-!      integer, parameter :: N(6) = (/11,21,23,171,191,351/)
-!      real*8, parameter :: PAS(6) = (/0.001,0.01,0.045,0.1,0.25,0.5/)
+      integer, parameter :: N(6) = (/11,21,23,171,191,211/)
+      real*8, parameter :: PAS(6) = (/0.001,0.01,0.045,0.1,0.25,0.5/)
 
-      real*8, dimension(MAX_MODIF_II) :: ac, phit
+      real*8, dimension(MAX_MODIF_IH) :: ac, phit
       real*8 :: bol, epsi, q, qy, ff1, ff2, ff4, res, res1, resg, som
       integer :: i, ir, j, k, kk
 
@@ -1435,22 +1482,11 @@ end if
         qy = q/dld
         25 res = 0.
         resg = 1.
-        do i = 1,modif_ih
-          ac(i) = abs(bol-qy*modif_var(i))
-        end do
+        do 50 i = 1,modif_ih
+          ac(i)=abs(bol-qy*modif_var(i))
+        50 continue
 
-! todo cleanup
-! Ddddddddddddddddddddddddddifference between ii and ih???????????????
-! print *, '41004100410041004100410041004100410041004100 B4'
-! print *, modif_ii
-!print *, modif_v(1:modif_ii)
-!print *, modif_phi(1:modif_ii)
-! print *, modif_ih
-!print *, ac(1:modif_ih)
         call ft2_hydro2(modif_ii,modif_v,modif_phi,modif_ih,ac,phit)
-
-! print *, '41004100410041004100410041004100410041004100 AFTER'
-
 
         i = 1
         k = 1
@@ -1459,14 +1495,14 @@ end if
         do 10 i = 2,modif_ih,2
           ff4 = 4*modif_f1(i)*phit(i)
           j = i+1
-          if ((i+1) .eq. modif_n(k)) go to 15
+          if ((i+1).eq.n(k)) go to 15
           ff2 = 2*modif_f1(i+1)*phit(i+1)
           som = som+ff4+ff2
           go to 10
 
           15 ff1 = modif_f1(i+1)*phit(i+1)
           som = som+ff4+ff1
-          res = res+som*modif_pas(k)/3
+          res = res+som*pas(k)/3
           if (abs(1.-res/resg).lt.epsi) go to 45
           som = ff1
           resg = res
@@ -1502,13 +1538,13 @@ end if
       integer, intent(in) :: j
 
       real*8 :: h(10), q, bol, s, som, s1, s2, sig
-      real*8, dimension(NUM_POINTS) :: v, ac, f
+      real*8, dimension(MAX_FILETOH_JMAX) :: v, ac, f
       integer :: ir, n, i, i1, k, k1, k2, k3, k4
 
       bol = m_dlam(j)/dld
       h(1) = m_dlam(2)
-      do 10 i = 2,m_iqm
-         i1 = m_ij(i-1)
+      do 10 i = 2,IQM
+         i1 = IJ(i-1)
          10 h(i)=m_dlam(i1+1)-m_dlam(i1)
 
       do 11 n = 1, m_jmax
@@ -1522,19 +1558,19 @@ end if
         15 f(n) = lv(n)*exp(ac(n))
 
       som = 0.
-      do 12 i = 1,m_iqm
+      do 12 i = 1,IQM
         if (i.gt.1) go to 20
         k1 = 1
-        k2 = m_ij(1)
+        k2 = IJ(1)
         go to 21
-        20 k1 = m_ij(i-1)
-        k2 = m_ij(i)
+        20 k1 = IJ(i-1)
+        k2 = IJ(i)
         21 k3 = k1+1
         k4 = k2-3
         sig = f(k1)+f(k2)+4.*f(k2-1)
         if (k4.lt.k3) go to 16
         do 13 k = k3,k4,2
-          13 sig = sig+4.*f(k)+2.*f(k+1)
+        13 sig = sig+4.*f(k)+2.*f(k+1)
         16 s = sig*h(i)/3.
         12 som = som+s
 
@@ -1553,24 +1589,24 @@ end if
     ! Result goes in ax
 
     subroutine pronor()
-      real*8 :: h(MAX_IQM), anor, s, sig, som
+      real*8 :: h(IQM), anor, s, sig, som
       integer :: i, i1, k, k1, k2, k3, k4
 
       h(1)=alfa(2)
-      do 10 i = 2,m_iqm
-        i1 = m_ij(i-1)
+      do 10 i = 2,IQM
+        i1 = IJ(i-1)
         10 h(i)=alfa(i1+1)-alfa(i1)
 
       som = 0.
 
-      do 12 i = 1,m_iqm
+      do 12 i = 1,IQM
         if (i.gt.1) go to 20
         k1 = 1
-        k2 = m_ij(1)
+        k2 = IJ(1)
         go to 21
 
-        20 k1 = m_ij(i-1)
-        k2 = m_ij(i)
+        20 k1 = IJ(i-1)
+        k2 = IJ(i)
 
         21 k3 = k1+1
         k4 = k2-3
@@ -1642,7 +1678,7 @@ end if
   ! #     # #     # ####### #     #  #####
 
   ! CALCUL DE LA PROFONDEUR OPTIQUE SELECTIVE m_tau PAR INTEGRATION
-  ! EXPONENTIELLE. TETA=5040./T, PELOG=LOG10PE, NH=VARIABLE DE PROFONDEUR
+  ! EXPONENTIELLE.modele%teta=5040./T,m_pelog=LOG10PE,modele%nh=VARIABLE DE PROFONDEUR
   ! DANS LE MODELE,LAMB=LONGUEUR D'ONDE
   !
 
@@ -1670,23 +1706,6 @@ end if
 
     !***************************
     4000 continue
-
-
-
-
-!todo cleanup
-write(50,'('//int2str(m_jmax)//'e20.10)') m_al(1:m_jmax,1:modele%ntot)
-print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50"
-
-
-
-
-
-
-
-
-
-
     do 1000 i = 1,modele%ntot
       pe = exp(2.302585*m_pelog(i))
       temp = 2.5*log(5040.39/modele%teta(i))
@@ -1730,24 +1749,6 @@ print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 
     f30 = 1-f20
     m_bpl(0) = CTE*f20/(f30*m_th%clam**3)
 
-
-
-
-
-
-
-!todo cleanup
-write(51,'('//int2str(m_jmax)//'e20.10)') m_al(1:m_jmax,1:modele%ntot)
-print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50"
-
-
-
-
-
-
-
-
-
     !
     ! CALCUL DE m_tau
     p(0)=0
@@ -1755,8 +1756,6 @@ print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 
       do i = 1,modele%ntot
         y(i)=m_al(j,i)
       end do
-
-
       p(1)=modele%nh(1)*(y(1)-(y(2)-y(1)) / (modele%nh(2)-modele%nh(1))*modele%nh(1)/2.)
       call integra(modele%nh,y,p,modele%ntot,p(1))
       do i = 0,modele%ntot
@@ -1864,11 +1863,13 @@ print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 
   !---------------------------------------------------------------------------------------
   ! Calculates m_fl and m_fc
   !
-  ! Similar to routine in flin in pfantlib.f90
+  ! Similar to routines in flin.f90
+  !
   !
 
+
   subroutine fluxis(fl, fc)
-    real*8, intent(out), dimension(NUM_POINTS) :: fl
+    real*8, intent(out), dimension(MAX_MODELES_NTOT) :: fl
     real*8, intent(out) :: fc
 
     real*8 :: cc(26),tt(26)
@@ -1898,14 +1899,14 @@ print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 
       if (config_kik.eq.0) then
         ipoint = 6
         do i = 1,ipoint
-          cc(i) = CCA(i)
-          tt(i) = TTA(i)
+          cc(i)=cca(i)
+          tt(i)=tta(i)
         end do
       else
         ipoint = 26
         do i = 1,ipoint
-          cc(i) = CCB(i)
-          tt(i) = TTB(i)
+          cc(i)=ccb(i)
+          tt(i)=ttb(i)
         end do
       end if
     end if
@@ -1937,298 +1938,6 @@ print *, "WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 WROTE FORT.50 
       fl(j)=fl_
     end do
   end
-
-
-
-
-  !=======================================================================================
-  !  CALCUL DE LA FONCTION DE HJERTING = H(A,V)
-
-  subroutine hjen(a,vh,del,phi,ii)
-    real*8, intent(in) :: a, vh(:), del
-    integer, intent(in) :: ii ! Length of vh and phi vectors
-    real*8, intent(out) :: phi(:)
-
-    real*8, parameter :: &
-     H11(41) = (/ &
-      -1.128380,-1.105960,-1.040480,-0.937030,-0.803460, &
-      -0.649450,-0.485520,-0.321920,-0.167720,-0.030120, &
-      +0.085940,+0.177890, 0.245370, 0.289810, 0.313940, &
-       0.321300, 0.315730, 0.300940, 0.280270, 0.256480, &
-       0.231726, 0.207528, 0.184882, 0.164341, 0.146128, &
-       0.130236, 0.116515, 0.104739, 0.094653, 0.086005, &
-       0.078565, 0.072129, 0.066526, 0.061615, 0.057281, &
-       0.053430, 0.049988, 0.046894, 0.044098, 0.041561, &
-       0.039250/), &
-     H12(43) = (/ &
-       0.0440980,0.0392500,0.0351950,0.0317620,0.0288240, &
-       0.0262880,0.0240810,0.0221460,0.0204410,0.0189290, &
-       0.0175820,0.0163750,0.0152910,0.0143120,0.0134260, &
-       0.0126200,0.0118860,0.0112145,0.0105990,0.0100332, &
-       0.0095119,0.0090306,0.0085852,0.0081722,0.0077885, &
-       0.0074314,0.0070985,0.0067875,0.0064967,0.0062243, &
-       0.0059688,0.0057287,0.0055030,0.0052903,0.0050898, &
-       0.0049006,0.0047217,0.0045526,0.0043924,0.0042405, &
-       0.0040964,0.0039595,0.0038308/)
-    real*8, save :: v1(43),v2(43)  ! will be calculated at first call only
-    logical, save :: flag_first = .true.
-    real*8 :: h1, v, w
-    integer :: i, k
-
-
-    if (flag_first) then
-      flag_first = .false.
-      ! initialization executed at first call
-      v1(1) = 0.
-      v2(1)= 3.8
-      do i = 1,42
-        v1(i+1) = v1(i)+0.1
-        v2(i+1) = v2(i)+0.2
-      end do
-    end if
-
-    call assert_le(ii, size(vh), 'hjen()', 'ii', 'size(vh)')
-    call assert_le(ii, size(phi), 'hjen()', 'ii', 'size(phi)')
-
-    do k = 1,ii
-      v = vh(k)
-      if (v .gt. 3.9) then
-        ! SI V>3.9 LE CALCUL DE EXP(-V**2) EST INUTILE
-        if (v .gt. 12.) then
-          w = 1./(2*v**2)
-          h1 = 2.*w*(1.+w*(3.+15.*w*(1.+7.*w)))
-          h1 = h1/RPI
-        else
-          h1 = ft(v, 43, v2, H12)
-        end if
-        phi(k) = (a*h1)/(RPI*del)
-      else
-        h1 = ft(v,41,v1,H11)
-        phi(k) = (exp(-v**2)+a*h1)/(RPI*del)
-      end if
-    end do
-  END
-
-
-
-
-  !=======================================================================================
-  ! ?doc?
-  !
-  ! Output: t
-
-  subroutine malt(th, u, beta, gam, t, iii)
-    integer, intent(in) :: iii ! maximum valid index of th and u
-    real*8, intent(in), dimension(:) :: th, u
-    real*8, intent(in) :: beta, gam
-    real*8, intent(out) :: t
-
-    real*8, dimension(150) :: asm ! Can't track down why 150
-
-    real*8 :: ah, aso, avu, h1, h2, pp, sig, sigma, sigma1, t1, t2, tb, to_, vu
-    integer :: i, ih1, ih2, im, in, ir
-    call assert_le(iii, size(th), 'malt()', 'iii', 'size(th)')
-    call assert_le(iii, size(u), 'malt()', 'iii', 'size(u)')
-
-    t1 = f_ta(dble(1.))
-    t2 = f_ta(dble(-1.))
-    vu = 0.
-    sigma = 0.
-    avu = vu
-    to_ = ft(avu,MAX_IL,u,th)
-    aso = f_as(dble(0.))
-    pp = beta+gam
-
-    if (pp-20.) 48,47,47  ! dunno if "20." is same as MAX_IL, but I think not, hope not
-
-    47 h1 = pp/100.
-    h2 = 0.
-    go to 606
-
-    48 if (pp-15.)50,49,49
-
-    49 ih1 = 100
-    ih2 = 10
-    go to 55
-
-    50 if (pp-10.)52,51,51
-
-    51 ih1 = 76
-    ih2 = 20
-    go to 55
-
-    52 if (pp-5.)54,53,53
-
-    53 ih1 = 50
-    ih2 = 30
-    go to 55
-
-    54 ih1 = 30
-    ih2 = 40
-
-    55 h1 = pp/ih1
-    h2 = (20.-pp)/ih2
-
-    606 ah = h1
-    in = 1
-    im = ih1-1
-    ir = ih1
-
-    59 do 56 i = in,ir
-      vu = vu+ah
-      avu = abs(vu)
-      to_ = ft(avu,MAX_IL,u,th)
-      56 asm(i)=f_as(vu)
-
-    do 57 i = in,im,2
-      sig = (1.333333*asm(i)+0.6666667*asm(i+1))*abs(ah)
-      57 sigma = sig+sigma
-
-    if (in-1)81,81,58
-
-    81 if (pp-20.)60,58,58
-
-    60 sigma = asm(ir)*(h2-h1)/3.+sigma
-    ah = h2
-    in = ih1+1
-    im = ih2+ih1-1
-    ir = im+1
-    go to 59
-
-    58 sigma = sigma-asm(ir)*abs(ah)/3.
-    if (ah) 63,62,62
-
-    62 sigma1 = sigma
-    vu = 0.
-    sigma = 0.
-    im = 40
-    in = 2
-    ir = im+1
-    ah=-0.5
-    go to 59
-
-    63 tb = (sigma+sigma1+aso*(h1+0.5)/3.)/PI
-    t = t1+t2+tb
-
-  contains
-    ! ?doc?
-
-    real*8 function f_as(vu_)
-      real*8, intent(in) :: vu_
-      f_as = to_*gam/(gam**2+(beta-vu_)**2)
-    end
-
-    ! ?doc?
-
-    real*8 function f_ta(x)
-      real*8, intent(in) :: x
-      real*8 :: aa, bb, q, rm, en, bca, aca, rca, fac, phi
-      bb = 2.*beta*x
-      aa = beta**2+gam**2
-      q = sqrt(aa)
-      rm = sqrt(2.*q-bb)
-      en = sqrt(2.*q+bb)
-      bca = bb**2
-      aca = aa**2
-      rca = sqrt(20.)
-      fac = (bca-aa)/(aca*q)
-      phi = bb/(4.*aca*rm)-fac/(4.*rm)
-      f_ta = (3.*gam/PI)*((-bb/aa+.1666667e-1)/(aa*rca)+phi*log((20.+rca*rm+q)/&
-       (20.-rca*rm+q))+(fac/(2.*en))*(PI/2.-atan((20.-q)/(rca*en)))+&
-       (bb/(2.*aca*en))*(PI-atan((2.*rca+rm)/en)-atan((2.*rca-rm)/en)))
-    end
-
-  end
-
-
-  !=======================================================================================
-  ! INTERPOLATION PARABOLIQUE
-  !  DANS LA TABLE X Y (N POINTS) ON INTERPOLE LES FTT CORRESPONDANT
-  !  AUX TT  (ITOT POINTS) POUR TOUTE LA LISTE DES TT
-  !
-  !  ON ADMET UNE EXTRAPOLATION JUSQU A 1/10 DE X2-X1 ET XN-X(N-1)
-  !
-  ! **Note** This routine does the same as ft2() in pfantlib.f90, but allows the
-  ! extrapolation explained above.
-
-  subroutine ft2_hydro2(n,x,y,itot,tt,ftt)
-    integer, intent(in) :: &
-     n, & ! Last valid element of vectors x and y
-     itot ! Size valid element of vectors tt and ftt
-    real*8, intent(in) :: &
-     x(:),     & ! input x-axis values
-     y(:),     & ! input y-axis values
-     tt(:)       ! x-axis values of output (to be given)
-    real*8, intent(out) :: &
-     ftt(:)   ! y-axis values of output (to be calculated)
-    real*8 ft, a, b, c, d, e, t, t0, t1, t2, u0, u1, u2
-    integer i, inv, j, k
-    real*8 dxa, dxz, xx1, xxn
-
-    call assert_le(n, size(x), 'ft2_hydro2()', 'n', 'size(x)')
-    call assert_le(n, size(y), 'ft2_hydro2()', 'n', 'size(y)')
-    call assert_le(itot, size(tt), 'ft2_hydro2()', 'itot', 'size(tt)')
-    call assert_le(itot, size(ftt), 'ft2_hydro2()', 'itot', 'size(ftt)')
-
-    inv = -1
-    if(x(n).lt.x(1) ) inv=1
-
-    ! DXA ET DXZ  : LIMITES SUPPORTABLES D EXTRAPOLATION
-    dxa=(x(2)-x(1))/10
-    dxz=(x(n)-x(n-1))/10
-    xx1=x(1)-dxa
-    xxn=x(n)+dxz
-
-    do k = 1,itot
-      t = tt(k)
-      if (inv) 5, 6, 6
-      5 continue
-      if ((t.lt.xx1) .or. (t.gt.xxn)) go to 10
-      do 1 j=1,n
-        i=j
-        if (t-x(j)) 3, 2, 1
-      1 continue
-      go to 3
-
-      6 continue
-      if((t.gt.xx1) .or. (t.lt.xxn)) go to 10
-      do 7 j=1,n
-        i = j
-        if (t-x(j)) 7,2,3
-      7 continue
-      go to 3
-
-      2 continue
-      ft=y(j)
-      go to 4
-
-3     continue
-      if(i .eq. 1) i = 2
-      if(i .ge. n) i = n-1
-      t0=t-x(i-1)
-      t1=t-x(i)
-      t2=t-x(i+1)
-      u0=x(i+1)-x(i-1)
-      u1=x(i+1)-x(i)
-      u2=x(i)-x(i-1)
-      a=t0/u0
-      b=t1/u1
-      c=t2/u2
-      d=t0/u1
-      e=t1/u0
-      ft=y(i+1)*a*b - y(i)*d*c + y(i-1)*e*c
-
-      4 continue
-      ftt(k) = ft
-    end do
-    return
-
-    10 write(lll,100) X(1),X(N),T
-    100 format(5X,'ft2_hydro2(): ON SORT DE LA TABLE D INTERPOLATION :', &
-     5X,'X(1)=',E15.7,3X,'X(N)=',E15.7,5X,'T=',E15.7)
-    call log_and_halt(lll)
-  end
-
 end
 
 
@@ -2253,7 +1962,7 @@ end
 !
 ! or the parameters for a single file can be passed by command-line arguments. Run hydro2 --help for details.
 !
-!
+! 
 ! HYD2
 !
 ! MEUDON OBSERVATORY
@@ -2263,7 +1972,7 @@ end
 ! CE PROGRAMME A ETE ECRIT PAR F. PRADERIE (ANN D AP 1967)
 ! TALAVERA Y A INTRODUIT L ELARGISSEMENT DE SELFRESONNANCE (1970)
 ! G.HERNANDEZ ET M.SPITE L ONT ADAPTE AU VAX PUIS SUR LA STATION DEC
-!
+! 
 !
 ! En sortie:
 !   - Un fichier de trace compatible avec GRAFIC (Nom demande)
@@ -2271,15 +1980,13 @@ end
 ! (JT) Now the velocity of microturbulence may vary with atmospheric depth;
 ! uses *main file* and subroutine turbul_(), same as pfant
 !
-!
+! 
 
 program hydro2
   use pfantlib
+  use hydro2_x
   use hydro2_calc
   implicit none
-
-
-
   integer i, cnt_in, in_idxs(MAX_FILETOH_NUM_FILES)
   type(hmap_row) :: th
 

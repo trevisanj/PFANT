@@ -37,7 +37,7 @@ module dimensions
   !
   real*8, parameter :: LAMBDA_STRETCH = 0.
   ! assumed width of a hydrogen line (from center to end of tail)
-  real*8, parameter :: H_LINE_WIDTH = 100.
+  real*8, parameter :: H_LINE_WIDTH = 35.
 
 
   !=====
