@@ -71,7 +71,7 @@ module dimensions
   ! Dimensions related to *mod file*
   !=====
 
-  ! Maximum possible value of modele%ntot. This used to be 50, but MARCS Sun models have 
+  ! Maximum possible value of modele%ntot. This used to be 50, but MARCS Sun models have
   ! 56 layers. The maximum possible is really 56, because the model record is 1200-byte long,
   ! fitting maximum 56 layers of data. If MARCS website changes to accomodate more layers,
   ! everything will neew to be redimensioned (but it is easy)

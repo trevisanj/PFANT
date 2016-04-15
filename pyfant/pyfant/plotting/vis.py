@@ -297,10 +297,10 @@ class VisFileToH(Vis):
         _y = np.ones(len(x))
         for i in range(r.th.shape[1]):
             z = np.concatenate((r.th[-2::-1, i], r.th[:, i]))
-            ax.plot(x, _y * (i + 1), z, label='a', color='k')
+            ax.plot(x, _y * (i + 1), np.log10(z), label='a', color='k')
         ax.set_xlabel('Wavelength (A)')
         ax.set_ylabel('Atmospheric layer')
-        ax.set_zlabel('Intensity (?)')
+        ax.set_zlabel('log10(Intensity)')
         plt.tight_layout()
         plt.show()
 

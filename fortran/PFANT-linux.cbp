@@ -62,45 +62,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/absoru.f90">
-			<Option weight="4" />
-		</Unit>
-		<Unit filename="src/absoru_data.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/config.f90">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="src/dimensions.f90">
-			<Option weight="0" />
-		</Unit>
 		<Unit filename="src/hydro2.f90">
-			<Option weight="5" />
+			<Option weight="1" />
 			<Option target="hydro2" />
 		</Unit>
 		<Unit filename="src/innewmarcs.f90">
-			<Option weight="4" />
+			<Option weight="1" />
 			<Option target="innewmarcs" />
 		</Unit>
-		<Unit filename="src/logging.f90">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/misc.f90">
-			<Option weight="1" />
-		</Unit>
-		<Unit filename="src/misc_math.f90">
-			<Option weight="2" />
-		</Unit>
 		<Unit filename="src/nulbad.f90">
-			<Option weight="4" />
+			<Option weight="1" />
 			<Option target="nulbad" />
 		</Unit>
 		<Unit filename="src/pfant.f90">
-			<Option weight="5" />
+			<Option weight="1" />
 			<Option target="pfant" />
 		</Unit>
-		<Unit filename="src/readers.f90">
-			<Option weight="3" />
+		<Unit filename="src/pfantlib.f90">
+			<Option weight="0" />
 		</Unit>
 		<Extensions>
 			<envvars />
