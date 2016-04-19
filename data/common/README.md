@@ -2,7 +2,7 @@
 
 **Note** please download file `grid.moo` from ([this location]
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)].
-This file has more than 100 MB and therefore cannot be stored in githun.
+This file has more than 100 MB and therefore cannot be stored in github.
 
 Data files that are independent from the star.
 
