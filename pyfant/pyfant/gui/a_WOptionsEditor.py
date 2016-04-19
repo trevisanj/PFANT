@@ -354,9 +354,9 @@ class WOptionsEditor(QWidget):
          '<p>Whether this file or the one specified by <em>--fn_modgrid</em> will be used '
          'will depend on the <em>--opa</em>option.')
         self.__add_option(self.w_allow, 'i', 'allow', False,
-         'Allow point out of model grid?', 'If this option is disabled, target '
+         'Allow point out of atmospheric model grid?', 'If this option is disabled, target '
          ' (glog, teff, asalog) point for interpolation must lie inside the 3D '
-         'model grid.')
+         'atmospheric model grid.')
 
         #
         # hydro2-only

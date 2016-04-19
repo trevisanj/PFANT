@@ -1,19 +1,19 @@
 # pyfant
 
 pyfant provides a Python interface to the PFANT Fortran binaries. Some features:
-  - object-oriented library for Python coding
+  - graphical user interfaces ([see screenshots](screenshots.md)):
+    - run Fortran binaries in parallel: ```x.py```
+    - file explorer: ```explorer.py```
+    - edit data files: ```ated.py```, ```mled.py```, ```mained.py```, ```abed.py```
+    - etc
   - command-line tools for
     - plotting, PDF generation: ```plot-spectra.py```, ```save-pdf.py```
     - cutting: ```cut-atoms.py```, ```cut-molecules.py```, ```cut-spectra.py```
     - running: ```run4.py```
     - VALD3 conversion: ```vald3-to-atoms.py```
     - etc
+  - object-oriented library for Python coding
      
-  - graphical user interfaces ([see screenshots](screenshots.md)):
-    - run Fortran binaries in parallel: ```x.py```
-    - file explorer: ```explorer.py```
-    - edit data files: ```ated.py```, ```mled.py```, ```mained.py```, ```abed.py```
-    - etc
 
 pyfant has support to loading a spectrum in a FITS file. 
 
@@ -63,3 +63,6 @@ Commonly, inspecting these files will be enough to figure out what happened.
 
 Your current directory will also have a file named ```python.log```, containing
 debug/info/warning/error messages from Python.
+
+(**new!**) Now `explorer.py` has a "Collect Fortran errors" button, which opens
+all files names `fortran.log` in search of errors.

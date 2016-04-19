@@ -149,10 +149,32 @@ class XExplorer(QMainWindow):
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
 
+        m = self.menu_tools = b.addMenu("&Tools")
+        accw = m.addAction("&Collect errors")
+        accw.triggered.connect(self.on_collect_errors)
+
         # # Status bar
         self.labelStatus = QLabel("Welcome")
         sb = self.statusBar()
         sb.insertWidget(0, self.labelStatus, 0)
+
+
+        # # Central widget
+
+        cw = self.centralWidget = QWidget()
+        lcw = self.centralLayout = QVBoxLayout(cw)
+        lcw.setMargin(1)
+
+        # ## Toolbar
+        l0 = self.layoutToolbar = QHBoxLayout()
+        b6 = self.pushButtonCollectErrors = QPushButton("&Collect Fortran errors")
+        b6.setToolTip("Searches for errors in log files and reports these errors in a new window.")
+        b6.clicked.connect(accw.triggered)
+        l0.addWidget(b6)
+        s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        l0.addItem(s)
+        lcw.addLayout(l0)
+
 
 
         # # Horizontal splitter
@@ -219,7 +241,8 @@ class XExplorer(QMainWindow):
         x.setReadOnly(True)
         x.setFont(MONO_FONT)
 
-        self.setCentralWidget(sp)
+        lcw.addWidget(sp)
+        self.setCentralWidget(cw)
         s0.setStretchFactor(0, 3)
         s0.setStretchFactor(1, 10)
 
@@ -295,6 +318,18 @@ class XExplorer(QMainWindow):
             dir_ = QFileDialog.getExistingDirectory(None, "Change directory", self.dir)
             if dir_:
                 self.set_dir(str(dir_))
+
+    def on_collect_errors(self, _=None):
+        if not self.__flag_loading:
+            try:
+                k = ErrorCollector()
+                k.collect_errors(self.dir)
+                w = XHTML(self, k.get_html(), "Errors in '%s' and subdirectories" % self.dir)
+                w.show()
+            except Exception as e:
+                MSG = "Could not collect errors"
+                get_python_logger().exception(MSG)
+                ShowError("%s: %s" % (MSG, str(e)))
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
@@ -386,7 +421,6 @@ class XExplorer(QMainWindow):
         z.clear()
         classes = self.__vis_classes = []
         pp = self.__get_current_propss()
-        # print "RRRRRRRRRRRRRR", len(pp), pp
         if len(pp) == 1:
             p = pp[0]
             # Visualization options
@@ -452,9 +486,6 @@ class XExplorer(QMainWindow):
                 spectra = [p.f.spectrum for p in pp]
                 plot_spectra(spectra)
             elif vis_class == "modgrid":
-                print "CMONCMONCMONCMONCMONCMONCMONCMONCMONCMONCMON"
-
-
                 pp = self.__get_current_propss()
                 models = [p.f for p in pp]
                 plot_mod_grid(models)

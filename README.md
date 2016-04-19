@@ -2,14 +2,14 @@
 
 ## Welcome
 
-PFANT is a spectral synthesis software written in Fortran for use in Astrophysics.
+PFANT is a spectral synthesis software written in Fortran for Astronomy.
 
 Analogue softwares include TurboSpectrum and MOOG.
 
 This guide provides a quick start with instructions on how to install and run Fortran
 binaries and Python scripts.
 
-Further down it also describes the PFANT "pipeline", _i.e._,
+Further down it also provides more detailed information about PFANT "pipeline", _i.e._,
 the sequence from input data files to a convolved synthetic spectrum.
 
 ### History
@@ -115,8 +115,8 @@ The code can be compiled using the CBFortran IDE, or typing
 
 ```shell
 cd fortran
-make_linux.sh     # Linux
-make_windows.bat  # Windows
+./make-linux.sh     # Linux
+make-windows.bat    # Windows
 ```
 
 The executable binaries are found in PFANT/fortran/bin
@@ -144,22 +144,36 @@ Here is a sequence of shell commands from mounting a new "case" to plotting a sy
 ```shell
 mkdir mytest
 cd mytest
-copy-star.py sun-asplund-2009  # copies star-specific files to local directory
-link-to-data.py common         # creates symbolic links to other (not star-specific) data files 
-innewmarcs                     # creates "modeles.mod", an interpolated atmospheric model based on NEWMARCS (2005) model grids
-hydro2                         # calculates the hydrogen lines profiles (in this case, file "thalpha")
-pfant                          # spectral synthesis (will create "flux.spec", "flux.cont", "flux.norm")
-nulbad --fwhm 0.12             # convolves the synthetic spectrum with a Gaussian function
+copy-star.py sun     # copies star-specific files to local directory
+link.py common       # creates symbolic links to other (not star-specific) data files 
+run4.py --fwhm 0.12  # runs all Fortran binaries in sequence
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.12 
 ```
 
-### Graphical user interface (new!)
+**Running the Fortran binaries separately**. Here is a sequence of command lines
+that could replace `run4.py --fwhm 0.12`:
 
-Now you can set up a star, run the Fortran binaries, and plot results from a
-graphical user interface (GUI):
+```shell
+innewmarcs
+hydro2
+pfant
+nulbad --fwhm 0.12
+```
+
+
+### Graphical User Interface (new!)
+
+Now you can set up a star, run the Fortran binaries, and visualize results from a
+Graphical User Interface (GUI):
 
 ```shell
 x.py
+```
+
+Or you can also just browse and visualize files using the pyfant File Explorer:
+
+```shell
+explorer.py
 ```
 
 - [See some screenshots](pyfant/screenshots.md) 
@@ -176,40 +190,45 @@ pyfant-scripts.py
 ## More about the PFANT pipeline
 
 ```
-                        +---------------------------+---------------------main.dat
-   modlist.dat          |                           |                        |
-newnewm150.mod          v                           v                        |
-newnewm100.mod    +----------+                  +------+                     |
-newnewm050.mod+-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
-newnewp000.mod    +----------+         +        +------+           |         |
-newnewp025.mod                         |            |              |         |
-                                       |            v              |         |
-                                       |         thalpha           |         |
-                                       |         thbeta        absoru2.dat   |
-                                       |         thgamma       hmap.dat      |
-                                       |         thdelta           |         |
-                                       |         thepsilon         |         |
-                                       |            |              |         |
-                         abonds.dat    |            v              |         |
-                         dissoc.dat    +-------->+-----+           |         |
-                          atoms.dat              |pfant|<----------+         |
-                      molecules.dat+------------>+-----+<--------------------+
-                         partit.dat                 |                        |
-                                                    v                        |
-                                                flux.norm                    |
-                                                flux.spec                    |
-                                                flux.cont                    |
-                                                    |                        |
-                                                    v                        |
-                                                 +------+                    |
-                                                 |nulbad|<-------------------+
-                                                 +------+
-                                                    |
-                                                    v
-                                             flux.norm.nulbad
+                    +---------------------------+---------------------main.dat
+                    |                           |                        |
+                    v                           v                        |
+ grid.mod     +----------+                  +------+                     |
+       or +-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
+ grid.moo     +----------+         +        +------+           |         |
+                                   |            |              |         |
+                                   |            v              |         |
+                                   |         thalpha           |         |
+                                   |         thbeta        absoru2.dat   |
+                                   |         thgamma       hmap.dat      |
+                                   |         thdelta           |         |
+                                   |         thepsilon         |         |
+                                   |            |              |         |
+                     abonds.dat    |            v              |         |
+                     dissoc.dat    +-------->+-----+           |         |
+                      atoms.dat              |pfant|<----------+         |
+                  molecules.dat+------------>+-----+<--------------------+
+                     partit.dat                 |                        |
+                                                v                        |
+                                            flux.norm                    |
+                                            flux.spec                    |
+                                            flux.cont                    |
+                                                |                        |
+                                                v                        |
+                                             +------+                    |
+                                             |nulbad|<-------------------+
+                                             +------+
+                                                |
+                                                v
+                                         flux.norm.nulbad.<fwhm>
 ```
 
 ### Input/output data files
+
+Most files can be found in `PFANT/data/common` and linked to using `link.py`.
+
+Some star-specific files are also shipped with PFANT: use script `copy-star.py`
+for convenience.
 
 The following table summarizes the files needed for spectral synthesis.
 
@@ -225,7 +244,7 @@ used to change the default name for the corresponding file
 --fn_dissoc       | dissoc.dat        | dissociation equilibrium data
 
 *** "constant" data files ***
---fn_absoru2      | absoru2.dat       | absorbances ?doc?
+--fn_absoru2      | absoru2.dat       | absorption info for continuum calculation
 --fn_atoms        | atoms.dat         | atomic lines
 --fn_molecules    | molecules.dat     | molecular lines
 --fn_partit       | partit.dat        | partition functions
@@ -244,16 +263,35 @@ used to change the default name for the corresponding file
                   | thdelta           | "
                   | thepsilon         | "
 
-*** created by pfant ***
+** created by pfant **
 flux.norm         | normalized flux
 flux.spec         | un-normalized flux (multiplied by 10**5)
 flux.cont         | continuum flux (multiplied by 10**5)
 
-*** created by nulbad *** 
+** created by nulbad ** 
 flux.norm.nulbad  | convolved flux
 ```
 
 ## Other topics
+
+### Adding MARCS opacities to the continuum (experimental!)
+
+PFANT can use continuum opacities from the MARCS website 
+(http://marcs.astro.uu.se/). To switch this on this behavior, run the Fortran binaries
+with the `--no_opa F` option:
+
+```shell
+run4.py --no_opa F
+```
+
+
+**Note** please download file `PFANT/data/common/grid.moo` from [this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
+as this file has more than 100 MB and therefore cannot be stored in github.
+This file contains a compiled atmospheric model grid
+(see (data/common/README.md) for more information).
+
+
 
 ### Converting VALD3 extended-format atomic lines
 

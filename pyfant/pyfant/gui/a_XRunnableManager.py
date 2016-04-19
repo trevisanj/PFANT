@@ -1,4 +1,5 @@
 __all__ = ["XRunnableManager"]
+__all__ = ["XRunnableManager"]
 
 
 from PyQt4.QtCore import *
@@ -11,6 +12,7 @@ from ..misc import *
 from threading import Lock
 import time
 from .a_XExplorer import *
+from .a_XText import *
 import matplotlib.pyplot as plt
 
 #todo clenaup
@@ -76,13 +78,16 @@ class XRunnableManager(QMainWindow):
         b4.clicked.connect(self.on_exit)
         b5 = self.pushButtonRetryFailed = QPushButton("Retry &failed")
         b5.clicked.connect(self.on_retry_failed)
+        b6 = self.pushButtonCollectErrors = QPushButton("&Collect Fortran errors")
+        b6.setToolTip("Searches for errors in log files and reports these errors in a new window.")
+        b6.clicked.connect(self.on_collect_errors)
         # todo + note: assuming that there is no interest in adding new tasks later
         l = self.labelEnd = QLabel()
         l.setVisible(False)
 
         s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        bb = [b0, b1, b2, b3, b4, b5, l]
+        bb = [b0, b1, b2, b3, b4, b5, b6, l]
         l0 = self.layoutToolbar = QHBoxLayout()
         for b in bb:
             l0.addWidget(b)
@@ -140,6 +145,7 @@ class XRunnableManager(QMainWindow):
         # ## Table Widget
 
         a = self.tableWidget = QTableWidget()
+        a.setToolTip("Double-click to open session directory")
         a.setSelectionMode(QAbstractItemView.SingleSelection)
         a.setAlternatingRowColors(True)
         a.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -254,6 +260,17 @@ class XRunnableManager(QMainWindow):
             self.rm.retry_failed()
         except Exception as e:
             MSG = "Could not retry failed"
+            _logger.exception(MSG)
+            ShowError("%s: %s" % (MSG, str(e)))
+
+    def on_collect_errors(self):
+        try:
+            k = ErrorCollector()
+            k.collect_errors(".")
+            w = XHTML(self, k.get_html(), "Errors in '.' and subdirectories")
+            w.show()
+        except Exception as e:
+            MSG = "Could not collect errors"
             _logger.exception(MSG)
             ShowError("%s: %s" % (MSG, str(e)))
 

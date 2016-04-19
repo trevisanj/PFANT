@@ -1,5 +1,9 @@
 # Common data files
 
+**Note** please download file `grid.moo` from ([this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)].
+This file has more than 100 MB and therefore cannot be stored in githun.
+
 Data files that are independent from the star.
 
 filename       | description
@@ -11,8 +15,19 @@ mghc2cnr_cn3ch13chtiog3tio.dat | molecular lines (12 molecules) (before 2005)
 absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
-grid.mod       | grid of MARCS atmospheric models
-grid.moo       | grid of MARCS atmospheric models with opacities included
+grid.mod       | grid of MARCS atmospheric models (*)
+grid.moo       | grid of MARCS atmospheric models with opacities included (*)
+
+
+(*) grid specifications:
+  - Chemical composition class: Moderately CN-cycled
+  - Model geometry: Spherical
+  - Microturbulence parameter: 2
+  - Mass: 1
+  - Teff: 3500 .. 7000
+  - Glog: 0 .. 3
+  - [Fe/H]: -2 .. 0.25
+
 
 ## Suggestion on how to use these files
 
