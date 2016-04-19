@@ -226,7 +226,7 @@ pyfant-scripts.py
 ### Input/output data files
 
 Most files can be found in `PFANT/data/common` and linked to using `link.py`
-(see (the common data README)[data/common/README.md] for more information).
+(see [the common data README](data/common/README.md) for more information).
 
 Some star-specific files are also shipped with PFANT: use script `copy-star.py`
 for convenience.
@@ -290,7 +290,7 @@ run4.py --no_opa F
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
 as this file has more than 100 MB and therefore cannot be stored in github.
 This file contains a compiled atmospheric model grid
-(see (the common data README)[data/common/README.md] for more information).
+(see [the common data README](data/common/README.md) for more information).
 
 
 
