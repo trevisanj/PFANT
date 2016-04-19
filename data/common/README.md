@@ -1,9 +1,5 @@
 # Common data files
 
-**Note** please download file `grid.moo` from ([this location]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)].
-This file has more than 100 MB and therefore cannot be stored in github.
-
 Data files that are independent from the star.
 
 filename       | description
@@ -28,10 +24,13 @@ grid.moo       | grid of MARCS atmospheric models with opacities included (*)
   - Glog: 0 .. 3
   - [Fe/H]: -2 .. 0.25
 
+**Note** If you want to use MARCS opacities, please download file `grid.moo` from [this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)].
+This file has more than 100 MB and therefore cannot be stored in github.
 
-## Suggestion on how to use these files
+**Create symbolic links to these files** 
 
-Instead of making copies of these files, create symbolic links to them by using the following shell command:
+instead of making copies of them:
 
 ```shell
 link.py common

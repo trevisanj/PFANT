@@ -219,13 +219,13 @@ class MultiRunnable(Runnable):
             raise RuntimeError("Not all nulbad's succeeded running.")
 
         ####
-        # # Deletes session-* directories
-        self.__logger.info("+++ NOT cleaning up...")
+        # # Deletes session-* directories if successful
+        self.__logger.info("+++ Cleaning up...")
 
-        # for pfant in pfant_list:
-        #     pfant.sid.clean()
-        # for nulbad in nulbad_list:
-        #     nulbad.sid.clean()
+        for pfant in pfant_list:
+            pfant.sid.clean()
+        for nulbad in nulbad_list:
+            nulbad.sid.clean()
 
     def _get_sid(self):
         return self.__sid
