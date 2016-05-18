@@ -141,6 +141,8 @@ class WOptionsEditor(QWidget):
         self.omap = []
         # Internal flag to prevent taking action when some field is updated programatically
         self.flag_process_changes = False
+        self.error_text = ""
+        self.hiding_text = ""
 
         # # Central layout
 
@@ -267,7 +269,10 @@ class WOptionsEditor(QWidget):
         self.w_no_molecules = QCheckBox()
         self.w_no_atoms = QCheckBox()
         self.w_no_h = QCheckBox()
-        self.w_no_opa = QCheckBox()
+        self.w_opa = QCheckBox()
+        self.w_abs = QCheckBox()
+        self.w_sca = QCheckBox()
+        self.w_absoru = QCheckBox()
         self.w_zinf = QLineEdit()
         self.w_pas = QLineEdit()
         self.w_aint = QLineEdit()
@@ -333,9 +338,9 @@ class WOptionsEditor(QWidget):
         #
         # innewmarcs, pfant
         #
-        self.__add_option(self.w_no_opa, 'ip', 'no_opa', True,
-         'Skip opacities?',
-         'If set, skips the calculation of opacities based on MARCS ".opa" opacities file.')
+        self.__add_option(self.w_opa, 'ip', 'opa', False,
+         'Use MARCS opacities?',
+         'Whether or not to include MARCS opacity coefficients (absorption and scattering) in the continuum.')
 
         #
         # innewmarcs-only
@@ -453,6 +458,20 @@ class WOptionsEditor(QWidget):
          'default: &lt;main_pas&gt; '+_FROM_MAIN)
         o.flag_main = True
         o.color = COLOR_CONFIG
+        o = self.__add_option(self.w_abs, 'p', 'abs', True,
+         'Use MARCS absorption coefficients?',
+         'Whether or not to include MARCS <b>absorption</b> coefficients in the continuum'
+         '<p>This option only has effect if <em>--opa<em> is True.')
+        o.flag_devel = True
+        o = self.__add_option(self.w_sca, 'p', 'sca', True,
+         'Use MARCS scattering coefficients?',
+         'Whether or not to include MARCS <b>scattering</b> coefficients in the continuum'
+         '<p>This option only has effect if <em>--opa<em> is True.')
+        o.flag_devel = True
+        o = self.__add_option(self.w_absoru, 'p', 'absoru', True,
+         'Use absoru() kappa?',
+         'Whether or not to include coefficients calculated by subroutine absoru() in the continuum.')
+        o.flag_devel = True
 
         #
         # pfant, nulbad
@@ -552,9 +571,11 @@ class WOptionsEditor(QWidget):
         # x.setWordWrap(True)
         x.setStyleSheet("QTextEdit {color: %s}" % COLOR_DESCR)
         lu.addWidget(x)
+
         x = self.labelError = QLabel(self)
         x.setStyleSheet("QLabel {color: %s}" % COLOR_ERROR)
-        lu.addWidget(self.labelError)
+        lu.addWidget(x)
+
         sp.addWidget(wlu)
 
         # ### Adjust splitter proportion
@@ -719,10 +740,10 @@ class WOptionsEditor(QWidget):
         except Exception as E:
             flag_error = True
             if ss:
-                emsg = "Field \"%s\": %s" % (ss, str(E))
+                emsg = "Option <em>--%s</em>: %s" % (ss, str(E))
             else:
                 emsg = str(E)
-            emsg = "<b>Invalid</b>: "+emsg
+            # emsg = "<b>Invalid</b>: "+emsg
         self.flag_valid = not flag_error
         self.__set_error_text(emsg)
 
@@ -756,18 +777,36 @@ class WOptionsEditor(QWidget):
             if not flag_visible and option.checkbox.isChecked():
                 hidden_set_count += 1
 
+        t = ""
         if hidden_set_count > 0:
-            ShowWarning("Hiding %d option%s in use." %
-             (hidden_set_count, "" if hidden_set_count == 1 else "s"))
+            t = "Hiding %d option%s in use." % \
+             (hidden_set_count, "" if hidden_set_count == 1 else "s")
+        self.__set_hiding_text(t)
 
     def __set_error_text(self, x):
         """Sets text of labelError."""
-        self.labelError.setText(x)
+        self.error_text = x
+        self.__update_error_label()
+
+    def __set_hiding_text(self, x):
+        """Sets text of labelError."""
+        self.hiding_text = x
+        self.__update_error_label()
 
     def __set_descr_text(self, x):
         """Sets text of labelDescr."""
         self.textEditDescr.setText(x)
 
+    def __update_error_label(self):
+        l = []
+        if self.error_text:
+            l.append('<span style="color: %s"><b>Error</b>: %s</span>' %
+                     (COLOR_ERROR, self.error_text))
+        if self.hiding_text:
+            l.append('<span style="color: %s"><b>Warning</b>: %s</span>' %
+                     (COLOR_WARNING, self.hiding_text))
+        s = "; ".join(l)
+        self.labelError.setText(s)
 
 
 

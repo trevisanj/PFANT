@@ -9,13 +9,18 @@ containing atmospheric model grid.
 Working modes (option "-m"):
  "opa" (default mode): looks for MARCS ".mod" and ".opa" text file pairs and
                        creates a *big* binary file containing *all* model
-                       information including opacities
+                       information including opacities.
+                       Output will be in ".moo" format.
 
  "modtxt": looks for MARCS ".mod" text files only. Resulting grid will not contain
-           opacity information
+           opacity information.
+           Output will be in binary ".mod" format.
+
 
  "modbin": looks for binary-format ".mod" files. Resulting grid will not contain
-           opacity information
+           opacity information.
+           Output will be in binary ".mod" format.
+
 .
 .
 .
@@ -40,7 +45,7 @@ if __name__ == "__main__":
     parser.add_argument('--mode', type=str, nargs="?", default="opa",
      choices=["opa", "modtxt", "modbin"],
      help='working mode (see description above)')
-    VDOM = "varies depending on mode"
+    VDOM = "\"grid.moo\" or \"grid.mod\", depending on mode"
     parser.add_argument('fn_output', type=str, help='output file name', nargs="?",
      default=VDOM)
 
@@ -49,7 +54,7 @@ if __name__ == "__main__":
     logger = get_python_logger()
 
     if args.fn_output == VDOM:
-        args.fn_output = "modopa.grid" if args.mode == "opa" else "mod.grid"
+        args.fn_output = "grid.moo" if args.mode == "opa" else "grid.mod"
         logger.info("Setting output filename to '%s'" % args.fn_output)
 
     filenames = glob.glob("./"+args.pattern)

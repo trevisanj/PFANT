@@ -2,7 +2,7 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
            "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
            "ShowError", "ShowMessage", "ShowWarning", "ResetTableWidget",
-           "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR",
+           "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR", "COLOR_WARNING",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
            "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector"]
@@ -19,7 +19,7 @@ import os
 # Error color
 COLOR_ERROR = "#AA0000" # sortta wine
 # Warning color
-COLOR_WARNING = "#C98A00" # sortta wine
+COLOR_WARNING = "#C98A00" # sortta yellow
 # Color for labels indicating a star parameter
 COLOR_STAR = "#2A8000"
 # Color for labels indicating a software configuration parameter

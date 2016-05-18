@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import traceback
 import copy
 import syntax
-
+import shutil
 
 ################################################################################
 class XPFANT(XMainAbonds):
@@ -64,11 +64,29 @@ class XPFANT(XMainAbonds):
         if len(errors) == 0:
             # more error checking
             if self.checkbox_custom_id.isChecked():
-                if len(self.__get_custom_session_id()) == 0:
+                s = self.__get_custom_session_id()
+                if len(s) == 0:
                     errors.append("Please inform custom session id.")
+                elif len(errors) == 0: # will only offer to remove directory if everything is ok so far
+                    dirname = SESSION_PREFIX_SINGULAR+s
+                    if os.path.isdir(dirname):
+                        r = QMessageBox.question(self, "Directory exists",
+                         "Directory '%s' already exists.\n\n"
+                         "Would you like to remove it?" % dirname,
+                         QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+                        if r == QMessageBox.Yes:
+                            try:
+                                shutil.rmtree(dirname)
+                            except Exception as e:
+                                errors.append(str(e))
+                        else:
+                            return
+
         if len(errors) == 0:
             try:
                 self._manager_form.show()
+                self._manager_form.raise_()
+                self._manager_form.activateWindow()
                 self.__submit_job()
             except Exception as e:
                 errors.append(str(e))

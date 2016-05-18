@@ -124,7 +124,15 @@ class WFileMain(QWidget):
         pp.append((x, y, "&mu", "cosine of angle", COLOR_CONFIG,
          "This is the cosine of the angle formed by center of "
          "the star disk, the point of observation, and the Earth as vertex. "
-         "<br><br>This value will be used only if "+enc_name("ptdisk", COLOR_CONFIG)+" is True."))
+         "<br><br>This value will be used only if "+enc_name("ptdisk", COLOR_CONFIG)+" is True.<br>\n<pre>\n"
+         "             point of observation   \n"
+         "            /                       \n"
+         "           /                        \n"
+         "          /                         \n"
+         "         /                          \n"
+         "        /                           \n"
+         "       / ) acos(mu)                 \n"
+         "Earth /------------------- center of star disk\n</pre>"))
 
         x = self.label_flprefix = QLabel()
         y = self.lineEdit_flprefix = QLineEdit()

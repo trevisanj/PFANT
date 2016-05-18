@@ -233,6 +233,9 @@ class FileOpa(DataFile):
         # sca(j,k) = specific continuous scattering opacity (cm2/g)
         self.sca = None
 
+        # logarithmic number abundances of the 92 first chemical
+        # elements on a scale where the hydrogen abundance=12.00
+        self.abund = None
 
     def cut(self, llzero, llfin):
         """Keeps only region within lambda interval [llzero, llfin]."""
@@ -276,6 +279,9 @@ class FileOpa(DataFile):
                 self.abs[:, k] = abs_sca[0::2]*self.ops[k]
                 self.sca[:, k] = abs_sca[1::2]*self.ops[k]
 
+            v, n_rows = multirow_str_vector(h, 92)
+            self.abund = np.array(map(float, v))
+
 
 
 class MooRecord(AttrsPart):
@@ -317,6 +323,7 @@ class MooRecord(AttrsPart):
         self.ops = None
         self.abs = None
         self.sca = None
+        self.abund = None
 
     def __repr__(self):
         return "/"+self.one_liner_str()+"/"
@@ -330,17 +337,18 @@ class MooRecord(AttrsPart):
         rec = file_mod.record
         for a in aa:
             self.__setattr__(a, rec.__getattribute__(a))
-        aa = ["swave", "nwav", "wav", "ops", "abs", "sca"]
+        aa = ["swave", "nwav", "wav", "ops", "abs", "sca", "abund"]
         for a in aa:
             self.__setattr__(a, file_opa.__getattribute__(a))
 
 
 
 # Record size is record size in modeles.mod plus opacity part
-# 13432 = 4+4+     (swave, nwav)
-#         56*4     (ops)
-#         1071*(1+2*56)*4 (wav, abs, sca)
-OPA_REC_SIZE = 484324
+# 13432 = 4+4+              (swave, nwav)
+#         56*4+             (ops)
+#         1071*(1+2*56)*4+  (wav, abs, sca)
+#         92*4              (abund)
+OPA_REC_SIZE = 484692
 MOG_REC_SIZE = MOD_REC_SIZE+OPA_REC_SIZE
 # Number of layers and wavelengths must have these fixed values because
 # the ".mog" file I/O operations both in Python and Fortran are assuming thi.
@@ -411,9 +419,11 @@ class FileMoo(DataFile):
                 rec.wav = np.frombuffer(x, dtype='<f4', count=rec.nwav,
                                         offset=8+rec.ntot*4)
                 rec.abs = np.frombuffer(x, dtype='<f4', count=rec.nwav*rec.ntot,
-                 offset=8+(rec.ntot+rec.nwav)*4).reshape((rec.nwav, rec.ntot)).T
+                 offset=8+(rec.ntot+rec.nwav)*4).reshape((rec.ntot, rec.nwav)).T
                 rec.sca = np.frombuffer(x, dtype='<f4', count=rec.nwav*rec.ntot,
-                 offset=8+(rec.ntot+2*rec.nwav)*4).reshape((rec.nwav, rec.ntot)).T
+                 offset=8+(rec.ntot+rec.nwav*(1+rec.ntot))*4).reshape((rec.ntot, rec.nwav)).T
+                rec.abund = np.frombuffer(x, dtype='<f4', count=92,
+                 offset=8+(rec.ntot+rec.nwav*(1+2*rec.ntot))*4)
                 self.records.append(rec)
 
     def _do_save_as(self, filename):
@@ -437,6 +447,7 @@ class FileMoo(DataFile):
                 h.write(struct.pack("<"+"f"*rec.nwav, *rec.wav))
                 h.write(struct.pack(s_temp, *rec.abs.T.flatten()))
                 h.write(struct.pack(s_temp, *rec.sca.T.flatten()))
+                h.write(struct.pack("<"+"f"*92, *rec.abund))
 
 
     def init_default(self):
@@ -479,3 +490,4 @@ def _encode_mod_record(rec, h):
                    ny)
     h.write(struct.pack("<" + "f" * ny, *y))
     h.write("\x00" * (MOD_REC_SIZE-ny*4-64))  # fills record with \x0 to have 1200 bytes
+

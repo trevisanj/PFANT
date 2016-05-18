@@ -391,3 +391,5 @@ class XRunnableManager(QMainWindow):
         else:
             self.__explorer_form.set_dir(dir_)
         self.__explorer_form.show()
+        self.__explorer_form.raise_()
+        self.__explorer_form.activateWindow()

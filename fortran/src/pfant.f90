@@ -52,7 +52,7 @@ module dissoc
   ! Note that indexes of these arrays are atomic numbers
   ! For example: m_ip(z) contains information related to atomic number z
   real*8, private, dimension(MAX_DISSOC_Z) :: &
-   m_ip,     & ! ?doc?
+   m_ip,     & ! values come from dissoc_ip, but index is the atomic number
    m_ccomp,  & ! ?doc?
    m_uiidui, & ! ?doc?
    m_fp,     & ! ?doc?
@@ -1023,17 +1023,17 @@ module synthesis
   ! Calculated by selekfh()
   real*8, dimension(MAX_DTOT) :: selekfh_fl, selekfh_fcont
 
-  ! Calculated by subroutine bk
+  ! Calculated by bk()
   real*8, dimension(0:MAX_MODELES_NTOT) :: bk_b1, bk_b2
-  ! Calculated by subroutine bk
   real*8, dimension(MAX_MODELES_NTOT) :: bk_phn, bk_ph2
-  ! Calculated by subroutine bk
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: bk_kcd
-  ! Opacity-related
+
+  ! Opacity-related, calculated by calc_opa()
   real*8, dimension(MAX_DTOT) :: m_lambda ! lambda for each point
   real*8, dimension(MAX_DTOT, MAX_MODELES_NTOT) :: &
    opa_sca, &  ! opacities calculated by interpolation of the available MARCs model (scattering)
    opa_abs     ! opacities calculated by interpolation of the available MARCs model (absorption)
+  real*8 :: opa_mass_factor ! factor to convert cm^2/g --> cm^2/(hydrogen particle)
 
   ! Calculated by calc_tauh(), hydrogen lines-related
   real*8, public :: hy_tauh(MAX_MODELES_NTOT, MAX_DTOT)
@@ -1223,7 +1223,7 @@ contains
       ! call log_info("BK() Time = "//real42str(finish-start, 3)//" seconds.")
 
       ! opacities
-      if (.not. config_no_opa) then
+      if (config_opa) then
         call calc_opa()
       end if
 
@@ -1439,19 +1439,52 @@ contains
   end subroutine
 
 
+  ! Calculates opa_*: interpolated abs and sca, "mass factor"
+
   subroutine calc_opa()
-    integer n, i
+    ! Atomic weights of all elements from hydrogen to uranium
+    real*8, parameter :: weights(92) = (/1.0079, 4.0026, 6.941, 9.0122, 10.811, 12.0107, &
+     14.0067, 15.9994, 18.9984, 20.1797, 22.9897, 24.305, 26.9815, 28.0855, 30.9738, &
+     32.065, 35.453, 39.948, 39.0983, 40.078, 44.9559, 47.867, 50.9415, 51.9961, 54.938, &
+     55.845, 58.9332, 58.6934, 63.546, 65.39, 69.723, 72.64, 74.9216, 78.96, 79.904, &
+     83.8, 85.4678, 87.62, 88.9059, 91.224, 92.9064, 95.94, 98., 101.07, 102.9055, 106.42, &
+     107.8682, 112.411, 114.818, 118.71, 121.76, 127.6, 126.9045, 131.293, 132.9055, &
+     137.327, 138.9055, 140.116, 140.9077, 144.24, 145., 150.36, 151.964, 157.25, &
+     158.9253, 162.5, 164.9303, 167.259, 168.9342, 173.04, 174.967, 178.49, 180.9479, &
+     183.84, 186.207, 190.23, 192.217, 195.078, 196.9665, 200.59, 204.3833, 207.2, &
+     208.9804, 209., 210., 222., 223., 226., 227., 232.0381, 231.0359, 238.0289/)
+
+    integer n, i, j
+    real*8 ab_h, temp
+
+    ! Mass factor is calculated to convert cm^2/g to cm^2/(hydrogen nucleus).
+    ! MARCS values are given in the former unit but we need the values in the latter unit,
+    ! because absoru_() calculates kappa in unit cm^2/(hydrogen nucleus).
+    !
+    ! This is calculates according to Gray 1st ed. formula (8-17)
+    !
+    ! We use the abundances given as part of the MARCS model because they were the ones
+    ! used by the MARCS code to calculate the model.
+    opa_mass_factor = 0
+    ab_h = 10**modele%abund(1)
+    do i = 1, 92
+      temp = weights(i)*(10**modele%abund(i)/ab_h)
+      opa_mass_factor = opa_mass_factor+temp
+      ! print *, 'mass of element ', i, ': ', weights(i), '; coiso: ', temp, '; abund: ', modele%abund(i)
+    end do
+    opa_mass_factor = opa_mass_factor*1.6606e-24
+
+    ! print *, 'opa_mass_factor ', opa_mass_factor
 
     ! write(10,*) (m_lambda(i), i=1,modele%nwav)
-    write(10,*) (modele%wav(i), i=1,modele%nwav)
-    do n = 1, modele%ntot  ! modele%ntot
-      ! todo cleanup
-      write(11, *) (modele%sca(i,n),i=1,modele%nwav)
-      write(12, *) (modele%abs(i,n),i=1,modele%nwav)
-    end do
+    ! write(10,*) (modele%wav(i), i=1,modele%nwav)
+    ! do n = 1, modele%ntot  ! modele%ntot
+    ! ! todo cleanup
+    !  write(11, *) (modele%sca(i,n),i=1,modele%nwav)
+    !  write(12, *) (modele%abs(i,n),i=1,modele%nwav)
+    ! end do
+    !write(13,*) (m_lambda(i), i=1,m_dtot)
 
-
-    write(13,*) (m_lambda(i), i=1,m_dtot)
     do n = 1, modele%ntot  ! modele%ntot
     ! ft2 does not perform well here, ftlin3 is ok
       !call   ft2(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
@@ -1462,7 +1495,8 @@ contains
       ! print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
 
 
-      call ftlin3(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
+      if (config_sca) &
+       call ftlin3(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
 
       ! print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
@@ -1475,7 +1509,8 @@ contains
 
       !call   ft2(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
       ! print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-      call ftlin3(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+      if (config_abs) &
+       call ftlin3(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
       ! print *, "___B___"
 
 
@@ -1621,21 +1656,22 @@ contains
     integer d, k, l, n
     real*8 :: bi(0:MAX_MODELES_NTOT)
     real*8, dimension(MAX_ATOMS_F_NBLEND) :: &
-     ecar  !, & !     ecartl, &
+     ecar  !, & !     ecart,l &
     real*8, dimension(MAX_MODELES_NTOT) :: &
      kap,    &
-     kci,    &
-     kappt
+     kci
     real*8, dimension(MAX_KM_F_MBLEND) :: &
      ecarm !, ecartlm
     real*8 :: &
      deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
      phi, t, v, vm, &
      kam, kappam, kappa, kak, &
-     kappa_opa  ! opacities aditive term
+     kappa_opa, &    ! continuum absorption coefficient, origin MARCS website
+     kappa_absoru    ! continuum absorption coefficient
 
 
     kappa_opa = 0
+    kappa_absoru = 0
 
     if (atoms_f_nblend .ne. 0) then
       do k = 1,atoms_f_nblend
@@ -1717,20 +1753,38 @@ contains
 
         ! opacities
 
-        if (.not. config_no_opa) then
-            ! TODO document this
-            kappa_opa = (opa_abs(d, n)+opa_sca(d, n))*2.e-24  !1.6606e-24
-            ! kappa_opa = (opa_abs(d, n)+opa_sca(d, n))/absoru_toc ! *1.6606e-24
+        if (config_abs .or. config_sca) then
+            ! todo issue
+            ! Scattering and absorption are given in MARCS ".opa" files in cm^2/g
+            !
+            ! Apparently they need to be converted back to cm^2 per hydrogen nucleous
+            !
+            ! It is doing so by multiplying by 2e-24, but this should be
+            ! a weighted sum from 1 to 92 of (relative abundance)*(atomic weight)*1.66e-24
+            !
+            ! According to Gray this gives a typical value of around 2e-24
+            !
+            ! Another thing to investigate is whether MARCS opacities do not already represent everything for the
+            ! kappa of the continuum
+
+            kappa_opa = 0
+
+            if (config_abs) kappa_opa = kappa_opa+opa_abs(d, n)
+            if (config_sca) kappa_opa = kappa_opa+opa_sca(d, n)
+
+
+            kappa_opa = kappa_opa*opa_mass_factor
         end if
 
-        kappt(n) = kappa+kappam
+        if (config_absoru) kappa_absoru = bk_kcd(d, n)
 
-        kci(n) = bk_kcd(d,n) + kappa_opa
-        kap(n) = kappt(n)+kci(n)
-        bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)        
+        kci(n) = kappa_absoru+kappa_opa  ! kappa for the continuous
+        kap(n) = kappa+kappam+kci(n)     ! continuous + lines
       end do
 
-      bi(0) = ((bk_b2(0)-bk_b1(0))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(0)
+      do n = 0,modele%ntot
+        bi(n) = ((bk_b2(n)-bk_b1(n))*(float(d-1)))/(float(m_dtot-1)) + bk_b1(n)
+      end do
 
       if (config_no_h .or. (d .lt. hy_dhm) .or. (d .ge. hy_dhp)) then
         ! without hydrogen lines
@@ -2074,7 +2128,7 @@ program pfant
   call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
-  if (.not. config_no_opa) call read_opa(config_fn_opa)
+  if (config_opa) call read_opa(config_fn_opa)
   call read_abonds(config_fn_abonds)
   if (.not. config_no_atoms) then
     call read_atoms(config_fn_atoms)

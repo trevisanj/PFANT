@@ -89,6 +89,12 @@ class XMainAbonds(QMainWindow):
         ac.setShortcut("Ctrl+M")
         ac.triggered.connect(self.on_show_rm)
 
+
+        # # It is necessary to do a little more work to create this option
+        # ac = m.addAction("&Explorer")
+        # ac.setShortcut("Ctrl+E")
+        # ac.triggered.connect(self.on_show_explorer)
+
         # # Central layout
 
         cw = self.centralWidget = QWidget()
@@ -242,6 +248,9 @@ class XMainAbonds(QMainWindow):
     def on_show_rm(self):
         if self._manager_form:
             self._manager_form.show()
+            self._manager_form.raise_()
+            self._manager_form.activateWindow()
+
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for signals emited by pyfant widgets

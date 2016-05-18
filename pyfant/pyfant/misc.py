@@ -13,7 +13,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
  "is_text_file", "get_QApplication", "copy_default_file", "MyLock",
- "get_data_dir", "get_data_subdirs"]
+ "get_data_dir", "get_data_subdirs", "SESSION_PREFIX_SINGULAR",
+ "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX"]
 
 
 # # todo cleanup
@@ -65,6 +66,13 @@ import glob
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 
+
+###############################################################################
+# # Constants to be shared among pyfant
+
+SESSION_PREFIX_SINGULAR = 'session-'
+SESSION_PREFIX_PLURAL = 'session-'
+MULTISESSION_PREFIX = 'multi-session-'
 
 # List of all atomic symbols
 # obtained using elements.py from http://www.lfd.uci.edu/~gohlke/, then
@@ -849,3 +857,5 @@ class MyLock(object):
             get_python_logger().info("--- MyLock %s --- %s (caller: %s; thread: %s)" %
             (self.name, s, GetCurrentFunctionName(2), current_thread().name))
 
+
+###############################################################################

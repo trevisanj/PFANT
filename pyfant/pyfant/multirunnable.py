@@ -8,11 +8,12 @@ __all__ = ["MultiRunnable"]
 from pyfant import *
 import copy
 import os
+from .misc import MULTISESSION_PREFIX
 import logging
 
-_multi_id_maker = IdMaker()
-_multi_id_maker.session_prefix_singular = "multi-session-"
 
+_multi_id_maker = IdMaker()
+_multi_id_maker.session_prefix_singular = MULTISESSION_PREFIX
 
 
 @froze_it
@@ -108,6 +109,25 @@ class MultiRunnable(Runnable):
         else:
             self.__sid.make_id()
 
+
+        ih = Combo([FOR_INNEWMARCS, FOR_HYDRO2])
+        ih.conf.flag_output_to_dir = True
+        ih.conf.logger = self.__logger
+        ih.conf.opt = copy.copy(self.__options)
+        ih.conf.sid = self.sid
+
+        # running innewmarcs and hydro2
+        ih.run()
+
+
+        # print ih.conf.opt.fn_modeles
+        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+        # raise RuntimeError("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+
+
         custom_id_maker = IdMaker()
         custom_id_maker.session_prefix_singular = \
          os.path.join(self.__sid.dir, "session-")
@@ -156,6 +176,10 @@ class MultiRunnable(Runnable):
             pfant.conf.file_main = self.__file_main
             pfant.conf.file_abonds = file_abonds_
             pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
+            # configuration overridden to match that of the Combo object
+            # (in order to find the files created by innewmarcs and hydro2).
+            pfant.conf.opt.fn_modeles = ih.conf.opt.fn_modeles
+            pfant.conf.file_hmap = ih.conf.file_hmap
 
             pfant_name = self.__file_abxfwhm.pfant_names[j] \
                 if self.__file_abxfwhm.pfant_names \

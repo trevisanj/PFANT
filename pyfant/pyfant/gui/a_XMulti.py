@@ -8,6 +8,7 @@ from pyfant import *
 import os.path
 from .a_XPFANT import *
 from .a_WFileAbXFwhm import *
+import shutil
 
 WINDOW_WIDTH = 700
 WINDOW_HEIGHT = 768
@@ -105,10 +106,6 @@ class XMulti(XPFANT):
     def on_run_multi(self):
         errors = self._check_single_setup()
 
-        # more error checking
-        if self.checkbox_multi_custom_id.isChecked():
-            if len(self.__get_multi_custom_session_id()) == 0:
-                errors.append("Please inform custom session id.")
         if not self.multi_editor.f:
             errors.append("abundances X FWHM's configuration not set")
         else:
@@ -117,12 +114,29 @@ class XMulti(XPFANT):
             if not self.multi_editor.flag_valid:
                 errors.append("error(s) in abundances X FWHM's configuration")
 
+        if self.checkbox_multi_custom_id.isChecked():
+            s = self.__get_multi_custom_session_id()
+            if len(s) == 0:
+                errors.append("Please inform custom session id.")
+            elif len(errors) == 0: # will only offer to remove directory if everything is ok so far
+                dirname = MULTISESSION_PREFIX+s
+                if os.path.isdir(dirname):
+                    r = QMessageBox.question(self, "Directory exists",
+                     "Directory '%s' already exists.\n\nWould you like to remove it?" % dirname,
+                     QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+                    if r == QMessageBox.Yes:
+                        try:
+                            shutil.rmtree(dirname)
+                        except Exception as e:
+                            errors.append(str(e))
+                    else:
+                        return
+
         if len(errors) == 0:
             try:
                 self.setEnabled(False)
                 self.__submit_multi()
                 self._manager_form.show()
-                print "NOT YET MULTI SUBMIT"
             except Exception as e:
                 errors.append(str(e))
                 get_python_logger().exception("Cannot submit multi-job")
@@ -168,12 +182,8 @@ class XMulti(XPFANT):
         return str(self.lineEdit_multi_custom_id.text()).strip()
 
     def __submit_multi(self):
-        custom_id = None
-        if self.checkbox_multi_custom_id.isChecked():
-            custom_id = self.__get_multi_custom_session_id()
-
         r = MultiRunnable(self.me.f, self.ae.f, self.oe.f, self.multi_editor.f)
-        if self.checkbox_custom_id.isChecked():
+        if self.checkbox_multi_custom_id.isChecked():
             r.sid.id = self.__get_multi_custom_session_id()
         self._rm.add_runnables([r])
 

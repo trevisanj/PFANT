@@ -35,7 +35,8 @@ class SID(object):
         """
         Information used to create a session directory and to identify this directory.
 
-        When this property is set, a directory "session-<session_id>" is created
+        When this property is set, the session directory
+        (probably named "session-<session_id>") is created
         immediately."""
         return self.__id
 
@@ -133,8 +134,8 @@ class IdMaker(object):
 
     def __init__(self):
         self.dirs_per_dir = 1000  # only if flag_split_dirs
-        self.session_prefix_singular = "session-"
-        self.session_prefix_plural = "sessions-"
+        self.session_prefix_singular = SESSION_PREFIX_SINGULAR
+        self.session_prefix_plural = SESSION_PREFIX_PLURAL
         # Lock is necessary to make unique session ids
         self.__lock_session_id = Lock()
         self.__i_id = 0
@@ -195,6 +196,7 @@ class Options(object):
 
         # innewmarcs, pfant
         self.fn_moo = None
+        self.opa = None
 
         # hydro2, pfant
         self.fn_absoru2 = None
@@ -208,7 +210,6 @@ class Options(object):
         self.tirb = None
         self.allow = None
         self.fn_modgrid = None
-        self.no_opa = None
 
         # hydro2
         self.zph = None
@@ -236,6 +237,9 @@ class Options(object):
         self.pas = None
         self.aint = None
         self.interp = None
+        self.abs = None
+        self.sca = None
+        self.absoru = None
 
         # nulbad
         self.norm = None
@@ -320,6 +324,9 @@ class Conf(object):
     @property
     def sid(self):
         return self.__sid
+    @sid.setter
+    def sid(self, x):
+        self.__sid = x
 
     def __init__(self):
         # # Setup flags
@@ -465,6 +472,20 @@ class Conf(object):
         """
         return self.opt.get_args()
 
+    def rename_outputs(self, sequence):
+        """
+        Adds session dir to names of files that will be created by any of the
+        executables. To be called *before* create_data_files
+
+        Arguments:
+          sequence: list containing one or more i_* values such as innewmarcs etc
+
+        Note: in order to link pfant->nulbad correctly,
+              nulbad "--fn_flux" option will not be used.
+        """
+        self.__rename_outputs(sequence)
+
+
     def __create_data_files(self):
         """
         Creates files for all self-attributes starting with prefix "file_"
@@ -493,16 +514,6 @@ class Conf(object):
                     self.opt.__setattr__("fn_"+attr_name[5:], new_fn)
 
     def __rename_outputs(self, sequence):
-        """
-        Adds session dir to names of files that will be created by any of the
-        executables. To be called *before* create_data_files
-
-        Arguments:
-          sequence: list containing one or more i_* values such as innewmarcs etc
-
-        Note: in order to link pfant->nulbad correctly,
-              nulbad "--fn_flux" option will not be used.
-        """
         if FOR_INNEWMARCS in sequence:
             # ** innewmarcs -> hydro2
             # **            -> pfant
@@ -531,7 +542,7 @@ class Conf(object):
 
         # ** pfant -> nulbad
         if FOR_PFANT in sequence or FOR_NULBAD in sequence:
-            flprefix = self.get_flprefix(True)
+            flprefix = self.get_flprefix()  #True)
             self.opt.flprefix = self.__sid.join_with_session_dir(flprefix)
 
         if FOR_NULBAD in sequence:

@@ -2724,7 +2724,7 @@ contains
     character(len=*) :: lll
 
     write(error_unit, *) lll
-    stop
+    stop -222
   end subroutine
 
 
@@ -2819,7 +2819,7 @@ module config
   !---
   ! innewmarcs, pfant
   !---
-  logical :: config_no_opa = .true. ! option --no_opa
+  logical :: config_opa = .false. ! option --opa
 
 
   !
@@ -2891,7 +2891,10 @@ module config
    config_fn_lines         = 'lines.pfant',       & ! option: --fn_lines
    config_fn_log           = 'log.log',           & ! option: --fn_log
    config_flprefix         = '?'                    ! option: --flprefix
-  integer :: config_interp = 1  ! option: --interp
+  integer :: config_interp = 1                      ! option: --interp
+  logical :: config_abs = .true., &                 ! option: --abs
+             config_sca = .true., &                 ! option: --sca
+             config_absoru = .true.                 ! option: --config_absoru
 
   !---
   ! nulbad-only
@@ -3081,8 +3084,9 @@ contains
     !
     ! innewmarcs, pfant
     !
-    call add_option('ip', 'no_opa',' ', .true., 'T/F', logical2str(config_no_opa), &
-     'If set, skips the calculation of opacities based on MARCS opacities file')
+    call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
+     'Whether or not to include MARCS opacity coefficients (absorption and scattering)<br>'//&
+     IND//'in the continuum')
 
 
     !
@@ -3130,7 +3134,15 @@ contains
      'Interval length per iteration (angstrom)')
     call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator', .false.)
-
+    call add_option('p', 'abs',' ', .true., 'T/F', logical2str(config_abs), &
+     'Whether or not to include MARCS *absorption* coefficients in the continuum.<br>'//&
+     'This option only has effect if --opa is True.')
+    call add_option('p', 'sca',' ', .true., 'T/F', logical2str(config_sca), &
+     'Whether or not to include MARCS *scattering* coefficients in the continuum.<br>'//&
+     'This option only has effect if --opa is True.')
+    call add_option('p', 'absoru',' ', .true., 'T/F', logical2str(config_absoru), &
+     'Whether or not to include coefficients calculated by subroutine absoru()<br>'//&
+     IND//'in the continuum.')
 
     !
     ! pfant, nulbad
@@ -3295,9 +3307,18 @@ contains
       case ('no_molecules')
         config_no_molecules = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_no_molecules', logical2str(config_no_molecules))
-      case ('no_opa')
-        config_no_opa = parse_aux_str2logical(opt, o_arg)
-        call parse_aux_log_assignment('config_no_opa', logical2str(config_no_opa))
+      case ('opa')
+        config_opa = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_opa', logical2str(config_opa))
+      case ('abs')
+        config_abs = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_abs', logical2str(config_abs))
+      case ('sca')
+        config_sca = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_sca', logical2str(config_sca))
+      case ('absoru')
+        config_absoru = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_absoru', logical2str(config_absoru))
       case ('no_atoms')
         config_no_atoms = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_no_atoms', logical2str(config_no_atoms))
@@ -3973,7 +3994,7 @@ module reader_models
   ! updated, but at the moment it is the simplest form:
   ! - allows to easily know the number of records based on the file size
   ! - allows for faster file reading
-  integer, parameter :: MOO_RECL = 1200+484324, & ! record length
+  integer, parameter :: MOO_RECL = 1200+484692, & ! record length
                         MOO_NTOT = 56, &  ! number of layers *must be 56*
                         MOO_NWAV = 1071   ! number of wavelengths *must be 1071
 
@@ -4334,6 +4355,7 @@ contains
     real*4 swave
     real*4 wav(MOO_NWAV)
     real*4, dimension(MAX_MODELES_NTOT) :: ops
+    real*4, dimension(92) :: abund
     real*4, dimension(MOO_NWAV, MAX_MODELES_NTOT) :: abs_, sca
     ! Variable used to skip a few characters
     character bid(MOD_RECL)
@@ -4418,6 +4440,9 @@ contains
       recs(iid)%wav = wav
       recs(iid)%abs = abs_
       recs(iid)%sca = sca
+
+      read(myunit) abund
+      recs(iid)%abund = abund
     end do
 
     close(myunit)
@@ -4459,7 +4484,7 @@ contains
       enddo
     enddo
 
-    ! Reads abundances (but doesn't use them for anything)
+    ! Reads abundances
     read(myunit,*) modele%abund
   end
 
@@ -4900,9 +4925,9 @@ module reader_abonds
   ! Variables filled by read_abonds() (file abonds.dat)
   !=====
   integer abonds_nabond ! ?doc?
-  character*2 abonds_ele(MAX_ABONDS_NABOND)     ! ?doc?
-  real*8      abonds_abol(MAX_ABONDS_NABOND), & ! ?doc?
-              abonds_abo(MAX_ABONDS_NABOND)     ! ?doc? This is calculated
+  character*2 abonds_ele(MAX_ABONDS_NABOND)     ! symbol of element, e.g., HE, LI etc
+  real*8      abonds_abol(MAX_ABONDS_NABOND), & ! logarithmic abundance (H=12)
+              abonds_abo(MAX_ABONDS_NABOND)     ! number abundance calculated as 10**(abol-12)
 
   ! Flag indicating whether read_abonds() has already been called
   logical :: flag_read_abonds = .false.

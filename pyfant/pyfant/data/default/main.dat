@@ -1,19 +1,9 @@
 Sun
-T 0.02 5.0 1.   .12
+T 0.02 5.0 1.0 0.12
 0.9
-5777 4.44 0.0 0.1 1
-T  1.
+5777.0 4.44 0.0 0.1 1
+F 1.0
 0.0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
 flux
-6059 6065  50
-thk
-thi
-thteta
-thneta
-thzeta
-thepsilon
-thdelta
-thgamma
-th1
-thalpha
+6530.0 6590.0 10.0

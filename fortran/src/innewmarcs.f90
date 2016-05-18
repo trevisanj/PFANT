@@ -57,14 +57,12 @@ program innewmarcs
 
   ! # Other variables
   integer i, ntot
-  logical flag_opa
 
   ! # Initialization, reads files, opens outputs
   execonf_name = 'innewmarcs'
   call config_init()
   call read_main(config_fn_main)
-  flag_opa = .not. config_no_opa
-  if (flag_opa) then
+  if (config_opa) then
     call read_moo(config_fn_moo, recs)
   else
     call read_mod_grid(config_fn_modgrid, recs)
@@ -122,12 +120,12 @@ program innewmarcs
   call write_modele(config_fn_modeles, zz)
   call log_info('File '''//trim(config_fn_modeles)//''' was successfully created.')
   ! Writes ".opa" file, e.g., "opacities.opa"
-  if (flag_opa) then
+  if (config_opa) then
     call write_opa(config_fn_opa, zz)
     call log_info('File '''//trim(config_fn_opa)//''' was successfully created.')
   end if
   if (config_explain) then
-    if (flag_opa) then
+    if (config_opa) then
       write(UNIT_EXPLAIN, *) 'innewmarcs grid file: '''//trim(config_fn_moo)//''''
     else
       write(UNIT_EXPLAIN, *) 'innewmarcs grid file: '''//trim(config_fn_modgrid)//''''
@@ -349,7 +347,7 @@ contains
         call shift_left(ishift, recs(i)%pg)
         call shift_left(ishift, recs(i)%log_tau_ross)
 
-        if (flag_opa) then
+        if (config_opa) then
           call shift_left(ishift, recs(i)%rad)
           call shift_left(ishift, recs(i)%tau)
           call shift_left(ishift, recs(i)%t)
@@ -422,7 +420,7 @@ contains
     call interpol(ka, kb, reca%pg, recb%pg, recx%pg)
     ! call interpol(ka, kb, reca%log_tau_ross, recb%log_tau_ross, recx%log_tau_ross)
 
-    if (flag_opa) then
+    if (config_opa) then
       call interpol(ka, kb, reca%rad, recb%rad, recx%rad)
       call interpol(ka, kb, reca%tau, recb%tau, recx%tau)
       call interpol(ka, kb, reca%t, recb%t, recx%t)
