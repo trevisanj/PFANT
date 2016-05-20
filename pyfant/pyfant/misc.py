@@ -143,8 +143,7 @@ class AttrsPart(object):
         if self.less_attrs is None:
             self.less_attrs = self.attrs
 
-
-    def __str__(self):
+    def __repr__(self):
         assert self.attrs is not None, "Forgot to set attrs class variable"
 
         s_format = "{:>%d} = {}" % max([len(x) for x in self.attrs])
@@ -153,7 +152,9 @@ class AttrsPart(object):
             y = self.__getattribute__(x)
             if isinstance(y, list):
                 # list gets special treatment
-                l.append(("** %s **\n" % x)+("\n".join([repr(z) for z in y])))
+                l.append(("%s = [\n" % x)+
+                 (" \n".join([z.one_liner_str() if isinstance(z, AttrsPart)
+                             else repr(z) for z in y]))+"\n]")
             else:
                 l.append(s_format.format(x, self.__getattribute__(x)))
 

@@ -78,7 +78,7 @@ class SID(object):
         self.__dir = None
         self.__flag_split_dirs = False
 
-    def     join_with_session_dir(self, fn):
+    def join_with_session_dir(self, fn):
         """Joins self.session_dir with specified filename to make a path."""
         return os.path.join(self.__dir, fn)
 
@@ -127,9 +127,7 @@ class SID(object):
 
 class IdMaker(object):
     """
-    Class to hold the thread-safe id maker + directory maker functionality.
-
-    This class is not supposed to be instantiated.
+    Thread-safe id maker + directory maker functionality.
     """
 
     def __init__(self):
@@ -188,15 +186,14 @@ class Options(object):
         # innewmarcs, hydro2, pfant
         self.fn_modeles = None
 
-        # innewmarcs, hydro2
-        self.teff = None
-        self.glog = None
-        self.asalog = None
-        self.inum = None
+        # innewmarcs
+        self.fn_modgrid = None
+        self.fn_moo = None
+        self.allow = None
 
         # innewmarcs, pfant
-        self.fn_moo = None
         self.opa = None
+        self.fn_opa = None
 
         # hydro2, pfant
         self.fn_absoru2 = None
@@ -204,20 +201,11 @@ class Options(object):
         self.llzero = None
         self.llfin = None
 
-        # innewmarcs
-        self.open_status = None
-        self.modcode = None
-        self.tirb = None
-        self.allow = None
-        self.fn_modgrid = None
-
         # hydro2
         self.zph = None
-        self.ptdisk = None
         self.kik = None
         self.amores = None
         self.kq = None
-        self.vvt = None
 
         # pfant
         self.fn_dissoc    = None
@@ -324,9 +312,18 @@ class Conf(object):
     @property
     def sid(self):
         return self.__sid
+
     @sid.setter
     def sid(self, x):
         self.__sid = x
+
+    @property
+    def opt(self):
+        return self.__opt
+    @opt.setter
+    def opt(self, x):
+        self.__opt = x
+
 
     def __init__(self):
         # # Setup flags
@@ -350,7 +347,7 @@ class Conf(object):
         self.file_atoms = None
 
         # # Command-line options
-        self.opt = Options()
+        self.__opt = Options()
 
         # # Read-only properties
         self.__popen_text_dest = None
@@ -373,7 +370,7 @@ class Conf(object):
             if self.__flag_output_to_dir:
                 self.__rename_outputs(sequence)
             if FOR_PFANT in sequence:
-                self.opt.fn_progress = self.__sid.join_with_session_dir("progress.txt")  # this is for pfant
+                self.__opt.fn_progress = self.__sid.join_with_session_dir("progress.txt")  # this is for pfant
 
         # Always gotta open logs
         if self.__flag_log_file:
@@ -400,32 +397,36 @@ class Conf(object):
         if self.__popen_text_dest is not None:
             self.__popen_text_dest.close()
 
-    def get_file_main(self):
+    def get_file_main(self, opt=None):
         """Returns either self.file_main, or if None, tries to open file and
         return a new FileMain object.
         """
+        if opt is None:
+            opt = self.__opt
         if self.file_main is not None:
             return self.file_main
         file_ = FileMain()
-        if self.opt.fn_main is None:
+        if opt.fn_main is None:
             file_.load()  # will try to load default file
         else:
-            file_.load(self.opt.fn_main)
+            file_.load(opt.fn_main)
         return file_
 
-    def get_flprefix(self, _flag_skip_opt=False):
+    def get_flprefix(self, _flag_skip_opt=False, opt=None):
         """Returns the prefix for a pfant output file.
 
         The returned prefix is used to compose a pfant output file name, e.g.
         <prefix>.norm
 
         Prefix is looked for in the following locations (in this order):
-          1) command-line option, i.e., self.opt.flprefix; if None,
+          1) command-line option, i.e., opt.flprefix; if None,
           2) self.file_main.flprefix; if self.file_main is None,
           3) tries to open the main configuration file
         """
-        if not _flag_skip_opt and self.opt.flprefix is not None:
-            return self.opt.flprefix
+        if opt is None:
+            opt = self.__opt
+        if not _flag_skip_opt and opt.flprefix is not None:
+            return opt.flprefix
         if self.file_main is not None:
             return self.file_main.flprefix
         file_ = self.get_file_main()
@@ -452,27 +453,27 @@ class Conf(object):
           2) gets flprefix from main configuration file and adds
              ".norm" or ".spec"
         """
-        if self.opt.fn_cv is not None:
-            filename = self.opt.fn_cv
+        if self.__opt.fn_cv is not None:
+            filename = self.__opt.fn_cv
         else:
             flprefix = self.get_flprefix()
             # True or None evaluates to "norm"
-            ext = "spec" if self.opt.norm == False else "norm"
+            ext = "spec" if self.__opt.norm == False else "norm"
             filename = flprefix+"."+ext
         return filename
 
     def get_fn_modeles(self):
         """Returns name of atmospheric model file."""
-        return FileModBin.default_filename if self.opt.fn_modeles is None \
-         else self.opt.fn_modeles
+        return FileModBin.default_filename if self.__opt.fn_modeles is None \
+         else self.__opt.fn_modeles
 
     def get_args(self):
         """
         Returns a list of command-line arguments (only options that have been set)
         """
-        return self.opt.get_args()
+        return self.__opt.get_args()
 
-    def rename_outputs(self, sequence):
+    def rename_outputs(self, sequence, opt=None, sid=None):
         """
         Adds session dir to names of files that will be created by any of the
         executables. To be called *before* create_data_files
@@ -483,22 +484,14 @@ class Conf(object):
         Note: in order to link pfant->nulbad correctly,
               nulbad "--fn_flux" option will not be used.
         """
-        self.__rename_outputs(sequence)
+        self.__rename_outputs(sequence, opt, sid)
 
 
     def __create_data_files(self):
         """
-        Creates files for all self-attributes starting with prefix "file_"
+        Creates files for all self.file_* that are not None.
 
-        Example:
-          Consider the attribute file_main:
-            If self.file_main is None:
-              - File specified by self.fn_main must exist.
-            else:
-              - File will be created inside session directory
-              - self.opt.fn_main will be overwritten
-
-        Now this example extends to file_* attributes.
+        Corresponding self.opt.fn_xxxx will be overwritten.
         """
         for attr_name in dir(self):
             if attr_name.startswith("file_"):
@@ -506,28 +499,41 @@ class Conf(object):
 
                 if obj is not None:
                     assert isinstance(obj, DataFile)
-
-                    new_fn = self.__sid.join_with_session_dir(obj.default_filename)
+                    fn_attr_name = "fn_"+attr_name[5:]
+                    curr_fn = self.__opt.__getattribute__(fn_attr_name)
+                    # Tries to preserve custom file name given to file
+                    # (file name only, not directories)
+                    base_fn = os.path.basename(curr_fn) if curr_fn \
+                     else obj.default_filename
+                    new_fn = self.__sid.join_with_session_dir(base_fn)
                     # Saves file
                     obj.save_as(new_fn)
                     # Overwrites config option
-                    self.opt.__setattr__("fn_"+attr_name[5:], new_fn)
+                    self.__opt.__setattr__("fn_"+attr_name[5:], new_fn)
 
-    def __rename_outputs(self, sequence):
+    def __rename_outputs(self, sequence, opt=None, sid=None):
+        if opt is None:
+            opt = self.__opt
+        if sid is None:
+            sid = self.__sid
         if FOR_INNEWMARCS in sequence:
-            # ** innewmarcs -> hydro2
-            # **            -> pfant
-            # ** (infile:modeles) is innewmarcs output and (pfant, hydro2) input
-            self.opt.fn_modeles = self.__sid.join_with_session_dir(self.opt.fn_modeles if self.opt.fn_modeles is not None else FileModBin.default_filename)
+            # # innewmarcs -> (hydro2, pfant)
+            opt.fn_modeles = sid.join_with_session_dir(
+             os.path.basename(opt.fn_modeles) if opt.fn_modeles is not None
+             else FileModBin.default_filename)
+            opt.fn_opa = sid.join_with_session_dir(
+             os.path.basename(opt.fn_opa) if opt.fn_opa is not None
+             else FileModBin.default_filename)
 
         if FOR_HYDRO2 in sequence:
-            # ** hydro2 -> pfant
-            # ** Task here is to add session_dir to all hydrogen lines filenames, e.g.,
-            # ** if it was "thalpha" it will be something like "session123456/thalpha"
+            # # hydro2 -> pfant
+            # Task here is to add session_dir to all hydrogen lines filenames, e.g.,
+            # if it was "thalpha" it will be something like "session123456/thalpha"
+
             if not self.file_hmap:
                 # if self doesn't have a Hmap object, will load from file
                 o = self.file_hmap = FileHmap()
-                fn = self.opt.fn_hmap if self.opt.fn_hmap is not None else \
+                fn = opt.fn_hmap if opt.fn_hmap is not None else \
                  FileHmap.default_filename
                 o.load(fn)
             else:
@@ -537,19 +543,19 @@ class Conf(object):
                 #
                 # Fortran reads this correctly. If not put between quotes, Fortran thinks that the "/"
                 # denotes the end of the string.
-                row.fn = "'"+self.__sid.join_with_session_dir(row.fn)+"'"
+                row.fn = "'"+sid.join_with_session_dir(row.fn)+"'"
                 # Done! new hmap file will be created by create_data_files
 
         # ** pfant -> nulbad
         if FOR_PFANT in sequence or FOR_NULBAD in sequence:
-            flprefix = self.get_flprefix()  #True)
-            self.opt.flprefix = self.__sid.join_with_session_dir(flprefix)
+            flprefix = self.get_flprefix(opt=opt)
+            opt.flprefix = sid.join_with_session_dir(flprefix)
 
         if FOR_NULBAD in sequence:
-            self.opt.fn_flux = None  # will cause nulbad to use flprefix
-            if self.opt.fn_cv:
+            opt.fn_flux = None  # will cause nulbad to use flprefix
+            if opt.fn_cv:
                 # Note that this is recursive, but Combo is meant to be
                 # run only once.
-                self.opt.fn_cv = self.__sid.join_with_session_dir(self.opt.fn_cv)
+                opt.fn_cv = sid.join_with_session_dir(opt.fn_cv)
 
 _conf_id_maker = IdMaker()

@@ -18,6 +18,14 @@ class FileAbonds(DataFile):
         self.abol = []  # corresponding abundances
         self.notes = []  # ignored by pfant
 
+    def __repr__(self):
+        nn = max(0 if x is None else len(x) for x in self.notes)
+        return "\n".join(
+         ["El  Abund Notes",
+          "-- ------ "+"-"*nn]+
+         ["{:>2s} {:>6.2f} {}".format(a, b, c)
+          for a, b, c in zip(self.ele, self.abol, self.notes)])
+
     def __len__(self):
         """Returns length of "ele" attribute."""
         return len(self.ele)

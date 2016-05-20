@@ -15,9 +15,9 @@ class FileMain(DataFile):
   """
 
   default_filename = "main.dat"
-  attrs = ["titrav", "ecrit", "pas", "echx", "echy", "fwhm", "ivtot", "vvt", "tolv",
-           "teff", "glog", "asalog", "nhe", "inum", "ptdisk", "mu", "afstar",
-           "xxcor", "flprefix", "llzero", "llfin", "aint", "filetohy"]
+  attrs = ["titrav", "pas", "fwhm", "ivtot", "vvt", "tolv",
+           "teff", "glog", "asalog", "nhe", "ptdisk", "mu",
+           "flprefix", "llzero", "llfin", "aint"]
 
   def __init__(self):
     DataFile.__init__(self)

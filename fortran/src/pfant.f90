@@ -2044,33 +2044,25 @@ contains
       4 continue
 
       14 continue
-
       do k = 1,m_dtot
         if(ftth(k).gt. 1e-38) go to 20
       end do
 
       20 m_dhmi = k
-
-      ! ?doc?
       if (m_dhmi .eq. m_dtot) m_dhmi = 1
-
-
       kk1 = m_dhmi+1
       do k = kk1,m_dtot
         if (ftth(k) .le. 1e-38) go to 30
       end do
 
       30 m_dhpi = k
-
       ! (Paula Coelho 21/11/04) instrucao da Marie Noel
       ! ?doc?
       if (ftth(m_dtot) .ne. 0.0) m_dhpi = m_dtot
-
       return
 
       10 ftth(k) = 0.
       j = j+1
-
       kk = kq
       kk = kk+1
       if (kq .gt. m_dtot) go to 14

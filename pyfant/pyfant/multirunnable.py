@@ -98,62 +98,48 @@ class MultiRunnable(Runnable):
 
     def __run(self):
         # Called from run() to lower one indentation lever.
-        # If something is not right here, just raise.
+        # **Note** If something is not right here: *raise*.
+        #
+        # **Note** It plays around with Conf, SID, IdMaker objects
 
-        ####
+
         # # Preparation
-        ####
         self.__status.stage = "preparing"
         if self.__custom_id:
             self.__sid.id = self.__custom_id
         else:
             self.__sid.make_id()
 
-
-        ih = Combo([FOR_INNEWMARCS, FOR_HYDRO2])
-        ih.conf.flag_output_to_dir = True
-        ih.conf.logger = self.__logger
-        ih.conf.opt = copy.copy(self.__options)
-        ih.conf.sid = self.sid
-
-        # running innewmarcs and hydro2
-        ih.run()
-
-
-        # print ih.conf.opt.fn_modeles
-        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-        # print "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-        # raise RuntimeError("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-
-
+        # This id maker will create directories inside the
+        # multi-session directory.
+        # It will replace the Pfant's default id maker
         custom_id_maker = IdMaker()
         custom_id_maker.session_prefix_singular = \
          os.path.join(self.__sid.dir, "session-")
 
-        symbols = self.__file_abxfwhm.ab.keys()
-        abdiffss = self.__file_abxfwhm.ab.values()
-        n_abdif = len(abdiffss[0])
 
-        # for abdifs in abdiffss:
-        #     if len(abdifs) != n_abdif:
-        #         raise RuntimeError(
-        #             'All abundances vectors must have length of %d' % n_abdif)
-
-
-        fwhms = self.__file_abxfwhm.get_fwhms()
-        n_fwhms = len(fwhms)
-
-        for fwhm in fwhms:
-            if fwhm > 9.99:
-                raise RuntimeError("fhwm maximum is 9.99")
+        # # Runs innewmarcs and hydro2
+        ih = Combo([FOR_INNEWMARCS, FOR_HYDRO2])
+        ih.conf.flag_output_to_dir = True
+        ih.conf.logger = self.__logger
+        ih.conf.opt = copy.copy(self.__options)
+        ih.conf.sid = self.__sid
+        # Runs innewmarcs and hydro2;
+        # it is also expected to create the "multi-session" directory
+        ih.run()
 
         ####
         # # Runs pfant, pfant creates several .norm files
         self.__status.stage = "pfant stage"
         self.__logger.info("+++ pfant stage...")
         pfant_list = []
+        symbols = self.__file_abxfwhm.ab.keys()
+        abdiffss = self.__file_abxfwhm.ab.values()
+        n_abdif = len(abdiffss[0])
+        fwhms = self.__file_abxfwhm.get_fwhms()
+        for fwhm in fwhms:
+            if fwhm > 9.99:
+                raise RuntimeError("fhwm maximum is 9.99")
         for j in range(n_abdif):
             file_abonds_ = copy.deepcopy(self.__file_abonds)
 
@@ -169,24 +155,20 @@ class MultiRunnable(Runnable):
                 if not found:
                     raise RuntimeError("Atom '%s' not found" % symbol)
 
-            pfant = Pfant()
-            pfant.conf.sid.id_maker = custom_id_maker
-            pfant.conf.logger = self.__logger
-            pfant.conf.opt = copy.copy(self.__options)
-            pfant.conf.file_main = self.__file_main
-            pfant.conf.file_abonds = file_abonds_
-            pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
-            # configuration overridden to match that of the Combo object
-            # (in order to find the files created by innewmarcs and hydro2).
-            pfant.conf.opt.fn_modeles = ih.conf.opt.fn_modeles
-            pfant.conf.file_hmap = ih.conf.file_hmap
-
             pfant_name = self.__file_abxfwhm.pfant_names[j] \
                 if self.__file_abxfwhm.pfant_names \
                 else "%02d" % j
             flprefix = "%s_%s" % (self.__file_main.titrav, pfant_name)
-            pfant.conf.opt.flprefix = os.path.join(self.__sid.dir, flprefix)
+
+            pfant = Pfant()
+            pfant.conf.opt = copy.copy(self.__options)
+            pfant.conf.rename_outputs([FOR_INNEWMARCS, FOR_HYDRO2], sid=self.sid)
+            pfant.conf.sid.id_maker = custom_id_maker
             pfant.conf.sid.id = flprefix
+            pfant.conf.opt.flprefix = self.__sid.join_with_session_dir(flprefix)
+            pfant.conf.file_main = self.__file_main
+            pfant.conf.file_abonds = file_abonds_
+            pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
 
             self.__logger.debug(pfant.conf.opt.flprefix)
 
@@ -214,7 +196,6 @@ class MultiRunnable(Runnable):
             for fwhm in fwhms:
                 nulbad = Nulbad()
                 nulbad.conf.sid.id_maker = custom_id_maker
-                nulbad.conf.logger = self.__logger
                 nulbad.conf.opt = copy.copy(self.__options)
                 nulbad.conf.opt.fn_flux = pfant.conf.opt.flprefix+".norm"
                 nulbad.conf.opt.fwhm = fwhm
@@ -244,12 +225,15 @@ class MultiRunnable(Runnable):
 
         ####
         # # Deletes session-* directories if successful
-        self.__logger.info("+++ Cleaning up...")
-
-        for pfant in pfant_list:
-            pfant.sid.clean()
-        for nulbad in nulbad_list:
-            nulbad.sid.clean()
+        FLAG_CLEAN = False  # True
+        if FLAG_CLEAN:
+            self.__logger.info("+++ Cleaning up...")
+            for pfant in pfant_list:
+                pfant.sid.clean()
+            for nulbad in nulbad_list:
+                nulbad.sid.clean()
+        else:
+            self.__logger.info("+++ NOT cleaning up...")
 
     def _get_sid(self):
         return self.__sid

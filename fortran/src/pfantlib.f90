@@ -2857,8 +2857,7 @@ module config
   !---
   character*64 :: &
    config_fn_modgrid = 'grid.mod', &        ! option: --fn_modgrid
-   config_fn_moo = 'grid.moo'        ! option: --fn_moo
-  character*25 :: config_modcode = 'NoName' ! option: --modcode
+   config_fn_moo = 'grid.moo'               ! option: --fn_moo
   logical :: config_allow = .false.         ! option: --allow
 
   !---
@@ -3080,14 +3079,15 @@ contains
      'allow (teff, glog, asalog) point out of model grid?')
 
 
-
     !
     ! innewmarcs, pfant
     !
     call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
      'Whether or not to include MARCS opacity coefficients (absorption and scattering)<br>'//&
      IND//'in the continuum')
-
+    call add_option('ip', 'fn_opa', ' ', .true., 'file name', config_fn_opa, &
+     'MARCS ".opa" opacities file (most probably created by innewmarcs by interpolation,<br>'//&
+     ' or downloaded from MARCS website)')
 
     !
     ! hydro2-only
@@ -3114,8 +3114,6 @@ contains
      'input file name - atomic lines')
     call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
-    call add_option('p', 'fn_opa', ' ', .true., 'file name', config_fn_opa, &
-     'input file name - MARCS ".opa" opacities file')
     call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
@@ -3235,8 +3233,6 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_progress, 'config_fn_progress')
       case ('fn_modeles')
         call parse_aux_assign_fn(o_arg, config_fn_modeles, 'fn_modeles')
-      case ('modcode')
-        call parse_aux_assign_fn(o_arg, config_modcode, 'modcode')
       case ('kik')
         config_kik = parse_aux_str2int(opt, o_arg)
         if (config_kik .eq. 0 .or. config_kik .eq. 1) then !#validation
