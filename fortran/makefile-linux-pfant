@@ -3,15 +3,17 @@
 #
 
 SRCS_f90d1 = \
-pfantlib.f90 \
-pfant.f90 
+readers.f90 \
+pfant.f90 \
+pfantlib.f90 
 
 OBJS_f90d1 = \
-pfantlib.o \
-pfant.o 
+readers.o \
+pfant.o \
+pfantlib.o 
 
-SRC_DIR_f90d1 = src/
-OBJS_DIR = obj-linux/src/
+SRC_DIR_f90d1 = 
+OBJS_DIR = obj-linux/
 EXE_DIR = bin/
 
 EXE = pfant
@@ -39,9 +41,11 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-pfantlib.o: \
-    pfantlib.f90
+readers.o: \
+    readers.f90
 pfant.o: \
     pfant.f90 \
     pfantlib.o
+pfantlib.o: \
+    pfantlib.f90
 
