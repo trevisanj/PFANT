@@ -207,9 +207,6 @@ and provides some interesting graphic visualizations to these files.
 Please take some time to explore the resources in the _PFANT launcher_ and 
 _PFANT explorer_ tool.
 
-- [See some screenshots](pyfant/screenshots.md) 
-
-
 ### 3.4 All Python programs
 
 To print a list of all Python programs available (with descriptions), please type:  
@@ -218,7 +215,7 @@ To print a list of all Python programs available (with descriptions), please typ
 scripts.py
 ```
 
-**Note** For further information, all programs can be called with the ```--help`` option.
+**Note** For further information, all programs can be called with the `--help` option.
 
 ## 4 More about the PFANT pipeline
 
