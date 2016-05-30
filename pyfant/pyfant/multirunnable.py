@@ -225,7 +225,7 @@ class MultiRunnable(Runnable):
 
         ####
         # # Deletes session-* directories if successful
-        FLAG_CLEAN = False  # True
+        FLAG_CLEAN = True
         if FLAG_CLEAN:
             self.__logger.info("+++ Cleaning up...")
             for pfant in pfant_list:
