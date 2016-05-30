@@ -6,3 +6,4 @@ workspace.xml
 .idea
 gmon.out
 python.log
+./master
