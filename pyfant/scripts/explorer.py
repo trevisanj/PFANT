@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""File Explorer - list and visualize data files."""
+"""PFANT Explorer - list, visualize and edit data files."""
 
 from pyfant.gui import XExplorer
 from pyfant import *

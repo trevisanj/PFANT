@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Utility to quickly visualize spectra.
+Plot spectra to screen or PDF.
 
 It can work in four different modes:
 

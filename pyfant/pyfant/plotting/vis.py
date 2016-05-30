@@ -60,7 +60,7 @@ class VisPrint(Vis):
     """Prints object to screen."""
 
     input_classes = (object,)
-    action = "print to console"
+    action = "Print to console"
 
     def _do_use(self, obj):
         print obj
@@ -72,7 +72,7 @@ class VisModRecord(Vis):
     """
 
     input_classes = (FileModBin,)
-    action = "Visualize model in file"
+    action = "Visualize single record"
 
     def __init__(self):
         Vis.__init__(self)
@@ -102,7 +102,7 @@ class VisMarcs(Vis):
     """
 
     input_classes = (FileModTxt,)
-    action = "visualize model"
+    action = "Visualize model"
 
     def __init__(self):
         Vis.__init__(self)
@@ -116,7 +116,7 @@ class VisMarcsSaveAsMod(Vis):
     """
 
     input_classes = (FileModTxt,)
-    action = 'save as a binary ".mod" file'
+    action = 'Save as a binary ".mod" file'
 
     def __init__(self):
         Vis.__init__(self)
@@ -254,7 +254,7 @@ class VisSpectrum(Vis):
     """Plots single spectrum."""
 
     input_classes = (FileSpectrum,)
-    action = "plot spectrum"
+    action = "Plot spectrum"
 
     def _do_use(self, m):
         s = m.spectrum
@@ -286,7 +286,7 @@ class VisFileToH(Vis):
     """
 
     input_classes = (FileToH,)
-    action = "visualize hydrogen lines profiles"
+    action = "Visualize hydrogen lines profiles"
 
     def _do_use(self, r):
         fig = plt.figure()
@@ -308,7 +308,7 @@ class VisFileToH(Vis):
 class VisAtoms(Vis):
     """Opens the mled window."""
     input_classes = (FileAtoms,)
-    action = "open atomic lines editor"
+    action = "Open atomic lines editor"
 
     def _do_use(self, r):
         from pyfant.gui import XFileAtoms
@@ -320,7 +320,7 @@ class VisAtoms(Vis):
 class VisMolecules(Vis):
     """Opens the ated window."""
     input_classes = (FileMolecules,)
-    action = "open molecular lines editor"
+    action = "Open molecular lines editor"
 
     def _do_use(self, r):
         from pyfant.gui import XFileMolecules

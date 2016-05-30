@@ -451,9 +451,9 @@ class XExplorer(QMainWindow):
             flag_spectra = all([isinstance(f, FileSpectrum) for f in ff])
             flag_mod = all([isinstance(f, FileModBin) and len(f.records) > 1 for f in ff])
             if flag_spectra:
-                z.addItem(QListWidgetItem("View spectra stacked"))
+                z.addItem(QListWidgetItem("Plot spectra stacked"))
                 classes.append("sta")
-                z.addItem(QListWidgetItem("View spectra overlapped"))
+                z.addItem(QListWidgetItem("Plot spectra overlapped"))
                 classes.append("ovl")
             elif flag_mod:
                 z.addItem(QListWidgetItem("View model grid"))

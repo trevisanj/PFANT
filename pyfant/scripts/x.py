@@ -9,7 +9,7 @@ import argparse
 import logging
 
 
-__doc__ = """XM - Graphical interface -- single and multi modes.\n\n
+__doc__ = """PFANT Launcher\n\nSingle and multi modes.\n\n
 Multi mode
 ----------
 """+guiaux.DESCR_MULTI+\

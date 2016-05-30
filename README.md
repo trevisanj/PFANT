@@ -135,7 +135,7 @@ There is a graphical user interface (GUI), but before using it,
 let's run a command-line test sequence. 
 
 
-### 3.1 Command-line test
+### 3.1 Getting the data together 
 
 First let's create a new directory and put some data in it: 
 
@@ -165,6 +165,8 @@ refer to Section 4):
 abonds.dat  absoru2.dat  atoms.dat  dissoc.dat  grid.mod  grid.moo  hmap.dat  main.dat  molecules.dat  partit.dat  python.log
 ```
 
+### 3.2 Spectral synthesis
+
 Run the spectral synthesis (this script is called "run4" because it runs four
 Fortran programs in sequence).
 
@@ -178,54 +180,72 @@ Visualize the synthetic spectra before and after the final convolution:
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-Here is the complete test sequence:
+### 3.3 Graphical programs
 
-```shell
-mkdir mystar
-cd mystar
-link.py common                 # creates symbolic links to star-independent data files 
-copy-star.py sun-asplund-2009  # copies star-specific data files to local directory
-run4.py --fwhm 0.12            # runs Fortran binaries
-plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
-```
+```x.py```, the *PFANT launcher*, is a user-friendly interface where you can edit the stellar
+parameters and command-line options and run spectral syntheses using multiple CPU cores.
+It also has a "multi mode" which can be useful for adjusting of stellar
+abundances. Here's a sequence of steps to get you started:
 
-**Note** If any of these steps fails although you have all required software installed correctly,
-please contact the authors.
+  1. in your ```mystar``` directory, invoke ```x.py```.
+  2. Change the temperature (_teff_) to **6000**.
+  3. Click on button _Submit single job_ (_Runnables Manager_ window opens).
+  4. When the _Status_ column shows **nulbad finished**, double-click on the table item
+     (_PFANT explorer_ window opens).
+  5. Double-click on **flux.norm**. Note that it turns green.
+  6. Double-click on _Plot spectrum_ (spectrum appears).
+  
+```explorer.py```, the *PFANT explorer*, is a file-explorer-like tool aimed at 
+facilitating visualization and editing of data files that are relevant to the context.
+It can open and visualize all the input/output data files in the PFANT pipeline
+and provides some interesting graphic visualizations to these files. 
 
-### 3.2 Using the graphical interface
-
-Now let's say we want to change a few properties of the star, say, its temperature and
-its iron abundance. This will allow us t
-
-### 3.2 Using que Graphical User Interface (GUI)
-
-#### ```x.py```
-
-```x.py``` is a GUI that allows for mouse-click-based editing of the star parameters and 
-command-line options, running spectral synthesis and visualization of the results. 
-
-```shell
-mkdir mystar
-cd mystar
-link.py common                 
-copy-star.py sun-asplund-2009
-x.py
-```
-
-
-
-Hello ```explorer.py``` 
+Please take some time to explore the resources in the _PFANT launcher_ and 
+_PFANT explorer_ tool.
 
 - [See some screenshots](pyfant/screenshots.md) 
 
 
-### Python tools
+### 3.4 All Python programs
 
-To get a realtime list of available Python tools: 
+Python scripts may be formed, cool down or explode during the software evolution process.
+The following command prints a list of scripts available:    
 
 ```shell
-scripts.py
+$ scripts.py
+abed.py .......... Abundances file editor.
+ated.py .......... Atomic lines file editor
+copy-star.py ..... Copies star-specific files (whose typical names are
+                   "main.dat", "abonds.dat", and "dissoc.dat") to local
+                   directory.
+create-grid.py ... Model Grid Creator
+cut-atoms.py ..... Cuts atomic lines file to wavelength interval specified.
+cut-molecules.py . Cuts molecular lines file to wavelength interval specified.
+cut-spectrum.py .. Cuts spectrum file to wavelength interval specified. Saved in
+                   2-column format.
+explorer.py ...... PFANT Explorer - list, visualize and edit data files.
+link.py .......... Creates symbolic links to PFANT data files as an alternative
+                   to copying these (sometimes large) files into local
+                   directory.
+mained.py ........ Main configuration file editor.
+mled.py .......... Molecular lines file editor.
+plot-spectra.py .. Plot spectra to screen or PDF.
+run4.py .......... Runs the four Fortran binaries in sequence: innewmarcs,
+                   hydro2, pfant, nulbad.
+save-pdf.py ...... Looks for file "flux.norm" inside directories session-* and
+                   saves one figure per page in a PDF file.
+scripts.py ....... Lists scripts in PFANT/pyfant/scripts directory.
+tune-zinf.py ..... Tunes the zinf parameter for each atomic line in atomic lines
+                   file.
+vald3-to-atoms.py  Converts VALD3 atomic/molecular lines file to PFANT atomic
+                   lines file.
+x.py ............. PFANT Launcher
+
 ```
+
+
+
+All scripts can be called with the ```--help`` option.
 
 ## More about the PFANT pipeline
 
