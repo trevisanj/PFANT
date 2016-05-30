@@ -1,18 +1,26 @@
+```
+PFANT
+├── art                          Graphic material made in PowerPoint, GIMP etc.
+├── fortran                      Fortran source code and binaries
+├── pyfant                       Python package and scripts                        
+└── data                         Some data
+```
+
 # PFANT
 
-## Welcome
+## 1 Welcome
 
 PFANT is a spectral synthesis software written in Fortran for Astronomy.
 
 Analogue softwares include TurboSpectrum and MOOG.
 
-This guide provides a quick start with instructions on how to install and run Fortran
+This guide provides a quick start with instructions on how to install and run the Fortran
 binaries and Python scripts.
 
 Further down it also provides more detailed information about PFANT "pipeline", _i.e._,
-the sequence from input data files to a convolved synthetic spectrum.
+the steps involved to generate a synthetic spectrum.
 
-### History
+### 1.1 History
 
 ```
  |
@@ -26,7 +34,7 @@ t|
  V
 ```
 
-## Installation
+## 2 Installation
 
 PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
@@ -35,24 +43,21 @@ To use PFANT, you will need to:
 1. Install the software pre-requisites
 2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release
 3. Compile the Fortran source code
-4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH
-5. Add `PFANT/pyfant` to your PYTHONPATH
+4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH and add `PFANT/pyfant` to your PYTHONPATH
 
-### Installing required software
+### 2.1 Installing required software
 
-Depending on your OS platform, you may have some of the following softwares installed already.
+Depending on your OS platform, you may have some of these requisites installed already.
 
-The install recommendations are based on successful attempts.
+#### 2.1.1 Applications
 
-#### Applications
-
-What  | Why?
+What  | Why
 ----- | ----
 gfortran >= 4.6, make | compile the Fortran code
 Python 2.7 | use pyfant resources
 pip | install some of the required Python packages
 
-#### Python packages
+#### 2.1.2 Python packages
 
 Some successful ways to install the Python packages are reported together with
 package names, but the exact way to install these packages will depend on
@@ -60,8 +65,8 @@ your system. In general, they should be all easy to install.
 
 Package name | Recommended way to install
 --- | ---
-matplotlib | apt-Linux `sudo apt-get install python-matplotlib`
-pyqt4 | apt-Linux `sudo apt-get install python-qt4`
+matplotlib | apt-Linux: `sudo apt-get install python-matplotlib`
+pyqt4 | apt-Linux: `sudo apt-get install python-qt4`
       | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
 fortranformat | All systems: `pip install fortranformat`
 astropy | apt-Linux: `sudo apt-get install python-astropy`
@@ -72,7 +77,7 @@ astropy | apt-Linux: `sudo apt-get install python-astropy`
 
 **Note:** When running `pip` on Linux, you may have to run it with `sudo`.
 
-#### Windows compiler
+#### 2.1.3 Windows compiler
 
 If you are using Windows, a possible way to compile the Fortran source code is
 to install MinGW (http://sourceforge.net/projects/mingw/files/).
@@ -82,32 +87,19 @@ After installed, MinGW has its own package manager, named
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
 
 
-### To clone the github repository
+### 2.2 Downloading PFANT
 
-The following command will create a directory named "PFANT"
+There are two main ways to download PFANT:
 
-```shell
-git clone https://github.com/trevisanj/PFANT
-```
+  a) either go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or
 
-### Overview of the PFANT directory tree
+  b) clone the github repository:
+     ```shell
+     git clone https://github.com/trevisanj/PFANT
+     ```
+   
 
-Here is an incomplete listing:
-
-```
-PFANT
-├── fortran
-│   ├── bin                      Fortran binaries
-│   └── src                      Fortran source code
-├── pyfant                       
-│   ├── scripts                  Python command-line tools
-│   └── pyfant                   Python package
-└── data                         some data
-    ├── arcturus                 Arcturus: only main.dat, abonds.dat, dissoc.dat
-    └── sun                      Sun: complete set to run
-```
-
-### Compiling the Fortran source code.
+### 2.3 Compiling the Fortran source code.
 
 The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested).
 
@@ -121,14 +113,14 @@ make-windows.bat    # Windows
 
 The executable binaries are found in PFANT/fortran/bin
 
-### Setting the paths
+### 2.4 Setting the paths
 
 Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
 Add `PFANT/pyfant` to your PYTHONPATH.
 
 
-#### The script `PFANT/add-paths.py`
+#### 2.4.1 The script `PFANT/add-paths.py`
 
 On Linux, you may try `PFANT/add-paths.py` to automatically apply the path settings to you login script:
 
@@ -137,57 +129,116 @@ On Linux, you may try `PFANT/add-paths.py` to automatically apply the path setti
 ./add-paths.py --bash  # bash shell only
 ```
 
-## Quick start
+## 3 Quick start
 
-Here is a sequence of shell commands from mounting a new "case" to plotting a synthetic spectrum:
+There is a graphical user interface (GUI), but before using it,
+let's run a command-line test sequence. 
 
-```shell
-mkdir mytest
-cd mytest
-copy-star.py sun     # copies star-specific files to local directory
-link.py common       # creates symbolic links to other (not star-specific) data files 
-run4.py --fwhm 0.12  # runs all Fortran binaries in sequence
-plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.12 
-```
 
-**Running the Fortran binaries separately**. Here is a sequence of command lines
-that could replace `run4.py --fwhm 0.12`:
+### 3.1 Test sequence
+
+First let's create a new directory and put some data in it: 
 
 ```shell
-innewmarcs
-hydro2
-pfant
-nulbad --fwhm 0.12
+mkdir mystar
+cd mystar
 ```
 
+For convenience, this tutorial divides the data files in two types: star-specific and
+star-independent.
 
-### Graphical User Interface (new!)
+We will create symbolic links to the star-independent files that ship with PFANT:
 
-Now you can set up a star, run the Fortran binaries, and visualize results from a
-Graphical User Interface (GUI):
+```
+link.py common
+```
+
+Then we will copy the Sun star-specific files into the local directory:
+
+```
+copy-star.py sun-asplund-2009
+```
+
+Now your directory listing should be the following (the Pipeline section below has 
+information about these files):
+```
+abonds.dat  absoru2.dat  atoms.dat  dissoc.dat  grid.mod  grid.moo  hmap.dat  main.dat  molecules.dat  partit.dat  python.log
+```
+
+Now run the spectral synthesis (this script is called "run4" because it runs four
+Fortran programs in sequence)
 
 ```shell
-x.py
+run4.py --fwhm 0.12
 ```
 
-Or you can also just browse and visualize files using the pyfant File Explorer:
+Now visualize the synthetic spectra before and after the final convolution:
 
 ```shell
-explorer.py
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
+
+Here is the complete test sequence:
+
+```shell
+mkdir mystar
+cd mystar
+link.py common                 # creates symbolic links to star-independent data files 
+copy-star.py sun-asplund-2009  # copies star-specific data files to local directory
+run4.py --fwhm 0.12            # runs Fortran binaries
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
+```
+
+**Note** If any of these steps fails although you have all required software installed correctly,
+please contact the authors.
+
+### 3.2 Changing star properties
+
+Now let's say we want to change a few properties of the star, say, its temperature and
+its iron abundance. This will allow us t
+
+### 3.2 Graphical User Interface (GUI)
+
+#### ```x.py```
+
+```x.py``` is a GUI that allows for mouse-click-based editing of the star parameters and 
+command-line options, running spectral synthesis and visualization of the results. 
+
+```shell
+mkdir mystar
+cd mystar
+link.py common                 # creates symbolic links to star-independent data files 
+copy-star.py sun-asplund-2009  # copies star-specific data files to local directory
+run4.py --fwhm 0.12            # runs Fortran binaries
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
+```
+
+
+
+```explorer.py``` 
 
 - [See some screenshots](pyfant/screenshots.md) 
 
 
-### All command-line tools
+### Python tools
 
-To get a realtime list of available command-line tools: 
+To get a realtime list of available Python tools: 
 
 ```shell
-pyfant-scripts.py
+scripts.py
 ```
 
 ## More about the PFANT pipeline
+
+The core of calculations is made by four Fortran programs:
+  1) *innewmarcs*: interpolates an atmospheric model given a grid of MARCS models
+  2) *hydro2*: created the hydrogen lines profiles
+  3) *pfant*: calculates the synthetic spectrum
+  4) *nulbad*: convolves the synthetic spectrum with a Gaussian function
+
+
+The following diagram depicts the PFANT pipeline with the Fortran programs
+and the input/output files used/generated by these programs. 
 
 ```
                     +---------------------------+---------------------main.dat
@@ -274,6 +325,7 @@ flux.norm.nulbad  | convolved flux
 ```
 
 ## Other topics
+
 
 ### Adding MARCS opacities to the continuum (experimental!)
 
