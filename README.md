@@ -230,10 +230,10 @@ scripts.py
 ## More about the PFANT pipeline
 
 The core of calculations is made by four Fortran programs:
-  1) *innewmarcs*: interpolates an atmospheric model given a grid of MARCS models
-  2) *hydro2*: created the hydrogen lines profiles
-  3) *pfant*: calculates the synthetic spectrum
-  4) *nulbad*: convolves the synthetic spectrum with a Gaussian function
+  1. *innewmarcs*: interpolates an atmospheric model given a grid of MARCS models
+  2. *hydro2*: created the hydrogen lines profiles
+  3. *pfant*: calculates the synthetic spectrum
+  4. *nulbad*: convolves the synthetic spectrum with a Gaussian function
 
 
 The following diagram depicts the PFANT pipeline with the Fortran programs
