@@ -62,49 +62,20 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/absoru.f90">
-			<Option weight="4" />
-		</Unit>
-		<Unit filename="src/absoru_data.f">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/config.f90">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="src/dimensions.f90">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/hydro2.f90">
-			<Option weight="5" />
+		<Unit filename="hydro2.f90">
 			<Option target="hydro2" />
 		</Unit>
-		<Unit filename="src/innewmarcs.f90">
-			<Option weight="4" />
+		<Unit filename="innewmarcs.f90">
 			<Option target="innewmarcs" />
 		</Unit>
-		<Unit filename="src/logging.f90">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/misc.f90">
-			<Option weight="1" />
-		</Unit>
-		<Unit filename="src/misc_math.f90">
-			<Option weight="2" />
-		</Unit>
-		<Unit filename="src/nulbad.f90">
-			<Option weight="4" />
+		<Unit filename="nulbad.f90">
 			<Option target="nulbad" />
 		</Unit>
-		<Unit filename="src/paula2003.f90">
-			<Option weight="0" />
-		</Unit>
-		<Unit filename="src/pfant.f90">
-			<Option weight="5" />
+		<Unit filename="pfant.f90">
 			<Option target="pfant" />
 		</Unit>
-		<Unit filename="src/readers.f90">
-			<Option weight="3" />
-		</Unit>
+		<Unit filename="pfantlib.f90" />
+		<Unit filename="readers.f90" />
 		<Extensions>
 			<envvars />
 			<code_completion />
