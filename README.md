@@ -135,7 +135,7 @@ There is a graphical user interface (GUI), but before using it,
 let's run a command-line test sequence. 
 
 
-### 3.1 Test sequence
+### 3.1 Command-line test
 
 First let's create a new directory and put some data in it: 
 
@@ -159,20 +159,20 @@ Then we will copy the Sun star-specific files into the local directory:
 copy-star.py sun-asplund-2009
 ```
 
-Now your directory listing should be the following (the Pipeline section below has 
-information about these files):
+Now your directory listing should be the following (for more information on these files,
+refer to Section 4):
 ```
 abonds.dat  absoru2.dat  atoms.dat  dissoc.dat  grid.mod  grid.moo  hmap.dat  main.dat  molecules.dat  partit.dat  python.log
 ```
 
-Now run the spectral synthesis (this script is called "run4" because it runs four
-Fortran programs in sequence)
+Run the spectral synthesis (this script is called "run4" because it runs four
+Fortran programs in sequence).
 
 ```shell
 run4.py --fwhm 0.12
 ```
 
-Now visualize the synthetic spectra before and after the final convolution:
+Visualize the synthetic spectra before and after the final convolution:
 
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
@@ -192,12 +192,12 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 **Note** If any of these steps fails although you have all required software installed correctly,
 please contact the authors.
 
-### 3.2 Changing star properties
+### 3.2 Using the graphical interface
 
 Now let's say we want to change a few properties of the star, say, its temperature and
 its iron abundance. This will allow us t
 
-### 3.2 Graphical User Interface (GUI)
+### 3.2 Using que Graphical User Interface (GUI)
 
 #### ```x.py```
 
@@ -207,15 +207,14 @@ command-line options, running spectral synthesis and visualization of the result
 ```shell
 mkdir mystar
 cd mystar
-link.py common                 # creates symbolic links to star-independent data files 
-copy-star.py sun-asplund-2009  # copies star-specific data files to local directory
-run4.py --fwhm 0.12            # runs Fortran binaries
-plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
+link.py common                 
+copy-star.py sun-asplund-2009
+x.py
 ```
 
 
 
-```explorer.py``` 
+Hello ```explorer.py``` 
 
 - [See some screenshots](pyfant/screenshots.md) 
 
