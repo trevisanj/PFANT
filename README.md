@@ -143,11 +143,7 @@ On Linux, you may try `PFANT/add-paths.py` to automatically apply the path setti
 
 ## <a name=S3></a>3 Quick start
 
-There is a graphical user interface (GUI), but before using it,
-let's run a command-line test sequence. 
-
-
-### 3.1 Getting the data together 
+### 3.1 Data
 
 First let's create a new directory and put some data in it: 
 
@@ -156,31 +152,42 @@ mkdir mystar
 cd mystar
 ```
 
-For convenience, this tutorial divides the data files in two types: star-specific and
-star-independent.
+#### 3.1.1 Stellar data
 
-We will create symbolic links to the star-independent files that ship with PFANT:
-
-```
-link.py common
-```
-
-Then we will copy the Sun star-specific files into the local directory:
-
-```
+The following will copy the Sun stellar files into the local directory:
+```shell
 copy-star.py sun-asplund-2009
 ```
 
-Now your directory listing should be the following (for more information on these files,
-refer to Section 4):
-```
-abonds.dat  absoru2.dat  atoms.dat  dissoc.dat  grid.mod  grid.moo  hmap.dat  main.dat  molecules.dat  partit.dat  python.log
-```
+  - main.dat
+  - abonds.dat
+  - dissoc.dat
 
-### 3.2 Command-line operation (1)
+# FIGURES COULD BE HERE
 
-Run the spectral synthesis (this script is called "run4" because it runs four
-Fortran programs in sequence).
+
+#### 3.2 Star-independent data
+
+In this case, we will create symbolic links to the data files instead of copying them because some of the files are big and are unlikely to be changed.
+```
+link.py common
+```
+This will create links to the following data files:
+  - absoru2.dat
+  - atoms.dat
+  - grid.moo
+  - hmap.dat
+  - molecules.dat
+  - partit.dat
+Please check [Section 4](#S4) for more information on these files.
+
+### 3.2 Command-line spectral synthesis (1)
+
+The file `main.dat` contains stellar parameters such as _teff_, _glog_, _metallicity_. You can change this file using a text editor or use `mained.py`.
+
+The file `abonds.dat` contains the stellar abundance of each chemical elements. You can change this file using a text editor or use `abed.py`.
+
+# TODO AUTO-DISSOC IN PFANT
 
 #### 3.2.1 Interpolate the stellar atmospheric model
 
