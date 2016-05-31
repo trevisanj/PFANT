@@ -14,14 +14,14 @@ PFANT
 
 ## Table of contents
 
-  - [Introduction](#introduction)
-  - Installation
+  - [Introduction](#Introduction)
+  - [Installation](#Installation)
   - Quick start guide
   - Pipeline
   - Other topics
 ```
-## gdfgfd
-<a name="introduction"></a> Introduction
+## Introduction
+
 
 
 
