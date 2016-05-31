@@ -46,7 +46,7 @@ t|
  V
 ```
 
-# 2 <a name="Installation"></a>Installation
+# 2 <a name=S2></a>Installation
 
 PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
@@ -141,7 +141,7 @@ On Linux, you may try `PFANT/add-paths.py` to automatically apply the path setti
 ./add-paths.py --bash  # bash shell only
 ```
 
-## 3 Quick start
+## <a name=S3></a>3 Quick start
 
 There is a graphical user interface (GUI), but before using it,
 let's run a command-line test sequence. 
@@ -296,7 +296,7 @@ scripts.py
 
 **Note** For further information, all programs can be called with the `--help` option.
 
-## 4 More about the PFANT pipeline
+## 4 <a name=S4></a> More about the PFANT pipeline
 
 ### 4.1 Overview
 
@@ -394,7 +394,7 @@ flux.norm.
 nulbad.<fwhm>     | convolved flux
 ```
 
-## 5 Other topics
+## 5 <a name=S5></a> Other topics
 
 ### 5.1 Adding MARCS opacities to the continuum (experimental!)
 
