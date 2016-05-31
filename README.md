@@ -180,6 +180,9 @@ This will create links to the following data files:
   - hmap.dat
   - molecules.dat
   - partit.dat
+
+# TODO Add grid.moo scatterplot
+
 Please check [Section 4](#S4) for more information on these files.
 
 ### 3.2 Command-line spectral synthesis (1)
@@ -200,6 +203,8 @@ This will create two files: `modeles.mod` and `opa.dat`.
 
 # TODO change default name to abs-sca.opa or sth.
 
+# TODO add graphics for modeles.mod and opa.dat
+
 #### 3.2.2 Create hydrogen lines profiles
 
 ```shell
@@ -208,6 +213,7 @@ hydro2
 
 This will create files such as : `thalpha`, `thbeta`, `thgamma` etc.
 
+# TODO add thalpha 3D
 
 #### 3.2.3 Spectral synthesis
 
