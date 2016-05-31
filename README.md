@@ -20,7 +20,7 @@ PFANT
   - Pipeline
   - Other topics
 ```
-## 1 [Introduction](#introduction)
+## 1 [introduction](#introduction)
 
 PFANT is a spectral synthesis software written in Fortran for Astronomy.
 
