@@ -47,46 +47,40 @@ To use PFANT, you will need to:
 3. Compile the Fortran source code
 4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH and add `PFANT/pyfant` to your PYTHONPATH
 
+This section will take you through these steps.
+
 ### 2.1 Installing required software
 
-Depending on your OS platform, you may have some of these requisites installed already.
+Depending on your OS platform, you may have some of these installed already.
 
-#### 2.1.1 Applications
+#### 2.1.1 Standalone applications
 
-What  | Why
------ | ----
-gfortran >= 4.6, make | compile the Fortran code
-Python 2.7 | use pyfant resources
-pip | install some of the required Python packages
+  - gfortran >= 4.6
+  - make
+  - Python 2.7
+  - pip
 
-#### 2.1.2 Python packages
+##### 2.1.1.1 Windows users: gfortran and make on Windows
 
-Some successful ways to install the Python packages are reported together with
-package names, but the exact way to install these packages will depend on
-your system. In general, they should be all easy to install.
-
-Package name | Recommended way to install
---- | ---
-matplotlib | apt-Linux: `sudo apt-get install python-matplotlib`
-pyqt4 | apt-Linux: `sudo apt-get install python-qt4`
-      | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
-fortranformat | All systems: `pip install fortranformat`
-astropy | apt-Linux: `sudo apt-get install python-astropy`
-        | All systems: `pip install astropy`
-                  
-                 
-(not yet) mayavi2           apt-Linux: `sudo apt-get install mayavi2`
-
-**Note:** When running `pip` on Linux, you may have to run it with `sudo`.
-
-#### 2.1.3 Windows compiler
-
-If you are using Windows, a possible way to compile the Fortran source code is
-to install MinGW (http://sourceforge.net/projects/mingw/files/).
+MinGW (http://sourceforge.net/projects/mingw/files/) is a convenient way to install the GNU Fortran compiler on Windows.
 
 After installed, MinGW has its own package manager, named
 "MinGW Installation Manager". There, you will need to install at least the following packages:
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
+
+#### 2.1.2 Python packages
+
+Package name | Possible way to install
+--- | ---
+matplotlib | apt-Linux: `sudo apt-get install python-matplotlib`
+pyqt4 | apt-Linux: `sudo apt-get install python-qt4`
+      | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
+fortranformat | All systems: `[sudo] pip install fortranformat`
+astropy | apt-Linux: `sudo apt-get install python-astropy`
+        | All systems: `[sudo] pip install astropy`
+
+**Note:** running `pip` on Linux, you may have to do it with `sudo`.
+
 
 
 ### 2.2 Downloading PFANT
@@ -99,21 +93,28 @@ There are two main ways to download PFANT:
      ```shell
      git clone https://github.com/trevisanj/PFANT
      ```
-   
+
+In either case, there should be a directory named PFANT on your drive.
 
 ### 2.3 Compiling the Fortran source code.
 
 The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested).
 
-The code can be compiled using the CBFortran IDE, or typing
+#### 2.3.1 Linux users
+
+The code can be compiled using the CBFortran IDE, or using the console:
 
 ```shell
+cd PFANT
 cd fortran
-./make-linux.sh     # Linux
-make-windows.bat    # Windows
+./make-linux.sh
 ```
 
-The executable binaries are found in PFANT/fortran/bin
+#### 2.3.1 Windows users
+
+The code can be compiled using the CBFortran IDE.
+
+# TODO link to other document
 
 ### 2.4 Setting the paths
 
@@ -121,8 +122,7 @@ Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
 Add `PFANT/pyfant` to your PYTHONPATH.
 
-
-#### 2.4.1 The script `PFANT/add-paths.py`
+#### 2.4.1 Linux users: the script `PFANT/add-paths.py`
 
 On Linux, you may try `PFANT/add-paths.py` to automatically apply the path settings to you login script:
 
@@ -167,22 +167,89 @@ refer to Section 4):
 abonds.dat  absoru2.dat  atoms.dat  dissoc.dat  grid.mod  grid.moo  hmap.dat  main.dat  molecules.dat  partit.dat  python.log
 ```
 
-### 3.2 Spectral synthesis
+### 3.2 Command-line operation (1)
 
 Run the spectral synthesis (this script is called "run4" because it runs four
 Fortran programs in sequence).
 
+#### 3.2.1 Interpolate the stellar atmospheric model
+
 ```shell
-run4.py --fwhm 0.12
+innewmarcs
 ```
 
-Visualize the synthetic spectra before and after the final convolution:
+This will create two files: `modeles.mod` and `opa.dat`. 
+
+# TODO change default name to abs-sca.opa or sth.
+
+#### 3.2.2 Create hydrogen lines profiles
+
+```shell
+hydro2
+```
+
+This will create files such as : `thalpha`, `thbeta`, `thgamma` etc.
+
+
+#### 3.2.3 Spectral synthesis
+
+```shell
+pfant
+```
+
+This will create files such as: `flux.norm`, `flux.spec`, `flux.cont`.
+
+
+#### 3.2.4 Post-synthesis convolution with Gaussian function
+
+```shell
+nulbad --fwhm 0.12
+```
+
+This will create a file such as `flux.norm.nulbad.0.120`
+
+#### 3.2.5 Visualize results
 
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-### 3.3 Graphical programs
+This will open a window containing two overlapped spectra (before and after convolution).
+
+### 3.3 Command-line operation (1)
+
+Run the spectral synthesis (this script is called "run4" because it runs four
+Fortran programs in sequence).
+
+#### 3.3.1 Run steps 3.2.1 - 3.2.4 at once
+
+```shell
+run4.py --fwhm 0.12
+```
+
+#### 3.3.2 Visualize results
+
+As in 3.2.5:
+
+```shell
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
+```
+
+#### 3.4 Changing stellar parameters
+
+# TODO insert main.dat, abonds.dat and dissoc.dat pictures here
+
+# TODO Figure numbers
+
+# TODO mu, ptdisk diagram
+
+# TODO Why aint (diagram will help)
+
+#### Changing running setup
+
+# TODO insert llzero, llfin, aint diagram
+
+### 3.4 Graphical operation
 
 #### 3.3.1 ```x.py```
 
