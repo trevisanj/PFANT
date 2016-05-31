@@ -163,7 +163,7 @@ copy-star.py sun-asplund-2009
   - abonds.dat
   - dissoc.dat
 
-![](art/main.dat.png)
+![](art/small-main.dat.png)
 
 
 
