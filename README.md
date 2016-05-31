@@ -1,9 +1,11 @@
 ```
+This directory
+
 PFANT
 ├── art                          Graphic material made in PowerPoint, GIMP etc.
 ├── fortran                      Fortran source code and binaries
 ├── pyfant                       Python package and scripts                        
-└── data                         Some data
+└── data                         Some stellar data, spectral lines etc.
 ```
 
 # PFANT
