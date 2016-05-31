@@ -14,15 +14,15 @@ PFANT
 
 ## Table of contents
 
-  - <a href="#introduction">Introduction</a>
+  - [Introduction][]
   - Installation
   - Quick start guide
   - Pipeline
   - Other topics
 ```
-## 1 asd
+### Introduction ###
 
-[introduction](#introduction)
+
 
 PFANT is a spectral synthesis software written in Fortran for Astronomy.
 
