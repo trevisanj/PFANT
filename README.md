@@ -163,7 +163,8 @@ copy-star.py sun-asplund-2009
   - abonds.dat
   - dissoc.dat
 
-# FIGURES COULD BE HERE
+![](art/main.dat.png)
+
 
 
 #### 3.2 Star-independent data
