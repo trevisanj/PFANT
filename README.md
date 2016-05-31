@@ -8,9 +8,20 @@ PFANT
 └── data                    Some stellar data, spectral lines etc.
 ```
 
-# PFANT
+# Welcome
 
-## 1 Welcome
+# PFANT Manual
+
+```
+Table of contents
+
+  1 Introduction
+  2 Installation
+  3 Quick start guide
+  4 Pipeline
+  5 Other topics
+```
+## 1 Introduction
 
 PFANT is a spectral synthesis software written in Fortran for Astronomy.
 
