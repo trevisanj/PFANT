@@ -12,7 +12,7 @@ PFANT
 
 # PFANT Manual
 
-## Table of contents
+# Table of contents
 
   - [Introduction](#Introduction)
   - [Installation](#Installation)
@@ -20,7 +20,7 @@ PFANT
   - Pipeline
   - Other topics
 
-## Introduction
+# Introduction
 
 
 
@@ -49,7 +49,7 @@ t|
  V
 ```
 
-## 2 Installation
+# 2 Installation
 
 PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
