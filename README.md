@@ -49,7 +49,7 @@ t|
  V
 ```
 
-# 2 Installation
+# 2 <a name="Installation"></a>Installation
 
 PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
