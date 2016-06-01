@@ -93,7 +93,7 @@ astropy | apt-Linux: `sudo apt-get install python-astropy`
 
 
 
-### 2.2 Downloading PFANT
+### 2.2 Download
 
 There are two main ways to download PFANT:
 
@@ -106,30 +106,19 @@ There are two main ways to download PFANT:
 
 In either case, there should be a directory named PFANT on your drive.
 
-**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
-as this file has more than 100 MB and therefore cannot be stored in github.
-This file contains a compiled atmospheric model grid
-(see [the common data README](data/common/README.md) for more information).
-**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
-as this file has more than 100 MB and therefore cannot be stored in github.
-This file contains a compiled atmospheric model grid
-(see [the common data README](data/common/README.md) for more information).
-**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
-as this file has more than 100 MB and therefore cannot be stored in github.
-This file contains a compiled atmospheric model grid
-(see [the common data README](data/common/README.md) for more information).
-
+There is an additional data file that needs to be downloaded from a different
+location because it is too big to be stored on GitHub (this file contains a 3D grid of MARCS atmospheric models with opacities included).
+Please download file `grid.moo` from [here]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
+and save it as `PFANT/data/common/grid.moo`.
 
 ### 2.3 Compiling the Fortran source code.
 
-The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested).
+The source code has been successfully compiled using gfortran 4.8.
 
 #### 2.3.1 Linux users
 
-The code can be compiled using the CBFortran IDE, or using the console:
+The code can be compiled using the [CBFortran IDE](fortran/README.md), or using the console:
 
 ```shell
 cd PFANT
@@ -139,7 +128,7 @@ cd fortran
 
 #### 2.3.1 Windows users
 
-The code can be compiled using the CBFortran IDE.
+The code can be compiled using the [CBFortran IDE](fortran/README.md).
 
 # TODO link to other document
 
