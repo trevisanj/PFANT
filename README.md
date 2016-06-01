@@ -14,13 +14,13 @@ PFANT
 
 # Table of contents
 
-  - [Introduction](#S1)
-  - [Installation](#S2)
-  - [Operation](#S3)
-  - [Pipeline](#S4)
-  - [Other topics](#S5)
+  1. [Introduction](#S1)
+  2. [Installation](#S2)
+  3. [Operation](#S3)
+  4. [Pipeline](#S4)
+  5. [Other topics](#S5)
 
-## <a name=S1></a>Introduction
+## <a name=S1></a>1 Introduction
 
 PFANT is a software stellar spectra written in Fortran.
 
@@ -130,24 +130,27 @@ cd fortran
 
 The code can be compiled using the [CBFortran IDE](fortran/README.md).
 
-# TODO link to other document
-
 ### 2.4 Setting the paths
 
 Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
 Add `PFANT/pyfant` to your PYTHONPATH.
 
-#### 2.4.1 Linux users: the script `PFANT/add-paths.py`
+#### 2.4.1 Bonus: Linux users: the script `PFANT/add-paths.py`
 
-On Linux, you may try `PFANT/add-paths.py` to automatically apply the path settings to you login script:
+tries to automatically apply these path settings for you by modifying your `home/.bashrc` or `home/.cshrc`:
 
+Bash shell:
 ```shell
-./add-paths.py --tcsh  # tcsh shell only
-./add-paths.py --bash  # bash shell only
+./add-paths.py --bash
 ```
 
-## <a name=S3></a>3 Quick start
+Tcsh shell:
+```shell
+./add-paths.py --tcsh
+```
+
+## <a name=S3></a>3 Operation
 
 **Aims**
   - Calculate a synthetic spectrum;
