@@ -136,9 +136,9 @@ Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
 Add `PFANT/pyfant` to your PYTHONPATH.
 
-#### 2.4.1 Bonus: Linux users: the script `PFANT/add-paths.py`
+#### 2.4.1 Linux users: bonus: `PFANT/add-paths.py` ...
 
-tries to automatically apply these path settings for you by modifying your `home/.bashrc` or `home/.cshrc`:
+... tries to automatically apply these path settings by modifying your `home/.bashrc` or `home/.cshrc`:
 
 Bash shell:
 ```shell
@@ -157,12 +157,11 @@ Tcsh shell:
   - convolve with Gaussian functions of different FWHMs;
   - visualize results.
 
-### 3.1 Data
+### 3.1 Input data
 
-In order to run, we need to specify:
-  1. (a) stellar parameters such as temperature, chemical abundances etc.;
-  1. (b) running settings, _e.g._, calculation wavelength interval;
-  2. a collection of star-independent data files containing various physical data such as line lists, atmospheric model grid, partition functions etc.
+Input data contists of:
+  1. stellar parameters (temperature, chemical abundances etc.) and running settings (_e.g._, calculation wavelength interval);
+  2. star-independent data: line lists, atmospheric model grid, partition functions etc. that are unlikely to be modified.
 
 First let's create a new directory and put some data in it: 
 
@@ -170,17 +169,16 @@ First let's create a new directory and put some data in it:
 mkdir mystar
 cd mystar
 copy-star.py sun-asplund-2009   # copies main.dat and abonds.dat from PFANT/data/sun-asplund-2009
-link.py common```               # creates symbolic links to PFANT/data/common
+link.py common                  # creates symbolic links to PFANT/data/common
+```
 
 #### 3.1.1 Stellar data and running settings
 
-These are contained in two files:
+These are contained in two text files:
 
-  - main.dat: main configuration. Edit using `mained.py`.
-  - abonds.dat: chemical abundances. Edit using `abed.py`.
-
-These files can be replicated and changed to create new stars.
-  
+  - main.dat: main configuration. Modify using `mained.py`.
+  - abonds.dat: chemical abundances. Modify using `abed.py`.
+ 
 #### 3.2 Star-independent data
 
 `link.py common` created symbolic links to the following data files inside `PFANT/data/common`:
