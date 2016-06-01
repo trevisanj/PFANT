@@ -181,7 +181,6 @@ These are contained in two text files:
  
 #### 3.2 Star-independent data
 
-`link.py common` created symbolic links to the following data files inside `PFANT/data/common`:
   - absoru2.dat
   - atoms.dat
   - grid.moo
@@ -201,7 +200,7 @@ To learn more about these files, please check [Section 4](#S4) or use `explorer.
 innewmarcs
 ```
 
-This will create two files: `modeles.mod` and `opa.dat`. 
+This will create two files: modeles.mod and opa.dat. 
 
 # TODO change default name to abs-sca.opa or sth.
 
@@ -213,7 +212,7 @@ This will create two files: `modeles.mod` and `opa.dat`.
 hydro2
 ```
 
-This will create files such as : `thalpha`, `thbeta`, `thgamma` etc.
+This will create files such as : thalpha, thbeta, thgamma etc.
 
 # TODO add thalpha 3D
 
@@ -223,7 +222,7 @@ This will create files such as : `thalpha`, `thbeta`, `thgamma` etc.
 pfant
 ```
 
-Creates `flux.norm`, `flux.spec`, `flux.cont`.
+Creates flux.norm, flux.spec, flux.cont.
 
 
 #### 3.2.4 Post-synthesis convolution with Gaussian function
@@ -232,7 +231,7 @@ Creates `flux.norm`, `flux.spec`, `flux.cont`.
 nulbad --fwhm 0.12
 ```
 
-creates file `flux.norm.nulbad.0.120`
+creates flux.norm.nulbad.0.120
 
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
@@ -250,7 +249,7 @@ nulbad --fwhm 0.12
 nulbad --fwhm 0.14
 ```
 
-creates files `flux.norm.nulbad.0.060`, `flux.norm.nulbad.0.080` etc.
+creates files flux.norm.nulbad.0.060, flux.norm.nulbad.0.080 etc.
 
 ```shell
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
@@ -299,15 +298,19 @@ link.py common
 then
 
 ```shell
-x.py```
+x.py
+```
 
-  2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 or "multi mode" will be explained below.
+  2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 ("multi mode") will be explained later.
 
-  3. Once you are done making changes, click on button _Submit single job_. A new window named _Runnables Manager_ window is supposed to open.
-  4. When the _Status_ column shows **nulbad finished**, double-click on the table item
-     (_PFANT explorer_ window opens).
-  5. Double-click on **flux.norm**. Note that it turns green.
-  6. Double-click on _Plot spectrum_ (spectrum appears).
+  3. Once you are done making changes, click on "Submit single job" button. A new window named "Runnables Manager" opens.
+
+  4. When the "Status" column shows "**nulbad finished**", double-click on the table item
+     ("PFANT explorer" window opens).
+
+  5. Double-click on "flux.norm". Note that it turns green.
+
+  6. Double-click on "Plot spectrum" (spectrum appears).
 
 
   
