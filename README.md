@@ -16,13 +16,13 @@ PFANT
 
   - [Introduction](#S1)
   - [Installation](#S2)
-  - [Quick start guide](#S3)
+  - [Operation](#S3)
   - [Pipeline](#S4)
   - [Other topics](#S5)
 
 ## <a name=S1></a>Introduction
 
-PFANT is a spectral synthesis software written in Fortran for Astronomy.
+PFANT is a software stellar spectra written in Fortran.
 
 Analogue softwares include TurboSpectrum and MOOG.
 
@@ -106,6 +106,23 @@ There are two main ways to download PFANT:
 
 In either case, there should be a directory named PFANT on your drive.
 
+**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
+as this file has more than 100 MB and therefore cannot be stored in github.
+This file contains a compiled atmospheric model grid
+(see [the common data README](data/common/README.md) for more information).
+**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
+as this file has more than 100 MB and therefore cannot be stored in github.
+This file contains a compiled atmospheric model grid
+(see [the common data README](data/common/README.md) for more information).
+**Important note** please download file `PFANT/data/common/grid.moo` from [this location]
+(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing),
+as this file has more than 100 MB and therefore cannot be stored in github.
+This file contains a compiled atmospheric model grid
+(see [the common data README](data/common/README.md) for more information).
+
+
 ### 2.3 Compiling the Fortran source code.
 
 The source code uses Fortran 2003 language features. gfortran >= 4.6 required (4.8 tested).
@@ -143,53 +160,48 @@ On Linux, you may try `PFANT/add-paths.py` to automatically apply the path setti
 
 ## <a name=S3></a>3 Quick start
 
+**Aims**
+  - Calculate a synthetic spectrum;
+  - convolve with Gaussian functions of different FWHMs;
+  - visualize results.
+
 ### 3.1 Data
+
+In order to run, we need to specify:
+  1. (a) stellar parameters such as temperature, chemical abundances etc.;
+  1. (b) running settings, _e.g._, calculation wavelength interval;
+  2. a collection of star-independent data files containing various physical data such as line lists, atmospheric model grid, partition functions etc.
 
 First let's create a new directory and put some data in it: 
 
 ```shell
 mkdir mystar
 cd mystar
-```
+copy-star.py sun-asplund-2009   # copies main.dat and abonds.dat from PFANT/data/sun-asplund-2009
+link.py common```               # creates symbolic links to PFANT/data/common
 
-#### 3.1.1 Stellar data
+#### 3.1.1 Stellar data and running settings
 
-The following will copy the Sun stellar files into the local directory:
-```shell
-copy-star.py sun-asplund-2009
-```
+These are contained in two files:
 
-  - main.dat
-  - abonds.dat
-  - dissoc.dat
+  - main.dat: main configuration. Edit using `mained.py`.
+  - abonds.dat: chemical abundances. Edit using `abed.py`.
 
-![](art/small-main.dat.png)
-
-
-
+These files can be replicated and changed to create new stars.
+  
 #### 3.2 Star-independent data
 
-In this case, we will create symbolic links to the data files instead of copying them because some of the files are big and are unlikely to be changed.
-```
-link.py common
-```
-This will create links to the following data files:
+`link.py common` created symbolic links to the following data files inside `PFANT/data/common`:
   - absoru2.dat
   - atoms.dat
   - grid.moo
   - hmap.dat
   - molecules.dat
   - partit.dat
-
-# TODO Add grid.moo scatterplot
-
-Please check [Section 4](#S4) for more information on these files.
-
+  
+To learn more about these files, please check [Section 4](#S4) or use `explorer.py`.
+ 
 ### 3.2 Command-line spectral synthesis (1)
-
-The file `main.dat` contains stellar parameters such as _teff_, _glog_, _metallicity_. You can change this file using a text editor or use `mained.py`.
-
-The file `abonds.dat` contains the stellar abundance of each chemical elements. You can change this file using a text editor or use `abed.py`.
 
 # TODO AUTO-DISSOC IN PFANT
 
@@ -221,7 +233,7 @@ This will create files such as : `thalpha`, `thbeta`, `thgamma` etc.
 pfant
 ```
 
-This will create files such as: `flux.norm`, `flux.spec`, `flux.cont`.
+Creates `flux.norm`, `flux.spec`, `flux.cont`.
 
 
 #### 3.2.4 Post-synthesis convolution with Gaussian function
@@ -230,33 +242,38 @@ This will create files such as: `flux.norm`, `flux.spec`, `flux.cont`.
 nulbad --fwhm 0.12
 ```
 
-This will create a file such as `flux.norm.nulbad.0.120`
-
-#### 3.2.5 Visualize results
+creates file `flux.norm.nulbad.0.120`
 
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-This will open a window containing two overlapped spectra (before and after convolution).
+opens plot window.
 
-### 3.3 Command-line operation (1)
+Now let's convolve the spectrum with several Gaussians of different FWHMs.
 
-Run the spectral synthesis (this script is called "run4" because it runs four
-Fortran programs in sequence).
+```shell
+nulbad --fwhm 0.06
+nulbad --fwhm 0.08
+nulbad --fwhm 0.10
+nulbad --fwhm 0.12
+nulbad --fwhm 0.14
+```
 
-#### 3.3.1 Run steps 3.2.1 - 3.2.4 at once
+creates files `flux.norm.nulbad.0.060`, `flux.norm.nulbad.0.080` etc.
+
+```shell
+plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
+```
+
+opens plot window.
+
+# TODO Add images of plot-spectra
+
+### 3.2.6 Running the four calculation steps at once
 
 ```shell
 run4.py --fwhm 0.12
-```
-
-#### 3.3.2 Visualize results
-
-As in 3.2.5:
-
-```shell
-plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
 #### 3.4 Changing stellar parameters
@@ -275,52 +292,56 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 
 ### 3.4 Graphical operation
 
-#### 3.3.1 ```x.py```
+#### 3.3.1 ```x.py```: PFANT launcher
 
-```x.py```, the *PFANT launcher*, is a user-friendly interface where you can edit the stellar
-parameters and command-line options and run spectral syntheses using multiple CPU cores.
-It also has a "multi mode" which can be useful for adjusting of stellar
-abundances. Here's a sequence of steps to get you started:
+`x.py` is a graphical user interface (GUI) that concentrates editing of stellar parameters
+and running settings, spectral synthesis, and visualization.
 
-  1. in your ```mystar``` directory, invoke ```x.py```.
-  2. Change the temperature (_teff_) to **6000**.
-  3. Click on button _Submit single job_ (_Runnables Manager_ window opens).
+  1. Starting again from scratch:
+
+```shell
+mkdir mystar
+cd mystar
+copy-star.py sun-asplund-2009
+link.py common
+```
+
+then
+
+```shell
+x.py```
+
+  2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 or "multi mode" will be explained below.
+
+  3. Once you are done making changes, click on button _Submit single job_. A new window named _Runnables Manager_ window is supposed to open.
   4. When the _Status_ column shows **nulbad finished**, double-click on the table item
      (_PFANT explorer_ window opens).
   5. Double-click on **flux.norm**. Note that it turns green.
   6. Double-click on _Plot spectrum_ (spectrum appears).
+
+
   
-#### 3.3.2 ```explorer.py```
+### 3.4 If you get lost ...
 
-```explorer.py```, the *PFANT explorer*, is a file-explorer-like tool aimed at 
-facilitating visualization and editing of data files that are relevant to the context.
-It can open and visualize all the input/output data files in the PFANT pipeline
-and provides some interesting graphic visualizations to these files. 
+Yeah we agree that there is a lot of things to remember, but maybe not so many.
 
-Please take some time to explore the resources in the _PFANT launcher_ and 
-_PFANT explorer_ tool.
+:bulb: All programs have a `-h` or `--help` option.
 
-### 3.4 All Python programs
+:bulb: Use `scripts.py` to get a list of all available Python programs.
 
-To print a list of all Python programs available (with descriptions), please type:  
+:bulb: Use `explorer.py` to browse through/edit/visualize data files.
+  
+  
+  
+## 4 <a name=S4></a>Reference section
 
-```shell
-scripts.py
-```
+# TODO Add grid.moo scatterplot in section 4 actually
 
-**Note** For further information, all programs can be called with the `--help` option.
+This is the boring section that enumerates exhaustively every category.
 
-## 4 <a name=S4></a> More about the PFANT pipeline
+### 4.1 Complete pipeline
 
-### 4.1 Overview
-
-The core of calculations is made by four Fortran programs:
-  1. *innewmarcs*: interpolates an atmospheric model given a grid of MARCS models
-  2. *hydro2*: created the hydrogen lines profiles
-  3. *pfant*: calculates the synthetic spectrum
-  4. *nulbad*: convolves the synthetic spectrum with a Gaussian function
-
-The following diagram depicts the PFANT pipeline with the Fortran programs
+Figure TODO depicts the PFANT pipeline with the Fortran programs
 and the input/output files used/generated by these programs. 
 
 ```
@@ -328,8 +349,8 @@ and the input/output files used/generated by these programs.
                     |                           |                        |
                     v                           v                        |
  grid.mod     +----------+                  +------+                     |
-       or +-->|innewmarcs|-->modeles.mod+-->|hydro2|<----------+         |
- grid.moo     +----------+         +        +------+           |         |
+      or ---->|innewmarcs|-->modeles.mod--->|hydro2|<----------+         |
+ grid.moo     +----------+         |        +------+           |         |
                                    |            |              |         |
                                    |            v              |         |
                                    |         thalpha           |         |
@@ -338,11 +359,11 @@ and the input/output files used/generated by these programs.
                                    |         thdelta           |         |
                                    |         thepsilon         |         |
                                    |            |              |         |
-                     abonds.dat    |            v              |         |
-                     dissoc.dat    +-------->+-----+           |         |
-                      atoms.dat              |pfant|<----------+         |
-                  molecules.dat+------------>+-----+<--------------------+
-                     partit.dat                 |                        |
+                    abonds.dat     |            v              |         |
+                    dissoc.dat     +-------->+-----+           |         |
+                     atoms.dat               |pfant|<----------+         |
+                 molecules.dat ------------->+-----+<--------------------+
+                    partit.dat                  |                        |
                                                 v                        |
                                             flux.norm                    |
                                             flux.spec                    |
@@ -356,57 +377,84 @@ and the input/output files used/generated by these programs.
                                                 v
                                          flux.norm.nulbad.<fwhm>
 ```
+Figure TODO - workflow showing data files (boxless) as inputs/outputs of the Fortran programs (boxed).
 
 ### 4.2 Input/output data files
 
-Most files can be found in `PFANT/data/common` and linked to using `link.py`
-(see [the common data README](data/common/README.md) for more information).
+All file types described in this section are supported by `explorer.py` with varying visualization/editing abilities.
 
-Some star-specific files are also shipped with PFANT: use script `copy-star.py`
-for convenience.
-
-The following table summarizes the files needed for spectral synthesis.
-
-The first column of the table shows the command-line option that can be
-used to change the default name for the corresponding file
+#### 4.2.1 Stellar data and running settings
 
 ```
---option          |  Default name     | Description
-------------------------------------------------------------------------------
-** star-specific data files **
---fn_main         | main.dat          | main configuration file
---fn_abonds       | abonds.dat        | abundances
---fn_dissoc       | dissoc.dat        | dissociation equilibrium data
+ Default name     | --option          | Description                    
+------------------------------------------------------------------------------------------
+main.dat          | --fn_main         | main configuration.
+ | | Edit using any text editor, `mained.py`, `explorer.py`, or `x.py`
+ | | See Figure TODO
+abonds.dat        | --fn_abonds       | chemical abundances.
+ | | Edit using any text editor, `abed.py`, `explorer.py`, or `x.py`
+| | See Figure TODO
+dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
+ | | This file is optional and can be created using `abed.py` if needed.
+ | | Edit using any text editor.
 
-** star-independent data files **
---fn_absoru2      | absoru2.dat       | absorption info for continuum calculation
---fn_atoms        | atoms.dat         | atomic lines
---fn_molecules    | molecules.dat     | molecular lines
---fn_partit       | partit.dat        | partition functions
-                  | hmap.dat          | hydrogen lines info (filename, lambda, na, nb, kiex, c1)
-                  | grid.mod or       | MARCS atmospheric model grid (models only)
-                  | grid.moo          | MARCS atmospheric model grid (models with opacities)
+![](art/small-main.dat.png)
 
-** created by innewmarcs **
---fn_modeles      | modeles.mod       | atmospheric model (binary file)
---fn_opa          | opa.dat           | atmospheric model: opacities
+ 
+#### 4.2.2 Star-independent data files
 
-** created by hydro2 **
-                  | thalpha           | hydrogen lines files
-                  | thbeta            | "
-                  | thgamma           | "
-                  | thdelta           | "
-                  | thepsilon         | "
+ Default name     | --option          | Description                    
+------------------------------------------------------------------------------------------
+absoru2.dat       | --fn_absoru2      | absorption info for continuum calculation.
+                  |                   | Edit using any text editor
+atoms.dat         | --fn_atoms        | atomic line list
+ | | Edit using any text editor, `ated.py`, or `explorer.py`
+molecules.dat     | --fn_molecules    | molecular line list
+ | | Edit using any text editor, `mled.py`, or `explorer.py`
+hmap.dat          |                   | hydrogen line list.
+ | | Edit using any text editor
+partit.dat        | --fn_partit       | partition functions.
+ | | Edit using any text editor
+grid.mod or       |                   | MARCS atmospheric model grid (models only)
+ | | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
+ | | Visualize using `explorer.py`
+grid.moo          |                   | MARCS atmospheric model grid (models with opacities)
+ | | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
+ | | Visualize using `explorer.py`
 
-** created by pfant **
+#### 4.2.3 Files created by the Fortran programs
+
+##### 4.2.3.1 Files created by `innewmarcs`
+
+ Default name     | --option          | Description                    
+------------------------------------------------------------------------------------------
+modeles.mod       | --fn_modeles      | atmospheric model (binary file)
+opa.dat           | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
+
+##### 4.2.3.2 Files created by `hydro2`
+
+ Default name     | --option          | Description                    
+------------------------------------------------------------------------------------------
+thalpha           |                   | hydrogen lines files
+thbeta            |                   | "
+thgamma           |                   | "
+thdelta           |                   | "
+thepsilon         |                   | "
+
+##### 4.2.3.2 Files created by `pfant`
+
+ Default name     | --option          | Description                    
+------------------------------------------------------------------------------------------
 flux.norm         | normalized flux
 flux.spec         | un-normalized flux (multiplied by 10**5)
 flux.cont         | continuum flux (multiplied by 10**5)
 
-** created by nulbad ** 
-flux.norm.
-nulbad.<fwhm>     | convolved flux
-```
+##### 4.2.3.2 Files created by `nulbad`
+
+ Default name           | --option          | Description                    
+------------------------------------------------------------------------------------------
+flux.norm.nulbad.<fwhm> | --fn_cv           | convolved flux
+
 
 ## 5 <a name=S5></a> Other topics
 
