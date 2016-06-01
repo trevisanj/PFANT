@@ -426,21 +426,20 @@ opa.dat           | --fn_opa          | atmospheric model: opacities (MARCS ".op
 
 ##### 4.2.3.2 Files created by `hydro2`
 
- Default name     | --option          | Description                    
-------------------------------------------------------------------------------------------
-thalpha           |                   | hydrogen lines files
-thbeta            |                   | "
-thgamma           |                   | "
-thdelta           |                   | "
-thepsilon         |                   | "
+`hydro2` creates a series of files named thalpha, thbeta, thgamma, thdelta, thepsilon etc.
+(filenames are given in hmap.dat).
+
+# TODO 3D plot
 
 ##### 4.2.3.2 Files created by `pfant`
 
- Default name     | --option          | Description                    
-------------------------------------------------------------------------------------------
+ Default name     | Description                    
+------------------|--------------------------------------------------
 flux.norm         | normalized flux
 flux.spec         | un-normalized flux (multiplied by 10**5)
 flux.cont         | continuum flux (multiplied by 10**5)
+
+# TODO stacked plots
 
 ##### 4.2.3.2 Files created by `nulbad`
 
@@ -448,6 +447,7 @@ flux.cont         | continuum flux (multiplied by 10**5)
 ------------------------------------------------------------------------------------------
 flux.norm.nulbad.<fwhm> | --fn_cv           | convolved flux
 
+# TODO Cross-reference to Figure in tutorial above
 
 ## 5 <a name=S5></a> Other topics
 
