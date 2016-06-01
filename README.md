@@ -378,7 +378,7 @@ All file types described in this section are supported by `explorer.py` with var
 
 #### 4.2.1 Stellar data and running settings
 
-```
+
  Default name     | --option          | Description                    
 ------------------------------------------------------------------------------------------
 main.dat          | --fn_main         | main configuration.
