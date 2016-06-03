@@ -2231,7 +2231,7 @@ contains
     !   - if .TRUE. : 7 points
     !   - .FALSE.   : 6 points
     logical, intent(in) :: ptdisk
-    ! cos(angle). Source is probably reader_main::main_mu
+    ! cos(angle). Source is probably file_main::main_mu
     real*8, intent(in) :: mu
     ! (old "IOP") accepts 0 or 1.
     !   - if 0, uses the 6/7 point formulation
@@ -3590,7 +3590,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *dissoc file*
 
-module reader_dissoc
+module file_dissoc
   use logging
   use dimensions
   use misc
@@ -3793,10 +3793,10 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *main file*
 
-module reader_main
+module file_main
   use logging
   use dimensions
-  use reader_dissoc
+  use file_dissoc
   use config
   implicit none
 
@@ -3977,10 +3977,10 @@ end
 !           compliant with the MARCS ".opa" standard.
 !
 
-module reader_models
+module file_models
   use logging
   use dimensions
-  use reader_main
+  use file_main
   use misc
   implicit none
 
@@ -4521,11 +4521,11 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *hmap file*
 
-module reader_hmap
+module file_hmap
   use logging
   use dimensions
   use misc
-  use reader_main
+  use file_main
   implicit none
 
   ! Structure to store one row of *hmap file*
@@ -4598,7 +4598,7 @@ contains
 
 
     !#logging
-    call log_debug('reader_hmap():')
+    call log_debug('read_hmap():')
     call log_debug('filename         na nb c.lambda     kiex       c1')
     do i = 1, hmap_n
       11 format(a,1x,i2,1x,i2,1x,f8.2,1x,f8.2,1x,f8.2)
@@ -4620,10 +4620,10 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for dfile:filetoh
 
-module reader_filetoh
+module file_toh
   use dimensions
-  use reader_models
-  use reader_hmap
+  use file_models
+  use file_hmap
   implicit none
 
   !=====
@@ -4764,7 +4764,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *absoru2 file*
 
-module reader_absoru2
+module file_absoru2
   use logging
   use dimensions
   use misc
@@ -4910,10 +4910,10 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *abonds file*
 
-module reader_abonds
+module file_abonds
   use logging
-  use reader_dissoc
-  use reader_main
+  use file_dissoc
+  use file_main
   use dimensions
   implicit none
 
@@ -5015,7 +5015,7 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reading routines and variable declarations for *partit file*
 
-module reader_partit
+module file_partit
   use logging
   use misc
   use dimensions
@@ -5121,10 +5121,10 @@ end
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 ! Reader and variable declarations for *atoms file*
 
-module reader_atoms
+module file_atoms
   use dimensions
   use logging
-  use reader_abonds
+  use file_abonds
   implicit none
 
   !=====
@@ -5279,7 +5279,7 @@ end
 ! Reading routines and variable declarations for *molecules file*
 !
 
-module reader_molecules
+module file_molecules
   use logging
   use dimensions
   use misc
@@ -5651,7 +5651,7 @@ end
 !   - absoru_ -- public variables used in other modules
 !   - au_, at_ -- private variables shared among routines
 module absoru
-  use reader_absoru2
+  use file_absoru2
   implicit none
 
   private  ! This statement makes all symbols private by default
@@ -6900,8 +6900,8 @@ end module absoru
 
 module turbul
   use dimensions
-  use reader_main
-  use reader_models
+  use file_main
+  use file_models
   use config
   use misc_math
   implicit none
@@ -6984,16 +6984,16 @@ module pfantlib
   use flin
   use config
 
-  use reader_main
-  use reader_dissoc
-  use reader_models
-  use reader_hmap
-  use reader_filetoh
-  use reader_absoru2
-  use reader_abonds
-  use reader_partit
-  use reader_atoms
-  use reader_molecules
+  use file_main
+  use file_dissoc
+  use file_models
+  use file_hmap
+  use file_toh
+  use file_absoru2
+  use file_abonds
+  use file_partit
+  use file_atoms
+  use file_molecules
 
   use absoru
   use turbul
