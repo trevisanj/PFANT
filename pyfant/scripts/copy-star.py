@@ -1,21 +1,20 @@
 #!/usr/bin/python
 """
-Copies star-specific files (whose typical names are "main.dat", "abonds.dat", and "dissoc.dat") to local directory.
+Copies stellar data files (such as main.dat, abonds.dat, dissoc.dat) to local directory.
 
-This script can work in three different modes:
+examples of usage:
+  > copy-star.py
+  (displays menu)
 
-a) default mode: it looks for files in a subdirectory of PFANT/data
-   Example:
-   > copy-star.py common
-   (will look inside the directory PFANT/data/common)
+  > copy-star.py arcturus
+  ("arcturus" is the name of a subdirectory of PFANT/data)
 
-b) "-l" option: lists subdirectories of PFANT/data
+  > copy-star.py -p /home/user/pfant-common-data
+  (use option "-p" to specify path)
 
-c) "-p" option: looks for files in a directory specified:
-   > copy-star.py -p /home/user/pfant-common-data
-   > copy-star.py -p ../../pfant-common-data
+  > copy-star.py -l
+  (lists subdirectories of PFANT/data , doesn't copy anything)
 
-Note: in Windows, this script must be run as administrator.
 """
 import argparse
 from pyfant import *
@@ -28,13 +27,9 @@ import shutil
 misc.logging_level = logging.INFO
 
 
-def print_skipped(reason):
-    """Standardized printing for when a file was skipped."""
-    print "   ... SKIPPED (%s)." % reason
-
-
-
 if __name__ == "__main__":
+    flag_menu = len(sys.argv) == 1  # will display menu if no command-line arguments
+
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=SmartFormatter
@@ -49,13 +44,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if len(sys.argv) == 1:
-        args.list = True  # makes "-l" the default behaviour
-
-    if (not args.directory or len(args.directory) ==  0) and not args.list:
-        print "Directory name is required, except if '-l' option specified."
-        parser.print_usage()
-        sys.exit()
 
     # "-l" mode
     if args.list:
@@ -63,40 +51,21 @@ if __name__ == "__main__":
         for dirname in get_data_subdirs():
             print dirname
         sys.exit()
-
-    if args.path:
-        dir_ = args.directory
+        
+    # figures out the path to directory (dir_)
+    if flag_menu:
+        dirnames = get_star_data_subdirs()
+        choice = menu("Choose a star", dirnames, cancel_label="quit", flag_allow_empty=True, flag_cancel=False)
+        if choice <= 0:
+            sys.exit()
+        dir_ = os.path.join(get_data_dir(), dirnames[choice-1])
     else:
-        dir_ = os.path.join(get_data_dir(), args.directory)
-    star_classes = [FileMain, FileDissoc, FileAbonds]
-
-    print "Will look inside directory %s" % dir_
-
-    # makes list of files to analyse
-    types = ('*.dat', '*.mod')
-    ff = []
-    for type_ in types:
-        ff.extend(glob.glob(os.path.join(dir_, type_)))
-
-    for f in ff:
-        name = os.path.split(f)[1]
-
-        flag_skip = False
-        print "Considering file '%s' ..." % name
-        if os.path.isfile(name):
-            print_skipped("file exists in local directory")
-            flag_skip = True
+        if args.path:
+            dir_ = args.directory
         else:
-            obj = load_with_classes(f, [FileMain, FileAbonds, FileDissoc])
-            if obj is not None:
-                pass
-            else:
-                print_skipped("neither main, abonds, nor dissoc file")
-                flag_skip = True
-
-        if not flag_skip:
-            try:
-                shutil.copy(f, ".")
-                print "   ... file copied"
-            except Exception as e:
-                print_error("Error copying file: %s" % str(e))
+            dir_ = os.path.join(get_data_dir(), args.directory)
+            
+    if not os.path.isdir(dir_):
+        print "'%s' is not a directory" % dir_
+        sys.exit(-1)
+    copy_star(dir_)

@@ -13,8 +13,9 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "random_name", "format_BLB", "seconds2str", "SignalProxy", "get_python_logger",
  "AttrsPart", "froze_it", "format_progress", "symbols", "SYMBOLS",
  "is_text_file", "get_QApplication", "copy_default_file", "MyLock",
- "get_data_dir", "get_data_subdirs", "SESSION_PREFIX_SINGULAR",
- "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX"]
+ "get_data_dir", "get_data_subdirs", "get_star_data_subdirs", "SESSION_PREFIX_SINGULAR",
+ "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
+ "symlink", "print_skipped"]
 
 
 # # todo cleanup
@@ -290,6 +291,40 @@ def get_data_subdirs():
             ret.append(os.path.basename(d))
     return ret
 
+def get_star_data_subdirs():
+    """Returns only subdirectories of PFANT/data that contain file main.dat."""
+    dd = glob.glob(os.path.join(get_data_dir(), "*"))
+    ret = []
+    for d in dd:
+        if os.path.isdir(d) and os.path.isfile(os.path.join(d, 'main.dat')):
+            ret.append(os.path.basename(d))
+    return ret
+
+
+
+def symlink(source, link_name):
+    """
+    Creates symbolic link for either operating system.
+
+    http://stackoverflow.com/questions/6260149/os-symlink-support-in-windows
+    """
+    os_symlink = getattr(os, "symlink", None)
+    if callable(os_symlink):
+        os_symlink(source, link_name)
+    else:
+        import ctypes
+        csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+        csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
+        csl.restype = ctypes.c_ubyte
+        flags = 1 if os.path.isdir(source) else 0
+        if csl(link_name, source, flags) == 0:
+            raise ctypes.WinError()
+    
+def print_skipped(reason):
+    """Standardized printing for when a file was skipped."""
+    print "   ... SKIPPED (%s)." % reason
+
+
 # #################################################################################################
 # # Conversion routines
 
@@ -484,7 +519,7 @@ def print_error(s):
     """Prints string as error message."""
     print fmt_error(s)
 
-def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
+def menu(title, options, cancel_label="Cancel", flag_allow_empty=False, flag_cancel=True, ch='.'):
   """Text menu.
 
   Arguments:
@@ -498,8 +533,9 @@ def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
 
   Adapted from irootlab menu.m"""
 
-  no_options, flag_ok, ch, lt = len(options), 0, 'p', len(title)
+  no_options, flag_ok, lt = len(options), 0, len(title)
   option = None  # result
+  min_allowed = 0 if flag_cancel else 1  # minimum option value allowed (if option not empty)
 
   while True:
     print ""
@@ -508,7 +544,7 @@ def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
     print "  "+ch*(lt+8)
     for i, s in enumerate(options):
       print "  %d - %s" % (i+1, s)
-    print "  0 - << (*%s*)" % cancel_label
+    if flag_cancel: print "  0 - << (*%s*)" % cancel_label
     s_option = raw_input('? ')
 
     n_try = 0
@@ -523,7 +559,7 @@ def menu(title, options, cancel_label="Cancel", flag_allow_empty=False):
 
       try:
         option = int(s_option)
-        if 0 <= option <= no_options:
+        if min_allowed <= option <= no_options:
           flag_ok = True
           break
       except ValueError:

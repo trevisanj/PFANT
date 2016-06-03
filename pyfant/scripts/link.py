@@ -45,30 +45,6 @@ import glob
 misc.logging_level = logging.INFO
 
 
-def print_skipped(reason):
-    """Standardized printing for when a file was skipped."""
-    print "   ... SKIPPED (%s)." % reason
-
-
-def symlink(source, link_name):
-    """
-    Creates symbolic link for either operating system.
-
-    http://stackoverflow.com/questions/6260149/os-symlink-support-in-windows
-    """
-    os_symlink = getattr(os, "symlink", None)
-    if callable(os_symlink):
-        os_symlink(source, link_name)
-    else:
-        import ctypes
-        csl = ctypes.windll.kernel32.CreateSymbolicLinkW
-        csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
-        csl.restype = ctypes.c_ubyte
-        flags = 1 if os.path.isdir(source) else 0
-        if csl(link_name, source, flags) == 0:
-            raise ctypes.WinError()
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -116,45 +92,5 @@ if __name__ == "__main__":
             if ans in ("Y", "YES", ""):
                 break
 
+    link_to_data(dir_)
 
-    star_classes = [FileMain, FileDissoc, FileAbonds]
-
-    print "Will look inside directory %s" % dir_
-
-    # makes list of files to analyse
-    types = ('*.dat', '*.mod', '*.moo')
-    ff = []
-    for type_ in types:
-        ff.extend(glob.glob(os.path.join(dir_, type_)))
-
-    for f in ff:
-        name = os.path.split(f)[1]
-
-        flag_skip = False
-        print "Considering file '%s' ..." % name
-        if os.path.isfile(name) and not os.path.islink(name):
-            print_skipped("file exists in local directory")
-            flag_skip = True
-        else:
-            obj = load_with_classes(f, [FileMain, FileAbonds, FileDissoc, FileToH])
-            if obj is not None:
-                print_skipped("detected type %s" % obj.__class__.__name__)
-                flag_skip = True
-            else:
-                obj = load_with_classes(f, [FileModBin])
-                if obj is not None:
-                    if len(obj) == 1:
-                        print_skipped("%s of only one record" % obj.__class__.__name__)
-                        flag_skip = True
-
-        if not flag_skip:
-            try:
-                if os.path.islink(name):
-                    os.remove(name)
-                    s_action = "replaced existing"
-                else:
-                    s_action = "created"
-                symlink(f, name)
-                print "   ... %s link" % s_action
-            except Exception as e:
-                print_error("Error creating link: %s" % str(e))

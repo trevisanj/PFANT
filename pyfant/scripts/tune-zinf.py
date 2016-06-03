@@ -111,31 +111,21 @@ if __name__ == "__main__":
     logger.info("Number of lines in file '%s': %d" % \
      (args.fn_input[0], file_atoms.num_lines))
 
-    # # Preparation
-
-    # ## If main.dat not present, will try to bring about the star files
-    if not os.path.isfile("main.dat"):
-        zz = ["main.dat", "dissoc.dat", "abonds.dat", "modeles.mod"]
-        logger.info("File 'main.dat' is not present, will try to bring the following files to your local directory:")
-        logger.info(str(zz))
-        for z in zz:
-            if os.path.isfile(z):
-                raise RuntimeError("Found file '%s' in local directory."
-                 "If 'main.dat' is not present, files %s must also not exist." % zz[1:])
-        for z in zz:
-            copy_default_file(z)
+    # # Tries to get input files together
+    setup_inputs(h=False, atoms=False, molecules=False, opa=False)
 
 
-    # ## Copies other data files that may not be present
-    zz = ["absoru2.dat", "partit.dat"]
-    for z in zz:
-        if not os.path.isfile(z):
-            logger.info("Copying file '%s' to local directory..." % z)
-        copy_default_file(z)
+    # ## Runs innewmarcs if modeles.mod not present
+    
+    if not os.path.isfile('modeles.mod'):
+        logger.info("'modeles.mod' does not exist, running innewmarcs...")
+        inn = Innewmarcs()
+        inn.conf.opt.opa = False
+        inn.run()
 
 
 
-    # As suggested by M. Trevisan, adds 0.5 to all abundances, except that of Fe
+    # ## As suggested by M. Trevisan, adds 0.5 to all abundances, except ...
     K_ADD = 0.5
     EXCEPTIONS = ["FE", "HE"]
     logger.info("Preparing abundances (Adding %g to all abundances, " % K_ADD)
@@ -189,7 +179,7 @@ if __name__ == "__main__":
             combo.conf.flag_output_to_dir = True
             combo.conf.opt.zinf = args.max
             combo.conf.opt.no_molecules = True
-            combo.conf.opt.no_opa = True
+            combo.conf.opt.opa = False
             combo.conf.opt.no_h = True
             # Note that half of the line (needs to)/(will be) calculated
             combo.conf.opt.llzero = line.lambda_-args.max
