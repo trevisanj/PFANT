@@ -2724,7 +2724,7 @@ contains
     character(len=*) :: lll
 
     write(error_unit, *) lll
-    stop -222
+    stop -1
   end subroutine
 
 
