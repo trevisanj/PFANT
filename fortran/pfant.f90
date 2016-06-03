@@ -841,7 +841,7 @@ contains
   ! PPA and PB contents are not changed after the assignment, it is reasonable to just point
   ! to the source vectors (way faster).
   !
-  ! @sa reader_molecules::find_formula_id, reader_molecules::read_molecules
+  ! @sa file_molecules::find_formula_id, file_molecules::read_molecules
 
   subroutine point_ppa_pb(formula_id)
     integer, intent(in) :: formula_id
@@ -1271,10 +1271,10 @@ contains
         !call log_debug("KAPMOL_() Time = "//real42str(finish-start, 3)//" seconds.")
       end if
 
-      call cpu_time(start)
+      ! call cpu_time(start)
       call selekfh()
-      call cpu_time(finish)
-      call log_info("SELEKFH() Time = "//real42str(finish-start, 3)//" seconds.")
+      ! call cpu_time(finish)
+      ! call log_info("SELEKFH() Time = "//real42str(finish-start, 3)//" seconds.")
 
       !=====
       ! Saving...
@@ -2094,6 +2094,7 @@ program pfant
   use pfant_x
   implicit none
   integer i
+  logical dissoc_exists
 
   !=====
   ! Startup
@@ -2106,22 +2107,30 @@ program pfant
   ! File reading
   !=====
   call read_main(config_fn_main)
-  call read_dissoc(config_fn_dissoc)
 
   !---
   ! (intermission)
-  ! After reading *dissoc file* and *main file*,
-  ! initializes variables whose values may come either from *main file* or
-  ! command-line option
+  ! After reading *main file*, initializes variables whose values may come
+  ! either from *main file* or command-line option
   !---
   call pfant_init_x()
 
+
   ! continues file reading
+  call read_abonds(config_fn_abonds)
+  inquire(file=config_fn_dissoc, exist=dissoc_exists)
+  if (dissoc_exists) then
+    call read_dissoc(config_fn_dissoc)
+  else
+    call log_warning('File "'//trim(config_fn_dissoc)//'" not found: will take '//&
+     'internally stored template and replace abundances with those in "'//trim(config_fn_abonds)//'" -12')
+    call auto_dissoc()
+  end if
+
   call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
   call read_absoru2(config_fn_absoru2)  ! LECTURE DES DONNEES ABSORPTION CONTINUE
   call read_modele(config_fn_modeles)  ! LECTURE DU MODELE
   if (config_opa) call read_opa(config_fn_opa)
-  call read_abonds(config_fn_abonds)
   if (.not. config_no_atoms) then
     call read_atoms(config_fn_atoms)
     if (config_zinf .ne. -1) then

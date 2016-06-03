@@ -55,7 +55,8 @@ if __name__ == "__main__":
     # figures out the path to directory (dir_)
     if flag_menu:
         dirnames = get_star_data_subdirs()
-        choice = menu("Choose a star", dirnames, cancel_label="quit", flag_allow_empty=True, flag_cancel=False)
+        choice = menu("Choose a star", [x.capitalize() for x in dirnames],
+                      cancel_label="quit", flag_allow_empty=True, flag_cancel=False)
         if choice <= 0:
             sys.exit()
         dir_ = os.path.join(get_data_dir(), dirnames[choice-1])

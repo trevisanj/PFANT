@@ -2717,7 +2717,7 @@ contains
   end subroutine
 
   ! Logs error and halts
-  ! This routine was created to standardize the "giving error" behaviuor
+  ! This routine was created to standardize the "giving error" behaviour
 
   subroutine give_error(lll)
     ! Error message
@@ -3585,206 +3585,13 @@ end
 
 
 
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for *dissoc file*
-
-module file_dissoc
-  use logging
-  use dimensions
-  use misc
-  implicit none
-
-  logical :: flag_read_dissoc = .false.    ! Whether read_dissoc() has already been called
-
-
-  ! dissoc.dat, metals part
-  integer dissoc_nmetal ! number of elements considered in chemical equilibrium
-  integer dissoc_nimax  ! maximum number of iterations in Newton-Rapson method
-  character*2 dissoc_elems(MAX_DISSOC_NMETAL)    ! Elements table field 1/6: atomic symbol
-  integer     dissoc_nelemx(MAX_DISSOC_NMETAL)   ! Elements table field 2/6: atomic number
-  real*8      dissoc_ip(MAX_DISSOC_NMETAL)      ! Elements table field 3/6: ?
-  integer     dissoc_ig0(MAX_DISSOC_NMETAL),  & ! Elements table field 4/6: ?
-              dissoc_ig1(MAX_DISSOC_NMETAL)     ! Elements table field 5/6: ?
-  real*8      dissoc_cclog(MAX_DISSOC_NMETAL)   ! Elements table field 6/6: ?
-
-  ! dissoc.dat, molecules part
-  character*3 dissoc_mol(MAX_DISSOC_NMOL)     ! Molecules table field 01: molecule name
-  real*8 dissoc_c(MAX_DISSOC_NMOL, 5)         ! Molecules table fields 02-06
-  integer dissoc_mmax(MAX_DISSOC_NMOL), &     ! Molecules table field 07
-          dissoc_nelem(5, MAX_DISSOC_NMOL), & ! Molecules table fields 08, 10, ... (atomic number)
-          dissoc_natom(5, MAX_DISSOC_NMOL)    ! Molecules table fields 09, 11, ... (number of atoms)
-  integer dissoc_nmol
-  real*8 dissoc_eps,   & ! if abs((x(i+1)-x(i))/x(i)) .le. eps: converged
-         dissoc_switer   ! flag affecting x(i+1)
-                         !   - if switer .gt. 0 then x(i+1)=0.5*(x(i+1)+x(i))
-                         !   - if switer .le. 0 then x(i+1)=x(i+1)
-
-contains
-
-  !=======================================================================================
-  ! Reads dissoc.dat to fill variables dissoc_*
-  !
-  ! *Attention* This file must end with a <b>blank row</b> so that the routine can detect
-  ! the end of the file.
-  !
-  ! TODO PROPOSE: use READ()'s "END=" option
-
-  subroutine read_dissoc(path_to_file)
-    integer myunit
-    integer i, j, k, m, mmaxj
-    character(len=*) :: path_to_file
-    character*2 symbol, symbol_
-    logical flag_found
-
-    ! Auxiliary temp variables for reading file
-    integer*4 natomm, nelemm
-    dimension natomm(5), nelemm(5)
-
-    ! this logging message is important in case of errors to know which file it was
-    call log_info('read_dissoc(): reading file '''//trim(path_to_file)//'''...')
-    open(newunit=myunit,file=path_to_file, status='old')
-
-    ! row 01
-    read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
-
-    ! rows 02 to NMETAL+1: 6-column rows
-    !
-    !
-    !
-    do i = 1, dissoc_nmetal
-      read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
-       symbol_, dissoc_nelemx(i), dissoc_ip(i), &
-       dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
-
-      symbol = adjust_atomic_symbol(symbol_)
-
-      ! makes sure that elements first and second are h and he, respectively,
-      ! because sat4() and die() count on this
-      select case (i)
-        case (1)
-          if (symbol .ne. ' H') then
-            write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
-            call log_and_halt(lll)
-          end if
-        case (2)
-          if (symbol .ne. 'HE') then
-            write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
-            call log_and_halt(lll)
-          end if
-      end select
-
-      dissoc_elems(i) = symbol
-
-      ! spill check
-      if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
-        call log_and_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
-         int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
-      end if
-    end do
 
 
 
-    ! rows NMETAL+2 till end-of-file
-    !   col  1     -- "name" of molecule
-    !   cols 2-6   -- c(J, 1-5)
-    !   col  7     -- mmax(j) (number of subsequent columns)/2
-    !   cols 8-... -- maximum of 8 columns here.
-    !                 pairs (nelem(m), natom(m)), m = 1 to mmax(j)
-    j = 0
 
-    1010 continue
-    j = j+1
 
-    read(myunit, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
-                 dissoc_mol(j), &
-                 (dissoc_c(j, k), k=1,5), &
-                 dissoc_mmax(j), &
-                 (nelemm(m), natomm(m), m=1,4)
 
-    write(lll,*) dissoc_mol(j), &
-                 (dissoc_c(j, k), k=1,5), &
-                 dissoc_mmax(j), &
-                 (nelemm(m), natomm(m), m=1,4)
-    call log_debug(lll)
 
-    mmaxj = dissoc_mmax(j)
-    if(mmaxj .eq. 0) then
-      ! note: interesting that Fortran accepts a blank line and reads everything blank or zero
-
-      go to 1014  ! means end-of-file
-    end if
-
-    ! consistency check:
-    if (mmaxj .gt. 4) then
-      write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
-       '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
-      call log_and_halt(lll)
-    end if
-
-    ! consistency check
-    do m = 1, mmaxj
-      flag_found = .false.
-      do i = 1, dissoc_nmetal
-        if (nelemm(m) .eq. dissoc_nelemx(i)) then
-          flag_found = .true.
-          exit
-        end if
-      end do
-
-      if (.not. flag_found) then
-        write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
-         '" atomic number ', nelemm(m), 'not in atoms list above'
-        call log_and_halt(lll)
-      end if
-    end do
-
-    do m = 1, mmaxj
-        dissoc_nelem(m,j) = nelemm(m)
-        dissoc_natom(m,j) = natomm(m)
-    end do
-
-    go to 1010
-
-    1014 dissoc_nmol = j-1
-
-    write(lll,*) 'Last molecule considered in dissoc file is ', dissoc_mol(dissoc_nmol)
-    call log_debug(lll)
-
-    close(unit=myunit)
-    flag_read_dissoc = .true.
-  end
-
-  ! Searches for atomic symbol inside dissoc_elems
-
-  integer function find_atomic_symbol_dissoc(symbol, flag_ignore)
-    ! Atomic symbol, case-insensitive
-    character(*), intent(in) :: symbol
-    ! (optional, defaults to .false.) If set, will return ZERO if symbol is not found.
-    ! The default behaviour is to halt the program.
-    logical, intent(in), optional :: flag_ignore
-    character(:), allocatable :: symbol_ ! formatted symbol
-    integer :: i
-    logical :: flag_ignore_
-
-    flag_ignore_ = .false.
-    if (present(flag_ignore)) flag_ignore_ = flag_ignore
-    symbol_ = adjust_atomic_symbol(symbol)
-
-    do i = 1, dissoc_nmetal
-      if (dissoc_elems(i) .eq. symbol_) then
-        find_atomic_symbol_dissoc = i
-        return
-      end if
-    end do
-
-    if (.not. flag_ignore_) then
-      call log_and_halt('Atomic symbol "'//symbol_//'" not found in dissoc metals table')
-    end if
-    find_atomic_symbol_dissoc = 0
-  end
-end
 
 
 
@@ -3796,7 +3603,7 @@ end
 module file_main
   use logging
   use dimensions
-  use file_dissoc
+  !use file_dissoc
   use config
   implicit none
 
@@ -3951,6 +3758,444 @@ contains
     flag_read_main = .true.
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Reading routines and variable declarations for *abonds file*
+
+module file_abonds
+  use logging
+  ! use file_dissoc
+  use file_main
+  use dimensions
+  implicit none
+
+  !=====
+  ! Variables filled by read_abonds() (file abonds.dat)
+  !=====
+  integer abonds_nabond ! ?doc?
+  character*2 abonds_ele(MAX_ABONDS_NABOND)     ! symbol of element, e.g., HE, LI etc
+  real*8      abonds_abol(MAX_ABONDS_NABOND), & ! logarithmic abundance (H=12)
+              abonds_abo(MAX_ABONDS_NABOND)     ! number abundance calculated as 10**(abol-12)
+
+  ! Flag indicating whether read_abonds() has already been called
+  logical :: flag_read_abonds = .false.
+
+contains
+
+  !=======================================================================================
+  ! Reads file abonds.dat to fill variables abonds_*
+  !
+  ! The input file has 3 columns:
+  !   - Empty space or "1"
+  !   - 2-character atomic element symbol (?)
+  !   - absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
+  !
+  ! The end of the file is signalled by two rows containing only "1" each at
+  ! column 1 and nothing else at the others, i.e.,
+  !
+  ! .......(last data row).......
+  ! 1
+  ! 1
+
+  subroutine read_abonds(path_to_file)
+    implicit none
+    integer myunit, finab, j
+    character(len=*) :: path_to_file
+    real*8 fstar
+
+    if (.not. flag_read_main) then
+      call log_and_halt('read_main() must be called before read_abonds()')
+    end if
+
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_abonds(): reading file '''//trim(path_to_file)//'''...')
+
+    open(newunit=myunit,file=path_to_file, status='old')
+
+    fstar = 10**main_afstar
+
+    j = 1
+    finab = 0
+    do while (finab .lt. 1)
+      read(myunit, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
+
+      if (finab .lt. 1) then
+        abonds_ele(j) = adjust_atomic_symbol(abonds_ele(j))
+
+        ! [2] Calculates abonds_ABO based on abonds_ABOL
+        ! (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12
+        !      In abonds.dat the values are is log10(NX/NH) - [Fe/H]
+        !      In dissoc.dat. the valus are log10(NX/NH) - 12 - [Fe/H]
+        abonds_abo(j) = 10.**(abonds_abol(j)-12.)
+        abonds_abo(j) = abonds_abo(j)*fstar
+      end if
+
+      j = j+1
+    end do
+    abonds_nabond = j-2
+
+    close(unit=myunit)
+    flag_read_abonds = .true.
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Reading routines and variable declarations for *dissoc file*
+
+module file_dissoc
+  use logging
+  use dimensions
+  use misc
+  use config
+  use file_abonds
+  implicit none
+
+  logical :: flag_read_dissoc = .false.    ! Whether read_dissoc() has already been called
+
+
+  ! dissoc.dat, metals part
+  integer dissoc_nmetal ! number of elements considered in chemical equilibrium
+  integer dissoc_nimax  ! maximum number of iterations in Newton-Rapson method
+  character*2 dissoc_elems(MAX_DISSOC_NMETAL)    ! Elements table field 1/6: atomic symbol
+  integer     dissoc_nelemx(MAX_DISSOC_NMETAL)   ! Elements table field 2/6: atomic number
+  real*8      dissoc_ip(MAX_DISSOC_NMETAL)      ! Elements table field 3/6: ?
+  integer     dissoc_ig0(MAX_DISSOC_NMETAL),  & ! Elements table field 4/6: ?
+              dissoc_ig1(MAX_DISSOC_NMETAL)     ! Elements table field 5/6: ?
+  real*8      dissoc_cclog(MAX_DISSOC_NMETAL)   ! Elements table field 6/6: ?
+
+  ! dissoc.dat, molecules part
+  character*3 dissoc_mol(MAX_DISSOC_NMOL)     ! Molecules table field 01: molecule name
+  real*8 dissoc_c(MAX_DISSOC_NMOL, 5)         ! Molecules table fields 02-06
+  integer dissoc_mmax(MAX_DISSOC_NMOL), &     ! Molecules table field 07
+          dissoc_nelem(5, MAX_DISSOC_NMOL), & ! Molecules table fields 08, 10, ... (atomic number)
+          dissoc_natom(5, MAX_DISSOC_NMOL)    ! Molecules table fields 09, 11, ... (number of atoms)
+  integer dissoc_nmol
+  real*8 dissoc_eps,   & ! if abs((x(i+1)-x(i))/x(i)) .le. eps: converged
+         dissoc_switer   ! flag affecting x(i+1)
+                         !   - if switer .gt. 0 then x(i+1)=0.5*(x(i+1)+x(i))
+                         !   - if switer .le. 0 then x(i+1)=x(i+1)
+
+  private internal_read_dissoc
+contains
+
+  !=======================================================================================
+  ! Reads dissoc.dat to fill variables dissoc_*
+  !
+  ! TODO PROPOSE: use READ()'s "END=" option
+
+  subroutine read_dissoc(path_to_file)
+    integer myunit
+    character(len=*) :: path_to_file
+    call log_info('read_dissoc(): reading file '''//trim(path_to_file)//'''...')
+    open(newunit=myunit,file=path_to_file, status='old')
+    call internal_read_dissoc(myunit)
+    close(unit=myunit)
+    flag_read_dissoc = .true.
+  end
+
+  !=======================================================================================
+  ! Searches for atomic symbol inside dissoc_elems
+  !
+  ! Returns index, or 0 if not found
+
+  integer function find_atomic_symbol_dissoc(symbol, flag_ignore)
+    ! Atomic symbol, case-insensitive
+    character(*), intent(in) :: symbol
+    ! (optional, defaults to .false.) If set, will return ZERO if symbol is not found.
+    ! The default behaviour is to halt the program.
+    logical, intent(in), optional :: flag_ignore
+    character(:), allocatable :: symbol_ ! formatted symbol
+    integer :: i, j
+    logical :: flag_ignore_
+
+    flag_ignore_ = .false.
+    if (present(flag_ignore)) flag_ignore_ = flag_ignore
+    symbol_ = adjust_atomic_symbol(symbol)
+
+    do i = 1, dissoc_nmetal
+      if (dissoc_elems(i) .eq. symbol_) then
+        find_atomic_symbol_dissoc = i
+        return
+      end if
+    end do
+
+    if (.not. flag_ignore_) then
+      call log_and_halt('Atomic symbol "'//symbol_//'" not found in dissoc metals table')
+    end if
+    find_atomic_symbol_dissoc = 0
+  end
+
+
+
+  !=======================================================================================
+  ! In the absence of a *dissoc file*, fills in dissoc_* using another strategy.
+  !
+  ! The strategy is to use an internal buffer and replace the abundances using the values
+  ! read from the *abonds file* .
+  !
+
+  subroutine auto_dissoc()
+    integer myunit, i, j, num_el
+    character(2) :: el
+    logical :: found
+    real*8 abund
+    integer, parameter :: NUM_LINES = 59, NUM_COLS = 74
+    character(NUM_COLS) :: buffer(NUM_LINES) = (/&
+'   18  100   0.00500  -1.00000 Created by pfant:auto_dissoc()             ', &
+' H       1    13.598    2    1                                            ', &
+'HE       2    24.587    1    2                                            ', &
+' C       6    11.260    9    6                                            ', &
+' N       7    14.534    4    9                                            ', &
+' O       8    13.618    9    4                                            ', &
+' A       9    12.268    9    6                                            ', &
+'NA      11     5.139    2    1                                            ', &
+'MG      12     7.646    1    2                                            ', &
+'AL      13     5.986    6    1                                            ', &
+'SI      14     8.151    9    6                                            ', &
+' P      15    10.486    4    9                                            ', &
+' S      16    10.360    9    4                                            ', &
+'CA      20     6.113    1    2                                            ', &
+'SC      21     6.540   10   15                                            ', &
+'TI      22     6.820   21   28                                            ', &
+'FE      26     7.870   25   30                                            ', &
+'NI      28     7.635   21   10                                            ', &
+'CU      29     7.726    2    1                                            ', &
+' AN     1.28051e+01-8.27934e+00 6.41622e-02-7.36267e-03 3.46663e-042 91 71', &
+' CN     1.28051e+01-8.27934e+00 6.41622e-02-7.36267e-03 3.46663e-042 61 71', &
+'CAH     1.13401e+01-3.01442e+00 4.23487e-01-6.14674e-02 3.16392e-032201 11', &
+'MGO     1.17018e+01-5.03261e+00 2.96408e-01-4.28111e-02 2.20232e-032121 81', &
+'TIO     1.33981e+01-8.59562e+00 4.08726e-01-5.79369e-02 2.92873e-032221 81', &
+'MGH     1.12853e+01-2.71637e+00 1.96585e-01-2.73103e-02 1.38164e-032121 11', &
+' AC     1.28038e+01-6.51780e+00 9.77186e-02-1.27393e-02 6.26035e-042 91 61', &
+' AA     1.28038e+01-6.51780e+00 9.77186e-02-1.27393e-02 6.26035e-041 92   ', &
+' CC     1.28038e+01-6.51780e+00 9.77186e-02-1.27393e-02 6.26035e-041 62   ', &
+'HOH     2.54204e+01-1.05223e+01 1.69394e-01-1.83684e-02 8.17296e-042 12 81', &
+'ALH     1.21913e+01-3.76361e+00 2.55568e-01-3.72612e-02 1.94061e-032131 11', &
+'ALO     1.27393e+01-5.25336e+00 1.82177e-01-2.57927e-02 1.31850e-032131 81', &
+' AO     1.38200e+01-1.17953e+01 1.72167e-01-2.28885e-02 1.13491e-032 91 81', &
+' CO     1.38200e+01-1.17953e+01 1.72167e-01-2.28885e-02 1.13491e-032 61 81', &
+' AH     1.21355e+01-4.07599e+00 1.27676e-01-1.54727e-02 7.26615e-042 91 11', &
+' CH     1.21355e+01-4.07599e+00 1.27676e-01-1.54727e-02 7.26615e-042 61 11', &
+' AP     1.24988e+01-6.47155e+00 1.23609e-01-1.74113e-02 8.97797e-042 91151', &
+' CP     1.24988e+01-6.47155e+00 1.23609e-01-1.74113e-02 8.97797e-042 61151', &
+' AS     1.34357e+01-8.55736e+00 1.87544e-01-2.55069e-02 1.27346e-032 91161', &
+' CS     1.34357e+01-8.55736e+00 1.87544e-01-2.55069e-02 1.27346e-032 61161', &
+' NH     1.20327e+01-3.84349e+00 1.36286e-01-1.66427e-02 7.86913e-042 71 11', &
+' NO     1.28310e+01-7.19644e+00 1.73495e-01-2.30652e-02 1.13799e-032 71 81', &
+' NN     1.35903e+01-1.05855e+01 2.20671e-01-2.99975e-02 1.49927e-031 72   ', &
+' OH     1.23710e+01-5.05783e+00 1.38217e-01-1.65474e-02 7.72245e-042 81 11', &
+' OO     1.32282e+01-5.51807e+00 6.99354e-02-8.15109e-03 3.79699e-041 82   ', &
+'NAH     1.14155e+01-2.75079e+00 1.96460e-01-2.73828e-02 1.38445e-032111 11', &
+'SIF     1.24272e+01-5.83726e+00 1.66854e-01-2.27883e-02 1.13711e-032141 91', &
+'SIH     1.18522e+01-3.74185e+00 1.59988e-01-2.06292e-02 9.98967e-042141 11', &
+'SIO     1.34132e+01-8.87098e+00 1.50424e-01-1.95811e-02 9.48283e-042141 81', &
+'SIN     1.23989e+01-5.48756e+00 9.53008e-02-1.33693e-02 6.93956e-042141 71', &
+' PH     1.20802e+01-4.64388e+00 3.41137e-01-4.87959e-02 2.50567e-032151 11', &
+'CAO     1.22598e+01-6.05249e+00 5.82844e-01-8.58050e-02 4.44251e-032201 81', &
+'SCO     1.37467e+01-8.64196e+00 4.80722e-01-6.96697e-02 3.57468e-032211 81', &
+'FEO     1.29845e+01-5.33182e+00 3.17452e-01-4.45649e-02 2.25240e-032261 81', &
+'NIH     1.25203e+01-3.43307e+00 1.96303e-01-2.53774e-02 1.24117e-032281 11', &
+'CUH     1.21518e+01-3.91900e+00 3.09765e-01-4.33886e-02 2.19329e-032291 11', &
+'CUO     1.21756e+01-4.28270e+00 2.04849e-01-2.82166e-02 1.40747e-032291 81', &
+' HH     1.27388e+01-5.11717e+00 1.25720e-01-1.41494e-02 6.30214e-041 12   ', &
+'                                                                          ', &
+'                                                                          ' &
+/)
+
+    if (.not. flag_read_abonds) &
+     call log_and_halt('auto_dissoc(): must call read_abonds() first', is_assertion=.true.)
+
+
+    ! Inserts abundances from abonds.dat in buffer
+    read(buffer(1), *) num_el  ! number of elements is in "upper left corner" of buffer
+    do i = 1, num_el
+      el = buffer(i+1)(1:2)
+
+      if (el .eq. ' H') then
+        abund = 0.  ! hydrogen in not in abonds.dat, and must be 0 in dissoc.dat by convention
+      else
+        found = .false.
+        do j = 1, abonds_nabond
+          if (abonds_ele(j) .eq. el) then
+            found = .True.
+            exit
+          end if
+        end do
+        if (.not. found) then
+          call log_and_halt('auto_dissoc(): Element "'//trim(el)//'" not found in abundances file "'//&
+           trim(config_fn_abonds)//'"')
+        end if
+        abund = abonds_abol(j)-12
+      end if
+
+      write(buffer(i+1)(31:40), '(f10.5)') abund
+    end do
+
+
+    !do i = 1, NUM_LINES
+    !  print '(a74)', buffer(i)
+    !end do
+    !stop -1
+
+
+    ! Creates and fills temporary file
+    open(newunit=myunit, status='scratch')
+    do i = 1, NUM_LINES
+      write(myunit, '(a'//int2str(NUM_COLS)//')') buffer(i)
+    end do
+    rewind(myunit)
+
+    ! Finally calls the reading subroutine
+    call internal_read_dissoc(myunit)
+    close(myunit)
+  end
+
+  !=======================================================================================
+  ! Fill variables dissoc_* given a Fortran unit number
+  !
+
+  subroutine internal_read_dissoc(myunit)
+    integer, intent(in) :: myunit
+    integer i, j, k, m, mmaxj
+    character*2 symbol, symbol_
+    logical flag_found
+    integer*4 natomm, nelemm
+    dimension natomm(5), nelemm(5)
+
+    ! row 01
+    read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
+
+    ! rows 02 to NMETAL+1: 6-column rows
+    !
+    !
+    !
+    do i = 1, dissoc_nmetal
+      read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
+       symbol_, dissoc_nelemx(i), dissoc_ip(i), &
+       dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
+
+      symbol = adjust_atomic_symbol(symbol_)
+
+      ! makes sure that elements first and second are h and he, respectively,
+      ! because sat4() and die() count on this
+      select case (i)
+        case (1)
+          if (symbol .ne. ' H') then
+            write(lll,*) 'First element must be hydrogen (" H"), not "', symbol_, '"!'
+            call log_and_halt(lll)
+          end if
+        case (2)
+          if (symbol .ne. 'HE') then
+            write(lll,*) 'First element must be helium ("HE"), not "', symbol_, '"!'
+            call log_and_halt(lll)
+          end if
+      end select
+
+      dissoc_elems(i) = symbol
+
+      ! spill check
+      if (dissoc_nelemx(i) .gt. MAX_DISSOC_Z) then
+        call log_and_halt('read_dissoc(): metal # '//int2str(i)//': nelemxi = '//&
+         int2str(dissoc_nelemx(i))//' over maximum allowed (MAX_DISSOC_Z='//int2str(MAX_DISSOC_Z)//')')
+      end if
+    end do
+
+
+
+    ! rows NMETAL+2 till end-of-file
+    !   col  1     -- "name" of molecule
+    !   cols 2-6   -- c(J, 1-5)
+    !   col  7     -- mmax(j) (number of subsequent columns)/2
+    !   cols 8-... -- maximum of 8 columns here.
+    !                 pairs (nelem(m), natom(m)), m = 1 to mmax(j)
+    j = 0
+
+    1010 continue
+    j = j+1
+
+    read(myunit, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
+                 dissoc_mol(j), &
+                 (dissoc_c(j, k), k=1,5), &
+                 dissoc_mmax(j), &
+                 (nelemm(m), natomm(m), m=1,4)
+
+    write(lll,*) dissoc_mol(j), &
+                 (dissoc_c(j, k), k=1,5), &
+                 dissoc_mmax(j), &
+                 (nelemm(m), natomm(m), m=1,4)
+    call log_info(lll)
+
+    mmaxj = dissoc_mmax(j)
+    if(mmaxj .eq. 0) then
+      ! note: interesting that Fortran accepts a blank line and reads everything blank or zero
+
+      go to 1014  ! means end-of-file
+    end if
+
+    ! consistency check:
+    if (mmaxj .gt. 4) then
+      write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
+       '", mmaxj = ', mmaxj, ' cannot be greater than 4!'
+      call log_and_halt(lll)
+    end if
+
+    ! consistency check
+    do m = 1, mmaxj
+      flag_found = .false.
+      do i = 1, dissoc_nmetal
+        if (nelemm(m) .eq. dissoc_nelemx(i)) then
+          flag_found = .true.
+          exit
+        end if
+      end do
+
+      if (.not. flag_found) then
+        write(lll,*) 'read_dissoc() molecule "', dissoc_mol(j), &
+         '" atomic number ', nelemm(m), 'not in atoms list above'
+        call log_and_halt(lll)
+      end if
+    end do
+
+    do m = 1, mmaxj
+        dissoc_nelem(m,j) = nelemm(m)
+        dissoc_natom(m,j) = natomm(m)
+    end do
+
+    go to 1010
+
+    1014 continue
+    dissoc_nmol = j-1
+
+    write(lll,*) 'Last molecule considered in dissoc file is ', dissoc_mol(dissoc_nmol)
+    call log_debug(lll)
+  end
+end
+
 
 
 
@@ -4902,107 +5147,6 @@ contains
     end do
   end
 end
-
-
-
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-! Reading routines and variable declarations for *abonds file*
-
-module file_abonds
-  use logging
-  use file_dissoc
-  use file_main
-  use dimensions
-  implicit none
-
-  !=====
-  ! Variables filled by read_abonds() (file abonds.dat)
-  !=====
-  integer abonds_nabond ! ?doc?
-  character*2 abonds_ele(MAX_ABONDS_NABOND)     ! symbol of element, e.g., HE, LI etc
-  real*8      abonds_abol(MAX_ABONDS_NABOND), & ! logarithmic abundance (H=12)
-              abonds_abo(MAX_ABONDS_NABOND)     ! number abundance calculated as 10**(abol-12)
-
-  ! Flag indicating whether read_abonds() has already been called
-  logical :: flag_read_abonds = .false.
-
-contains
-
-  !=======================================================================================
-  ! Reads file abonds.dat to fill variables abonds_*
-  !
-  ! The input file has 3 columns:
-  !   - Empty space or "1"
-  !   - 2-character atomic element symbol (?)
-  !   - absolute abundance (a) (exponent; actual abundance is 10^a), unit "dex"
-  !
-  ! The end of the file is signalled by two rows containing only "1" each at
-  ! column 1 and nothing else at the others, i.e.,
-  !
-  ! .......(last data row).......
-  ! 1
-  ! 1
-
-  subroutine read_abonds(path_to_file)
-    implicit none
-    integer myunit, finab, j
-    character(len=*) :: path_to_file
-    real*8 fstar
-
-    if (.not. flag_read_main) then
-      call log_and_halt('read_main() must be called before read_abonds()')
-    end if
-
-    ! this logging message is important in case of errors to know which file it was
-    call log_info('read_abonds(): reading file '''//trim(path_to_file)//'''...')
-
-    open(newunit=myunit,file=path_to_file, status='old')
-
-    fstar = 10**main_afstar
-
-    j = 1
-    finab = 0
-    do while (finab .lt. 1)
-      read(myunit, '(i1,a2,f6.3)') finab, abonds_ele(j), abonds_abol(j)
-
-      if (finab .lt. 1) then
-        abonds_ele(j) = adjust_atomic_symbol(abonds_ele(j))
-
-        ! [2] Calculates abonds_ABO based on abonds_ABOL
-        ! (MT) By definition, the "abundance of element X" is given by (X/H) = log10(NX/NH) - 12
-        !      In abonds.dat the values are is log10(NX/NH) - [Fe/H]
-        !      In dissoc.dat. the valus are log10(NX/NH) - 12 - [Fe/H]
-        abonds_abo(j) = 10.**(abonds_abol(j)-12.)
-        abonds_abo(j) = abonds_abo(j)*fstar
-      end if
-
-      j = j+1
-    end do
-    abonds_nabond = j-2
-
-    close(unit=myunit)
-    flag_read_abonds = .true.
-  end
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
