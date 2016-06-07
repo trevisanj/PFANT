@@ -24,9 +24,8 @@ PFANT
 
 PFANT is stellar spectral synthesis software written in Fortran.
 
-The development started with F Spite et al. in France in the year of 1967 and has been upgraded since then (Table 1).
+The development started with F Spite et al. in France in the year of 1967 and has been upgraded since then (Figure 1).
 
-Table 1 - PFANT timeline  
 ```
  |
  | 1967 -- FANTÔME -- by F Spite et al.
@@ -38,6 +37,7 @@ Table 1 - PFANT timeline
 t|
  V
 ```
+Figure 1 - PFANT timeline  
 
 # 2 <a name=S2></a>Installation
 
@@ -85,11 +85,12 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 **Linux users:** you may have to `sudo` your `pip` commands.
 
 
-### 2.2 Download PFANT
+### 2.2 Downloading PFANT
 
-  a) either go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or
+  a. either go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or
 
-  b) clone the github repository:
+  b. clone the github repository:
+    
      ```shell
      git clone https://github.com/trevisanj/PFANT
      ```
