@@ -89,11 +89,7 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 
   a. either go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or
 
-  b. clone the github repository:
-    
-     ```shell
-     git clone https://github.com/trevisanj/PFANT
-     ```
+  b. clone the github repository: `git clone https://github.com/trevisanj/PFANT`
 
 In either case, there should be a directory named PFANT on your drive now.
 
@@ -220,10 +216,6 @@ innewmarcs
 
 will create two files: modeles.mod and modeles.opa. 
 
-# TODO change default name to abs-sca.opa or sth.
-
-# TODO add graphics for modeles.mod and modeles.opa
-
 #### 3.2.2 Create hydrogen lines profiles
 
 ```shell
@@ -231,8 +223,6 @@ hydro2
 ```
 
 will create files such as: thalpha, thbeta, thgamma etc.
-
-# TODO add thalpha 3D
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -325,9 +315,6 @@ Yeah we agree that there is a lot of things to remember, but maybe not so many.
   
 ## 4 <a name=S4></a>Reference section
 
-# TODO Add grid.moo scatterplot in section 4 actually
-
-
 ### 4.1 Spectral synthesis workflow
 
 Figure TODO. 
@@ -377,9 +364,9 @@ All file types described in this section are supported by `explorer.py` with var
 
 
  Default name     | --option          | Description                    
-------------------------------------------------------------------------------------------
+------------------|-------------------|---------------------------------------------------
 main.dat          | --fn_main         | main configuration.
- | | Edit using any text editor, `mained.py`, `explorer.py`, or `x.py`
+                  |                   | Edit using any text editor, `mained.py`, `explorer.py`, or `x.py`
                   |                   | See Figure TODO
 abonds.dat        | --fn_abonds       | chemical abundances.
                   |                   | Edit using any text editor, `abed.py`, `explorer.py`, or `x.py`
@@ -393,7 +380,6 @@ dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
 
 # TODO annotate main.dat with descriptions, mu diagram, llzero-llfin-aint diagram
 
-# TODO enhance format_blb()
 
  
 #### 4.2.2 Common data files
@@ -419,12 +405,13 @@ there are atmospheric models in grid.moo. The uppermost point are the Sun coordi
 ##### 4.2.3.1 Files created by `innewmarcs`
 
  Default name     | --option          | Description                    
-------------------------------------------------------------------------------------------
+------------------|-------------------|---------------------------------------------------
 modeles.mod       | --fn_modeles      | atmospheric model (binary file)
-modeles.opa           | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
+modeles.opa       | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
 
 
 ![](figures/modeles.png)
+
 Figure TODO -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.opa  
 
 ##### 4.2.3.2 Files created by `hydro2`
@@ -434,9 +421,6 @@ Figure TODO -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modele
 
 ![](figures/thalpha.png)
 Figure TODO -- Example of H-alpha line profile calculated by `hydro2`.  
-
-
-# TODO 3D plot
 
 ##### 4.2.3.2 Files created by `pfant`
 
@@ -451,7 +435,7 @@ flux.cont         | continuum flux (multiplied by 10**5)
 ##### 4.2.3.2 Files created by `nulbad`
 
  Default name           | --option          | Description                    
-------------------------------------------------------------------------------------------
+------------------------|-------------------|---------------------------------------------
 flux.norm.nulbad.<fwhm> | --fn_cv           | convolved flux
 
 # TODO Cross-reference to Figure in tutorial above
