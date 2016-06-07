@@ -17,7 +17,7 @@ PFANT
   1. [Introduction](#S1)
   2. [Installation](#S2)
   3. [Operation](#S3)
-  4. [Pipeline](#S4)
+  4. [Reference](#S4)
   5. [Other topics](#S5)
 
 ## <a name=S1></a>1 Introduction
@@ -97,7 +97,7 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 In either case, there should be a directory named PFANT on your drive now.
 
 There is an additional data file that needs to be downloaded from a different
-location because it is too big to be stored on GitHub.
+location, because it is too big to be stored on GitHub.
 Please download file `grid.moo` from [here]
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
 and save it as `PFANT/data/common/grid.moo`.
@@ -144,7 +144,7 @@ Tcsh shell:
 ## <a name=S3></a>3 Operation
 
 **Aims**
-  - Calculate a synthetic spectrum;
+  - calculate a synthetic spectrum;
   - convolve with Gaussian functions of different FWHMs;
   - visualize results.
 
@@ -153,7 +153,7 @@ Tcsh shell:
 Input data contists of:
   1. stellar parameters (temperature, chemical abundances etc.) and running settings (_e.g._, calculation wavelength interval);
   2. star-independent data: line lists, atmospheric model grid, partition functions etc. that are unlikely to be modified.
-     we refer to these as "common" data.
+     We refer to these as "common" data.
 
 First let's create a new directory:
 
@@ -164,19 +164,20 @@ cd mystar
 
 #### 3.1.1 Stellar data and running settings
 
-The following displays a menu allowing you to choose among a few stars downloaded with PFANT.
+The following displays a menu allowing you to choose among a few stars.
 
 ```shell
 copy-star.py
 ```
 
-These are the files which will be copied to your local directory:
+The following files will be copied into your local directory:
   - main.dat: main configuration
   - abonds.dat: chemical abundances
   
 #### 3.2 Common data
 
-For the moment, we will create links to common data instead of copying these files:
+For these data, we will create links instead of copying these files. This can be
+done by running the following:
 
 ```shell
 > link.py
@@ -197,7 +198,7 @@ These are the links that should appear in your directory now:
  
 ### 3.2 Spectral synthesis
 
-Spectral synthesis involves a few steps, as shown in Figure TODO.
+Spectral synthesis involves a few steps, as shown in Figure 1.
 These steps will be described in the next subsections.
 
 ```
@@ -208,9 +209,7 @@ These steps will be described in the next subsections.
 |             model|   |       profiles|   |  spectrum|   | gaussian|
 +------------------+   +---------------+   +----------+   +---------+
 ```
-Figure TODO - Summarized workflow showing the Fortran program names and what they do.
-
-# TODO AUTO-DISSOC IN PFANT
+Figure 1 - Summarized workflow showing the Fortran program names and what they do.
 
 #### 3.2.1 Interpolate the stellar atmospheric model
 
@@ -218,11 +217,11 @@ Figure TODO - Summarized workflow showing the Fortran program names and what the
 innewmarcs
 ```
 
-will create two files: modeles.mod and opa.dat. 
+will create two files: modeles.mod and modeles.opa. 
 
 # TODO change default name to abs-sca.opa or sth.
 
-# TODO add graphics for modeles.mod and opa.dat
+# TODO add graphics for modeles.mod and modeles.opa
 
 #### 3.2.2 Create hydrogen lines profiles
 
@@ -327,10 +326,11 @@ Yeah we agree that there is a lot of things to remember, but maybe not so many.
 
 # TODO Add grid.moo scatterplot in section 4 actually
 
-This is the boring section that enumerates exhaustively every category.
 
+### 4.1 Spectral synthesis workflow
 
-### 4.1 Spectral synthesis pipeline
+Figure TODO. 
+
 
 ```
                     +---------------------------+---------------------main.dat
@@ -365,7 +365,8 @@ This is the boring section that enumerates exhaustively every category.
                                                 v
                                          flux.norm.nulbad.<fwhm>
 ```
-Figure TODO - Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.
+Figure TODO - Spectral synthesis workflow - Fortran programs (boxes) and their 
+input/output files.
 
 ### 4.2 Input/output data files
 
@@ -386,7 +387,7 @@ dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
                   |                   | This file is optional and can be created using `abed.py` if needed.
                   |                   | Edit using any text editor.
 
-![](art/small-main.dat.png)
+![](figures/small-main.dat.png)
 
 
 # TODO annotate main.dat with descriptions, mu diagram, llzero-llfin-aint diagram
@@ -399,21 +400,18 @@ dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
  Default name     | --option          | Description                    
 ------------------------------------------------------------------------------------------
 absoru2.dat       | --fn_absoru2      | absorption info for continuum calculation.
-                  |                   | Edit using any text editor
 atoms.dat         | --fn_atoms        | atomic line list
-                  |                   | Edit using any text editor, `ated.py`, or `explorer.py`
 molecules.dat     | --fn_molecules    | molecular line list
-                  |                   | Edit using any text editor, `mled.py`, or `explorer.py`
 hmap.dat          |                   | hydrogen line list.
-                  |                   | Edit using any text editor
 partit.dat        | --fn_partit       | partition functions.
-                  |                   | Edit using any text editor
 grid.mod or       |                   | MARCS atmospheric model grid (models only)
                   |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
-                  |                   | Visualize using `explorer.py`
 grid.moo          |                   | MARCS atmospheric model grid (models with opacities)
                   |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
-                  |                   | Visualize using `explorer.py`
+
+![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
+Figure TODO -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
+there are atmospheric models in grid.moo. The uppermost point are the Sun coordinates.
 
 #### 4.2.3 Files created by the Fortran programs
 
@@ -422,12 +420,20 @@ grid.moo          |                   | MARCS atmospheric model grid (models wit
  Default name     | --option          | Description                    
 ------------------------------------------------------------------------------------------
 modeles.mod       | --fn_modeles      | atmospheric model (binary file)
-opa.dat           | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
+modeles.opa           | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
+
+
+![](figures/modeles.png)
+Figure TODO -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.opa  
 
 ##### 4.2.3.2 Files created by `hydro2`
 
 `hydro2` creates a series of files named thalpha, thbeta, thgamma, thdelta, thepsilon etc.
 (filenames are given in hmap.dat).
+
+![](figures/thalpha.png)
+Figure TODO -- Example of H-alpha line profile calculated by `hydro2`.  
+
 
 # TODO 3D plot
 
@@ -460,7 +466,7 @@ PFANT can now use continuum opacities from the MARCS website
 pfant --opa T --absoru F
 ```
 
-  - switches on using absorption and scattering coefficients from MARCS model in opa.dat
+  - switches on using absorption and scattering coefficients from MARCS model in modeles.opa
   - switches off pfant internal calculation of these coefficients
   
 #### Update
@@ -485,32 +491,17 @@ vald3-to-atoms.py <prefix>.vald3x
 tune-zinf atoms-<prefix>-untuned.dat
 ```
 
-# TODO too complicated, merge the two steps
-
-does the actual conversion
-(which is quick) and saves a file, _e.g._, "atoms-5500-6500-untuned.dat"
-(note the "untuned" that is inserted in the auto-generated filename).
+This is done in two steps. The first step, `vald3-to-atoms.py` does the actual conversion
+(which is quick) and saves a file, _e.g._, `atoms.dat`
 
 The second step (which is time-consuming) is performed by `tune-zinf.py` and aims
-to tune an important parameter used by the ```pfant``` Fortran binary.
+to tune an important parameter used by the `pfant` Fortran binary.
 
-It is recommended to use the tool ```cut-atoms.py``` to cut the file converted by
-```vald3-to-atoms.py``` to a wavelength region of interest before running ```tune-zinf.py```.
+It is recommended to use the tool `cut-atoms.py` to cut the file converted by
+`vald3-to-atoms.py` to a wavelength region of interest before running `tune-zinf.py`.
 
-For more information, see help for ```vald3-to-atoms.py```, ```tune-zinf.py```,
-```cut-atoms.py``` (call these scripts with ```--help``` option).
-
-This is done in two steps. ```vald3-to-atoms.py``` does the actual conversion
-(which is quick) and saves a file, _e.g._, ```atoms.dat```
-
-The second step (which is time-consuming) is performed by ```tune-zinf.py``` and aims
-to tune an important parameter used by the ```pfant``` Fortran binary.
-
-It is recommended to use the tool ```cut-atoms.py``` to cut the file converted by
-```vald3-to-atoms.py``` to a wavelength region of interest before running ```tune-zinf.py```.
-
-For more information, see help for ```vald3-to-atoms.py```, ```tune-zinf.py```,
-```cut-atoms.py``` (call these scripts with ```--help``` option).
+For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
+`cut-atoms.py` (call these scripts with `--help` option).
 
 
 # 6 Other readings in this repository

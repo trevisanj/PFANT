@@ -43,9 +43,8 @@ def plot_spectra(ss, title=None, ymin=None):
 
         ax.plot(s.x, s.y)
         ymin_, ymax = ax.get_ylim()
-        if ymin is None:
-            ymin = ymin_
-        ax.set_ylim([ymin, ymin + (ymax - ymin) * (1 + _T)])  # prevents top of line from being hidden by plot box
+        ymin_now = ymin_ if ymin is None else ymin
+        ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (1 + _T)])  # prevents top of line from being hidden by plot box
         ax.set_ylabel(s.filename)
 
         xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)

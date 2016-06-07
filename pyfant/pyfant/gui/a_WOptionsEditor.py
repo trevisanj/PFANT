@@ -265,6 +265,7 @@ class WOptionsEditor(QWidget):
         self.w_fn_moo = QLineEdit()
         self.w_fn_modgrid = QLineEdit()
         self.w_fn_molecules = QLineEdit()
+        self.w_fn_opa = QLineEdit()
         self.w_molidxs_off = QLineEdit()
         self.w_no_molecules = QCheckBox()
         self.w_no_atoms = QCheckBox()
@@ -341,6 +342,13 @@ class WOptionsEditor(QWidget):
         self.__add_option(self.w_opa, 'ip', 'opa', False,
          'Use MARCS opacities?',
          'Whether or not to include MARCS opacity coefficients (absorption and scattering) in the continuum.')
+        self.__add_option(self.w_fn_opa, 'ip', 'fn_opa', FileOpa.default_filename,
+         'Opacities filename',
+         'This is a text file in the MARCS ".opa" format. This file can be generated through '
+         'interpolation using <em>innewmarcs</em>.'
+         '<p>Files downloaded directly from the MARCS '
+         'website should also work, although it is expected that you will use <em>innewmarcs</em>'
+         'to interpolate this opacities file based on a grid of models.')
 
         #
         # innewmarcs-only

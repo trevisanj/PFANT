@@ -1960,7 +1960,6 @@ contains
     ! write(*,*) 'CALCULATING TAUHI FOR FILE ', filetoh_filenames(i_file)
 
     now_jmax   = filetoh_jmax(i_file)
-    print *, now_jmax
     now_th     => filetoh_th(i_file, :, :)
     now_lambdh => filetoh_lambdh(i_file, :)
 

@@ -85,7 +85,7 @@ program innewmarcs
   ! Separates 8 records
   do i = 1, 8
     rr(i) = recs(ii(i))
-    print *, 'ntot', rr(i)%ntot
+! todo cleanup    print *, 'ntot', rr(i)%ntot
   end do
   call align_log_tau_ross(rr)
   ! Converts nh, pe, pg to log
@@ -104,7 +104,7 @@ program innewmarcs
   call interpol_two_models(teffs(ii(1)), teffs(ii(3)), main_teff, aa, bb, ee)
   call interpol_two_models(teffs(ii(5)), teffs(ii(7)), main_teff, cc, dd, ff)
   zz = rr(1)  ! copies scalar information such as ntot, asalalf, nhe, tit, tiabs to result
-  print *, 'zz ntot', zz%ntot
+  ! todo cleanup print *, 'zz ntot', zz%ntot
   call interpol_two_models(asalogs(ii(1)), asalogs(ii(5)), main_asalog, ee, ff, zz)
 
   ! # Final adjustments
@@ -237,7 +237,8 @@ contains
       iid = v_indexes(xs(i), ys(i), zs(i))
       indexes(i) = iid
 
-      write(*,1212) i, iid, xs(i), ys(i), zs(i), glogs(iid), teffs(iid), asalogs(iid)
+      write(lll,1212) i, iid, xs(i), ys(i), zs(i), glogs(iid), teffs(iid), asalogs(iid)
+      call log_debug(lll)
       1212 format('#', i1, ': ', i3, ' (', i2, ',', i2, ',', i2, ') -- ', f5.1, f7.1, f5.1)
     end do
   end
@@ -324,23 +325,24 @@ contains
     do i = 1, num_rec
       tos(i) = recs(i)%log_tau_ross(1)
     end do
-    print *, 'TOSSSSSSSSSSSS', tos
+! todo cleanup   
+!    print *, 'TOSSSSSSSSSSSS', tos
     isup_ = isup(tos, num_rec, 1, num_rec)
     to0 = tos(isup_)
-    print *, 'TO000000000000000', to0, isup_
+!    print *, 'TO000000000000000', to0, isup_
 
     ntot_min = 9999
     do i = 1, num_rec
       ishift = int((to0-recs(i)%log_tau_ross(1))*10+0.1)
       if(ishift .gt. 0) then
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH ', ishift
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH '
-        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH ', ishift
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
+!        print *, ' O SHIFT EH '
         call shift_left(ishift, recs(i)%nh)
         call shift_left(ishift, recs(i)%teta)
         call shift_left(ishift, recs(i)%pe)
@@ -410,8 +412,8 @@ contains
       ! kb = (b-x)/div
     end if
 
-    print *, "----------------- a=",a,"; b=", b, "; x=", x
-    print *, "----------------- ka=",ka,"; kb=", kb
+    ! todo cleanup print *, "----------------- a=",a,"; b=", b, "; x=", x
+    ! print *, "----------------- ka=",ka,"; kb=", kb
 
 
     call interpol(ka, kb, reca%nh, recb%nh, recx%nh)

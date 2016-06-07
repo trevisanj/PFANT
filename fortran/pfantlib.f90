@@ -2819,7 +2819,8 @@ module config
   !---
   ! innewmarcs, pfant
   !---
-  logical :: config_opa = .false. ! option --opa
+  logical :: config_opa = .true.               ! option --opa
+  character*64 :: config_fn_opa = 'modeles.opa' ! option: --fn_opa
 
 
   !
@@ -2886,14 +2887,13 @@ module config
    config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
    config_fn_atoms         = 'atoms.dat',         & ! option: --fn_atoms
    config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
-   config_fn_opa           = 'opa.dat',           & ! option: --fn_opa
    config_fn_lines         = 'lines.pfant',       & ! option: --fn_lines
    config_fn_log           = 'log.log',           & ! option: --fn_log
    config_flprefix         = '?'                    ! option: --flprefix
   integer :: config_interp = 1                      ! option: --interp
   logical :: config_abs = .true., &                 ! option: --abs
              config_sca = .true., &                 ! option: --sca
-             config_absoru = .true.                 ! option: --config_absoru
+             config_absoru = .false.                 ! option: --config_absoru
 
   !---
   ! nulbad-only
@@ -4148,7 +4148,7 @@ contains
                  (dissoc_c(j, k), k=1,5), &
                  dissoc_mmax(j), &
                  (nelemm(m), natomm(m), m=1,4)
-    call log_info(lll)
+    call log_debug(lll)
 
     mmaxj = dissoc_mmax(j)
     if(mmaxj .eq. 0) then

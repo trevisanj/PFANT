@@ -212,7 +212,7 @@ class VisGrid(Vis):
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         ax.scatter(asalog, teff, glog, c='r', s=60, marker='o')
-        ax.set_xlabel('asalog')
+        ax.set_xlabel('asalog ([Fe/H] relative to Sun)')
         ax.set_ylabel('teff')
         ax.set_zlabel('glog')
         fig.canvas.set_window_title(self.title+" -- asalog-teff-glog scatterplot")
@@ -297,10 +297,12 @@ class VisFileToH(Vis):
         _y = np.ones(len(x))
         for i in range(r.th.shape[1]):
             z = np.concatenate((r.th[-2::-1, i], r.th[:, i]))
-            ax.plot(x, _y * (i + 1), np.log10(z), label='a', color='k')
+            # ax.plot(x, _y * (i + 1), np.log10(z), label='a', color='k')
+            ax.plot(x, _y * (i + 1), z, label='a', color='k')
         ax.set_xlabel('Wavelength (A)')
         ax.set_ylabel('Atmospheric layer')
-        ax.set_zlabel('log10(Intensity)')
+        # ax.set_zlabel('log10(Intensity)')
+        # ax.set_zlabel('?')
         plt.tight_layout()
         plt.show()
 

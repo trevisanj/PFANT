@@ -187,6 +187,7 @@ class FileOpa(DataFile):
     Reference: http://marcs.astro.uu.se
     """
 
+    default_filename = "modeles.opa"
     attrs = ["ndp", "swave", "nwav"]
 
     def __init__(self):

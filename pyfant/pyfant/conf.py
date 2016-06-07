@@ -6,7 +6,7 @@ executables.
 __all__ = ["Options", "Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
            "FOR_NULBAD", "IdMaker", "SID"]
 
-from pyfant.data import DataFile, FileHmap, FileModBin, FileMain
+from pyfant.data import DataFile, FileHmap, FileModBin, FileMain, FileOpa
 import shutil
 import os
 from .misc import *
@@ -523,7 +523,7 @@ class Conf(object):
              else FileModBin.default_filename)
             opt.fn_opa = sid.join_with_session_dir(
              os.path.basename(opt.fn_opa) if opt.fn_opa is not None
-             else FileModBin.default_filename)
+             else FileOpa.default_filename)
 
         if FOR_HYDRO2 in sequence:
             # # hydro2 -> pfant
