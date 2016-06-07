@@ -33,8 +33,8 @@ for i in range(r.th.shape[1]):
 
   ax.plot(x, _y*(i+1), z, label='a', color='k')
 
-ax.set_xlabel('Wavelength (A)')
-ax.set_ylabel('Atmospheric layer')
+ax.set_xlabel('WaveLength ($\AA$)')
+ax.set_ylabel('Atmospheric layer #')
 ax.set_zlabel('th (?)')
 
 

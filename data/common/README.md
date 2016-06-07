@@ -4,10 +4,8 @@ Data files that are independent from the star.
 
 filename       | description
 ---------------|-------------
-atoms.dat      | atomic lines (todo reference) (from 3688.331 to 8194.824 angstrom) (original name was `atomgrade.dat`)
-atom4070g.dat  | atomic lines (todo reference) (from 3688.331 to 7711.724 angstrom) 
+atoms.dat      | atomic lines (from 3688.331 to 8194.824 angstrom) (original name was `atomgrade.dat`)
 molecules.dat  | molecular lines (21 molecules) [1]
-mghc2cnr_cn3ch13chtiog3tio.dat | molecular lines (12 molecules) (before 2005)
 absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 

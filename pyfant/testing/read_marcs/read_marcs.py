@@ -66,9 +66,7 @@ for var in vars:
 
     ax.plot(x, y, z, label='a', color='k')
 
-  # ax.set_xlabel('Wavelength (A)')
-  # ax.set_ylabel('Atmospheric layer')
-  ax.set_xlabel('Atmospheric layer')
+  ax.set_xlabel('Atmospheric layer #')
   ax.set_ylabel('Record number')
   ax.set_zlabel(var)
 

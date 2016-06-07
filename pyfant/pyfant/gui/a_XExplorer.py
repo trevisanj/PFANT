@@ -13,6 +13,7 @@ import time
 from pyfant import *
 from .a_XText import *
 import matplotlib.pyplot as plt
+import datetime
 
 COLOR_LOADED = "#ADFFB4"  # light green
 COLOR_LOAD_ERROR = "#FFB5B5"  # light red
@@ -37,6 +38,8 @@ class _FileProps(object):
         self.error_message = ""
         # Row index in table
         self.row_index = None
+        # Date changed
+        self.mtime = None
 
     def get_color(self):
         """Returns None if background not to be changed, otherwise a QColor."""
@@ -129,6 +132,13 @@ class XExplorer(QMainWindow):
         self.__flag_loading = False
         self.__flag_visualizing = False
         self.__load_thread = None
+
+        # # Timer to watch for changed files
+        t = self.timer_changed = QTimer()
+        t.setInterval(1000)  # miliseconds
+        t.timeout.connect(self.on_timer_changed_timeout)
+        t.start()
+
 
         # # Menu bar
         b = self.menuBar()
@@ -273,7 +283,7 @@ class XExplorer(QMainWindow):
             plt.close("all")
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
-    # Slots for Qt library signals
+    # Slots
 
     # def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
     #                                       previousColumn):
@@ -296,10 +306,6 @@ class XExplorer(QMainWindow):
 
     def selectionChanged(self, *args):
         self.__update_info()
-
-
-    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
-    # Slots for Qt library signals
 
     def on_load(self, _=None):
         if not self.__flag_loading:
@@ -331,12 +337,63 @@ class XExplorer(QMainWindow):
                 get_python_logger().exception(MSG)
                 ShowError("%s: %s" % (MSG, str(e)))
 
+    def on_timer_changed_timeout(self):
+        print "%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%."
+        if self.__flag_loading:
+            return
+
+        tw = self.tableWidget
+        ir = tw.currentRow()
+        ic = tw.currentColumn()
+
+        flag_refresh = False
+        filepaths = [p.filepath for p in self.__propss]
+        for p in reversed(self.__propss):
+            try:
+                t = os.path.getmtime(p.filepath)
+
+                if t != p.mtime:
+                    # File has been changed, mark it as non scanned
+                    p.flag_scanned = False
+                    p.mtime = t
+                    flag_refresh = True
+                    print "CCCCCCCCCCCCCCCCCCCCCCCHANGED", p.filepath, t, p.mtime
+            except OSError, E:
+                if E.errno == 2:
+                    # File no longer exists
+                    if p.row_index <= ir:
+                        ir -= 1
+                    self.__propss.remove(p)
+                    flag_refresh = True
+                    print "DDDDDDDDDDDDDDDDELETED", p.filepath
+                else:
+                    raise
+
+        # Newly created files will be added at the bottom and without any sorting
+        for filepath in glob.glob(os.path.join(self.dir, "*")):
+            if os.path.isfile(filepath):
+                if not filepath in filepaths:
+                    p = _FileProps()
+                    p.isfile = os.path.isfile(filepath)
+                    p.filepath = filepath
+                    p.mtime = os.path.getmtime(filepath)
+                    self.__propss.append(p)
+                    flag_refresh = True
+
+        if flag_refresh:
+            self.__update_table()
+            self.__update_info()
+            if ir < tw.rowCount():
+                # Tries to re-position cursor at cell
+                tw.setCurrentCell(ir, ic)
+
+
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
 
 
     def __update_window_title(self):
-        self.setWindowTitle("PFANT explorer -- %s" % self.dir)
+        self.setWindowTitle("PFANT Explorer -- %s" % self.dir)
 
     def __get_file_list(self, isfile):
 
@@ -359,9 +416,9 @@ class XExplorer(QMainWindow):
         for i, f in enumerate(dir_):
             filepath = f  #os.path.join(self.dir, f)
             p = _FileProps()
-            p.row_index = i
             p.isfile = os.path.isfile(filepath)
             p.filepath = filepath
+            p.mtime = os.path.getmtime(filepath)
             self.__propss.append(p)
         self.__update_table()
         self.__update_info()
@@ -375,6 +432,8 @@ class XExplorer(QMainWindow):
         t.setHorizontalHeaderLabels(["filename", "size", "date modified"])
 
         for i, p in enumerate(self.__propss):
+            p.row_index = i
+
             items = []
             info = os.stat(p.filepath)
             filename = os.path.basename(p.filepath)
@@ -508,7 +567,6 @@ class XExplorer(QMainWindow):
         self.__flag_loading = False
         t = self.tableWidget
         row = t.currentRow()
-        props = self.__get_current_props()
         for props in self.__load_thread.propss:
             i, c = props.row_index, props.get_color()
             for j in range(t.columnCount()):

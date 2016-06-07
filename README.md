@@ -385,7 +385,7 @@ dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
 #### 4.2.2 Common data files
 
  Default name     | --option          | Description                    
-------------------------------------------------------------------------------------------
+------------------|-------------------|---------------------------------------------------
 absoru2.dat       | --fn_absoru2      | absorption info for continuum calculation.
 atoms.dat         | --fn_atoms        | atomic line list
 molecules.dat     | --fn_molecules    | molecular line list

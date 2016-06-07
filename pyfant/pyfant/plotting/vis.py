@@ -188,7 +188,7 @@ class VisModCurves(Vis):
                 z = r.__getattribute__(var)
                 ax.plot(x, y, z, label='a', color='k')
 
-            ax.set_xlabel('Atmospheric layer')
+            ax.set_xlabel('Atmospheric layer #')
             ax.set_ylabel('Record number')
             ax.set_zlabel(var)
 
@@ -300,7 +300,7 @@ class VisFileToH(Vis):
             # ax.plot(x, _y * (i + 1), np.log10(z), label='a', color='k')
             ax.plot(x, _y * (i + 1), z, label='a', color='k')
         ax.set_xlabel('Wavelength (A)')
-        ax.set_ylabel('Atmospheric layer')
+        ax.set_ylabel(LAYER_NUMBER)
         # ax.set_zlabel('log10(Intensity)')
         # ax.set_zlabel('?')
         plt.tight_layout()
@@ -349,11 +349,11 @@ class VisOpa(Vis):
         titles = ["spherical radiative transfer",
                   "continuumm optical depth at %g angstrom" % obj.swave,
                   "temperature (K)",
-                  "electron pressure (dyn/cm2)",
-                  "total gas pressure (dyn/cm2)",
-                  "densigy (g/cm3)",
+                  "electron pressure (dyn/cm**2)",
+                  "total gas pressure (dyn/cm**2)",
+                  "densigy (g/cm**3)",
                   "microturbulence parameter (km/s)",
-                  "continuumm opacity at %g angstrom (cm2/g)" % obj.swave]
+                  "continuumm opacity at %g angstrom (cm**2/g)" % obj.swave]
 
         f, axarr = plt.subplots(nrows=4, ncols=2, sharex=True)
         x = np.linspace(1, obj.ndp, obj.ndp)
@@ -375,8 +375,8 @@ class VisOpa(Vis):
         #################
         # 3D plots
         vars = ["abs", "sca"]
-        titles = ["specific continuous absorption opacity (cm2/g)",
-                  "specific continuous scattering opacity (cm2/g)"]
+        titles = ["specific continuous absorption opacity (cm**2/g)",
+                  "specific continuous scattering opacity (cm**2/g)"]
 
         for var, title in zip(vars, titles):
             attr = obj.__getattribute__(var)
