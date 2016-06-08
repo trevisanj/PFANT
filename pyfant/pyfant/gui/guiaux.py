@@ -171,14 +171,25 @@ def show_edit_form(obj, attrs, title):
     return r, form
 
 
-def place_left_top(window):
+def place_left_top(window, width=None, height=None):
     """Places window in top left corner of screen.
 
     Qt, on doing this, does not count the window frame. This is being coarsely
     accounted for by setting the position coordinates to values slightly greater
     than 0.
+
+    Arguments:
+      window -- a QWidget
+      width=None -- window width, in case you want to change it (if not passed, not changed)
+      height=None -- window height, in case you want to change it (if not passed, not changed)
     """
-    window.setGeometry(2, 15, window.width(), window.height())
+
+    if width is None:
+        width = window.width()
+    if height is None:
+        height = window.height()
+
+    window.setGeometry(2, 15, width, height)
 
 def place_center(window):
     """Places window in the center of the screen."""

@@ -25,8 +25,6 @@ class XFileAbonds(QMainWindow):
         me = self.editor = a_WFileAbonds.WFileAbonds()
         me.setFont(MONO_FONT)
         me.edited.connect(self.on_edited)
-        if file_abonds is not None:
-            self.editor.load(file_abonds)
         me.setFocus()
         # self.setWindowTitle(title)
         self.setCentralWidget(me)
@@ -63,6 +61,9 @@ class XFileAbonds(QMainWindow):
         rect = QApplication.desktop().screenGeometry()
         self.setGeometry(0, 0, 400, rect.height())
         place_left_top(self)
+
+        if file_abonds is not None:
+            self.load(file_abonds)
 
     def load(self, x):
         assert isinstance(x, FileAbonds)

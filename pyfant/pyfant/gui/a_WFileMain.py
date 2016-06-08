@@ -50,12 +50,19 @@ class WFileMain(QWidget):
         sa.setWidgetResizable(True)
 #        la.addWidget(w)
 
+
+        lw = QVBoxLayout()
+        w.setLayout(lw)
+        # Form layout
         lg = self.formLayout = QGridLayout()
-        w.setLayout(lg)
+        lw.addLayout(lg)
         lg.setMargin(0)
         lg.setVerticalSpacing(4)
         lg.setHorizontalSpacing(5)
-        self.setLayout(lg)
+        lw.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+
+
         # field map: [(label widget, edit widget, field name, short description,
         #              field name color, long description), ...]
         pp = self._map = []

@@ -24,6 +24,6 @@ if __name__ == "__main__":
     m.load(args.fn)
     app = get_QApplication([])
     form = XFileMain()
-    form.show()
     form.load(m)
+    form.show()
     sys.exit(app.exec_())

@@ -325,11 +325,6 @@ class WFileAbonds(QWidget):
             notes.append(x)
 
         d = self.__default_dissoc
-        print "#################################"
-        print "#################################"
-        print "#################################"
-        print "#################################"
-        print d.elems
         for elem, cclog in zip(d.elems, d.cclog):
             if elem not in ele and elem != " H":
                 warnings.append("<b>Warning</b>: element \"%s\", required for "

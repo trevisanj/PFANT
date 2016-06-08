@@ -1,6 +1,7 @@
 __all__ = ["VisPrint", "VisModRecord", "VisModCurves", "VisSpectrum", "VisFileToH",
            "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa",
-           "VisMarcs", "VisMarcsSaveAsMod", "VisGrid", "VisVector"]
+           "VisMarcs", "VisMarcsSaveAsMod", "VisGrid", "VisVector", "VisMain",
+           "VisAbonds"]
 
 from pyfant.data import *
 import numpy as np
@@ -9,6 +10,11 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D  # yes, required (see below)
 # from ..misc import *
 from PyQt4.QtGui import *
+
+# Forms created here (editors) will be kept in this list in order to keep a
+# reference to the Python object, otherwise forms may disappear when the program
+# leaves the method that created the form.
+_forms = []
 
 
 def get_suitable_vis_classes(obj):
@@ -300,35 +306,11 @@ class VisFileToH(Vis):
             # ax.plot(x, _y * (i + 1), np.log10(z), label='a', color='k')
             ax.plot(x, _y * (i + 1), z, label='a', color='k')
         ax.set_xlabel('Wavelength (A)')
-        ax.set_ylabel(LAYER_NUMBER)
+        ax.set_ylabel("Atmospheric layer #")
         # ax.set_zlabel('log10(Intensity)')
         # ax.set_zlabel('?')
         plt.tight_layout()
         plt.show()
-
-
-class VisAtoms(Vis):
-    """Opens the mled window."""
-    input_classes = (FileAtoms,)
-    action = "Open atomic lines editor"
-
-    def _do_use(self, r):
-        from pyfant.gui import XFileAtoms
-        form = XFileAtoms(self.parent_form)
-        form.load(r)
-        form.show()
-
-
-class VisMolecules(Vis):
-    """Opens the ated window."""
-    input_classes = (FileMolecules,)
-    action = "Open molecular lines editor"
-
-    def _do_use(self, r):
-        from pyfant.gui import XFileMolecules
-        form = XFileMolecules(self.parent_form)
-        form.load(r)
-        form.show()
 
 
 class VisOpa(Vis):
@@ -402,3 +384,55 @@ class VisOpa(Vis):
             ax.set_title("%s: %s" % (var, title))
 
         plt.show()
+
+
+
+###############################################################################
+# Editors
+
+class VisAtoms(Vis):
+    """Opens the ated window."""
+    input_classes = (FileAtoms,)
+    action = "Edit using atomic lines editor"
+
+    def _do_use(self, r):
+        from pyfant.gui import XFileAtoms
+        form = XFileAtoms(self.parent_form)
+        _forms.append(form)
+        form.load(r)
+        form.show()
+
+
+class VisMolecules(Vis):
+    """Opens the mled window."""
+    input_classes = (FileMolecules,)
+    action = "Edit using molecular lines editor"
+
+    def _do_use(self, r):
+        from pyfant.gui import XFileMolecules
+        form = XFileMolecules(self.parent_form)
+        _forms.append(form)
+        form.load(r)
+        form.show()
+
+class VisMain(Vis):
+    """Opens the mained window."""
+    input_classes = (FileMain,)
+    action = "Edit using main configuration file editor"
+
+    def _do_use(self, r):
+        from pyfant.gui import XFileMain
+        form = XFileMain(self.parent_form, r)
+        _forms.append(form)
+        form.show()
+
+class VisAbonds(Vis):
+    """Opens the abed window."""
+    input_classes = (FileAbonds,)
+    action = "Edit using abundances file editor"
+
+    def _do_use(self, r):
+        from pyfant.gui import XFileAbonds
+        form = XFileAbonds(self.parent_form, r)
+        _forms.append(form)
+        form.show()

@@ -17,15 +17,12 @@ class XFileMain(QMainWindow):
     """
 
     def __init__(self, parent=None, file_main=None):
-        ## State variables
         QMainWindow.__init__(self, parent)
         self.flag_changed = False
         self.save_dir = "."
         me = self.editor = a_WFileMain.WFileMain()
         me.setFont(MONO_FONT)
         me.edited.connect(self.on_edited)
-        if file_main is not None:
-            self.editor.load(file_main)
         me.setFocus()
         # self.setWindowTitle(title)
         self.setCentralWidget(me)
@@ -42,6 +39,11 @@ class XFileMain(QMainWindow):
         ac = m.addAction("&Quit")
         ac.setShortcut("Ctrl+Q")
         ac.triggered.connect(self.close)
+
+        place_left_top(self, 500, 768)
+
+        if file_main is not None:
+            self.load(file_main)
 
     def load(self, x):
         assert isinstance(x, FileMain)
