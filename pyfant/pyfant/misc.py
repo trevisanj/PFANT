@@ -51,7 +51,8 @@ import random
 import logging
 import inspect
 import sys
-from matplotlib import rc
+from matplotlib import rc, pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
 import re
 from argparse import *
 from PyQt4.QtCore import *
@@ -632,6 +633,14 @@ def format_BLB():
     rc('xtick', labelsize=14)
     rc('ytick', labelsize=14)
     rc('axes', linewidth=2)
+    rc('xtick.major', size=4, width=2)
+    rc('xtick.minor', size=2, width=2)
+    rc('ytick.major', size=4, width=2)
+    rc('ytick.minor', size=2, width=2)
+    # plt.minorticks_on()
+    #minorLocator = AutoMinorLocator()
+    # plt.tick_params(which="both", width=2)
+    # plt.tick_params(which="major", width=2)
     #rc('text', usetex=True)
 
 

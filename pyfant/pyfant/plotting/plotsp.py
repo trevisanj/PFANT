@@ -50,7 +50,7 @@ def plot_spectra(ss, title=None, ymin=None):
         xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
 
         if i == n-1:
-            ax.set_xlabel('Wavelength')
+            ax.set_xlabel('WaveLength ($\AA$)')
             span = xmax - xmin
             ax.set_xlim([xmin - span * _T, xmax + span * _T])
 
