@@ -14,10 +14,15 @@ from pyfant import *
 from .a_XText import *
 import matplotlib.pyplot as plt
 import datetime
+import numpy as np
+from threading import Lock
 
 COLOR_LOADED = "#ADFFB4"  # light green
 COLOR_LOAD_ERROR = "#FFB5B5"  # light red
 COLOR_DIR = "#FFFFB5"  # light yellow
+# Maximum size of file to be loaded automatically (in bytes)
+MAX_FILESIZE_AUTO_LOAD = 1.2*2**20
+
 
 @froze_it
 class _FileProps(object):
@@ -45,10 +50,10 @@ class _FileProps(object):
         """Returns None if background not to be changed, otherwise a QColor."""
         if not self.isfile:
             return QColor(COLOR_DIR)
-        elif self.flag_error:
-            return QColor(COLOR_LOAD_ERROR)
         elif not self.flag_scanned:
             return None
+        elif self.flag_error:
+            return QColor(COLOR_LOAD_ERROR)
         return QColor(COLOR_LOADED)
 
     def get_summary(self):
@@ -111,6 +116,8 @@ class LoadThread(QThread):
 #         else:
 #             vis_class().use(props.f)
 
+###############################################################################
+
 
 class XExplorer(QMainWindow):
     """Window to explore files in directory from PFANT point of view.
@@ -131,7 +138,9 @@ class XExplorer(QMainWindow):
         # # More internals
         self.__flag_loading = False
         self.__flag_visualizing = False
+        self.__flag_updating_table = False
         self.__load_thread = None
+        self.__lock_propss = MyLock(flag_verbose=False)
 
         # # Timer to watch for changed files
         t = self.timer_changed = QTimer()
@@ -267,16 +276,6 @@ class XExplorer(QMainWindow):
         elif obj == self.listWidgetVis:
             return check_return_space(event, self.__visualize)
         return False
-    #
-    # def eventFilter(self, source, event):
-    #     if event.type() == QEvent.KeyPress:
-    #         if event.key() == Qt.Key_Return:
-    #             if source == self.tableWidget:
-    #                 self.tableWidget.editItem(self.tableWidget.currentItem())
-    #                 return True
-    #     return False
-
-
 
     def closeEvent(self, event):
         if self.flag_close_mpl_plots_on_close:
@@ -284,13 +283,6 @@ class XExplorer(QMainWindow):
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Slots
-
-    # def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
-    #                                       previousColumn):
-    #     print "QUAL EH A LINHA", self.tableWidget.currentRow()
-    #     return
-    #     self.__update_info()
-
 
     def on_tableWidget_cellDoubleClicked(self, row, col):
         # Assuming that double-click will also select the row of the file to load
@@ -305,15 +297,17 @@ class XExplorer(QMainWindow):
             raise
 
     def selectionChanged(self, *args):
+        if self.__flag_updating_table:
+            return
         self.__update_info()
 
     def on_load(self, _=None):
         if not self.__flag_loading:
-            pp = self.__get_current_propss()
+            pp = self.__lock_get_current_propss()
             if len(pp) == 1 and not pp[0].isfile:
                 self.set_dir(pp[0].filepath)
             else:
-                self.__load()
+                self.__lock_load()
 
     def on_refresh(self, _=None):
         if not self.__flag_loading:
@@ -338,55 +332,9 @@ class XExplorer(QMainWindow):
                 ShowError("%s: %s" % (MSG, str(e)))
 
     def on_timer_changed_timeout(self):
-        print "%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%.%."
         if self.__flag_loading:
             return
-
-        tw = self.tableWidget
-        ir = tw.currentRow()
-        ic = tw.currentColumn()
-
-        flag_refresh = False
-        filepaths = [p.filepath for p in self.__propss]
-        for p in reversed(self.__propss):
-            try:
-                t = os.path.getmtime(p.filepath)
-
-                if t != p.mtime:
-                    # File has been changed, mark it as non scanned
-                    p.flag_scanned = False
-                    p.mtime = t
-                    flag_refresh = True
-                    print "CCCCCCCCCCCCCCCCCCCCCCCHANGED", p.filepath, t, p.mtime
-            except OSError, E:
-                if E.errno == 2:
-                    # File no longer exists
-                    if p.row_index <= ir:
-                        ir -= 1
-                    self.__propss.remove(p)
-                    flag_refresh = True
-                    print "DDDDDDDDDDDDDDDDELETED", p.filepath
-                else:
-                    raise
-
-        # Newly created files will be added at the bottom and without any sorting
-        for filepath in glob.glob(os.path.join(self.dir, "*")):
-            if os.path.isfile(filepath):
-                if not filepath in filepaths:
-                    p = _FileProps()
-                    p.isfile = os.path.isfile(filepath)
-                    p.filepath = filepath
-                    p.mtime = os.path.getmtime(filepath)
-                    self.__propss.append(p)
-                    flag_refresh = True
-
-        if flag_refresh:
-            self.__update_table()
-            self.__update_info()
-            if ir < tw.rowCount():
-                # Tries to re-position cursor at cell
-                tw.setCurrentCell(ir, ic)
-
+        self.__lock_check_dir_contents_changed()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
@@ -395,80 +343,14 @@ class XExplorer(QMainWindow):
     def __update_window_title(self):
         self.setWindowTitle("PFANT Explorer -- %s" % self.dir)
 
-    def __get_file_list(self, isfile):
-
-
-        all_ = [os.path.join(self.dir, x) for x in os.listdir(self.dir)]
-        dirs = filter(os.path.isdir, all_)
-
     def set_dir(self, dir_):
-        """Sets set of lines."""
-        self.dir = os.path.relpath(dir_)
-        self.__propss = []
+        """Sets directory, auto-loads, updates all GUI contents."""
 
-        all_ = glob.glob(os.path.join(self.dir, "*"))
-        dirs = filter(os.path.isdir, all_)
-        dirs.sort()
-        files = filter(os.path.isfile, all_)
-        files.sort()
-        dir_ = [os.path.join(self.dir, "..")]+dirs+files
-
-        for i, f in enumerate(dir_):
-            filepath = f  #os.path.join(self.dir, f)
-            p = _FileProps()
-            p.isfile = os.path.isfile(filepath)
-            p.filepath = filepath
-            p.mtime = os.path.getmtime(filepath)
-            self.__propss.append(p)
-        self.__update_table()
+        self.__lock_set_dir(dir_)
+        self.__lock_auto_load()
+        self.__lock_update_table()
         self.__update_info()
         self.__update_window_title()
-
-    def __update_table(self):
-        n = len(self.__propss)
-
-        t = self.tableWidget
-        ResetTableWidget(t, n, 3)
-        t.setHorizontalHeaderLabels(["filename", "size", "date modified"])
-
-        for i, p in enumerate(self.__propss):
-            p.row_index = i
-
-            items = []
-            info = os.stat(p.filepath)
-            filename = os.path.basename(p.filepath)
-            # if not p.isfile:
-            #     filename = "["+filename+"]"
-            item = QTableWidgetItem(filename)
-            items.append(item)
-            t.setItem(i, 0, item)
-            item = QTableWidgetItem(str(info.st_size))
-            items.append(item)
-            item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-
-            t.setItem(i, 1, item)
-            item = QTableWidgetItem(time.ctime(info.st_mtime))
-            items.append(item)
-            t.setItem(i, 2, item)
-
-            color = p.get_color()
-            if color is not None:
-                for item in items:
-                    item.setBackground(color)
-
-        t.resizeColumnsToContents()
-
-    def __get_current_props(self):
-        if len(self.__propss) > 0:
-            return self.__propss[self.tableWidget.currentRow()]
-        return None
-
-    def __get_current_propss(self):
-        ii = self.tableWidget.selectedIndexes()
-        i_rows = set([idx.row() for idx in ii])
-        # print "AS LINHA", i_rows
-        pp = [self.__propss[i_row] for i_row in i_rows]
-        return pp
 
     def __get_current_vis_class(self):
         return self.__vis_classes[self.listWidgetVis.currentRow()]
@@ -479,7 +361,7 @@ class XExplorer(QMainWindow):
         z = self.listWidgetVis
         z.clear()
         classes = self.__vis_classes = []
-        pp = self.__get_current_propss()
+        pp = self.__lock_get_current_propss()
         if len(pp) == 1:
             p = pp[0]
             # Visualization options
@@ -522,34 +404,25 @@ class XExplorer(QMainWindow):
     def __set_status_text(self, text):
         self.labelStatus.setText(text)
 
-    def __load(self):
-        pp = self.__get_current_propss()
-        if len(pp) > 0:
-            self.__flag_loading = True
-            self.__set_status_text("Loading file(s), please wait...")
-            t = self.__load_thread = LoadThread(self, pp)
-            t.finished.connect(self.__finished_loading)
-            t.start()
-
     def __visualize(self):
         self.__flag_visualizing = True
         self.__set_status_text("Creating visualization, please wait...")
         try:
             vis_class = self.__get_current_vis_class()
             if vis_class == "ovl":
-                pp = self.__get_current_propss()
+                pp = self.__lock_get_current_propss()
                 spectra = [p.f.spectrum for p in pp]
                 plot_spectra_overlapped(spectra)
             elif vis_class == "sta":
-                pp = self.__get_current_propss()
+                pp = self.__lock_get_current_propss()
                 spectra = [p.f.spectrum for p in pp]
                 plot_spectra(spectra)
             elif vis_class == "modgrid":
-                pp = self.__get_current_propss()
+                pp = self.__lock_get_current_propss()
                 models = [p.f for p in pp]
                 plot_mod_grid(models)
             else:
-                props = self.__get_current_props()
+                props = self.__lock_get_current_props()
                 if vis_class == "txt":
                     w = XText(self, open(props.filepath, "r").read(), props.filepath)
                     w.show()
@@ -576,3 +449,172 @@ class XExplorer(QMainWindow):
     # def __finished_visualizing(self):
     #     self.__set_status_text("")
     #     self.__flag_visualizing = False
+
+    def __get_auto_size(self):
+        # Returns the number of bytes that will be automatically analysed.
+        return 100.*2**20  # 100 MB
+
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
+    # Internals that use lock
+
+    def __lock_update_table(self):
+        self.__flag_updating_table = True
+        try:
+            with self.__lock_propss:
+                n = len(self.__propss)
+
+                t = self.tableWidget
+                ResetTableWidget(t, n, 3)
+                t.setHorizontalHeaderLabels(["filename", "size", "date modified"])
+
+                for i, p in enumerate(self.__propss):
+                    p.row_index = i
+
+                    items = []
+                    info = os.stat(p.filepath)
+                    filename = os.path.basename(p.filepath)
+                    # if not p.isfile:
+                    #     filename = "["+filename+"]"
+                    item = QTableWidgetItem(filename)
+                    items.append(item)
+                    t.setItem(i, 0, item)
+                    item = QTableWidgetItem(str(info.st_size))
+                    items.append(item)
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+                    t.setItem(i, 1, item)
+                    item = QTableWidgetItem(time.ctime(info.st_mtime))
+                    items.append(item)
+                    t.setItem(i, 2, item)
+
+                    color = p.get_color()
+#                    if color is None:
+#                        color = t.palette().color(t.backgroundRole())
+                    if color is not None:
+                        for item in items:
+                            item.setBackground(color)
+
+            t.resizeColumnsToContents()
+        finally:
+            self.__flag_updating_table = False
+
+    def __lock_get_current_props(self):
+        with self.__lock_propss:
+            if len(self.__propss) > 0:
+                return self.__propss[self.tableWidget.currentRow()]
+            return None
+
+    def __lock_get_current_propss(self):
+        with self.__lock_propss:
+            ii = self.tableWidget.selectedIndexes()
+            i_rows = set([idx.row() for idx in ii])
+            # print "AS LINHA", i_rows
+            pp = [self.__propss[i_row] for i_row in i_rows]
+            return pp
+
+    def __lock_check_dir_contents_changed(self):
+        with self.__lock_propss:
+            tw = self.tableWidget
+            ir = tw.currentRow()
+            ic = tw.currentColumn()
+
+            flag_refresh = False
+            filepaths = [p.filepath for p in self.__propss]
+
+            for p in reversed(self.__propss):
+                try:
+                    t = os.path.getmtime(p.filepath)
+
+                    if t != p.mtime:
+                        # File has been changed, mark it as non scanned
+                        p.flag_scanned = False
+                        p.mtime = t
+                        flag_refresh = True
+                except OSError, E:
+                    if E.errno == 2:
+                        # File no longer exists
+                        if p.row_index <= ir:
+                            ir -= 1
+                        self.__propss.remove(p)
+                        flag_refresh = True
+                    else:
+                        raise
+
+            # Newly created files will be added at the bottom and without any sorting
+            for filepath in glob.glob(os.path.join(self.dir, "*")):
+                if os.path.isfile(filepath):
+                    if not filepath in filepaths:
+                        p = _FileProps()
+                        p.isfile = os.path.isfile(filepath)
+                        p.filepath = filepath
+                        p.mtime = os.path.getmtime(filepath)
+                        self.__propss.append(p)
+                        flag_refresh = True
+
+        if flag_refresh:
+            self.__lock_update_table()
+            self.__update_info()
+            if ir < tw.rowCount():
+                # Tries to re-position cursor at cell
+                tw.setCurrentCell(ir, ic)
+
+    def __lock_set_dir(self, dir_):
+        with self.__lock_propss:
+            self.dir = os.path.relpath(dir_)
+            self.__propss = []
+
+            all_ = glob.glob(os.path.join(self.dir, "*"))
+            dirs = filter(os.path.isdir, all_)
+            dirs.sort()
+            files = filter(os.path.isfile, all_)
+            files.sort()
+            dir_ = [os.path.join(self.dir, "..")] + dirs + files
+
+            for i, f in enumerate(dir_):
+                filepath = f  # os.path.join(self.dir, f)
+                p = _FileProps()
+                p.isfile = os.path.isfile(filepath)
+                p.filepath = filepath
+                p.mtime = os.path.getmtime(filepath)
+                self.__propss.append(p)
+
+    def __lock_auto_load(self):
+        dir_ = glob.glob(os.path.join(self.dir, "*"))
+#        dir_ = [x for x in dir_ if os.path.isfile(x)]
+        sizes = [os.path.getsize(x) for x in dir_ if os.path.isfile(x)]
+        sizes.sort()
+        acc = np.cumsum(sizes)
+        threshold = self.__get_auto_size()
+        ww = np.where(acc <= threshold)
+        if len(ww[0]) == 0:
+            return
+        max_size = min(sizes[ww[0][-1]], MAX_FILESIZE_AUTO_LOAD)
+        # np.savetxt("brinca", sizes)
+        # total = sum(sizes)
+        # percentile = threshold/total
+        #max_size = np.percentile(sizes, percentile)*100
+        get_python_logger().info("AUTO LOAD: max file size: %g" %
+                                  (max_size,))
+        pp = []
+        with self.__lock_propss:
+            for p in self.__propss:
+                if p.isfile and os.path.getsize(p.filepath) <= max_size:
+                    pp.append(p)
+
+        if len(pp) > 0:
+            self.__set_status_text("Loading all files sized <= %g kB..." % (max_size/1024))
+            self.__flag_loading = True
+            t = self.__load_thread = LoadThread(self, pp)
+            t.finished.connect(self.__finished_loading)
+            t.start()
+
+    def __lock_load(self):
+        pp = self.__lock_get_current_propss()
+        if len(pp) > 0:
+            with self.__lock_propss:
+                self.__flag_loading = True
+                self.__set_status_text("Loading file(s), please wait...")
+                t = self.__load_thread = LoadThread(self, pp)
+                t.finished.connect(self.__finished_loading)
+                t.start()

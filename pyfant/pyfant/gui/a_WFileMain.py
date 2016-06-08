@@ -39,8 +39,16 @@ class WFileMain(QWidget):
 
 
         # ### Widget + grid layout to be first in splitter
-        w = self.c33441 = QWidget()
-        sp.addWidget(w)
+        sa = self.c33441 = QScrollArea()
+        sp.addWidget(sa)
+        sa.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        sa.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        # Widget that will be handled by the scrollable area
+        w = self.scrollWidget = QWidget()
+        sa.setWidget(self.scrollWidget)
+        sa.setWidgetResizable(True)
+#        la.addWidget(w)
 
         lg = self.formLayout = QGridLayout()
         w.setLayout(lg)

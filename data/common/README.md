@@ -9,26 +9,32 @@ molecules.dat  | molecular lines (21 molecules) [1]
 absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
-grid.mod       | grid of MARCS atmospheric models (*)
-grid.moo       | grid of MARCS atmospheric models with opacities included (*)
+grid.mod       | grid of MARCS atmospheric models (see grid specs below)
+grid.moo       | grid of MARCS atmospheric models with opacities included (see grid specs below).
+               | Please download this file from [this location]
+               | (https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)], as 
+               | this file has more than 100 MB and therefore cannot be stored in GitHub.
 
 
-(*) grid specifications:
+## Atmospheric model grid specifications
+
+The files grid.mod and grid.moo were created using `create-grid.py` having as input a bulk of
+".mod" and ".opa" (the latter for grid.moo only) files downloaded from the MARCS website
+(http://marcs.astro.uu.se/). At this site, when you are prompted to fill in a download form, here
+is how the choices were made:
+
   - Chemical composition class: Moderately CN-cycled
   - Model geometry: Spherical
   - Microturbulence parameter: 2
   - Mass: 1
   - Teff: 3500 .. 7000
-  - Glog: 0 .. 3
+  - Glog: 0 .. 3.5
   - [Fe/H]: -2 .. 0.25
 
-**Note** If you want to use MARCS opacities, please download file `grid.moo` from [this location]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)].
-This file has more than 100 MB and therefore cannot be stored in github.
+## Using these files
 
-**Create symbolic links to these files** 
-
-instead of making copies of them:
+We suggested that you create symbolic links to these files instead of making copies of them
+(unless you want to change some file). To do so, type the following on the console:
 
 ```shell
 link.py common

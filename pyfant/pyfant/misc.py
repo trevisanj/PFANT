@@ -62,6 +62,7 @@ import numpy as np
 import shutil
 from threading import Lock, current_thread
 import glob
+import traceback
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -865,16 +866,17 @@ def GetCurrentFunctionName(k=0):
 class MyLock(object):
     """Lock with verbosing, helps to find deadlocks"""
 
-    def __init__(self, name=None, flagVerbose=False):
+    def __init__(self, name=None, flag_verbose=False):
         if name is None:
             name = random_name()
         self.name = name
-        self.flagVerbose = flagVerbose
+        self.flag_verbose = flag_verbose
         self.__lock = Lock()
 
     def acquire(self, *args):
         if self.__lock.locked():
             self.__log("Tried to lock, but is already locked!!")
+            get_python_logger().info("\n".join(traceback.format_stack()))
         else:
             pass
             # self.__log("Will acquire lock")
@@ -891,7 +893,7 @@ class MyLock(object):
     __enter__ = acquire
 
     def __log(self, s):
-        if self.flagVerbose:
+        if self.flag_verbose:
             get_python_logger().info("--- MyLock %s --- %s (caller: %s; thread: %s)" %
             (self.name, s, GetCurrentFunctionName(2), current_thread().name))
 
