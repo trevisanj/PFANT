@@ -264,7 +264,7 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
-![](figures/spec-conf-norm.png)
+![](figures/spec-cont-norm.png)
 
 Figure TODO - plots showing calculated spectrum; continuum; and normalized spectrum.
 
