@@ -15,7 +15,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "is_text_file", "get_QApplication", "copy_default_file", "MyLock",
  "get_data_dir", "get_data_subdirs", "get_star_data_subdirs", "SESSION_PREFIX_SINGULAR",
  "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
- "symlink", "print_skipped"]
+ "symlink", "print_skipped", "format_legend"]
 
 
 # # todo cleanup
@@ -643,6 +643,10 @@ def format_BLB():
     # plt.tick_params(which="major", width=2)
     #rc('text', usetex=True)
 
+def format_legend(leg):
+    """Sets some formatting options in a matplotlib legend object."""
+    rect = leg.get_frame()
+    rect.set_linewidth(2.)
 
 # #################################################################################################
 # # PyQt-related routines

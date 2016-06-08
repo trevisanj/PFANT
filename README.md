@@ -253,7 +253,7 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 
 opens a plot window.
 
-Now let's vary FWHM and plot the six different convolved spectra.
+Now let's vary FWHM and plot the six different convolved spectra (Figure TODO).
 
 ```shell
 nulbad --fwhm 0.06
@@ -264,9 +264,10 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
-![](figures/spec-cont-norm.png)
+![](figures/fwhms.png)
 
-Figure TODO - plots showing calculated spectrum; continuum; and normalized spectrum.
+Figure TODO - plots showing zoomed spectra where the effects of different FWHMs
+(0.06 to 0.14) for convolution with Gaussian can be contemplated.
 
 ### 3.2.5 Running the four calculation steps at once
 
@@ -438,7 +439,10 @@ flux.norm         | normalized flux
 flux.spec         | un-normalized flux (multiplied by 10**5)
 flux.cont         | continuum flux (multiplied by 10**5)
 
-# TODO stacked plots
+![](figures/spec-cont-norm.png)
+
+Figure TODO - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
+calculated spectrum; continuum; normalized spectrum.
 
 ##### 4.2.3.2 Files created by `nulbad`
 

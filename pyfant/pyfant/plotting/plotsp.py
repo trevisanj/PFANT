@@ -1,7 +1,7 @@
 """
 Routines used by plot-spectra.py
 """
-from pyfant import format_BLB, cut_spectrum, Spectrum, get_python_logger
+from pyfant import *
 import matplotlib.pyplot as plt
 import math
 import matplotlib.backends.backend_pdf
@@ -84,7 +84,7 @@ def plot_spectra_overlapped(ss, title=None, ymin=None):
 
         ax.plot(s.x, s.y, label=s.filename)
 
-    plt.xlabel('Wavelength')
+    plt.xlabel('Wavelength ($\AA$)')
     xmin, xmax, ymin_, ymax, xspan, yspan = _calc_max_min(ss)
     if ymin is None:
         ymin = ymin_
@@ -92,7 +92,9 @@ def plot_spectra_overlapped(ss, title=None, ymin=None):
     plt.ylim([ymin-yspan*_T, ymax+yspan*_T])
 
 
-    plt.legend(loc=0)
+    leg = plt.legend(loc=0)
+    format_legend(leg)
+
     plt.tight_layout()
     if title is not None:
         f.canvas.set_window_title(title)
@@ -136,7 +138,8 @@ def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf', ymin=None):
         xspan = lambda1-lambda0
         ax.set_xlim([lambda0 - xspan * _T, lambda1 + xspan * _T])
         ax.set_ylim([ymin - yspan * _T, ymax + yspan * _T])
-        plt.legend(loc=0)
+        leg = plt.legend(loc=0)
+        format_legend(leg)
         plt.tight_layout()
         pdf.savefig(fig)
         plt.close()
