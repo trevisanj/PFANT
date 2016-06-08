@@ -93,8 +93,8 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 
 In either case, there should be a directory named PFANT on your drive now.
 
-There is an additional data file that needs to be downloaded from a different
-location, because it is too big to be stored on GitHub.
+:zap: There is an additional data file that needs to be downloaded from a different
+location, because it is too big to be stored on GitHub (> 100 MB).
 Please download file `grid.moo` from [here]
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
 and save it as `PFANT/data/common/grid.moo`.
@@ -124,9 +124,10 @@ Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
 
 Add `PFANT/pyfant` to your PYTHONPATH.
 
-#### 2.4.1 Linux users: bonus: `PFANT/add-paths.py` ...
+#### 2.4.1 Linux users
 
-... tries to automatically apply these path settings by modifying your `home/.bashrc` or `home/.cshrc`:
+Linux users may try the script `PFANT/add-paths.py`, which tries to automatically
+apply the path settings by modifying your `home/.bashrc` or `home/.cshrc`:
 
 Bash shell:
 ```shell
@@ -140,7 +141,9 @@ Tcsh shell:
 
 ## <a name=S3></a>3 Operation
 
-**Aims**
+Section 3 is a short tutorial that will take you through common operational steps.
+
+**Aims for this tutorial**
   - calculate a synthetic spectrum;
   - convolve with Gaussian functions of different FWHMs;
   - visualize results.
@@ -149,7 +152,7 @@ Tcsh shell:
 
 Input data contists of:
   1. stellar parameters (temperature, chemical abundances etc.) and running settings (_e.g._, calculation wavelength interval);
-  2. star-independent data: line lists, atmospheric model grid, partition functions etc. that are unlikely to be modified.
+  2. star-independent physical data: line lists, atmospheric model grid, partition functions etc. that are unlikely to be modified.
      We refer to these as "common" data.
 
 First let's create a new directory:
@@ -161,30 +164,32 @@ cd mystar
 
 #### 3.1.1 Stellar data and running settings
 
-The following displays a menu allowing you to choose among a few stars.
+The following displays a menu allowing you to choose among a few stars:
 
 ```shell
 copy-star.py
 ```
 
-The following files will be copied into your local directory:
+After running this, the following files will be copied into your local directory:
   - main.dat: main configuration
   - abonds.dat: chemical abundances
   
 #### 3.2 Common data
 
-For these data, we will create links instead of copying these files. This can be
+For these data, we will create links instead of copying the files. This can be
 done by running the following:
 
 ```shell
-> link.py
+link.py
+```
+```
 Create links to /home/[...]/PFANT/data/common (Y/n)? Y
 .
 .
 .
 ```
 
-These are the links that should appear in your directory now:
+The following links that should appear in your directory now:
   - absoru2.dat
   - atoms.dat
   - grid.moo
@@ -195,18 +200,19 @@ These are the links that should appear in your directory now:
  
 ### 3.2 Spectral synthesis
 
-Spectral synthesis involves a few steps, as shown in Figure 1.
+Spectral synthesis involves a few steps, as shown in Figure 2.
 These steps will be described in the next subsections.
 
 ```
 +------------------+   +---------------+   +----------+   +---------+
-|innewmarcs        |   |hydro2         |   |pfant     |   |nulbad   |
+| innewmarcs       |   | hydro2        |   | pfant    |   | nulbad  |
+| ==========       |   | ======        |   | =====    |   | ======  |
 |   interpolate the|   |         create|   | calculate|   | convolve|
 |       atmospheric|-->| hydrogen lines|-->| synthetic|-->|     with|
-|             model|   |       profiles|   |  spectrum|   | gaussian|
+|             model|   |       profiles|   |  spectrum|   | Gaussian|
 +------------------+   +---------------+   +----------+   +---------+
 ```
-Figure 1 - Summarized workflow showing the Fortran program names and what they do.
+Figure 2 - Summarized workflow showing the Fortran program names and what they do.
 
 #### 3.2.1 Interpolate the stellar atmospheric model
 
