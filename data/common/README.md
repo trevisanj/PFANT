@@ -2,6 +2,10 @@
 
 Data files that are independent from the star.
 
+
+:zap: Please download grid.moo from [this location](https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c), as this file is more than 100 MB large and therefore cannot be hosted by GitHub.
+
+
 filename       | description
 ---------------|-------------
 atoms.dat      | atomic lines (from 3688.331 to 8194.824 angstrom) (original name was `atomgrade.dat`)
@@ -10,9 +14,7 @@ absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
 grid.mod       | grid of MARCS atmospheric models (see grid specs below)
-grid.moo       | grid of MARCS atmospheric models with opacities included (see grid specs below).
-               | Please download grid.moo from [this location](https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c), as this file is more than 100 MB large and therefore cannot be hosted by GitHub.
-
+grid.moo       | grid of MARCS atmospheric models with opacities included (see grid specs below)
 
 ## Atmospheric model grid specifications
 
