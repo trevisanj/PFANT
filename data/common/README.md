@@ -11,7 +11,7 @@ hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
 grid.mod       | grid of MARCS atmospheric models (see grid specs below)
 grid.moo       | grid of MARCS atmospheric models with opacities included (see grid specs below).
-               | Please download grid.moo from [this location](https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)], as this file has more than 100 MB and therefore cannot be stored in GitHub.
+               | Please download grid.moo from [this location](https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c), as this file is more than 100 MB large and therefore cannot be hosted by GitHub.
 
 
 ## Atmospheric model grid specifications
