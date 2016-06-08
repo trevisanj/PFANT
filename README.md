@@ -204,13 +204,13 @@ Spectral synthesis involves a few steps, as shown in Figure 2.
 These steps will be described in the next subsections.
 
 ```
-+------------------+   +---------------+   +----------+   +---------+
-| innewmarcs       |   | hydro2        |   | pfant    |   | nulbad  |
-| ==========       |   | ======        |   | =====    |   | ======  |
-|   interpolate the|   |         create|   | calculate|   | convolve|
-|       atmospheric|-->| hydrogen lines|-->| synthetic|-->|     with|
-|             model|   |       profiles|   |  spectrum|   | Gaussian|
-+------------------+   +---------------+   +----------+   +---------+
++-------------------+   +----------------+   +-----------+   +----------+
+| innewmarcs        |   | hydro2         |   | pfant     |   | nulbad   |
+| ==========        |   | ======         |   | =====     |   | ======   |
+|   interpolate the |   |         create |   | calculate |   | convolve |
+|       atmospheric |-->| hydrogen lines |-->| synthetic |-->|     with |
+|             model |   |       profiles |   |  spectrum |   | Gaussian |
++-------------------+   +----------------+   +-----------+   +----------+
 ```
 Figure 2 - Summarized workflow showing the Fortran program names and what they do.
 
