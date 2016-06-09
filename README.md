@@ -48,7 +48,7 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 To use PFANT, you will need to:
 
 1. Install the software pre-requisites
-2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release
+2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or clone the repository
 3. Compile the Fortran source code
 4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH and add `PFANT/pyfant` to your PYTHONPATH
 
@@ -239,7 +239,17 @@ pfant
 
 creates files flux.norm, flux.spec, flux.cont
 
-# TODO Maybe place small image here
+```shell
+plot-spectra.py --rows 1 flux.spec flux.cont flux.norm
+```
+
+# TODO Explorer load all files
+
+# TODO Figure 1-row 3-column image here
+
+# TODO add resource above to plot-spectra
+
+# TODO enhance explorer.py, create window to set up parameters for plot-spectra
 
 #### 3.2.4 Convolve synthetic spectrum with Gaussian function
 
@@ -253,9 +263,8 @@ creates flux.norm.nulbad.0.120
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-opens a plot window.
 
-Now let's vary FWHM and plot the six different convolved spectra (Figure TODO).
+# TODO Now let's try several FWHMs and see which one produces a spectrum that fits best with an observed spectrum (Figure TODO).
 
 ```shell
 nulbad --fwhm 0.06
@@ -266,10 +275,11 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
+# TODO or ... explorer.py select click select click ok
+
 ![](figures/fwhms.png)
 
-Figure TODO - plots showing zoomed spectra where the effects of different FWHMs
-(0.06 to 0.14) for convolution with Gaussian can be contemplated.
+Figure TODO - plots showing zoomed convolved spectra with FWHM = 0.06 to 0.14.
 
 ### 3.2.5 Running the four calculation steps at once
 
@@ -277,19 +287,29 @@ Figure TODO - plots showing zoomed spectra where the effects of different FWHMs
 run4.py --fwhm 0.12
 ```
 
-### 3.3 Graphical interface
+### 3.2.6 Checking all available programs
+
+```shell
+scripts.py
+```
+
+```
+TODO print just a few lines... or maybe all of them.
+.
+.
+.
+```
+
+### 3.3 Graphical user interface (GUI)
 
 #### 3.3.1 ```x.py```: PFANT launcher
-
-`x.py` is a graphical user interface (GUI) that concentrates editing of stellar parameters
-and running settings, spectral synthesis, and visualization.
 
   1. Starting again from scratch:
 
 ```shell
 mkdir mystar
 cd mystar
-copy-star.py sun-asplund-2009
+copy-star.py sun
 link.py common
 ```
 
@@ -298,6 +318,8 @@ then
 ```shell
 x.py
 ```
+
+Now, for example:
 
   2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 ("multi mode") will be explained later.
 
@@ -309,20 +331,16 @@ x.py
   5. Double-click on "flux.norm". Note that it turns green.
 
   6. Double-click on "Plot spectrum" (spectrum appears).
+ 
+#### 3.3.2 `explorer.py`: PFANT Explorer
 
+```shell
+explorer.py
+```
 
-  
-### 3.4 If you get lost ...
-
-Yeah we agree that there is a lot of things to remember, but maybe not so many.
-
-:bulb: All programs have a `-h` or `--help` option.
-
-:bulb: Use `scripts.py` to get a list of all available Python programs.
-
-:bulb: Use `explorer.py` to browse through/edit/visualize data files.
-  
-  
+This file-explorer-like application provides visualization/editing abilities for a number
+of relevant file types.
+ 
   
 ## 4 <a name=S4></a>Reference section
 
@@ -369,22 +387,14 @@ input/output files.
 
 ### 4.2 Input/output data files
 
-All file types described in this section are supported by `explorer.py` with varying visualization/editing abilities.
-
 #### 4.2.1 Stellar data and running settings
 
 
- Default name     | --option          | Description                    
-------------------|-------------------|---------------------------------------------------
-main.dat          | --fn_main         | main configuration.
-                  |                   | Edit using any text editor, `mained.py`, `explorer.py`, or `x.py`
-                  |                   | See Figure TODO
-abonds.dat        | --fn_abonds       | chemical abundances.
-                  |                   | Edit using any text editor, `abed.py`, `explorer.py`, or `x.py`
-                  |                   | See Figure TODO
-dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
-                  |                   | This file is optional and can be created using `abed.py` if needed.
-                  |                   | Edit using any text editor.
+ Default name     | Description                    
+------------------|----------------------------------------------------
+main.dat          | main configuration file containing all stellar except abundances (Figure TODO).
+abonds.dat        | chemical abundances
+dissoc.dat        | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
 
 ![](figures/small-main.dat.png)
 
@@ -401,11 +411,11 @@ absoru2.dat       | --fn_absoru2      | absorption info for continuum calculatio
 atoms.dat         | --fn_atoms        | atomic line list
 molecules.dat     | --fn_molecules    | molecular line list
 hmap.dat          |                   | hydrogen line list.
-partit.dat        | --fn_partit       | partition functions.
-grid.mod or       |                   | MARCS atmospheric model grid (models only)
-                  |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
-grid.moo          |                   | MARCS atmospheric model grid (models with opacities)
-                  |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
+partit.dat        | --fn_partit       | partition functions
+grid.mod or       | --fn_modgrid      | MARCS atmospheric model grid (models only).
+                  |                   | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
+grid.moo          | --fn_moo          | MARCS atmospheric model grid (models with opacities).
+                  |                   | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
 
 ![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
 Figure TODO -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
@@ -473,7 +483,7 @@ pfant --opa T --absoru F
 Using MARCs coefficients is now the default behaviour, so to calculate the continuum as before, you will need to call pfant as follows:
 
 ```shell
-pfant --opt F --absoru T
+pfant --opa F --absoru T
 ```
 
 ### 5.2 Converting "VALD3 extended" format atomic lines
