@@ -22,9 +22,9 @@ PFANT
 
 ## <a name=S1></a>1 Introduction
 
-PFANT is stellar spectral synthesis software written in Fortran.
+PFANT is a stellar spectral synthesis software written in Fortran.
 
-The development started with F Spite et al. in France in the year of 1967 and has been upgraded since then (Figure 1).
+The development started with F Spite et al. in France in the year of 1967 (Figure 1).
 
 ```
  |
@@ -37,7 +37,7 @@ The development started with F Spite et al. in France in the year of 1967 and ha
 t|
  V
 ```
-Figure 1 - PFANT timeline  
+Figure 1 - PFANT timeline [(Coelho et al. 2005)][1]
 
 # 2 <a name=S2></a>Installation
 
@@ -506,7 +506,6 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
     interested in changing the source code)
   - [`pyfant` Python package overview](pyfant/README.md) 
 
+# 7 References
 
-```
--x-x-x-x-x
-```
+[1]: Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. (2005). A library of high resolution synthetic stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & Astrophysics, 443(2), 735-746.
