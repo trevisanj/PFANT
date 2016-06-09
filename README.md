@@ -56,7 +56,7 @@ This section will take you through these steps.
 
 ### 2.1 Installing required software
 
-Depending on your OS platform, you may have some of the following already installed.
+Depending on your OS platform, you may have some of the following  installed already.
 
 #### 2.1.1 Standalone applications
 
@@ -93,7 +93,7 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 
   b. clone the github repository: `git clone https://github.com/trevisanj/PFANT`
 
-In either case, there should be a directory named PFANT on your drive now.
+In either case, you should now have a directory named PFANT on your disk.
 
 :zap: There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (> 100 MB).
@@ -172,9 +172,9 @@ The following displays a menu allowing you to choose among a few stars:
 copy-star.py
 ```
 
-After running this, the following files will be copied into your local directory:
-  - main.dat: main configuration
-  - abonds.dat: chemical abundances
+After running this, the following files will be copied into the *mystar* directory:
+  - *main.dat*: main configuration
+  - *abonds.dat*: chemical abundances
   
 #### 3.2 Common data
 
@@ -192,18 +192,17 @@ Create links to /home/[...]/PFANT/data/common (Y/n)? Y
 ```
 
 The following links that should appear in your directory now:
-  - absoru2.dat
-  - atoms.dat
-  - grid.moo
-  - hmap.dat
-  - molecules.dat
-  - partit.dat
+  - *absoru2.dat*
+  - *atoms.dat*
+  - *grid.moo*
+  - *hmap.dat*
+  - *molecules.dat*
+  - *partit.dat*
   
  
 ### 3.2 Spectral synthesis
 
-Spectral synthesis involves a few steps, as shown in Figure 2.
-These steps will be described in the next subsections.
+Spectral synthesis involves a few steps (Figure 2), which will be described in the next subsections.
 
 ```
 +-------------------+   +----------------+   +-----------+   +----------+
@@ -230,7 +229,7 @@ will create two files: modeles.mod and modeles.opa.
 hydro2
 ```
 
-will create files such as: thalpha, thbeta, thgamma etc.
+will create files such as: thalpha (Figure TODO), thbeta, thgamma etc.
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -240,6 +239,7 @@ pfant
 
 creates files flux.norm, flux.spec, flux.cont
 
+# TODO Maybe place small image here
 
 #### 3.2.4 Convolve synthetic spectrum with Gaussian function
 
