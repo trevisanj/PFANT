@@ -19,6 +19,8 @@ PFANT
   3. [Operation](#S3)
   4. [Reference](#S4)
   5. [Other topics](#S5)
+  6. [Links](#S6)
+  7. [References](#S7)
 
 ## <a name=S1></a>1 Introduction
 
@@ -37,7 +39,7 @@ The development started with F Spite et al. in France in the year of 1967 (Figur
 t|
  V
 ```
-Figure 1 - PFANT timeline [(Coelho et al. 2005)][1]
+Figure 1 - PFANT timeline [(Coelho et al. 2005)](#R1)
 
 # 2 <a name=S2></a>Installation
 
@@ -508,4 +510,4 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
 
 # 7 References
 
-[1]: Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. (2005). A library of high resolution synthetic stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & Astrophysics, 443(2), 735-746.
+[1]<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. (2005). A library of high resolution synthetic stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & Astrophysics, 443(2), 735-746.
