@@ -343,8 +343,6 @@ of relevant file types.
 
 ### 4.1 Spectral synthesis workflow
 
-Figure TODO. 
-
 
 ```
                     +---------------------------+---------------------main.dat
@@ -395,11 +393,10 @@ dissoc.dat        | dissociation equilibrium data. This file is optional, and ca
 
 ![](figures/small-main.dat.png)
 
+Figure TODO - representaion of a file _main.dat_. The black color shows the characters
+that are the actual parts of the file.
 
-# TODO annotate main.dat with descriptions, mu diagram, llzero-llfin-aint diagram
 
-
- 
 #### 4.2.2 Common data files
 
  Default name     | --option          | Description                    
