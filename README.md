@@ -229,7 +229,7 @@ will create two files: modeles.mod and modeles.opa.
 hydro2
 ```
 
-will create files such as: thalpha (Figure TODO), thbeta, thgamma etc.
+will create files such as: thalpha (Figure 9), thbeta, thgamma etc.
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -412,11 +412,12 @@ _hmap.dat_        |                   | hydrogen line list.
 _partit.dat_      | --fn_partit       | partition functions
 _grid.mod_ or     | --fn_modgrid      | MARCS atmospheric model grid (models only).
                   |                   | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
-_grid.moo_        | --fn_moo          | MARCS atmospheric model grid (models with opacities).
+_grid.moo_        | --fn_moo          | MARCS atmospheric model grid (models with opacities) (Figure 7).
                   |                   | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
 
 ![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
-Figure TODO -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
+
+Figure 7 -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
 there are atmospheric models in grid.moo. The uppermost point are the Sun coordinates.
 
 #### 4.2.3 Files created by the Fortran programs
@@ -425,13 +426,13 @@ there are atmospheric models in grid.moo. The uppermost point are the Sun coordi
 
  Default name     | --option          | Description                    
 ------------------|-------------------|---------------------------------------------------
-_modeles.mod_     | --fn_modeles      | atmospheric model (binary file)
-_modeles.opa_     | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format)
+_modeles.mod_     | --fn_modeles      | atmospheric model (binary file) (Figure 8A)
+_modeles.opa_     | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B)
 
 
 ![](figures/modeles.png)
 
-Figure TODO -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.opa  
+Figure 8 -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.opa  
 
 ##### 4.2.3.2 Files created by `hydro2`
 
@@ -439,7 +440,8 @@ Figure TODO -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modele
 (filenames are given in hmap.dat).
 
 ![](figures/thalpha.png)
-Figure TODO -- Example of H-alpha line profile calculated by `hydro2`.  
+
+Figure 9 -- Example of H-alpha line profile calculated by `hydro2`.  
 
 ##### 4.2.3.3 Files created by `pfant`
 
@@ -451,7 +453,7 @@ _flux.cont_       | continuum flux (multiplied by 10**5)
 
 ![](figures/spec-cont-norm.png)
 
-Figure TODO - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
+Figure 10 - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
 calculated spectrum; continuum; normalized spectrum.
 
 ##### 4.2.3.4 Files created by `nulbad`
@@ -517,4 +519,7 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
 
 # 7 References
 
-[1]<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. (2005). A library of high resolution synthetic stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & Astrophysics, 443(2), 735-746.
+[1]<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. 
+(2005). A library of high resolution synthetic stellar spectra from 300 nm to 
+1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & 
+Astrophysics, 443(2), 735-746.
