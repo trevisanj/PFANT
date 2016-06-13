@@ -294,39 +294,12 @@ a listing of all available programs:
 scripts.py
 ```
 
-```
-/------------------------------------------------------------------\
-| Scripts in /home/x/Documents/projects/pfant/PFANT/pyfant/scripts |
-\------------------------------------------------------------------/
-abed.py .......... Abundances file editor.
-ated.py .......... Atomic lines file editor
-copy-star.py ..... Copies stellar data files (such as main.dat, abonds.dat,
-                   dissoc.dat) to local directory.
-create-grid.py ... Model Grid Creator
-cut-atoms.py ..... Cuts atomic lines file to wavelength interval specified.
-cut-molecules.py . Cuts molecular lines file to wavelength interval specified.
-cut-spectrum.py .. Cuts spectrum file to wavelength interval specified. Saved in
-                   2-column format.
-explorer.py ...... PFANT Explorer - list, visualize and edit data files.
-link.py .......... Creates symbolic links to PFANT data files as an alternative
-                   to copying these (sometimes large) files into local
-                   directory.
-mained.py ........ Main configuration file editor.
-mled.py .......... Molecular lines file editor.
-plot-spectra.py .. Plot spectra to screen or PDF.
-run4.py .......... Runs the four Fortran binaries in sequence: innewmarcs,
-                   hydro2, pfant, nulbad.
-save-pdf.py ...... Looks for file "flux.norm" inside directories session-* and
-                   saves one figure per page in a PDF file.
-scripts.py ....... Lists scripts in PFANT/pyfant/scripts directory.
-tune-zinf.py ..... Tunes the zinf parameter for each atomic line in atomic lines
-                   file.
-vald3-to-atoms.py  Converts VALD3 atomic/molecular lines file to PFANT atomic
-                   lines file.
-x.py ............. PFANT Launcher
-```
-
 ### 3.3 Graphical user interface (GUI)
+
+The GUI, which is still under development (but works!), may be more comfortable for
+beginners than command-line operation. It concentrates almost all the operations
+(change parameters, run synthesis, visualize results) in a single application, but has also
+some extra features such as the "multi mode".
 
 #### 3.3.1 ```x.py```: PFANT launcher
 
@@ -351,7 +324,7 @@ Now, for example:
 
   3. Once you are done making changes, click on "Submit single job" button. A new window named "Runnables Manager" opens.
 
-  4. When the "Status" column shows "**nulbad finished**", double-click on the table item
+  4. When the "Status" column shows "nulbad finished", double-click on the table item
      ("PFANT explorer" window opens).
 
   5. Double-click on "flux.norm". Note that it turns green.
