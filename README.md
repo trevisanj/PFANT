@@ -19,12 +19,14 @@ PFANT
   3. [Operation](#S3)
   4. [Reference](#S4)
   5. [Other topics](#S5)
+  6. [Links](#S6)
+  7. [References](#S7)
 
 ## <a name=S1></a>1 Introduction
 
-PFANT is stellar spectral synthesis software written in Fortran.
+PFANT is a stellar spectral synthesis software written in Fortran.
 
-The development started with F Spite et al. in France in the year of 1967 and has been upgraded since then (Figure 1).
+The development started with F Spite et al. in France in the year of 1967 (Figure 1).
 
 ```
  |
@@ -37,7 +39,7 @@ The development started with F Spite et al. in France in the year of 1967 and ha
 t|
  V
 ```
-Figure 1 - PFANT timeline  
+Figure 1 - PFANT timeline [(Coelho et al. 2005)](#R1)
 
 # 2 <a name=S2></a>Installation
 
@@ -46,7 +48,7 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 To use PFANT, you will need to:
 
 1. Install the software pre-requisites
-2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release
+2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or clone the repository
 3. Compile the Fortran source code
 4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH and add `PFANT/pyfant` to your PYTHONPATH
 
@@ -54,7 +56,7 @@ This section will take you through these steps.
 
 ### 2.1 Installing required software
 
-Depending on your OS platform, you may have some of the following already installed.
+Depending on your OS platform, you may have some of the following  installed already.
 
 #### 2.1.1 Standalone applications
 
@@ -91,7 +93,7 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 
   b. clone the github repository: `git clone https://github.com/trevisanj/PFANT`
 
-In either case, there should be a directory named PFANT on your drive now.
+In either case, you should now have a directory named PFANT on your disk.
 
 :zap: There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (> 100 MB).
@@ -170,9 +172,9 @@ The following displays a menu allowing you to choose among a few stars:
 copy-star.py
 ```
 
-After running this, the following files will be copied into your local directory:
-  - main.dat: main configuration
-  - abonds.dat: chemical abundances
+After running this, the following files will be copied into the *mystar* directory:
+  - *main.dat*: main configuration
+  - *abonds.dat*: chemical abundances
   
 #### 3.2 Common data
 
@@ -190,18 +192,17 @@ Create links to /home/[...]/PFANT/data/common (Y/n)? Y
 ```
 
 The following links that should appear in your directory now:
-  - absoru2.dat
-  - atoms.dat
-  - grid.moo
-  - hmap.dat
-  - molecules.dat
-  - partit.dat
+  - *absoru2.dat*
+  - *atoms.dat*
+  - *grid.moo*
+  - *hmap.dat*
+  - *molecules.dat*
+  - *partit.dat*
   
  
 ### 3.2 Spectral synthesis
 
-Spectral synthesis involves a few steps, as shown in Figure 2.
-These steps will be described in the next subsections.
+Spectral synthesis involves a few steps (Figure 2), which will be described in the next subsections.
 
 ```
 +-------------------+   +----------------+   +-----------+   +----------+
@@ -228,7 +229,7 @@ will create two files: modeles.mod and modeles.opa.
 hydro2
 ```
 
-will create files such as: thalpha, thbeta, thgamma etc.
+will create files such as: thalpha (Figure TODO), thbeta, thgamma etc.
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -238,6 +239,17 @@ pfant
 
 creates files flux.norm, flux.spec, flux.cont
 
+```shell
+plot-spectra.py --rows 1 flux.spec flux.cont flux.norm
+```
+
+# TODO Explorer load all files
+
+# TODO Figure 1-row 3-column image here
+
+# TODO add resource above to plot-spectra
+
+# TODO enhance explorer.py, create window to set up parameters for plot-spectra
 
 #### 3.2.4 Convolve synthetic spectrum with Gaussian function
 
@@ -251,9 +263,8 @@ creates flux.norm.nulbad.0.120
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-opens a plot window.
 
-Now let's vary FWHM and plot the six different convolved spectra (Figure TODO).
+# TODO Now let's try several FWHMs and see which one produces a spectrum that fits best with an observed spectrum (Figure TODO).
 
 ```shell
 nulbad --fwhm 0.06
@@ -264,10 +275,11 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
+# TODO or ... explorer.py select click select click ok
+
 ![](figures/fwhms.png)
 
-Figure TODO - plots showing zoomed spectra where the effects of different FWHMs
-(0.06 to 0.14) for convolution with Gaussian can be contemplated.
+Figure TODO - plots showing zoomed convolved spectra with FWHM = 0.06 to 0.14.
 
 ### 3.2.5 Running the four calculation steps at once
 
@@ -275,19 +287,29 @@ Figure TODO - plots showing zoomed spectra where the effects of different FWHMs
 run4.py --fwhm 0.12
 ```
 
-### 3.3 Graphical interface
+### 3.2.6 Checking all available programs
+
+```shell
+scripts.py
+```
+
+```
+TODO print just a few lines... or maybe all of them.
+.
+.
+.
+```
+
+### 3.3 Graphical user interface (GUI)
 
 #### 3.3.1 ```x.py```: PFANT launcher
-
-`x.py` is a graphical user interface (GUI) that concentrates editing of stellar parameters
-and running settings, spectral synthesis, and visualization.
 
   1. Starting again from scratch:
 
 ```shell
 mkdir mystar
 cd mystar
-copy-star.py sun-asplund-2009
+copy-star.py sun
 link.py common
 ```
 
@@ -296,6 +318,8 @@ then
 ```shell
 x.py
 ```
+
+Now, for example:
 
   2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 ("multi mode") will be explained later.
 
@@ -307,20 +331,16 @@ x.py
   5. Double-click on "flux.norm". Note that it turns green.
 
   6. Double-click on "Plot spectrum" (spectrum appears).
+ 
+#### 3.3.2 `explorer.py`: PFANT Explorer
 
+```shell
+explorer.py
+```
 
-  
-### 3.4 If you get lost ...
-
-Yeah we agree that there is a lot of things to remember, but maybe not so many.
-
-:bulb: All programs have a `-h` or `--help` option.
-
-:bulb: Use `scripts.py` to get a list of all available Python programs.
-
-:bulb: Use `explorer.py` to browse through/edit/visualize data files.
-  
-  
+This file-explorer-like application provides visualization/editing abilities for a number
+of relevant file types.
+ 
   
 ## 4 <a name=S4></a>Reference section
 
@@ -367,22 +387,14 @@ input/output files.
 
 ### 4.2 Input/output data files
 
-All file types described in this section are supported by `explorer.py` with varying visualization/editing abilities.
-
 #### 4.2.1 Stellar data and running settings
 
 
- Default name     | --option          | Description                    
-------------------|-------------------|---------------------------------------------------
-main.dat          | --fn_main         | main configuration.
-                  |                   | Edit using any text editor, `mained.py`, `explorer.py`, or `x.py`
-                  |                   | See Figure TODO
-abonds.dat        | --fn_abonds       | chemical abundances.
-                  |                   | Edit using any text editor, `abed.py`, `explorer.py`, or `x.py`
-                  |                   | See Figure TODO
-dissoc.dat        | --fn_dissoc       | dissociation equilibrium data.
-                  |                   | This file is optional and can be created using `abed.py` if needed.
-                  |                   | Edit using any text editor.
+ Default name     | Description                    
+------------------|----------------------------------------------------
+main.dat          | main configuration file containing all stellar except abundances (Figure TODO).
+abonds.dat        | chemical abundances
+dissoc.dat        | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
 
 ![](figures/small-main.dat.png)
 
@@ -399,11 +411,11 @@ absoru2.dat       | --fn_absoru2      | absorption info for continuum calculatio
 atoms.dat         | --fn_atoms        | atomic line list
 molecules.dat     | --fn_molecules    | molecular line list
 hmap.dat          |                   | hydrogen line list.
-partit.dat        | --fn_partit       | partition functions.
-grid.mod or       |                   | MARCS atmospheric model grid (models only)
-                  |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
-grid.moo          |                   | MARCS atmospheric model grid (models with opacities)
-                  |                   | Created using `create-grid.py` from a bulk of models downloaded from the MARCS website
+partit.dat        | --fn_partit       | partition functions
+grid.mod or       | --fn_modgrid      | MARCS atmospheric model grid (models only).
+                  |                   | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
+grid.moo          | --fn_moo          | MARCS atmospheric model grid (models with opacities).
+                  |                   | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
 
 ![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
 Figure TODO -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
@@ -471,7 +483,7 @@ pfant --opa T --absoru F
 Using MARCs coefficients is now the default behaviour, so to calculate the continuum as before, you will need to call pfant as follows:
 
 ```shell
-pfant --opt F --absoru T
+pfant --opa F --absoru T
 ```
 
 ### 5.2 Converting "VALD3 extended" format atomic lines
@@ -506,7 +518,6 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
     interested in changing the source code)
   - [`pyfant` Python package overview](pyfant/README.md) 
 
+# 7 References
 
-```
--x-x-x-x-x
-```
+[1]<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. (2005). A library of high resolution synthetic stellar spectra from 300 nm to 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & Astrophysics, 443(2), 735-746.
