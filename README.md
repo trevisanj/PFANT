@@ -258,7 +258,7 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 ```
 
 
-# TODO Now let's try several FWHMs and see which one produces a spectrum that fits best with an observed spectrum (Figure TODO).
+Now let's try several FWHMs and plot them all (Figure TODO):
 
 ```shell
 nulbad --fwhm 0.06
@@ -277,21 +277,53 @@ Figure TODO - plots showing zoomed convolved spectra with FWHM = 0.06 to 0.14.
 
 ### 3.2.5 Running the four calculation steps at once
 
+The script `run4.py` is provided for convenience. 
+The following is almost equivalent to steps 3.2.1-3.2.4:
+
 ```shell
 run4.py --fwhm 0.12
 ```
 
-### 3.2.6 Checking all available programs
+### 3.2.6 Checking all available Python programs
+
+There are several Python programs in the directory _PFANT/pyfant/scripts_. To get
+a listing of all available programs:
+
 
 ```shell
 scripts.py
 ```
 
 ```
-TODO print just a few lines... or maybe all of them.
-.
-.
-.
+/------------------------------------------------------------------\
+| Scripts in /home/x/Documents/projects/pfant/PFANT/pyfant/scripts |
+\------------------------------------------------------------------/
+abed.py .......... Abundances file editor.
+ated.py .......... Atomic lines file editor
+copy-star.py ..... Copies stellar data files (such as main.dat, abonds.dat,
+                   dissoc.dat) to local directory.
+create-grid.py ... Model Grid Creator
+cut-atoms.py ..... Cuts atomic lines file to wavelength interval specified.
+cut-molecules.py . Cuts molecular lines file to wavelength interval specified.
+cut-spectrum.py .. Cuts spectrum file to wavelength interval specified. Saved in
+                   2-column format.
+explorer.py ...... PFANT Explorer - list, visualize and edit data files.
+link.py .......... Creates symbolic links to PFANT data files as an alternative
+                   to copying these (sometimes large) files into local
+                   directory.
+mained.py ........ Main configuration file editor.
+mled.py .......... Molecular lines file editor.
+plot-spectra.py .. Plot spectra to screen or PDF.
+run4.py .......... Runs the four Fortran binaries in sequence: innewmarcs,
+                   hydro2, pfant, nulbad.
+save-pdf.py ...... Looks for file "flux.norm" inside directories session-* and
+                   saves one figure per page in a PDF file.
+scripts.py ....... Lists scripts in PFANT/pyfant/scripts directory.
+tune-zinf.py ..... Tunes the zinf parameter for each atomic line in atomic lines
+                   file.
+vald3-to-atoms.py  Converts VALD3 atomic/molecular lines file to PFANT atomic
+                   lines file.
+x.py ............. PFANT Launcher
 ```
 
 ### 3.3 Graphical user interface (GUI)

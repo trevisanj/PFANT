@@ -645,8 +645,8 @@ def format_BLB():
 
 def format_legend(leg):
     """Sets some formatting options in a matplotlib legend object."""
-    rect = leg.get_frame()
-    rect.set_linewidth(2.)
+    # rect = leg.get_frame()
+    # rect.set_linewidth(2.)
 
 # #################################################################################################
 # # PyQt-related routines
