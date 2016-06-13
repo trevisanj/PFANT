@@ -269,8 +269,6 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
-# TODO or ... explorer.py select click select click ok
-
 ![](figures/fwhms.png)
 
 Figure TODO - plots showing zoomed convolved spectra with FWHM = 0.06 to 0.14.
