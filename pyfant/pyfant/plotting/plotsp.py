@@ -14,32 +14,51 @@ __all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf",
 _T = 0.02  # percentual amount of extra space on left, right, top, bottom of graphics
 _FAV_COLOR = 'k'  # "favourite color" for single-spectrum plots
 
-def plot_spectra(ss, title=None, ymin=None):
+def plot_spectra(ss, title=None, ymin=None, num_rows=None):
     """
     Plots one or more stacked in subplots sharing same x-axis.
 
     Arguments:
       ss -- list of Spectrum objects
       title=None -- window title
-      ymin -- (optional) force mininum y-value
+      ymin -- (optional) force mininum y-value. If not passed, ymin is
+              calculated every subplot
+      num_rows=None -- (optional) number of rows for subplot grid. If not passed,
+        num_rows will be the number of plots, and the number of columns will be 1.
+        If passed, number of columns is calculated automatically.
+
     """
 
     n = len(ss)
+    assert n > 0, "ss is empty"
+    if not num_rows:
+        num_rows = n
+        num_cols = 1
+    else:
+        num_cols = int(np.ceil(float(n)/num_rows))
 
     format_BLB()
-    if n == 1:
-        fig = plt.figure()
-    else:
-        fig, axarr = plt.subplots(n, sharex=True)
+    # if n == 1:
+    #     fig = plt.figure()
+    # else:
+    fig, axarr = plt.subplots(num_rows, num_cols, sharex=True, squeeze=False)
 
     xmin = 1e38
     xmax = -1e38
-    for i, s in enumerate(ss):
+    i, j = -1, num_cols
+    for s in ss:
+        j += 1
+        if j >= num_cols:
+            i += 1
+            if i >= num_rows:
+                break
+            j = 0
         assert isinstance(s, Spectrum)
-        if n == 1:
-            ax = plt.gca()
-        else:
-            ax = axarr[i]
+        # if n == 1:
+        #     ax = axarr
+        # else:
+        print " O I E O J", i, j
+        ax = axarr[i, j]
 
         ax.plot(s.x, s.y)
         ymin_, ymax = ax.get_ylim()
@@ -49,10 +68,12 @@ def plot_spectra(ss, title=None, ymin=None):
 
         xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
 
-        if i == n-1:
-            ax.set_xlabel('WaveLength ($\AA$)')
-            span = xmax - xmin
-            ax.set_xlim([xmin - span * _T, xmax + span * _T])
+    span = xmax - xmin
+    ax.set_xlim([xmin - span * _T, xmax + span * _T])
+
+    for j in range(num_cols):
+        ax = axarr[num_rows-1, j]
+        ax.set_xlabel('WaveLength ($\AA$)')
 
     plt.tight_layout()
     if title is not None:

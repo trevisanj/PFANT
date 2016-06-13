@@ -4,7 +4,7 @@ Plot spectra to screen or PDF.
 
 It can work in four different modes:
 
-a) stack of sub-plots, one for each spectrum (default mode)
+a) grid of sub-plots, one for each spectrum (default mode)
    Example:
    plot-spectra.py flux.norm.nulbad measured.fits
 
@@ -67,10 +67,13 @@ if __name__ == "__main__":
      help='PDF output file name (used only if --pieces)')
     parser.add_argument('--ymin', nargs='?', default='(automatic)', type=str,
      help='Minimum value for y-axis')
+    parser.add_argument('-r', '--num_rows', nargs='?', default='(automatic)', type=str,
+     help='Number of rows in subplot grid')
 
     args = parser.parse_args()
 
     ymin = None if args.ymin == "(automatic)" else float(args.ymin)
+    num_rows = None if args.num_rows == "(automatic)" else int(args.num_rows)
 
     # Compiles list of file names.
     # Each item in args.fn list may have wildcards, and these will be expanded
@@ -103,8 +106,6 @@ if __name__ == "__main__":
             plot_spectra_pages_pdf(ss, pdf_filename=args.fn_output, ymin=ymin)
         else:
             if args.ovl:
-                f = plot_spectra_overlapped
+                plot_spectra_overlapped(ss, "", ymin=ymin)
             else:
-                f = plot_spectra
-            f(ss, "", ymin=ymin)
-            # plt.show()
+                plot_spectra(ss, "", ymin=ymin, num_rows=num_rows)
