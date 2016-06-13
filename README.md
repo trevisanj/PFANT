@@ -243,13 +243,7 @@ creates files flux.norm, flux.spec, flux.cont
 plot-spectra.py --rows 1 flux.spec flux.cont flux.norm
 ```
 
-# TODO Explorer load all files
-
-# TODO Figure 1-row 3-column image here
-
-# TODO add resource above to plot-spectra
-
-# TODO enhance explorer.py, create window to set up parameters for plot-spectra
+![](figures/spec-cont-norm0.png)
 
 #### 3.2.4 Convolve synthetic spectrum with Gaussian function
 

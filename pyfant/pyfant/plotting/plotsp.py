@@ -73,7 +73,7 @@ def plot_spectra(ss, title=None, ymin=None, num_rows=None):
 
     for j in range(num_cols):
         ax = axarr[num_rows-1, j]
-        ax.set_xlabel('WaveLength ($\AA$)')
+        ax.set_xlabel('Wavelength ($\AA$)')
 
     plt.tight_layout()
     if title is not None:

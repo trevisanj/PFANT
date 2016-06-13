@@ -442,7 +442,7 @@ class XFileMolecules(QMainWindow):
                     pi.axis = ax = self.figure.gca()
                     ax.clear()
                     ax.plot(x, y, 'k'+('' if len(x) > 1 else 'x'))
-                    ax.set_xlabel('WaveLength ($\AA$)')
+                    ax.set_xlabel('Wavelength ($\AA$)')
                     ax.set_ylabel(y_label)
 
                     # x-limits
