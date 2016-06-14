@@ -98,8 +98,9 @@ class WFileAbonds(QWidget):
 
         w = self.csslff = QWidget()
         sp.addWidget(w)
-        l = self.c49378 = QHBoxLayout(w)
+        l = self.c49378 = QVBoxLayout(w)
         l.setMargin(0)
+        l.setSpacing(1)
 
         x = self.c88888 = QLabel("<b>Errors</b>")
         l.addWidget(x)

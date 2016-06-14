@@ -289,7 +289,7 @@ The following is almost equivalent to steps 3.2.1-3.2.4:
 run4.py --fwhm 0.12
 ```
 
-:bulb: `run4.py` creates a directory named _session-&lt;n&gt; where it saves temporary
+`run4.py` creates a directory named _session-&lt;n&gt; where it saves temporary
 files. It may be useful to check the log files in this directory if you encounter any
 errors during program execution.
 
@@ -397,12 +397,13 @@ input/output files.
 
 ### 4.2 Input/output data files
 
-THe different file types in the pipeline will be explained in the next subsections. 
-
+The different file types in the pipeline will be explained in the next subsections.
+ 
 #### 4.2.1 Stellar data and running settings
 
 Table 2 -- stellar and running settings data files. The "--options" column shows the
-command-line options that can be used to change the 
+command-line options that can be used to change the name for a particular file, _e.g._,
+`run4.py --fn_main main-other.dat`.
 
  Default name     | --option    | Description                    
 ------------------|-------------|----------------------------------------------------

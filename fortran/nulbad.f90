@@ -404,7 +404,7 @@ contains
     40 continue
     ifd = i-1
     p_ift = 1 + 2*ifd
-    write(lll, *) 'Number of point of Gaussian curve: '//int2str(p_ift)
+    write(lll, *) 'Number of points of Gaussian curve: '//int2str(p_ift)
     call log_info(lll)
 
     if(p_ift .gt. MAX_P_IFT)  then

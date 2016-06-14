@@ -5,7 +5,8 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR", "COLOR_WARNING",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
-           "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector"]
+           "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector",
+           "VerticalLabel"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -43,7 +44,18 @@ def enc_name(name, color=COLOR_DESCR):
 INITIALIZES_SUN = "Initializes fields with default parameters (Sun)"
 PARAMS_INVALID = "Can't save, invalid parameter values(s)!"
 LLZERO_LLFIN = "The calculation interval for the synthetic spectrum is given by "\
-      "["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"]"
+  "["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"]."\
+"""
+<pre>
+          aint
+          &lt;--&gt;
+
+----[----|----|----|----|-]------->
+    |                     |       wavelength (angstrom)
+    llzero                llfin
+</pre>
+"""
+
 DESCR_PTDISK = """
 This option is used to simulate a spectrum acquired
 out of the center of the star disk.<br><br>
@@ -279,3 +291,32 @@ class ErrorCollector(object):
             return "No errors were found."
         return "\n".join(oo)
 
+
+
+class VerticalLabel(QLabel):
+    """Label that draws itself vertically.
+
+    This was created to be used at lateral title:
+      - It paints in bold
+      - No HTML support
+    """
+    def paintEvent(self, evt):
+        painter = QPainter(self)
+        painter.setPen(Qt.black)
+        painter.setBrush(Qt.Dense1Pattern)
+        painter.rotate(90)
+        painter.font().setWeight(QFont.Bold)
+
+        # td = QTextDocument()
+        # td.setHtml(self.text())
+        # td.drawContents(painter)
+
+        painter.drawText(0,0, self.text())
+
+    def minimumSizeHint(self):
+        s = QLabel.minimumSizeHint(self)
+        return QSize(s.height(), s.width())
+
+    def sizeHint(self):
+        s = QLabel.sizeHint()
+        return QSize(s.height(), s.width())
