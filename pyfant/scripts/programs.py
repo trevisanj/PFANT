@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
     print ""
-    print "Program directories:"
+    print "Search directories:"
     print "  Fortran: %s" % os.path.join(get_pfant_dir(), "fortran", "bin")
     print "  Python: %s" % os.path.join(get_pfant_dir(), "pyfant", "scripts")
 

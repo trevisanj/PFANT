@@ -3082,9 +3082,6 @@ contains
     !
     ! innewmarcs, pfant
     !
-    call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
-     'Whether or not to include MARCS opacity coefficients (absorption and scattering)<br>'//&
-     IND//'in the continuum')
     call add_option('ip', 'fn_opa', ' ', .true., 'file name', config_fn_opa, &
      'MARCS ".opa" opacities file (most probably created by innewmarcs by interpolation,<br>'//&
      ' or downloaded from MARCS website)')
@@ -3132,6 +3129,12 @@ contains
      'Interval length per iteration (angstrom)')
     call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator', .false.)
+
+
+    ! better to group the opacity-related options
+    call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
+     'Whether or not to include MARCS opacity coefficients (absorption and scattering)<br>'//&
+     IND//'in the continuum')
     call add_option('p', 'abs',' ', .true., 'T/F', logical2str(config_abs), &
      'Whether or not to include MARCS *absorption* coefficients in the continuum.<br>'//&
      'This option only has effect if --opa is True.')

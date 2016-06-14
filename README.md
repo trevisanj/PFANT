@@ -2,10 +2,10 @@
 This directory
 
 PFANT
-├── art                     Graphic material made in PowerPoint, GIMP etc.
-├── fortran                 Fortran source code and binaries
-├── pyfant                  Python package and scripts                        
-└── data                    Some stellar data, spectral lines etc.
+├── figures . Graphic material made in PowerPoint, GIMP etc.
+├── fortran . Fortran source code and binaries
+├── pyfant .. Python package and scripts                        
+└── data .... Some stellar data, spectral lines etc.
 ```
 
 # Welcome
@@ -98,7 +98,7 @@ location, because it is too big to be stored on GitHub (> 100 MB).
 Please download it from [here]
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
 and save it as `PFANT/data/common/grid.moo`.
-This file contains a 3D grid of MARCS atmospheric models with opacities included.
+This file contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
 ### 2.3 Compiling the Fortran source code.
 
@@ -512,27 +512,51 @@ Table 6 - Files created by `hydro2`
 _flux.norm.nulbad.&lt;fwhm&gt;_ | --fn_cv           | convolved flux
 
 
-## 5 <a name=S5></a> Other topics
+## 5 <a name=S5></a> Miscellanea how-to
 
-### 5.1 Adding MARCS opacities to the continuum (experimental!)
+### 5.1 Continuous opacities: selecting between PFANT and MARCS coefficients
 
-PFANT can now use continuum opacities from the MARCS website 
-(http://marcs.astro.uu.se/).
+The following is now the default mode of operation:
 
 ```shell
-pfant --opa T --absoru F
+innewmarcs --opa T
 ```
 
-  - switches on using absorption and scattering coefficients from MARCS model in modeles.opa
-  - switches off pfant internal calculation of these coefficients
-  
-#### Update
+```shell
+pfant --opa T --abs T --sca T --absoru F
+```
 
-Using MARCs coefficients is now the default behaviour, so to calculate the continuum as before, you will need to call pfant as follows:
+Meaning:
+
+```
+--opa T ...... switches on MARCS opacities
+               (may be of two types: absorption and scattering)
+--abs T ...... switches on MARCS absorption
+--sca T ...... switches on MARCS scattering
+--absoru F ... switches off PFANT internal calculation
+```
+
+For `innewmarcs`, "--opa T" causes the creation of an additional file _modeles.opa_
+besides _modeles.mod_.
+
+Accordingly, `pfant` will require these two files in order to run.
+
+**Operating without MARCS opacities**
+
+```shell
+innewmarcs --opa F
+```
 
 ```shell
 pfant --opa F --absoru T
 ```
+
+**Adding PFANT and MARCS coefficients together**
+
+```shell
+pfant --opa T --absoru T
+```
+
 
 ### 5.2 Converting "VALD3 extended" format atomic lines
 
@@ -561,14 +585,17 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
 `cut-atoms.py` (call these scripts with `--help` option).
 
 
-# 6 Other readings in this repository
+# 6 Links
   - [Fortran source code overview](fortran/README.md) (for Fortran developers
+    interested in changing the source code)
+  - [](fortran/README.md) (for Fortran developers
     interested in changing the source code)
   - [`pyfant` Python package overview](pyfant/README.md) 
 
+
 # 7 References
 
-[1]<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. 
+**(Coelho et al. 2005)**<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. 
 (2005). A library of high resolution synthetic stellar spectra from 300 nm to 
 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & 
 Astrophysics, 443(2), 735-746.
