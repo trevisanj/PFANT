@@ -262,7 +262,7 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 ```
 
 
-Now let's try several FWHMs and plot them all (Figure 4):
+Now let's try several FWHMs and plot them all:
 
 ```shell
 nulbad --fwhm 0.06
@@ -272,6 +272,9 @@ nulbad --fwhm 0.12
 nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
+
+This should generate a plot with several curves overlapped. Figure 4 shows a zoomed
+area of this plot.
 
 ![](figures/fwhms.png)
 
@@ -286,22 +289,30 @@ The following is almost equivalent to steps 3.2.1-3.2.4:
 run4.py --fwhm 0.12
 ```
 
-### 3.2.6 Checking all available Python programs
+:bulb: `run4.py` creates a directory named _session-&lt;n&gt; where it saves temporary
+files. It may be useful to check the log files in this directory if you encounter any
+errors during program execution.
 
-There are several Python programs in the directory _PFANT/pyfant/scripts_. To get
-a listing of all available programs:
+### 3.2.6 Where you can find documentation
 
+:bulb: Apart from this README, there are several _README.md_ files in other PFANT subdirectories
+that contain relevant information for their directory;
 
-```shell
-scripts.py
-```
+:bulb: All programs can be invoked with a "--help" option;
+
+:bulb: To print a listing of all available Python programs (with descriptions): `scripts.py`;
+
+:bulb: Stellar parameters and running setting are described in the graphical user
+interfaces where these parameters can be edited, such as `x.py`;
+
+:bulb: In the source code.
 
 ### 3.3 Graphical user interface (GUI)
 
 The GUI, which is still under development (but works!), may be more comfortable for
 beginners than command-line operation. It concentrates almost all the operations
-(change parameters, run synthesis, visualize results) in a single application, but has also
-some extra features such as the "multi mode".
+(change parameters, run synthesis, visualize results) in a single application.
+It also has some extra features such as the "multi mode".
 
 #### 3.3.1 ```x.py```: PFANT launcher
 
@@ -386,14 +397,18 @@ input/output files.
 
 ### 4.2 Input/output data files
 
+THe different file types in the pipeline will be explained in the next subsections. 
+
 #### 4.2.1 Stellar data and running settings
 
+Table 2 -- stellar and running settings data files. The "--options" column shows the
+command-line options that can be used to change the 
 
- Default name     | Description                    
-------------------|----------------------------------------------------
-_main.dat _       | main configuration file containing all stellar except abundances (Figure 6).
-_abonds.dat_      | chemical abundances
-_dissoc.dat_      | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
+ Default name     | --option    | Description                    
+------------------|-------------|----------------------------------------------------
+_main.dat_        | --fn_main   | main configuration file containing all stellar parameters except abundances (Figure 6).
+_abonds.dat_      | --fn_abonds | chemical abundances
+_dissoc.dat_      | --fn_dissoc | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
 
 ![](figures/small-main.dat.png)
 
@@ -403,17 +418,17 @@ that are the actual parts of the file.
 
 #### 4.2.2 Common data files
 
- Default name     | --option          | Description                    
-------------------|-------------------|---------------------------------------------------
-_absoru2.dat_     | --fn_absoru2      | absorption info for continuum calculation.
-_atoms.dat_       | --fn_atoms        | atomic line list
-_molecules.dat_   | --fn_molecules    | molecular line list
-_hmap.dat_        |                   | hydrogen line list.
-_partit.dat_      | --fn_partit       | partition functions
-_grid.mod_ or     | --fn_modgrid      | MARCS atmospheric model grid (models only).
-                  |                   | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
-_grid.moo_        | --fn_moo          | MARCS atmospheric model grid (models with opacities) (Figure 7).
-                  |                   | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
+ Default name     | --option       | Description                    
+------------------|----------------|---------------------------------------------------
+_absoru2.dat_     | --fn_absoru2   | absorption info for continuum calculation.
+_atoms.dat_       | --fn_atoms     | atomic line list
+_molecules.dat_   | --fn_molecules | molecular line list
+_hmap.dat_        |                | hydrogen line list.
+_partit.dat_      | --fn_partit    | partition functions
+_grid.mod_ or     | --fn_modgrid   | MARCS atmospheric model grid (models only).
+                  |                | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
+_grid.moo_        | --fn_moo       | MARCS atmospheric model grid (models with opacities) (Figure 7).
+                  |                | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
 
 ![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
 
@@ -424,10 +439,10 @@ there are atmospheric models in grid.moo. The uppermost point are the Sun coordi
 
 ##### 4.2.3.1 Files created by `innewmarcs`
 
- Default name     | --option          | Description                    
-------------------|-------------------|---------------------------------------------------
-_modeles.mod_     | --fn_modeles      | atmospheric model (binary file) (Figure 8A)
-_modeles.opa_     | --fn_opa          | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B)
+ Default name     | --option     | Description                    
+------------------|--------------|---------------------------------------------------
+_modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 8A)
+_modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B)
 
 
 ![](figures/modeles.png)
