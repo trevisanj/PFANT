@@ -293,19 +293,21 @@ run4.py --fwhm 0.12
 files. It may be useful to check the log files in this directory if you encounter any
 errors during program execution.
 
-### 3.2.6 Where you can find documentation
+### 3.2.6 Where you can find information
 
-:bulb: Apart from this README, there are several _README.md_ files in other PFANT subdirectories
-that contain relevant information for their directory;
-
-:bulb: All programs can be invoked with a "--help" option;
-
-:bulb: To print a listing of all available Python programs (with descriptions): `scripts.py`;
-
-:bulb: Stellar parameters and running setting are described in the graphical user
+:book: **Description of stellar parameters, running settings, command-line options:** run `x.py`
+and navigate through the fields in Tabs 1 and 3. As you navigate, documentation for
+the current field will be displayed at the bottom of the window. 
 interfaces where these parameters can be edited, such as `x.py`;
 
-:bulb: In the source code.
+:book: Call a program with "--help" option, _e.g._, `pfant --help`
+
+:book: **other _README.md_ files** can be found in other PFANT subdirectories.
+
+:book: `programs.py` lists all Fortran/Python programs.
+ 
+:book: The source code is the most important source of documentation.  
+
 
 ### 3.3 Graphical user interface (GUI)
 

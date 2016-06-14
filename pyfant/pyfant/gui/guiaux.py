@@ -50,7 +50,7 @@ LLZERO_LLFIN = "The calculation interval for the synthetic spectrum is given by 
           aint
           &lt;--&gt;
 
-----[----|----|----|----|-]------->
+----[----|----|----|----|-]-------&gt;
     |                     |       wavelength (angstrom)
     llzero                llfin
 </pre>
