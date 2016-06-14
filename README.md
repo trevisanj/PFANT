@@ -26,7 +26,7 @@ PFANT
 
 PFANT is a stellar spectral synthesis software written in Fortran.
 
-The development started with F Spite et al. in France in the year of 1967 (Figure 1).
+The development started with F Spite _et al._ in France in the year of 1967 (Figure 1).
 
 ```
  |
@@ -55,8 +55,6 @@ To use PFANT, you will need to:
 This section will take you through these steps.
 
 ### 2.1 Installing required software
-
-Depending on your OS platform, you may have some of the following  installed already.
 
 #### 2.1.1 Standalone applications
 
@@ -97,7 +95,7 @@ In either case, you should now have a directory named PFANT on your disk.
 
 :zap: There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (> 100 MB).
-Please download file `grid.moo` from [here]
+Please download it from [here]
 (https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
 and save it as `PFANT/data/common/grid.moo`.
 This file contains a 3D grid of MARCS atmospheric models with opacities included.
@@ -108,7 +106,7 @@ The source code has been successfully compiled using gfortran 4.8.
 
 #### 2.3.1 Linux users
 
-The code can be compiled using the [CBFortran IDE](fortran/README.md), or using the console:
+Enter the following on your console to compile the Fortran source code:
 
 ```shell
 cd PFANT
@@ -116,20 +114,24 @@ cd fortran
 ./make-linux.sh
 ```
 
-#### 2.3.1 Windows users
+This should create four executable binaries inside the directory _PFANT/fortran/bin_: 
+`innewmarcs`, `hydro2`, `pfant`, `nulbad`.
+ 
+#### 2.3.2 Windows users
 
-The code can be compiled using the [CBFortran IDE](fortran/README.md).
+The Fortran code can also be compiled using the CodeBlock Fortran IDE. For more information,
+please visit [the Fortran source code README](fortran/README.md).
 
 ### 2.4 Setting the paths
 
-Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH.
+Add _PFANT/fortran/bin_ and _PFANT/pyfant/scripts_ to your PATH.
 
-Add `PFANT/pyfant` to your PYTHONPATH.
+Add _PFANT/pyfant_ to your PYTHONPATH.
 
 #### 2.4.1 Linux users
 
 Linux users may try the script `PFANT/add-paths.py`, which tries to automatically
-apply the path settings by modifying your `home/.bashrc` or `home/.cshrc`:
+apply the path settings by modifying your _home/.bashrc_ or _home/.cshrc_:
 
 Bash shell:
 ```shell
@@ -147,15 +149,8 @@ Section 3 is a short tutorial that will take you through common operational step
 
 **Aims for this tutorial**
   - calculate a synthetic spectrum;
-  - convolve with Gaussian functions of different FWHMs;
+  - convolve with Gaussian functions of varying full-width-at-half-maximum (FWHM);
   - visualize results.
-
-### 3.1 Input data
-
-Input data contists of:
-  1. stellar parameters (temperature, chemical abundances etc.) and running settings (_e.g._, calculation wavelength interval);
-  2. star-independent physical data: line lists, atmospheric model grid, partition functions etc. that are unlikely to be modified.
-     We refer to these as "common" data.
 
 First let's create a new directory:
 
@@ -163,6 +158,15 @@ First let's create a new directory:
 mkdir mystar
 cd mystar
 ```
+
+### 3.1 Input data
+
+Input data consists of:
+  1. stellar parameters (temperature, chemical abundances etc.) and running settings
+     (_e.g._, calculation wavelength interval);
+  2. star-independent physical data: line lists, atmospheric model grid, partition
+     functions etc. that are less likely to be modified.
+     We refer to these as "common" data.
 
 #### 3.1.1 Stellar data and running settings
 
@@ -172,7 +176,7 @@ The following displays a menu allowing you to choose among a few stars:
 copy-star.py
 ```
 
-After running this, the following files will be copied into the *mystar* directory:
+After running this, the following files will be copied into the _mystar_ directory:
   - *main.dat*: main configuration
   - *abonds.dat*: chemical abundances
   
@@ -202,7 +206,9 @@ The following links that should appear in your directory now:
  
 ### 3.2 Spectral synthesis
 
-Spectral synthesis involves a few steps (Figure 2), which will be described in the next subsections.
+Spectral synthesis involves a few steps,
+as shown Figure 2,
+and described in the next subsections.
 
 ```
 +-------------------+   +----------------+   +-----------+   +----------+
@@ -213,15 +219,20 @@ Spectral synthesis involves a few steps (Figure 2), which will be described in t
 |             model |   |       profiles |   |  spectrum |   | Gaussian |
 +-------------------+   +----------------+   +-----------+   +----------+
 ```
-Figure 2 - Summarized pipeline showing the Fortran program names and what they do.
+Figure 2 - PFANT spectral synthesis pipeline showing the Fortran program names
+and what they do.
 
 #### 3.2.1 Interpolate the stellar atmospheric model
+
+This step takes a 3D grid of atmospheric models and interpolates a new model
+given a certain point (temperature x gravity x metallicity) contained within the
+limits of the grid.
 
 ```shell
 innewmarcs
 ```
 
-will create two files: modeles.mod and modeles.opa. 
+will create two files: _modeles.mod_ and _modeles.opa_. 
 
 #### 3.2.2 Create hydrogen lines profiles
 
@@ -229,7 +240,7 @@ will create two files: modeles.mod and modeles.opa.
 hydro2
 ```
 
-will create files such as: thalpha (Figure 9), thbeta, thgamma etc.
+will create files such as: _thalpha_ (Figure 9), _thbeta_, _thgamma_ etc.
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -237,13 +248,16 @@ will create files such as: thalpha (Figure 9), thbeta, thgamma etc.
 pfant
 ```
 
-creates files flux.norm, flux.spec, flux.cont
+creates files _flux.norm_, _flux.spec_, _flux.cont_,
+respectively: normalized, un-normalized, continuum spectrum.
+
+To visualize these files:
 
 ```shell
-plot-spectra.py --rows 1 flux.spec flux.cont flux.norm
+plot-spectra.py flux.spec flux.cont flux.norm
 ```
 
-opens a plot window (Figure 3).
+will open a plot window (Figure 3).
 
 ![](figures/spec-cont-norm0.png)
 
@@ -251,16 +265,20 @@ Figure 3 -- plots of three files generated by `pfant`.
 
 #### 3.2.4 Convolve synthetic spectrum with Gaussian function
 
+The following will take the normalized spectrum from the previous step and convolve it
+with a Gaussian function of FWHM=0.12 :
+
 ```shell
 nulbad --fwhm 0.12
 ```
 
-creates flux.norm.nulbad.0.120
+creates file _flux.norm.nulbad.0.120_
 
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
+opens a plot window where one can see how the spectrum looks before and after the convolution.
 
 Now let's try several FWHMs and plot them all:
 
@@ -273,12 +291,12 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
-This should generate a plot with several curves overlapped. Figure 4 shows a zoomed
+should generate a plot with several curves overlapped. Figure 4 shows a zoomed
 area of this plot.
 
 ![](figures/fwhms.png)
 
-Figure 4 - plots showing zoomed convolved spectra with FWHM = 0.06 to 0.14.
+Figure 4 - plots showing zoomed convolved spectra with FWHM varying from 0.06 to 0.14.
 
 ### 3.2.5 Running the four calculation steps at once
 
@@ -297,10 +315,9 @@ errors during program execution.
 
 :book: **Description of stellar parameters, running settings, command-line options:** run `x.py`
 and navigate through the fields in Tabs 1 and 3. As you navigate, documentation for
-the current field will be displayed at the bottom of the window. 
-interfaces where these parameters can be edited, such as `x.py`;
+the current field will be displayed at the bottom of the window.
 
-:book: Call a program with "--help" option, _e.g._, `pfant --help`
+:book: Call a program with "--help" option, _e.g._, `pfant --help`.
 
 :book: **other _README.md_ files** can be found in other PFANT subdirectories.
 
@@ -421,6 +438,8 @@ that are the actual parts of the file.
 
 #### 4.2.2 Common data files
 
+Table 3 -- Common data files.
+
  Default name     | --option       | Description                    
 ------------------|----------------|---------------------------------------------------
 _absoru2.dat_     | --fn_absoru2   | absorption info for continuum calculation.
@@ -442,15 +461,23 @@ there are atmospheric models in grid.moo. The uppermost point are the Sun coordi
 
 ##### 4.2.3.1 Files created by `innewmarcs`
 
+Table 4 -- Files created by `innewmarcs`
+
  Default name     | --option     | Description                    
 ------------------|--------------|---------------------------------------------------
 _modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 8A)
 _modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B)
 
-
 ![](figures/modeles.png)
 
-Figure 8 -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.opa  
+Figure 8 -- Atmospheric model information (Sun).
+**(A)** data in file modeles.mod;
+**(B)**, **(C)** data in modeles.opa  
+
+`innewmarcs` creates two separate files (Table 4). They are created separately for
+historical reasons. _modeles.opa_ follows the same structure of ".opa" files downloaded from
+the MARCS website. _modeles.mod_ does **not** follow the same structure of MARCS ".mod" files.
+Figure 8 exemplifies the information contained in these files. 
 
 ##### 4.2.3.2 Files created by `hydro2`
 
@@ -462,6 +489,8 @@ Figure 8 -- **(A)** data in file modeles.mod; **(B)**, **(C)** data in modeles.o
 Figure 9 -- Example of H-alpha line profile calculated by `hydro2`.  
 
 ##### 4.2.3.3 Files created by `pfant`
+
+Table 5 - Files created by `pfant`
 
  Default name     | Description                    
 ------------------|--------------------------------------------------
@@ -475,6 +504,8 @@ Figure 10 - plots showing three `pfant` output files for the [4000, 7000] angstr
 calculated spectrum; continuum; normalized spectrum.
 
 ##### 4.2.3.4 Files created by `nulbad`
+
+Table 6 - Files created by `hydro2`
 
  Default name           | --option          | Description                    
 ------------------------|-------------------|---------------------------------------------

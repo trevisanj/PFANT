@@ -15,7 +15,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "is_text_file", "get_QApplication", "copy_default_file", "MyLock",
  "get_data_dir", "get_data_subdirs", "get_star_data_subdirs", "SESSION_PREFIX_SINGULAR",
  "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
- "symlink", "print_skipped", "format_legend"]
+ "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
+ "get_pfant_dir"]
 
 
 # # todo cleanup
@@ -64,6 +65,9 @@ import shutil
 from threading import Lock, current_thread
 import glob
 import traceback
+import imp
+import textwrap
+import platform
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -280,9 +284,18 @@ def copy_default_file(filename):
     fullpath = path_to_default(filename)
     shutil.copy(fullpath, ".")
 
+
+def get_pfant_dir(*args):
+    """
+    Returns absolute path to the "PFANT" directory.
+
+    Arguments passed will be incorporated into path
+    """
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *args))
+
 def get_data_dir():
     """returns absolute path to PFANT/data."""
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
+    return get_pfant_dir("data")
 
 def get_data_subdirs():
     """returns a list containing all subdirectories of PFANT/data (their names only, not full path)."""
@@ -302,8 +315,6 @@ def get_star_data_subdirs():
             ret.append(os.path.basename(d))
     return ret
 
-
-
 def symlink(source, link_name):
     """
     Creates symbolic link for either operating system.
@@ -321,10 +332,110 @@ def symlink(source, link_name):
         flags = 1 if os.path.isdir(source) else 0
         if csl(link_name, source, flags) == 0:
             raise ctypes.WinError()
-    
+
+
 def print_skipped(reason):
     """Standardized printing for when a file was skipped."""
     print "   ... SKIPPED (%s)." % reason
+
+
+def crunch_dir(name, n=50):
+    """Puts "..." in the middle of a directory name if lengh > n."""
+    if len(name) > n + 3:
+        name = "..." + name[-n:]
+    return name
+
+def get_scripts(flag_header=True, flag_markdown=False):
+    """
+    Generates listing of all Python scripts available as command-line programs.
+
+    Arguments:
+      flag_header=True -- whether or not to include a header at the beginning of
+                          the text.
+      flag_markdown=False -- if set, will generate MarkDown, otherwise plain text.
+
+    Returns: (list of strings, maximum filename size)
+      list of strings -- can be joined with a "\n"
+      maximum filename size
+    """
+
+    ret = []
+    base_dir = get_pfant_dir("pyfant", "scripts")
+    # gets all scripts in script directory
+    ff = glob.glob(os.path.join(base_dir, "*.py"))
+    # discards scripts whose file name starts with a "_"
+    ff = [f for f in ff if not os.path.basename(f).startswith("_")]
+    ff.sort()
+    py_len = max([len(os.path.split(f)[1]) for f in ff])
+    if flag_markdown:
+        mask = "%%-%ds | %%s" % py_len
+        ret.append(mask % ("Script name", "Purpose"))
+        ret.append( "-" * (py_len + 1) + "|" + "-" * 10)
+        for f in ff:
+            _, filename = os.path.split(f)
+            try:
+                script_ = imp.load_source('script_', f)  # module object
+                descr = script_.__doc__.strip()
+                descr = descr.split("\n")[0]  # first line of docstring
+            except Exception as e:
+                descr = "*%s*: %s" % (e.__class__.__name__, str(e))
+            ret.append(mask % (filename, descr))
+    else:
+        if flag_header:
+            s = "Scripts in " + crunch_dir(base_dir)
+            ret.append(fmt_ascii_h1(s))
+        for f in ff:
+            _, filename = os.path.split(f)
+
+            piece = filename + " " + ("." * (py_len - len(filename)))
+            flag_error = False
+            try:
+                script_ = imp.load_source('script_', f)  # module object
+            except Exception as e:
+                flag_error = True
+                ret.append("%s*%s*: %s" % (piece, e.__class__.__name__, str(e)))
+
+            if not flag_error:
+                descr = script_.__doc__.strip()
+                descr = descr.split("\n")[0]  # first line of docstring
+                ss = textwrap.wrap(descr, 79 - py_len - 1)
+
+                ret.append(piece+" "+(ss[0] if ss and len(ss) > 0 else "no doc"))
+                for i in range(1, len(ss)):
+                    ret.append((" " * (py_len + 2))+ss[i])
+    return ret, py_len
+
+
+def get_fortrans(max_len=None):
+    """
+    Generates listing of files in the Fortran bin directory
+
+    Arguments
+      max_len -- (optional) if passed, will use it, otherwise will be the
+                 maximum number of characters among all Fortran executable names.
+
+    Returns: list of filenames
+    """
+
+    ret = []
+    bindir = os.path.join(get_pfant_dir(), "fortran", "bin")
+    ihpn = ["innewmarcs", "hydro2", "pfant", "nulbad"]
+    if max_len is None:
+        max_len = max(len(x) for x in ihpn)
+
+    if platform.system() == "Windows":
+        def has_it(x):
+            return os.path.isfile(os.path.join(bindir, x+".exe"))
+    else:
+        def has_it(x):
+            return os.path.isfile(os.path.join(bindir, x))
+    for name in ihpn:
+        status = "not found"
+        if has_it(name):
+            status = "found"
+        piece = name + " " + ("." * (max_len-len(name)))
+        ret.append(("%-"+str(max_len)+"s %s") % (piece, status))
+    return ret
 
 
 # #################################################################################################
@@ -509,9 +620,9 @@ def format_progress(i, n):
 def fmt_ascii_h1(s):
     """Returns string enclosed in an ASCII frame, with \n line separators. Does not end in \n."""
     n = len(s)
-    return "/"+("-"*(n+2))+"\\\n"+ \
+    return "+"+("-"*(n+2))+"+\n"+ \
            "| "+s+" |\n"+ \
-           "\\"+("-"*(n+2))+"/"
+           "+"+("-"*(n+2))+"+"
 
 def fmt_error(s):
     """Standardized embellishment. Adds formatting to error message."""

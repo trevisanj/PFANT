@@ -19,7 +19,7 @@ pyfant has support to loading a spectrum in a FITS file.
 
 ## Command-line tools
 
-To get a realtime list of available tools, run ```pyfant-scripts.py```.
+To get an updated list of available tools, run `programs.py`.
 
 ## Library
 
