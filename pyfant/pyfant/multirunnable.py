@@ -124,6 +124,7 @@ class MultiRunnable(Runnable):
         ih.conf.logger = self.__logger
         ih.conf.opt = copy.copy(self.__options)
         ih.conf.sid = self.__sid
+        ih.conf.file_main = copy.copy(self.__file_main)
         # Runs innewmarcs and hydro2;
         # it is also expected to create the "multi-session" directory
         ih.run()
@@ -166,7 +167,7 @@ class MultiRunnable(Runnable):
             pfant.conf.sid.id_maker = custom_id_maker
             pfant.conf.sid.id = flprefix
             pfant.conf.opt.flprefix = self.__sid.join_with_session_dir(flprefix)
-            pfant.conf.file_main = self.__file_main
+            pfant.conf.file_main = copy.copy(self.__file_main)
             pfant.conf.file_abonds = file_abonds_
             pfant.conf.file_dissoc = file_abonds_.get_file_dissoc()
 

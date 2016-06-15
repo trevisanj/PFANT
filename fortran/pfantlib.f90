@@ -1119,7 +1119,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = ' v16.2.8-beta'
+    v = ' v16.6.14-beta'
   end
 
   ! Displays welcome message
@@ -1217,7 +1217,7 @@ contains
     write(unit_,*) '                                               `                        '
     write(unit_,*) '                        @                                               '
     write(unit_,*) '             `      `              `                 `                  '
-    write(unit_,*) '`                     `           `    Bugs/crashes: please report at   '
+    write(unit_,*) '`                     `           ` Bugs/crashes: please report issue at'
     write(unit_,*) '                  `                                                     '
     write(unit_,*) '               @`@`@ `          `      http://github.com/trevisanj/pfant'
     write(unit_,*) '`              `    `                            `             `        '

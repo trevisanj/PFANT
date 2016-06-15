@@ -278,7 +278,12 @@ creates file _flux.norm.nulbad.0.120_
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-opens a plot window where one can see how the spectrum looks before and after the convolution.
+opens a plot window where one can see how the spectrum looks before and after the convolution (Figure 4).
+
+![](figures/normfwhms.png)
+
+Figure 4 -- plot comparing spectra without and after convolution with Gaussian function (FWHM=0.12).
+
 
 Now let's try several FWHMs and plot them all:
 
@@ -291,12 +296,12 @@ nulbad --fwhm 0.14
 plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
 ```
 
-should generate a plot with several curves overlapped. Figure 4 shows a zoomed
+should generate a plot with several curves overlapped. Figure 5 shows a zoomed
 area of this plot.
 
 ![](figures/fwhms.png)
 
-Figure 4 - plots showing zoomed convolved spectra with FWHM varying from 0.06 to 0.14.
+Figure 5 - plots showing zoomed convolved spectra with FWHM varying from 0.06 to 0.14.
 
 ### 3.2.5 Running the four calculation steps at once
 
@@ -411,7 +416,7 @@ of relevant file types.
                                                 v
                                          flux.norm.nulbad.<fwhm>
 ```
-Figure 5 - Spectral synthesis pipeline - Fortran programs (boxes) and their 
+Figure 6 - Spectral synthesis pipeline - Fortran programs (boxes) and their 
 input/output files.
 
 ### 4.2 Input/output data files
@@ -426,13 +431,13 @@ command-line options that can be used to change the name for a particular file, 
 
  Default name     | --option    | Description                    
 ------------------|-------------|----------------------------------------------------
-_main.dat_        | --fn_main   | main configuration file containing all stellar parameters except abundances (Figure 6).
+_main.dat_        | --fn_main   | main configuration file containing all stellar parameters except abundances (Figure 7).
 _abonds.dat_      | --fn_abonds | chemical abundances
 _dissoc.dat_      | --fn_dissoc | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
 
 ![](figures/small-main.dat.png)
 
-Figure 6 - representaion of a file _main.dat_. The black color shows the characters
+Figure 7 - representaion of a file _main.dat_. The black color shows the characters
 that are the actual parts of the file.
 
 
@@ -445,16 +450,16 @@ Table 3 -- Common data files.
 _absoru2.dat_     | --fn_absoru2   | absorption info for continuum calculation.
 _atoms.dat_       | --fn_atoms     | atomic line list
 _molecules.dat_   | --fn_molecules | molecular line list
-_hmap.dat_        |                | hydrogen line list.
+_hmap.dat_        | --fn_hmap      | hydrogen line list
 _partit.dat_      | --fn_partit    | partition functions
 _grid.mod_ or     | --fn_modgrid   | MARCS atmospheric model grid (models only).
                   |                | Created using `create-grid.py --mode modbin` from files _newnew*.mod_
-_grid.moo_        | --fn_moo       | MARCS atmospheric model grid (models with opacities) (Figure 7).
+_grid.moo_        | --fn_moo       | MARCS atmospheric model grid (models with opacities) (Figure 8).
                   |                | Created using `create-grid.py --mode opa` from a bulk of models downloaded from the MARCS website
 
 ![](figures/grid.moo_--_asalog-teff-glog_scatterplot.png)
 
-Figure 7 -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
+Figure 8 -- 3D scatterplot showing points of (teff, glog, [Fe/H]) space where
 there are atmospheric models in grid.moo. The uppermost point are the Sun coordinates.
 
 #### 4.2.3 Files created by the Fortran programs
@@ -465,28 +470,30 @@ Table 4 -- Files created by `innewmarcs`
 
  Default name     | --option     | Description                    
 ------------------|--------------|---------------------------------------------------
-_modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 8A)
-_modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B)
+_modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 9A)
+_modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 9B,9C)
 
 ![](figures/modeles.png)
 
-Figure 8 -- Atmospheric model information (Sun).
+Figure 9 -- Atmospheric model information (Sun).
 **(A)** data in file modeles.mod;
 **(B)**, **(C)** data in modeles.opa  
 
 `innewmarcs` creates two separate files (Table 4). They are created separately for
 historical reasons. _modeles.opa_ follows the same structure of ".opa" files downloaded from
 the MARCS website. _modeles.mod_ does **not** follow the same structure of MARCS ".mod" files.
-Figure 8 exemplifies the information contained in these files. 
+Figure 9 exemplifies the information contained in these files. 
 
 ##### 4.2.3.2 Files created by `hydro2`
 
-`hydro2` creates a series of files named thalpha, thbeta, thgamma, thdelta, thepsilon etc.
-(filenames are given in hmap.dat).
+`hydro2` creates a series of files named _thalpha_ (Figure 10), _thbeta_, _thgamma_, 
+_thdelta_, _thepsilon_ etc (the series of hydrogen lines is given in _hmap.dat_).
 
 ![](figures/thalpha.png)
 
-Figure 9 -- Example of H-alpha line profile calculated by `hydro2`.  
+Figure 10 -- Example of H-alpha line profile calculated by `hydro2`.  
+
+These files will be 
 
 ##### 4.2.3.3 Files created by `pfant`
 
@@ -500,16 +507,28 @@ _flux.cont_       | continuum flux (multiplied by 10**5)
 
 ![](figures/spec-cont-norm.png)
 
-Figure 10 - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
+Figure 11 - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
 calculated spectrum; continuum; normalized spectrum.
+
+The common prefix "flux" can be changed in file _main.dat_ to give a set of files
+with different names.
 
 ##### 4.2.3.4 Files created by `nulbad`
 
-Table 6 - Files created by `hydro2`
+`nulbad` creates a file whose name by default is the full input file name with the FWHM
+added with three decimal places. For example,
+ 
+```shell
+nulbad --fwhm 1.2
+```
 
- Default name           | --option          | Description                    
-------------------------|-------------------|---------------------------------------------
-_flux.norm.nulbad.&lt;fwhm&gt;_ | --fn_cv           | convolved flux
+creates a file named _flux.norm.nulbad.1.200_.
+ 
+To change this, use option "--fn_cv", for example,
+
+```shell
+nulbad --fwhm 1.2 --fn_cv another-name
+```
 
 
 ## 5 <a name=S5></a> Miscellanea how-to
