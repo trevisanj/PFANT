@@ -605,12 +605,8 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
 
 
 # 6 Links
-  - [Fortran source code overview](fortran/README.md) (for Fortran developers
-    interested in changing the source code)
-  - ![](fortran/README.md) (for Fortran developers
-  - [fortran/README.md](fortran/README.md) (for Fortran developers
-    interested in changing the source code)
-  - [`pyfant` Python package overview](pyfant/README.md) 
+  - [fortran/README.md](fortran/README.md) -- Fortran source code overview 
+  - [pyfant/README.md](pyfant/README.md) -- Python layer overview
 
 
 # 7 References
