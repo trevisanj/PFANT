@@ -608,7 +608,7 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
   - [Fortran source code overview](fortran/README.md) (for Fortran developers
     interested in changing the source code)
   - ![](fortran/README.md) (for Fortran developers
-  - (fortran/README.md) (for Fortran developers
+  - [fortran/README.md](fortran/README.md) (for Fortran developers
     interested in changing the source code)
   - [`pyfant` Python package overview](pyfant/README.md) 
 
