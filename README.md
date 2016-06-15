@@ -280,7 +280,7 @@ plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 
 opens a plot window where one can see how the spectrum looks before and after the convolution (Figure 4).
 
-![](figures/normfwhms.png)
+![](figures/normfwhm.png)
 
 Figure 4 -- plot comparing spectra without and after convolution with Gaussian function (FWHM=0.12).
 
