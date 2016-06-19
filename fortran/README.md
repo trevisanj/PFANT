@@ -288,7 +288,7 @@ user interface (GUI):
 
 :nine: Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
 
-:ten: :one: :zero: You will need to make a few interventions inside the `__init__()` method,
+:one: :zero: You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code. 
 
 
