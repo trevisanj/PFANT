@@ -265,17 +265,17 @@ This section contains guidelines for implementing new features in the source cod
 
 To add a new command-line option to the Fortran code:
 
-1. Open _pfantlib.f90_
+.1. Open _pfantlib.f90_
 
-2. Find string `module config`
+.2. Find string `module config`
 
-3. Create a new variable starting with `config_` and set its default value
+.3. Create a new variable starting with `config_` and set its default value
 
-4. In subroutine `init_options()`, add a `call add_option(...)`
+.4. In subroutine `init_options()`, add a `call add_option(...)`
 
-5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
+.5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
 
-6. Finally, use your new `config_xxxx` variable in other modules of the source code,
+.6. Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
          
@@ -283,16 +283,16 @@ To add a new command-line option to the Fortran code:
 
 Steps 7-8 adds field to `Options` class so that, among other things, the new option becomes accepted by `run4.py`
 
-7. open `PFANT/pyfant/pyfant/conf.py`
+.7. open `PFANT/pyfant/pyfant/conf.py`
 
-8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
+.8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
    option, without the config_ prefix
 
 Steps 9-10 add the new option to Tab 3 of `x.py`
 
-9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+.9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
 
-10. You will need to make a few interventions inside the `__init__()` method,
+.10. You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code
 
 
