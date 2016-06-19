@@ -265,23 +265,30 @@ To add a new command-line option to the Fortran code:
 :one: Open `config.f90`.
 
 :two: Find string `module config`.
-3. Create a new variable starting with `config_` and set its default value. :bulb:
-4. In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
-5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
-6. Finally, use your new `config_xxxx` variable in other modules of the source code,
+
+:three: Create a new variable starting with `config_` and set its default value. :bulb:
+
+:four: In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
+
+:five: In subroutine `handle_option`, add a `case` for your new variable. :bulb:
+
+:six: Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
          
 Python code: steps 7-10 are required to make `pyfant` aware of the new option.     
-7. open `PFANT/pyfant/pyfant/conf.py`.
-8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
+
+:seven:. open `PFANT/pyfant/pyfant/conf.py`.
+
+:eight:. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
    option, without the config_ prefix.
 
 To make the new option editable Options editor that appears in the `x.py` Graphical
 user interface (GUI):
 
-9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
-10. You will need to make a few interventions inside the `__init__()` method,
+:nine: Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+
+:ten: :one: :zero: You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code. 
 
 
