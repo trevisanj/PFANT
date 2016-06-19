@@ -261,8 +261,10 @@ This section contains guidelines for implementing new features in the source cod
 ### How to create a new command-line option
 
 To add a new command-line option to the Fortran code:
-1. Open `config.f90`.
-2. Find string `module config`.
+
+:one: Open `config.f90`.
+
+:two: Find string `module config`.
 3. Create a new variable starting with `config_` and set its default value. :bulb:
 4. In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
 5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
