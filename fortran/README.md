@@ -213,8 +213,11 @@ programming errors.
 
 For assertions, use
 
-log_halt("message", is_assertion=.true.).
+```fortran
+log_and_halt("message", is_assertion=.true.).
+```
 
+todo some good three examples, including assert_le, for example
 
 #### More documentation guidelines
 
@@ -262,33 +265,34 @@ This section contains guidelines for implementing new features in the source cod
 
 To add a new command-line option to the Fortran code:
 
-:one: Open `config.f90`.
+1. Open _pfantlib.f90_
 
-:two: Find string `module config`.
+2. Find string `module config`
 
-:three: Create a new variable starting with `config_` and set its default value. :bulb:
+3. Create a new variable starting with `config_` and set its default value
 
-:four: In subroutine `init_options()`, add a `call add_option(...)`. :bulb:
+4. In subroutine `init_options()`, add a `call add_option(...)`
 
-:five: In subroutine `handle_option`, add a `case` for your new variable. :bulb:
+5. In subroutine `handle_option`, add a `case` for your new variable. :bulb:
 
-:six: Finally, use your new `config_xxxx` variable in other modules of the source code,
+6. Finally, use your new `config_xxxx` variable in other modules of the source code,
    making sure that the module that you are working on has a `use config` statement 
    at its beginning.
          
-Python code: steps 7-10 are required to make `pyfant` aware of the new option.     
+**Python code**
 
-:seven:. open `PFANT/pyfant/pyfant/conf.py`.
+Steps 7-8 adds field to `Options` class so that, among other things, the new option becomes accepted by `run4.py`
 
-:eight:. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
-   option, without the config_ prefix.
+7. open `PFANT/pyfant/pyfant/conf.py`
 
-To make the new option editable Options editor that appears in the `x.py` Graphical
-user interface (GUI):
+8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
+   option, without the config_ prefix
 
-:nine: Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+Steps 9-10 add the new option to Tab 3 of `x.py`
 
-:one: :zero: You will need to make a few interventions inside the `__init__()` method,
-which should become clear from the existing code. 
+9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+
+10. You will need to make a few interventions inside the `__init__()` method,
+which should become clear from the existing code
 
 
