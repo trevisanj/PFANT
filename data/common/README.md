@@ -2,7 +2,7 @@
 
 Data files that are independent from the star.
 
-:zap: If _grid.moo_ is not present, please download it as indicated in [PFANT/README.md, Section 2](../../README.md#S2).
+:zap: If _grid.moo_ is not present, please download it as indicated in [PFANT/README.md, Section 2.2](../../README.md#22-downloading-pfant).
 
 filename       | description
 ---------------|-------------
