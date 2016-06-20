@@ -94,7 +94,7 @@ astropy       | apt-Linux: `sudo apt-get install python-astropy`
 In either case, you should now have a directory named PFANT on your disk.
 
 :zap: There is an additional data file that needs to be downloaded from a different
-location, because it is too big to be stored on GitHub (> 100 MB).
+location, because it is too big to be stored on GitHub (241 MB > 100 MB).
 Please download it from [here]
 (https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
 and save it as _PFANT/data/common/grid.moo_ (if the previous link doesn't work, please try [this one](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view)).
