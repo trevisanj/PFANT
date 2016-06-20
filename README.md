@@ -96,9 +96,10 @@ In either case, you should now have a directory named PFANT on your disk.
 :zap: There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (> 100 MB).
 Please download it from [here]
-(https://drive.google.com/file/d/0B8m8GNLFiaewY0J1YzRrbHBCbWs/view?usp=sharing)
-and save it as `PFANT/data/common/grid.moo`.
-This file contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
+(https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
+and save it as _PFANT/data/common/grid.moo_ (if the previous link doesn't work, please try [this one](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view)).
+
+File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
 ### 2.3 Compiling the Fortran source code.
 
