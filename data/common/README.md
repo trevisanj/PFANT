@@ -2,12 +2,7 @@
 
 Data files that are independent from the star.
 
-
-:zap: Please download grid.moo from
-[this location](https://drive.google.com/open?id=0B8m8GNLFiaewejd6dmJ6MW1pX2c),
-as this file is more than 100 MB large and therefore cannot be hosted by GitHub.
-When you download it, please save it inside the PFANT/data/common directory.
-
+:zap: If _grid.moo_ is not present, it needs to be downloaded. Please check [PFANT/README.md](../../README.md), Section 2 for download instructions for file _grid.moo_.
 
 filename       | description
 ---------------|-------------
