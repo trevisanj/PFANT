@@ -36,10 +36,11 @@ is how the choices were made:
 
 ## Using these files
 
-We suggested that you create symbolic links to these files instead of making copies of them
-(unless you want to change some file). To do so, type the following on the console:
+We that you create symbolic links to these files instead of making copies of them
+(unless you want to change some file). To do so:
 
 ```shell
+cd mystar
 link.py common
 ```
 

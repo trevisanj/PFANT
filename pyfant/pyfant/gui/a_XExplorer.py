@@ -186,12 +186,29 @@ class XExplorer(QMainWindow):
 
         # ## Toolbar
         l0 = self.layoutToolbar = QHBoxLayout()
+
+
+        a0 = self.c88532 = QLabel("<b>&Directory:</b>")
+        l0.addWidget(a0)
+        #
+        a1 = self.lineEditDir = QLineEdit()
+        l0.addWidget(a1)
+        a1.installEventFilter(self)  # we want _down arrow_ to jump to table widget
+        a0.setBuddy(a1)
+        a1.returnPressed.connect(self.on_cd2)
+        #
+        w = self.line44412 = QFrame() # vertical line
+        l0.addWidget(w)
+        # w.setGeometry(QRect(240, 240, 3, 61))
+        w.setFrameShape(QFrame.VLine)
+        w.setFrameShadow(QFrame.Sunken)
+        w.setFixedWidth(3)
+        #
         b6 = self.pushButtonCollectErrors = QPushButton("&Collect Fortran errors")
         b6.setToolTip("Searches for errors in log files and reports these errors in a new window.")
         b6.clicked.connect(accw.triggered)
         l0.addWidget(b6)
-        s = self.spacer0 = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        l0.addItem(s)
+        #
         lcw.addLayout(l0)
 
 
@@ -203,8 +220,16 @@ class XExplorer(QMainWindow):
 
         # ## File listing table
 
+        w = self.cdf856 = QWidget()
+        l0 = self.c49g7s = QVBoxLayout(w)
+        l0.setMargin(0)
+        #
+        y = self.c88ss8 = QLabel("<b>Directory &contents</b>")
+        l0.addWidget(y)
+        #
         t = self.tableWidget = QTableWidget()
-        sp.addWidget(t)
+        y.setBuddy(t)
+        l0.addWidget(t)
         t.installEventFilter(self)
         # t.setSelectionBehavior(QAbstractItemView.SelectRows)
         # t.currentCellChanged.connect(self.on_tableWidget_currentCellChanged)
@@ -215,6 +240,7 @@ class XExplorer(QMainWindow):
         t.installEventFilter(self)
         t.selectionModel().selectionChanged.connect(self.selectionChanged)
 
+        sp.addWidget(w)
 
         # ## "Possibilities area"
         # The area is a widget that will be added to the main splitter.
@@ -223,40 +249,42 @@ class XExplorer(QMainWindow):
 
         w = QWidget()
         sp.addWidget(w)
-        l = QVBoxLayout(w)
+        l1 = QVBoxLayout(w)
+        l1.setMargin(0)
 
         # ### Label to indicate the detected file type
         x = self.labelFileType = QLabel()
-        l.addWidget(x)
+        l1.addWidget(x)
 
         # ### Splitter containing a "visualization options area"
         #     and a "general file info" area
         s0 = QSplitter(Qt.Vertical)
-        l.addWidget(s0)
+        l1.addWidget(s0)
 
         # #### "visualization options" area
         w = self.csslff = QWidget()
         s0.addWidget(w)
-        l = self.c49378 = QVBoxLayout(w)
-        l.setMargin(0)
+        l1 = self.c49378 = QVBoxLayout(w)
+        l1.setMargin(0)
         y = self.c88888 = QLabel("<b>&Actions available for selected file(s)</b>")
-        l.addWidget(y)
+        l1.addWidget(y)
         x = self.listWidgetVis = QListWidget(self)
         x.installEventFilter(self)
         x.itemDoubleClicked.connect(self.on_listWidgetVis_itemDoubleClicked)
         y.setBuddy(x)
 
-        l.addWidget(x)
+        l1.addWidget(x)
 
         # #### "general file info" area
         w = self.c77777 = QWidget()
         s0.addWidget(w)
-        l = self.c86888 = QVBoxLayout(w)
-        l.setMargin(0)
-        x = self.c83388 = QLabel("<b>Data file information</b>")
-        l.addWidget(x)
+        l1 = self.c86888 = QVBoxLayout(w)
+        l1.setMargin(0)
+        x = self.c83388 = QLabel("<b>Data file &information</b>")
+        l1.addWidget(x)
         x = self.textEditInfo = QTextEdit(self)
-        l.addWidget(x)
+        self.c83388.setBuddy(x)
+        l1.addWidget(x)
         x.setReadOnly(True)
         x.setFont(MONO_FONT)
 
@@ -267,14 +295,32 @@ class XExplorer(QMainWindow):
 
         self.set_dir(dir_)
 
+    def set_dir(self, dir_):
+        """Sets directory, auto-loads, updates all GUI contents."""
+
+        self.__lock_set_dir(dir_)
+        self.__lock_auto_load()
+        self.__lock_update_table()
+        self.__update_info()
+        self.__update_window_title()
+
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Qt override
 
     def eventFilter(self, obj, event):
         if obj == self.tableWidget:
-            return check_return_space(event, self.on_load)
+            if check_return_space(event, self.on_load):
+                return True
+            if event.type() == QEvent.KeyPress:
+                if event.key() == Qt.Key_Up:
+                    if self.tableWidget.currentRow() == 0:
+                        self.lineEditDir.setFocus()
         elif obj == self.listWidgetVis:
             return check_return_space(event, self.__visualize)
+        elif obj == self.lineEditDir:
+            if event.type() == QEvent.KeyPress:
+                if event.key() == Qt.Key_Down:
+                    self.tableWidget.setFocus()
         return False
 
     def closeEvent(self, event):
@@ -319,17 +365,32 @@ class XExplorer(QMainWindow):
             if dir_:
                 self.set_dir(str(dir_))
 
+    def on_cd2(self):
+        new_dir = str(self.lineEditDir.text())
+        if os.path.isdir(new_dir):
+            new_dir = os.path.abspath(new_dir)
+            self.set_dir(new_dir)
+        else:
+            ShowError("Invalid directory")
+
     def on_collect_errors(self, _=None):
-        if not self.__flag_loading:
-            try:
-                k = ErrorCollector()
-                k.collect_errors(self.dir)
-                w = XHTML(self, k.get_html(), "Errors in '%s' and subdirectories" % self.dir)
-                w.show()
-            except Exception as e:
-                MSG = "Could not collect errors"
-                get_python_logger().exception(MSG)
-                ShowError("%s: %s" % (MSG, str(e)))
+        if self.__flag_loading:
+            return
+
+        self.__flag_loading = True
+        self.__set_status_text("Collecting errors, please wait...")
+        try:
+            k = ErrorCollector()
+            k.collect_errors(self.dir)
+            w = XHTML(self, k.get_html(), "Errors in '%s' and subdirectories" % self.dir)
+            w.show()
+        except Exception as e:
+            MSG = "Could not collect errors"
+            get_python_logger().exception(MSG)
+            ShowError("%s: %s" % (MSG, str(e)))
+        finally:
+            self.__flag_loading = False
+            self.__set_status_text("")
 
     def on_timer_changed_timeout(self):
         if self.__flag_loading:
@@ -339,18 +400,11 @@ class XExplorer(QMainWindow):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
     # Internals
 
-
     def __update_window_title(self):
-        self.setWindowTitle("PFANT Explorer -- %s" % self.dir)
-
-    def set_dir(self, dir_):
-        """Sets directory, auto-loads, updates all GUI contents."""
-
-        self.__lock_set_dir(dir_)
-        self.__lock_auto_load()
-        self.__lock_update_table()
-        self.__update_info()
-        self.__update_window_title()
+        full_dir = os.path.abspath(self.dir)
+        # self.setWindowTitle("PFANT Explorer -- %s" % os.path.abspath(self.dir))
+        self.setWindowTitle("PFANT Explorer")
+        self.lineEditDir.setText(full_dir)
 
     def __get_current_vis_class(self):
         return self.__vis_classes[self.listWidgetVis.currentRow()]
@@ -403,6 +457,7 @@ class XExplorer(QMainWindow):
 
     def __set_status_text(self, text):
         self.labelStatus.setText(text)
+        QApplication.instance().processEvents()
 
     def __visualize(self):
         self.__flag_visualizing = True

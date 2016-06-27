@@ -5,6 +5,7 @@ Ancestor class for all classes that represent an input file.
 __all__ = ["DataFile"]
 
 from ..misc import *
+import os
 
 class DataFile(AttrsPart):
     default_filename = None  ## Descendants shoulds set this
@@ -38,6 +39,13 @@ class DataFile(AttrsPart):
             filename = self.default_filename
         assert filename is not None, \
             "%s class has no default filename" % self.__class__.__name__
+
+        # Convention: trying to open empty file is an error,
+        # because it could be of (almost) any type.
+
+        size = os.path.getsize(filename)
+        if size == 0:
+            raise RuntimeError("Empty file")
 
         self._do_load(filename)
         self.filename = filename
