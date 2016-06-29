@@ -1,14 +1,30 @@
+```
+This directory
+
+fortran
+├── *.f90  ........... Source code
+├── make-linux.sh  ... Compilation shell script for Linux
+└── *.cbp , PFANT*  .. Code Blocks Fortran files
+
+```
+
 # Fortran source code
 
-## Directory contents
+# Table of Contents
 
-*.f90, *.f      -- Fortran sources
-                                     
-## Tools
+  1. [Introduction](#S1)
+  2. [Installation](#S2)
+  3. [Operation](#S3)
+  4. [Reference](#S4)
+  5. [Other topics](#S5)
+  6. [Links](#S6)
+  7. [References](#S7)
 
-This section contains guidelines for developers to maintain and share the source code. 
+## <a name=S1></a> Introduction
 
-### Working with the github repository
+...
+
+## <a name=S2></a> Working with the github repository
  
 To clone the github repository:
  
