@@ -12,7 +12,7 @@ fortran
 
 # Table of Contents
 
-  1. [Introduction](#S1)
+  1. [C](#S1)
   2. [Installation](#S2)
   3. [Operation](#S3)
   4. [Reference](#S4)
@@ -23,6 +23,9 @@ fortran
 ## <a name=S1></a> Introduction
 
 ...
+
+
+# TODO structure, i.e., pfant.f90 + pfantlib.f90, hydro2.f90 + pfantlib.f90, compile from console without makefile
 
 ## <a name=S2></a> Working with the github repository
  
@@ -40,7 +43,7 @@ document.
 This will facilitate future <code>git push</code> invokes.
 To keep git from asking for your github username and password every time you execute a
 <code>git push</code>, you have to configure git to use the SSH protocol to communicate
-with github.
+with github (works for other GitHub repositories as well).
  
 The steps involved are roughly summarized below. For full details, please follow the
 tutorials referenced below.
@@ -65,14 +68,11 @@ tutorials referenced below.
    ```
   
 ### CodeBlocks Fortran (CBFortran)
- 
-CBFortran is a customization of the
-Code Blocks (CB) IDE optimized for working with Fortran projects.
 
-I am not suggesting CBFortran to edit code, but to compile the code, as
-**this IDE does a good job in compiling the code** (and also generating makefiles). 
-CB was used to create the makefiles in the `PFANT/fortran directory`.
- 
+CBFortran is a customization of the Code Blocks (CB) IDE optimized for working with Fortran projects.
+
+CBFortran is being presented here as a tool to compile the source code or generate the make files to do so.
+
 #### Running CBFortran on Linux
  
 CBFortran does not require installation. Just download the .taz.bz2 file from the
@@ -83,6 +83,8 @@ After extracted, enter the new directory, and
 execute `codeblocks_run.sh`
  
 #### Using CBFortran
+
+# TODO open PFANT-linux.cbp, Build-Select target, Fortran generate makefile...
  
 The CBFortran project is the file PFANT/fortran/PFANT.cbp.
  
