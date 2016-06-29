@@ -8,15 +8,12 @@ fortran
 
 ```
 
-# Fortran source code
+# Fortran directory
 
 # Table of Contents
 
   1. [Compile](#S1)
-  2. [Installation](#S2)
-  3. [Operation](#S3)
-  4. [Reference](#S4)
-  5. [Other topics](#S5)
+  2. [Develop](#S2)
   6. [Links](#S6)
   7. [References](#S7)
 
@@ -44,45 +41,6 @@ gfortran -o nulbad nulbad.f90 pfantlib.o
 
 Please refer to Section TODO.
 
-## <a name=S2></a> Working with the github repository
- 
-To clone the github repository:
- 
-```shell
-git clone https://github.com/trevisanj/PFANT
-```
-
-This will create a directory named PFANT, which is treated as our root directory in this
-document.
-
-#### Communicating with github <i>via</i> SSH
-
-This will facilitate future <code>git push</code> invokes.
-To keep git from asking for your github username and password every time you execute a
-<code>git push</code>, you have to configure git to use the SSH protocol to communicate
-with github (works for other GitHub repositories as well).
- 
-The steps involved are roughly summarized below. For full details, please follow the
-tutorials referenced below.
-1. Generate a SSH key. I followed the tutorial at
-   https://help.github.com/articles/generating-ssh-keys/,
-   but the commands are roughly as follows:
-   ```shell
-   ls -al ~/.ssh  # Check existing SSH keys
-   ssh-keygen -t rsa -C "your@email.com"
-   ssh-add ~/.ssh/id_rsa
-   <your_text_editor>  ~/.ssh/id_rsa.pub
-   ```
-2. Copy-paste the key to a box at a settings page at GitHub.
-   After you do this, you can test if it works:
-   ```shell
-   ssh -T git@github.com
-   ```
-3. Change the remote URL that git uses. Tutorial at
-   https://help.github.com/articles/changing-a-remote-s-url/
-   ```shell
-   git remote set-url origin git@github.com:trevisanj/pfant.git
-   ```
   
 ### CodeBlocks Fortran (CBFortran)
 
