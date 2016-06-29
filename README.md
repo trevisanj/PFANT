@@ -2,10 +2,10 @@
 This directory
 
 PFANT
-├── figures . Graphic material made in PowerPoint, GIMP etc.
 ├── fortran . Fortran source code and binaries
+├── data .... Some stellar data, spectral lines etc.
 ├── pyfant .. Python package and scripts                        
-└── data .... Some stellar data, spectral lines etc.
+└── figures . Graphic material made in PowerPoint, GIMP etc.
 ```
 
 # Welcome
