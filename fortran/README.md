@@ -12,7 +12,7 @@ fortran
 
 # Table of Contents
 
-  1. [C](#S1)
+  1. [Compile](#S1)
   2. [Installation](#S2)
   3. [Operation](#S3)
   4. [Reference](#S4)
@@ -20,12 +20,29 @@ fortran
   6. [Links](#S6)
   7. [References](#S7)
 
-## <a name=S1></a> Introduction
+## <a name=S1></a> Compile
 
-...
+The quickest way to compile (in Linux) is to use the shell script provided:
 
+```shell
+./make-linux.sh
+```
 
-# TODO structure, i.e., pfant.f90 + pfantlib.f90, hydro2.f90 + pfantlib.f90, compile from console without makefile
+### Using gfortran explicitly
+
+The four programs `innewmarcs`, `hydro2`, `pfant`, `nulbad` have their corresponding ".f90" source files, _i.e._, _innewmarcs.f90_ etc. They must be linked together with  _pfantlib.f90_. The following will generate the four executable binaries.
+
+```shell
+gfortran -c pfantlib.f90
+gfortran -o innewmarcs pfant.f90 pfantlib.o
+gfortran -o hydro2 hydro2.f90 pfantlib.o
+gfortran -o pfant pfant.f90 pfantlib.o
+gfortran -o nulbad nulbad.f90 pfantlib.o
+```
+
+### Using CodeBlocks Fortran IDE
+
+Please refer to Section TODO.
 
 ## <a name=S2></a> Working with the github repository
  
