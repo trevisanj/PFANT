@@ -1,62 +1,53 @@
-# Fortran source code
+```
+This directory
 
-## Directory contents
+fortran
+├── *.f90  ........... Source code
+├── make-linux.sh  ... Compilation shell script for Linux
+└── *.cbp , PFANT*  .. Code Blocks Fortran files
 
-*.f90, *.f      -- Fortran sources
-                                     
-## Tools
-
-This section contains guidelines for developers to maintain and share the source code. 
-
-### Working with the github repository
- 
-To clone the github repository:
- 
-```shell
-git clone https://github.com/trevisanj/PFANT
 ```
 
-This will create a directory named PFANT, which is treated as our root directory in this
-document.
+# Fortran directory
 
-#### Communicating with github <i>via</i> SSH
+# Table of Contents
 
-This will facilitate future <code>git push</code> invokes.
-To keep git from asking for your github username and password every time you execute a
-<code>git push</code>, you have to configure git to use the SSH protocol to communicate
-with github.
- 
-The steps involved are roughly summarized below. For full details, please follow the
-tutorials referenced below.
-1. Generate a SSH key. I followed the tutorial at
-   https://help.github.com/articles/generating-ssh-keys/,
-   but the commands are roughly as follows:
-   ```shell
-   ls -al ~/.ssh  # Check existing SSH keys
-   ssh-keygen -t rsa -C "your@email.com"
-   ssh-add ~/.ssh/id_rsa
-   <your_text_editor>  ~/.ssh/id_rsa.pub
-   ```
-2. Copy-paste the key to a box at a settings page at GitHub.
-   After you do this, you can test if it works:
-   ```shell
-   ssh -T git@github.com
-   ```
-3. Change the remote URL that git uses. Tutorial at
-   https://help.github.com/articles/changing-a-remote-s-url/
-   ```shell
-   git remote set-url origin git@github.com:trevisanj/pfant.git
-   ```
+  1. [Compile](#S1)
+  2. [Develop](#S2)
+  6. [Links](#S6)
+  7. [References](#S7)
+
+## <a name=S1></a> Compile
+
+The quickest way to compile (in Linux) is to use the shell script provided:
+
+```shell
+./make-linux.sh
+```
+
+### Using gfortran explicitly
+
+The four programs `innewmarcs`, `hydro2`, `pfant`, `nulbad` have their corresponding ".f90" source files, _i.e._, _innewmarcs.f90_ etc. They must be linked together with  _pfantlib.f90_. The following will generate the four executable binaries.
+
+```shell
+gfortran -c pfantlib.f90
+gfortran -o innewmarcs pfant.f90 pfantlib.o
+gfortran -o hydro2 hydro2.f90 pfantlib.o
+gfortran -o pfant pfant.f90 pfantlib.o
+gfortran -o nulbad nulbad.f90 pfantlib.o
+```
+
+### Using CodeBlocks Fortran IDE
+
+Please refer to Section TODO.
+
   
 ### CodeBlocks Fortran (CBFortran)
- 
-CBFortran is a customization of the
-Code Blocks (CB) IDE optimized for working with Fortran projects.
 
-I am not suggesting CBFortran to edit code, but to compile the code, as
-**this IDE does a good job in compiling the code** (and also generating makefiles). 
-CB was used to create the makefiles in the `PFANT/fortran directory`.
- 
+CBFortran is a customization of the Code Blocks (CB) IDE optimized for working with Fortran projects.
+
+CBFortran is being presented here as a tool to compile the source code or generate the make files to do so.
+
 #### Running CBFortran on Linux
  
 CBFortran does not require installation. Just download the .taz.bz2 file from the
@@ -67,6 +58,8 @@ After extracted, enter the new directory, and
 execute `codeblocks_run.sh`
  
 #### Using CBFortran
+
+# TODO open PFANT-linux.cbp, Build-Select target, Fortran generate makefile...
  
 The CBFortran project is the file PFANT/fortran/PFANT.cbp.
  
