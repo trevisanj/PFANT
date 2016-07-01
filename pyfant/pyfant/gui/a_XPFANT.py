@@ -49,13 +49,6 @@ class XPFANT(XMainAbonds):
         self.__update_lineEdit_custom_id()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
-    # Qt override
-
-    def closeEvent(self, event):
-        plt.close("all")
-        event.accept()
-
-    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for Qt library signals
 
     def on_submit(self):
@@ -92,7 +85,7 @@ class XPFANT(XMainAbonds):
                 errors.append(str(e))
                 get_python_logger().exception("Cannot submit job")
         if len(errors) > 0:
-            ShowError("Cannot submit job:\n  - "+("\n  - ".join(errors)))
+            show_error("Cannot submit job:\n  - "+("\n  - ".join(errors)))
 
     def on_checkbox_custom_id_state_changed(self):
         self.__update_lineEdit_custom_id()

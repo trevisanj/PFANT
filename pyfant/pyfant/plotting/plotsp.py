@@ -54,10 +54,6 @@ def plot_spectra(ss, title=None, ymin=None, num_rows=None):
                 break
             j = 0
         assert isinstance(s, Spectrum)
-        # if n == 1:
-        #     ax = axarr
-        # else:
-        print " O I E O J", i, j
         ax = axarr[i, j]
 
         ax.plot(s.x, s.y)

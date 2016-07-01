@@ -26,9 +26,7 @@ class XMolLinesEditor(QMainWindow):
 
 
         self.setCentralWidget(a)
-        rect = QApplication.desktop().screenGeometry()
-        W = 200  # fixed value for the width for now
-        self.setGeometry(rect.width()-W, 0, W, rect.height())
+        snap_right(self, 200)
 
     def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
                                           previousColumn):
@@ -41,7 +39,7 @@ class XMolLinesEditor(QMainWindow):
                 value = float(item.text())
             except ValueError:
                 # restores original value
-                ShowError("Invalid floating point value: %s" % item.text())
+                show_error("Invalid floating point value: %s" % item.text())
                 item.setText(str(self.parent.sol.__getattribute__(SOL_ATTR_NAMES[column])[row]))
             else:
                 self.parent.MolLinesEditor_cell_changed(row, column, value)
@@ -84,7 +82,6 @@ class XMolLinesEditor(QMainWindow):
             t.resizeColumnsToContents()
         finally:
             self.flag_populating = False
-
 
     def set_row(self, i):
         t = self.tableWidget

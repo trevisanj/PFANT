@@ -2368,6 +2368,7 @@ end module flin
 ! Originally from the Fortran wiki (http://fortranwiki.org/fortran/show/Command-line+arguments)
 
 module options2
+  use logging
   implicit none
 
   integer, parameter :: MAX_LEN_DESCR = 500 ! Maximum length of option description
@@ -2402,8 +2403,6 @@ module options2
 
   !^^^^^ PUBLIC  ^^^^^
   !vvvvv PRIVATE vvvvv
-
-  private give_error  ! logs and halts
 
   integer, private, parameter :: MAX_TEMP_PTR=300  ! In practice: maximum size of options_ string
 
@@ -2495,7 +2494,7 @@ contains
       if (ch /= '-' .and. len_trim(arg0) > 2) then
         ! single dash, but name too long ('-xxxx...')
         write(lll, *) 'Invalid name for short option: "', trim(arg0(2:)), '"'
-        call give_error(lll)
+        call log_and_halt(lll)
       end if
 
       if (ch == '-' .and. arg0(3:3) == ' ') then
@@ -2516,7 +2515,7 @@ contains
 
       if (id == 0) then
         write(lll, *) 'Invalid option: "', trim(arg0), '"'
-        call give_error(lll)
+        call log_and_halt(lll)
       end if
 
       if (.not. options(id)%has_arg) then
@@ -2526,7 +2525,7 @@ contains
 
       if (pos == cnt) then
         write(lll, *) 'Option "', trim(arg0), '" requires an argument, but none found'
-        call give_error(lll)
+        call log_and_halt(lll)
       end if
 
       pos = pos + 1
@@ -2535,7 +2534,7 @@ contains
       ! make sure argument is not an option
       if (arg1(1:1) == '-') then
         write(lll, *) 'Option "', trim(arg0), '" requires an argument, but option found'
-        call give_error(lll)
+        call log_and_halt(lll)
       end if
 
       st = 0
@@ -2716,24 +2715,9 @@ contains
 
   end subroutine
 
-  ! Logs error and halts
-  ! This routine was created to standardize the "giving error" behaviour
-
-  subroutine give_error(lll)
-    ! Error message
-    character(len=*) :: lll
-
-    write(error_unit, *) lll
-    stop -1
-  end subroutine
-
-
-
   !=======================================================================================
-
-
   ! Returns option name with single quotes.
-  !
+  
   function get_option_name(opt) result(res)
     character(len=:), allocatable :: res
     ! Option, will be used only in case of error

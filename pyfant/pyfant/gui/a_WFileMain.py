@@ -74,7 +74,7 @@ class WFileMain(QWidget):
         y.installEventFilter(self)
         x.setBuddy(y)
         pp.append((x, y, "t&itrav", "star name", COLOR_STAR,
-         "Name of the star."))
+         "Name of the star"))
 
         x = self.label_teff = QLabel()
         y = self.lineEdit_teff = QLineEdit()
@@ -196,7 +196,7 @@ class WFileMain(QWidget):
         pp.append((x, y, "&aint", "length of sub-interval (&Aring;)", COLOR_CONFIG,
         "This is length of each calculation sub-interval "
         "(the calculation interval ["+enc_name("llzero", COLOR_CONFIG)+", "+enc_name("llfin", COLOR_CONFIG)+"] is split in sub-intervals of roughly "+enc_name("aint", COLOR_CONFIG)+" &Aring;)."
-        "<br><br>Note: "+enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+enc_name("pas", COLOR_CONFIG)+"."))
+        "<br><br>Note: "+enc_name("aint", COLOR_CONFIG)+" must be a multiple of "+enc_name("pas", COLOR_CONFIG)+"."+LLZERO_LLFIN))
 
         x = self.label_fwhm = QLabel()
         y = self.lineEdit_fwhm = QLineEdit()
@@ -217,8 +217,8 @@ class WFileMain(QWidget):
             label.setAlignment(Qt.AlignRight)
             lg.addWidget(label, i, 0)
             lg.addWidget(edit, i, 1)
+            label.setToolTip(long_descr)
             edit.setToolTip(long_descr)
-
 
 
         # ### Second widget of splitter
@@ -279,10 +279,11 @@ class WFileMain(QWidget):
     # # Slots
 
     def on_edited(self):
-        # print "THE SENDER IS ", self.sender()
         if self.flag_process_changes:
+            print "THE SENDER IS ", self.sender()
             self.__update_file_main()
             self.edited.emit()
+
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Internal gear
@@ -367,7 +368,6 @@ class WFileMain(QWidget):
                 emsg = "Field \"%s\": %s" % (ss, str(E))
             else:
                 emsg = str(E)
-            emsg = "<b>Invalid</b>: "+emsg
             # ShowError(str(E))
         self.flag_valid = not flag_error
         self.__set_error_text(emsg)

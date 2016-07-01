@@ -50,7 +50,7 @@ class MultiRunnable(Runnable):
         Runnable.__init__(self)
         assert isinstance(file_main, FileMain)
         assert isinstance(file_abonds, FileAbonds)
-        assert isinstance(options, Options)
+        assert isinstance(options, FileOptions)
         assert isinstance(file_abxfwhm, FileAbXFwhm)
         self.__file_main = file_main
         self.__file_abonds = file_abonds

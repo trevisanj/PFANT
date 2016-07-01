@@ -60,7 +60,7 @@ class FileHmap(DataFile):
 
                     self.rows.append(r)
                 except:
-                    _logger.error("Error reading row #%d, file \"%s\"" % (i+1, filename))
+                    # _logger.error("Error reading row #%d, file \"%s\"" % (i+1, filename))
                     raise
 
 

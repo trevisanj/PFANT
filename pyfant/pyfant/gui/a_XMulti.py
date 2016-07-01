@@ -75,9 +75,6 @@ class XMulti(XPFANT):
         editor.edited.connect(self.on_multi_edited)
         l.addWidget(editor)
 
-        # # Final adjustments
-        self.setGeometry(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
-
         # ## Registers data in a_XMainAbonds lists to automatically perform Load/Save/Save as
         self.tab_texts.append(TAB_TEXT_4)
         self.flags_changed.append(False)
@@ -99,6 +96,8 @@ class XMulti(XPFANT):
         if self.ae.f:
             self.on_file_abonds_loaded()
         self._update_labels_fn()
+
+        snap_left(self, 720)
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots for Qt library signals
@@ -144,7 +143,7 @@ class XMulti(XPFANT):
                 self.setEnabled(True)
 
         if len(errors) > 0:
-            ShowError("Cannot submit multi-job:\n  - "+("\n  - ".join(errors)))
+            show_error("Cannot submit multi-job:\n  - "+("\n  - ".join(errors)))
 
     def on_checkbox_multi_custom_id_state_changed(self):
         self.__update_lineEdit_multi_custom_id()
@@ -166,10 +165,6 @@ class XMulti(XPFANT):
     # Slots for signals emited by pyfant widgets
 
     def on_file_abonds_loaded(self):
-        self.multi_editor.file_abonds = self.ae.f
-
-    def on_abonds_edited(self):
-        XPFANT.on_abonds_edited(self)
         self.multi_editor.file_abonds = self.ae.f
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

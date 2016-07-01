@@ -49,37 +49,38 @@ class _Option(AttrsPart):
             self.edit.setText("")
 
     def __update_edit(self, value):
-        if isinstance(self.edit, QCheckBox):
-            self.edit.setChecked(value == True)
+        if value is None:
+            if isinstance(self.edit, QCheckBox):
+                self.edit.setChecked(False)
+            else:
+                self.edit.setText("")
         else:
-            self.edit.setText(str(value))
+            if isinstance(self.edit, QCheckBox):
+                self.edit.setChecked(value == True)
+            else:
+                self.edit.setText(str(value))
 
     def update_edit_with_default(self):
-        if self.default is not None:
-            self.__update_edit(self.default)
+        self.__update_edit(self.default)
 
-    def update_gui(self, options):
-        assert isinstance(options, Options)
+    def update_gui(self, options, flag_reset=False):
+        """Updates control and in-use-checkbox.
+
+        Arguments:
+          options -- FileOptions instance
+          flag_reset=False -- resets controls to default value if their value in the
+                              FileOptions object is None
+        """
+        assert isinstance(options, FileOptions)
         attr = options.__getattribute__(self.name)
         flag_check = attr is not None
         self.checkbox.setChecked(flag_check)
         if self.flag_never_used and flag_check:
             self.flag_never_used = False
-        if attr is None:
-            pass
-            # todo not sure if clearing edit of not
-            # self.__clear_edit()
-        else:
+        if flag_check:
             self.__update_edit(attr)
-
-    def set_gui_default_if_never_used(self):
-        """Sets edit/checkbox default if first time the option is set to "in use"."""
-        if self.default is not None and self.flag_never_used:
-            if isinstance(self.edit, QCheckBox):
-                self.edit.setChecked(self.default)
-            else:
-                self.edit.setText(str(self.default))
-        self.flag_never_used = False
+        elif flag_reset:
+            self.update_edit_with_default()
 
     def get_label_text(self):
         return enc_name_descr("--%s" % self.name, self.short_descr, self.color)
@@ -115,7 +116,7 @@ class _Option(AttrsPart):
 
 class WOptionsEditor(QWidget):
     """
-    Options editor widget.
+    FileOptions editor widget.
 
     Arguments:
       parent=None
@@ -132,7 +133,7 @@ class WOptionsEditor(QWidget):
 
         # Whether all the values in the fields are valid or not
         self.flag_valid = False
-        self.f = None # Options object
+        self.f = None # FileOptions object
         self.logger = get_python_logger()
 
         # # Internal stuff that must not be accessed from outside
@@ -554,17 +555,20 @@ class WOptionsEditor(QWidget):
                 lo.addWidget(edit, i, 1)
                 lo.addWidget(checkbox, i, 2, Qt.AlignCenter)
                 i += 1
-                option.edit.setToolTip(option.long_descr)
+                for w in [option.label, option.edit]:
+                    w.setToolTip(option.long_descr)
+
                 if isinstance(edit, QCheckBox):
                     edit.stateChanged.connect(self.on_edited)
                 else:
                     edit.textEdited.connect(self.on_edited)
 
                 # todo No consensus yet if it is better to show the default values
-                option.update_edit_with_default()
+                # option.update_edit_with_default()
             except:
                 self.logger.exception("Processing option '%s'" % option.name)
                 raise
+        self.__update_from_data(FileOptions(), True)
 
 
         # ### Second widget of splitter
@@ -590,9 +594,9 @@ class WOptionsEditor(QWidget):
         sp.setStretchFactor(0, 8)
         sp.setStretchFactor(1, 2)
 
-        self.setEnabled(False)  # disabled until load() is called
         self.__update_visible_options()
         style_checkboxes(self)
+        self.setEnabled(False)  # disabled until load() is called
         self.flag_process_changes = True
 
 
@@ -600,9 +604,9 @@ class WOptionsEditor(QWidget):
     # # Interface
 
     def load(self, x):
-        assert isinstance(x, Options)
+        assert isinstance(x, FileOptions)
         self.f = x
-        self.__update_from_data()
+        self.__update_from_data(flag_reset=True)
         # this is called to perform file validation upon loading
         self.__update_data()
         self.setEnabled(True)
@@ -650,9 +654,10 @@ class WOptionsEditor(QWidget):
             return
         checkbox = self.sender()
         option = self.__find_option_by_in_use_checkbox(checkbox)
-        if checkbox.isChecked():
-            option.set_gui_default_if_never_used()
+        # if checkbox.isChecked():
+        #     option.set_gui_default_if_never_used()
         self.__update_data()
+        self.edited.emit()
 
     def on_checkbox_exe_clicked(self):
         self.__update_visible_options()
@@ -721,11 +726,18 @@ class WOptionsEditor(QWidget):
                 break
         return ret
 
-    def __update_from_data(self):
+    def __update_from_data(self, data=None, flag_reset=False):
+        """Updates the edits and in-use-checkboxes.
+
+        data=self.f -- FileOptions instance
+        flag_reset -- options are loaded as if for the first time into GUI
+        """
         self.flag_process_changes = False
         try:
+            if data is None:
+                data = self.f
             for option in self.omap:
-                option.update_gui(self.f)
+                option.update_gui(data, flag_reset)
         finally:
             self.flag_process_changes = True
 

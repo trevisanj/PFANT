@@ -14,6 +14,7 @@ class FileMain(DataFile):
   Attributes match reader_main.f90::main_* (minus the "main_" prefix)
   """
 
+  description = "main configuration"
   default_filename = "main.dat"
   attrs = ["titrav", "pas", "fwhm", "ivtot", "vvt", "tolv",
            "teff", "glog", "asalog", "nhe", "ptdisk", "mu",

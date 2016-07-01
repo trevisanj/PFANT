@@ -6,12 +6,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from .guiaux import *
 from pyfant import *
-from .a_XText import *
 from .syntax import *
-import traceback
 import sys
 import types
-
+import traceback
 
 class WFileAbXFwhm(QWidget):
     """
@@ -27,12 +25,11 @@ class WFileAbXFwhm(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-
         # # Setup & accessible attributes
 
         # Whether all the values in the fields are valid or not
         self.flag_valid = False  # initialized to False because not loaded yet
-        self.f = None # Options object
+        self.f = None # FileOptions object
         self.logger = get_python_logger()
         # FileAbonds instance to check for existence of atomic symbols
         self.file_abonds = None
@@ -60,7 +57,8 @@ class WFileAbXFwhm(QWidget):
         # ### Editor for multi setup
         editor = self.editor = QPlainTextEdit()
         # editor.setStyleSheet("QPlainTextEdit {background-color: #000000}")
-        editor.textChanged.connect(self.on_edited)
+        #editor.textChanged.connect(self.on_edited)
+        editor.modificationChanged.connect(self.on_edited)
         sp.addWidget(editor)
         self.highlight = PythonHighlighter(editor.document())
 
@@ -85,8 +83,6 @@ class WFileAbXFwhm(QWidget):
         style_checkboxes(self)
         self.flag_process_changes = True
 
-
-
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Interface
 
@@ -95,7 +91,7 @@ class WFileAbXFwhm(QWidget):
         self.f = x
         self.__update_from_data()
         # this is called to perform file validation upon loading
-        self.__update_data()
+        # self.__update_data()
         self.setEnabled(True)
 
     def validate(self):
@@ -109,19 +105,27 @@ class WFileAbXFwhm(QWidget):
     # # Qt override
 
     def setFocus(self, reason=None):
-        self.editor.setFocus()
+        pass  # self.editor.setFocus()
 
-    def eventFilter(self, obj_focused, event):
-        pass
-        return False
+#    def eventFilter(self, obj_focused, event):
+#        pass
+#        return False
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Slots
 
     def on_edited(self):
+        # http://stackoverflow.com/questions/22685463/qt5-tell-qplaintextedit-to-ignore-syntax-highlighting-changes
+
+        print "0000MULA THE SENDER IS ", self.sender()
         if not self.flag_process_changes:
             return
+
+
+        self.editor.document().setModified(False)
         self.__update_data()
+        print "1111MULA THE SENDER IS ", self.sender()
+
         self.edited.emit()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

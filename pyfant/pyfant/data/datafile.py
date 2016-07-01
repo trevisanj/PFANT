@@ -8,7 +8,8 @@ from ..misc import *
 import os
 
 class DataFile(AttrsPart):
-    default_filename = None  ## Descendants shoulds set this
+    description = ""  # Description, e.g. "main configuration"
+    default_filename = None  # Descendants shoulds set this
 
     def __init__(self):
         AttrsPart.__init__(self)
@@ -26,8 +27,10 @@ class DataFile(AttrsPart):
         """
         if filename is None:
             filename = self.filename
-        self.filename = filename
+        if filename is None:
+            filename = self.default_filename
         self._do_save_as(filename)
+        self.filename = filename
 
     def _do_save_as(self, filename):
         raise NotImplementedError()
@@ -45,7 +48,7 @@ class DataFile(AttrsPart):
 
         size = os.path.getsize(filename)
         if size == 0:
-            raise RuntimeError("Empty file")
+            raise RuntimeError("Empty file: '%s'" % filename)
 
         self._do_load(filename)
         self.filename = filename

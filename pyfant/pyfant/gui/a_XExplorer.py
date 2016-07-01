@@ -69,7 +69,7 @@ class _FileProps(object):
             else:
                 aa.append("<span style=\"color: %s\">PFANT type: <b>%s</b></span>" %
                           ("#006000", self.f.__class__.__name__))
-            ret = "<b>Summary</b>: "+", ".join(aa)
+            ret = ("; ".join(aa))
         return ret
 
     def get_info(self):
@@ -140,6 +140,7 @@ class XExplorer(QMainWindow):
         self.__flag_visualizing = False
         self.__flag_updating_table = False
         self.__load_thread = None
+        self.__flag_creating = True
         self.__lock_propss = MyLock(flag_verbose=False)
 
         # # Timer to watch for changed files
@@ -252,8 +253,12 @@ class XExplorer(QMainWindow):
         l1 = QVBoxLayout(w)
         l1.setMargin(0)
 
-        # ### Label to indicate the detected file type
-        x = self.labelFileType = QLabel()
+        # ### Label containing information about the current selection in the table widget
+
+        y = self.c77ww8 = QLabel("<b>Selection summary information</b>")
+        l1.addWidget(y)
+
+        x = self.labelSummary = QLabel()
         l1.addWidget(x)
 
         # ### Splitter containing a "visualization options area"
@@ -281,6 +286,8 @@ class XExplorer(QMainWindow):
         l1 = self.c86888 = QVBoxLayout(w)
         l1.setMargin(0)
         x = self.c83388 = QLabel("<b>Data file &information</b>")
+        x.setToolTip("The box below will show information only if the file is of a "
+                     "supported type")
         l1.addWidget(x)
         x = self.textEditInfo = QTextEdit(self)
         self.c83388.setBuddy(x)
@@ -295,6 +302,8 @@ class XExplorer(QMainWindow):
 
         self.set_dir(dir_)
 
+        self.__flag_creating = False
+
     def set_dir(self, dir_):
         """Sets directory, auto-loads, updates all GUI contents."""
 
@@ -308,6 +317,9 @@ class XExplorer(QMainWindow):
     # Qt override
 
     def eventFilter(self, obj, event):
+        if self.__flag_creating:
+            return
+
         if obj == self.tableWidget:
             if check_return_space(event, self.on_load):
                 return True
@@ -339,7 +351,7 @@ class XExplorer(QMainWindow):
         try:
             self.__visualize()
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
 
     def selectionChanged(self, *args):
@@ -371,7 +383,7 @@ class XExplorer(QMainWindow):
             new_dir = os.path.abspath(new_dir)
             self.set_dir(new_dir)
         else:
-            ShowError("Invalid directory")
+            show_error("Invalid directory")
 
     def on_collect_errors(self, _=None):
         if self.__flag_loading:
@@ -387,7 +399,7 @@ class XExplorer(QMainWindow):
         except Exception as e:
             MSG = "Could not collect errors"
             get_python_logger().exception(MSG)
-            ShowError("%s: %s" % (MSG, str(e)))
+            show_error("%s: %s" % (MSG, str(e)))
         finally:
             self.__flag_loading = False
             self.__set_status_text("")
@@ -439,7 +451,7 @@ class XExplorer(QMainWindow):
                     z.addItem(item)
 
             # File info
-            self.labelFileType.setText(p.get_summary())
+            self.labelSummary.setText(p.get_summary())
             self.textEditInfo.setPlainText(p.get_info())
         elif len(pp) >= 2:
             ff = [p.f for p in pp]

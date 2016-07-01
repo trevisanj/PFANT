@@ -208,9 +208,9 @@ class XFileAtoms(QMainWindow):
         base_dir = os.path.dirname(sys.argv[0])
         try:
             webbrowser.open_new(os.path.join(base_dir, "ated.html"))
-            ShowMessage("Help file ated.html was opened in web browser.")
+            show_message("Help file ated.html was opened in web browser.")
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
 
     def on_save(self, _):
@@ -218,7 +218,7 @@ class XFileAtoms(QMainWindow):
         try:
             self.save()
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()
@@ -233,7 +233,7 @@ class XFileAtoms(QMainWindow):
                     self.save_dir, _ = os.path.split(str(new_filename))
                     self.save_as(new_filename)
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()

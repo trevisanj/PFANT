@@ -14,3 +14,4 @@ from .filepartit import *
 from .filemolecules import *
 from .fileatoms import *
 from .fileabxfwhm import *
+from .fileoptions import *

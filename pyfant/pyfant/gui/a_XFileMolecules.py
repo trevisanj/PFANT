@@ -281,9 +281,9 @@ class XFileMolecules(QMainWindow):
         try:
             base_dir = os.path.dirname(sys.argv[0])
             webbrowser.open_new(os.path.join(base_dir, "mled.html"))
-            ShowMessage("Help file mled.html was opened in web browser.")
+            show_message("Help file mled.html was opened in web browser.")
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
 
     def on_save(self, _):
@@ -291,7 +291,7 @@ class XFileMolecules(QMainWindow):
         try:
             self.save()
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()
@@ -306,7 +306,7 @@ class XFileMolecules(QMainWindow):
                     self.save_dir, _ = os.path.split(str(new_filename))
                     self.save_as(new_filename)
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()

@@ -26,9 +26,7 @@ class XAtomLinesEditor(QMainWindow):
 
 
         self.setCentralWidget(a)
-        rect = QApplication.desktop().screenGeometry()
-        W = 360  # fixed value for the width for now
-        self.setGeometry(rect.width()-W, 0, W, rect.height())
+        snap_right(self, 360)
 
     def on_tableWidget_currentCellChanged(self, currentRow, currentColumn, previousRow,
                                           previousColumn):
@@ -41,7 +39,7 @@ class XAtomLinesEditor(QMainWindow):
                 value = float(item.text())
             except ValueError:
                 # restores original value
-                ShowError("Invalid floating point value: %s" % item.text())
+                show_error("Invalid floating point value: %s" % item.text())
                 item.setText(str(self.parent.atom.__getattribute__(ATOM_ATTR_NAMES[column])[row]))
             else:
                 self.parent.AtomLinesEditor_cell_changed(row, column, value)

@@ -261,7 +261,7 @@ class XRunnableManager(QMainWindow):
         except Exception as e:
             MSG = "Could not retry failed"
             _logger.exception(MSG)
-            ShowError("%s: %s" % (MSG, str(e)))
+            show_error("%s: %s" % (MSG, str(e)))
 
     def on_collect_errors(self):
         try:
@@ -272,7 +272,7 @@ class XRunnableManager(QMainWindow):
         except Exception as e:
             MSG = "Could not collect errors"
             _logger.exception(MSG)
-            ShowError("%s: %s" % (MSG, str(e)))
+            show_error("%s: %s" % (MSG, str(e)))
 
     # def on_timer_timeout(self):
     #     print "on_timer_timeout"
@@ -290,7 +290,7 @@ class XRunnableManager(QMainWindow):
         except Exception as e:
             MSG = "Could explore directory"
             _logger.exception(MSG)
-            ShowError("%s: %s" % (MSG, str(e)))
+            show_error("%s: %s" % (MSG, str(e)))
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

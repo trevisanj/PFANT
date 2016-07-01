@@ -3,14 +3,13 @@ Class to store all command-line options & DataFile instances used to run one or 
 executables.
 """
 
-__all__ = ["Options", "Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
+__all__ = ["Conf", "FOR_INNEWMARCS", "FOR_HYDRO2", "FOR_PFANT",
            "FOR_NULBAD", "IdMaker", "SID"]
 
-from pyfant.data import DataFile, FileHmap, FileModBin, FileMain, FileOpa
+from pyfant.data import DataFile, FileHmap, FileModBin, FileMain, FileOpa, FileOptions
 import shutil
 import os
 from .misc import *
-import re
 import logging
 import subprocess
 from threading import Lock
@@ -162,102 +161,6 @@ class IdMaker(object):
         d1 = self.session_prefix_singular+str(self.__i_id)
         return os.path.join(d0, d1)
 
-
-@froze_it
-class Options(object):
-    """Stores the command-line options.
-
-    For each xxxx attribute not starting with "_" there exists
-    a variable in config.f90 named config_xxxx, and
-    a command-line option "--xxxx"
-
-    """
-
-    def __init__(self):
-        # innewmarcs, hydro2, pfant, nulbad
-        self.logging_level = None
-        self.logging_console = None
-        self.logging_file = None
-        self.fn_logging = None
-        self.fn_main = None
-        self.explain = None
-        self.play = None
-
-        # innewmarcs, hydro2, pfant
-        self.fn_modeles = None
-
-        # innewmarcs
-        self.fn_modgrid = None
-        self.fn_moo = None
-        self.allow = None
-
-        # innewmarcs, pfant
-        self.opa = None
-        self.fn_opa = None
-
-        # hydro2, pfant
-        self.fn_absoru2 = None
-        self.fn_hmap = None
-        self.llzero = None
-        self.llfin = None
-
-        # hydro2
-        self.zph = None
-        self.kik = None
-        self.amores = None
-        self.kq = None
-
-        # pfant
-        self.fn_dissoc    = None
-        self.fn_partit    = None
-        self.fn_abonds    = None
-        self.fn_atoms   = None
-        self.fn_molecules = None
-        self.fn_lines     = None
-        self.fn_log       = None
-        self.fn_progress = None
-        self.flprefix = None
-        self.molidxs_off = None
-        self.no_molecules = None
-        self.no_h = None
-        self.no_atoms = None
-        self.zinf = None
-        self.pas = None
-        self.aint = None
-        self.interp = None
-        self.abs = None
-        self.sca = None
-        self.absoru = None
-
-        # nulbad
-        self.norm = None
-        self.flam = None
-        self.convol = None
-        self.fwhm = None
-        self.pat = None
-        self.fn_flux = None
-        self.fn_cv = None
-
-    def get_names(self):
-        """Returns a list with the names of all the options. Names come sorted"""
-        return filter(lambda x: not x.startswith(('_', 'get_')), dir(self))
-
-    def get_args(self):
-        """
-        Returns a list of command-line arguments (only options that have been set)
-        """
-        l = []
-        names = self.get_names()
-        for attr_name in names:
-            value = self.__getattribute__(attr_name)
-            if value is not None:
-                s_value = ("T" if value else "F") if isinstance(value, bool) else str(value)
-                if re.search(r"[,|& ]", s_value):
-                    s_value = '"'+s_value+'"'  # adds quotes if string contains one of the characters above
-                l.extend(["--"+attr_name, s_value])
-        return l
-
-
 @froze_it
 class Conf(object):
     """
@@ -347,7 +250,7 @@ class Conf(object):
         self.file_atoms = None
 
         # # Command-line options
-        self.__opt = Options()
+        self.__opt = FileOptions()
 
         # # Read-only properties
         self.__popen_text_dest = None

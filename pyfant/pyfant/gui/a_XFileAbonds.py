@@ -72,17 +72,23 @@ class XFileAbonds(QMainWindow):
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
+    # Override
+
+    def closeEvent(self, evt):
+        are_you_sure(self.flag_changed, evt, self)
+
+    # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # Slots
 
     def on_save(self, _):
         self.disable_save_actions()
         try:
             if not self.editor.flag_valid:
-                ShowError(PARAMS_INVALID)
+                show_error(PARAMS_INVALID)
             else:
                 self.save()
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()
@@ -92,7 +98,7 @@ class XFileAbonds(QMainWindow):
         try:
             if self.editor.f:
                 if not self.editor.flag_valid:
-                    ShowError(PARAMS_INVALID)
+                    show_error(PARAMS_INVALID)
                 else:
                     new_filename = QFileDialog.getSaveFileName(self, "Save file",
                      self.save_dir, "*.dat")
@@ -100,7 +106,7 @@ class XFileAbonds(QMainWindow):
                         self.save_dir, _ = os.path.split(str(new_filename))
                         self.save_as(new_filename)
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()
@@ -110,7 +116,7 @@ class XFileAbonds(QMainWindow):
         try:
             if self.editor.f:
                 if not self.editor.flag_valid:
-                    ShowError(PARAMS_INVALID)
+                    show_error(PARAMS_INVALID)
                 else:
                     new_filename = QFileDialog.getSaveFileName(self, "Save file",
                      os.path.join(".", FileDissoc.default_filename), "*.dat")
@@ -119,7 +125,7 @@ class XFileAbonds(QMainWindow):
                         f.title = "Created using abed.py"
                         f.save_as(new_filename)
         except Exception as e:
-            ShowError(str(e))
+            show_error(str(e))
             raise
         finally:
             self.enable_save_actions()

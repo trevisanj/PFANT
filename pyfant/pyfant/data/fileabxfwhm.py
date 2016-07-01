@@ -37,6 +37,8 @@ pfant_names = []
 conv = [0.08, 0.6,  0.04]
 """ % (_COMMENT0, _COMMENT1, _COMMENT2)
 
+
+    description = "abundances X FWHM's"
     default_filename = "abxfwhm.py"
     attrs = ["ab", "conv"]
 

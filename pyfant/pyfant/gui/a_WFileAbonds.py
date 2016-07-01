@@ -174,7 +174,7 @@ class WFileAbonds(QWidget):
                         item.setText(self._validate_element(row, item.text()))
                         flag_done = True
                     except Exception as E:
-                        ShowError(str(E))
+                        show_error(str(E))
 
                 if flag_done:
                     self._update_file_abonds()
@@ -202,7 +202,7 @@ class WFileAbonds(QWidget):
         self._update_file_abonds()
         self.edited.emit()
         if len(not_found) > 0:
-            ShowMessage("Symbols not found in the periodic table:\n\n"+
+            show_message("Symbols not found in the periodic table:\n\n"+
                         str([x.strip() for x in not_found])+"\n\n"+
                         "These symbols will appear first and will be ordered alphabetically.")
 

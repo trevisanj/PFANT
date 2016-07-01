@@ -1,19 +1,19 @@
 __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "ATOM_HEADERS", "index_nearest", "remove_line", "show_edit_form",
-           "PlotInfo", "place_left_top", "place_center", "PARAMS_INVALID",
-           "ShowError", "ShowMessage", "ShowWarning", "ResetTableWidget",
+           "PlotInfo", "place_left_top", "place_center", "snap_left", "snap_right",
+           "PARAMS_INVALID",
+           "show_error", "show_message", "show_warning", "ResetTableWidget",
            "COLOR_ERROR", "COLOR_CONFIG", "COLOR_STAR", "COLOR_DESCR", "COLOR_WARNING",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
            "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector",
-           "VerticalLabel"]
+           "VerticalLabel", "are_you_sure"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from .a_XParametersEditor import *
 import numpy as np
 import os
-
 
 
 # # Colors used in two or more different situations
@@ -37,7 +37,6 @@ def enc_name(name, color=COLOR_DESCR):
     """Encodes html given name."""
     return "<span style=\"color: %s; font-weight: bold\">%s</span>" % \
            (color, name)
-
 
 
 # Messages shared in two or more different situations
@@ -66,6 +65,7 @@ observed spectrum acquired out of the center of the star disk.
     <li>False: 6- or 26-point integration, depending on option --kik
 </ul>"""
 
+
 DESCR_MULTI = """
 Runs pfant for different abundances for each element, then run nulbad for each
 pfant result for different FWHMs.
@@ -90,21 +90,21 @@ The result will be
 """
 
 
-
 # Standard font to be use   d in all GUIs
 MONO_FONT = QFont("not_a_font_name")
 MONO_FONT.setStyleHint(QFont.TypeWriter)
+
 
 # Relating tablewidget column headers with set-of-lines attributes
 # This is shared between XFileMolecules and XMolLinesEditor
 SOL_HEADERS = ["lambda", "sj", "jj"]
 SOL_ATTR_NAMES = ["lmbdam", "sj", "jj"]
 
+
 # Relating tablewidget column headers with Atom atributes
 # This is shared between XFileAtoms and XAtomLinesEditor
 ATOM_HEADERS = ["lambda", "kiex", "algf", "ch", "gr", "ge", "zinf"]
 ATOM_ATTR_NAMES = ["lambda_", "kiex", "algf", "ch", "gr", "ge", "zinf"]
-
 
 
 def style_checkboxes(widget):
@@ -129,16 +129,39 @@ def check_return_space(event, callable_):
     return False
 
 
-def ShowError(s):
+def show_error(s):
   QMessageBox.critical(None, "Error", s)
 
 
-def ShowMessage(s):
+def show_message(s):
   QMessageBox.information(None, "Information", s)
 
 
-def ShowWarning(s):
+def show_warning(s):
   QMessageBox.warning(None, "Warning", s)
+
+
+def are_you_sure(flag_changed, evt, parent=None, title="File has been changed",
+                 msg="Are you sure you want to exit?"):
+    """
+    "Are you sure you want to exit" question dialog.
+
+    If flag_changed, shows question dialog. If answer is not yes, calls evt.ignore()
+
+    Arguments:
+      flag_changed
+      evt -- QCloseEvent instance
+      parent=None -- parent form, used to centralize the question dialog at
+      title -- title for question dialog
+      msg -- text of question dialog
+
+    Returns True or False. True means: "yes, I want to exit"
+    """
+    if flag_changed:
+        r = QMessageBox.question(parent, title, msg,
+             QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)
+        if r != QMessageBox.Yes:
+            evt.ignore()
 
 
 def ResetTableWidget(t, rowCount, colCount):
@@ -157,6 +180,7 @@ def index_nearest(array, value):
     """
     idx = (np.abs(array-value)).argmin()
     return idx
+
 
 def remove_line(line2D):
     """
@@ -183,12 +207,15 @@ def show_edit_form(obj, attrs, title):
     return r, form
 
 
+# # Coarse solution for hidden window title
+# Qt does not account for the window frame.This is being coarsely
+# accounted for by setting the position coordinates to values slightly greater
+# than 0.
+_DESKTOP_OFFSET_LEFT = 2
+_DESKTOP_OFFSET_TOP = 15
+
 def place_left_top(window, width=None, height=None):
     """Places window in top left corner of screen.
-
-    Qt, on doing this, does not count the window frame. This is being coarsely
-    accounted for by setting the position coordinates to values slightly greater
-    than 0.
 
     Arguments:
       window -- a QWidget
@@ -201,7 +228,7 @@ def place_left_top(window, width=None, height=None):
     if height is None:
         height = window.height()
 
-    window.setGeometry(2, 15, width, height)
+    window.setGeometry(_DESKTOP_OFFSET_LEFT, _DESKTOP_OFFSET_TOP, width, height)
 
 def place_center(window):
     """Places window in the center of the screen."""
@@ -209,6 +236,29 @@ def place_center(window):
     x = (screenGeometry.width() - window.width()) / 2
     y = (screenGeometry.height() - window.height()) / 2
     window.move(x, y)
+
+def snap_left(window, width=None):
+    """Snaps window to left of desktop.
+    Arguments:
+      window -- a QWidget
+      width=None -- window width, in case you want to change it (if not passed, not changed)
+    """
+    if not width:
+        width = window.width()
+    rect = QApplication.desktop().screenGeometry()
+    window.setGeometry(_DESKTOP_OFFSET_LEFT, _DESKTOP_OFFSET_TOP, width, rect.height())
+
+def snap_right(window, width=None):
+    """Snaps window to right of desktop.
+    Arguments:
+      window -- a QWidget
+      width=None -- window width, in case you want to change it (if not passed, not changed)
+    """
+    if not width:
+        width = window.width()
+    rect = QApplication.desktop().screenGeometry()
+    window.setGeometry(rect.width()-width, _DESKTOP_OFFSET_TOP, width, rect.height())
+
 
 
 class PlotInfo(object):
@@ -220,7 +270,6 @@ class PlotInfo(object):
 
 
 class Occurrence(object):
-
     colors = {"undefined": "#000000",
               "warning": COLOR_WARNING,
               "error": COLOR_ERROR,
@@ -240,6 +289,7 @@ class Occurrence(object):
          (self.filename, self.colors[self.type], self.type))+ \
          ("" if not self.line else "<b>line %d</b>\n" % self.line)+ \
          ("<pre>%s</pre>" % message if message else "")
+
 
 class ErrorCollector(object):
     def __init__(self):
