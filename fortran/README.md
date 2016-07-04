@@ -13,8 +13,9 @@ fortran
 # Table of Contents
 
   1. [Compile](#S1)
-  2. [Develop](#S2)
-  6. [Links](#S6)
+  2. [Coding style](#S2)
+  3. [
+  4. [Using CBFortran](#S6)
   7. [References](#S7)
 
 ## <a name=S1></a> Compile
@@ -39,37 +40,7 @@ gfortran -o nulbad nulbad.f90 pfantlib.o
 
 ### Using CodeBlocks Fortran IDE
 
-Please refer to Section TODO.
-
-  
-### CodeBlocks Fortran (CBFortran)
-
-CBFortran is a customization of the Code Blocks (CB) IDE optimized for working with Fortran projects.
-
-CBFortran is being presented here as a tool to compile the source code or generate the make files to do so.
-
-#### Running CBFortran on Linux
- 
-CBFortran does not require installation. Just download the .taz.bz2 file from the
-downloads page http://cbfortran.sourceforge.net/downloads.html and extract it into your
-home directory (will create directory `/home/user/CodeBLocks_Fortran_xxxx`).
- 
-After extracted, enter the new directory, and
-execute `codeblocks_run.sh`
- 
-#### Using CBFortran
-
-# TODO open PFANT-linux.cbp, Build-Select target, Fortran generate makefile...
- 
-The CBFortran project is the file PFANT/fortran/PFANT.cbp.
- 
-Some shortcuts:
-
-- Find in files: `Ctrl+Shift+F`
-- Compile: `Ctrl+F9`
-- Compile everything from scratch: `Ctrl+F11` 
-- Run: `Ctrl+F10`
-
+CodeBlocks Fortran (CBFortran) is an open-source integrated development environment (IDE) that was successfully used to compile the code and generate makefiles. For more information on CBFortran, please refer to [...](#S4)
 
 ## Coding style
 
@@ -250,7 +221,7 @@ ask EC    "
 Tags are case-insensitive.
  
  
-## Development how-to's
+# Development how-to's
  
 This section contains guidelines for implementing new features in the source code
 
