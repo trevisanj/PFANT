@@ -96,7 +96,7 @@ Add the `implicit none` statement at the beginning of each `module` or `program`
 
 ## 2.6 Variable declarations
 
-### `subroutine`/`function` arguments**
+### 2.6.1 `subroutine`/`function` arguments
 
   - always include `intent(in)`, `intent(out)`, or `intent(inout)` in subroutine/function argument declarations. 
     This has two advantages:
@@ -105,11 +105,11 @@ Add the `implicit none` statement at the beginning of each `module` or `program`
       that has been declared using `intent(in)` 
   - declare only one argument per code line and write a short description as a comment
 
-### `module` variables**
+### 2.6.2 `module` variables
 
   - declare only one variable per code line and write a short description as a comment
 
-### Prefixes
+### 2.6.3 Prefixes
 
 In many sections of the code, a preceding `<prefix>_` has been added to
 the original names of variables that are shared among subroutines and functions. 
