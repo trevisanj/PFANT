@@ -5583,7 +5583,7 @@ contains
       !call log_debug(lll)
 
       ! BLB: Values, one for each set-of-lines (transition) (v',v")
-      ! BLB: qqv  -- Frank-Condon factors
+      ! BLB: qqv  -- Franck-Condon factors
       ! BLB: ggv  -- rotational terms
       ! BLB:          G_A(v) = ??? (ininteligible formula)
       ! BLB: bbv  -- rotational constants B_v for different v"
