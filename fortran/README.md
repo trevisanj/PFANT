@@ -15,7 +15,7 @@ fortran
   1. [Compile](#S1)
   2. [Coding style](#S2)
   3. [Coding how-to's](#S3)
-  4. [Appendix (tools)](#A)
+  4. [Appendix -- tools](#A)
 
 # <a name=S1></a> 1 Compile
 
@@ -136,15 +136,18 @@ floating-point numbers stored as `real*4`, so there is no getting away with this
 > process double precision values than they do to process reals.
 (http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html)
 
-### What to put in comments
+### Commenting the code
 
 It is recommended to document at least this:
 
-- Explain -- at the beginning of a module -- what the prefixes of variables declared within it stand for.
-- `module`, `subroutine`, and `function`: at least one description line .
-- `subroutine` or `function` arguments: at least one sentence for each argument.
-- variables declared in the header section of a module: at least one sentence.
+- Explain -- at the beginning of a module -- what the prefixes of variables declared within it stand for
+- `module`, `subroutine`, and `function`: at least one description line
+- `subroutine` or `function` arguments: at least one sentence for each argument
+- variables declared in the header section of a module: at least one sentence
 - when the logic becomes tricky, it is a kind gesture to explain what the code is doing
+
+For more on software documentation, there is an inspiring treaty available at 
+http://www.agilemodeling.com/essays/agileDocumentation.htm.
 
 ### Writing messages to console
 
@@ -154,18 +157,8 @@ module instead of `write` or `print`. This may give a bit more work
 by using this, the user of the program has options to silence these messages
 depending on their severity, and/or redirect logging message to a file.
 
-There are different routines that can be used, such as
+There are different routines that can be used for this: 
 `log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`, `log_halt()` and also `log_and_halt()`.
-
-### More documentation guidelines
-
-Some guidelines inspired in Agile modelling documentation guidelines
-(http://www.agilemodeling.com/essays/agileDocumentation.htm):
-
-- Explain what the code does in the `.f90` files, preferrably as close
-  to the actual code as possible.
-- Keep the information in the `.md` files to a minimum, mostly to give
-  directions to users who just bumped into the project.
 
 ### Tags
 
@@ -180,6 +173,7 @@ ask MT    "
 ask PC    "
 ask EC    "
 ```
+One of this project goals is to get rid of all these tags (by resolving them).
 
 Tags are case-insensitive.
  
@@ -220,6 +214,7 @@ Steps 9-10 add the new option to Tab 3 of `x.py`
 
 .10. You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code
+
 
 # <a name="A"></a>Appendix - tools
  
