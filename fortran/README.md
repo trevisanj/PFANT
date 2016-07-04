@@ -14,11 +14,12 @@ fortran
 
   1. [Compile](#S1)
   2. [Coding style](#S2)
-  3. [
-  4. [Using CBFortran](#S6)
-  7. [References](#S7)
+  3. [Coding how-to's](#S3)
+  4. [Appendix - tools](#S4)
 
-## <a name=S1></a> Compile
+# <a name=S1></a> 1 Compile
+
+## 1.1 Using shell script
 
 The quickest way to compile (in Linux) is to use the shell script provided:
 
@@ -26,7 +27,7 @@ The quickest way to compile (in Linux) is to use the shell script provided:
 ./make-linux.sh
 ```
 
-### Using gfortran explicitly
+## 1.2 Using gfortran explicitly
 
 The four programs `innewmarcs`, `hydro2`, `pfant`, `nulbad` have their corresponding ".f90" source files, _i.e._, _innewmarcs.f90_ etc. They must be linked together with  _pfantlib.f90_. The following will generate the four executable binaries.
 
@@ -38,30 +39,22 @@ gfortran -o pfant pfant.f90 pfantlib.o
 gfortran -o nulbad nulbad.f90 pfantlib.o
 ```
 
-### Using CodeBlocks Fortran IDE
+## 1.3 Using CodeBlocks Fortran
 
-CodeBlocks Fortran (CBFortran) is an open-source integrated development environment (IDE) that was successfully used to compile the code and generate makefiles. For more information on CBFortran, please refer to [...](#S4)
+CodeBlocks Fortran (CBFortran) is an option for those who like to work with integrated development environments. In addition, CBFortran was used to create the make files in this directory. For more information, please refer to the [Appendix](#S4).
 
-## Coding style
+# 2 Coding style
 
 This sections contains several guidelines to keep the source code consistent and
 well documented.
 
-@todo how-to "How to convert user into a code developer"
+## Fortran file format
 
-@todo how to create a new executable
+Now using the 1990+ .f90 file format (instead of .f "punchcard").
 
-@todo how to insert new command-line option
+## Indentation
 
-@todo reading either from main file or command-line option for all variables
-
-### Format
-
-Now using the "modern" .f90-.f95 file format (instead of .f "punchcard").
-
-#### Indentation
-
-- 2-space indentation for all IF, DO, SUBROUTINE etc. structures.
+- 2-space indentation for all `IF`, `DO`, `SUBROUTINE` etc. structures.
 
 - Continuation lines: suggestion: continue with a 1-space indentation from the
   beginning line, i.e.:
@@ -73,7 +66,7 @@ Now using the "modern" .f90-.f95 file format (instead of .f "punchcard").
      1-space indentation after beginning line
 ```
 
-#### Number of columns
+## Number of columns
 
 Coders ofter pronounce on keeping code width to 80 columns maximum (this applies to all text files,
 including `*.f`, `*.f90`, `*.txt`, `*.md`).
@@ -85,10 +78,7 @@ https://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s4.4-column-li
 
 I tend to [ab]use a **90-column maximum**.
 
-
-### Code structure
-
-#### Do *not* use COMMON blocks
+### Do **not** use COMMON blocks
 
 COMMON blocks require variables to be declared multiple
 times with different names and shapes. This is high-maintenance and makes the code harder
@@ -97,9 +87,19 @@ to understand, specially for newbies.
 MODULE provides a more clear structure to share variables among subroutines and functions.
 Variables are declared only once at the header section of a module.
 
-#### Variable names
+### Variable declarations
 
-*Prefixes*: in many sections of the code, a preceding `<prefix>_` has been added to
+- `subroutine`/`function` arguments: always explicit whether the variable is an input
+  or an output by using `intent(in)` or `intent(out)`. This has two advantages:
+  - it is effective documentation
+  - helps with bug prevention (the code will not compile if you try to write to a variable
+    that has been declared using `intent(in)` 
+- Module variables and `subroutine`/`function` arguments: declare **only one** variable per
+    code line, and **document the variable**.
+- **Any variable**: document the variable if its use/purpose is not obviuos.
+
+
+**Prefixes**: in many sections of the code, a preceding `<prefix>_` has been added to
 the original names of variables that are shared among subroutines and functions.
  
 - Prefixes help to track the meaning and origin of a certain variable.
@@ -116,7 +116,7 @@ selekfh_fl       calculated by subroutine synthesis::selekfh()
 MAX_PARTIT_NPAR  constant having maximum allowed value of variable partit_npar
 ```
 
-#### Real numbers
+### Real numbers
 
 `real*8` is now used throughout, except for reading the binary .mod files (which have 
 floating-point numbers stored as real*4, so there is no getting away with this).
@@ -128,60 +128,28 @@ floating-point numbers stored as real*4, so there is no getting away with this).
 (http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html)
 
 
-#### Always IMPLICIT NONE
+### Always IMPLICIT NONE
 
 Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
 
 - types of variables becomes clear from reading the code
 - we are forced to remember to declare real variables as `real*8`
 
-#### Variable declarations
-
-- **`subroutine`/`function` arguments**: always explicit whether the variable is an input
-  or an output by using `intent(in)` or `intent(out)`. This has two advantages:
-  - it is effective documentation
-  - helps with bug prevention (the code will not compile if you try to write to a variable
-    that has been declared using `intent(in)` 
-- **Module variables and `subroutine`/`function` arguments**: declare *only one* variable per
-    code line, and **document the variable**.
-- **Any variable**: document the variable if its use/purpose is not obviuos.
-
 #### `function`/`subroutine`
 
 Write documentation explaining what the function/subroutine does and whenever possible,
 why it was created.
 
-#### Logging
+### Message output
 
-Logging is about generating output about program activity, *e.g.*, printing
-messages on the screen.
-
-For outputting messages on the screen, you may use the routines from the `logging`
+For outputting messages to the console, it is preferrable to use the routines from the `logging`
 module instead of `write` or `print`. This may give a bit more work
 (may require one extra line of code if the string is formatted), but
 by using this, the user of the program has options to silence these messages
 depending on their severity, and/or redirect logging message to a file.
 
 There are different routines that can be used, such as
-`log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`.
-
-
-#### Assertions
-
-An assertion is a statement that an expression is expected to always be true 
-at a given point in the code. If an assertion evaluates to `.false.` at run time,
-the program will crash (https://en.wikipedia.org/wiki/Assertion_(software_development)).
-
-Assertions have two purposes: they help with documentation and can also catch
-programming errors.
-
-For assertions, use
-
-```fortran
-log_and_halt("message", is_assertion=.true.).
-```
-
-todo some good three examples, including assert_le, for example
+`log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`, `log_halt()` and also `log_and_halt()`.
 
 #### More documentation guidelines
 
@@ -220,12 +188,11 @@ ask EC    "
 
 Tags are case-insensitive.
  
- 
 # Development how-to's
  
-This section contains guidelines for implementing new features in the source code
+This section describes how to carry out specific tasks with the source code, such as implementing new features.
 
-### How to create a new command-line option
+## How to create a new command-line option
 
 To add a new command-line option to the Fortran code:
 
@@ -259,4 +226,70 @@ Steps 9-10 add the new option to Tab 3 of `x.py`
 .10. You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code
 
+# Appendix - tools
+ 
+## A.1 Communicating with GitHub _via_ SSH
 
+This will configure automatic authentication and transfer to GitHub _via_ SSH, so `git push` will no longer ask
+for user name and password.
+ 
+The steps involved are roughly summarized below. For full details, please follow the
+links provided.
+
+:one: Generate a SSH key
+
+```shell
+ls -al ~/.ssh  # Check existing SSH keys
+ssh-keygen -t rsa -C "your@email.com"
+ssh-add ~/.ssh/id_rsa
+```
+
+(https://help.github.com/articles/generating-ssh-keys/)
+
+:two: Open file _ ~/.ssh/id_rsa.pub_ using any text editor and copy its contents to the clipboard (Ctrl+C)
+
+:three: Go to GitHub, personal settings, look for "SSH and GPG keys", click on "New SSH key", and paste the contents of _~/.ssh/id_rsa.pub_ into the appropriate box.
+
+After you do this, you can test if it works:
+```shell
+ssh -T git@github.com
+ ```
+ 
+:four: Change the remote URL that git uses
+
+```shell
+git remote set-url origin git@github.com:user-name/repository-name.git
+```
+
+(https://help.github.com/articles/changing-a-remote-s-url/)
+
+## A.2 CodeBlocks Fortran (CBFortran)
+
+CBFortran is a customization of the Code Blocks (CB) IDE optimized for working with Fortran projects.
+
+CBFortran does not require installation. Just download the .taz.bz2 file from the
+downloads page http://cbfortran.sourceforge.net/downloads.html and extract it into your
+home directory (will create directory _/home/your-user-name/CodeBLocks_Fortran_xxxx_).
+ 
+After extracted, enter the new directory, and
+execute `codeblocks_run.sh`
+
+### A.2.1 Using CBFortran
+
+The CBFortran project is the file _PFANT-linux.cbp_ or _PFANT-windows.cbp_
+ 
+**Some shortcuts:**
+
+- Find in files: `Ctrl+Shift+F`
+- Compile: `Ctrl+F9`
+- Compile everything from scratch: `Ctrl+F11` (required sometimes as incremental compilation is not perfect)
+- Run: `Ctrl+F10`
+
+**How make files were generated**
+
+The following procedure is required for the script `make-linux.sh` to continue working if ".f90" files are added or removed to the project.
+
+- Click on menu: Build &rarr; Select Target &rarr; innewmarcs/hydro2/pfant/hulbad
+- Click on menu: Fortran &rarr; Generate Makefile
+- Rename file _Makefile_, _e.g_, to _makefile-linux-innewmarcs_
+- Repeat the previous steps for all four "targets".
