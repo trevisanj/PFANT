@@ -15,7 +15,7 @@ fortran
   1. [Compile](#S1)
   2. [Coding style](#S2)
   3. [Coding how-to's](#S3)
-  4. [Appendix - tools](#Appendix)
+  4. [Appendix - tools](#A)
 
 # <a name=S1></a> 1 Compile
 
@@ -41,7 +41,7 @@ gfortran -o nulbad nulbad.f90 pfantlib.o
 
 ## 1.3 Using CodeBlocks Fortran
 
-CodeBlocks Fortran (CBFortran) is an option for those who like to work with integrated development environments. In addition, CBFortran was used to create the make files in this directory. For more information, please refer to the [Appendix](#S4).
+CodeBlocks Fortran (CBFortran) is an option for those who like to work with integrated development environments. CBFortran was used to create the make files in this directory. For more information, please refer to the [Appendix](#S4).
 
 # 2 Coding style
 
@@ -54,7 +54,7 @@ Now using the 1990+ .f90 file format (instead of .f "punchcard").
 
 ## Indentation
 
-- 2-space indentation for all `IF`, `DO`, `SUBROUTINE` etc. structures.
+- 2-space indentation for all `if`, `do`, `subroutine` etc.
 
 - Continuation lines: suggestion: continue with a 1-space indentation from the
   beginning line, i.e.:
@@ -78,36 +78,42 @@ https://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s4.4-column-li
 
 I tend to [ab]use a **90-column maximum**.
 
-### Do **not** use COMMON blocks
+### Do **not** use `common` blocks
 
-COMMON blocks require variables to be declared multiple
+`common` blocks require variables to be declared multiple
 times with different names and shapes. This is high-maintenance and makes the code harder
 to understand, specially for newbies.
 
-MODULE provides a more clear structure to share variables among subroutines and functions.
+`module` provides a more clear structure to share variables among subroutines and functions.
 Variables are declared only once at the header section of a module.
+
+### Always `implicit none`
+
+Add the `implicit none` statement at the beginning of each `module` or `program`.
+
+  - types of variables becomes clear from reading the code
+  - we are forced to remember to declare real variables as `real*8`
 
 ### Variable declarations
 
-- `subroutine`/`function` arguments: always explicit whether the variable is an input
-  or an output by using `intent(in)` or `intent(out)`. This has two advantages:
-  - it is effective documentation
-  - helps with bug prevention (the code will not compile if you try to write to a variable
-    that has been declared using `intent(in)` 
-- Module variables and `subroutine`/`function` arguments: declare **only one** variable per
-    code line, and **document the variable**.
-- **Any variable**: document the variable if its use/purpose is not obviuos.
+#### `subroutine`/`function` arguments**
 
+  - always include `intent(in)`, `intent(out)`, or `intent(inout)` in subroutine/function argument declarations. 
+    This has two advantages:
+    - it counts as documentation
+    - helps with bug prevention (the code will not compile if you try to write to a variable
+      that has been declared using `intent(in)` 
+  - declare only one argument per code line and write a short description as a comment
 
-**Prefixes**: in many sections of the code, a preceding `<prefix>_` has been added to
-the original names of variables that are shared among subroutines and functions.
- 
-- Prefixes help to track the meaning and origin of a certain variable.
-- Additionally, they help to ensure that variable names don't clash across different modules.
+#### `module` variables**
 
-Sometimes the prefix matches the module name where the variable is declared, sometimes not.
-    
-Examples:
+  - declare only one variable per code line and write a short description as a comment
+  - **Prefixes**: in many sections of the code, a preceding `<prefix>_` has been added to
+    the original names of variables that are shared among subroutines and functions. 
+    Prefixes help to track the meaning and origin of a certain variable.
+    Additionally, they help to ensure that variable names don't clash across different modules.
+
+Prefix examples:
 ```
 au_g3d           from module absoru
 config_fn_main   from module config
@@ -118,8 +124,8 @@ MAX_PARTIT_NPAR  constant having maximum allowed value of variable partit_npar
 
 ### Real numbers
 
-`real*8` is now used throughout, except for reading the binary .mod files (which have 
-floating-point numbers stored as real*4, so there is no getting away with this).
+`real*8` is now used throughout, except for reading the binary "*.mod" and "*.moo" files (which have 
+floating-point numbers stored as `real*4`, so there is no getting away with this).
 
 > If you must use floating point, use double precision unless you have reason
 > to be concerned about memory use (your program uses large arrays) and you do
@@ -127,18 +133,6 @@ floating-point numbers stored as real*4, so there is no getting away with this).
 > process double precision values than they do to process reals.
 (http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html)
 
-
-### Always IMPLICIT NONE
-
-Add the IMPLICIT NONE statement at the beginning of each MODULE or PROGRAM.
-
-- types of variables becomes clear from reading the code
-- we are forced to remember to declare real variables as `real*8`
-
-#### `function`/`subroutine`
-
-Write documentation explaining what the function/subroutine does and whenever possible,
-why it was created.
 
 ### Message output
 
@@ -151,17 +145,6 @@ depending on their severity, and/or redirect logging message to a file.
 There are different routines that can be used, such as
 `log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`, `log_halt()` and also `log_and_halt()`.
 
-#### More documentation guidelines
-
-Some guidelines inspired in Agile modelling documentation guidelines
-(http://www.agilemodeling.com/essays/agileDocumentation.htm):
-
-- Explain what the code does in the `.f90` files, preferrably as close
-  to the actual code as possible.
-- Keep the information in the `.md` files to a minimum, mostly to give
-  directions to users who just bumped into the project.
-
-
 #### Commenting .f, .f90 files
 
 *What to put in comments*. It is recommended to document at least this:
@@ -172,7 +155,17 @@ Some guidelines inspired in Agile modelling documentation guidelines
 - variables declared in the header section of a module: at least one sentence.
 - when the logic becomes tricky, it is a kind gesture to explain what the code is doing
 
-#### Tags
+### More documentation guidelines
+
+Some guidelines inspired in Agile modelling documentation guidelines
+(http://www.agilemodeling.com/essays/agileDocumentation.htm):
+
+- Explain what the code does in the `.f90` files, preferrably as close
+  to the actual code as possible.
+- Keep the information in the `.md` files to a minimum, mostly to give
+  directions to users who just bumped into the project.
+
+### Tags
 
 These are search keywords with the following meaning (this list is probably not complete):
 ```
@@ -226,7 +219,7 @@ Steps 9-10 add the new option to Tab 3 of `x.py`
 .10. You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code
 
-# Appendix - tools
+# <a name="A"></a>Appendix - tools
  
 ## A.1 Communicating with GitHub _via_ SSH
 
