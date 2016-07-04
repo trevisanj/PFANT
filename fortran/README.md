@@ -15,7 +15,7 @@ fortran
   1. [Compile](#S1)
   2. [Coding style](#S2)
   3. [Coding how-to's](#S3)
-  4. [Appendix - tools](#S4)
+  4. [Appendix - tools](#Appendix)
 
 # <a name=S1></a> 1 Compile
 
