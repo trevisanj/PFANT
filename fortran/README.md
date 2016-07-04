@@ -43,16 +43,16 @@ gfortran -o nulbad nulbad.f90 pfantlib.o
 
 CodeBlocks Fortran (CBFortran) is an option for those who like to work with integrated development environments. CBFortran was used to create the make files in this directory. For more information, please refer to the [Appendix](#S4).
 
-# 2 Coding style
+# <a name="S2"></a> 2 Coding style
 
 This sections contains several guidelines to keep the source code consistent and
 well documented.
 
-## Fortran file format
+## 2.1 Fortran file format
 
 Now using the ".f90" (1990+) file format (instead of ".f").
 
-## Indentation
+## 2.2 Indentation
 
 - 2-space indentation for all `if`, `do`, `subroutine` etc.
 
@@ -66,7 +66,7 @@ Now using the ".f90" (1990+) file format (instead of ".f").
      1-space indentation after beginning line
 ```
 
-## Number of columns
+## 2.3 Number of columns
 
 Coders ofter pronounce on keeping code width to 80 columns maximum (this applies to all text files,
 including `*.f`, `*.f90`, `*.txt`, `*.md`).
@@ -78,7 +78,7 @@ https://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s4.4-column-li
 
 I tend to [ab]use a **90-column maximum**.
 
-### Do **not** use `common` blocks
+## 2.4 Do **not** use `common` blocks
 
 `common` blocks require variables to be declared multiple
 times with different names and shapes. This is high-maintenance and makes the code harder
@@ -87,16 +87,16 @@ to understand, specially for newbies.
 `module` provides a more clear structure to share variables among subroutines and functions.
 Variables are declared only once at the header section of a module.
 
-### Always `implicit none`
+## 2.5 Always `implicit none`
 
 Add the `implicit none` statement at the beginning of each `module` or `program`.
   - rules out the risk of accidentally using undeclared symbols in formulae
   - types of variables becomes clear from reading the code
   - we are forced to remember to declare real variables as `real*8`
 
-### Variable declarations
+## 2.6 Variable declarations
 
-#### `subroutine`/`function` arguments**
+### `subroutine`/`function` arguments**
 
   - always include `intent(in)`, `intent(out)`, or `intent(inout)` in subroutine/function argument declarations. 
     This has two advantages:
@@ -105,11 +105,11 @@ Add the `implicit none` statement at the beginning of each `module` or `program`
       that has been declared using `intent(in)` 
   - declare only one argument per code line and write a short description as a comment
 
-#### `module` variables**
+### `module` variables**
 
   - declare only one variable per code line and write a short description as a comment
 
-#### Prefixes
+### Prefixes
 
 In many sections of the code, a preceding `<prefix>_` has been added to
 the original names of variables that are shared among subroutines and functions. 
@@ -125,7 +125,7 @@ selekfh_fl       calculated by subroutine synthesis::selekfh()
 MAX_PARTIT_NPAR  constant having maximum allowed value of variable partit_npar
 ```
 
-### Real numbers
+## 2.7 Real numbers
 
 `real*8` is now used throughout, except for reading the binary "*.mod" and "*.moo" files (which have 
 floating-point numbers stored as `real*4`, so there is no getting away with this).
@@ -136,7 +136,7 @@ floating-point numbers stored as `real*4`, so there is no getting away with this
 > process double precision values than they do to process reals.
 (http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html)
 
-### Commenting the code
+## 2.8 Commenting the code
 
 It is recommended to document at least this:
 
@@ -149,7 +149,7 @@ It is recommended to document at least this:
 For more on software documentation, there is an inspiring treaty available at 
 http://www.agilemodeling.com/essays/agileDocumentation.htm.
 
-### Writing messages to console
+## 2.9 Writing messages to console
 
 For outputting messages to the console, it is preferrable to use the routines from the `logging`
 module instead of `write` or `print`. This may give a bit more work
@@ -160,7 +160,7 @@ depending on their severity, and/or redirect logging message to a file.
 There are different routines that can be used for this: 
 `log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`, `log_halt()` and also `log_and_halt()`.
 
-### Tags
+## 2.10 Tags
 
 These are search keywords with the following meaning (this list is probably not complete):
 ```
@@ -177,11 +177,11 @@ One of this project goals is to get rid of all these tags (by resolving them).
 
 Tags are case-insensitive.
  
-# Development how-to's
+# <a name="S3"></a> 3 Development how-to's
  
 This section describes how to carry out specific tasks with the source code, such as implementing new features.
 
-## How to create a new command-line option
+## 3.1 How to create a new command-line option
 
 To add a new command-line option to the Fortran code:
 
