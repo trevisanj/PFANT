@@ -62,25 +62,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/hydro2.f90">
-			<Option weight="1" />
+		<Unit filename="hydro2.f90">
 			<Option target="hydro2" />
 		</Unit>
-		<Unit filename="src/innewmarcs.f90">
-			<Option weight="1" />
+		<Unit filename="innewmarcs.f90">
 			<Option target="innewmarcs" />
 		</Unit>
-		<Unit filename="src/nulbad.f90">
-			<Option weight="1" />
+		<Unit filename="nulbad.f90">
 			<Option target="nulbad" />
 		</Unit>
-		<Unit filename="src/pfant.f90">
-			<Option weight="1" />
+		<Unit filename="pfant.f90">
 			<Option target="pfant" />
 		</Unit>
-		<Unit filename="src/pfantlib.f90">
-			<Option weight="0" />
-		</Unit>
+		<Unit filename="pfantlib.f90" />
 		<Extensions>
 			<envvars />
 			<code_completion />

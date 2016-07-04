@@ -5557,7 +5557,7 @@ contains
       ! BLB:
       ! BLB: UA -- value of partition function for element A
       ! BLB: UB -- value of partition function for element B
-      ! BLB: TE -- eletronic term.
+      ! BLB: TE -- eletronic term
       ! BLB: CRO - delta Kronecker (2-delta_{Sigma, 0})
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
@@ -5573,7 +5573,7 @@ contains
        km_a0(molidx), km_a1(molidx), km_a2(molidx), &
        km_a3(molidx), km_a4(molidx), km_als(molidx)
 
-      ! ?doc?
+      ! no documentation but not used anyway
       read(myunit,*) km_s(molidx)
 
       nnv = km_nv(molidx)
