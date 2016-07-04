@@ -15,7 +15,7 @@ fortran
   1. [Compile](#S1)
   2. [Coding style](#S2)
   3. [Coding how-to's](#S3)
-  4. [Appendix - tools](#A)
+  4. [Appendix (tools)](#A)
 
 # <a name=S1></a> 1 Compile
 
@@ -50,7 +50,7 @@ well documented.
 
 ## Fortran file format
 
-Now using the 1990+ .f90 file format (instead of .f "punchcard").
+Now using the ".f90" (1990+) file format (instead of ".f").
 
 ## Indentation
 
@@ -90,7 +90,7 @@ Variables are declared only once at the header section of a module.
 ### Always `implicit none`
 
 Add the `implicit none` statement at the beginning of each `module` or `program`.
-
+  - rules out the risk of accidentally using undeclared symbols in formulae
   - types of variables becomes clear from reading the code
   - we are forced to remember to declare real variables as `real*8`
 
@@ -108,10 +108,13 @@ Add the `implicit none` statement at the beginning of each `module` or `program`
 #### `module` variables**
 
   - declare only one variable per code line and write a short description as a comment
-  - **Prefixes**: in many sections of the code, a preceding `<prefix>_` has been added to
-    the original names of variables that are shared among subroutines and functions. 
-    Prefixes help to track the meaning and origin of a certain variable.
-    Additionally, they help to ensure that variable names don't clash across different modules.
+
+#### Prefixes
+
+In many sections of the code, a preceding `<prefix>_` has been added to
+the original names of variables that are shared among subroutines and functions. 
+Prefixes help to track the meaning and origin of a certain variable.
+Additionally, they help to ensure that variable names don't clash across different modules.
 
 Prefix examples:
 ```
@@ -133,8 +136,17 @@ floating-point numbers stored as `real*4`, so there is no getting away with this
 > process double precision values than they do to process reals.
 (http://www.cs.uwm.edu/~cs151/Bacon/Lecture/HTML/ch06s09.html)
 
+### What to put in comments
 
-### Message output
+It is recommended to document at least this:
+
+- Explain -- at the beginning of a module -- what the prefixes of variables declared within it stand for.
+- `module`, `subroutine`, and `function`: at least one description line .
+- `subroutine` or `function` arguments: at least one sentence for each argument.
+- variables declared in the header section of a module: at least one sentence.
+- when the logic becomes tricky, it is a kind gesture to explain what the code is doing
+
+### Writing messages to console
 
 For outputting messages to the console, it is preferrable to use the routines from the `logging`
 module instead of `write` or `print`. This may give a bit more work
@@ -144,16 +156,6 @@ depending on their severity, and/or redirect logging message to a file.
 
 There are different routines that can be used, such as
 `log_critical()`, `log_error()`, `log_warning()`, `log_info()`, `log_debug()`, `log_halt()` and also `log_and_halt()`.
-
-#### Commenting .f, .f90 files
-
-*What to put in comments*. It is recommended to document at least this:
-
-- Explain -- at the beginning of a module -- what the prefixes of variables declared within it stand for.
-- `module`, `subroutine`, and `function`: at least one description line .
-- `subroutine` or `function` arguments: at least one sentence for each argument.
-- variables declared in the header section of a module: at least one sentence.
-- when the logic becomes tricky, it is a kind gesture to explain what the code is doing
 
 ### More documentation guidelines
 
