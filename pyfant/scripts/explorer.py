@@ -4,6 +4,7 @@
 
 from pyfant.gui import XExplorer
 from pyfant import *
+from pyfant.gui.guiaux import place_center
 import sys
 from PyQt4.QtGui import *
 import argparse
