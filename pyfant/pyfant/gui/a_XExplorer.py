@@ -255,7 +255,7 @@ class XExplorer(QMainWindow):
 
         # ### Label containing information about the current selection in the table widget
 
-        y = self.c77ww8 = QLabel("<b>Selection summary information</b>")
+        y = self.c77ww8 = QLabel("<b>Brief</b>")
         l1.addWidget(y)
 
         x = self.labelSummary = QLabel()
@@ -428,7 +428,9 @@ class XExplorer(QMainWindow):
         z.clear()
         classes = self.__vis_classes = []
         pp = self.__lock_get_current_propss()
-        if len(pp) == 1:
+        npp = len(pp)
+        s0, s1 = "", ""
+        if npp == 1:
             p = pp[0]
             # Visualization options
             if p.flag_scanned:
@@ -451,9 +453,12 @@ class XExplorer(QMainWindow):
                     z.addItem(item)
 
             # File info
-            self.labelSummary.setText(p.get_summary())
-            self.textEditInfo.setPlainText(p.get_info())
-        elif len(pp) >= 2:
+            s0 = p.get_summary()
+            s1 = p.get_info()
+
+
+        elif npp >= 2:
+            s0 = "%d selected" % npp
             ff = [p.f for p in pp]
             flag_spectra = all([isinstance(f, FileSpectrum) for f in ff])
             flag_mod = all([isinstance(f, FileModBin) and len(f.records) > 1 for f in ff])
@@ -465,6 +470,11 @@ class XExplorer(QMainWindow):
             elif flag_mod:
                 z.addItem(QListWidgetItem("View model grid"))
                 classes.append("modgrid")
+                
+        # File info
+        self.labelSummary.setText(s0)
+        self.textEditInfo.setPlainText(s1)
+
 
 
     def __set_status_text(self, text):
@@ -523,7 +533,7 @@ class XExplorer(QMainWindow):
 
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # *
-    # Internals that use lock
+    # Internals mutually locked: __lock*()
 
     def __lock_update_table(self):
         self.__flag_updating_table = True
