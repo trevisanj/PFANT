@@ -22,5 +22,6 @@ if __name__ == "__main__":
 
     app = get_QApplication([])
     form = XExplorer(None, args.dir)
-    form.showMaximized()
+    form.show()
+    place_center(form)
     sys.exit(app.exec_())
