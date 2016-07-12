@@ -343,6 +343,11 @@ class WOptionsEditor(QWidget):
         self.__add_option(self.w_opa, 'ip', 'opa', False,
          'Use MARCS opacities?',
          'Whether or not to include MARCS opacity coefficients (absorption and scattering) in the continuum.')
+        # the following option is a pfant-only option but it is better to put it here
+        o = self.__add_option(self.w_absoru, 'p', 'absoru', True,
+         'Use absoru() kappa?',
+         'Whether or not to include coefficients calculated by subroutine absoru() in the continuum.')
+        o.flag_devel = False  # True
         self.__add_option(self.w_fn_opa, 'ip', 'fn_opa', FileOpa.default_filename,
          'Opacities filename',
          'This is a text file in the MARCS ".opa" format. This file can be generated through '
@@ -476,10 +481,6 @@ class WOptionsEditor(QWidget):
          'Use MARCS scattering coefficients?',
          'Whether or not to include MARCS <b>scattering</b> coefficients in the continuum'
          '<p>This option only has effect if <em>--opa<em> is True.')
-        o.flag_devel = True
-        o = self.__add_option(self.w_absoru, 'p', 'absoru', True,
-         'Use absoru() kappa?',
-         'Whether or not to include coefficients calculated by subroutine absoru() in the continuum.')
         o.flag_devel = True
 
         #

@@ -3,6 +3,7 @@
 Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.
 
 Molecular lines are skipped.
+
 """
 
 import argparse
