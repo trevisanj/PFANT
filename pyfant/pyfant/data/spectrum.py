@@ -271,6 +271,35 @@ class FileSpectrumFits(FileSpectrum):
         sp.x = np.linspace(lambda0, lambda0+delta_lambda*(n-1), n)
         sp.y = hdu.data
 
-    # def _do_save_as(self, filename):
-    #     """Saves spectrum back to FITS file."""
+    def _do_save_as(self, filename):
+        """Saves spectrum back to FITS file."""
 
+        if len(self.spectrum.x) < 2:
+            raise RuntimeError("Spectrum must have at least two points")
+
+        hdu = fits.PrimaryHDU()
+        hdu.header["telescop"] = "PFANT synthetic spectrum"  # "suggested" by https://python4astronomers.github.io/astropy/fits.html
+        hdu.header["CRVAL1"] = self.spectrum.x[0]
+        hdu.header["CDELT1"] = self.spectrum.x[1]-self.spectrum.x[0]
+        hdu.data = self.spectrum.y
+        hdu.writeto(filename)
+
+        fits_obj = fits.open(filename)
+        fits_obj.info()
+        hdu = fits_obj[0]
+
+        # Building the x-axis
+        n = hdu.data.shape[0]
+        lambda0 = hdu.header["CRVAL1"]
+        try:
+            delta_lambda = hdu.header["CDELT1"]
+        except Exception as E:  # todo figure out the type of exception (KeyError?)
+            delta_lambda = hdu.header['CD1_1']
+            print "Alternative delta lambda in FITS header: CD1_1"
+            print "Please narrow the Exception specification in the code"
+            print "Exception is: " + str(E) + " " + E.__class__.__name__
+            print delta_lambda
+
+        sp = self.spectrum = Spectrum()
+        sp.x = np.linspace(lambda0, lambda0 + delta_lambda * (n - 1), n)
+        sp.y = hdu.data
