@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
+	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="hydro2" />
-	<File name="src/innewmarcs.f90" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2448" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/pfantlib.f90" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="141023" topLine="4167" />
-		</Cursor>
-	</File>
-	<File name="src/nulbad.f90" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1828" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/pfant.f90" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1692" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/hydro2.f90" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9905" topLine="301" />
-		</Cursor>
-	</File>
 </CodeBlocks_layout_file>
