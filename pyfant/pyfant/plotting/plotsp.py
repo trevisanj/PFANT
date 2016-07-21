@@ -99,7 +99,7 @@ def plot_spectra_overlapped(ss, title=None, ymin=None):
         assert isinstance(s, Spectrum)
         ax = plt.gca()
 
-        ax.plot(s.x, s.y, label=s.filename)
+        ax.plot(s.x, s.y, label=str(s.filename))
 
     plt.xlabel('Wavelength ($\AA$)')
     xmin, xmax, ymin_, ymax, xspan, yspan = _calc_max_min(ss)

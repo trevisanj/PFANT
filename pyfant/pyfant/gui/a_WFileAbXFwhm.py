@@ -116,16 +116,10 @@ class WFileAbXFwhm(QWidget):
 
     def on_edited(self):
         # http://stackoverflow.com/questions/22685463/qt5-tell-qplaintextedit-to-ignore-syntax-highlighting-changes
-
-        print "0000MULA THE SENDER IS ", self.sender()
         if not self.flag_process_changes:
             return
-
-
         self.editor.document().setModified(False)
         self.__update_data()
-        print "1111MULA THE SENDER IS ", self.sender()
-
         self.edited.emit()
 
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #

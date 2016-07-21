@@ -2717,7 +2717,7 @@ contains
 
   !=======================================================================================
   ! Returns option name with single quotes.
-  
+
   function get_option_name(opt) result(res)
     character(len=:), allocatable :: res
     ! Option, will be used only in case of error
@@ -3730,15 +3730,6 @@ contains
 
     if (main_llzero .ge. main_llfin) then
       call log_and_halt('llzero must be lower than llfin!')
-    end if
-
-
-    ! config_aint has to be divisible by main_pas
-    temp = config_aint/main_pas
-    if (abs(temp-nint(temp)) .gt. 1.e-10) then
-        call log_and_halt('pas='//real82str(main_pas, 3)//' (delta-lambda) must be a '//&
-         'sub-multiple of aint='//real82str(config_aint, 1)//' (the latter is '//&
-         'configurable through command-line option "--aint").')
     end if
 
     close(unit=myunit)

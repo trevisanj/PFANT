@@ -2,9 +2,7 @@
 """
 Adds lines to ~/.bashrc file or other specified + appends paths to environment variables
 
-Will work only on if os.name == "posix"
-
-Note: only works with the bash shell.
+**Note** Will work only on if os.name == "posix"
 
 """
 
@@ -100,34 +98,6 @@ if __name__ == "__main__":
       # print "--- END ---"
   else:
     print2("No changes made to file '%s'" % t)
-
-  # runs commands
-  any_ = False
-  get_cmd = lambda p: 'export PATH="${PATH}:%s"' % p # running python under "sh"
-  # for v, p, _ in map_:
-  #   goes = False
-  #   try:
-  #     e = os.environ[v]
-  #
-  #     if not p in e:
-  #       goes = True
-  #   except KeyError:
-  #     goes = True
-  #   if goes:
-  #
-  #     cmd = get_cmd(p)
-  #     print "running > "+cmd
-  #     os.system(cmd)
-  #     any_ = True
-  #
-  # if any_:
-  #   if args.bash:
-  #     print "Running another bash"
-  #     os.system("bash")
-  #   else:
-  #     print "Running another tcsh"
-  #     os.system("tcsh")
-  #
 
   # Runs another shell that will parse its new configuration file
   if args.bash:

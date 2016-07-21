@@ -7,14 +7,16 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
            "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector",
-           "VerticalLabel", "are_you_sure"]
+           "VerticalLabel", "are_you_sure", "get_matplotlib_layout"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from .a_XParametersEditor import *
 import numpy as np
 import os
-
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT # as NavigationToolbar2QT
+import matplotlib.pyplot as plt
 
 # # Colors used in two or more different situations
 # Error color
@@ -370,3 +372,24 @@ class VerticalLabel(QLabel):
     def sizeHint(self):
         s = QLabel.sizeHint()
         return QSize(s.height(), s.width())
+
+
+def get_matplotlib_layout(widget):
+    """
+    Creates figure, toolbar, layout, sets widget layout
+
+    Returns figure, canvas, layout
+
+    Reference: http://stackoverflow.com/questions/12459811
+
+    """
+    fig = plt.figure()
+    canvas = FigureCanvas(fig)
+    #        self.canvas.mpl_connect('button_press_event', self.on_plot_click)
+    toolbar = NavigationToolbar2QT(canvas, widget)  # hope works with widget as parent
+    layout = QVBoxLayout(widget)
+    layout.addWidget(toolbar)
+    layout.addWidget(canvas)
+    layout.setMargin(0)
+
+    return fig, canvas, layout

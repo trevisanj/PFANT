@@ -5,7 +5,7 @@ Rule: no pyfant module can import util!!!
 
 """
 __all__ = ["run_parallel",
-           "load_with_classes", "load_any_file", "load_spectrum",
+           "load_any_file", "load_spectrum",
             "setup_inputs", "link_to_data", "copy_star"]
 # from pyfant.misc import *
 from pyfant import *
@@ -43,44 +43,6 @@ def load_spectrum(filename):
     Attempts to load spectrum as one of the supported types.
     """
     return load_with_classes(filename, _classes_sp)
-
-def load_with_classes(filename, classes):
-    """Attempts to load file by trial-and-error using a given list of classes.
-
-    Arguments:
-      filename -- full path to file
-      classes -- list of DataFile descendant classes
-
-    Returns: DataFile object if loaded successfully, or None if not.
-
-    Note: it will stop at the first successful load.
-
-    Attention: this is not good if there is a bug in any of the file readers,
-    because *all exceptions will be silenced!*
-    """
-
-    ok = False
-    for class_ in classes:
-        obj = class_()
-        try:
-            obj.load(filename)
-            ok = True
-        # cannot let IOError through because pyfits raises IOError!!
-        # except IOError:
-        #     raise
-        except OSError:
-            raise
-        except Exception as e:  # (ValueError, NotImplementedError):
-            # Note: for debugging, switch the below to True
-            if False:
-                get_python_logger().exception("Error trying with class \"%s\"" % \
-                                              class_.__name__)
-            pass
-        if ok:
-            break
-    if ok:
-        return obj
-    return None
 
 
 # ##################################################################################################

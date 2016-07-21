@@ -280,7 +280,6 @@ class WFileMain(QWidget):
 
     def on_edited(self):
         if self.flag_process_changes:
-            print "THE SENDER IS ", self.sender()
             self.__update_file_main()
             self.edited.emit()
 

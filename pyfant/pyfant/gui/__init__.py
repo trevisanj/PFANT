@@ -1,3 +1,4 @@
+from .guiaux import *
 from .a_WParametersEditor import *
 from .a_WFileMain import *
 from .a_WFileAbonds import *

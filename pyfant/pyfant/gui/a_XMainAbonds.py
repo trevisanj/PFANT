@@ -436,7 +436,7 @@ class XMainAbonds(QMainWindow):
             if new_filename:
                 self.load_dir, _ = os.path.split(str(new_filename))
                 f = cls()
-                f.load(str(new_filename))
+                f.load_filename(str(new_filename))
                 editor.load(f)
                 self._update_labels_fn()
                 self.__update_tab_texts()

@@ -9,9 +9,39 @@ from .datafile import DataFile
 from ..misc import *
 from astropy.io import fits
 from pyfant import write_lf
+# from ..pipeline import spectral_area
 
 class Spectrum(object):
+
+    @property
+    def wavelength(self):
+        return self.x
+
+    @wavelength.setter
+    def wavelength(self, x):
+        self.x = x
+
+    @property
+    def flux(self):
+        return self.y
+
+    @flux.setter
+    def flux(self, y):
+        self.y = y
+
+    @property
+    def delta_lambda(self):
+        """Should agree with self.pas"""
+        return self.x[1]-self.x[0]
+
     def __init__(self):
+        self._flag_created_by_block = False  # assertion
+        self.x = None  # x-values
+        self.y = None  # y-values
+        self.filename = None
+        self.more_headers = {}  # for Spectrum, just cargo
+
+        # Attributes used only by FileSpectrumPfant
         self.ikeytot = None
         self.tit = None
         self.tetaef = None
@@ -21,41 +51,108 @@ class Spectrum(object):
         self.amg = None
         self.l0 = None
         self.lf = None
-        # self.lzero = None
-        # self.lfin = None
-        # self.itot = None
         self.pas = None
         self.echx = None
         self.echy = None
         self.fwhm = None
 
-        self.x = None  # x-values
-        self.y = None  # y-values
-
-        self.filename = None
-
     def __len__(self):
         """Corresponds to nulbad "ktot"."""
         return len(self.x) if self.x is not None else 0
 
-    def __str__(self):
-
-        s = "".join(["ikeytot = ", str(self.ikeytot), "\n",
-                     "tit = ", str(self.tit), "\n",
-                     "tetaef = ", str(self.tetaef), "\n",
-                     "glog = ", str(self.glog), "\n",
-                     "asalog = ", str(self.asalog), "\n",
-                     "modeles_nhe = ", str(self.modeles_nhe), "\n",
-                     "amg = ", str(self.amg), "\n",
-                     "l0 = ", str(self.l0), "\n",
-                     "lf = ", str(self.lf), "\n",
-                     "pas = ", str(self.pas), "\n",
-                     "echx = ", str(self.echx), "\n",
-                     "echy = ", str(self.echy), "\n",
-                     "fwhm = ", str(self.fwhm), "\n",
-                     "============\n"
-                     "Size of Spectrum: ", str(len(self)), "\n"])
+    def one_liner_str(self):
+        if self.x is not None and len(self.x) > 0:
+            s = ", ".join(["%g <= lambda <= %g" % (self.x[0], self.x[-1]),
+                           "delta_lambda = %g" % self.delta_lambda,
+                           "no. points: %d" % len(self.x)])
+        else:
+            s = "(empty)"
         return s
+
+    def __str__(self):
+        s = ", ".join(["ikeytot = ", str(self.ikeytot), "\n",
+                       "tit = ", str(self.tit), "\n",
+                       "tetaef = ", str(self.tetaef), "\n",
+                       "glog = ", str(self.glog), "\n",
+                       "asalog = ", str(self.asalog), "\n",
+                       "modeles_nhe = ", str(self.modeles_nhe), "\n",
+                       "amg = ", str(self.amg), "\n",
+                       "l0 = ", str(self.l0), "\n",
+                       "lf = ", str(self.lf), "\n",
+                       "pas = ", str(self.pas), "\n",
+                       "echx = ", str(self.echx), "\n",
+                       "echy = ", str(self.echy), "\n",
+                       "fwhm = ", str(self.fwhm), "\n",
+                       "============\n"
+                       "Size of Spectrum: ", str(len(self)), "\n"])
+        return s
+
+    def get_rgb(self, visible_range=None, method=0):
+        """Takes weighted average of rainbow colors RGB's
+
+        Arguments:
+            visible_range=None -- if passed, affine-transforms the rainbow colors
+            method --
+              0: rainbow colors
+              1: RGB
+        """
+
+        if len(visible_range) < 2:
+            raise RuntimeError("Invalid visible range: %s" % (visible_range,))
+        if visible_range[1] <= visible_range[0]:
+            raise RuntimeError("Second element of visible range (%s) must be greater than first element" % (visible_range,))
+
+        if method == 1:
+            # new color system splitting visible range in three
+            dl = float(visible_range[1]-visible_range[0])/3
+            ranges = np.array([[visible_range[0]+i*dl, visible_range[0]+(i+1)*dl] for i in range(3)])
+            colors = np.array([(0., 0., 1.), (0., 1., 0.), (1., 0., 0.)])  # blue, green, red
+
+            tot_area, tot_sum = 0., np.zeros(3)
+            for color, range_ in zip(colors, ranges):
+                b = np.logical_and(self.x >= range_[0], self.x <= range_[1])
+                area = np.sum(self.y[b])
+                tot_area += area
+                tot_sum += color*area
+            if tot_area == 0.:
+                tot_area = 1.
+            ret = tot_sum/tot_area
+            return ret
+
+        elif method == 0:
+            tot_area, tot_sum = 0., np.zeros(3)
+            ftrans = lambda x: x
+            if visible_range:
+                ll0 = rainbow_colors[0].l0
+                llf = rainbow_colors[-1].lf
+                ftrans = lambda lold: visible_range[0] + (visible_range[1] - visible_range[0]) / (llf - ll0) * (lold - ll0)
+
+            for color in rainbow_colors:
+                b = np.logical_and(self.x >= ftrans(color.l0), self.x <= ftrans(color.lf))
+                area = np.sum(self.y[b])
+                tot_area += area
+                tot_sum += color.rgb*area
+            if tot_area == 0.:
+                tot_area = 1.
+            ret = tot_sum/tot_area
+            return ret
+        else:
+            raise RuntimeError("Unknown method: %s" % method)
+
+
+    def from_hdu(self, hdu):
+        n = hdu.data.shape[0]
+        lambda0 = hdu.header["CRVAL1"]
+        try:
+            delta_lambda = hdu.header["CDELT1"]
+        except Exception as E:  # todo figure out the type of exception (KeyError?)
+            delta_lambda = hdu.header['CD1_1']
+            print "Alternative delta lambda in FITS header: CD1_1"
+            print "Please narrow the Exception specification in the code"
+            print "Exception is: " + str(E) + " " + E.__class__.__name__
+            print delta_lambda
+        self.x = np.linspace(lambda0, lambda0 + delta_lambda * (n - 1), n)
+        self.y = hdu.data
 
 
 class FileSpectrum(DataFile):
@@ -80,6 +177,8 @@ class FileSpectrumPfant(FileSpectrum):
     repeated, and a "values" line, with the values of the flux
     corresponding to the lambda interval lzero-lfin
     """
+
+    default_filename = "flux.norm"
 
     def _do_load(self, filename):
         with open(filename, 'r') as h:
@@ -254,22 +353,8 @@ class FileSpectrumFits(FileSpectrum):
         fits_obj = fits.open(filename)
         fits_obj.info()
         hdu = fits_obj[0]
-
-        # Building the x-axis
-        n = hdu.data.shape[0]
-        lambda0 = hdu.header["CRVAL1"]
-        try:
-            delta_lambda = hdu.header["CDELT1"]
-        except Exception as E:  # todo figure out the type of exception (KeyError?)
-            delta_lambda = hdu.header['CD1_1']
-            print "Alternative delta lambda in FITS header: CD1_1"
-            print "Please narrow the Exception specification in the code"
-            print "Exception is: "+str(E)+" "+E.__class__.__name__
-            print delta_lambda
-
         sp = self.spectrum = Spectrum()
-        sp.x = np.linspace(lambda0, lambda0+delta_lambda*(n-1), n)
-        sp.y = hdu.data
+        sp.from_hdu(hdu)
 
     def _do_save_as(self, filename):
         """Saves spectrum back to FITS file."""

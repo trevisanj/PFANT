@@ -16,8 +16,9 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "get_data_dir", "get_data_subdirs", "get_star_data_subdirs", "SESSION_PREFIX_SINGULAR",
  "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
- "get_pfant_dir"]
-
+ "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
+           "FindNotNaNBackwards",
+           "load_with_classes"]
 
 # # todo cleanup
 # # This is just for debugging
@@ -68,6 +69,7 @@ import traceback
 import imp
 import textwrap
 import platform
+from bisect import bisect_left
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -436,6 +438,47 @@ def get_fortrans(max_len=None):
         piece = name + " " + ("." * (max_len-len(name)))
         ret.append(("%-"+str(max_len)+"s %s") % (piece, status))
     return ret
+
+
+
+
+def load_with_classes(filename, classes):
+    """Attempts to load file by trial-and-error using a given list of classes.
+
+    Arguments:
+      filename -- full path to file
+      classes -- list of DataFile descendant classes
+
+    Returns: DataFile object if loaded successfully, or None if not.
+
+    Note: it will stop at the first successful load.
+
+    Attention: this is not good if there is a bug in any of the file readers,
+    because *all exceptions will be silenced!*
+    """
+
+    ok = False
+    for class_ in classes:
+        obj = class_()
+        try:
+            obj.load(filename)
+            ok = True
+        # cannot let IOError through because pyfits raises IOError!!
+        # except IOError:
+        #     raise
+        except OSError:
+            raise
+        except Exception as e:  # (ValueError, NotImplementedError):
+            # Note: for debugging, switch the below to True
+            if False:
+                get_python_logger().exception("Error trying with class \"%s\"" % \
+                                              class_.__name__)
+            pass
+        if ok:
+            break
+    if ok:
+        return obj
+    return None
 
 
 # #################################################################################################
@@ -1023,3 +1066,131 @@ class MyLock(object):
 
 
 ###############################################################################
+# # RAINBOW
+
+class Color(AttrsPart):
+    attrs = ["name", "rgb", "clambda", "l0", "lf"]
+    def __init__(self, name, rgb, clambda):
+        AttrsPart.__init__(self)
+        self.name = name
+        self.rgb = rgb
+        self.clambda = clambda
+        self.l0 = -1.  # initialized later
+        self.lf = -1.
+    def __repr__(self):
+        return '"%s"' % self.one_liner_str()
+        # return ", ".join(["%s: %s" % (name, self.__getattribute__(name)) for name in ["name", "rgb", "clambda", "l0", "lf"]])
+rainbow_colors = [Color("Violet", [139, 0, 255], 4000),
+                  Color("Indigo", [75, 0, 130], 4450),
+                  Color("Blue", [0, 0, 255], 4750),
+                  Color("Green(X11)", [0, 255, 0], 5100),
+                  Color("Yellow", [255, 255, 0], 5700),
+                  Color("Orange", [255, 127, 0], 5900),
+                  Color("Red", [255, 0, 0], 6500),
+                  ]
+
+# Calculates l0, lf
+# rainbow_colors[0].l0 = 0.
+# rainbow_colors[-1].lf = float("inf")
+for c in rainbow_colors:
+    c.clambda = float(c.clambda)
+ncolors = len(rainbow_colors)
+for i in range(1, ncolors):
+    cprev, cnow = rainbow_colors[i-1], rainbow_colors[i]
+    avg = (cprev.clambda + cnow.clambda) / 2
+    cprev.lf = avg
+    cnow.l0 = avg
+
+    if i == 1:
+        cprev.l0 = 2*cprev.clambda-cprev.lf
+    if i == ncolors-1:
+        cnow.lf = 2*cnow.clambda-cnow.l0
+# converts RGB from [0, 255] to [0, 1.] interval
+for c in rainbow_colors:
+    c.rgb = np.array([float(x)/255 for x in c.rgb])
+
+
+
+################################################################################
+# # SEARCHES
+
+
+def BSearch(a, x, lo=0, hi=None):
+  """Returns index of x in a, or -1 if x not in a.
+
+  Arguments:
+    a -- ordered numeric sequence
+    x -- element to search within a
+    lo -- lowest index to consider in search*
+    hi -- highest index to consider in search*
+
+  *bisect.bisect_left capability that we don't need to loose."""
+  if len(a) == 0: return -1
+  hi = hi if hi is not None else len(a)
+  pos = bisect_left(a, x, lo, hi)
+  return pos if pos != hi and a[pos] == x else -1 # doesn't walk off the end
+
+
+def BSearchRound(a, x, lo=0, hi=None):
+  """Returns index of a that is closest to x.
+
+  Arguments:
+    a -- ordered numeric sequence
+    x -- element to search within a
+    lo -- lowest index to consider in search*
+    hi -- highest index to consider in search*
+
+  *bisect.bisect_left capability that we don't need to loose."""
+  if len(a) == 0: return -1
+  hi = hi if hi is not None else len(a)
+  pos = bisect_left(a, x, lo, hi)
+
+  if pos >= hi:
+    return hi-1
+  elif a[pos] == x or pos == lo:
+    return pos
+  else:
+    return pos-1 if x-a[pos-1] <= a[pos]-x else pos
+
+
+def BSearchCeil(a, x, lo=0, hi=None):
+  """Returns lowest i such as a[i] >= x, or -1 if x > all elements in a
+
+  So, if x is in between two elements in a, this function will return the
+  index of the higher element, hence "Ceil".
+
+  Arguments:
+    a -- ordered numeric sequence
+    x -- element to search within a
+    lo -- lowest index to consider in search
+    hi -- highest index to consider in search"""
+  if len(a) == 0: return -1
+  hi = hi if hi is not None else len(a)
+  pos = bisect_left(a, x, lo, hi)
+  return pos if pos < hi else -1
+
+
+def BSearchFloor(a, x, lo=0, hi=None):
+  """Returns highest i such as a[i] <= x, or -1 if x < all elements in a
+
+  So, if x is in between two elements in a, this function will return the
+  index of the lower element, hence "Floor".
+
+  Arguments:
+    a -- ordered numeric sequence
+    x -- element to search within a
+    lo -- lowest index to consider in search
+    hi -- highest index to consider in search"""
+  if len(a) == 0: return -1
+  hi = hi if hi is not None else len(a)
+  pos = bisect_left(a, x, lo, hi)
+  return pos-1 if pos >= hi\
+       else (pos if x == a[pos] else (pos-1 if pos > lo else -1))
+
+def FindNotNaNBackwards(x, i):
+  """Returns last position (starting at i backwards) which is not NaN, or -1."""
+  while i >= 0:
+    if not np.isnan(x[i]):
+      return i
+    i -= 1
+  return -1
