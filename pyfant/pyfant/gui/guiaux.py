@@ -374,7 +374,7 @@ class VerticalLabel(QLabel):
         return QSize(s.height(), s.width())
 
 
-def get_matplotlib_layout(widget):
+def get_matplotlib_layout(widget, flag_toolbar=True):
     """
     Creates figure, toolbar, layout, sets widget layout
 
@@ -386,9 +386,10 @@ def get_matplotlib_layout(widget):
     fig = plt.figure()
     canvas = FigureCanvas(fig)
     #        self.canvas.mpl_connect('button_press_event', self.on_plot_click)
-    toolbar = NavigationToolbar2QT(canvas, widget)  # hope works with widget as parent
     layout = QVBoxLayout(widget)
-    layout.addWidget(toolbar)
+    if flag_toolbar:
+        toolbar = NavigationToolbar2QT(canvas, widget)
+        layout.addWidget(toolbar)
     layout.addWidget(canvas)
     layout.setMargin(0)
 

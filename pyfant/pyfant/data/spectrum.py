@@ -34,6 +34,30 @@ class Spectrum(object):
         """Should agree with self.pas"""
         return self.x[1]-self.x[0]
 
+    @property
+    def pixel_x(self):
+        return self.more_headers.get("PIXEL-X")
+        
+    @pixel_x.setter
+    def pixel_x(self, value):
+        self.more_headers["PIXEL-X"] = value
+
+    @property
+    def pixel_y(self):
+        return self.more_headers.get("PIXEL-Y")
+        
+    @pixel_y.setter
+    def pixel_y(self, value):
+        self.more_headers["PIXEL-Y"] = value
+
+    @property
+    def z_start(self):
+        return self.more_headers.get("Z-START")
+        
+    @z_start.setter
+    def z_start(self, value):
+        self.more_headers["Z-START"] = value
+
     def __init__(self):
         self._flag_created_by_block = False  # assertion
         self.x = None  # x-values
@@ -62,9 +86,15 @@ class Spectrum(object):
 
     def one_liner_str(self):
         if self.x is not None and len(self.x) > 0:
-            s = ", ".join(["%g <= lambda <= %g" % (self.x[0], self.x[-1]),
-                           "delta_lambda = %g" % self.delta_lambda,
-                           "no. points: %d" % len(self.x)])
+            # s = ", ".join(["%g <= lambda <= %g" % (self.x[0], self.x[-1]),
+            #                "delta_lambda = %g" % self.delta_lambda,
+            #                "no. points: %d" % len(self.x)])
+
+            s = " | ".join([u"%g \u2264 \u03BB \u2264 %g" % (self.x[0], self.x[-1]),
+                           u"\u0394\u03BB = %g" % self.delta_lambda,
+                           u"%g \u2264 flux \u2264 %g" % (np.min(self.y), np.max(self.y)),
+                           "length: %d" % len(self.x)])
+
         else:
             s = "(empty)"
         return s
@@ -140,7 +170,13 @@ class Spectrum(object):
             raise RuntimeError("Unknown method: %s" % method)
 
 
+
+    # header parameters *not* to be put automatically in self.more_headers
+    #                  saved separately  dealt with automatically by the FITS module
+    #                  ----------------  ------------------------------------------------
+    _IGNORE_HEADERS = ("CRVAL", "CDELT", "NAXIS", "PCOUNT", "BITPIX", "GCOUNT", "XTENSION")
     def from_hdu(self, hdu):
+        # x/wavelength and y/flux
         n = hdu.data.shape[0]
         lambda0 = hdu.header["CRVAL1"]
         try:
@@ -153,6 +189,34 @@ class Spectrum(object):
             print delta_lambda
         self.x = np.linspace(lambda0, lambda0 + delta_lambda * (n - 1), n)
         self.y = hdu.data
+
+        # Additional header fields
+        for name in hdu.header:
+            if not name.startswith(self._IGNORE_HEADERS):
+                self.more_headers[name] = hdu.header[name]
+
+    def to_hdu(self):
+        hdu = fits.PrimaryHDU()
+        # hdu.header[
+        #     "telescop"] = "PFANT synthetic spectrum"  # "suggested" by https://python4astronomers.github.io/astropy/fits.html
+        hdu.header["CRVAL1"] = self.x[0]
+        hdu.header["CDELT1"] = self.x[1] - self.x[0]
+        for key, value in self.more_headers.iteritems():
+            hdu.header[key] = value
+        hdu.data = self.y
+        return hdu
+        
+    def cut(self, l0, l1):
+        """Cuts to wavelength interval [l0, l1]. Cut is done within the array objects thus keeping the same objects"""
+        ii_delete = np.where(np.logical_or(self.x < l0, self.x > l1))
+        np.delete(self.x, ii_delete)
+        np.delete(self.y, ii_delete)
+        
+    def cut_idxs(self, i0, i1):
+        """Cuts to slice i0:i1 (pythonic, interval = [i0, i1["""
+        self.x = self.x[i0:i1]
+        self.y = self.y[i0:i1]
+        
 
 
 class FileSpectrum(DataFile):
@@ -362,29 +426,5 @@ class FileSpectrumFits(FileSpectrum):
         if len(self.spectrum.x) < 2:
             raise RuntimeError("Spectrum must have at least two points")
 
-        hdu = fits.PrimaryHDU()
-        hdu.header["telescop"] = "PFANT synthetic spectrum"  # "suggested" by https://python4astronomers.github.io/astropy/fits.html
-        hdu.header["CRVAL1"] = self.spectrum.x[0]
-        hdu.header["CDELT1"] = self.spectrum.x[1]-self.spectrum.x[0]
-        hdu.data = self.spectrum.y
+        hdu = self.spectrum.to_hdu()
         hdu.writeto(filename)
-
-        fits_obj = fits.open(filename)
-        fits_obj.info()
-        hdu = fits_obj[0]
-
-        # Building the x-axis
-        n = hdu.data.shape[0]
-        lambda0 = hdu.header["CRVAL1"]
-        try:
-            delta_lambda = hdu.header["CDELT1"]
-        except Exception as E:  # todo figure out the type of exception (KeyError?)
-            delta_lambda = hdu.header['CD1_1']
-            print "Alternative delta lambda in FITS header: CD1_1"
-            print "Please narrow the Exception specification in the code"
-            print "Exception is: " + str(E) + " " + E.__class__.__name__
-            print delta_lambda
-
-        sp = self.spectrum = Spectrum()
-        sp.x = np.linspace(lambda0, lambda0 + delta_lambda * (n - 1), n)
-        sp.y = hdu.data
