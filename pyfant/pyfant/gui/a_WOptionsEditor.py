@@ -595,7 +595,7 @@ class WOptionsEditor(QWidget):
         sp.setStretchFactor(0, 8)
         sp.setStretchFactor(1, 2)
 
-        self.__update_visible_options()
+        self.__update_gui_visible_options()
         style_checkboxes(self)
         self.setEnabled(False)  # disabled until load() is called
         self.flag_process_changes = True
@@ -661,13 +661,13 @@ class WOptionsEditor(QWidget):
         self.edited.emit()
 
     def on_checkbox_exe_clicked(self):
-        self.__update_visible_options()
+        self.__update_gui_visible_options()
 
     def on_checkbox_main_clicked(self):
-        self.__update_visible_options()
+        self.__update_gui_visible_options()
 
     def on_checkbox_devel_clicked(self):
-        self.__update_visible_options()
+        self.__update_gui_visible_options()
 
     def on_preview(self):
         args = self.f.get_args()
@@ -679,7 +679,7 @@ class WOptionsEditor(QWidget):
     def on_filter(self):
         if not self.flag_process_changes:
             return
-        self.__update_visible_options()
+        self.__update_gui_visible_options()
 
 
 
@@ -769,7 +769,7 @@ class WOptionsEditor(QWidget):
         self.__set_error_text(emsg)
 
 
-    def __update_visible_options(self):
+    def __update_gui_visible_options(self):
         LETTERS = "ihpn"
         ll = []
         for i, (checkbox, letter) in enumerate(zip(self.checkboxes_exes, LETTERS)):

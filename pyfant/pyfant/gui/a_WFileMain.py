@@ -252,7 +252,7 @@ class WFileMain(QWidget):
     def load(self, x):
         assert isinstance(x, FileMain)
         self.f = x
-        self.__update_from_file_main()
+        self.__update_guiile_main()
         # this is called to perform file validation upon loading
         self.__update_file_main()
         self.setEnabled(True)
@@ -287,7 +287,7 @@ class WFileMain(QWidget):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Internal gear
 
-    def __update_from_file_main(self):
+    def __update_guiile_main(self):
         self.flag_process_changes = False
         try:
             o = self.f

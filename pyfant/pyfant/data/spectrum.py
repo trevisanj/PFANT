@@ -9,7 +9,7 @@ from .datafile import DataFile
 from ..misc import *
 from astropy.io import fits
 from pyfant import write_lf
-# from ..pipeline import spectral_area
+import copy
 
 class Spectrum(object):
 
@@ -53,10 +53,18 @@ class Spectrum(object):
     @property
     def z_start(self):
         return self.more_headers.get("Z-START")
-        
+
     @z_start.setter
     def z_start(self, value):
         self.more_headers["Z-START"] = value
+
+    @property
+    def ylabel(self):
+        return self.more_headers.get("YLABEL")
+
+    @ylabel.setter
+    def ylabel(self, value):
+        self.more_headers["YLABEL"] = value
 
     def __init__(self):
         self._flag_created_by_block = False  # assertion
@@ -216,7 +224,53 @@ class Spectrum(object):
         """Cuts to slice i0:i1 (pythonic, interval = [i0, i1["""
         self.x = self.x[i0:i1]
         self.y = self.y[i0:i1]
-        
+
+    def calculate_magnitude(self, band_name, flag_force_parametric=False):
+        """
+        Calculates magnitude and stores values in more_headers "MAG_CALC" and "MAG_BAND"
+
+        Returns several variables in a dict, which may be also useful for plotting or other purposes
+        """
+
+        band = Bands.bands[band_name]
+        band_l0, band_lf = band.range(flag_force_parametric)  # band practical limits
+        band_f = band.ufunc_band(flag_force_parametric)  # callable transmission function
+        spc = copy.deepcopy(self)
+        spc.cut(band_l0, band_lf)
+        band_f_spc_x = band_f(spc.x)
+        band_area = np.sum(band_f_spc_x) * spc.delta_lambda
+        out_y = spc.y * band_f_spc_x
+
+        # Calculates apparent magnitude and filtered flux area
+        cmag, weighted_mean_flux, out_area = None, 0, 0
+        if band.ref_mean_flux:
+            if len(spc) > 0:
+                out_area = np.sum(out_y) * spc.delta_lambda
+                weighted_mean_flux = out_area / band_area
+                cmag = -2.5 * np.log10(weighted_mean_flux / band.ref_mean_flux)
+
+                # cosmetic manipulation
+                cmag = np.round(cmag, 3)
+                if cmag == 0.0:
+                    cmag = 0.0  # get rid of "-0.0"
+
+            else:
+                cmag = np.inf
+
+        self.more_headers["MAG_CALC"] = cmag
+        self.more_headers["MAG_BAND"] = band_name
+        return {"band_area": band_area,  # area under band filter
+                "band_f": band_f,  # transmission function
+                "band_f_spc_x": band_f_spc_x,  # transmission function evaluated over spc.x
+                "band_l0": band_l0,  # l0 as in [l0, lf], band range considered
+                "band_lf": band_lf,  # lf as in [l0, lf], band range considered
+                "spc": spc,  # spectrum cut to l0, lf, used in calculations
+                "cmag": cmag,  # calculated magnitude
+                "weighted_mean_flux": weighted_mean_flux,  # weighted-average flux where the weights are the transmission function
+                "out_y": out_y,  # spc with flux multiplied by transmission function
+                "out_area": out_area,  # area under out_y
+                "fieldnames": ["MAG_CALC", "MAG_BAND"]  # names of fields added/replaces to self.more_headers
+                }
 
 
 class FileSpectrum(DataFile):

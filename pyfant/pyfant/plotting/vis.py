@@ -269,7 +269,9 @@ class VisSpectrum(Vis):
         if self.parent_form:
             f.canvas.setParent(self.parent_form)
         ax = plt.gca()
-        ax.plot(s.x, s.y, color="#800000")
+        # y = s.y/s.x**2
+        y = s.y
+        ax.plot(s.x, y, color="#800000")
         ymi, yma = ax.get_ylim()
         ax.set_ylim([ymi, ymi + (yma - ymi) * (1 + T)])  # prevents top of line from being hidden by plot box
         # ax.set_ylabel(s.filename)

@@ -55,8 +55,8 @@ def plot_spectra(ss, title=None, ymin=None, num_rows=None):
             j = 0
         assert isinstance(s, Spectrum)
         ax = axarr[i, j]
-
-        ax.plot(s.x, s.y)
+        y = s.y
+        ax.plot(s.x, y)
         ymin_, ymax = ax.get_ylim()
         ymin_now = ymin_ if ymin is None else ymin
         ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (1 + _T)])  # prevents top of line from being hidden by plot box
@@ -98,8 +98,8 @@ def plot_spectra_overlapped(ss, title=None, ymin=None):
     for i, s in enumerate(ss):
         assert isinstance(s, Spectrum)
         ax = plt.gca()
-
-        ax.plot(s.x, s.y, label=str(s.filename))
+        y = s.y
+        ax.plot(s.x, y, label=str(s.filename))
 
     plt.xlabel('Wavelength ($\AA$)')
     xmin, xmax, ymin_, ymax, xspan, yspan = _calc_max_min(ss)
