@@ -8,8 +8,6 @@ PFANT
 └── figures . Graphic material made in PowerPoint, GIMP etc.
 ```
 
-:sun: :love: :one:
-
 # Welcome
 
 # PFANT Manual
