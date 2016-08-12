@@ -1367,6 +1367,11 @@ class Bands(object):
         bands[k] = Band(k, TABULAR.get(k), PARAMETRIC.get(k), REF_JY.get(k))
 
     @classmethod
+    def names(cls):
+        """Returns string containing all band names"""
+        return "".join([x[0] for x in cls.PARAMETRIC])
+
+    @classmethod
     def ufunc_band(cls, band_name, flag_force_parametric=False):
         """Returns a function(wavelength) for the transmission filter given the band name. Works as a numpy ufunc
 
