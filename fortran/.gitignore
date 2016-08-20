@@ -1,5 +1,9 @@
-# Object and executable files don't work well between computers, so they will not be tracked.
+# Object and executable files don't work well across computers, so they will not be tracked.
 obj-linux
 obj-windows
 bin
-
+pfant
+hydro2
+innewmarcs
+nulbad
+*.exe

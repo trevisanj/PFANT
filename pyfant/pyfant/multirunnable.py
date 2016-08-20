@@ -208,11 +208,12 @@ class MultiRunnable(Runnable):
                 sp_filenames_by_fwhm[fwhm].append(nulbad.conf.opt.fn_cv)
 
         # ## Saves files for lineplot.py (lists of spectra)
+        # Each item of each list is a full path to a spectrum file
         for fwhm, sp_filenames in sp_filenames_by_fwhm.iteritems():
             spl_filename = os.path.join(self.__sid.dir, "cv_%s.spl" % fmt_fwhm(fwhm))
             with open(spl_filename, "w") as h:
                 for sp_filename in sp_filenames:
-                    h.write(os.path.basename(sp_filename)+"\n")
+                    h.write(os.path.abspath(os.path.join(self.__sid.dir, os.path.basename(sp_filename)+"\n")))
 
         # ## Runs nulbads
         self.__status.stage = "nulbad stage"

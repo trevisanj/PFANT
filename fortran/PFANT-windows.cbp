@@ -8,7 +8,7 @@
 		<Option compiler="gfortran" />
 		<Build>
 			<Target title="pfant">
-				<Option output="bin/pfant" prefix_auto="1" extension_auto="1" />
+				<Option output="pfant" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj-windows/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
@@ -20,7 +20,7 @@
 				</Linker>
 			</Target>
 			<Target title="nulbad">
-				<Option output="bin/nulbad" prefix_auto="1" extension_auto="1" />
+				<Option output="nulbad" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj-windows/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
@@ -32,7 +32,7 @@
 				</Linker>
 			</Target>
 			<Target title="innewmarcs">
-				<Option output="bin/innewmarcs" prefix_auto="1" extension_auto="1" />
+				<Option output="innewmarcs" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj-windows/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
@@ -44,7 +44,7 @@
 				</Linker>
 			</Target>
 			<Target title="hydro2">
-				<Option output="bin/hydro2" prefix_auto="1" extension_auto="1" />
+				<Option output="hydro2" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj-windows/" />
 				<Option type="1" />
 				<Option compiler="gfortran" />
@@ -63,19 +63,27 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="hydro2.f90">
+			<Option weight="1" />
 			<Option target="hydro2" />
 		</Unit>
 		<Unit filename="innewmarcs.f90">
+			<Option weight="1" />
 			<Option target="innewmarcs" />
 		</Unit>
 		<Unit filename="nulbad.f90">
+			<Option weight="1" />
 			<Option target="nulbad" />
 		</Unit>
 		<Unit filename="pfant.f90">
+			<Option weight="1" />
 			<Option target="pfant" />
 		</Unit>
-		<Unit filename="pfantlib.f90" />
-		<Unit filename="readers.f90" />
+		<Unit filename="pfantlib.f90">
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="readers.f90">
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />

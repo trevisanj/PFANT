@@ -91,7 +91,8 @@ class WFileAbXFwhm(QWidget):
         self.f = x
         self.__update_from_data()
         # this is called to perform file validation upon loading
-        # self.__update_data()
+        self.validate()
+        
         self.setEnabled(True)
 
     def validate(self):
@@ -130,8 +131,6 @@ class WFileAbXFwhm(QWidget):
         # first validation: code parses OK and has "ab" and "conv" variables
         f.source = str(self.editor.toPlainText())
         f.validate(self.file_abonds)
-
-
 
     def __update_from_data(self):
         self.flag_process_changes = False

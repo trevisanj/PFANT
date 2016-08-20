@@ -2803,7 +2803,7 @@ module config
   !---
   ! innewmarcs, pfant
   !---
-  logical :: config_opa = .true.               ! option --opa
+  logical :: config_opa = .false.               ! option --opa
   character*64 :: config_fn_opa = 'modeles.opa' ! option: --fn_opa
 
 
@@ -2877,7 +2877,7 @@ module config
   integer :: config_interp = 1                      ! option: --interp
   logical :: config_abs = .true., &                 ! option: --abs
              config_sca = .true., &                 ! option: --sca
-             config_absoru = .false.                 ! option: --config_absoru
+             config_absoru = .true.                 ! option: --config_absoru
 
   !---
   ! nulbad-only
