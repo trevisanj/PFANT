@@ -10,6 +10,7 @@ from ..misc import *
 from astropy.io import fits
 from pyfant import write_lf
 import copy
+import os
 
 class Spectrum(object):
 
@@ -204,11 +205,13 @@ class Spectrum(object):
                 self.more_headers[name] = hdu.header[name]
 
     def to_hdu(self):
+        """Converts to fits.PrimaryHDU object. Assumes XUNIT is "A" (angstrom)"""
         hdu = fits.PrimaryHDU()
         # hdu.header[
         #     "telescop"] = "PFANT synthetic spectrum"  # "suggested" by https://python4astronomers.github.io/astropy/fits.html
         hdu.header["CRVAL1"] = self.x[0]
         hdu.header["CDELT1"] = self.x[1] - self.x[0]
+        hdu.header["XUNIT"] = "A"
         for key, value in self.more_headers.iteritems():
             hdu.header[key] = value
         hdu.data = self.y
@@ -479,6 +482,8 @@ class FileSpectrumFits(FileSpectrum):
 
         if len(self.spectrum.x) < 2:
             raise RuntimeError("Spectrum must have at least two points")
+        if os.path.isfile(filename):
+            os.unlink(filename)  # PyFITS does not overwrite file
 
         hdu = self.spectrum.to_hdu()
         hdu.writeto(filename)

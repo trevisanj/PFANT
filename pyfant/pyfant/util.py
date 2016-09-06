@@ -24,10 +24,12 @@ import shutil
 # Fortran.
 #
 # note: leave FileAbonds to the end because it is too general
-_classes = [FileAbsoru2, FileHmap, FileMain, FileDissoc, FileModBin,
-            FileSpectrumNulbad,FileSpectrumPfant, FileToH, FileAbonds,
-            FileSpectrumXY, FileAtoms, FileMolecules, FileSpectrumFits,
-            FileOpa, FileModTxt, FileMoo]
+_classes_txt = [FileAbsoru2, FileHmap, FileMain, FileDissoc,
+                FileSpectrumNulbad, FileSpectrumPfant, FileToH, FileAbonds,
+                FileSpectrumXY, FileAtoms, FileMolecules,
+                FileOpa, FileModTxt]
+
+_classes_bin = [FileModBin, FileSpectrumFits, FileMoo, FileCCube, FileDCube]
 
 _classes_sp = [FileModBin, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
                FileSpectrumFits]
@@ -36,7 +38,12 @@ def load_any_file(filename):
     """
     Attempts to load filename by trial-and-error using _classes as list of classes.
     """
-    return load_with_classes(filename, _classes)
+
+    # Splits attempts using ((binary X text) file) criterion
+    if is_text_file(filename):
+
+
+    return load_with_classes(filename, _classes_txt)
 
 def load_spectrum(filename):
     """

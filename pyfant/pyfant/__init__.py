@@ -6,6 +6,7 @@ def init_agg():
     matplotlib.use('Qt4Agg')
 
 init_agg()
+
 from .errors import *
 from .misc import *
 from .data import *
@@ -17,4 +18,4 @@ from .plotting import *
 from .util import *
 from .from_vald import *
 from .multirunnable import *
-
+from .blocks import *

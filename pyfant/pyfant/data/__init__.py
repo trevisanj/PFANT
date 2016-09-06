@@ -15,3 +15,6 @@ from .filemolecules import *
 from .fileatoms import *
 from .fileabxfwhm import *
 from .fileoptions import *
+from .fileccube import *
+from .filedcube import *
+from .filespectrumlist import *

@@ -17,10 +17,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
-           "FindNotNaNBackwards",
-           "load_with_classes",
-        "MAGNITUDE_BASE", "Bands",
-           ]
+ "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames"
+]
 
 # # todo cleanup
 # # This is just for debugging
@@ -299,9 +297,11 @@ def get_pfant_dir(*args):
     """
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *args))
 
+
 def get_data_dir():
     """returns absolute path to PFANT/data."""
     return get_pfant_dir("data")
+
 
 def get_data_subdirs():
     """returns a list containing all subdirectories of PFANT/data (their names only, not full path)."""
@@ -312,6 +312,7 @@ def get_data_subdirs():
             ret.append(os.path.basename(d))
     return ret
 
+
 def get_star_data_subdirs():
     """Returns only subdirectories of PFANT/data that contain file main.dat."""
     dd = glob.glob(os.path.join(get_data_dir(), "*"))
@@ -320,6 +321,7 @@ def get_star_data_subdirs():
         if os.path.isdir(d) and os.path.isfile(os.path.join(d, 'main.dat')):
             ret.append(os.path.basename(d))
     return ret
+
 
 def symlink(source, link_name):
     """
@@ -350,6 +352,7 @@ def crunch_dir(name, n=50):
     if len(name) > n + 3:
         name = "..." + name[-n:]
     return name
+
 
 def get_scripts(flag_header=True, flag_markdown=False):
     """
@@ -442,8 +445,6 @@ def get_fortrans(max_len=None):
         piece = name + " " + ("." * (max_len-len(name)))
         ret.append(("%-"+str(max_len)+"s %s") % (piece, status))
     return ret
-
-
 
 
 def load_with_classes(filename, classes):
@@ -1418,3 +1419,18 @@ class Bands(object):
         """
 
         return cls.bands[band_name].range(flag_force_parametric, no_stds)
+
+
+########################################################################################################################
+# Originally from pymos
+
+def eval_fieldnames(string_, varname="fieldnames"):
+    """Evaluates string_, must evaluate to list of strings. Also converts field names to uppercase"""
+    ff = eval(string_)
+    if not isinstance(ff, list):
+        raise RuntimeError("%s must be a list" % varname)
+    if not all([isinstance(x, str) for x in ff]):
+        raise RuntimeError("%s must be a list of strings" % varname)
+    ff = [x.upper() for x in ff]
+    return ff
+
