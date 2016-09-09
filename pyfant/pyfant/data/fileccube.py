@@ -6,7 +6,9 @@ Based on IDL source file chris_J4000.pro
 
 __all__ = ["CompassCube", "FileCCube"]
 
-from pyfant import DataFile, AttrsPart, Spectrum
+from pyfant import AttrsPart
+from .datafile import DataFile
+from .spectrum import Spectrum
 import numpy as np
 #from pyfant.misc import *
 from astropy.io import fits

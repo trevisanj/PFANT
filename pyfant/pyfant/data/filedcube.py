@@ -8,16 +8,14 @@ Based on IDL source file chris_J4000.pro
 
 __all__ = ["DataCube", "FileDCube"]
 
+from .filespectrumlist import *
+from . import DataFile, Spectrum
+from .fileccube import *
+from ..misc import *
 import numpy as np
 import os
 from scipy.interpolate import interp1d
-
 from astropy.io import fits
-from .filespectrumlist import *
-
-from pyfant import DataFile, Spectrum
-from pyfant.data.fileccube import *
-from pyfant.misc import *
 
 # headers to care about when importing from a CompassCube HDU
 _HEADERS_COMPASS_CUBE = ["CDELT1", "HRFACTOR", "R"]
@@ -144,6 +142,52 @@ class DataCube(SpectrumCollection):
                     self.spectra.remove(sp)
         self.__update()
 
+
+    def from_hdulist(self, hdul):
+        """
+        Checks for required field names existence
+
+        Toad successfully, file must have the following field names:
+        'PIXEL-X', 'PIXEL-Y', 'Z-START'
+        """
+
+        self.__flag_update = False
+        try:
+            # if not hdul[0].header.get("TAINHA"):
+            #     raise RuntimeError("Wrong HDUList")
+
+            SpectrumCollection.from_hdulist(self, hdul)
+
+            required = ('PIXEL-X', 'PIXEL-Y', 'Z-START')
+            for fn in required:
+                if not fn in self.fieldnames:
+                    raise RuntimeError("Required field name '%s' not found" % fn)
+
+#            for i, hdu in enumerate(hdul):
+#                if i == 0:
+#                    for na0, na1 in _MMM:
+#                        try:
+#                            self.__setattr__(na0, hdu.header[na1])
+#                        except:
+#                            get_python_logger().exception("Failed setting '%s' = '%s'" % (na0, na1))
+#
+#                else:
+#                    sp = Spectrum()
+#                    sp.from_hdu(hdu)
+#                    if i == 1:
+#                        # TODO this must be settable, not just taken from first spectrum
+#                        self.reference = _LambdaReference(sp.x)
+#                    self.add_spectrum(sp)
+        finally:
+            self.enable_update()
+
+
+    # def to_hdulist(self):
+    #     """Inherited to add FileDCube-specific header marker"""
+    #     hdul = SpectrumCollection.to_hdulist(self)
+    #     hdul[0].header["TAINHA"] = 26.9752
+    #     return hdul
+    #
     def from_compass_cube(self, ccube):
         assert isinstance(ccube, CompassCube)
         hdu = ccube.hdu
@@ -169,29 +213,6 @@ class DataCube(SpectrumCollection):
                         sp.cut_idxs(where_positive[0], where_positive[-1]+1)
                         sp.pixel_x, sp.pixel_y = i, j
                         self.add_spectrum(sp)
-        finally:
-            self.enable_update()
-
-    def from_hdulist(self, hdul):
-        self.__flag_update = False
-        try:
-            SpectrumCollection.from_hdulist(self, hdul)
-            
-#            for i, hdu in enumerate(hdul):
-#                if i == 0:
-#                    for na0, na1 in _MMM:
-#                        try:
-#                            self.__setattr__(na0, hdu.header[na1])
-#                        except:
-#                            get_python_logger().exception("Failed setting '%s' = '%s'" % (na0, na1))
-#
-#                else:
-#                    sp = Spectrum()
-#                    sp.from_hdu(hdu)
-#                    if i == 1:
-#                        # TODO this must be settable, not just taken from first spectrum
-#                        self.reference = _LambdaReference(sp.x)
-#                    self.add_spectrum(sp)
         finally:
             self.enable_update()
 

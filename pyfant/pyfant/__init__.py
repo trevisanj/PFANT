@@ -13,7 +13,6 @@ from .data import *
 from .conf import *
 from .runnables import *
 from .rm import *
-from .pipeline import *
 from .plotting import *
 from .util import *
 from .from_vald import *

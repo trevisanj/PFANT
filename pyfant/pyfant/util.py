@@ -29,7 +29,7 @@ _classes_txt = [FileAbsoru2, FileHmap, FileMain, FileDissoc,
                 FileSpectrumXY, FileAtoms, FileMolecules,
                 FileOpa, FileModTxt]
 
-_classes_bin = [FileModBin, FileSpectrumFits, FileMoo, FileCCube, FileDCube]
+_classes_bin = [FileModBin, FileSpectrumFits, FileMoo, FileCCube, FileDCube, FileSpectrumList]
 
 _classes_sp = [FileModBin, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
                FileSpectrumFits]
@@ -41,9 +41,9 @@ def load_any_file(filename):
 
     # Splits attempts using ((binary X text) file) criterion
     if is_text_file(filename):
-
-
-    return load_with_classes(filename, _classes_txt)
+        return load_with_classes(filename, _classes_txt)
+    else:
+        return load_with_classes(filename, _classes_bin)
 
 def load_spectrum(filename):
     """
@@ -112,7 +112,6 @@ def run_parallel(rr, max_simultaneous=None, flag_console=True, runnable_manager=
     print rm
 
     return rm
-
 
 
 def setup_inputs(dest_dir='.', star='sun-asplund-2009', common='common', h=True, atoms=True, molecules=True, opa=True):
@@ -230,7 +229,7 @@ def create_or_replace_or_skip_links(ff, dest_dir="."):
                 print "   ... %s link" % s_action
             except Exception as e:
                 print_error("Error creating link: %s" % str(e))
-                
+
 
 
 def copy_or_skip_files(ff, dest_dir="."):
@@ -259,7 +258,7 @@ def copy_or_skip_files(ff, dest_dir="."):
 
         if not flag_skip:
             try:
-                shutil.copy(f, ".")
+                shutil.copy(f, dest_dir)
                 print "   ... file copied"
             except Exception as e:
                 print_error("Error copying file: %s" % str(e))

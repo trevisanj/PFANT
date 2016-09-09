@@ -7,7 +7,8 @@ __all__ = ["MONO_FONT", "SOL_HEADERS", "SOL_ATTR_NAMES", "ATOM_ATTR_NAMES",
            "INITIALIZES_SUN", "check_return_space",
            "enc_name", "enc_name_descr", "LLZERO_LLFIN", "DESCR_PTDISK",
            "style_checkboxes", "DESCR_MULTI", "Occurrence", "ErrorCollector",
-           "VerticalLabel", "are_you_sure", "get_matplotlib_layout"]
+           "VerticalLabel", "are_you_sure", "get_matplotlib_layout",
+           "style_widget"]
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -344,7 +345,6 @@ class ErrorCollector(object):
         return "\n".join(oo)
 
 
-
 class VerticalLabel(QLabel):
     """Label that draws itself vertically.
 
@@ -394,3 +394,9 @@ def get_matplotlib_layout(widget, flag_toolbar=True):
     layout.setMargin(0)
 
     return fig, canvas, layout
+
+
+def style_widget(spinbox, flag_changed):
+    """(Paints background yellow)/(removes stylesheet)"""
+    spinbox.setStyleSheet("QWidget {background-color: #FFFF00}" if flag_changed else "")
+

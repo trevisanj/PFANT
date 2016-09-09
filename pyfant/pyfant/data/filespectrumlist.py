@@ -4,18 +4,17 @@ List of spectra sharing same wavenumber axis. Uses FITS format
 
 __all__ = ["SpectrumList", "FileSpectrumList", "SpectrumCollection"]
 
-from pyfant import DataFile, AttrsPart, Spectrum, cut_spectrum_idxs, cut_spectrum, eval_fieldnames
-from pyfant import get_python_logger
-import numpy as np
-from pyfant.misc import *
+from ..misc import *
+from .spectrum import *
+from .fileccube import *
+from . import DataFile, Spectrum
 from astropy.io import fits
 import os
-from fileccube import *
 import numpy as np
 from scipy.interpolate import interp1d
 import numbers
 #from pymos.misc import *
-from pymos.blocks import *
+# from ..blocks import *
 import copy
 
 class SpectrumCollection(AttrsPart):
@@ -326,13 +325,11 @@ class SpectrumList(SpectrumCollection):
         pass
 
 
-
-
 class FileSpectrumList(DataFile):
     """Represents a Spectrum List file, which is also a FITS file"""
     attrs = ['splist']
     description = "Spectrum List"
-    default_filename = "default.splist.fits"
+    default_filename = "default.splist"
 
     def __init__(self):
         DataFile.__init__(self)

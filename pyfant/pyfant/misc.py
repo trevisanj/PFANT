@@ -17,7 +17,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "SESSION_PREFIX_PLURAL", "MULTISESSION_PREFIX",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
- "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames"
+ "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames",
 ]
 
 # # todo cleanup
@@ -1000,7 +1000,7 @@ _text_characters = (
         b''.join(int2byte(i) for i in range(32, 127)) +
         b'\n\r\t\f\b')
 
-def is_text_file(filepath, blocksize=512):
+def is_text_file(filepath, blocksize=2**13):
     """ Uses heuristics to guess whether the given file is text or binary,
         by reading a single block of bytes from the file.
         If more than 30% of the chars in the block are non-text, or there
@@ -1118,7 +1118,6 @@ for c in rainbow_colors:
 
 ################################################################################
 # # SEARCHES
-
 
 def BSearch(a, x, lo=0, hi=None):
   """Returns index of x in a, or -1 if x not in a.
@@ -1434,3 +1433,48 @@ def eval_fieldnames(string_, varname="fieldnames"):
     ff = [x.upper() for x in ff]
     return ff
 
+
+########################################################################################################################
+# MATHS
+
+def bc_rubber(vx):
+    """Convex Polygonal Line baseline correction
+
+    Arguments:
+      vx -- vector
+    """
+
+    return vx-rubberband(vx)
+
+
+def rubberband(vx):
+    """
+    Convex polygonal line (aka rubberbadn) whose vertices touch troughs of x
+    without crossing x, where x = X[i, :], i <= 0 < no (see below).
+
+
+    This was inspired on OPUS SB_Rubberband baseline correction (RBBC) [1]. However,
+    this one is parameterless, whereas OPUS RBBC asks for a number of points.
+
+    References:
+        [1] Bruker Optik GmbH, OPUS 5 Reference Manual. Ettlingen: Bruker, 2004.
+    """
+    pieces = [[vx[0]]]
+    _rubber_pieces(vx, pieces)
+    rubberband = np.concatenate(pieces)
+
+    return rubberband
+
+
+def _rubber_pieces(x, pieces):
+    """Recursive function that add straight lines to list. Together, these lines form the rubberband."""
+    nf = len(x)
+    l = np.linspace(x[0], x[-1], nf)
+    xflat = x - l
+    idx = np.argmin(xflat)
+    val = xflat[idx]
+    if val < 0:
+        _rubber_pieces(x[0:idx + 1], pieces)
+        _rubber_pieces(x[idx:], pieces)
+    else:
+        pieces.append(l[1:])
