@@ -1117,7 +1117,7 @@ class XFileSpectrumList(XFileMainWindow):
         return f
 
 
-class WFileSky(WBase):
+class WFileDCube(WBase):
     """
     FileDCube editor widget.
 
@@ -1903,7 +1903,7 @@ class XFileDCube(XFileMainWindow):
         self.wilds[0] = "*.fits"
 
         lv = keep_ref(QVBoxLayout(self.gotting))
-        ce = self.ce = WFileSky(self)
+        ce = self.ce = WFileDCube(self)
         lv.addWidget(ce)
         ce.edited.connect(self.on_tab0_file_edited)
         self.editors[0] = ce

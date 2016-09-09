@@ -16,9 +16,9 @@ if __name__ == "__main__":
     formatter_class=SmartFormatter
     )
     parser.add_argument('fn', type=str, nargs='?',
-     default=FileMolecules.default_filename,
+     #default=FileDCube.default_filename,
      help="file name, supports '%s' and '%s'" %
-          (FileDCube.description, FileCCube.description), nargs='?')
+          (FileDCube.description, FileCCube.description))
 
     args = parser.parse_args()
 
