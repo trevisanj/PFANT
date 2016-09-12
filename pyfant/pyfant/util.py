@@ -6,7 +6,9 @@ Rule: no pyfant module can import util!!!
 """
 __all__ = ["run_parallel",
            "load_any_file", "load_spectrum",
-            "setup_inputs", "link_to_data", "copy_star"]
+            "setup_inputs", "link_to_data", "copy_star",
+           "load_spectrum_fits_messed_x"]
+
 # from pyfant.misc import *
 from pyfant import *
 import time
@@ -16,6 +18,7 @@ import copy
 import os
 import glob
 import shutil
+from astropy.io import fits
 
 ###############################################################################
 # # Routines to load file of unknown format
@@ -47,9 +50,41 @@ def load_any_file(filename):
 
 def load_spectrum(filename):
     """
-    Attempts to load spectrum as one of the supported types.
+    Attempts to load spectrum as one of the supported types. Returns a Spectrum, or None
     """
-    return load_with_classes(filename, _classes_sp)
+    f = load_with_classes(filename, _classes_sp)
+    if f:
+        return f.spectrum
+    return None
+
+
+def load_spectrum_fits_messed_x(filename, sp_ref=None):
+    """Loads FITS file spectrum that does not have the proper headers. Returns a Spectrum"""
+
+    # First tries to load as usual
+    f = load_with_classes(filename, (FileSpectrumFits,))
+
+    if f is None:
+        hdul = fits.open(filename)
+
+        hdu = hdul[0]
+        if not hdu.header.get("CDELT1"):
+            hdu.header["CDELT1"] = 1 if sp_ref is None else sp_ref.delta_lambda
+        if not hdu.header.get("CRVAL1"):
+            hdu.header["CRVAL1"] = 0 if sp_ref is None else sp_ref.x[0]
+
+        ret = Spectrum()
+        ret.from_hdu(hdu)
+        original_shape = ret.y.shape  # Shape of data before squeeze
+        # Squeezes to make data of shape e.g. (1, 1, 122) into (122,)
+        ret.y = ret.y.squeeze()
+
+        if len(ret.y.shape) > 1:
+            raise RuntimeError(
+                "Data contains more than 1 dimension (shape is %s), FITS file is not single spectrum" % (
+                original_shape,))
+
+    return ret
 
 
 # ##################################################################################################

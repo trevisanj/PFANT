@@ -75,7 +75,7 @@ class DataCube(SpectrumCollection):
         self.__flag_update_pending = False
         self.wavelength = np.array([-1., -1.])  # Like this delta_lambda property does not give error
         # Header data initialized to default
-        self.R = 5000
+        self.R = 5000  # TODO this does not match the spectrum R necessarily, should I do sth about it?
         self.hrfactor = 10
         self.hr_pix_size = 0.0375/self.hrfactor
         self.width = 50
@@ -213,6 +213,9 @@ class DataCube(SpectrumCollection):
                         sp.cut_idxs(where_positive[0], where_positive[-1]+1)
                         sp.pixel_x, sp.pixel_y = i, j
                         self.add_spectrum(sp)
+
+            self.height = nY
+            self.width = nX
         finally:
             self.enable_update()
 

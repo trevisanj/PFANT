@@ -473,7 +473,7 @@ class FileSpectrumFits(FileSpectrum):
 
     def _do_load(self, filename):
         fits_obj = fits.open(filename)
-        fits_obj.info()
+        # fits_obj.info()
         hdu = fits_obj[0]
         sp = self.spectrum = Spectrum()
         sp.from_hdu(hdu)

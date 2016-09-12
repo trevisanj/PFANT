@@ -81,10 +81,10 @@ class WChooseSpectrum(QWidget):
             d = self.sp.filename if self.sp and self.sp.filename is not None else FileSpectrumPfant.default_filename
             new_filename = QFileDialog.getOpenFileName(self, "Cube", d, "*.fits")
             if new_filename:
-                f = load_spectrum(new_filename)
+                sp = load_spectrum(new_filename)
                 if not f:
                     raise RuntimeError("Failed to load '%s'" % new_filename)
-                self.sp = f.spectrum
+                self.sp = sp
                 self.__update_from_sp()
         except Exception as e:
             show_error(str(e))

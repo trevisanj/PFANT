@@ -1317,7 +1317,7 @@ class WFileDCube(WBase):
         y = self.spinbox_width = QSpinBox()
         y.valueChanged.connect(self.on_header_edited)
         y.setMinimum(1)
-        y.setMaximum(100)
+        y.setMaximum(1000)
         x.setBuddy(y)
         pp.append((x, y, "&width", "hi-resolution (HR) width (pixels)", "", lambda: self.f.dcube.width,
                    lambda: self.spinbox_width.value()))
@@ -1326,7 +1326,7 @@ class WFileDCube(WBase):
         y = self.spinbox_height = QSpinBox()
         y.valueChanged.connect(self.on_header_edited)
         y.setMinimum(0)
-        y.setMaximum(100)
+        y.setMaximum(1000)
         x.setBuddy(y)
         pp.append(
             (x, y, "&height", "HR height (pixels)", "", lambda: self.f.dcube.height, lambda: self.spinbox_height.value()))
