@@ -9,7 +9,7 @@ import datetime
 from pyfant import *
 from pyfant.gui import *
 import os
-
+from matplotlib import pyplot as plt
 
 class _LogPart(object):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
@@ -45,7 +45,7 @@ class _LogPart(object):
         else:
             get_python_logger().info(x)
         if flag_also_show:
-            show_error(x_)
+            show_error(x)
 
 
 class XLogMainWindow(QMainWindow, _LogPart):
@@ -196,7 +196,7 @@ class XFileMainWindow(XLogMainWindow):
         else:
             get_python_logger().info(x)
         if flag_also_show:
-            show_error(x_)
+            show_error(x)
 
     def set_manager_form(self, x):
         assert isinstance(x, XRunnableManager)
@@ -465,3 +465,5 @@ class WBase(QWidget):
         pass
         
         
+
+

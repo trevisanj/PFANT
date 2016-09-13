@@ -128,7 +128,7 @@ module dimensions
   integer, parameter :: &
    MAX_KM_LINES_TOTAL=1400000, & ! Maximum number of spectral lines in *molecules file*
                                    ! pertaining all molecules
-   MAX_KM_F_MBLEND=200000 ! Maximum number of spectral lines that can be filtered in at a
+   MAX_KM_F_MBLEND=1400000 ! Maximum number of spectral lines that can be filtered in at a
                         ! filtering operation performed by filter_molecules()
 
   !=====
@@ -2870,7 +2870,6 @@ module config
    config_fn_partit        = 'partit.dat',        & ! option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
    config_fn_atoms         = 'atoms.dat',         & ! option: --fn_atoms
-   config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
    config_fn_molecules_out = '?',                 & ! option: --fn_molecules_out
    config_fn_lines         = 'lines.pfant',       & ! option: --fn_lines
    config_fn_log           = 'log.log',           & ! option: --fn_log
@@ -2879,6 +2878,12 @@ module config
   logical :: config_abs = .true., &                 ! option: --abs
              config_sca = .true., &                 ! option: --sca
              config_absoru = .true.                 ! option: --config_absoru
+
+  !---
+  ! pfant and convmol
+  !---
+  character*64 :: &
+   config_fn_molecules     = 'molecules.dat'        ! option: --fn_molecules
 
   !---
   ! nulbad-only
@@ -2892,10 +2897,18 @@ module config
    config_fwhm = -1, &               ! option: --fwhm
    config_pat = -1                   ! option: --pat
   character*64 :: &
-    config_fn_flux = '?', &         ! option: --fn_flux
-    config_fn_cv = '?'              ! option: --fn_cv
+    config_fn_flux = '?', &          ! option: --fn_flux
+    config_fn_cv = '?'               ! option: --fn_cv
 
-  real*8 :: config_zinf = -1        ! option: --zinf
+  real*8 :: config_zinf = -1         ! option: --zinf
+
+
+  !---
+  ! convmol
+  !---
+  character*69 :: &
+   config_fn_out = '?'  ! option: --fn_out
+
   !===== end of command-line variables declarations
 
 
@@ -3040,10 +3053,6 @@ contains
     call add_option('hp', 'fn_hmap',       ' ', .true., 'file name', config_fn_hmap, &
      'input file name - contains table with<br>'//&
      IND//'(filename, niv inf, niv sup, central lambda, kiex, c1)')
-    call add_option('hp', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
-     'Lower boundary of calculation interval (angstrom)')
-    call add_option('hp', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
-     'Upper boundary of calculation interval (angstrom)')
     call add_option('hp', 'interp', ' ', .true., 'type', int2str(config_interp), &
      'interpolation type for subroutine turbul()<br>'//&
      IND//'1: linear;<br>'//&
@@ -3054,6 +3063,14 @@ contains
      IND//'1: 26-point integration')
 
     !
+    ! hydro2, pfant, convmol
+    !
+    call add_option('hpc', 'llzero',' ', .true., 'real value', '<main_llzero> '//FROM_MAIN, &
+     'Lower boundary of calculation interval (angstrom)')
+    call add_option('hpc', 'llfin',' ', .true., 'real value', '<main_llfin> '//FROM_MAIN, &
+     'Upper boundary of calculation interval (angstrom)')
+
+    !
     ! innewmarcs-only
     !
     call add_option('i', 'fn_modgrid', ' ', .true., 'file name', config_fn_modgrid, &
@@ -3062,7 +3079,6 @@ contains
      'input file name - complete atmospheric model grid with opacities included')
     call add_option('i', 'allow', ' ', .true., 'T/F', logical2str(config_allow), &
      'allow (teff, glog, asalog) point out of model grid?')
-
 
     !
     ! innewmarcs, pfant
@@ -3094,8 +3110,6 @@ contains
      'input file name - atomic abundances')
     call add_option('p', 'fn_atoms',     ' ', .true., 'file name', config_fn_atoms, &
      'input file name - atomic lines')
-    call add_option('p', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
-     'input file name - molecular lines')
     call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
      'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
@@ -3114,11 +3128,6 @@ contains
      'Interval length per iteration (angstrom)')
     call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator', .false.)
-    call add_option('p', 'fn_molecules_out', ' ', .true., 'file name', &
-      trim(config_fn_molecules)//'.vald', &
-      'output file name - molecular lines in VALD3 extended format.<br>'//&
-      'This option only has effect in "--convmol" mode')
-
 
     ! better to group the opacity-related options
     call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
@@ -3133,6 +3142,12 @@ contains
     call add_option('p', 'absoru',' ', .true., 'T/F', logical2str(config_absoru), &
      'Whether or not to include coefficients calculated by subroutine absoru()<br>'//&
      IND//'in the continuum.')
+
+    !
+    ! pfant, convmol
+    !
+    call add_option('pc', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
+     'input file name - molecular lines')
 
     !
     ! pfant, nulbad
@@ -3161,6 +3176,14 @@ contains
       'Apply convolution?')
     call add_option('n', 'fwhm',     ' ', .true., 'real value', '<main_fwhm> '//FROM_MAIN, &
       'full-width-half-maximum of Gaussian function')
+
+    !
+    ! convmol
+    !
+    call add_option('c', 'fn_out', ' ', .true., 'file name', &
+      '<molecular lines file name>.vald', &
+      'output file name - molecular lines in VALD3 extended format.')
+
   end
 
 
@@ -3282,6 +3305,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_atoms, 'config_fn_atoms')
       case ('fn_molecules')
         call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
+      case ('fn_out')
+        call parse_aux_assign_fn(o_arg, config_fn_out, 'config_fn_out')
       case ('fn_opa')
         call parse_aux_assign_fn(o_arg, config_fn_opa, 'config_fn_opa')
 !            case ('fn_lines')

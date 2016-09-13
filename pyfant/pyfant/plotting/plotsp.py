@@ -5,11 +5,11 @@ from pyfant import *
 import matplotlib.pyplot as plt
 import math
 import matplotlib.backends.backend_pdf
+from matplotlib import rc
 import logging
 import numpy as np
 __all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf",
  "plot_spectra_pages_pdf"]
-
 
 _T = 0.02  # percentual amount of extra space on left, right, top, bottom of graphics
 _FAV_COLOR = 'k'  # "favourite color" for single-spectrum plots
@@ -60,7 +60,8 @@ def plot_spectra(ss, title=None, ymin=None, num_rows=None):
         ymin_, ymax = ax.get_ylim()
         ymin_now = ymin_ if ymin is None else ymin
         ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (1 + _T)])  # prevents top of line from being hidden by plot box
-        ax.set_ylabel(s.filename)
+        if s.filename is not None:
+            ax.set_ylabel(s.filename)
 
         xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
 

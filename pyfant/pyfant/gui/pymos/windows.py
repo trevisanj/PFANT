@@ -5,21 +5,24 @@ __all__ = ["WSpectrumTable", "XQuery", "XFileSpectrumList", "XFileDCube"]
 import collections
 import copy
 import matplotlib.pyplot as plt
+from pylab import MaxNLocator
 import numbers
 import numpy as np
 import os
 import os.path
 from itertools import product, combinations, cycle
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
 from pyfant import *
 from pyfant.data.filespectrumlist import *
 from pyfant.gui import *
 from .basewindows import *
 from .a_WChooseSpectrum import *
 from .a_XScaleSpectrum import *
+
+
+# http://stackoverflow.com/questions/22084163/how-to-remove-gray-border-from-matplotlib
+set_facecolor_white()
 
 _COLORS_SQ = [(.1, .6, .5), (.5, .1, .7)]
 _ITER_COLORS_SQ = cycle(_COLORS_SQ)
@@ -1790,7 +1793,8 @@ class WFileDCube(WBase):
             get_python_logger().exception("Could not plot colors")
 
 
-def _plot_spectra(ax, sky):
+_ZERO_OFFSET = 0.
+def _plot_spectra(ax, dcube):
     """
     Plots front and back grid, scaled fluxes
 
@@ -1800,44 +1804,46 @@ def _plot_spectra(ax, sky):
     Y pixel coordinate   z
     Z wavelength         y
     """
-    assert isinstance(sky, DataCube)
+    assert isinstance(dcube, DataCube)
 
-    flag_empty = len(sky.spectra) == 0
-    r0 = [-.5, sky.width + .5]
-    r2 = [-.5, sky.height + .5]
+    flag_empty = len(dcube.spectra) == 0
+    r0 = [_ZERO_OFFSET, dcube.width +_ZERO_OFFSET]
+    r2 = [_ZERO_OFFSET, dcube.height +_ZERO_OFFSET]
     if flag_empty:
-        r1 = [-.5, .5]
+        r1 = [_ZERO_OFFSET, 1+_ZERO_OFFSET]
     else:
-        max_flux = max([max(sp.flux) for sp in sky.spectra])
-        _y = sky.wavelength
+        max_flux = max([max(sp.flux) for sp in dcube.spectra])
+        _y = dcube.wavelength
         dlambda = _y[1] - _y[0]
         r1 = [_y[0] - dlambda / 2, _y[-1] + dlambda / 2]
         scale = 1. / max_flux
 
     PAR = {"color": "y", "alpha": 0.3}
 
-    def draw_line(*args):
-        ax.plot3D(*args, **PAR)
+    def draw_line(*args, **kwargs):
+        tempdict = copy.copy(PAR)
+        tempdict.update(kwargs)
+        ax.plot3D(*args, **tempdict)
 
-    # draws cube
+    # draws cube edges using a thicker line
     if not flag_empty:
         for s, e in combinations(np.array(list(product(r0, r1, r2))), 2):
             if np.sum(s == e) == 2:
                 # if np.sum(np.abs(s - e)) == r[1] - r[0]:
-                draw_line(*zip(s, e))
+                draw_line(*zip(s, e), lw=2)
 
     # draws grids
-    for i in range(sky.width + 1):
-        draw_line([i - .5] * 2, [r1[0]] * 2, r2)
-        draw_line([i - .5] * 2, [r1[1]] * 2, r2)
-    for i in range(sky.height + 1):
-        draw_line(r0, [r1[0]] * 2, [i - .5] * 2)
-        draw_line(r0, [r1[1]] * 2, [i - .5] * 2)
+    for i in range(dcube.width):
+        draw_line([i + _ZERO_OFFSET] * 2, [r1[0]] * 2, r2)
+        draw_line([i + _ZERO_OFFSET] * 2, [r1[1]] * 2, r2)
+    for i in range(dcube.height):
+        draw_line(r0, [r1[0]] * 2, [i + _ZERO_OFFSET] * 2)
+        draw_line(r0, [r1[1]] * 2, [i + _ZERO_OFFSET] * 2)
 
-    for sp in sky.spectra:
+    for sp in dcube.spectra:
         n = len(sp)
-        flux1 = sp.flux * scale + sp.pixel_y - .5
-        ax.plot(np.ones(n) * sp.pixel_x,
+        flux1 = sp.flux * scale + sp.pixel_y +_ZERO_OFFSET
+        ax.plot(np.ones(n) * sp.pixel_x+_ZERO_OFFSET+.5,
                 sp.wavelength,
                 flux1, color='k')
 
@@ -1845,6 +1851,12 @@ def _plot_spectra(ax, sky):
     ax.set_xlabel("x (pixel)")
     ax.set_ylabel('wavelength ($\AA$)')  # ax.set_ylabel('wavelength ($\AA$)')
     ax.set_zlabel('y (pixel)')
+
+    ax.set_ylim([dcube.wavelength[0], dcube.wavelength[-1]])
+    ax.set_zlim([_ZERO_OFFSET, _ZERO_OFFSET+dcube.height])
+    ax.set_xlim([_ZERO_OFFSET, _ZERO_OFFSET+dcube.width])
+    ax.zaxis.set_major_locator(MaxNLocator(integer=True))
+
     # ax.set_zlabel('?')
     # plt.show()
 

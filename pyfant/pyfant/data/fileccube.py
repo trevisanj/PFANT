@@ -6,7 +6,7 @@ Based on IDL source file chris_J4000.pro
 
 __all__ = ["CompassCube", "FileCCube"]
 
-from pyfant import AttrsPart
+from pyfant import AttrsPart, get_python_logger
 from .datafile import DataFile
 from .spectrum import Spectrum
 import numpy as np
@@ -17,7 +17,14 @@ import os
 class CompassCube(AttrsPart):
     """X-Y-wavelength cube compliant with WebSim-Compass specs
 
-    Data is stored primarily in self.hdu, with a few other relevant attributes"""
+    Data is stored primarily in self.hdu, with a few other relevant attributes
+
+    Notes on FITS HDU:
+      - data is stored in reverse dimensions, i.e., (z, y, x)
+      - CDELT1, CRVAL1 refer to x
+      - CDELT2, CRVAL2 refer to y
+      - CDELT3, CRVAL3 refer to z
+    """
 
     attrs = ["R", "hrfactor", "ifu_pix_size"]
 
@@ -41,21 +48,36 @@ class CompassCube(AttrsPart):
             self.from_hdu(hdu)
 
     def from_hdu(self, hdu):
-        """Sets self.hdu and with HDU object passed. Warning: may change HDU object"""
+        """
+        Sets self.hdu and with HDU object passed. Warning: may change HDU object.
+
+        Default HDU headers:
+         CDELT1 defaults to 1.
+         CDELT2 defaults to CDELT1
+         CRDELT3 defaults to 1.
+         CRVAL3 defaults to 0.
+        """
         assert isinstance(hdu, fits.PrimaryHDU)
 
         # ensures all required headers are present
-        keys = ["NAXIS1", "NAXIS2", "NAXIS3", "CDELT1", "CDELT3",  "CRVAL3"]
+        keys = ["NAXIS1", "NAXIS2", "NAXIS3"]
         for key in keys:
             assert key in hdu.header, 'Key "%s" not found in headers' % key
 
+        if not "CDELT3" in hdu.header:
+            get_python_logger().warning("HDU lacks header 'CDELT3', assumed 1.0")
+            hdu.header["CDELT3"] = 1.
+        if not "CRVAL3" in hdu.header:
+            get_python_logger().warning("HDU lacks header 'CRVAL3', assumed 0.0")
+            hdu.header["CRVAL3"] = 0.
+        if not "CDELT1" in hdu.header:
+            get_python_logger().warning("HDU lacks header 'CDELT1', assumed 1.0")
+            hdu.header["CDELT1"] = 1.0
         if not "CDELT2" in hdu.header:
+            get_python_logger().warning("HDU lacks header 'CDELT2', assumed value in 'CDELT1'")
             hdu.header["CDELT2"] = hdu.header["CDELT1"]
         if not "HRFACTOR" in hdu.header:
-            hdu.header["HRFACTOR"] = 1
-
-        print "Need to see what to do with CDELT2"
-
+            hdu.header["HRFACTOR"] = 1.
 
         l0 = hdu.header["CRVAL3"]+hdu.header["CDELT3"]
         delta_lambda = hdu.header["CDELT3"]

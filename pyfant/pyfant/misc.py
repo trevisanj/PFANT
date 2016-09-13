@@ -18,6 +18,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
  "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames",
+ "set_facecolor_white"
 ]
 
 # # todo cleanup
@@ -786,8 +787,12 @@ def random_name():
 # #################################################################################################
 # # Matplotlib-related routines
 
+def set_facecolor_white():
+    rc("figure", facecolor="white")
+
 def format_BLB():
     """Sets some formatting options in Matplotlib."""
+    rc("figure", facecolor="white")
     rc('font', family = 'serif', size=14) #, serif = 'cmr10')
     rc('xtick', labelsize=14)
     rc('ytick', labelsize=14)

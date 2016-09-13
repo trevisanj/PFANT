@@ -214,7 +214,11 @@ class Spectrum(object):
         hdu.header["CDELT1"] = self.x[1] - self.x[0]
         hdu.header["XUNIT"] = "A"
         for key, value in self.more_headers.iteritems():
-            hdu.header[key] = value
+            try:
+                hdu.header[key] = value
+            except:
+                get_python_logger().exception("Error adding header['%s'] = '%s'" % (key, value))
+                raise
         hdu.data = self.y
         return hdu
         
