@@ -11,7 +11,7 @@ from pyfant.gui.guiaux import *
 
 class WChooseSpectrum(QWidget):
     """
-    FileCCube editor widget.
+    FileWebsimCube editor widget.
 
     Arguments:
       parent=None

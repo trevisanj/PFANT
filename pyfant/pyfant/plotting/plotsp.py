@@ -9,10 +9,15 @@ from matplotlib import rc
 import logging
 import numpy as np
 __all__ = ["plot_spectra", "plot_spectra_overlapped", "plot_spectra_pieces_pdf",
- "plot_spectra_pages_pdf"]
+ "plot_spectra_pages_pdf", "draw_spectra"]
 
 _T = 0.02  # percentual amount of extra space on left, right, top, bottom of graphics
 _FAV_COLOR = 'k'  # "favourite color" for single-spectrum plots
+
+
+
+# TODO draw_spectra_overlapped (maybe when I need it)
+
 
 def plot_spectra(ss, title=None, ymin=None, num_rows=None):
     """
@@ -29,52 +34,7 @@ def plot_spectra(ss, title=None, ymin=None, num_rows=None):
 
     """
 
-    n = len(ss)
-    assert n > 0, "ss is empty"
-    if not num_rows:
-        num_rows = n
-        num_cols = 1
-    else:
-        num_cols = int(np.ceil(float(n)/num_rows))
-
-    format_BLB()
-    # if n == 1:
-    #     fig = plt.figure()
-    # else:
-    fig, axarr = plt.subplots(num_rows, num_cols, sharex=True, squeeze=False)
-
-    xmin = 1e38
-    xmax = -1e38
-    i, j = -1, num_cols
-    for s in ss:
-        j += 1
-        if j >= num_cols:
-            i += 1
-            if i >= num_rows:
-                break
-            j = 0
-        assert isinstance(s, Spectrum)
-        ax = axarr[i, j]
-        y = s.y
-        ax.plot(s.x, y)
-        ymin_, ymax = ax.get_ylim()
-        ymin_now = ymin_ if ymin is None else ymin
-        ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (1 + _T)])  # prevents top of line from being hidden by plot box
-        if s.filename is not None:
-            ax.set_ylabel(s.filename)
-
-        xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
-
-    span = xmax - xmin
-    ax.set_xlim([xmin - span * _T, xmax + span * _T])
-
-    for j in range(num_cols):
-        ax = axarr[num_rows-1, j]
-        ax.set_xlabel('Wavelength ($\AA$)')
-
-    plt.tight_layout()
-    if title is not None:
-        fig.canvas.set_window_title(title)
+    draw_spectra(ss, title, ymin, num_rows)
     plt.show()
     # return fig
 
@@ -216,3 +176,50 @@ def _calc_max_min(ss):
     xspan = xmax-xmin
     yspan = ymax - ymin
     return xmin, xmax, ymin, ymax, xspan, yspan
+
+
+def draw_spectra(ss, title=None, ymin=None, num_rows=None):
+    """Same as plot_spectra, but does not call plt.show(); returns figure"""
+    n = len(ss)
+    assert n > 0, "ss is empty"
+    if not num_rows:
+        num_rows = n
+        num_cols = 1
+    else:
+        num_cols = int(np.ceil(float(n) / num_rows))
+    format_BLB()
+    # if n == 1:
+    #     fig = plt.figure()
+    # else:
+    fig, axarr = plt.subplots(num_rows, num_cols, sharex=True, squeeze=False)
+    xmin = 1e38
+    xmax = -1e38
+    i, j = -1, num_cols
+    for s in ss:
+        j += 1
+        if j >= num_cols:
+            i += 1
+            if i >= num_rows:
+                break
+            j = 0
+        assert isinstance(s, Spectrum)
+        ax = axarr[i, j]
+        y = s.y
+        ax.plot(s.x, y)
+        ymin_, ymax = ax.get_ylim()
+        ymin_now = ymin_ if ymin is None else ymin
+        ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (
+        1 + _T)])  # prevents top of line from being hidden by plot box
+        if s.filename is not None:
+            ax.set_ylabel(s.filename)
+
+        xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
+    span = xmax - xmin
+    ax.set_xlim([xmin - span * _T, xmax + span * _T])
+    for j in range(num_cols):
+        ax = axarr[num_rows - 1, j]
+        ax.set_xlabel('Wavelength ($\AA$)')
+    plt.tight_layout()
+    if title is not None:
+        fig.canvas.set_window_title(title)
+    return fig

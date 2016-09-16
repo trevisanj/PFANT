@@ -1,6 +1,6 @@
 __all__ = ["Spectrum", "FileSpectrum", "FileSpectrumPfant",
            "FileSpectrumNulbad", "FileSpectrumXY", "FileSpectrumFits",
-            "cut_spectrum", "cut_spectrum_idxs"]
+            "cut_spectrum", "cut_spectrum_idxs", "normalize_spectrum"]
 
 import fortranformat as ff
 import struct
@@ -498,6 +498,10 @@ class FileSpectrumFits(FileSpectrum):
 
 ########################################################################################################################
 # Pipeline routines -- spectrum manipulation
+#
+# **IMPORTANT** all functions here must make copies of original data.
+# dest.wavelength = source.wavelength.copy()  <--- correct
+# dest.wavelength = source.wavelength  <--- *WRONG*
 
 def cut_spectrum(sp, lambda0, lambda1):
     """Cuts spectrum to interval [lambda0, lambda1]. Returns new"""
@@ -510,8 +514,26 @@ def cut_spectrum(sp, lambda0, lambda1):
 
 def cut_spectrum_idxs(sp, idx0, idx1):
     """Cuts spectrum using index interval. Returns new"""
-    ret = Spectrum()
-    ret.x = sp.x[idx0:idx1]
-    ret.y = sp.y[idx0:idx1]
+    ret = copy.deepcopy(sp)
+    ret.x = ret.x[idx0:idx1]
+    ret.y = sp.y[idx0:idx1].copy()
     return ret
 
+def normalize_spectrum(sp, method="01"):
+    """
+    Normalizes spectrum according to specified method. Returns new
+
+    Arguments:
+      method="01" -- Normalization method:
+        "01": normalizes between 0 and 1
+    """
+
+    ret = copy.deepcopy(sp)
+    if method == "01":
+        miny, maxy = np.min(ret.y), np.max(ret.y)
+        if miny == maxy:
+            raise RuntimeError("Cannot normalize, y-span is ZERO")
+        ret.y = (ret.y-miny)/(maxy-miny)
+    else:
+        raise RuntimeError("Invalid method: '%s'" % method)
+    return ret

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""FileSpectrumList editor with import/export FileCCube"""
+"""FileSpectrumList editor with import/export FileWebsimCube"""
 
 from pyfant import *
 from pymos import *

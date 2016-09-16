@@ -2,7 +2,6 @@ __all__ = ["VisPrint", "VisModRecord", "VisModCurves", "VisSpectrum", "VisFileTo
            "get_suitable_vis_classes", "VisAtoms", "VisMolecules", "VisOpa",
            "VisMarcs", "VisMarcsSaveAsMod", "VisGrid", "VisVector", "VisMain",
            "VisAbonds", "VisCube", "VisSpectrumList"]
-
 from pyfant.data import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -444,7 +443,7 @@ class VisAbonds(Vis):
 
 class VisCube(Vis):
     """Opens the Data Cube Editor window."""
-    input_classes = (FileCCube, FileDCube)
+    input_classes = (FileWebsimCube, FileDCube)
     action = "Edit using Data Cube Editor"
 
     def _do_use(self, r):
@@ -464,3 +463,8 @@ class VisSpectrumList(Vis):
         form = XFileSpectrumList(self.parent_form, r)
         _forms.append(form)
         form.show()
+
+
+###############################################################################
+# # Visualization functions
+# TODO **All visualization routines should be in functional form and not in classes!!!**

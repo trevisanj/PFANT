@@ -4,7 +4,7 @@ Support for WebSim-Compass FITS spectral cubes
 Based on IDL source file chris_J4000.pro
 """
 
-__all__ = ["CompassCube", "FileCCube"]
+__all__ = ["WebsimCube", "FileWebsimCube"]
 
 from pyfant import AttrsPart, get_python_logger
 from .datafile import DataFile
@@ -14,7 +14,7 @@ import numpy as np
 from astropy.io import fits
 import os
 
-class CompassCube(AttrsPart):
+class WebsimCube(AttrsPart):
     """X-Y-wavelength cube compliant with WebSim-Compass specs
 
     Data is stored primarily in self.hdu, with a few other relevant attributes
@@ -89,7 +89,7 @@ class CompassCube(AttrsPart):
         raise NotImplementedError()
 
     def __repr__(self):
-        return "Please implement CompassCube.__repr__()"
+        return "Please implement WebsimCube.__repr__()"
 
     def create1(self, R, dims, hr_pix_size, hrfactor):
         """Creates FITS HDU, including the cube full with zeros 
@@ -131,23 +131,23 @@ class CompassCube(AttrsPart):
         self.wavelength = w
 
 
-class FileCCube(DataFile):
+class FileWebsimCube(DataFile):
     """Represents a Compass data cube file, which is also a FITS file"""
-    attrs = ['ccube']
+    attrs = ['wcube']
     description = "WebSim Compass Data Cube (FITS file)"
-    default_filename = "default.ccube"
+    default_filename = "default.wcube"
 
     def __init__(self):
         DataFile.__init__(self)
-        self.ccube = CompassCube()
+        self.wcube = WebsimCube()
 
     def _do_load(self, filename):
         fits_obj = fits.open(filename)
-        self.ccube = CompassCube(fits_obj[0])
+        self.wcube = WebsimCube(fits_obj[0])
         self.filename = filename
 
     def _do_save_as(self, filename):
-        assert self.ccube.flag_wavelengthed, "Cannot save before at least one pixel has been \"painted\""""
+        assert self.wcube.flag_wavelengthed, "Cannot save before at least one pixel has been \"painted\""""
         if os.path.isfile(filename):
             os.unlink(filename)  # PyFITS does not overwrite file
-        self.ccube.hdu.writeto(filename)
+        self.wcube.hdu.writeto(filename)

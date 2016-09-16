@@ -1033,7 +1033,7 @@ class XFileSpectrumList(XFileMainWindow):
         self.save_as_texts[0] = "Save %s as..." % _VVV
         self.open_texts[0] = "Load %s" % _VVV
         self.clss[0] = FileSpectrumList
-        self.clsss[0] = (FileSpectrumList, FileCCube)  # file types that can be opened
+        self.clsss[0] = (FileSpectrumList, FileWebsimCube)  # file types that can be opened
         self.wilds[0] = "*.splist.fits"
 
         lv = keep_ref(QVBoxLayout(self.gotting))
@@ -1112,10 +1112,10 @@ class XFileSpectrumList(XFileMainWindow):
         self._update_tab_texts()
 
     def _filter_on_load(self, f):
-        """Converts from FileCCube to FileSpectrumList format, if necessary"""
-        if isinstance(f, FileCCube):
+        """Converts from FileWebsimCube to FileSpectrumList format, if necessary"""
+        if isinstance(f, FileWebsimCube):
             f1 = FileSpectrumList()
-            f1.dcube.from_compass_cube(f.ccube)
+            f1.dcube.from_websim_cube(f.wcube)
             f = f1
         return f
 
@@ -1395,7 +1395,7 @@ class WFileDCube(WBase):
         lwset.addWidget(b)
         b.clicked.connect(self.crop_clicked)
         ###
-        b = keep_ref(QPushButton("E&xport %s ..." % FileCCube.description))
+        b = keep_ref(QPushButton("E&xport %s ..." % FileWebsimCube.description))
         lwset.addWidget(b)
         b.clicked.connect(self.export_ccube_clicked)
         ###
@@ -1609,14 +1609,14 @@ class WFileDCube(WBase):
             raise
 
     def export_ccube_clicked(self):
-        fn = QFileDialog.getSaveFileName(self, "Save file in %s format" % FileCCube.description,
-                                         FileCCube.default_filename, "*.fits")
+        fn = QFileDialog.getSaveFileName(self, "Save file in %s format" % FileWebsimCube.description,
+                                         FileWebsimCube.default_filename, "*.fits")
         if fn:
             try:
                 fn = str(fn)
-                ccube = self.f.dcube.to_compass_cube()
-                fccube = FileCCube()
-                fccube.ccube = ccube
+                wcube = self.f.dcube.to_websim_cube()
+                fccube = FileWebsimCube()
+                fccube.wcube = wcube
                 fccube.save_as(fn)
             except Exception as E:
                 self.add_log_error("Failed export: %s" % _str_exc(E), True)
@@ -1754,7 +1754,7 @@ class WFileDCube(WBase):
             fig = self.figure0
             fig.clear()
             ax = fig.gca(projection='3d')
-            _plot_spectra(ax, self.f.dcube)
+            draw_cube_3d(ax, self.f.dcube)
             fig.tight_layout()
             self.canvas0.draw()
 
@@ -1782,7 +1782,7 @@ class WFileDCube(WBase):
                 sqx, sqy = self.get_place_spectrum_xy()
             except:
                 pass  # Nevermind (does not draw square)
-            self.obj_square = _plot_colors(ax, self.f.dcube, vrange, sqx, sqy, flag_scale, method)
+            self.obj_square = draw_cube_colors(ax, self.f.dcube, vrange, sqx, sqy, flag_scale, method)
 
             fig.tight_layout()
             self.canvas1.draw()
@@ -1793,100 +1793,6 @@ class WFileDCube(WBase):
             get_python_logger().exception("Could not plot colors")
 
 
-_ZERO_OFFSET = 0.
-def _plot_spectra(ax, dcube):
-    """
-    Plots front and back grid, scaled fluxes
-
-    data cube            mapped to 3D axis
-    ------------------   -----------------
-    X pixel coordinate   x
-    Y pixel coordinate   z
-    Z wavelength         y
-    """
-    assert isinstance(dcube, DataCube)
-
-    flag_empty = len(dcube.spectra) == 0
-    r0 = [_ZERO_OFFSET, dcube.width +_ZERO_OFFSET]
-    r2 = [_ZERO_OFFSET, dcube.height +_ZERO_OFFSET]
-    if flag_empty:
-        r1 = [_ZERO_OFFSET, 1+_ZERO_OFFSET]
-    else:
-        max_flux = max([max(sp.flux) for sp in dcube.spectra])
-        _y = dcube.wavelength
-        dlambda = _y[1] - _y[0]
-        r1 = [_y[0] - dlambda / 2, _y[-1] + dlambda / 2]
-        scale = 1. / max_flux
-
-    PAR = {"color": "y", "alpha": 0.3}
-
-    def draw_line(*args, **kwargs):
-        tempdict = copy.copy(PAR)
-        tempdict.update(kwargs)
-        ax.plot3D(*args, **tempdict)
-
-    # draws cube edges using a thicker line
-    if not flag_empty:
-        for s, e in combinations(np.array(list(product(r0, r1, r2))), 2):
-            if np.sum(s == e) == 2:
-                # if np.sum(np.abs(s - e)) == r[1] - r[0]:
-                draw_line(*zip(s, e), lw=2)
-
-    # draws grids
-    for i in range(dcube.width):
-        draw_line([i + _ZERO_OFFSET] * 2, [r1[0]] * 2, r2)
-        draw_line([i + _ZERO_OFFSET] * 2, [r1[1]] * 2, r2)
-    for i in range(dcube.height):
-        draw_line(r0, [r1[0]] * 2, [i + _ZERO_OFFSET] * 2)
-        draw_line(r0, [r1[1]] * 2, [i + _ZERO_OFFSET] * 2)
-
-    for sp in dcube.spectra:
-        n = len(sp)
-        flux1 = sp.flux * scale + sp.pixel_y +_ZERO_OFFSET
-        ax.plot(np.ones(n) * sp.pixel_x+_ZERO_OFFSET+.5,
-                sp.wavelength,
-                flux1, color='k')
-
-    # ax.set_aspect("equal")
-    ax.set_xlabel("x (pixel)")
-    ax.set_ylabel('wavelength ($\AA$)')  # ax.set_ylabel('wavelength ($\AA$)')
-    ax.set_zlabel('y (pixel)')
-
-    ax.set_ylim([dcube.wavelength[0], dcube.wavelength[-1]])
-    ax.set_zlim([_ZERO_OFFSET, _ZERO_OFFSET+dcube.height])
-    ax.set_xlim([_ZERO_OFFSET, _ZERO_OFFSET+dcube.width])
-    ax.zaxis.set_major_locator(MaxNLocator(integer=True))
-
-    # ax.set_zlabel('?')
-    # plt.show()
-
-
-def _plot_colors(ax, sky, vrange, sqx=None, sqy=None, flag_scale=False, method=0):
-    """
-    Plots image on axis
-
-    Arguments
-      ax -- matplotlib axis
-      sky -- DataCube instance
-      vrange -- visible range
-      sqx -- "place spectrum" x
-      sqy -- "place spectrum" y
-
-    Returns: matplotlib plot object representing square, or None
-    """
-    assert isinstance(sky, DataCube)
-    im = sky.to_colors(vrange, flag_scale, method)
-    ax.imshow(im, interpolation="nearest")
-    ax.invert_yaxis()
-    obj_square = None
-    K = .5
-    if sqx is not None:
-        x0, x1, y0, y1 = sqx - K, sqx + K, sqy - K, sqy + K
-        obj_square = ax.plot([x0, x1, x1, x0, x0], [y0, y0, y1, y1, y0],
-                             c=_COLORS_SQ[0], ls='solid', lw=3, alpha=0.5, zorder=99999)
-    ax.set_xlim([-K, sky.width - .5])
-    ax.set_ylim([-K, sky.height - .5])
-    return obj_square
 
 #######################################################################################################################
 #                ####################################################################################
@@ -1911,7 +1817,7 @@ class XFileDCube(XFileMainWindow):
         self.save_as_texts[0] = "Save %s as..." % _VVV
         self.open_texts[0] = "Load %s" % _VVV
         self.clss[0] = FileDCube
-        self.clsss[0] = (FileDCube, FileCCube)  # file types that can be opened
+        self.clsss[0] = (FileDCube, FileWebsimCube)  # file types that can be opened
         self.wilds[0] = "*.fits"
 
         lv = keep_ref(QVBoxLayout(self.gotting))
@@ -1991,9 +1897,9 @@ class XFileDCube(XFileMainWindow):
         self._update_tab_texts()
 
     def _filter_on_load(self, f):
-        """Converts from FileCCube to FileDCube format, if necessary"""
-        if isinstance(f, FileCCube):
+        """Converts from FileWebsimCube to FileDCube format, if necessary"""
+        if isinstance(f, FileWebsimCube):
             f1 = FileDCube()
-            f1.dcube.from_compass_cube(f.ccube)
+            f1.dcube.from_websim_cube(f.wcube)
             f = f1
         return f

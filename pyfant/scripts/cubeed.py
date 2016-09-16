@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument('fn', type=str, nargs='?',
      #default=FileDCube.default_filename,
      help="file name, supports '%s' and '%s'" %
-          (FileDCube.description, FileCCube.description))
+          (FileDCube.description, FileWebsimCube.description))
 
     args = parser.parse_args()
 

@@ -9,5 +9,6 @@ this sub-package structure, which is likely to remain disorganized.
 
 """
 from .plotsp import *
-from .plotgrid import *
+from .modgrid import *
+from .draw_cube import *
 from .vis import *

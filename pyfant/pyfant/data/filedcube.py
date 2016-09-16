@@ -17,7 +17,7 @@ import os
 from scipy.interpolate import interp1d
 from astropy.io import fits
 
-# headers to care about when importing from a CompassCube HDU
+# headers to care about when importing from a WebsimCube HDU
 _HEADERS_COMPASS_CUBE = ["CDELT1", "HRFACTOR", "R"]
 
 
@@ -188,9 +188,9 @@ class DataCube(SpectrumCollection):
     #     hdul[0].header["TAINHA"] = 26.9752
     #     return hdul
     #
-    def from_compass_cube(self, ccube):
-        assert isinstance(ccube, CompassCube)
-        hdu = ccube.hdu
+    def from_websim_cube(self, wcube):
+        assert isinstance(wcube, WebsimCube)
+        hdu = wcube.hdu
         assert isinstance(hdu, fits.PrimaryHDU)
         data = hdu.data
         nlambda, nY, nX = data.shape
@@ -207,7 +207,7 @@ class DataCube(SpectrumCollection):
                     Yi = j + 1
                     flux0 = data[:, j, i]
                     if np.any(flux0 > 0):
-                        sp = ccube.get_spectrum(i, j)
+                        sp = wcube.get_spectrum(i, j)
                         # discards edges that are zeros
                         where_positive = np.where(sp.flux > 0)[0]
                         sp.cut_idxs(where_positive[0], where_positive[-1]+1)
@@ -219,19 +219,19 @@ class DataCube(SpectrumCollection):
         finally:
             self.enable_update()
 
-    def to_compass_cube(self):
-        """Creates CompassCube object"""
+    def to_websim_cube(self):
+        """Creates WebsimCube object"""
         assert len(self.spectra) > 0, "No spectra added"
 
-        ccube = CompassCube()
-        wl_new = ccube.wavelength = self.wavelength.copy()
+        wcube = WebsimCube()
+        wl_new = wcube.wavelength = self.wavelength.copy()
         dims = len(wl_new), self.height, self.width
-        ccube.create1(self.R, dims, self.hr_pix_size, self.hrfactor)
+        wcube.create1(self.R, dims, self.hr_pix_size, self.hrfactor)
         for sp in self.spectra:
             ii0 = BSearchCeil(wl_new, sp.x[0])
-            ccube.hdu.data[ii0:ii0+len(sp), sp.pixel_y, sp.pixel_x] = sp.y
-        ccube.set_wavelength(self.wavelength)
-        return ccube
+            wcube.hdu.data[ii0:ii0+len(sp), sp.pixel_y, sp.pixel_x] = sp.y
+        wcube.set_wavelength(self.wavelength)
+        return wcube
 
     def to_colors(self, visible_range=None, flag_scale=False, method=0):
         """Returns a [nY, nX, 3] red-green-blue (0.-1.) matrix

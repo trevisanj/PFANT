@@ -32,7 +32,7 @@ _classes_txt = [FileAbsoru2, FileHmap, FileMain, FileDissoc,
                 FileSpectrumXY, FileAtoms, FileMolecules,
                 FileOpa, FileModTxt]
 
-_classes_bin = [FileModBin, FileSpectrumFits, FileMoo, FileCCube, FileDCube, FileSpectrumList]
+_classes_bin = [FileModBin, FileSpectrumFits, FileMoo, FileWebsimCube, FileDCube, FileSpectrumList]
 
 _classes_sp = [FileModBin, FileSpectrumNulbad, FileSpectrumPfant, FileSpectrumXY,
                FileSpectrumFits]
@@ -75,6 +75,7 @@ def load_spectrum_fits_messed_x(filename, sp_ref=None):
 
         ret = Spectrum()
         ret.from_hdu(hdu)
+        ret.filename = filename
         original_shape = ret.y.shape  # Shape of data before squeeze
         # Squeezes to make data of shape e.g. (1, 1, 122) into (122,)
         ret.y = ret.y.squeeze()
