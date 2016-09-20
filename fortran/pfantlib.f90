@@ -810,6 +810,74 @@ contains
     end do
   end
 
+
+  ! Parses string into pairs of integers
+  !
+  ! This is similar to parse_int_array(). Anything that is not 0-9 is considered
+  ! a separator
+
+  subroutine parse_transitions(str, transitions, nv)
+    use logging
+    ! String to be parsed, e.g.
+    character(*), intent(in) :: str
+    ! Integer numbers found in string
+    integer, intent(out) :: transitions(2, MAX_KM_NV_PER_MOL)
+    ! Number of transitions found
+    integer, intent(out) :: nv
+    integer, parameter :: UNINIT=-1, SEP=0, NUM=1
+    integer i_len, i, state, break_point, ascii, sup_low, n
+    logical flag_digit
+
+    i_len = len(str)
+
+    state = UNINIT
+    flag_digit = .false.
+    n = 0  ! number counter (must be even  at the end)
+    nv = 0
+    sup_low = 2  ! either 1 or 2, first index in transitions (initialized with 2)
+    break_point = -1
+    do i = 1, i_len+1
+      ! only two possibilities: character is either a digit or not
+      if (i .eq. i_len+1) then
+        flag_digit = .false.
+      else
+        ascii = ichar(str(i:i))
+        flag_digit = ascii .ge. 48 .and. ascii .le. 57  ! 48:0| 57: 9
+      end if
+
+      if (.not. flag_digit) then
+        if (state .eq. NUM) then
+          ! end-of-number
+
+          n = n+1
+          if (sup_low .eq. 1) then
+            sup_low = 2
+          else
+            sup_low = 1
+            nv = nv+1
+          end if
+
+          call assert_le(nv, MAX_KM_NV_PER_MOL, 'parse_transitions()', 'nv', 'maximum number of transitions per molecule')
+          read(str(break_point:i-1), *) transitions(sup_low, nv)
+
+        else
+          ! does nothing until finds a digit
+        end if
+        state = SEP
+      else
+        if (state .ne. NUM) then
+          ! beginning-of-number
+          state = NUM
+          break_point = i
+        end if
+      end if
+    end do
+
+    if (mod(n, 2) .ne. 0) then
+      call log_and_halt('parse_transitions(): number of numbers to parse must be '//&
+       'even, but was '//int2str(n))
+    end if
+  end
 end module misc
 
 
@@ -5460,9 +5528,9 @@ module file_molecules
 
   integer km_lines_total  ! Total number of spectral line, counting all molecules
 
-  character*160 km_titm, km_titulo
-
-  dimension km_titulo(NUM_MOL)
+  character*160 km_titm
+  ! Now km_titulo is very big because it has numeric information about the transitions
+  character*4096 :: km_titulo(NUM_MOL)
 
   real*8, dimension(NUM_MOL) :: km_fe, km_do, &
    km_mm, km_am, km_bm, km_ua, km_ub, km_te, km_cro, &
@@ -5559,6 +5627,7 @@ contains
       ! BLB: title -- specifying the molecule to follow
       ! BLB:          format: 20A4
       read(myunit,'(a)') km_titulo(molidx)
+      print *, trim(km_titulo(molidx))
       km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
 
       !write(lll,*) 'molecule index ', molidx
