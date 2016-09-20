@@ -7,3 +7,5 @@ workspace.xml
 gmon.out
 python.log
 ./master
+*.tmp
+~*

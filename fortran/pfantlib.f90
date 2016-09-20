@@ -4096,14 +4096,19 @@ contains
     dimension natomm(5), nelemm(5)
 
     ! row 01
-    read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
+    ! read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
+    
+    ! 20160920 don't need formats, free format is better, I think
+    read(myunit,*) dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
     ! rows 02 to NMETAL+1: 6-column rows
     !
     !
     !
     do i = 1, dissoc_nmetal
-      read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') &
+      ! read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') 
+      
+      read (myunit, *) &
        symbol_, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
 
@@ -4146,17 +4151,13 @@ contains
     1010 continue
     j = j+1
 
+
+    ! TFree format here is not possible because there is no space between the last fields
     read(myunit, '(a3, 5x, e11.5, 4e12.5, i1, 4(i2,i1))') &
                  dissoc_mol(j), &
                  (dissoc_c(j, k), k=1,5), &
                  dissoc_mmax(j), &
                  (nelemm(m), natomm(m), m=1,4)
-
-    write(lll,*) dissoc_mol(j), &
-                 (dissoc_c(j, k), k=1,5), &
-                 dissoc_mmax(j), &
-                 (nelemm(m), natomm(m), m=1,4)
-    call log_debug(lll)
 
     mmaxj = dissoc_mmax(j)
     if(mmaxj .eq. 0) then
