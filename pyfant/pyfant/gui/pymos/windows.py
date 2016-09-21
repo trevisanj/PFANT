@@ -228,7 +228,7 @@ class WSpectrumTable(WBase):
                     r = form.exec_()
                     if not r:
                         break
-                    kk = form.GetKwargs()
+                    kk = form.get_kwargs()
                     band_name = kk["band_name"].upper()
 
                     if not band_name in Bands.bands.keys():
@@ -875,7 +875,7 @@ class WFileSpectrumList(WBase):
                 r = form.exec_()
                 if not r:
                     break
-                kk = form.GetKwargs()
+                kk = form.get_kwargs()
                 s = ""
                 try:
                     s = "wavelength_range"
@@ -907,7 +907,7 @@ class WFileSpectrumList(WBase):
         specs = (("std", {"labelText": "Noise standard deviation", "value": 1.}),)
         form = XParametersEditor(specs=specs, title="Select sub-range")
         if form.exec_():
-            block = SB_AddNoise(**form.GetKwargs())
+            block = SB_AddNoise(**form.get_kwargs())
             self.__use_sblock(block)
 
     def extract_continua_clicked(self):
@@ -1573,7 +1573,7 @@ class WFileDCube(WBase):
                 r = form.exec_()
                 if not r:
                     break
-                kk = form.GetKwargs()
+                kk = form.get_kwargs()
                 s = ""
                 try:
                     s = "x_range"

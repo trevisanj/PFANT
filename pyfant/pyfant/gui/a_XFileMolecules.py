@@ -287,7 +287,7 @@ class XFileMolecules(QMainWindow):
             raise
 
     def on_save(self, _):
-        self.disable_save_alsctions()
+        self.disable_save_actions()
         try:
             self.save()
         except Exception as e:

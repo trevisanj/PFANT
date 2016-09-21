@@ -762,7 +762,6 @@ contains
   !
   ! Very tolerant: everything that is not 0-9 is considered a separator
 
-
   subroutine parse_int_array(str, molidxs, n)
     use logging
     ! String to be parsed, e.g. '[3, 4, 5]'
@@ -810,13 +809,81 @@ contains
     end do
   end
 
+  ! Splits string into two alphanumeric characters representing atomic symbols
+  !
+  ! Delimiter is space
+  !
+  ! **Example** of str: 'MG H' --> ('MG', ' H')
+
+  subroutine parse_symbols(str, symbols)
+    use logging
+    ! String to be parsed
+    character(*), intent(in) :: str
+    ! symbols
+    character(len=2), intent(out) :: symbols(2)
+    integer, parameter :: UNINIT=-1, SEP=0, SYM=1
+    integer i_len, i, state, break_point, ascii, n
+    logical flag_alpha
+
+    i_len = len(str)
+
+    state = UNINIT
+    flag_alpha = .false.
+    n = 0
+    break_point = -1
+    do i = 1, i_len+1
+      ! only two possibilities: character is either a digit or not
+      if (i .eq. i_len+1) then
+        flag_alpha = .false.
+      else
+        ascii = ichar(str(i:i))
+        flag_alpha = ascii .ge. 65 .and. ascii .le.  90 .or. &  ! A; Z
+                     ascii .ge. 97 .and. ascii .le. 122         ! a; z
+      end if
+
+      if (.not. flag_alpha) then
+        if (state .eq. SYM) then
+          ! end-of-number
+          n = n+1
+
+          if (n .gt. 2) then
+            call log_and_halt('More than two atomic symbols in '''//trim(str)//''', '//&
+             'however diatomic molecule expected')
+          end if
+
+          if (i-break_point .gt. 2) then
+            call log_and_halt('Symbol '''//str(break_point:i-1)//&
+             ''' is too big, maximum allowed size is 2')
+          end if
+
+          read(str(break_point:i-1), *) symbols(n)
+        else
+          ! does nothing until finds a digit
+        end if
+        state = SEP
+      else
+        if (state .ne. SYM) then
+          ! beginning-of-number
+          state = SYM
+          break_point = i
+        end if
+      end if
+    end do
+
+    if (n .ne. 2) then
+      call log_and_halt('Less than two atomic symbols in '''//trim(str)//''', '//&
+       'however diatomic molecule expected')
+    end if
+
+  end
+
 
   ! Parses string into pairs of integers
   !
   ! This is similar to parse_int_array(). Anything that is not 0-9 is considered
   ! a separator
 
-  subroutine parse_transitions(str, transitions, nv)
+  subroutine parse_transitions(str, transitions, nv, titulo)
     use logging
     ! String to be parsed, e.g.
     character(*), intent(in) :: str
@@ -824,6 +891,8 @@ contains
     integer, intent(out) :: transitions(2, MAX_KM_NV_PER_MOL)
     ! Number of transitions found
     integer, intent(out) :: nv
+    ! Complete molecule 'titulo' for error logging only
+    character(*), intent(in) :: titulo
     integer, parameter :: UNINIT=-1, SEP=0, NUM=1
     integer i_len, i, state, break_point, ascii, sup_low, n
     logical flag_digit
@@ -874,8 +943,8 @@ contains
     end do
 
     if (mod(n, 2) .ne. 0) then
-      call log_and_halt('parse_transitions(): number of numbers to parse must be '//&
-       'even, but was '//int2str(n))
+      call log_and_halt('parse_transitions() in molecule '''//trim(titulo)//&
+       ''': number of numbers to parse must be even, but was '//int2str(n))
     end if
   end
 end module misc
@@ -1187,7 +1256,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = ' v16.6.14-beta'
+    v = ' v16.9.20-beta'
   end
 
   ! Displays welcome message
@@ -1560,7 +1629,6 @@ contains
     save :: flag_first, b, ri, xn, yn, d0, d1, d2, d3, d4, hn, h, xx, hh, nby2, c
 
     if (flag_first) then
-      ! print *, 'first'
       ! initialization executed at first call
 
       flag_first = .false.
@@ -1596,8 +1664,6 @@ contains
       end do
       flag_first = .false.
     else
-      ! print *, 'NOT FIRST'
-      ! pass
     end if
 
     104 if (x-5.) 105,112,112
@@ -4026,8 +4092,6 @@ contains
     find_atomic_symbol_dissoc = 0
   end
 
-
-
   !=======================================================================================
   ! In the absence of a *dissoc file*, fills in dissoc_* using another strategy.
   !
@@ -4165,7 +4229,7 @@ contains
 
     ! row 01
     ! read(myunit,'(2i5, 2f10.5, i10)') dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
-    
+
     ! 20160920 don't need formats, free format is better, I think
     read(myunit,*) dissoc_nmetal, dissoc_nimax, dissoc_eps, dissoc_switer
 
@@ -4174,8 +4238,8 @@ contains
     !
     !
     do i = 1, dissoc_nmetal
-      ! read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)') 
-      
+      ! read (myunit, '(a2, 2x, i6, f10.3, 2i5, f10.5)')
+
       read (myunit, *) &
        symbol_, dissoc_nelemx(i), dissoc_ip(i), &
        dissoc_ig0(i), dissoc_ig1(i), dissoc_cclog(i)
@@ -4687,8 +4751,6 @@ contains
 
     open(newunit=myunit, form='unformatted', access='stream',status='old', file=path_to_file)
     do iid = 1, num_rec
-      ! print *, 'Record ', iid
-
       read(myunit) &
        recs(iid)%ntot,    &
        teff,    &
@@ -4738,11 +4800,6 @@ contains
          int2str(MOO_NWAV)//', not '//int2str(recs(iid)%nwav))
 
       recs(iid)%swave = swave
-
-      ! print *, 'nwav', recs(iid)%nwav
-      ! print *, 'ntot', recs(iid)%ntot
-
-
 
       ! This statement is much faster than the one commented below
       read(myunit) &
@@ -5505,11 +5562,15 @@ module file_molecules
   use dimensions
   use misc
   use molecules_idxs
+  use file_dissoc
   implicit none
 
   ! Number of different "chemical molecules" that the system supports. Differs from number of
   ! molecules listes in *molecules file* because in the latter the same molecule is
   ! repeated, such as "CN AZUL, CN AX, CN BX", but in this case the formula is always CN
+  !
+  ! **Note** this is provided for backwards compatibility and used only if the separate symbols
+  !          are not found in the second section of km_titulo
   integer, parameter :: NUM_FORMULAE = 10
   ! Molecule formulae
   character*6, parameter :: FORMULAE(NUM_FORMULAE) = &
@@ -5523,6 +5584,12 @@ module file_molecules
      'OH    ', &
      'FeH   ', &
      'TiO   '/)
+  ! Corresponding isotope names. **Note** that 13C is referred to as 'A' in abonds.dat
+  ! and dissoc.dat
+  character*2, parameter :: FORMULA_SYMBOLS(2, NUM_FORMULAE) = reshape((/&
+    'MG', ' H', ' C', ' C', ' C', ' N', ' C', ' H', ' A', ' H', ' C', ' O', &
+    ' N', ' H', ' O', ' H', 'FE', ' H', 'TI', ' O'/), (/2, NUM_FORMULAE/))
+
 
   ! Specifies how many molecules to read
   integer km_number
@@ -5530,20 +5597,25 @@ module file_molecules
   integer km_lines_total  ! Total number of spectral line, counting all molecules
 
   character*160 km_titm
-  ! Now km_titulo is very big because it has numeric information about the transitions
-  character*4096 :: km_titulo(NUM_MOL)
+  integer, parameter :: SIZE_TITULO=4096
+  character(SIZE_TITULO) :: km_titulo(NUM_MOL)
+
+  ! 20160920
+  ! (v_sup, v_inf) list for each molecule
+  integer, dimension(2, MAX_KM_NV_PER_MOL, NUM_MOL) :: km_transitions
+  logical :: km_has_transitions(NUM_MOL)
+  ! 20160920
+  ! atomic symbols for each molecule (all are diatomic)
+  character*2 :: km_symbols(2, NUM_MOL)
 
   real*8, dimension(NUM_MOL) :: km_fe, km_do, &
    km_mm, km_am, km_bm, km_ua, km_ub, km_te, km_cro, &
    km_a0, km_a1, km_a2, km_a3, km_a4, km_als, km_s
 
   integer, dimension(NUM_MOL)  :: km_ise, km_nv, &
-   km_lines_per_mol, & ! This stores the number of spectral lines for each molecule
-   km_formula_id       ! Formula ID of molecule (between 1 and NUM_FORMULAE)
-
+   km_lines_per_mol  ! This stores the number of spectral lines for each molecule
 
   real*8, dimension(MAX_KM_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
-
 
   ! "Index of Last Lambda Of Set-Of-Lines"
   ! Points to km_lmbdam, km_sj, km_jj.
@@ -5556,6 +5628,7 @@ module file_molecules
    km_sj,     &
    km_jj
 
+  private split_titulo
 contains
   !=======================================================================================
   ! Reads file *molecules file* to fill variables km_*
@@ -5576,10 +5649,22 @@ contains
      nnv, iz, &
      numlin , &  ! Temporary variable
      j_set,   &
-     j_line
+     j_line, &
+     nv_in_titulo, &
+     temp
+    character(len=SIZE_TITULO) :: sections(3)
+    ! integer :: sizes(3)
+
+
+    ! # Initialization
+    !
+    km_has_transitions = .false.
+    km_titulo = ' '
+
+    ! # Reading
+    !
 
     open(newunit=myunit,file=filename, status='old')
-
 
     ! row 01:
     ! BLB: NUMBER -- number of molecules do be considered
@@ -5624,12 +5709,63 @@ contains
 
     i_line = 0
     do molidx = 1, km_number
-      ! BLB:
-      ! BLB: title -- specifying the molecule to follow
-      ! BLB:          format: 20A4
+      ! 20160920
+      ! 'titulo' was historically only a string, but now was made *big* and has a
+      ! structure like this:
+      !
+      !   'comments # atomic symbols # transitions', where
+      !
+      !   - the '#' character: separator between the following three sections:
+      !   - comments: anything
+      !   - atomic symbols: separated by space; example: 'MG H'
+      !   - transitions: pairs of integer numbers separated by any character
+      !
+      ! **Note 1** [for backward compatibility, ] if atomic symbols not specified,
+      !            will try to find molecule formula in the comments. In this case,
+      !            the formula must match one in the constant FORMULAE
+      !
+      ! **Note 2** 'titulo' was the only place left in this file specification to add
+      !            this extra information
+      !
       read(myunit,'(a)') km_titulo(molidx)
-      print *, trim(km_titulo(molidx))
-      km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
+
+      call split_titulo(km_titulo(molidx), sections)  ! , sizes)
+
+      if (len(trim(sections(2))) .eq. 0) then
+        ! If atomic symbols not present in section 2, will try to find the formula in the comments
+        call log_info('Looking for formula in comments '''//trim(sections(1))//'''...')
+
+        ! km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
+        call assign_symbols_by_formula(sections(1), km_symbols(:, molidx))
+
+        !  call log_and_halt('Atomic symbols not available for molecule #'//int2str(molidx))
+      else
+        call parse_symbols(sections(2), km_symbols(:, molidx))
+        ! To test if elements are valid
+        if (flag_read_dissoc) then
+          temp = find_atomic_symbol_dissoc(km_symbols(1, molidx))
+          temp = find_atomic_symbol_dissoc(km_symbols(2, molidx))
+        end if
+      end if
+
+
+      if (len(trim(sections(3))) .gt. 0) then
+        ! print *, 'SECTIONS(3) has len', len(trim(sections(3)))
+        ! print *, '$$$', trim(sections(3)), '$$$'
+
+        ! if it has the transitional information it must be correct
+        call parse_transitions(sections(3), km_transitions(:,:,molidx), nv_in_titulo, &
+         km_titulo(molidx))
+
+        if (nv_in_titulo .ne. km_nv(molidx)) then
+          call log_and_halt('read_molecules(): Wrong (vsup, vinf) information in '''//trim(sections(3))//''''//&
+           int2str(molidx)//': number of transitions specified should be '//&
+           int2str(km_nv(molidx))//' but was '//int2str(nv_in_titulo))
+        end if
+
+        km_has_transitions(molidx) = .true.
+      end if
+
 
       !write(lll,*) 'molecule index ', molidx
       !call log_debug(lll)
@@ -5764,31 +5900,73 @@ contains
     close(myunit)
   end
 
-  ! Finds formula id given title of molecule
-  !
-  ! The title is exists inside the *molecules file* as the first row of a new molecule.
-  ! The title must contain one of the formula listed in the FORMULAE constant, otherwise
-  ! the program will crash.
-  !
-  ! Case-insensitive: both title and formulae are converted to all uppercase for comparison.
 
-  integer function find_formula_id(title)
-    character(len=*), intent(in) :: title
-    character(len=:), allocatable :: formula, title_upper
+  ! Splits titulo in three parts; no space trimming
+
+  subroutine split_titulo(titulo, sections)  !, sizes)
+    character(len=SIZE_TITULO), intent(in) :: titulo
+    ! each section will be contained
+    character(len=SIZE_TITULO), intent(out) :: sections(3)
+    ! ! Number of characters per section
+    ! integer, intent(out) :: sizes(3)
+    integer i_pos, start, n
+    character, parameter :: DELI='#'
+
+    sections = ' '  ! very important
+    start = 1
+    ! sizes = 0
+    n = 0
+    ! print *, 'SPLIT_TITULO():'
+    ! print *, trim(titulo)
+    ! print *, '-------------'
+
+    do i_pos = 1, SIZE_TITULO+1
+      if (titulo(i_pos:i_pos) .eq. '#' .or. i_pos .eq. SIZE_TITULO+1) then
+        n = n+1
+        if (n .gt. 3) then
+          call log_and_halt('split_titulo(): number of sections in separated by ''#'' in '''//&
+           trim(titulo)//''' > 3')
+        end if
+
+        sections(n) = titulo(start:(i_pos-1))
+
+        ! print *, 'section', n, trim(sections(n))
+
+        start = i_pos+1
+
+      end if
+    end do
+  end
+
+
+  ! Assigns separate atomic symbols given the formula of the molecule
+  !
+  ! **Example**, if str containg "MGH", symbols will be (/'MG', ' H'/)
+  !
+  ! **Note** str is case-insensitive
+  !
+
+  subroutine assign_symbols_by_formula(str, symbols)
+    ! String; comments section of km_titulo
+    character(len=*), intent(in) :: str
+    ! 2-element character array of two characters each
+    character(len=2), intent(out) :: symbols(2)
+
+    character(len=:), allocatable :: formula, str_upper
     integer :: idx_found(NUM_FORMULAE), num_found, i, n, idx
     character(len=7*NUM_FORMULAE) :: s_matches, s_matches2  ! logging buffer
     integer :: i_ch
 
-    title_upper = to_upper(trim(adjustl(title)))
+    str_upper = to_upper(trim(adjustl(str)))
 
     num_found = 0
     do i = 1, NUM_FORMULAE
       formula = to_upper(trim(adjustl(FORMULAE(i))))
 
-      idx = index(title_upper, formula)
+      idx = index(str_upper, formula)
       if (idx .gt. 0) then
-        if (idx .eq. 1) go to 1  ! found in beginning of title
-        i_ch = ichar(title_upper(idx-1:idx-1))
+        if (idx .eq. 1) go to 1  ! found in beginning of str
+        i_ch = ichar(str_upper(idx-1:idx-1))
         ! compares with space or tab
         if (i_ch .eq. 32 .or. i_ch .eq. 9) goto 1  ! found in beginning of word
         goto 2  ! found in middle of word, not condidered
@@ -5802,7 +5980,7 @@ contains
     end do
 
     if (num_found .eq. 0) then
-      call log_and_halt('No valid molecule formula was found in "'//title_upper//'"')
+      call log_and_halt('No valid molecule formula was found in "'//str_upper//'"')
     elseif (num_found .gt. 1) then
       ! joins molecule names separated by comma
       ! Fortran formatting does most of the job, ...
@@ -5812,11 +5990,73 @@ contains
       n = len(trim(s_matches))
       s_matches2 = s_matches(1:n-1)
 
-      call log_and_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
+      call log_and_halt('Ambiguity in "'//str_upper//'": matches: '//s_matches2)
     end if
 
-    find_formula_id = idx_found(1)
+    symbols = FORMULA_SYMBOLS(:, idx_found(1))
   end
+
+
+
+!!!!!!!  ! Finds formula id given title of molecule
+!!!!!!!  !
+!!!!!!!  ! The title is exists inside the *molecules file* as the first row of a new molecule.
+!!!!!!!  ! The title must contain one of the formula listed in the FORMULAE constant, otherwise
+!!!!!!!  ! the program will crash.
+!!!!!!!  !
+!!!!!!!  ! Case-insensitive: both title and formulae are converted to all uppercase for comparison.
+!!!!!!!
+!!!!!!!  integer function find_formula_id(title)
+!!!!!!!    character(len=*), intent(in) :: title
+!!!!!!!    character(len=:), allocatable :: formula, title_upper
+!!!!!!!    integer :: idx_found(NUM_FORMULAE), num_found, i, n, idx
+!!!!!!!    character(len=7*NUM_FORMULAE) :: s_matches, s_matches2  ! logging buffer
+!!!!!!!    integer :: i_ch
+!!!!!!!
+!!!!!!!    title_upper = to_upper(trim(adjustl(title)))
+!!!!!!!
+!!!!!!!    num_found = 0
+!!!!!!!    do i = 1, NUM_FORMULAE
+!!!!!!!      formula = to_upper(trim(adjustl(FORMULAE(i))))
+!!!!!!!
+!!!!!!!      idx = index(title_upper, formula)
+!!!!!!!      if (idx .gt. 0) then
+!!!!!!!        if (idx .eq. 1) go to 1  ! found in beginning of title
+!!!!!!!        i_ch = ichar(title_upper(idx-1:idx-1))
+!!!!!!!        ! compares with space or tab
+!!!!!!!        if (i_ch .eq. 32 .or. i_ch .eq. 9) goto 1  ! found in beginning of word
+!!!!!!!        goto 2  ! found in middle of word, not condidered
+!!!!!!!
+!!!!!!!        1 continue
+!!!!!!!        num_found = num_found+1
+!!!!!!!        idx_found(num_found) = i
+!!!!!!!
+!!!!!!!        2 continue
+!!!!!!!      end if
+!!!!!!!    end do
+!!!!!!!
+!!!!!!!    if (num_found .eq. 0) then
+!!!!!!!      call log_and_halt('No valid molecule formula was found in "'//title_upper//'"')
+!!!!!!!    elseif (num_found .gt. 1) then
+!!!!!!!      ! joins molecule names separated by comma
+!!!!!!!      ! Fortran formatting does most of the job, ...
+!!!!!!!      write(s_matches, '('//int2str(num_found)//'(A,2H, ))') &
+!!!!!!!       (to_upper(trim(adjustl(FORMULAE(idx_found(i))))), i=1, num_found)
+!!!!!!!      ! ... but there is one extra comma that needs to be removed
+!!!!!!!      n = len(trim(s_matches))
+!!!!!!!      s_matches2 = s_matches(1:n-1)
+!!!!!!!
+!!!!!!!      call log_and_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
+!!!!!!!    end if
+!!!!!!!
+!!!!!!!    find_formula_id = idx_found(1)
+!!!!!!!  end
+
+
+
+
+
+
 end
 
 
@@ -7208,6 +7448,10 @@ module dissoc
   use molecules_idxs
   implicit none
 
+  ! Pressure vectors of elements listed in Table 1 of dissoc.dat
+  real*8, target, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: dissoc_xp
+
+
   ! They will be pointer targets at molecules::point_ppa_pb()
   real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
    sat4_pph,  & ! pressure: hydrogen
@@ -7252,7 +7496,6 @@ contains
   ! Subroutine d'equilibre dissociatif
 
   subroutine sat4()
-    real*8, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: xp
     real*8  kplog, fplog, &
      pdfpl, pelog, pglog, pionl, plog, pmoll, tem, pg, theta, xlog
     real*8 cclogi
@@ -7313,8 +7556,8 @@ contains
         nelemi = dissoc_nelemx(i)
 
         fplog  = log10(m_fp(nelemi))
-        xp(ito,i) = m_p(nelemi)+1.0e-30
-        plog   = log10( xp(ito,i) )
+        dissoc_xp(ito,i) = m_p(nelemi)+1.0e-30
+        plog   = log10( dissoc_xp(ito,i) )
         pdfpl  = plog - fplog
         if (mod(i,5)) 1303,1304,1303
         1304 continue
@@ -7417,36 +7660,38 @@ contains
 
     !_logging__
     !do i=1,4
-    !  write(*,'(7e11.4)') (xp(itx,i),itx=1,modele%ntot)
+    !  write(*,'(7e11.4)') (dissoc_xp(itx,i),itx=1,modele%ntot)
     !end do
 
-    iz = find_atomic_symbol_dissoc('H ')
-    sat4_pph = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('C ')
-    sat4_ppc2 = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('N ')
-    sat4_pn = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('O ')
-    sat4_po = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('A ')  ! Yeah, "A" is 13C
-    sat4_pc13 = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('TI')
-    sat4_pti = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('MG')
-    sat4_pmg = xp(:, iz)
-    iz = find_atomic_symbol_dissoc('FE')
-    sat4_pfe = xp(:, iz)
+
+
+!20160920-    iz = find_atomic_symbol_dissoc('H ')
+!20160920-    sat4_pph = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('C ')
+!20160920-    sat4_ppc2 = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('N ')
+!20160920-    sat4_pn = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('O ')
+!20160920-    sat4_po = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('A ')  ! Yeah, "A" is 13C
+!20160920-    sat4_pc13 = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('TI')
+!20160920-    sat4_pti = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('MG')
+!20160920-    sat4_pmg = dissoc_xp(:, iz)
+!20160920-    iz = find_atomic_symbol_dissoc('FE')
+!20160920-    sat4_pfe = dissoc_xp(:, iz)
 
 
 !original      do itx = 1,modele%ntot
-!original        sat4_pph(itx)=xp(itx,1)
-!original        sat4_ppc2(itx)=xp(itx,3)
-!original        sat4_pn(itx)=xp(itx,4)
-!original        sat4_po(itx)=xp(itx,5)
-!original        sat4_pc13(itx)=xp(itx,6)
-!original        sat4_pti(itx)=xp(itx,15)
-!original        sat4_pmg(itx)=xp(itx,8)
-!original        sat4_pfe(itx)=xp(itx,16)
+!original        sat4_pph(itx)=dissoc_xp(itx,1)
+!original        sat4_ppc2(itx)=dissoc_xp(itx,3)
+!original        sat4_pn(itx)=dissoc_xp(itx,4)
+!original        sat4_po(itx)=dissoc_xp(itx,5)
+!original        sat4_pc13(itx)=dissoc_xp(itx,6)
+!original        sat4_pti(itx)=dissoc_xp(itx,15)
+!original        sat4_pmg(itx)=dissoc_xp(itx,8)
+!original        sat4_pfe(itx)=dissoc_xp(itx,16)
 !original      end do
   end
 
@@ -7810,7 +8055,7 @@ contains
 
       km_f_ln(1, i_mol) = i_filtered  ! first row contain number of lines already filtered
 
-      write(lll, *) 'molecule idx', molidx, '; titulo: ',  km_titulo(molidx), &
+      write(lll, *) 'molecule idx', molidx, '; titulo: ',  trim(km_titulo(molidx)), &
        '; number of prospective lambdas: ', km_lines_per_mol(molidx)
       call log_debug(lll)
 
@@ -7931,7 +8176,7 @@ module kapmol
   real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj ! ?doc? in sync with km_f_sj etc
 
   real*8, private, pointer, dimension(:) :: ppa, pb
-  private point_ppa_pb
+!   private point_ppa_pb
 
 contains
 
@@ -7943,7 +8188,7 @@ contains
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
-    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx
+    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx, iz
 
     real*8, parameter :: C2 = 8.8525E-13
 
@@ -7952,7 +8197,14 @@ contains
     do i_mol = 1, molidxs%n_on
       molidx = get_molidx(i_mol)
 
-      call point_ppa_pb(km_formula_id(molidx))
+!       call point_ppa_pb(km_formula_id(molidx))
+!      call point_ppa_pb(km_symbols(:, molidx))
+
+      ! Assigns address of variable PPA and PB depending on atomic symbols of molecule
+      iz = find_atomic_symbol_dissoc(km_symbols(1, molidx))
+      ppa => dissoc_xp(:, iz)
+      iz = find_atomic_symbol_dissoc(km_symbols(2, molidx))
+      pb => dissoc_xp(:, iz)
 
       ! print *, 'molidx', molidx, '; formula_id', km_formula_id(molidx), '; nnv'
 
@@ -8015,59 +8267,51 @@ contains
     call log_debug(LEAVING//' kapmol()')
   end
 
+!!!!!!  subroutine point_ppa_pb(formula_id)
+!!!!!!    integer, intent(in) :: formula_id
+!!!!!!
+!!!!!!    if (formula_id .gt. NUM_FORMULAE) then
+!!!!!!      write (lll, *) 'point_ppa_pb(): invalid formula id (', formula_id, ') must be maximum ', NUM_FORMULAE
+!!!!!!      call log_and_halt(lll)
+!!!!!!    end if
+!!!!!!
+!!!!!!    select case (formula_id)
+!!!!!!      case (1)            ! MgH
+!!!!!!        ppa => sat4_pmg
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (2)            ! C2
+!!!!!!        ppa => sat4_ppc2
+!!!!!!        pb  => sat4_ppc2
+!!!!!!      case (3)            ! CN
+!!!!!!        ppa => sat4_ppc2
+!!!!!!        pb  => sat4_pn
+!!!!!!      case (4)            ! CH
+!!!!!!        ppa => sat4_ppc2
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (5)            ! 13CH
+!!!!!!        ppa => sat4_pc13
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (6)            ! CO
+!!!!!!        ppa => sat4_ppc2
+!!!!!!        pb  => sat4_po
+!!!!!!      case (7)            ! NH
+!!!!!!        ppa => sat4_pn
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (8)            ! OH
+!!!!!!        ppa => sat4_po
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (9)            ! FeH
+!!!!!!        ppa => sat4_pfe
+!!!!!!        pb  => sat4_pph
+!!!!!!      case (10)           ! TiO
+!!!!!!        ppa => sat4_pti
+!!!!!!        pb  => sat4_po
+!!!!!!      case default
+!!!!!!        call log_and_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
+!!!!!!    end select
+!!!!!!  end
 
-  !=======================================================================================
-  ! Assigns address of variable PPA and PB depending on the molecule formula ID
-  !
-  ! This was originally a vector copy element-by-element in old routine KAPMOL. However, as
-  ! PPA and PB contents are not changed after the assignment, it is reasonable to just point
-  ! to the source vectors (way faster).
-  !
-  ! @sa file_molecules::find_formula_id, file_molecules::read_molecules
 
-  subroutine point_ppa_pb(formula_id)
-    integer, intent(in) :: formula_id
-
-    if (formula_id .gt. NUM_FORMULAE) then
-      write (lll, *) 'point_ppa_pb(): invalid formula id (', formula_id, ') must be maximum ', NUM_FORMULAE
-      call log_and_halt(lll)
-    end if
-
-    select case (formula_id)
-      case (1)            ! MgH
-        ppa => sat4_pmg
-        pb  => sat4_pph
-      case (2)            ! C2
-        ppa => sat4_ppc2
-        pb  => sat4_ppc2
-      case (3)            ! CN
-        ppa => sat4_ppc2
-        pb  => sat4_pn
-      case (4)            ! CH
-        ppa => sat4_ppc2
-        pb  => sat4_pph
-      case (5)            ! 13CH
-        ppa => sat4_pc13
-        pb  => sat4_pph
-      case (6)            ! CO
-        ppa => sat4_ppc2
-        pb  => sat4_po
-      case (7)            ! NH
-        ppa => sat4_pn
-        pb  => sat4_pph
-      case (8)            ! OH
-        ppa => sat4_po
-        pb  => sat4_pph
-      case (9)            ! FeH
-        ppa => sat4_pfe
-        pb  => sat4_pph
-      case (10)           ! TiO
-        ppa => sat4_pti
-        pb  => sat4_po
-      case default
-        call log_and_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
-    end select
-  end
 end
 
 

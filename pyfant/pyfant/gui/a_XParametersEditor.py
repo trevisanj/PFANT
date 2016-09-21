@@ -33,10 +33,10 @@ class XParametersEditor(QDialog, ui_XParametersEditor.Ui_XParametersEditor):
       self.setWindowTitle(title)
 
 
-  def GetKwargs(self):
+  def get_kwargs(self):
     return self.pe.get_kwargs()
 
-  def GetSpecs(self):
+  def get_specs(self):
     return self.pe.get_specs()
 
   def _ReadConfig(self):
