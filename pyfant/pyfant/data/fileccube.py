@@ -132,7 +132,14 @@ class WebsimCube(AttrsPart):
 
 
 class FileWebsimCube(DataFile):
-    """Represents a Compass data cube file, which is also a FITS file"""
+    """Represents a Compass data cube file, which is also a FITS file
+
+    **Note** normally, the DataFile classes load operation reads all contents
+    and closes the file, however this class keeps the file **open** as an
+    astropy.io.fits.HDUList object in self.hdulist, because apparently many
+    HDUList methods need the file open to work, even after calling
+    HDUList.readall()
+    """
     attrs = ['wcube']
     description = "WebSim Compass Data Cube (FITS file)"
     default_filename = "default.wcube"
@@ -140,10 +147,11 @@ class FileWebsimCube(DataFile):
     def __init__(self):
         DataFile.__init__(self)
         self.wcube = WebsimCube()
+        self.hdulist = None
 
     def _do_load(self, filename):
-        fits_obj = fits.open(filename)
-        self.wcube = WebsimCube(fits_obj[0])
+        self.hdulist = fits.open(filename)
+        self.wcube = WebsimCube(self.hdulist[0])
         self.filename = filename
 
     def _do_save_as(self, filename):

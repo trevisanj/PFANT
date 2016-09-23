@@ -18,3 +18,4 @@ from .fileoptions import *
 from .fileccube import *
 from .filedcube import *
 from .filespectrumlist import *
+from .filefits import *

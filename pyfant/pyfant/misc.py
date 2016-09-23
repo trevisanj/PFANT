@@ -18,7 +18,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
  "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames",
- "set_facecolor_white"
+ "set_facecolor_white", "set_figure_size"
 ]
 
 # # todo cleanup
@@ -811,6 +811,15 @@ def format_legend(leg):
     """Sets some formatting options in a matplotlib legend object."""
     # rect = leg.get_frame()
     # rect.set_linewidth(2.)
+
+def set_figure_size(fig, width, height):
+    """Sets MatPlotLib figure width and height in pixels
+
+    Reference: https://github.com/matplotlib/matplotlib/issues/2305/
+    """
+    dpi = float(fig.get_dpi())
+    fig.set_size_inches(float(width) / dpi, float(height) / dpi)
+
 
 # #################################################################################################
 # # PyQt-related routines

@@ -1221,7 +1221,7 @@ class WFileDCube(WBase):
         y = self.spinbox_X = QSpinBox()
         y.valueChanged.connect(self.on_place_spectrum_edited)
         y.setMinimum(0)
-        y.setMaximum(100)
+        y.setMaximum(1000)
         x.setBuddy(y)
         pp.append((x, y, "&x", "x-coordinate<br>(pixels; 0-based)", ""))
         ###
@@ -1230,7 +1230,7 @@ class WFileDCube(WBase):
         y = self.spinbox_Y = QSpinBox()
         y.valueChanged.connect(self.on_place_spectrum_edited)
         y.setMinimum(0)
-        y.setMaximum(100)
+        y.setMaximum(1000)
         x.setBuddy(y)
         pp.append((x, y, "&y", "y-coordinate", ""))
         # ##### FWHM maybe later
