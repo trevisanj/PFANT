@@ -333,7 +333,7 @@ class XExplorer(QMainWindow):
             if event.type() == QEvent.KeyPress:
                 if event.key() == Qt.Key_Down:
                     self.tableWidget.setFocus()
-        return False
+        return 0
 
     def closeEvent(self, event):
         if self.flag_close_mpl_plots_on_close:
