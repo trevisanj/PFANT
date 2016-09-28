@@ -3315,7 +3315,7 @@ contains
     ! convmol
     !
     call add_option('c', 'fn_out', ' ', .true., 'file name', &
-      '<molecular lines file name>.vald', &
+      '<molecular lines file name>.plez', &
       'output file name - molecular lines in VALD3 extended format.')
 
   end
@@ -7453,15 +7453,21 @@ module dissoc
 
 
   ! They will be pointer targets at molecules::point_ppa_pb()
-  real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
-   sat4_pph,  & ! pressure: hydrogen
-   sat4_ppc2, & ! pressure: 12carbon
-   sat4_pn,   & ! pressure: nytrogen
-   sat4_pc13, & ! pressure: 13carbon
-   sat4_pmg,  & ! pressure: magnesium
-   sat4_po,   & ! pressure: oxygen
-   sat4_pti,  & ! pressure: titanium
-   sat4_pfe     ! pressure: iron
+  real*8, public, dimension(MAX_MODELES_NTOT) ::  &
+   sat4_pph, &  ! pressure: hydrogen (used in kapmol_())
+   sat4_po      ! pressure: oxygen (used in popadelh())
+
+!  ! They will be pointer targets at molecules::point_ppa_pb()
+!  real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
+!   sat4_pph,  & ! pressure: hydrogen
+!   sat4_ppc2, & ! pressure: 12carbon
+!   sat4_pn,   & ! pressure: nytrogen
+!   sat4_pc13, & ! pressure: 13carbon
+!   sat4_pmg,  & ! pressure: magnesium
+!   sat4_po,   & ! pressure: oxygen
+!   sat4_pti,  & ! pressure: titanium
+!   sat4_pfe     ! pressure: iron
+
 
   private :: die ! private subroutine
 
@@ -7663,10 +7669,13 @@ contains
     !  write(*,'(7e11.4)') (dissoc_xp(itx,i),itx=1,modele%ntot)
     !end do
 
+    ! These pressure vectors are used explicitly in calculations special cases
+    iz = find_atomic_symbol_dissoc('H ')
+    sat4_pph = dissoc_xp(:, iz)
+    iz = find_atomic_symbol_dissoc('O ')
+    sat4_po = dissoc_xp(:, iz)
 
 
-!20160920-    iz = find_atomic_symbol_dissoc('H ')
-!20160920-    sat4_pph = dissoc_xp(:, iz)
 !20160920-    iz = find_atomic_symbol_dissoc('C ')
 !20160920-    sat4_ppc2 = dissoc_xp(:, iz)
 !20160920-    iz = find_atomic_symbol_dissoc('N ')
@@ -8188,7 +8197,7 @@ contains
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
-    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx, iz
+    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx, iz0, iz1
 
     real*8, parameter :: C2 = 8.8525E-13
 
@@ -8201,12 +8210,13 @@ contains
 !      call point_ppa_pb(km_symbols(:, molidx))
 
       ! Assigns address of variable PPA and PB depending on atomic symbols of molecule
-      iz = find_atomic_symbol_dissoc(km_symbols(1, molidx))
-      ppa => dissoc_xp(:, iz)
-      iz = find_atomic_symbol_dissoc(km_symbols(2, molidx))
-      pb => dissoc_xp(:, iz)
+      iz0 = find_atomic_symbol_dissoc(km_symbols(1, molidx))
+      ppa => dissoc_xp(:, iz0)
+      iz1 = find_atomic_symbol_dissoc(km_symbols(2, molidx))
+      pb => dissoc_xp(:, iz1)
 
-      ! print *, 'molidx', molidx, '; formula_id', km_formula_id(molidx), '; nnv'
+      print *, 'WWXWW molidx', molidx, '; iz0', iz0, '; iz1', iz1, '; symbol0 ', &
+      km_symbols(1, molidx), '; symbol1 ', km_symbols(2, molidx)
 
       nnv = km_nv(molidx)
       fe  = km_fe(molidx)
