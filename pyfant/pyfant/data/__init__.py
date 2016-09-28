@@ -19,3 +19,4 @@ from .fileccube import *
 from .filedcube import *
 from .filespectrumlist import *
 from .filefits import *
+from .filepar import *
