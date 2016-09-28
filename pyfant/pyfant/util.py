@@ -64,7 +64,9 @@ def load_spectrum_fits_messed_x(filename, sp_ref=None):
     # First tries to load as usual
     f = load_with_classes(filename, (FileSpectrumFits,))
 
-    if f is None:
+    if f is not None:
+        ret = f.spectrum
+    else:
         hdul = fits.open(filename)
 
         hdu = hdul[0]
