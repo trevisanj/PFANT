@@ -2509,8 +2509,8 @@ module options2
 
   type option
     ! Initials of executable(s) where option is applicable.
-    ! [i]nnewmarcs, in[o]pamarcs, [h]ydro2, [p]fant, [n]ulbad
-    character(len=5) :: ihpn
+    ! [i]nnewmarcs, [h]ydro2, [p]fant, [n]ulbad, [c]onvmol
+    character(len=5) :: ihpnc
     ! Long name.
     character(len=100) :: name
     ! Corresponding short name.
@@ -3000,7 +3000,6 @@ module config
   ! pfant-only
   !---
   character*64 :: &
-   config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
    config_fn_partit        = 'partit.dat',        & ! option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
    config_fn_atoms         = 'atoms.dat',         & ! option: --fn_atoms
@@ -3017,6 +3016,7 @@ module config
   ! pfant and convmol
   !---
   character*64 :: &
+   config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
    config_fn_molecules     = 'molecules.dat'        ! option: --fn_molecules
 
   !---
@@ -3109,8 +3109,8 @@ contains
   ! *Note* character arguments are declared with len=*, truncation may occur when
   ! option structure is created.
 
-  subroutine add_option(ihpn, name, chr, has_arg, argname, default_, descr, appears)
-    character(len=*), intent(in) :: ihpn  ! initials of executables where option is valid
+  subroutine add_option(ihpnc, name, chr, has_arg, argname, default_, descr, appears)
+    character(len=*), intent(in) :: ihpnc  ! initials of executables for which option is valid
     character(len=*), intent(in) :: name, argname, default_, descr
     character(len=1), intent(in) :: chr
     logical, intent(in) :: has_arg
@@ -3129,7 +3129,7 @@ contains
       appears_ = appears
     end if
 
-    options(num_options) = option(ihpn, name, chr, has_arg, argname, default_, descr, &
+    options(num_options) = option(ihpnc, name, chr, has_arg, argname, default_, descr, &
       appears_)
   end
 
@@ -3150,9 +3150,9 @@ contains
     !
     ! All executables
     !
-    call add_option('ihpn', 'help', 'h', .false., '', '', &
+    call add_option('ihpnc', 'help', 'h', .false., '', '', &
       'Displays this help text.')
-    call add_option('ihpn', 'logging_level', 'l', .true., 'level', 'debug', &
+    call add_option('ihpnc', 'logging_level', 'l', .true., 'level', 'debug', &
      'logging level<br>'//&
      IND//'debug<br>'//&
      IND//'info<br>'//&
@@ -3160,23 +3160,23 @@ contains
      IND//'error<br>'//&
      IND//'critical<br>'//&
      IND//'halt')
-    call add_option('ihpn', 'logging_console',   ' ', .true., 'T/F', logical2str(config_logging_console), &
+    call add_option('ihpnc', 'logging_console',   ' ', .true., 'T/F', logical2str(config_logging_console), &
      'Print log messages to standard output (usually monitor screen)?')
-    call add_option('ihpn', 'logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
+    call add_option('ihpnc', 'logging_dump',     ' ', .true., 'T/F', logical2str(config_logging_dump), &
       'Print log messages to dump log file?')
-    call add_option('ihpn', 'logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
+    call add_option('ihpnc', 'logging_fn_dump',   ' ', .true., 'file name', '<executable name>_dump.log', &
      'output file name - dump log file')
-    call add_option('ihpn', 'fn_main',          ' ', .true., 'file name', config_fn_main, &
+    call add_option('ihpnc', 'fn_main',          ' ', .true., 'file name', config_fn_main, &
      'input file name - main configuration')
-    call add_option('ihpn', 'explain',     ' ', .true., 'T/F', logical2str(config_explain), &
+    call add_option('ihpnc', 'explain',     ' ', .true., 'T/F', logical2str(config_explain), &
       'Save additional information in file explain.txt (debugging purposes; output varies, or flag may be ignored)', .false.)
-    call add_option('ihpn', 'play',     ' ', .false., '', '', &
+    call add_option('ihpnc', 'play',     ' ', .false., '', '', &
       'Fed up of calculating spectra', .false.)
 
     !
-    ! innewmarcs, hydro2, pfant
+    ! innewmarcs, hydro2, pfant, convmol
     !
-    call add_option('ihp', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
+    call add_option('ihpc', 'fn_modeles',' ', .true., 'file name', config_fn_modeles, &
      'Binary file containing information about atmospheric model (created by innewmarcs)')
 
     !
@@ -3236,8 +3236,6 @@ contains
     !
     ! pfant-only
     !
-    call add_option('p', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
-     'input file name - dissociative equilibrium')
     call add_option('p', 'fn_partit',        ' ', .true., 'file name', config_fn_partit, &
      'input file name - partition functions')
     call add_option('p', 'fn_abonds',        ' ', .true., 'file name', config_fn_abonds, &
@@ -3280,6 +3278,8 @@ contains
     !
     ! pfant, convmol
     !
+    call add_option('pc', 'fn_dissoc',        ' ', .true., 'file name', config_fn_dissoc, &
+     'input file name - dissociative equilibrium')
     call add_option('pc', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
 
@@ -3678,7 +3678,7 @@ contains
   logical function exe_wants(opt) result(res)
     type(option), intent(in) :: opt
     res = .true.
-    if (index(opt%ihpn, execonf_name(1:1)) .eq. 0) then
+    if (index(opt%ihpnc, execonf_name(1:1)) .eq. 0) then
       res = .false.
     end if
   end
@@ -8180,9 +8180,10 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm ! ?doc? in sync with km_f_sj etc
+    km_c_gfm ! (BLB) moleculer "gf", corresponding to Eistein's coefficient (?doc?); in sync with km_f_sj etc
 
-  real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: km_c_pnvj ! ?doc? in sync with km_f_sj etc
+  real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: &
+   km_c_pnvj ! (BLB) partial pressure; In sync with km_f_sj etc
 
   real*8, private, pointer, dimension(:) :: ppa, pb
 !   private point_ppa_pb

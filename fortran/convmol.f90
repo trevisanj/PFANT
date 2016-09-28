@@ -30,11 +30,10 @@ program convmol
   real*8 x_llzero, x_llfin
   logical :: main_exists  ! whether or not main configuration file exists
   integer :: myunit, l
+  logical :: dissoc_exists
 
 
-  !=====
-  ! Startup
-  !=====
+  ! # Startup
   execonf_name = 'convmol'
   call molecules_idxs_init()
   call config_init()
@@ -45,9 +44,7 @@ program convmol
     call parse_aux_log_assignment('config_fn_out', config_fn_out)
   end if
 
-  !
-  ! Assigns x_*
-  !
+  ! ## Assigns x_*
   ! values in config_* variables have preference, but if they are uninitialized, will
   ! pick values from *main file*
   x_llzero = config_llzero
@@ -69,14 +66,31 @@ program convmol
     call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 4))
   end if
 
-  call log_info('Reading file '''//trim(config_fn_molecules)//'''...')
-  call read_molecules(config_fn_molecules)
-  call log_info('Filtering to specified wavelength region...')
-  call filter_molecules(x_llzero, x_llfin)
 
+  ! ## File reading
+  ! ### dissoc.dat required because kapmol requires sat4
+  inquire(file=config_fn_dissoc, exist=dissoc_exists)
+  if (dissoc_exists) then
+    call read_dissoc(config_fn_dissoc)
+  else
+    call log_warning('File "'//trim(config_fn_dissoc)//'" not found: will take '//&
+     'internally stored template and replace abundances with those in "'//trim(config_fn_abonds)//'" -12')
+    call assure_read_main(config_fn_main)
+    call read_abonds(config_fn_abonds)
+    call auto_dissoc()
+  end if
+  call read_modele(config_fn_modeles) 
+  call read_molecules(config_fn_molecules)
+
+  ! # Calculation
+  call sat4()
+  call filter_molecules(x_llzero, x_llfin)
+  call log_info('Number of lines within ['//real82str(x_llzero, 3)//', '//&
+   real82str(x_llfin, 3)//']: '//int2str(km_f_mblend))
+  call log_info('Calculating...')
+  call kapmol_()
 
   call log_info('Writing to file '''//trim(config_fn_out)//'''...')
-
 
 
 ! # Plez specs
@@ -103,17 +117,17 @@ program convmol
                   '1x, f11.4, 1x, i3, 1x, f5.1, 1x, f5.1, 1x, i2, 1x, e12.6, 1x, a16)') &  ! Eup(cm-1), ...
      km_f_lmbdam(l), &  ! lambda_air(A)
      km_c_gfm(l), &  ! gf
-     3., &  ! Elow(cm-1)
-     4, &  ! vl
-     5., &  ! Jl
-     6., &  ! Nl
-     7, &  ! syml
-     8., &  ! Eup(cm-1)
-     9, &  ! vu
-     10., &  ! Ju
-     11., &  ! Nu
-     12, &  ! symu
-     13., &  ! gamrad
+     0., &  ! Elow(cm-1); (BLB: not needed); TODO check TurboSpectrum for all "not needed"
+     4, &  ! vl; TODO: filter and put vlow here
+     km_f_jj(l), &  ! Jl
+     km_f_jj(l), &  ! Nl; TODO check if all the same for a Plez file
+     0, &  ! syml
+     0., &  ! Eup(cm-1); (BLB: not needed)
+     9, &  ! vu; TODO filter and put vup here
+     km_f_jj(l)+1, &  ! Ju; set as J+1 as a "first approximation"; TODO is it going to stay like this?
+     km_f_jj(l)+1, &  ! Nu; TODO check if they follow this pattern in Plez file
+     0, &  ! symu
+     0., &  ! gamrad
      '''---'''  ! mol trans branch
   end do
   close(myunit)
