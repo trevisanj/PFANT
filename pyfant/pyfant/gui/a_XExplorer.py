@@ -318,7 +318,7 @@ class XExplorer(QMainWindow):
 
     def eventFilter(self, obj, event):
         if self.__flag_creating:
-            return
+            return False
 
         if obj == self.tableWidget:
             if check_return_space(event, self.on_load):
@@ -333,7 +333,7 @@ class XExplorer(QMainWindow):
             if event.type() == QEvent.KeyPress:
                 if event.key() == Qt.Key_Down:
                     self.tableWidget.setFocus()
-        return 0
+        return False
 
     def closeEvent(self, event):
         if self.flag_close_mpl_plots_on_close:

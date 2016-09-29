@@ -35,7 +35,6 @@ program convmol
 
   ! # Startup
   execonf_name = 'convmol'
-  call molecules_idxs_init()
   call config_init()
 
   inquire(file=config_fn_main, exist=main_exists)

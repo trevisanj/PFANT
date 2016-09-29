@@ -9,7 +9,6 @@ from pyfant import *
 from .a_XText import *
 
 _FROM_MAIN = ' (read from main configuration file)'
-_NUM_MOL = 21
 _EXE_NAMES = {"i": "innewmarcs", "h": "hydro2", "p": "pfant", "n": "nulbad"}
 
 
@@ -267,7 +266,6 @@ class WOptionsEditor(QWidget):
         self.w_fn_modgrid = QLineEdit()
         self.w_fn_molecules = QLineEdit()
         self.w_fn_opa = QLineEdit()
-        self.w_molidxs_off = QLineEdit()
         self.w_no_molecules = QCheckBox()
         self.w_no_atoms = QCheckBox()
         self.w_no_h = QCheckBox()
@@ -449,9 +447,6 @@ class WOptionsEditor(QWidget):
          'input file name - atomic lines', '')
         self.__add_option(self.w_fn_molecules, 'p', 'fn_molecules', FileMolecules.default_filename,
          'input file name - molecular lines', '')
-        self.__add_option(self.w_molidxs_off, 'p', 'molidxs_off', '',
-         'moleculed to be "turned off"',
-         'These are comma-separated ids of molecules to be "turned off" (1 to '+str(_NUM_MOL)+').')
         self.__add_option(self.w_no_molecules, 'p', 'no_molecules', False,
          'Skip molecules?',
          'If set, skips the calculation of molecular lines.')

@@ -1225,7 +1225,6 @@ program pfant
   ! Startup
   !=====
   execonf_name = 'pfant'
-  call molecules_idxs_init()
   call config_init()
 
   !=====

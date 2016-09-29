@@ -66,7 +66,6 @@ class FileOptions(DataFile):
         self.fn_log       = None
         self.fn_progress = None
         self.flprefix = None
-        self.molidxs_off = None
         self.no_molecules = None
         self.no_h = None
         self.no_atoms = None

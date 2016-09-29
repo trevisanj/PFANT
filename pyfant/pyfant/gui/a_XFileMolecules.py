@@ -249,6 +249,10 @@ class XFileMolecules(QMainWindow):
                 if source == self.listWidgetSol:
                     self.edit_sol()
                     return True
+            if event.key() == Qt.Key_Delete:
+                if source == self.listWidgetMol:
+                    self.delete_mol()
+                    return True
         return False
 
     def closeEvent(self, event):
@@ -333,9 +337,12 @@ class XFileMolecules(QMainWindow):
     def on_listWidgetMol_customContextMenuRequested(self, position):
         menu = QMenu()
         a_edit = menu.addAction("&Edit")
+        a_delete = menu.addAction("&Delete")
         action = menu.exec_(self.listWidgetMol.mapToGlobal(position))
         if action == a_edit:
             self.edit_mol()
+        elif action == a_delete:
+            self.delete_mol()
 
     def on_listWidgetSol_customContextMenuRequested(self, position):
         menu = QMenu()
@@ -508,6 +515,18 @@ class XFileMolecules(QMainWindow):
             #item.setBackgroundColor(QColor(255, 0, 0))
             self.update_mol_info()
             self.update_window_title()
+
+    def delete_mol(self):
+        f = self.f
+        if f is None:
+            return
+        i = self.listWidgetMol.currentRow()
+        if i >= len(f.molecules):
+            return
+        del self.f.molecules[i]
+        self.listWidgetMol.takeItem(i)
+        self.flag_changed = True
+        self.update_window_title()
 
 
     def edit_sol(self):

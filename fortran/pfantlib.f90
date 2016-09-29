@@ -120,7 +120,7 @@ module dimensions
   !=====
 
   ! Maximum Number of molecules in *molecules file*
-  integer, parameter :: NUM_MOL=21
+  integer, parameter :: MAX_NUM_MOL=30
 
   ! Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
   integer, parameter :: MAX_KM_NV_PER_MOL=200
@@ -761,6 +761,12 @@ contains
   ! The examples above all result in <code>(1, 2, 3, 4)</code>.
   !
   ! Very tolerant: everything that is not 0-9 is considered a separator
+  !
+  ! **Note** This was used to parse list of molecules to "turn off"; however,
+  !          as now there is an editor for the molecular lines file (mled.py),
+  !          one can delete the molecules directly from the file, so this routine is
+  !          no longer used, however it was kept here as it may be useful for something
+  !          in the future.
 
   subroutine parse_int_array(str, molidxs, n)
     use logging
@@ -1086,161 +1092,9 @@ end
 
 
 
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-! Maintains a list of molecules that are on/off
-!
-! Has routines to maintain the list and retrieve information.
 
-module molecules_idxs
-  use logging
-  use misc
-  use dimensions
-  implicit none
 
-  type molidx_list
-    integer :: n_off, & ! number "off"
-               n_on     ! number "on"
-
-    integer, dimension(NUM_MOL) :: &
-      on,  & ! molecule ids "on"
-      off    ! molecule ids "off"
-  end type
-
-  type(molidx_list) :: molidxs
-
-  !^^^^^ PUBLIC  ^^^^^
-  !vvvvv PRIVATE vvvvv
-
-  ! There is a calling order to be observed. These flags + assertions inforce that
-  logical, private :: &
-   flag_molecules_idxs_init = .false.   ! molecules_idxs_init() has been called?
-
-  private make_molidxs_on
-contains
-
-  ! Module initialization:
-  ! Must be called at some point of system startup.
-
-  subroutine molecules_idxs_init()
-    call make_molidxs_on()
-    flag_molecules_idxs_init = .true.
-  end
-
-  !=======================================================================================
-  ! Returns molecule id given index
-  !
-  ! Molecule id is a number from 1 to NUM_MOL, which is uniquely related to a chemical molecule within pfant.
-
-  function get_molidx(i_mol)
-    integer i_mol, get_molidx
-
-    if (.not. flag_molecules_idxs_init) then
-      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
-    end if
-
-    ! spill check
-    if (i_mol .gt. molidxs%n_on) then
-      write (lll, *) 'get_molidx(): invalid molecule index i_mol (', &
-       i_mol, ') must be maximum ', molidxs%n_on
-      call log_and_halt(lll)
-    end if
-
-    get_molidx = molidxs%on(i_mol)
-  end
-
-  !=======================================================================================
-  ! Returns .TRUE. or .FALSE. depending on whether molecule represented by molidx is "on"
-  ! or "off"
-  !
-  ! Can be called anytime
-
-  function molecule_is_on(molidx)
-    integer molidx, j
-    logical molecule_is_on
-
-    if (.not. flag_molecules_idxs_init) then
-      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
-    end if
-
-    molecule_is_on = .true.
-    do j = 1, molidxs%n_off
-      if (molidx .eq. molidxs%off(j)) then
-        molecule_is_on = .false.
-        exit
-      end if
-    end do
-  end
-
-  !=======================================================================================
-  ! Parses string into integer array and adds molecule ids to list of "off" molecules
-
-  subroutine set_molidxs_off(str)
-    character(*), intent(in) :: str
-
-    integer :: molidxs(NUM_MOL), n, i
-
-    call parse_int_array(str, molidxs, n)
-
-    do i = 1, n
-      call add_molidx_off(molidxs(i))
-    end do
-  end
-
-  !=======================================================================================
-  ! Adds molecule id to list of "off" molecules
-
-  subroutine add_molidx_off(molidx)
-    integer, intent(in) :: molidx ! molecule id
-
-    if (.not. flag_molecules_idxs_init) then
-      call log_and_halt('get_molidx(): forgot to call molecules_idxs_init()', is_assertion=.true.)
-    end if
-
-    ! spill check
-    if (molidx .gt. NUM_MOL .or. molidx .lt. 1) then
-      call log_and_halt('Invalid molecule id: '//int2str(molidx)//' (valid: 1 to '//&
-       int2str(NUM_MOL)//')')
-    end if
-
-    if (molecule_is_on(molidx)) then
-      ! The condition we-re in prevents duplication
-      molidxs%n_off = molidxs%n_off+1
-      molidxs%off(molidxs%n_off) = molidx
-      call log_info('molecule id '//int2str(molidx)//' added to molidxs%off')
-    else
-      call log_warning('molecule id '//int2str(molidx)//' *already turned off*')
-    end if
-
-    call make_molidxs_on()
-  end
-
-  !=======================================================================================
-  ! Fills molidxs%on and molidxs%n_on based on their complements.
-
-  subroutine make_molidxs_on()
-    integer i_mol, j, molidx
-    logical is_off
-
-    i_mol = 0
-    do molidx = 1, NUM_MOL
-      is_off = .false.  ! Whether molecule I_MOL is off
-      do j = 1, molidxs%n_off
-        if (molidx .eq. molidxs%off(j)) then
-          is_off = .true.
-          exit
-        end if
-      end do
-      if (.not. is_off) then
-        i_mol = i_mol+1
-        molidxs%on(i_mol) = molidx
-      end if
-    end do
-    molidxs%n_on = i_mol
-  end
-end
 
 
 
@@ -3242,8 +3096,6 @@ contains
      'input file name - atomic abundances')
     call add_option('p', 'fn_atoms',     ' ', .true., 'file name', config_fn_atoms, &
      'input file name - atomic lines')
-    call add_option('p', 'molidxs_off',        ' ', .true., 'molecule ids', '', &
-     'comma-separated ids of molecules to be "turned off" (1 to '//int2str(NUM_MOL)//').')
     call add_option('p', 'no_molecules',' ', .true., 'T/F', logical2str(config_no_molecules), &
      'If set, skips the calculation of molecular lines')
     call add_option('p', 'no_atoms',' ', .true., 'T/F', logical2str(config_no_atoms), &
@@ -3447,8 +3299,6 @@ contains
 !              call parse_aux_assign_fn(o_arg, config_fn_lines)
 !            case ('fn_log')
 !              call parse_aux_assign_fn(o_arg, config_fn_log)
-      case ('molidxs_off')
-        call set_molidxs_off(o_arg)
       case ('flprefix')
         call parse_aux_assign_fn(o_arg, config_flprefix, 'config_flprefix')
       case ('no_molecules')
@@ -5598,30 +5448,30 @@ module file_molecules
 
   character*160 km_titm
   integer, parameter :: SIZE_TITULO=4096
-  character(SIZE_TITULO) :: km_titulo(NUM_MOL)
+  character(SIZE_TITULO) :: km_titulo(MAX_NUM_MOL)
 
   ! 20160920
   ! (v_sup, v_inf) list for each molecule
-  integer, dimension(2, MAX_KM_NV_PER_MOL, NUM_MOL) :: km_transitions
-  logical :: km_has_transitions(NUM_MOL)
+  integer, dimension(2, MAX_KM_NV_PER_MOL, MAX_NUM_MOL) :: km_transitions
+  logical :: km_has_transitions(MAX_NUM_MOL)
   ! 20160920
   ! atomic symbols for each molecule (all are diatomic)
-  character*2 :: km_symbols(2, NUM_MOL)
+  character*2 :: km_symbols(2, MAX_NUM_MOL)
 
-  real*8, dimension(NUM_MOL) :: km_fe, km_do, &
+  real*8, dimension(MAX_NUM_MOL) :: km_fe, km_do, &
    km_mm, km_am, km_bm, km_ua, km_ub, km_te, km_cro, &
    km_a0, km_a1, km_a2, km_a3, km_a4, km_als, km_s
 
-  integer, dimension(NUM_MOL)  :: km_ise, km_nv, &
+  integer, dimension(MAX_NUM_MOL)  :: km_ise, km_nv, &
    km_lines_per_mol  ! This stores the number of spectral lines for each molecule
 
-  real*8, dimension(MAX_KM_NV_PER_MOL, NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
+  real*8, dimension(MAX_KM_NV_PER_MOL, MAX_NUM_MOL) :: km_qqv, km_ggv, km_bbv, km_ddv, km_fact
 
   ! "Index of Last Lambda Of Set-Of-Lines"
   ! Points to km_lmbdam, km_sj, km_jj.
   ! This is mounted at reading to help with the filtering and avoid
   ! allocating 2 dimensions for (lm__lmbdam, km_sj, km_jj)
-  real*8, dimension(MAX_KM_NV_PER_MOL, NUM_MOL) :: km_ln
+  real*8, dimension(MAX_KM_NV_PER_MOL, MAX_NUM_MOL) :: km_ln
 
   real*8,  dimension(MAX_KM_LINES_TOTAL) :: &
    km_lmbdam, &
@@ -5644,7 +5494,7 @@ contains
   subroutine read_molecules(filename)
     character(len=*) :: filename
     integer myunit, i, &
-     molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to NUM_MOL
+     molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to MAX_NUM_MOL
      i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
      nnv, iz, &
      numlin , &  ! Temporary variable
@@ -5673,15 +5523,10 @@ contains
     read(myunit,*) km_number
 
     ! spill check
-    if (km_number .gt. NUM_MOL) then
+    if (km_number .gt. MAX_NUM_MOL) then
       call log_and_halt("Number of molecules ("//int2str(km_number)// &
-       ") exceeds maximum allowed ("//int2str(NUM_MOL)//")")
+       ") exceeds maximum allowed ("//int2str(MAX_NUM_MOL)//")")
     end if
-
-    ! Deactivates molecules not wanted or not present in the file
-    do molidx = km_number+1, NUM_MOL
-      call add_molidx_off(molidx)
-    end do
 
 
     ! row 02: string containing list of names of all molecules
@@ -5735,7 +5580,6 @@ contains
         ! If atomic symbols not present in section 2, will try to find the formula in the comments
         call log_info('Looking for formula in comments '''//trim(sections(1))//'''...')
 
-        ! km_formula_id(molidx) = find_formula_id(km_titulo(molidx))
         call assign_symbols_by_formula(sections(1), km_symbols(:, molidx))
 
         !  call log_and_halt('Atomic symbols not available for molecule #'//int2str(molidx))
@@ -5995,68 +5839,6 @@ contains
 
     symbols = FORMULA_SYMBOLS(:, idx_found(1))
   end
-
-
-
-!!!!!!!  ! Finds formula id given title of molecule
-!!!!!!!  !
-!!!!!!!  ! The title is exists inside the *molecules file* as the first row of a new molecule.
-!!!!!!!  ! The title must contain one of the formula listed in the FORMULAE constant, otherwise
-!!!!!!!  ! the program will crash.
-!!!!!!!  !
-!!!!!!!  ! Case-insensitive: both title and formulae are converted to all uppercase for comparison.
-!!!!!!!
-!!!!!!!  integer function find_formula_id(title)
-!!!!!!!    character(len=*), intent(in) :: title
-!!!!!!!    character(len=:), allocatable :: formula, title_upper
-!!!!!!!    integer :: idx_found(NUM_FORMULAE), num_found, i, n, idx
-!!!!!!!    character(len=7*NUM_FORMULAE) :: s_matches, s_matches2  ! logging buffer
-!!!!!!!    integer :: i_ch
-!!!!!!!
-!!!!!!!    title_upper = to_upper(trim(adjustl(title)))
-!!!!!!!
-!!!!!!!    num_found = 0
-!!!!!!!    do i = 1, NUM_FORMULAE
-!!!!!!!      formula = to_upper(trim(adjustl(FORMULAE(i))))
-!!!!!!!
-!!!!!!!      idx = index(title_upper, formula)
-!!!!!!!      if (idx .gt. 0) then
-!!!!!!!        if (idx .eq. 1) go to 1  ! found in beginning of title
-!!!!!!!        i_ch = ichar(title_upper(idx-1:idx-1))
-!!!!!!!        ! compares with space or tab
-!!!!!!!        if (i_ch .eq. 32 .or. i_ch .eq. 9) goto 1  ! found in beginning of word
-!!!!!!!        goto 2  ! found in middle of word, not condidered
-!!!!!!!
-!!!!!!!        1 continue
-!!!!!!!        num_found = num_found+1
-!!!!!!!        idx_found(num_found) = i
-!!!!!!!
-!!!!!!!        2 continue
-!!!!!!!      end if
-!!!!!!!    end do
-!!!!!!!
-!!!!!!!    if (num_found .eq. 0) then
-!!!!!!!      call log_and_halt('No valid molecule formula was found in "'//title_upper//'"')
-!!!!!!!    elseif (num_found .gt. 1) then
-!!!!!!!      ! joins molecule names separated by comma
-!!!!!!!      ! Fortran formatting does most of the job, ...
-!!!!!!!      write(s_matches, '('//int2str(num_found)//'(A,2H, ))') &
-!!!!!!!       (to_upper(trim(adjustl(FORMULAE(idx_found(i))))), i=1, num_found)
-!!!!!!!      ! ... but there is one extra comma that needs to be removed
-!!!!!!!      n = len(trim(s_matches))
-!!!!!!!      s_matches2 = s_matches(1:n-1)
-!!!!!!!
-!!!!!!!      call log_and_halt('Ambiguity in "'//title_upper//'": matches: '//s_matches2)
-!!!!!!!    end if
-!!!!!!!
-!!!!!!!    find_formula_id = idx_found(1)
-!!!!!!!  end
-
-
-
-
-
-
 end
 
 
@@ -7997,12 +7779,12 @@ module filters
   !------
 
   ! Contains the index of the last line of each set of lines within km_f_lmbdam, km_f_sj and km_f_jj
-  ! **for the current molecule** I_MOL
+  ! **for the current molecule** molidx
   !
   ! Augmented: first row is 0 (ZERO) or repeats last element of previous column
   !
-  ! km_f_ln(i+1, j) represents to i-th transition of j-th molecule, 1=1,molidxs%n_on
-  integer :: km_f_ln(MAX_KM_NV_PER_MOL+1, NUM_MOL)
+  ! km_f_ln(i+1, j) represents to i-th transition of j-th molecule
+  integer :: km_f_ln(MAX_KM_NV_PER_MOL+1, MAX_NUM_MOL)
 
   !=====
   ! atoms_f_*Variables filled by filter_atoms()
@@ -8039,8 +7821,7 @@ contains
     ! Upper edge of wavelength interval
     real*8, intent(in) :: lfin
     real*8 :: lambda
-    integer molidx,          &  ! Counts molecule id, from 1 to NUM_MOL
-            i_mol,           &  ! Counts molecules that are "switched on"
+    integer molidx,          &  ! Counts molecule id, from 1 to km_number
             j_dummy, j_set,  &
             i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
             i_filtered          ! Counts number of filtered lines (molecule-independent);
@@ -8048,21 +7829,13 @@ contains
     integer num_lambdas
     logical flag_in
 
-    write(lll, *) ENTERING, 'filter_molecules()', 'molidxs%n_on = ', molidxs%n_on
+    write(lll, *) ENTERING, 'filter_molecules()'
     call log_debug(lll)
 
     i_filtered = 0  ! Current *filtered-in* spectral line. Keeps growing (not reset when the molecule changes). Related to old "L"
     i_line = 1
-    i_mol = 0
     do molidx = 1, km_number
-      if (.not. molecule_is_on(molidx)) then
-        i_line = i_line+km_lines_per_mol(molidx)
-        cycle
-      end if
-
-      i_mol = i_mol+1
-
-      km_f_ln(1, i_mol) = i_filtered  ! first row contain number of lines already filtered
+      km_f_ln(1, molidx) = i_filtered  ! first row contain number of lines already filtered
 
       write(lll, *) 'molecule idx', molidx, '; titulo: ',  trim(km_titulo(molidx)), &
        '; number of prospective lambdas: ', km_lines_per_mol(molidx)
@@ -8093,9 +7866,9 @@ contains
 
         if (i_line .eq. km_ln(j_set, molidx)) then
           ! Reached last line of current set of lines
-          km_f_ln(j_set+1, i_mol) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is set apart.
+          km_f_ln(j_set+1, molidx) = i_filtered  ! Yes, j_set+1, not j_set, remember km_f_ln first row is set apart.
 
-          num_lambdas = km_f_ln(j_set+1, i_mol)-km_f_ln(j_set, i_mol)
+          num_lambdas = km_f_ln(j_set+1, molidx)-km_f_ln(j_set, molidx)
 
           !write(lll, *) 'number of SELECTED lambdas for transition ', j_set, ': ', num_lambdas
           !call log_debug(lll)
@@ -8110,11 +7883,6 @@ contains
 
     km_f_mblend = i_filtered
 
-    !print *, '*****************************************************************'
-    !do i = 1, i_mol
-    !  print *, '#', get_molidx(i), ' == ', km_f_ln(1:km_nv(get_molidx(i_mol)),i)
-    !end do
-    !print *, '*****************************************************************'
     write(lll, *) LEAVING, 'filter_molecules() summary: [', lzero, ', ', lfin, '] --> ', i_filtered, '/', km_lines_total
     call log_debug(lll)
   end
@@ -8198,17 +7966,13 @@ contains
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
     real*8 qv, gv, bv, dv, facto
-    integer i_mol, j_set, l, l_ini, l_fin, n, nnv, molidx, iz0, iz1
+    integer j_set, l, l_ini, l_fin, n, nnv, molidx, iz0, iz1
 
     real*8, parameter :: C2 = 8.8525E-13
 
     call log_debug(ENTERING//' kapmol()')
 
-    do i_mol = 1, molidxs%n_on
-      molidx = get_molidx(i_mol)
-
-!       call point_ppa_pb(km_formula_id(molidx))
-!      call point_ppa_pb(km_symbols(:, molidx))
+    do molidx = 1, km_number
 
       ! Assigns address of variable PPA and PB depending on atomic symbols of molecule
       iz0 = find_atomic_symbol_dissoc(km_symbols(1, molidx))
@@ -8245,10 +8009,10 @@ contains
           bv = km_bbv(j_set, molidx)
           dv = km_ddv(j_set, molidx)
 
-          ! Note that l_ini may be > l_ini, meaning that the current set-of-lines has no
+          ! Note that l_ini may be > l_fin, meaning that the current set-of-lines has no
           ! selected lines for current lzero-lfin intervfal
-          l_ini = km_f_ln(j_set, i_mol)+1
-          l_fin = km_f_ln(j_set+1, i_mol)
+          l_ini = km_f_ln(j_set, molidx)+1
+          l_fin = km_f_ln(j_set+1, molidx)
 
           ! l is index within km_f_lmbdam, km_f_sj and km_f_jj
           do l= l_ini, l_fin
@@ -8264,65 +8028,25 @@ contains
           ! Takes advantage of current j_set loop so it is not necessary to create
           ! another double loop as in the original KAPMOL() to calculate km_c_gfm
           if (n .eq. 1) then
-            ! Because gfm does not depend on n, runs this part just once, when n is 1.
+            ! Because gfm does not depend on n (i.e., it is atmospheric-layer-independent),
+            ! this part runs only once, when n is 1.
             facto = km_fact(j_set, molidx)
             do l= l_ini, l_fin
               km_c_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
+              if (km_c_gfm(l) .eq. 0.) then
+                write (*,*) "MOLECULAR GF IS ZERO!!!! HOW COME???"
+                write (*,*) facto, C2, fe, qv, km_f_lmbdam(l), km_f_sj(l)
+                ! TODO egt back to this stop -1
+              end if
             end do
           end if
         end do
       end do
-    end do ! end of i_mol loop
+    end do
 
 
     call log_debug(LEAVING//' kapmol()')
   end
-
-!!!!!!  subroutine point_ppa_pb(formula_id)
-!!!!!!    integer, intent(in) :: formula_id
-!!!!!!
-!!!!!!    if (formula_id .gt. NUM_FORMULAE) then
-!!!!!!      write (lll, *) 'point_ppa_pb(): invalid formula id (', formula_id, ') must be maximum ', NUM_FORMULAE
-!!!!!!      call log_and_halt(lll)
-!!!!!!    end if
-!!!!!!
-!!!!!!    select case (formula_id)
-!!!!!!      case (1)            ! MgH
-!!!!!!        ppa => sat4_pmg
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (2)            ! C2
-!!!!!!        ppa => sat4_ppc2
-!!!!!!        pb  => sat4_ppc2
-!!!!!!      case (3)            ! CN
-!!!!!!        ppa => sat4_ppc2
-!!!!!!        pb  => sat4_pn
-!!!!!!      case (4)            ! CH
-!!!!!!        ppa => sat4_ppc2
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (5)            ! 13CH
-!!!!!!        ppa => sat4_pc13
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (6)            ! CO
-!!!!!!        ppa => sat4_ppc2
-!!!!!!        pb  => sat4_po
-!!!!!!      case (7)            ! NH
-!!!!!!        ppa => sat4_pn
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (8)            ! OH
-!!!!!!        ppa => sat4_po
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (9)            ! FeH
-!!!!!!        ppa => sat4_pfe
-!!!!!!        pb  => sat4_pph
-!!!!!!      case (10)           ! TiO
-!!!!!!        ppa => sat4_pti
-!!!!!!        pb  => sat4_po
-!!!!!!      case default
-!!!!!!        call log_and_halt('Formula id not handled by point_ppa_pb(): '//int2str(formula_id), is_assertion=.true.)
-!!!!!!    end select
-!!!!!!  end
-
-
 end
 
 
