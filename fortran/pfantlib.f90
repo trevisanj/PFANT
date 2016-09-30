@@ -503,7 +503,7 @@ contains
   ! This is used to prevent against left-alignment/lovercase  in specifying the atomic
   ! symbols in several input data files.
   !
-  ! ExampleL: "O ", " o", "o ", all will result in " O"
+  ! Example: "O ", " o", "o ", all will result in " O"
 
   function adjust_atomic_symbol(elem) result(res)
     character(len=*), intent(in) :: elem
@@ -5440,6 +5440,23 @@ module file_molecules
     'MG', ' H', ' C', ' C', ' C', ' N', ' C', ' H', ' A', ' H', ' C', ' O', &
     ' N', ' H', ' O', ' H', 'FE', ' H', 'TI', ' O'/), (/2, NUM_FORMULAE/))
 
+  ! - List of symbols "featuring" in molecules.dat, dissoc.dat and abonds.dat and
+  ! - Corresponding VALD3 notation, using the most "probable" (most abundant) isotope
+  ! - "A" is an exception, as it means (13)C
+  !
+  ! **Note** TODO When/if this is expanded, it would be nice to
+  !          - implement a proper naming convention in molecules.dat, abonds.dat and dissoc.dat
+  !            e.g. '(235)U', i.e., '(isotope)symbol' with 7 characters. This implies also thorough
+  !            code checking because the the existing right-aligned symbolic naming convention (e.g. ' O')
+  !            will have to change
+  !          - associate symbols without explicit isotope with their most common isotope
+  !          - for backwards compatibility, keep translating A --> (13)C
+  !
+  character*2, parameter :: SYMBOLS_PFANT(9) = &
+   (/'MG',    ' H', ' C',     ' N',    ' A',    'FE',     'TI',     ' O'/)
+  character*6, parameter :: SYMBOLS_VALD3(9) = &
+   (/'(24)Mg', 'H', '(12)C ', '(14)N', '(13)C', '(56)Fe', '(48)Ti', '(16)O'/)
+
 
   ! Specifies how many molecules to read
   integer km_number
@@ -5448,7 +5465,8 @@ module file_molecules
 
   character*160 km_titm
   integer, parameter :: SIZE_TITULO=4096
-  character(SIZE_TITULO) :: km_titulo(MAX_NUM_MOL)
+  character(SIZE_TITULO) :: km_titulo(MAX_NUM_MOL), &
+   km_comments(MAX_NUM_MOL)  ! Stores only first section in km_titulo
 
   ! 20160920
   ! (v_sup, v_inf) list for each molecule
@@ -5457,6 +5475,7 @@ module file_molecules
   ! 20160920
   ! atomic symbols for each molecule (all are diatomic)
   character*2 :: km_symbols(2, MAX_NUM_MOL)
+  integer :: km_isotopes(2, MAX_NUM_MOL)
 
   real*8, dimension(MAX_NUM_MOL) :: km_fe, km_do, &
    km_mm, km_am, km_bm, km_ua, km_ub, km_te, km_cro, &
@@ -5575,6 +5594,8 @@ contains
       read(myunit,'(a)') km_titulo(molidx)
 
       call split_titulo(km_titulo(molidx), sections)  ! , sizes)
+
+      km_comments(molidx) = sections(1)
 
       if (len(trim(sections(2))) .eq. 0) then
         ! If atomic symbols not present in section 2, will try to find the formula in the comments
@@ -5712,6 +5733,7 @@ contains
         ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule
         read(myunit,*) km_lmbdam(i_line), km_sj(i_line), km_jj(i_line), iz, numlin
+
 
         !~km_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
 
@@ -7771,8 +7793,11 @@ module filters
     km_f_lmbdam, & ! ?doc?
     km_f_sj,     & ! ?doc?
     km_f_jj,     & ! ?doc?
-    km_f_mm        ! Replicates km_mm(molidx) for all selected lines of molecule molidx.
+    km_f_mm,     & ! Replicates km_mm(molidx) for all selected lines of molecule molidx.
                    ! Redundant information but simplifies use. Used in synthesis::selekfh()
+    km_f_molidx, & ! Molecule index for each line; allows access to any molecule-wise data
+    km_f_transidx  ! Transition index for each line; allows access to any transition-wise data
+
 
   !------
   ! These two arrays contain indexes pointing at km_f_lmbdam, km_f_sj, km_f_jj, km_f_mm
@@ -7861,7 +7886,9 @@ contains
           km_f_lmbdam(i_filtered) = lambda
           km_f_sj(i_filtered) = km_sj(i_line)
           km_f_jj(i_filtered) = km_jj(i_line)
-          km_f_mm(i_filtered) = km_mm(molidx)
+          km_f_mm(i_filtered) = km_mm(molidx)  ! TODO perhaps this will not be
+          km_f_molidx(i_filtered) = molidx
+          km_f_transidx(i_filtered) = j_set
         end if
 
         if (i_line .eq. km_ln(j_set, molidx)) then
@@ -7980,8 +8007,8 @@ contains
       iz1 = find_atomic_symbol_dissoc(km_symbols(2, molidx))
       pb => dissoc_xp(:, iz1)
 
-      print *, 'WWXWW molidx', molidx, '; iz0', iz0, '; iz1', iz1, '; symbol0 ', &
-      km_symbols(1, molidx), '; symbol1 ', km_symbols(2, molidx)
+      ! print *, 'WWXWW molidx', molidx, '; iz0', iz0, '; iz1', iz1, '; symbol0 ', &
+      ! km_symbols(1, molidx), '; symbol1 ', km_symbols(2, molidx)
 
       nnv = km_nv(molidx)
       fe  = km_fe(molidx)
@@ -8034,9 +8061,12 @@ contains
             do l= l_ini, l_fin
               km_c_gfm(l) = C2*((1.e-8*km_f_lmbdam(l))**2)*fe*qv*km_f_sj(l)*facto
               if (km_c_gfm(l) .eq. 0.) then
-                write (*,*) "MOLECULAR GF IS ZERO!!!! HOW COME???"
-                write (*,*) facto, C2, fe, qv, km_f_lmbdam(l), km_f_sj(l)
-                ! TODO egt back to this stop -1
+                ! I think this is actually not a problem at all
+                ! write (*,*) "MOLECULAR GF IS ZERO!!!! HOW COME???"
+                ! write (*,*) trim(km_comments(km_f_molidx(l)))
+                ! write (*,*) 'set-of-lines:', km_f_transidx(l)
+                ! write (*,*) facto, C2, fe, qv, km_f_lmbdam(l), km_f_sj(l)
+                ! stop -1
               end if
             end do
           end if

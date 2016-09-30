@@ -29,8 +29,9 @@ program convmol
   implicit none
   real*8 x_llzero, x_llfin
   logical :: main_exists  ! whether or not main configuration file exists
-  integer :: myunit, l
+  integer :: myunit, l, molidx_last, molidx, num_species
   logical :: dissoc_exists
+  character*6 :: mol_name, mol_names(MAX_NUM_MOL)
 
 
   ! # Startup
@@ -78,7 +79,7 @@ program convmol
     call read_abonds(config_fn_abonds)
     call auto_dissoc()
   end if
-  call read_modele(config_fn_modeles) 
+  call read_modele(config_fn_modeles)
   call read_molecules(config_fn_molecules)
 
   ! # Calculation
@@ -100,36 +101,135 @@ program convmol
 !
 ! # VALD3 sample
 !
+!                                                                    Lande factors      Damping parameters
 ! Elm Ion      WL_air(A)   log gf* E_low(eV) J lo  E_up(eV) J up  lower  upper   mean   Rad.  Stark  Waals
-! 'Fe 1',       16400.045,  -4.131,  6.5922,  6.0,  7.3480,  5.0, 1.320, 1.090, 1.910, 8.140,-3.840,-7.330,
-! '  LS                                                                       3d7.(4F).4d f5G'
-! '  JK                                                             3d7.(4F<7/2>).4f 2[11/2]*'
+! 'CO 1',       16400.058,  -5.951,  1.3820, 38.0,  2.1378, 39.0,99.000,99.000,99.000, 2.000, 0.000, 0.000,
+! 1234567890,123456789012,12345678,12345678,12345,12345678,12345,123456,123456,123456,123456,123456,123456,
+! '  Hb                                                4s2.5s2.1p4              X,2,0,,none,4'
+! '  Hb                                                    4s2.5s2.1p4          X,2,0,,none,7'
+! 'KCO                                  2 KCO       2 KCO       2 KCO       2 KCO       2 KCO       2 KCO       2 KCO       2 KCO       2 KCO     (12)C(16)O    '
 
 
   open(newunit=myunit, file=config_fn_out, status='replace', err=10)
 
   write(myunit, '(a)') &
-   '  lambda_air(A)   gf         Elow(cm-1)  vl  Jl    Nl  syml  Eup(cm-1) vu   Ju    Nu  symu  gamrad    mol trans branch'
+   '                                                                   Lande factors      Damping parameters'
+  write(myunit, '(a)') &
+   'Elm Ion      WL_air(A)   log gf* E_low(eV) J lo  E_up(eV) J up  lower  upper   mean   Rad.  Stark  Waals'
+
+  molidx_last = 0
+  num_species = 0
 
   do l = 1, km_f_mblend
+    molidx = km_f_molidx(l)
+    if (molidx_last .ne. molidx) then
+      molidx_last = molidx
+      mol_name = make_mol_name(km_symbols(1, molidx), km_symbols(2, molidx))
+
+      ! note that this condition is repeated below; it exists here for logging purpose,
+      ! and below, for skipping molecules without the transitional information in the "titulo"
+      if (.not. km_has_transitions(km_f_molidx(l))) then
+        call log_warning('Cannot convert molecule '''//trim(km_comments(molidx))//&
+         ''', for it has no (v'', v'''') information')
+      else
+        num_species = num_species+1
+        mol_names(num_species) = mol_name
+
+        call log_warning('Converting molecule '''//trim(km_comments(molidx))//'''...')
+      end if
+    end if
+
+    if (.not. km_has_transitions(km_f_molidx(l))) cycle
+
     write(myunit, '(f13.4, 1x, e12.6, 1x, f11.4, 1x, i3, 1x, f5.1, 1x, f5.1, 1x, i2, '//&  ! lambda_air(A), ...
                   '1x, f11.4, 1x, i3, 1x, f5.1, 1x, f5.1, 1x, i2, 1x, e12.6, 1x, a16)') &  ! Eup(cm-1), ...
      km_f_lmbdam(l), &  ! lambda_air(A)
      km_c_gfm(l), &  ! gf
      0., &  ! Elow(cm-1); (BLB: not needed); TODO check TurboSpectrum for all "not needed"
-     4, &  ! vl; TODO: filter and put vlow here
+     km_transitions(2, km_f_transidx(l), km_f_molidx(l)), &  ! vl
      km_f_jj(l), &  ! Jl
      km_f_jj(l), &  ! Nl; TODO check if all the same for a Plez file
      0, &  ! syml
      0., &  ! Eup(cm-1); (BLB: not needed)
-     9, &  ! vu; TODO filter and put vup here
+     km_transitions(1, km_f_transidx(l), km_f_molidx(l)), &  ! vu
      km_f_jj(l)+1, &  ! Ju; set as J+1 as a "first approximation"; TODO is it going to stay like this?
      km_f_jj(l)+1, &  ! Nu; TODO check if they follow this pattern in Plez file
      0, &  ! symu
      0., &  ! gamrad
-     '''---'''  ! mol trans branch
+     ''''//trim(mol_name)//''''  ! mol trans branch
   end do
+
+
+
+
+!Plez  molidx_last = 0
+!Plez  num_species = 0
+!Plez
+!Plez  do l = 1, km_f_mblend
+!Plez    molidx = km_f_molidx(l)
+!Plez    if (molidx_last .ne. molidx) then
+!Plez      molidx_last = molidx
+!Plez      mol_name = make_mol_name(km_symbols(1, molidx), km_symbols(2, molidx))
+!Plez
+!Plez      ! note that this condition is repeated below; it exists here for logging purpose,
+!Plez      ! and below, for skipping molecules without the transitional information in the "titulo"
+!Plez      if (.not. km_has_transitions(km_f_molidx(l))) then
+!Plez        call log_warning('Cannot convert molecule '''//trim(km_comments(molidx))//&
+!Plez         ''', for it has no (v'', v'''') information')
+!Plez      else
+!Plez        num_species = num_species+1
+!Plez        mol_names(num_species) = mol_name
+!Plez
+!Plez        call log_warning('Converting molecule '''//trim(km_comments(molidx))//'''...')
+!Plez      end if
+!Plez    end if
+!Plez
+!Plez    if (.not. km_has_transitions(km_f_molidx(l))) cycle
+!Plez
+!Plez    write(myunit, '(f13.4, 1x, e12.6, 1x, f11.4, 1x, i3, 1x, f5.1, 1x, f5.1, 1x, i2, '//&  ! lambda_air(A), ...
+!Plez                  '1x, f11.4, 1x, i3, 1x, f5.1, 1x, f5.1, 1x, i2, 1x, e12.6, 1x, a16)') &  ! Eup(cm-1), ...
+!Plez     km_f_lmbdam(l), &  ! lambda_air(A)
+!Plez     km_c_gfm(l), &  ! gf
+!Plez     0., &  ! Elow(cm-1); (BLB: not needed); TODO check TurboSpectrum for all "not needed"
+!Plez     km_transitions(2, km_f_transidx(l), km_f_molidx(l)), &  ! vl
+!Plez     km_f_jj(l), &  ! Jl
+!Plez     km_f_jj(l), &  ! Nl; TODO check if all the same for a Plez file
+!Plez     0, &  ! syml
+!Plez     0., &  ! Eup(cm-1); (BLB: not needed)
+!Plez     km_transitions(1, km_f_transidx(l), km_f_molidx(l)), &  ! vu
+!Plez     km_f_jj(l)+1, &  ! Ju; set as J+1 as a "first approximation"; TODO is it going to stay like this?
+!Plez     km_f_jj(l)+1, &  ! Nu; TODO check if they follow this pattern in Plez file
+!Plez     0, &  ! symu
+!Plez     0., &  ! gamrad
+!Plez     ''''//trim(mol_name)//''''  ! mol trans branch
+!Plez  end do
+
+
+
+
+
+
+
+
+
+
   close(myunit)
+
+
+  call log_info('# FINAL REPORT')
+  call log_info('')
+  call log_info('## Summary')
+  call log_info('Number of lines within ['//real82str(x_llzero, 3)//', '//&
+   real82str(x_llfin, 3)//']: '//int2str(km_f_mblend))
+  call log_info('')
+  call log_info('## List of ''species''')
+  do l = 1, num_species
+    call log_info(trim(mol_names(l)))
+  end do
+  call log_info('')
+  call log_info('  -x-x-x-')
+
+
   goto 11
 
   10 continue
@@ -137,5 +237,43 @@ program convmol
 
   11 continue
 
-  write (*, *) 'BYE * BYE * BYE * BYE * BYE * BYE * BYE * BYE * BYE * BYE'
+contains
+  ! Makes molecule name from two symbols
+  ! Assu
+
+  function make_mol_name(symbol1, symbol2) result(res)
+    use pfantlib
+    implicit none
+    character(len=*), intent(in) :: symbol1, symbol2
+    character(len=:), allocatable :: res
+    character(len=:), allocatable :: sym1, sym2
+
+
+print *,'######################'
+print *, symbol1, symbol2
+    sym1 = trim(adjustl(adjust_atomic_symbol(symbol1)))
+    sym2 = trim(adjustl(adjust_atomic_symbol(symbol2)))
+print *, sym1, sym2
+
+    ! converts to lowercase the second letter of the atomic symbols
+    if (len(sym1) .eq. 2) then
+      sym1(2:2) = char(iachar(sym1(2:2))+32)
+    end if
+    if (len(sym2) .eq. 2) then
+      sym2(2:2) = char(iachar(sym2(2:2))+32)
+    end if
+    if (sym1 .eq. sym2) then
+      res = trim(sym1)//'2'
+    else
+      res = trim(sym1)//trim(sym2)
+    end if
+
+
+    print *, res
+
+  end
+
+
 end program convmol
+
+
