@@ -58,6 +58,8 @@ This section will take you through these steps.
 
 #### 2.1.1 Standalone applications
 
+Please install the following standalone applications on your system (no pain except for gfortran and make on Windows (see below)):
+
   - gfortran >= 4.6
   - make
   - Python 2.7
@@ -76,6 +78,7 @@ After installed, MinGW has its own package manager, named
 Package name  | Possible way to install
 ------------- | ---
 matplotlib    | apt-Linux: `sudo apt-get install python-matplotlib`
+scipy         | apt-Linux: `sudo apt-get install python-scipy`
 pyqt4         | apt-Linux: `sudo apt-get install python-qt4`
               | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
 fortranformat | All systems: `[sudo] pip install fortranformat`
