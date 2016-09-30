@@ -2744,7 +2744,6 @@ module config
   use logging
   use options2
   use misc
-  use molecules_idxs
   use welcome
   implicit none
 
@@ -5411,7 +5410,6 @@ module file_molecules
   use logging
   use dimensions
   use misc
-  use molecules_idxs
   use file_dissoc
   implicit none
 
@@ -5452,10 +5450,10 @@ module file_molecules
   !          - associate symbols without explicit isotope with their most common isotope
   !          - for backwards compatibility, keep translating A --> (13)C
   !
-  character*2, parameter :: SYMBOLS_PFANT(9) = &
+  character*2, parameter :: SYMBOLS_PFANT(8) = &
    (/'MG',    ' H', ' C',     ' N',    ' A',    'FE',     'TI',     ' O'/)
-  character*6, parameter :: SYMBOLS_VALD3(9) = &
-   (/'(24)Mg', 'H', '(12)C ', '(14)N', '(13)C', '(56)Fe', '(48)Ti', '(16)O'/)
+  character*6, parameter :: SYMBOLS_VALD3(8) = &
+   (/'(24)Mg', 'H     ', '(12)C ', '(14)N ', '(13)C ', '(56)Fe', '(48)Ti', '(16)O '/)
 
 
   ! Specifies how many molecules to read
@@ -7249,7 +7247,6 @@ end
 module dissoc
   use file_models
   use file_dissoc
-  use molecules_idxs
   implicit none
 
   ! Pressure vectors of elements listed in Table 1 of dissoc.dat
@@ -7771,7 +7768,6 @@ end
 !   - atoms_f_ -- calculated by filter_atoms()
 
 module filters
-  use molecules_idxs
   use file_atoms
   use file_molecules
   implicit none
@@ -8089,7 +8085,6 @@ module pfantlib
   use dimensions
   use logging
   use misc
-  use molecules_idxs
   use welcome
   use misc_math
   use flin
