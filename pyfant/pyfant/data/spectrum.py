@@ -14,6 +14,12 @@ import copy
 import os
 
 class Spectrum(object):
+    """
+    Spectrum with several *in-place* operations, conversion utilities etc.
+
+    Routines that have the term *in place*: it means that the spectrum
+    itself is changed and nothing is returned
+    """
 
     @property
     def wavelength(self):
@@ -223,13 +229,13 @@ class Spectrum(object):
         return hdu
         
     def cut(self, l0, l1):
-        """Cuts to wavelength interval [l0, l1]. Cut is done within the array objects thus keeping the same objects"""
+        """Cuts *in place* to wavelength interval [l0, l1]. Cut is done within the array objects thus keeping the same objects"""
         ii_delete = np.where(np.logical_or(self.x < l0, self.x > l1))
         np.delete(self.x, ii_delete)
         np.delete(self.y, ii_delete)
         
     def cut_idxs(self, i0, i1):
-        """Cuts to slice i0:i1 (pythonic, interval = [i0, i1["""
+        """Cuts *in place* to slice i0:i1 (pythonic, interval = [i0, i1["""
         self.x = self.x[i0:i1]
         self.y = self.y[i0:i1]
 

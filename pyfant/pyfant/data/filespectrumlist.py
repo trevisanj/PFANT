@@ -266,7 +266,7 @@ class SpectrumList(SpectrumCollection):
         try:
             from pyfant.blocks import *  # TODO make it locals to pass to eval()
             block = eval(expr)  # , {}, {})
-            if not isinstance(block, MergeDownBlock):
+            if not isinstance(block, SLB_MergeDownBlock):
                 raise RuntimeError("Must evaluate to a MergeDownBlock, but evaluated to a %s" % (block.__class__.__name__))
         except Exception as E:
             msg = "Expression ''%s``: %s" % (expr, str(E))
