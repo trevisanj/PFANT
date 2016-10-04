@@ -60,7 +60,7 @@ def plot_spectra_overlapped(ss, title=None, ymin=None):
         assert isinstance(s, Spectrum)
         ax = plt.gca()
         y = s.y
-        ax.plot(s.x, y, label=str(s.filename))
+        ax.plot(s.x, y, label=str(s.title))
 
     plt.xlabel('Wavelength ($\AA$)')
     xmin, xmax, ymin_, ymax, xspan, yspan = _calc_max_min(ss)
@@ -111,7 +111,7 @@ def plot_spectra_pieces_pdf(ss, aint=10, pdf_filename='pieces.pdf', ymin=None):
         for i, s in enumerate(ss):
             s_cut = cut_spectrum(s, lambda0, lambda1)
             ax = plt.gca()
-            ax.plot(s_cut.x, s_cut.y, label=s.filename)
+            ax.plot(s_cut.x, s_cut.y, label=s.title)
         plt.xlabel('Wavelength (interval: [%g, %g])' % (lambda0, lambda1))
         xspan = lambda1-lambda0
         ax.set_xlim([lambda0 - xspan * _T, lambda1 + xspan * _T])
@@ -147,7 +147,7 @@ def plot_spectra_pages_pdf(ss, pdf_filename='pages.pdf', ymin=None):
     format_BLB()
     pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_filename)
     for i, s in enumerate(ss):
-        title = s.filename
+        title = s.title
         fig = plt.figure()
         plt.plot(s.x, s.y, c=_FAV_COLOR)
         plt.xlabel('Wavelength')
@@ -210,8 +210,8 @@ def draw_spectra(ss, title=None, ymin=None, num_rows=None):
         ymin_now = ymin_ if ymin is None else ymin
         ax.set_ylim([ymin_now, ymin_now + (ymax - ymin_now) * (
         1 + _T)])  # prevents top of line from being hidden by plot box
-        if s.filename is not None:
-            ax.set_ylabel(s.filename)
+        if s.title is not None:
+            ax.set_ylabel(s.title)
 
         xmin, xmax = min(min(s.x), xmin), max(max(s.x), xmax)
     span = xmax - xmin

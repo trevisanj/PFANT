@@ -12,6 +12,8 @@ from astropy.io import fits
 from pyfant import write_lf
 import copy
 import os
+# from scipy.interpolate import interp1d
+from scipy import interp
 
 class Spectrum(object):
     """
@@ -20,6 +22,16 @@ class Spectrum(object):
     Routines that have the term *in place*: it means that the spectrum
     itself is changed and nothing is returned
     """
+
+    @property
+    def title(self):
+        """Calculated, read-only property"""
+        ret = None
+        if ret is None:
+            ret = self.filename
+        if ret is None:
+            ret = self.more_headers.get("ORIGIN")
+        return ret
 
     @property
     def wavelength(self):
@@ -209,7 +221,11 @@ class Spectrum(object):
         # Additional header fields
         for name in hdu.header:
             if not name.startswith(self._IGNORE_HEADERS):
-                self.more_headers[name] = hdu.header[name]
+                # **Note** that it eliminates "#" comments from FITS header
+                value = hdu.header[name]
+                if isinstance(value, str):
+                    value = value.split("#")[0].strip()
+                self.more_headers[name] = value
 
     def to_hdu(self):
         """Converts to fits.PrimaryHDU object. Assumes XUNIT is "A" (angstrom)"""
@@ -221,6 +237,9 @@ class Spectrum(object):
         hdu.header["XUNIT"] = "A"
         for key, value in self.more_headers.iteritems():
             try:
+                # Strips line feed which were present in some of the Websim-Compass fits files
+                if isinstance(value, str):
+                    value = value.replace("\n", "")
                 hdu.header[key] = value
             except:
                 get_python_logger().exception("Error adding header['%s'] = '%s'" % (key, value))
@@ -285,6 +304,18 @@ class Spectrum(object):
                 "out_area": out_area,  # area under out_y
                 "fieldnames": ["MAG_CALC", "MAG_BAND"]  # names of fields added/replaces to self.more_headers
                 }
+
+
+    def resample(self, new_wavelength, kind='linear'):
+        """Resamples *in-place* to new wavelength vector using interpolation
+
+        Arguments:
+            new_wavelength -- new wavelength vector
+            kind -- interpolation kind to be passed to scipy.interpolate.interp1d
+        """
+        # f = interp1d(self.x, self.y, kind='linear', bounds_error=True, fill_value=0)
+        self.y = interp(new_wavelength, self.x, self.y)
+        self.wavelength = new_wavelength
 
 
 class FileSpectrum(DataFile):

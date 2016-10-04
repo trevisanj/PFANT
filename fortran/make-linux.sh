@@ -9,4 +9,5 @@ make -f makefile-linux-innewmarcs
 make -f makefile-linux-hydro2
 make -f makefile-linux-pfant
 make -f makefile-linux-nulbad
+make -f makefile-linux-convmol
 

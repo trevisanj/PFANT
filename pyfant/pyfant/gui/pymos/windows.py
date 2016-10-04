@@ -14,7 +14,7 @@ from itertools import product, combinations, cycle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from pyfant import *
-from pyfant.data.filespectrumlist import *
+from pyfant.data.filesplist import *
 from pyfant.gui import *
 from .basewindows import *
 from .a_WChooseSpectrum import *
@@ -341,7 +341,7 @@ class WSpectrumTable(WBase):
         flag_emit = False
         try:
             # TODO another SpectrumCollection, not SpectrumList
-            new_filename = QFileDialog.getOpenFileName(self, "Merge with another Spectrum List file", "", "*.splist.fits")
+            new_filename = QFileDialog.getOpenFileName(self, "Merge with another Spectrum List file", "", "*.splist")
             if new_filename:
                 new_filename = str(new_filename)
                 f = FileSpectrumList()
@@ -1034,7 +1034,7 @@ class XFileSpectrumList(XFileMainWindow):
         self.open_texts[0] = "Load %s" % _VVV
         self.clss[0] = FileSpectrumList
         self.clsss[0] = (FileSpectrumList, FileWebsimCube)  # file types that can be opened
-        self.wilds[0] = "*.splist.fits"
+        self.wilds[0] = "*.splist"
 
         lv = keep_ref(QVBoxLayout(self.gotting))
         ce = self.ce = WFileSpectrumList(self)

@@ -3,20 +3,18 @@
 #
 
 SRCS_f90d1 = \
-readers.f90 \
-hydro2.f90 \
-pfantlib.f90 
+pfantlib.f90 \
+convmol.f90 
 
 OBJS_f90d1 = \
-readers.o \
-hydro2.o \
-pfantlib.o 
+pfantlib.o \
+convmol.o 
 
 SRC_DIR_f90d1 = 
 OBJS_DIR = obj-linux/
 EXE_DIR = bin/
 
-EXE = hydro2
+EXE = convmol
 FC = gfortran
 IDIR = 
 CFLAGS = -Wall -O2  -J$(OBJS_DIR) $(IDIR)
@@ -41,11 +39,9 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-readers.o: \
-    readers.f90
-hydro2.o: \
-    hydro2.f90 \
-    pfantlib.o
 pfantlib.o: \
     pfantlib.f90
+convmol.o: \
+    convmol.f90 \
+    pfantlib.o
 

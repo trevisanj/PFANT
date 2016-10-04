@@ -863,6 +863,7 @@ contains
           end if
 
           read(str(break_point:i-1), *) symbols(n)
+          symbols(n) = adjust_atomic_symbol(symbols(n))
         else
           ! does nothing until finds a digit
         end if
@@ -5438,22 +5439,6 @@ module file_molecules
     'MG', ' H', ' C', ' C', ' C', ' N', ' C', ' H', ' A', ' H', ' C', ' O', &
     ' N', ' H', ' O', ' H', 'FE', ' H', 'TI', ' O'/), (/2, NUM_FORMULAE/))
 
-  ! - List of symbols "featuring" in molecules.dat, dissoc.dat and abonds.dat and
-  ! - Corresponding VALD3 notation, using the most "probable" (most abundant) isotope
-  ! - "A" is an exception, as it means (13)C
-  !
-  ! **Note** TODO When/if this is expanded, it would be nice to
-  !          - implement a proper naming convention in molecules.dat, abonds.dat and dissoc.dat
-  !            e.g. '(235)U', i.e., '(isotope)symbol' with 7 characters. This implies also thorough
-  !            code checking because the the existing right-aligned symbolic naming convention (e.g. ' O')
-  !            will have to change
-  !          - associate symbols without explicit isotope with their most common isotope
-  !          - for backwards compatibility, keep translating A --> (13)C
-  !
-  character*2, parameter :: SYMBOLS_PFANT(8) = &
-   (/'MG',    ' H', ' C',     ' N',    ' A',    'FE',     'TI',     ' O'/)
-  character*6, parameter :: SYMBOLS_VALD3(8) = &
-   (/'(24)Mg', 'H     ', '(12)C ', '(14)N ', '(13)C ', '(56)Fe', '(48)Ti', '(16)O '/)
 
 
   ! Specifies how many molecules to read
@@ -7789,8 +7774,9 @@ module filters
     km_f_lmbdam, & ! ?doc?
     km_f_sj,     & ! ?doc?
     km_f_jj,     & ! ?doc?
-    km_f_mm,     & ! Replicates km_mm(molidx) for all selected lines of molecule molidx.
+    km_f_mm        ! Replicates km_mm(molidx) for all selected lines of molecule molidx.
                    ! Redundant information but simplifies use. Used in synthesis::selekfh()
+  integer, dimension(MAX_KM_F_MBLEND) :: &
     km_f_molidx, & ! Molecule index for each line; allows access to any molecule-wise data
     km_f_transidx  ! Transition index for each line; allows access to any transition-wise data
 

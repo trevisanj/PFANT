@@ -3,7 +3,7 @@
 """FileSpectrumList editor with import/export FileWebsimCube"""
 
 from pyfant import *
-from pymos import *
+from pyfant.gui.pymos import XFileSpectrumList
 import sys
 import argparse
 import logging

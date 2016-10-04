@@ -427,7 +427,6 @@ class NullEditor(object):
     f = None
 
 
-
 class WBase(QWidget):
     """Widget with 'edited' signal, keep_ref(), logging tools"""
     # Emitted whenever any value changes

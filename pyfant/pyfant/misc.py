@@ -18,7 +18,8 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "symlink", "print_skipped", "format_legend", "get_scripts", "get_fortrans",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
  "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames",
- "set_facecolor_white", "set_figure_size", "rubberband", "poly_baseline"
+ "set_facecolor_white", "set_figure_size", "rubberband", "poly_baseline",
+ "make_fits_keys_dict"
 ]
 
 # # todo cleanup
@@ -554,6 +555,7 @@ def seconds2str(seconds):
     else:
         return "%.3gs" % s
 
+
 # #################################################################################################
 # # Logging routines
 
@@ -782,6 +784,46 @@ def random_name():
     a.append(_suffixes[random.randint(0, len(_suffixes)-1)])
 
   return " ".join(a)
+
+
+def make_fits_keys_dict(keys):
+    """
+    Returns a dictionary to translate to unique FITS header keys up to 8 characters long
+
+    This is similar to Windows making up 8-character names for filenames that
+    are longer than this
+
+    "The keyword names may be up to 8 characters long and can only contain
+    uppercase letters A to Z, the digits 0 to 9, the hyphen, and the underscore
+    character." (http://fits.gsfc.nasa.gov/fits_primer.html)
+
+    Arguments:
+        keys -- list of strings
+
+    Returns:
+        dictionary whose keys are the elements in the "keys" argument, and whose
+        values are made-up uppercase names
+    """
+
+    key_dict = {}
+    new_keys = []
+    for key in keys:
+        fits_key = key[:8].upper()
+        num_digits = 1
+        i = -1
+        i_max = 9
+        while fits_key in new_keys:
+            i += 1
+            if i > i_max:
+                i = 0
+                i_max = i_max * 10 + 9
+                num_digits += 1
+            fits_key = fits_key[:(8 - num_digits)] + (("%%0%dd" % num_digits) % i)
+
+        key_dict[key] = fits_key
+        new_keys.append(fits_key)
+
+    return key_dict
 
 
 # #################################################################################################

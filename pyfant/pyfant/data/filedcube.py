@@ -8,7 +8,7 @@ Based on IDL source file chris_J4000.pro
 
 __all__ = ["DataCube", "FileDCube"]
 
-from .filespectrumlist import *
+from .filesplist import *
 from . import DataFile, Spectrum
 from .fileccube import *
 from ..misc import *

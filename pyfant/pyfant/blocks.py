@@ -4,7 +4,7 @@ __all__ = ["SBlock", "SB_ElementWise", "SB_Rubberband", "SB_AddNoise", "SLBlock"
 
 import numpy as np
 from pyfant import *
-from pyfant.data.filespectrumlist import SpectrumList
+from pyfant.data.filesplist import SpectrumList
 import copy
 
 # All values in CGS

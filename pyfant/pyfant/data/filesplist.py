@@ -94,9 +94,16 @@ class SpectrumCollection(AttrsPart):
         return list(set(ff))
 
     def add_spectrum(self, sp):
-        """Adds spectrum, no content check"""
+        """Adds spectrum, no content check
+
+        **Note** updates self.fieldnames to expose sp.more_headers
+        """
         assert isinstance(sp, Spectrum)
         self.spectra.append(sp)
+
+        for name in sp.more_headers:
+            if name not in self.fieldnames:
+                self.fieldnames.append(name)
 
     def delete_spectra(self, indexes):
         """Deletes spectra given a list of 0-based indexes"""
@@ -127,6 +134,31 @@ class SpectrumCollection(AttrsPart):
                                   [str(flux) for flux in sp.y])+"\n")
         return lines
 
+
+    def to_colors(self, visible_range=None, flag_scale=False, method=0):
+        """Returns a [n, 3] red-green-blue (0.-1.) matrix
+
+        Arguments:
+          visible_range=None -- if passed, the true human visible range will be
+                                affine-transformed to visible_range in order
+                                to use the red-to-blue scale to paint the pixels
+          flag_scale -- whether to scale the luminosities proportionally
+                        the weight for each spectra will be the area under the flux
+          method -- see Spectrum.get_rgb()
+        """
+        weights = np.zeros((len(self), 3))
+        max_area = 0.
+        ret = np.zeros((len(self), 3))
+        for i, sp in enumerate(self.spectra):
+            ret[i, :] = sp.get_rgb(visible_range, method)
+            sp_area = np.sum(sp.y)
+            max_area = max(max_area, sp_area)
+            weights[i, :] = sp_area
+        if flag_scale:
+            weights *= 1. / max_area
+            ret *= weights
+        # TODO return weights if necessary
+        return ret
 
 
 class SpectrumList(SpectrumCollection):
@@ -196,31 +228,6 @@ class SpectrumList(SpectrumCollection):
         finally:
             self.enable_update()
 
-    def to_colors(self, visible_range=None, flag_scale=False, method=0):
-        """Returns a [n, 3] red-green-blue (0.-1.) matrix
-
-        Arguments:
-          visible_range=None -- if passed, the true human visible range will be
-                                affine-transformed to visible_range in order
-                                to use the red-to-blue scale to paint the pixels
-          flag_scale -- whether to scale the luminosities proportionally
-                        the weight for each spectra will be the area under the flux
-          method -- see Spectrum.get_rgb()
-        """
-        weights = np.zeros((len(self), 3))
-        max_area = 0.
-        ret = np.zeros((len(self), 3))
-        for i, sp in enumerate(self.spectra):
-            ret[i, :] = sp.get_rgb(visible_range, method)
-            sp_area = np.sum(sp.y)
-            max_area = max(max_area, sp_area)
-            weights[i, :] = sp_area
-        if flag_scale:
-            weights *= 1./max_area
-            ret *= weights
-        # TODO return weights if necessary
-        return ret
-
     def add_spectrum(self, sp):
         """Adds spectrum, checks if wavelengths match first"""
         assert isinstance(sp, Spectrum)
@@ -252,6 +259,9 @@ class SpectrumList(SpectrumCollection):
         Arguments:
             expr -- expression which will be eval()'ed with expected result to be a MergeDownBlock
                     Example: "SNR()"
+
+                    TODO I should not eval here, the argument should be the block itself
+
             group_by -- sequence of spectrum "more_headers" fieldnames.
                         If not passed, will treat the whole SpectrumCollection as a single group.
                         If passed, will split the collection in groups and perform the "merge down" operations separately
