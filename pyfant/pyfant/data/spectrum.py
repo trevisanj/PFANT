@@ -528,7 +528,7 @@ class FileSpectrumFits(FileSpectrum):
             os.unlink(filename)  # PyFITS does not overwrite file
 
         hdu = self.spectrum.to_hdu()
-        hdu.writeto(filename)
+        overwrite_fits(hdu, filename)
 
 
 

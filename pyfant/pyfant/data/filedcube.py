@@ -407,10 +407,8 @@ class FileDCube(DataFile):
         self.filename = filename
 
     def _do_save_as(self, filename):
-        if os.path.isfile(filename):
-            os.unlink(filename)  # PyFITS does not overwrite file
         hdul = self.dcube.to_hdulist()
-        hdul.writeto(filename)
+        overwrite_fits(hdul, filename)
 
     def init_default(self):
         # Already created OK

@@ -30,6 +30,8 @@ class SpectrumCollection(AttrsPart):
         self.spectra = []
         # List of field names
         self.fieldnames = []
+        # Visible field names (GUI setup purpose); order is same as column order in table widget
+        self.fieldnames_visible = []
         self.more_headers = {}
 
     def __len__(self):
@@ -40,8 +42,9 @@ class SpectrumCollection(AttrsPart):
     #     ret = copy.copy(self)
     #     ret.spectra = self.spectra.__getitem__(item)
 
-    # NAXIS(1/2/3) apparently managed by pyfits
-    _IGNORE_HEADERS = ("NAXIS", "FIELDNAM")
+    # - NAXIS(1/2/3) apparently managed by pyfits
+    # - FIELDNAM & FIELDN_V are parsed separately
+    _IGNORE_HEADERS = ("NAXIS", "FIELDNAM", "FIELDN_V")
     def from_hdulist(self, hdul):
         assert isinstance(hdul, fits.HDUList)
         if not (hdul[0].header.get("ANCHOVA") or hdul[0].header.get("TAINHA")):
@@ -54,10 +57,17 @@ class SpectrumCollection(AttrsPart):
                 for name in hdu.header:
                     if not name.startswith(self._IGNORE_HEADERS):
                         self.more_headers[name] = hdu.header[name]
-                
-                temp = hdu.header.get("FIELDNAM", [])
+
+                # self.fieldnames is not overwritten if there is no such information in HDU
+                temp = hdu.header.get("FIELDNAM")
                 if temp:
                     self.fieldnames = eval_fieldnames(temp)
+                # self.fieldnames_visible is overwritten yes
+                temp = hdu.header.get("FIELDN_V")
+                if temp is None:
+                    self.fieldnames_visible = copy.copy(self.fieldnames)
+                else:
+                    self.fieldnames_visible = eval_fieldnames(temp)
             else:
                 sp = Spectrum()
                 sp.from_hdu(hdu)
@@ -66,12 +76,13 @@ class SpectrumCollection(AttrsPart):
     def to_hdulist(self):
         # I think this is not or should not be a restriction assert len(self.spectra) > 0, "No spectra added"
 
-        dl = self.delta_lambda
+        # dl = self.delta_lambda
 
         hdul = fits.HDUList()
 
         hdu = fits.PrimaryHDU()
         hdu.header["FIELDNAM"] = str(self.fieldnames)
+        hdu.header["FIELDN_V"] = str(self.fieldnames_visible)
         hdu.header["ANCHOVA"] = 26.9752
 
         hdu.header.update(self.more_headers)  # TODO hope this works, if not ...
@@ -352,10 +363,8 @@ class FileSpectrumList(DataFile):
         self.filename = filename
 
     def _do_save_as(self, filename):
-        if os.path.isfile(filename):
-            os.unlink(filename)  # PyFITS does not overwrite file
         hdul = self.splist.to_hdulist()
-        hdul.writeto(filename)
+        overwrite_fits(hdul, filename)
 
     def init_default(self):
         # Already created OK

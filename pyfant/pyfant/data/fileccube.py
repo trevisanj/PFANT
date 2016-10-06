@@ -6,11 +6,10 @@ Based on IDL source file chris_J4000.pro
 
 __all__ = ["WebsimCube", "FileWebsimCube"]
 
-from pyfant import AttrsPart, get_python_logger
+from pyfant import AttrsPart, get_python_logger, overwrite_fits
 from .datafile import DataFile
 from .spectrum import Spectrum
 import numpy as np
-#from pyfant.misc import *
 from astropy.io import fits
 import os
 
@@ -155,7 +154,6 @@ class FileWebsimCube(DataFile):
         self.filename = filename
 
     def _do_save_as(self, filename):
-        assert self.wcube.flag_wavelengthed, "Cannot save before at least one pixel has been \"painted\""""
-        if os.path.isfile(filename):
-            os.unlink(filename)  # PyFITS does not overwrite file
-        self.wcube.hdu.writeto(filename)
+        if not self.wcube.flag_wavelengthed:
+            raise RuntimeError("Cannot save before at least one pixel has been \"painted\"""")
+        overwrite_fits(self.wcube.hdu, filename)

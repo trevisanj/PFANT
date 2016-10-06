@@ -19,7 +19,7 @@ __all__ = ["str_vector", "float_vector", "int_vector", "readline_strip",
  "get_pfant_dir", "rainbow_colors", "BSearch", "BSearchCeil", "BSearchFloor", "BSearchRound",
  "FindNotNaNBackwards", "load_with_classes", "MAGNITUDE_BASE", "Bands", "eval_fieldnames",
  "set_facecolor_white", "set_figure_size", "rubberband", "poly_baseline",
- "make_fits_keys_dict"
+ "make_fits_keys_dict", "rename_to_temp", "overwrite_fits"
 ]
 
 # # todo cleanup
@@ -74,6 +74,7 @@ import platform
 from bisect import bisect_left
 import collections
 from scipy.interpolate import interp1d
+from astropy.io import fits
 
 # Logger for internal use
 _logger = logging.getLogger(__name__)
@@ -253,7 +254,8 @@ def path_to_default(fn):
 
 
 def new_filename(prefix, extension=""):
-  """Returns a file name that does not exist yet, e.g. prefix.0001.extension"""
+  """returns a file name that does not exist yet, e.g. prefix.0001.extension"""
+
   i = 0
   while True:
     ret = '%s.%04d.%s' % (prefix, i, extension) \
@@ -261,7 +263,49 @@ def new_filename(prefix, extension=""):
     if not os.path.exists(ret):
       break
     i += 1
-    return ret
+    if i > 9999:
+        raise RuntimeError("Could not make a new file name for (prefix='%s', extension='%s')" %
+                           (prefix, extension))
+  return ret
+
+
+_rename_to_temp_lock = Lock()
+def rename_to_temp(filename):
+    """*Thread-safe* renames file to temporary filename. Returns new name"""
+    with _rename_to_temp_lock:
+        root, ext = os.path.splitext(filename)
+        if len(ext) > 0:
+            ext = ext[1:]  # the dot (".") is originally included
+        new_name = new_filename(root, ext)
+        os.rename(filename, new_name)
+        return new_name
+
+
+def overwrite_fits(hdulist, filename):
+    """
+    Saves a FITS file. Combined file rename, save new, delete renamed for FITS files
+
+    Why: HDUlist.writeto() does not overwrite existing files
+
+    Why(2): It is also a standardized way to asve FITS files
+    """
+
+    assert isinstance(hdulist, (fits.HDUList, fits.PrimaryHDU))
+    temp_name = None
+    flag_delete_temp = False
+    if os.path.isfile(filename):
+        # PyFITS does not overwrite file
+        temp_name = rename_to_temp(filename)
+    try:
+        hdulist.writeto(filename, output_verify='warn')
+        flag_delete_temp = temp_name is not None
+    except:
+        # Writing failed, reverts renaming
+        os.rename(temp_name, filename)
+        raise
+
+    if flag_delete_temp:
+        os.unlink(temp_name)
 
 
 def write_lf(h, s):

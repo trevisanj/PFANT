@@ -2,6 +2,7 @@ __all__ = ["FileFits"]
 
 from .datafile import DataFile
 from astropy.io import fits
+from pyfant.misc import overwrite_fits
 import os
 
 
@@ -26,6 +27,4 @@ class FileFits(DataFile):
 
     def _do_save_as(self, filename):
         """Saves HDU list to FITS file."""
-        if os.path.isfile(filename):
-            os.unlink(filename)  # PyFITS does not overwrite file
-        self.hdulist.writeto(filename)
+        overwrite_fits(self.hdulist, filename)

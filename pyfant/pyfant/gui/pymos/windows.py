@@ -140,6 +140,13 @@ class WSpectrumTable(WBase):
         a.installEventFilter(self)
         a.setContextMenuPolicy(Qt.CustomContextMenu)
         a.customContextMenuRequested.connect(self.on_twSpectra_customContextMenuRequested)
+        a.setSortingEnabled(True)
+        ah = a.horizontalHeader()
+        ah.setMovable(True)
+        ah.sectionMoved.connect(self.section_moved)
+        ah.setContextMenuPolicy(Qt.CustomContextMenu)
+        ah.customContextMenuRequested.connect(self.show_header_context_menu)
+        ah.setSelectionMode(QAbstractItemView.SingleSelection)
 
         self.setEnabled(False)  # disabled until load() is called
         style_checkboxes(self)
@@ -158,10 +165,20 @@ class WSpectrumTable(WBase):
         self.button_query.setEnabled(isinstance(self.collection, SpectrumList))
 
     def get_selected_spectra(self):
-        return [self.collection.spectra[i] for i in self.get_selected_row_indexes()]
+        return [self.collection.spectra[i] for i in self.get_selected_spectrum_indexes()]
 
     def get_selected_row_indexes(self):
         ii = list(set([index.row() for index in self.twSpectra.selectedIndexes()]))
+        return ii
+
+    def get_selected_spectrum_indexes(self):
+        items = self.twSpectra.selectedItems()
+        ii = []
+        for item in items:
+            obj = item.data(1).toPyObject()
+            if isinstance(obj, int):
+                ii.append(obj)
+        ii.sort()
         return ii
 
     def update(self):
@@ -192,16 +209,92 @@ class WSpectrumTable(WBase):
     # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * # * #
     # # Slots
 
+    def section_moved(self, idx_logical, idx_vis_old, idx_vis_new):
+        obj = self.collection
+        l = self.collection.fieldnames_visible
+        fieldname_current = l[idx_vis_old]
+        del l[idx_vis_old]
+        l.insert(idx_vis_new, fieldname_current)
+
+    def show_header_context_menu(self, position):
+        obj = self.collection
+
+        ah = self.twSpectra.horizontalHeader()
+        # col_idx = ah.logicalIndexAt(position)
+        col_idx = ah.visualIndex(ah.logicalIndexAt(position))
+
+        menu = QMenu()
+        act_hide_current = None
+
+        if col_idx < len(obj.fieldnames_visible):
+            fieldname_current = obj.fieldnames_visible[col_idx]
+            act_hide_current = menu.addAction("&Hide field '%s'" % fieldname_current)
+            menu.addSeparator()
+
+        act_show_all = menu.addAction("&Show all fields")
+        act_hide_all = menu.addAction("&Hide all fields")
+        act_restore_order = menu.addAction("&Restore order")
+        menu.addSeparator()
+
+        aa_visible = []
+        for fieldname in obj.fieldnames:
+            act = menu.addAction(fieldname)
+            act.setCheckable(True)
+            act.setChecked(fieldname in obj.fieldnames_visible)
+            aa_visible.append(act)
+
+        action = menu.exec_(self.twSpectra.mapToGlobal(position))
+        flag_update = False
+        if action == act_hide_current:
+            obj.fieldnames_visible.remove(fieldname_current)
+            flag_update = True
+
+        elif action == act_show_all:
+            for fieldname in reversed(obj.fieldnames):
+                if not fieldname in obj.fieldnames_visible:
+                    obj.fieldnames_visible.insert(0, fieldname)
+                    flag_update = True
+
+        elif action == act_hide_all:
+            obj.fieldnames_visible = []
+            flag_update = True
+
+        elif action == act_restore_order:
+            curr_visible = copy.copy(obj.fieldnames_visible)
+            obj.fieldnames_visible = []
+            for fieldname in obj.fieldnames:
+                if fieldname in curr_visible:
+                    obj.fieldnames_visible.append(fieldname)
+            flag_update = not (curr_visible == obj.fieldnames_visible)
+
+        elif action in aa_visible:
+            idx = aa_visible.index(action)
+            if not aa_visible[idx].isChecked():
+                obj.fieldnames_visible.remove(obj.fieldnames[idx])
+            else:
+                obj.fieldnames_visible.insert(0, obj.fieldnames[idx])
+            flag_update = True
+
+        if flag_update:
+            self.__update_gui()
+            self.edited.emit(False)
+
     def on_twSpectra_customContextMenuRequested(self, position):
         """Mounts, shows popupmenu for the tableWidget control, and takes action."""
+        obj = self.collection
         menu = QMenu()
-        actions = []
-        actions.append(menu.addAction("Delete selected (Del)"))
+        act_del = menu.addAction("&Delete selected (Del)")
+
         action = menu.exec_(self.twSpectra.mapToGlobal(position))
-        if action is not None:
-            idx = actions.index(action)
-            if idx == 0:
-                self.__delete_spectra()
+        flag_update = False
+        if action == act_del:
+            n_deleted = self.__delete_spectra()
+            if n_deleted > 0:
+                self.edited.emit(False)
+
+        if flag_update:
+            self.edited.emit(False)
+            self.__update_gui()
 
     def plot_stacked_clicked(self):
         sspp = self.get_selected_spectra()
@@ -243,6 +336,9 @@ class WSpectrumTable(WBase):
                         if fn not in self.collection.fieldnames:
                             self.collection.fieldnames.append(fn)
                             flag_changed_header = True
+                        if fn not in self.collection.fieldnames_visible:
+                            self.collection.fieldnames_visible.append(fn)
+                            flag_changed_header = True
 
                     self.__update_gui()
                     flag_emit = True
@@ -256,7 +352,7 @@ class WSpectrumTable(WBase):
             self.edited.emit(flag_changed_header)
 
     def open_in_new_clicked(self):
-        ii = self.get_selected_row_indexes()
+        ii = self.get_selected_spectrum_indexes()
         if len(ii) > 0:
             other = copy.deepcopy(self.collection)
             other.spectra = [other.spectra[i] for i in ii]
@@ -266,7 +362,6 @@ class WSpectrumTable(WBase):
             form = self.keep_ref(XFileSpectrumList())
             form.load(f)
             form.show()
-
 
     def delete_selected(self):
         n = self.__delete_spectra()
@@ -372,8 +467,8 @@ class WSpectrumTable(WBase):
             t = self.twSpectra
             n = len(spectra)
             FIXED = ["Spectrum summary report"]
-            more_headers = self.collection.fieldnames
-            all_headers = more_headers+FIXED
+            fieldnames_visible = self.collection.fieldnames_visible
+            all_headers = fieldnames_visible+FIXED
             nc = len(all_headers)
             ResetTableWidget(t, n, nc)
             t.setHorizontalHeaderLabels(all_headers)
@@ -382,7 +477,7 @@ class WSpectrumTable(WBase):
                 j = 0
 
                 # Spectrum.more_headers columns
-                for h in more_headers:
+                for h in fieldnames_visible:
                     twi = QTableWidgetItem(str(sp.more_headers.get(h)))
                     if h in "Z-START":  # fields that should be made read-only
                         twi.setFlags(twi.flags() & ~Qt.ItemIsEditable)
@@ -392,6 +487,8 @@ class WSpectrumTable(WBase):
                 # Spectrum self-generated report
                 twi = QTableWidgetItem(sp.one_liner_str())
                 twi.setFlags(twi.flags() & ~Qt.ItemIsEditable)
+                # stores spectrum index not to lose track in case the table is sorted by column
+                twi.setData(1, QVariant(i))
                 t.setItem(i, j, twi)
                 j += 1
 
@@ -403,7 +500,7 @@ class WSpectrumTable(WBase):
             self.flag_process_changes = True
 
     def __delete_spectra(self):
-        ii = self.get_selected_row_indexes()
+        ii = self.get_selected_spectrum_indexes()
         if len(ii) > 0:
             self.collection.delete_spectra(ii)
             self.__update_gui()

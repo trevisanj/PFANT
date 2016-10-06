@@ -169,6 +169,8 @@ def are_you_sure(flag_changed, evt, parent=None, title="File has been changed",
 
 def ResetTableWidget(t, rowCount, colCount):
     """Clears and resizes a table widget."""
+    t.reset()
+    t.horizontalHeader().reset()
     t.clear()
     t.sortItems(-1)
     t.setRowCount(rowCount)
