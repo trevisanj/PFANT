@@ -94,7 +94,7 @@ class FileMolecules(DataFile):
     """
 
     default_filename = "molecules.dat"
-    attrs = ["titm", "number", "num_lines"]
+    attrs = ["titm", "num_lines"]
 
     @property
     def num_lines(self):
@@ -113,7 +113,6 @@ class FileMolecules(DataFile):
     def jj(self):
         return np.hstack([np.hstack([x.jj for x in m.sol]) for m in self.molecules])
 
-
     def __init__(self):
         DataFile.__init__(self)
 
@@ -121,7 +120,6 @@ class FileMolecules(DataFile):
         self.molecules = []
 
         # Integer number in first row of file.Specifies how many molecules to use
-        self.number = None
         self.titm = None
 
     def __len__(self):
@@ -133,14 +131,14 @@ class FileMolecules(DataFile):
         with open(filename, "r") as h:
             r = 0 # counts rows of file
             try:
-                self.number = int(h.readline())
+                number = int(h.readline())  # not used (see below)
                 r += 1
                 self.titm = readline_strip(h)
                 r += 1
 
                 nv = int_vector(h)  # number of transitions=sets-of-lines for each molecule
                 r += 1
-                # Uses length of nv vector to know how many molecules to read (ignored self.number)
+                # Uses length of nv vector to know how many molecules to read (ignores "number")
                 nm = len(nv)
 
                 for im in range(nm):
@@ -234,7 +232,7 @@ class FileMolecules(DataFile):
 
     def _do_save_as(self, filename):
         with open(filename, "w") as h:
-            write_lf(h, str(self.number))
+            write_lf(h, str(len(self.molecules)))
             write_lf(h, self.titm)
             write_lf(h, " ".join([str(x.nv) for x in self.molecules]))
             for m in self.molecules:
@@ -256,4 +254,4 @@ class FileMolecules(DataFile):
                     num_lines = len(s)  # number of lines for current set-of-lines
                     for j in xrange(num_lines):
                         numlin = 0 if j < num_lines-1 else 9 if i == num_sol-1 else 1
-                        write_lf(h, "%.7g %.7g %.7g 0 %d" % (s.lmbdam[j], s.sj[j], s.jj[j], numlin))
+                        write_lf(h, "%.10g %.10g %.10g 0 %d" % (s.lmbdam[j], s.sj[j], s.jj[j], numlin))

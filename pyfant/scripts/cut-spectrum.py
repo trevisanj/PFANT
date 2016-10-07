@@ -27,12 +27,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    file_sp = load_spectrum(args.fn_input[0])
-    if not file_sp:
+    sp = load_spectrum(args.fn_input[0])
+    if not sp:
         print "File '%s' not recognized as a spectrum file." % args.fn_input[0]
         sys.exit()
 
-    sp = file_sp.spectrum
     m = min(sp.x)
     M = max(sp.x)
 

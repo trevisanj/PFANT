@@ -2896,6 +2896,9 @@ module config
   !---
   character*69 :: &
    config_fn_out = '?'  ! option: --fn_out
+  integer, parameter :: CONVMOL_TYPE_VALD3 = 0, &
+                        CONVMOL_TYPE_LOGGFS = 1
+  integer :: config_out_type = CONVMOL_TYPE_VALD3  ! option: --out_type
 
   !===== end of command-line variables declarations
 
@@ -3169,6 +3172,10 @@ contains
     call add_option('c', 'fn_out', ' ', .true., 'file name', &
       '<molecular lines file name>.plez', &
       'output file name - molecular lines in VALD3 extended format.')
+    call add_option('c', 'out_type', ' ', .true., '0/1', int2str(config_out_type), &
+     'Output file type<br>'//&
+     IND//'0: VALD3 *long* *extended*;<br>'//&
+     IND//'1: Various ways of calculating log(gf)')
 
   end
 
@@ -3348,6 +3355,13 @@ contains
       case ('allow')
         config_allow = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_allow', logical2str(config_allow))
+      case ('out_type')
+        config_out_type = parse_aux_str2int(opt, o_arg)
+        if (config_out_type .ge. CONVMOL_TYPE_VALD3 .and. config_out_type .le. CONVMOL_TYPE_LOGGFS) then !#validation
+          call parse_aux_log_assignment('config_out_type', int2str(config_out_type))
+        else
+          res = HANDLER_ERROR
+        end if
 
       case default
         res = HANDLER_DONT_CARE
@@ -7957,7 +7971,8 @@ module kapmol
 
   ! Valid elements of these are from 1 to km_f_mblend
   real*8, dimension(MAX_KM_F_MBLEND) :: &
-    km_c_gfm ! (BLB) moleculer "gf", corresponding to Eistein's coefficient (?doc?); in sync with km_f_sj etc
+    km_c_gfm, & ! (BLB) moleculer "gf", corresponding to Eistein's coefficient (?doc?); in sync with km_f_sj etc
+    km_c_csc    ! Used in convmol when output type is CONVMOL_TYPE_LOGGFS
 
   real*8, dimension(MAX_KM_F_MBLEND, MAX_MODELES_NTOT) :: &
    km_c_pnvj ! (BLB) partial pressure; In sync with km_f_sj etc
@@ -8026,11 +8041,18 @@ contains
           ! l is index within km_f_lmbdam, km_f_sj and km_f_jj
           do l= l_ini, l_fin
             ! PC2003: default value for CSC does not exist physically
+
+            ! TODO re-arrange this because CSC independs of n (atmospheric layer)
             csc = exp(-H*C/KB*t5040*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*   &
                   (2.-cro)*(2.*km_f_jj(l)+1.)*                                             &
                   exp(H*C/KB*t5040*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))
 
             km_c_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
+
+            ! used in "convmol --out_type 1"
+            if (n .eq. 1) then
+              km_c_csc(l) = csc
+            end if
           end do
 
 

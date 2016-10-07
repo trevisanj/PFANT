@@ -183,14 +183,14 @@ program convmol
   use pfantlib
   use convmol_aux
   implicit none
-  integer :: myunit, l, molidx_last, molidx, num_molecules
+  integer :: myunit, l, molidx_last, molidx, num_molecules, transidx
   logical :: dissoc_exists  !, flag_new_molecule
   character*6 :: mol_formula
   ! have to mount a string to write, for the desired effect, otherwise Fortran will
   ! right-align the formula, and Plez's conversion utility will not understand
   character*11 :: mol_formula_write
   character*14 :: mol_formula_vald3
-  real*8 log_gf
+  real*8 log_gf, qv, fe, csc, gf1, gf2, gf3, gf4, sj, jj
   ! ! Formulas of molecules converted
   ! character*6 :: mol_formulas(MAX_NUM_MOL)  ! this store unique names (different "molecules" in molecules.dat may have same formula)
   ! character*30 :: mol_formulas_report(MAX_NUM_MOL)
@@ -249,10 +249,28 @@ program convmol
 
   open(newunit=myunit, file=x_fn_out, status='replace', err=100)
 
-  write(myunit, '(a)') &
-   '                                                                   Lande factors      Damping parameters'
-  write(myunit, '(a)') &
-   'Elm Ion      WL_air(A)   log gf* E_low(eV) J lo  E_up(eV) J up  lower  upper   mean   Rad.  Stark  Waals'
+
+  ! # File header
+  !   ===========
+  select case (config_out_type)
+    case (CONVMOL_TYPE_VALD3)
+      write(myunit, '(a)') &
+       '                                                                   Lande factors      Damping parameters'
+      write(myunit, '(a)') &
+       'Elm Ion      WL_air(A)   log gf* E_low(eV) J lo  E_up(eV) J up  lower  upper   mean   Rad.  Stark  Waals'
+    case (CONVMOL_TYPE_LOGGFS)
+      write(myunit, '(a)') "# gf_1 = qv'v'' * fel * sj'' * 8.8525E-13 * (Wavelength(in cm))**2"
+      write(myunit, '(a)') "# gf_2 = gf_1 / (2*J'' + 1)"
+      write(myunit, '(a)') "# gf_3 = gf_2 * csc"
+      write(myunit, '(a)') "# gf_4 = gf_1 * csc"
+      write(myunit, '(a)') "#"
+      write(myunit, '(a)') &
+       "# Wavelength(A)  log(gf_1)  log(gf_2)  log(gf_3)  log(gf_4)       SJ''       JJ''     qv'v''        fel"//&
+       "        csc        gfm"
+      ! xx1234567890123 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890
+      !  1234567890 1234567890
+  end select
+
 
   molidx_last = 0
   num_molecules = 0
@@ -281,36 +299,70 @@ program convmol
     ! TRYING-ALL if (.not. km_has_transitions(km_f_molidx(l))) cycle
 
 
-    ! Protection against -Infinity
-    log_gf = log10(km_c_gfm(l))
-    if (log_gf .lt. -99.99) log_gf = -99.99
 
-    mol_formula_write = ''''//trim(mol_formula)//' 1'','
+    select case (config_out_type)
+      case (CONVMOL_TYPE_VALD3)  ! VALD3 (not sorted yet, maybe never)
+        ! Protection against -Infinity
+        log_gf = log10(km_c_gfm(l))
+        if (log_gf .lt. -99.99) log_gf = -99.99
 
-    ! note that the comma is inside the a11, for the desired effect
-    11 format(a11,f12.3,',',f8.3,',',f8.4,',',f5.1,',',f8.4,',',f5.1,',',f6.3,',',&
-              f6.3,',',f6.3,',',f6.3,',',f6.3,',',f8.3,',')
-    12 format('''', 90x, '''')
-    13 format('''', 90x, '''')
-    14 format('''', 143x, a14, '''')
+        mol_formula_write = ''''//trim(mol_formula)//' 1'','
 
-    write(myunit, 11) &
-     mol_formula_write, &
-     km_f_lmbdam(l), &  ! WL_air(A)
-     -2., &  ! log gf
-     1., &  ! 1., &  ! Elow(eV)
-     km_f_jj(l)-100, &  ! J lo
-     99.,  &  !  3., &  !E_up(eV)
-     km_f_jj(l)+100, &  ! J up
-     99., &  ! lower
-     99., &  ! upper
-     99., &  ! mean
-     10., &  ! Rad.
-     99., &  ! Stark
-     99.  ! Walls
-    write(myunit, 12)
-    write(myunit, 13)
-    write(myunit, 14) mol_formula_vald3
+        ! note that the comma is inside the a11, for the desired effect
+        11 format(a11,f12.3,',',f8.3,',',f8.4,',',f5.1,',',f8.4,',',f5.1,',',f6.3,',',&
+                  f6.3,',',f6.3,',',f6.3,',',f6.3,',',f8.3,',')
+        12 format('''', 90x, '''')
+        13 format('''', 90x, '''')
+        14 format('''', 143x, a14, '''')
+
+        write(myunit, 11) &
+         mol_formula_write, &
+         km_f_lmbdam(l), &  ! WL_air(A)
+         -2., &  ! log gf
+         1., &  ! 1., &  ! Elow(eV)
+         km_f_jj(l)-100, &  ! J lo
+         99.,  &  !  3., &  !E_up(eV)
+         km_f_jj(l)+100, &  ! J up
+         99., &  ! lower
+         99., &  ! upper
+         99., &  ! mean
+         10., &  ! Rad.
+         99., &  ! Stark
+         99.  ! Walls
+        write(myunit, 12)
+        write(myunit, 13)
+        write(myunit, 14) mol_formula_vald3
+
+      case (CONVMOL_TYPE_LOGGFS)
+        transidx = km_f_transidx(l)
+        fe = km_fe(molidx)
+        qv = km_qqv(transidx, molidx)
+        csc = km_c_csc(l)
+        sj = km_f_sj(l)
+        jj = km_f_jj(l)
+
+        gf1 = km_c_gfm(l)  ! qv*fe*sj
+        gf2 = gf1/(2*jj+1)
+        gf3 = gf2*csc
+        gf4 = gf1*csc
+
+
+        21 format(2x,f13.3,1x,f10.3,1x,f10.3,1x,f10.3,1x,f10.3,1x,f10.3,1x,f10.3,1x,f10.3,1x,e10.5,1x,f10.3,1x,e10.5)
+
+
+        write(myunit, 21) &
+         km_f_lmbdam(l), &  ! Wavelength(A)
+         log10(gf1), & ! log(gf_1)
+         log10(gf2), & ! log(gf_2)
+         log10(gf3), & ! log(gf_3)
+         log10(gf4), & ! log(gf_4)
+         km_f_sj(l), & ! SJ''
+         km_f_jj(l), & ! JJ''
+         qv, &  ! qv'v''
+         fe, &  ! fel
+         csc, & ! csc
+         km_c_gfm(l)
+    end select
   end do
 
 
