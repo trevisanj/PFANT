@@ -45,13 +45,11 @@ if __name__ == "__main__":
     print2("Running in bash mode")
     path_var = "PATH"
     fn_conf = ".bashrc"
-    get_cmd0 = lambda p: 'export PYTHONPATH="${PYTHONPATH}:%s"' % p
     get_cmd1 = lambda p: 'export PATH="${PATH}:%s"' % p
   else:
     print2("Running in tcsh mode")
     path_var = "path"
     fn_conf = ".cshrc"
-    get_cmd0 = lambda p: 'setenv PYTHONPATH "{$PYTHONPATH}:%s"' % p
     get_cmd1 = lambda p: 'set path = ($path %s)' % p
 
   # file to be changed/created
@@ -60,8 +58,6 @@ if __name__ == "__main__":
   p = os.path.dirname(os.path.realpath(__file__))
 
   map_ = [
-    ("PYTHONPATH", "%s/pyfant"% p, get_cmd0),
-    (path_var, "%s/pyfant/scripts" % p, get_cmd1),
     (path_var, "%s/fortran/bin" % p, get_cmd1)]
 
   ll = [f(p) for v, p, f in map_]  # list of commands
