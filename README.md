@@ -4,8 +4,7 @@ This directory
 PFANT
 ├── fortran . Fortran source code and binaries
 ├── data .... Some stellar data, spectral lines etc.
-├── pyfant .. Python package and scripts                        
-└── figures . Graphic material made in PowerPoint, GIMP etc.
+└── doc ..... Graphic material made in PowerPoint, GIMP etc.
 ```
 
 # Welcome
@@ -47,23 +46,30 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
 To use PFANT, you will need to:
 
-1. Install the software pre-requisites
-2. Go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or clone the repository
-3. Compile the Fortran source code
-4. Add `PFANT/fortran/bin` and `PFANT/pyfant/scripts` to your PATH and add `PFANT/pyfant` to your PYTHONPATH
+1. Download PFANT files
+2. Compile the Fortran source code
+3. Add `PFANT/fortran/bin` to your PATH
 
 This section will take you through these steps.
+
+
+
+
+
 
 ### 2.1 Installing required software
 
 #### 2.1.1 Standalone applications
 
 Please install the following standalone applications on your system (no pain except for gfortran and make on Windows (see below)):
-
   - gfortran >= 4.6
   - make
-  - Python 2.7
-  - pip
+
+
+
+
+
+
 
 ##### 2.1.1.1 Windows users: gfortran and make on Windows
 
@@ -73,34 +79,29 @@ After installed, MinGW has its own package manager, named
 "MinGW Installation Manager". There, you will need to install at least the following packages:
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
 
-#### 2.1.2 Python packages
 
-Package name  | Possible way to install
-------------- | ---
-matplotlib    | apt-Linux: `sudo apt-get install python-matplotlib`
-scipy         | apt-Linux: `sudo apt-get install python-scipy`
-pyqt4         | apt-Linux: `sudo apt-get install python-qt4`
-              | Windows: download Python 2.7 installer at https://riverbankcomputing.com/software/pyqt/download
-fortranformat | All systems: `[sudo] pip install fortranformat`
-astropy       | apt-Linux: `sudo apt-get install python-astropy`
-              | All systems: `[sudo] pip install astropy`
+### 2.1 Clone the repository
 
-**Linux users:** you may have to `sudo` your `pip` commands.
+:zap: First, clone the GitHub repository:
 
+```shell
+git clone https://github.com/trevisanj/PFANT
+```
 
-### 2.2 Downloading PFANT
-
-  a. either go to https://github.com/trevisanj/PFANT/releases and download the most recent release, or
-
-  b. clone the github repository: `git clone https://github.com/trevisanj/PFANT`
-
-In either case, you should now have a directory named PFANT on your disk.
+This will create a directory named PFANT on your disk.
 
 :zap: There is an additional data file that needs to be downloaded from a different
-location, because it is too big to be stored on GitHub (241 MB > 100 MB).
-Please download it from [here]
-(https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
-and save it as _PFANT/data/common/grid.moo_ (if the previous link doesn't work, please try [this one](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view)).
+location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get file, either:
+
+  (a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
+  
+  (b) download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
+      and save it as _PFANT/data/common/grid.moo_
+
+      [Alternative link 1]
+      (https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
+
+      [Alternative link 2] (https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
 
 File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
