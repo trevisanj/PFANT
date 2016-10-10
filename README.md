@@ -97,15 +97,12 @@ location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get
 
 (a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
   
-(b) download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
+(b) download it from [this location](ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
+([alternative link 1](https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c), 
+ [alternative link 2] (https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
 and save it as _PFANT/data/common/grid.moo_
 
-[Alternative link 1]
-(https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
-
-[Alternative link 2] (https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
-
-File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
+**Note:** File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
 ### 2.3 Compiling the Fortran source code.
 
