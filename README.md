@@ -93,9 +93,9 @@ This will create a directory named PFANT on your disk.
 :zap: There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get file, either:
 
-  (a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
+  a. go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
   
-  (b) download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
+  b. download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
       and save it as _PFANT/data/common/grid.moo_
 
       [Alternative link 1]
