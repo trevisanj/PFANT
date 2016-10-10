@@ -46,7 +46,7 @@ PFANT is cross-platform, and all features have been tested on Windows and Linux.
 
 To use PFANT, you will need to:
 
-1. Download PFANT files
+1. Download files
 2. Compile the Fortran source code
 3. Add `PFANT/fortran/bin` to your PATH
 
@@ -80,9 +80,9 @@ After installed, MinGW has its own package manager, named
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
 
 
-### 2.1 Clone the repository
+### 2.1 Download files
 
-:zap: First, clone the GitHub repository:
+#### 2.1.1 Clone the GitHub repository:
 
 ```shell
 git clone https://github.com/trevisanj/PFANT
@@ -90,18 +90,20 @@ git clone https://github.com/trevisanj/PFANT
 
 This will create a directory named PFANT on your disk.
 
-:zap: There is an additional data file that needs to be downloaded from a different
+#### 2.1.2 Extra file
+
+There is an additional data file that needs to be downloaded from a different
 location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get file, either:
 
-  a. go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
+(a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
   
-  b. download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
-      and save it as _PFANT/data/common/grid.moo_
+(b) download it from [here] (ftp://astroweb.iag.usp.br/barbuy/PFANT/grid.moo)
+and save it as _PFANT/data/common/grid.moo_
 
-      [Alternative link 1]
-      (https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
+[Alternative link 1]
+(https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
 
-      [Alternative link 2] (https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
+[Alternative link 2] (https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
 
 File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
