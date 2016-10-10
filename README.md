@@ -42,19 +42,18 @@ Figure 1 - PFANT timeline [(Coelho et al. 2005)](#R1)
 
 # 2 <a name=S2></a>Installation
 
-PFANT is cross-platform, and all features have been tested on Windows and Linux.
-
 To use PFANT, you will need to:
 
 1. Download files
 2. Compile the Fortran source code
 3. Add `PFANT/fortran/bin` to your PATH
 
+**Note::** PFANT is platform-independent (it should work no any system if you can install the GNU Fortran Compiler),
+however only Debian-based Linux system is "supported" in the following instructions. However, there are some tips
+for Windows users in a specific section below.
+
+
 This section will take you through these steps.
-
-
-
-
 
 
 ### 2.1 Installing required software
@@ -62,22 +61,8 @@ This section will take you through these steps.
 #### 2.1.1 Standalone applications
 
 Please install the following standalone applications on your system (no pain except for gfortran and make on Windows (see below)):
-  - gfortran >= 4.6
+  - gfortran >= 4.6 (theoretical; tested with 4.8 only)
   - make
-
-
-
-
-
-
-
-##### 2.1.1.1 Windows users: gfortran and make on Windows
-
-MinGW (http://sourceforge.net/projects/mingw/files/) is a convenient way to install the GNU Fortran compiler on Windows.
-
-After installed, MinGW has its own package manager, named
-"MinGW Installation Manager". There, you will need to install at least the following packages:
-`mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
 
 
 ### 2.1 Download files
@@ -97,17 +82,13 @@ location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get
 
 (a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
   
-(b) download it from [this location](https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c), 
-([alternative link](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
+(b) download it from [this location](https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
+(or [this location](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
 and save it as _PFANT/data/common/grid.moo_
 
 **Note:** File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
-### 2.3 Compiling the Fortran source code.
-
-The source code has been successfully compiled using gfortran 4.8.
-
-#### 2.3.1 Linux users
+### 2.2 Compiling the Fortran source code.
 
 Enter the following on your console to compile the Fortran source code:
 
@@ -119,22 +100,17 @@ cd fortran
 
 This should create four executable binaries inside the directory _PFANT/fortran/bin_: 
 `innewmarcs`, `hydro2`, `pfant`, `nulbad`.
- 
-#### 2.3.2 Windows users
 
-The Fortran code can also be compiled using the CodeBlock Fortran IDE. For more information,
-please visit [the Fortran source code README](fortran/README.md).
-
-### 2.4 Setting the paths
+### 2.3 Setting the paths
 
 Add _PFANT/fortran/bin_ and _PFANT/pyfant/scripts_ to your PATH.
 
 Add _PFANT/pyfant_ to your PYTHONPATH.
 
-#### 2.4.1 Linux users
+This can be done automaticall through running the Python script `PFANT/add-paths.py`, which tries to automatically
+apply the path settings to your _home/.bashrc_ or _home/.cshrc_:
 
-Linux users may try the script `PFANT/add-paths.py`, which tries to automatically
-apply the path settings by modifying your _home/.bashrc_ or _home/.cshrc_:
+Depending on which shell your system uses, try one of the following:
 
 Bash shell:
 ```shell
@@ -145,6 +121,25 @@ Tcsh shell:
 ```shell
 ./add-paths.py --tcsh
 ```
+
+
+### 2.4 Tips for windows users
+
+#### 2.4.1 gfortran and make on Windows
+
+MinGW (http://sourceforge.net/projects/mingw/files/) is a convenient way to install the GNU Fortran compiler on Windows.
+
+After installed, MinGW has its own package manager, named
+"MinGW Installation Manager". There, you will need to install at least the following packages:
+`mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
+
+
+#### 2.4.2 Compiling the source code on Windows
+
+The source can be compiled using the CodeBlock Fortran IDE. For more information,
+please visit [the Fortran source code README](fortran/README.md). The _PFANT/fortran_ forder contains a CodeBlocks
+project named _PFANT-windows.cbp_
+
 
 ## <a name=S3></a>3 Operation
 
