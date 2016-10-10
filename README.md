@@ -47,6 +47,7 @@ To use PFANT, you will need to:
 1. Download files
 2. Compile the Fortran source code
 3. Add `PFANT/fortran/bin` to your PATH
+4. Install **pyfant** (Python interface) (http://github.com/trevisanj/pyfant)
 
 **Note::** PFANT is platform-independent (it should work no any system if you can install the GNU Fortran Compiler),
 however only Debian-based Linux system is "supported" in the following instructions. However, there are some tips
@@ -103,29 +104,27 @@ This should create four executable binaries inside the directory _PFANT/fortran/
 
 ### 2.3 Setting the paths
 
-Add _PFANT/fortran/bin_ and _PFANT/pyfant/scripts_ to your PATH.
-
-Add _PFANT/pyfant_ to your PYTHONPATH.
-
-This can be done automaticall through running the Python script `PFANT/add-paths.py`, which tries to automatically
-apply the path settings to your _home/.bashrc_ or _home/.cshrc_:
-
 Depending on which shell your system uses, try one of the following:
 
 Bash shell:
 ```shell
-./add-paths.py --bash
+./add-path.py --bash
 ```
 
 Tcsh shell:
 ```shell
-./add-paths.py --tcsh
+./add-path.py --tcsh
 ```
 
+This will automatically apply the path settings to your _home/.bashrc_ or _home/.cshrc_.
 
-### 2.4 Tips for windows users
 
-#### 2.4.1 gfortran and make on Windows
+**Note** If the above does not work for you, manually add _PFANT/fortran/bin_ to your system path.
+
+
+### 2.5 Tips for windows users
+
+#### 2.5.1 gfortran and make on Windows
 
 MinGW (http://sourceforge.net/projects/mingw/files/) is a convenient way to install the GNU Fortran compiler on Windows.
 
@@ -134,21 +133,38 @@ After installed, MinGW has its own package manager, named
 `mingw-developer-toolkit`, `mingw32-base`, `mingw32-gcc-fortran`, `msys-base`.
 
 
-#### 2.4.2 Compiling the source code on Windows
+#### 2.5.2 Compiling the source code on Windows
 
 The source can be compiled using the CodeBlock Fortran IDE. For more information,
 please visit [the Fortran source code README](fortran/README.md). The _PFANT/fortran_ forder contains a CodeBlocks
 project named _PFANT-windows.cbp_
 
 
-## <a name=S3></a>3 Operation
+## <a name=S3></a>3 Command-line operation
 
-Section 3 is a short tutorial that will take you through common operational steps.
+This section uses the `pyfant` Python package,
+which is freely available at http://github.com/trevisanj/pyfant. Please install it to follow this tutorial.
 
-**Aims for this tutorial**
+
+**Aims for this tutorial:**
   - calculate a synthetic spectrum;
   - convolve with Gaussian functions of varying full-width-at-half-maximum (FWHM);
   - visualize results.
+
+### 3.1 Short story
+
+Here is the full command sequence:
+
+```shell
+mkdir mystar
+cd mystar
+copy-star.py
+link.py
+run4.py --fwhm 0.12
+plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
+```
+
+### 3.2 Long story
 
 First let's create a new directory:
 
@@ -157,7 +173,7 @@ mkdir mystar
 cd mystar
 ```
 
-### 3.1 Input data
+#### 3.2.1 Input data
 
 Input data consists of:
   1. stellar parameters (temperature, chemical abundances etc.) and running settings
@@ -166,7 +182,7 @@ Input data consists of:
      functions etc. that are less likely to be modified.
      We refer to these as "common" data.
 
-#### 3.1.1 Stellar data and running settings
+##### 3.2.1.1 Stellar data and running settings
 
 The following displays a menu allowing you to choose among a few stars:
 
@@ -178,7 +194,7 @@ After running this, the following files will be copied into the _mystar_ directo
   - *main.dat*: main configuration
   - *abonds.dat*: chemical abundances
   
-#### 3.2 Common data
+#### 3.2.1.2 Common data
 
 For these data, we will create links instead of copying the files. This can be
 done by running the following:
@@ -202,7 +218,7 @@ The following links that should appear in your directory now:
   - *partit.dat*
   
  
-### 3.2 Spectral synthesis
+#### 3.2 Spectral synthesis
 
 Spectral synthesis involves a few steps,
 as shown Figure 2,
@@ -238,7 +254,7 @@ will create two files: _modeles.mod_ and _modeles.opa_.
 hydro2
 ```
 
-will create files such as: _thalpha_ (Figure 9), _thbeta_, _thgamma_ etc.
+will create files such as: _thalpha_ (Figure 8), _thbeta_, _thgamma_ etc.
 
 #### 3.2.3 Calculate synthetic spectrum
 
@@ -283,24 +299,6 @@ opens a plot window where one can see how the spectrum looks before and after th
 Figure 4 -- plot comparing spectra without and after convolution with Gaussian function (FWHM=0.12).
 
 
-Now let's try several FWHMs and plot them all:
-
-```shell
-nulbad --fwhm 0.06
-nulbad --fwhm 0.08
-nulbad --fwhm 0.10
-nulbad --fwhm 0.12
-nulbad --fwhm 0.14
-plot-spectra.py --ovl flux.norm.nulbad.0.060 flux.norm.nulbad.0.080 flux.norm.nulbad.0.100 flux.norm.nulbad.0.120 flux.norm.nulbad.0.140
-```
-
-should generate a plot with several curves overlapped. Figure 5 shows a zoomed
-area of this plot.
-
-![](doc/fwhms.png)
-
-Figure 5 - plots showing zoomed convolved spectra with FWHM varying from 0.06 to 0.14.
-
 ### 3.2.5 Running the four calculation steps at once
 
 The script `run4.py` is provided for convenience. 
@@ -326,57 +324,14 @@ the current field will be displayed at the bottom of the window.
 
 :book: `programs.py` lists all Fortran/Python programs.
  
-:book: The source code is the most important source of documentation.  
+:book: The Fortran source code
 
+:book: Also check the pyfant tutorial(s) at http://github.com/trevisanj/pyfant
 
-### 3.3 Graphical user interface (GUI)
-
-The GUI, which is still under development (but works!), may be more comfortable for
-beginners than command-line operation. It concentrates almost all the operations
-(change parameters, run synthesis, visualize results) in a single application.
-It also has some extra features such as the "multi mode".
-
-#### 3.3.1 ```x.py```: PFANT launcher
-
-  1. Starting again from scratch:
-
-```shell
-mkdir mystar
-cd mystar
-copy-star.py sun
-link.py common
-```
-
-then
-
-```shell
-x.py
-```
-
-Now, for example:
-
-  2. Take some time to explore Tabs 1, 2 and 3 (Alt+1, Alt+2, Alt+3). Tab 4 ("multi mode") will be explained later.
-
-  3. Once you are done making changes, click on "Submit single job" button. A new window named "Runnables Manager" opens.
-
-  4. When the "Status" column shows "nulbad finished", double-click on the table item
-     ("PFANT explorer" window opens).
-
-  5. Double-click on "flux.norm". Note that it turns green.
-
-  6. Double-click on "Plot spectrum" (spectrum appears).
- 
-#### 3.3.2 `explorer.py`: PFANT Explorer
-
-```shell
-explorer.py
-```
-
-This file-explorer-like application provides visualization/editing abilities for a number
-of relevant file types.
- 
   
 ## 4 <a name=S4></a>Reference section
+
+This section contains a more complete description of the PFANT pipeline and the files and file types involved.
 
 ### 4.1 Spectral synthesis pipeline
 
@@ -414,7 +369,7 @@ of relevant file types.
                                                 v
                                          flux.norm.nulbad.<fwhm>
 ```
-Figure 6 - Spectral synthesis pipeline - Fortran programs (boxes) and their 
+Figure 5 - Spectral synthesis pipeline - Fortran programs (boxes) and their 
 input/output files.
 
 ### 4.2 Input/output data files
@@ -429,13 +384,13 @@ command-line options that can be used to change the name for a particular file, 
 
  Default name     | --option    | Description                    
 ------------------|-------------|----------------------------------------------------
-_main.dat_        | --fn_main   | main configuration file containing all stellar parameters except abundances (Figure 7).
+_main.dat_        | --fn_main   | main configuration file containing all stellar parameters except abundances (Figure 6).
 _abonds.dat_      | --fn_abonds | chemical abundances
 _dissoc.dat_      | --fn_dissoc | dissociation equilibrium data. This file is optional, and can be created using `abed.py` if needed.
 
 ![](doc/small-main.dat.png)
 
-Figure 7 - representaion of a file _main.dat_. The black color shows the characters
+Figure 6 - representaion of a file _main.dat_. The black color shows the characters
 that are the actual parts of the file.
 
 
@@ -468,28 +423,28 @@ Table 4 -- Files created by `innewmarcs`
 
  Default name     | --option     | Description                    
 ------------------|--------------|---------------------------------------------------
-_modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 9A)
-_modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 9B,9C)
+_modeles.mod_     | --fn_modeles | atmospheric model (binary file) (Figure 8A)
+_modeles.opa_     | --fn_opa     | atmospheric model: opacities (MARCS ".opa" format) (Figure 8B,8C)
 
 ![](doc/modeles.png)
 
-Figure 9 -- Atmospheric model information (Sun).
+Figure 8 -- Atmospheric model information (Sun).
 **(A)** data in file modeles.mod;
 **(B)**, **(C)** data in modeles.opa  
 
 `innewmarcs` creates two separate files (Table 4). They are created separately for
 historical reasons. _modeles.opa_ follows the same structure of ".opa" files downloaded from
 the MARCS website. _modeles.mod_ does **not** follow the same structure of MARCS ".mod" files.
-Figure 9 exemplifies the information contained in these files. 
+Figure 8 exemplifies the information contained in these files. 
 
 ##### 4.2.3.2 Files created by `hydro2`
 
-`hydro2` creates a series of files named _thalpha_ (Figure 10), _thbeta_, _thgamma_, 
+`hydro2` creates a series of files named _thalpha_ (Figure 9), _thbeta_, _thgamma_, 
 _thdelta_, _thepsilon_ etc (the series of hydrogen lines is given in _hmap.dat_).
 
 ![](doc/thalpha.png)
 
-Figure 10 -- Example of H-alpha line profile calculated by `hydro2`.  
+Figure 9 -- Example of H-alpha line profile calculated by `hydro2`.  
 
 These files will be 
 
@@ -505,7 +460,7 @@ _flux.cont_       | continuum flux (multiplied by 10**5)
 
 ![](doc/spec-cont-norm.png)
 
-Figure 11 - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
+Figure 10 - plots showing three `pfant` output files for the [4000, 7000] angstrom region: 
 calculated spectrum; continuum; normalized spectrum.
 
 The common prefix "flux" can be changed in file _main.dat_ to give a set of files
