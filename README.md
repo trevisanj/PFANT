@@ -287,6 +287,10 @@ creates file _flux.norm.nulbad.0.120_
 
 :bulb: You can change the FWHM using option `--fwhm`
 
+
+#### 3.3.4 Plot spectra
+
+
 ```shell
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
@@ -298,7 +302,7 @@ opens a plot window where one can see how the spectrum looks before and after th
 Figure 4 -- plot comparing spectra without and after convolution with Gaussian function (FWHM=0.12).
 
 
-### 3.3.5 Running the four calculation steps at once
+#### 3.3.6 Running the four calculation steps at once
 
 The script `run4.py` is provided for convenience. 
 The following is almost equivalent to steps 3.2.1-3.2.4:
