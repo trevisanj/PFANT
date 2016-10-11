@@ -21,7 +21,7 @@ PFANT
   6. [Links](#S6)
   7. [References](#S7)
 
-## <a name=S1></a>1 Introduction
+# <a name=S1></a>1 Introduction
 
 PFANT is a stellar spectral synthesis software written in Fortran.
 
@@ -532,33 +532,6 @@ pfant --opa F --absoru T
 ```shell
 pfant --opa T --absoru T
 ```
-
-
-### 5.2 Converting "VALD3 extended" format atomic lines
-
-The Vienna Atomic Line Database (VALD) is "a 
-collection of atomic and molecular transition parameters of astronomical interest"
-(http://vald.astro.uu.se/).
-
-
-To convert from the "VALD3 extended" to a "PFANT atomic lines" file:
-
-```shell
-vald3-to-atoms.py <prefix>.vald3x
-tune-zinf atoms-<prefix>-untuned.dat
-```
-
-This is done in two steps. The first step, `vald3-to-atoms.py` does the actual conversion
-(which is quick) and saves a file, _e.g._, `atoms.dat`
-
-The second step (which is time-consuming) is performed by `tune-zinf.py` and aims
-to tune an important parameter used by the `pfant` Fortran binary.
-
-It is recommended to use the tool `cut-atoms.py` to cut the file converted by
-`vald3-to-atoms.py` to a wavelength region of interest before running `tune-zinf.py`.
-
-For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
-`cut-atoms.py` (call these scripts with `--help` option).
 
 
 # 6 Links

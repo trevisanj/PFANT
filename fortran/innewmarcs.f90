@@ -300,7 +300,8 @@ contains
       if (config_allow) then
         call log_warning(lll)
       else
-        call log_and_halt(lll)
+        call log_halt(lll)
+        call log_and_halt("Use '--allow T' option to bypass this")
       end if
     end if
   end
