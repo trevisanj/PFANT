@@ -5712,9 +5712,10 @@ contains
         ! BLB: Sj -- Honl-London factor calculated such that sum(S_j/(2*j+1)) = 1
         ! BLB: JJ -- rotational quantum number
         ! BLB: IZ -- branch as table:  *not used*
-        ! BLB:       P  -  1
-        ! BLB:       Q  -  2
-        ! BLB:       R  -  3
+        !  JT:                 delta_J = J_sup-J_inf
+        ! BLB:       P  -  1   -1
+        ! BLB:       Q  -  2   +1
+        ! BLB:       R  -  3    0
         ! BLB:       P1 -  4
         ! BLB:       Q1 -  5
         ! BLB:       R1 -  6
