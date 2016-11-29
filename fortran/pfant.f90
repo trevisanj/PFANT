@@ -455,8 +455,8 @@ contains
     !--- close(unit_lines)
 
     !#logging
-    call log_info('Note: flux sortant est en nu: Fnu x lambda')
-    call log_info('Note: flux absolu sortant a ete multiplie par 10**5')
+    call log_info('**Note**: flux sortant est en nu: lambda (x-axis) vs. F(nu) (y-axis)')
+    call log_info('**Note**: flux absolu sortant a ete multiplie par 10**5')
 
     call log_info('File '//trim(fn_spec)//' successfully created.')
     call log_info('File '//trim(fn_cont)//' successfully created.')
@@ -1204,12 +1204,6 @@ end module
 !
 ! Creates three files such as (flux.spec, flux.cont, flux.norm).
 ! These files can be inputted into nulbad
-! or visualized with plot_spectra.py
-!
-! Takes as input most of the data files.
-!
-!
-! *Note* Flux absolu sortant a ete multiplie par 10**5
 !
 
 program pfant
