@@ -5577,9 +5577,9 @@ contains
       !   'comments # atomic symbols # transitions', where
       !
       !   - the '#' character: separator between the following three sections:
-      !   - comments: anything
-      !   - atomic symbols: separated by space; example: 'MG H'
-      !   - transitions: pairs of integer numbers separated by any character
+      !     - description: anything
+      !     - isotopes: separated by space; example: 'MG H'
+      !     - transitions: pairs of integer numbers separated by any character
       !
       ! **Note 1** [for backward compatibility, ] if atomic symbols not specified,
       !            will try to find molecule formula in the comments. In this case,
