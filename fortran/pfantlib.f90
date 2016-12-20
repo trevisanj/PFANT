@@ -5512,13 +5512,14 @@ contains
     integer myunit, i, &
      molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to MAX_NUM_MOL
      i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
-     nnv, iz, &
+     nnv, &
      numlin , &  ! Temporary variable
      j_set,   &
      j_line, &
      nv_in_titulo, &
      temp
     character(len=SIZE_TITULO) :: sections(3)
+    character(len=2) :: iz  ! branch (ignored here for all effects)
     ! integer :: sizes(3)
 
 
@@ -5711,8 +5712,9 @@ contains
         ! BLB: LMBDAM -- wavelength in angstron
         ! BLB: Sj -- Honl-London factor calculated such that sum(S_j/(2*j+1)) = 1
         ! BLB: JJ -- rotational quantum number
-        ! BLB: IZ -- branch as table:  *not used*
-        !  JT:                 delta_J = J_sup-J_inf
+        ! BLB: IZ -- branch as table:  **not used, but important information**
+        !  JT:       branch may now come as alphanumeric (P/Q/R/P1...)
+        !  JT:                 delta_J = J_sup - J_inf = Jl - J2l = J' - J"
         ! BLB:       P  -  1   -1
         ! BLB:       Q  -  2   +1
         ! BLB:       R  -  3    0
