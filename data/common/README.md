@@ -7,7 +7,11 @@ Data files that are independent from the star.
 filename       | description
 ---------------|-------------
 atoms.dat      | atomic lines (from 3688.331 to 8194.824 angstrom) (original name was `atomgrade.dat`)
-molecules.dat  | molecular lines (21 molecules) [1]
+molecules.dat  | molecular lines (21 molecules) [1]. This file is currently identical to (2016-12-21)
+               | https://github.com/trevisanj/PFANT-data/blob/master/molecular-lines/moleculagrade-paula.dat.newtitulo
+               | **there are a few wrong wavelengths** (2016-12-21)
+               | Note that 'molecules.dat' is the default name for PFANT molecular lines file, therefore this file is
+               | likely to change contents over time, reusing the same name
 absoru2.dat    | absoru data
 hmap.dat       | hydrogen lines information
 partit.dat     | partition functions 
