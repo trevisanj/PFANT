@@ -126,7 +126,7 @@ module dimensions
   integer, parameter :: MAX_KM_NV_PER_MOL=200
 
   integer, parameter :: &
-   MAX_KM_LINES_TOTAL=1400000, & ! Maximum number of spectral lines in *molecules file*
+   MAX_KM_LINES_TOTAL=2000000, & ! Maximum number of spectral lines in *molecules file*
                                    ! pertaining all molecules
    MAX_KM_F_MBLEND=1400000 ! Maximum number of spectral lines that can be filtered in at a
                         ! filtering operation performed by filter_molecules()
@@ -7775,10 +7775,22 @@ module filters
   implicit none
 
 
-  ! Analogue to atoms_zinf
-  ! All molecular lines will be calculated until this value (angstrom) to the
-  ! left and to the right of the line centre.
+  ! To limit calculations, all molecular lines will be calculated between 
+  ! lc +- lc*KM_ALARGM_FACT, where lc is the center of the molecular line (Angstrom)
+  !
+  ! Example: line calculation interfal for:
+  !   lc =   KM_ALARGM_LAMBDA_REF: lc +-   KM_ALARGM
+  !   lc = 2*KM_ALARGM_LAMBDA_REF: lc +- 2*KM_ALARGM
+  !
+  ! **Note** "reference wavelength" KM_ALARGM_LAMBDA_REF introduced in 20161227.
+  !          Before, the interval was simply lc += KM_ALARGM
+  !
+  ! **Note** Analogue to atoms_zinf
+  !
   real*8, parameter :: KM_ALARGM = 0.1
+  real*8, parameter :: KM_ALARGM_LAMBDA_REF = 5000
+  real*8, parameter :: KM_ALARGM_FACT = 4/KM_ALARGM_LAMBDA_REF
+
 
   !=====
   ! km_f_*Variables filled by filter_molecules()
@@ -7844,7 +7856,7 @@ contains
     real*8, intent(in) :: lzero
     ! Upper edge of wavelength interval
     real*8, intent(in) :: lfin
-    real*8 :: lambda
+    real*8 :: lambda, alargm
     integer molidx,          &  ! Counts molecule id, from 1 to km_number
             j_dummy, j_set,  &
             i_line,          &  ! Index of km_lmbdam, km_sj, km_jj
@@ -7872,7 +7884,8 @@ contains
       do j_dummy = 1, km_lines_per_mol(molidx)
         lambda = km_lmbdam(i_line)
 
-        if ((lambda .ge. lzero-KM_ALARGM) .and. (lambda .le. lfin+KM_ALARGM)) then
+        alargm = lambda*KM_ALARGM_FACT
+        if ((lambda .ge. lzero-alargm) .and. (lambda .le. lfin+alargm)) then
           ! Filters in a new spectral line!
           i_filtered = i_filtered+1
 

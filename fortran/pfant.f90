@@ -788,7 +788,7 @@ contains
     real*8, dimension(MAX_KM_F_MBLEND) :: &
      ecarm !, ecartlm
     real*8 :: &
-     deltam(max_km_f_mblend,MAX_MODELES_NTOT), &
+     deltam, &
      phi, t, v, vm, &
      kam, kappam, kappa, kak, &
      kappa_opa, &    ! continuum absorption coefficient, origin MARCS website
@@ -861,14 +861,12 @@ contains
         ! molecules
         if (config_no_molecules) go to 250
         do l = 1, km_f_mblend
-          ! TODO exponential is easier to know where it finishes, no need to use KM_ALARGM. however, will it be faster?
-          !      changing this may be easier to import from TurboSpectrum molecular data
-          if(abs(ecarm(l)) .gt. KM_ALARGM)  then
+          if(abs(ecarm(l)) .gt. km_f_lmbdam(l)*KM_ALARGM_FACT)  then
             kam = 0.
           else
-            deltam(l,n) = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
-            vm = abs(ecarm(l)*1.e-08/deltam(l,n))
-            phi = (exp(-vm**2))/(RPI*deltam(l,n))
+            deltam = (1.e-8*km_f_lmbdam(l))/C*sqrt(turbul_vt(n)**2+DEUXR*t/km_f_mm(l))
+            vm = abs(ecarm(l)*1.e-08/deltam)
+            phi = exp(-vm**2)/(RPI*deltam)
             kam = phi*km_c_gfm(l)*km_c_pnvj(l,n)
           end if
           kappam = kappam + kam
@@ -879,24 +877,10 @@ contains
         ! opacities
 
         if (config_abs .or. config_sca) then
-            ! todo issue
-            ! Scattering and absorption are given in MARCS ".opa" files in cm^2/g
-            !
-            ! Apparently they need to be converted back to cm^2 per hydrogen nucleous
-            !
-            ! It is doing so by multiplying by 2e-24, but this should be
-            ! a weighted sum from 1 to 92 of (relative abundance)*(atomic weight)*1.66e-24
-            !
-            ! According to Gray this gives a typical value of around 2e-24
-            !
-            ! Another thing to investigate is whether MARCS opacities do not already represent everything for the
-            ! kappa of the continuum
-
             kappa_opa = 0
 
             if (config_abs) kappa_opa = kappa_opa+opa_abs(d, n)
             if (config_sca) kappa_opa = kappa_opa+opa_sca(d, n)
-
 
             kappa_opa = kappa_opa*opa_mass_factor
         end if
