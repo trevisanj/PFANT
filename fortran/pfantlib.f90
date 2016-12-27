@@ -7791,7 +7791,6 @@ module filters
   real*8, parameter :: KM_ALARGM_LAMBDA_REF = 5000
   real*8, parameter :: KM_ALARGM_FACT = 4/KM_ALARGM_LAMBDA_REF
 
-
   !=====
   ! km_f_*Variables filled by filter_molecules()
   !=====
