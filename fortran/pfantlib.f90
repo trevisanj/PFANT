@@ -5663,7 +5663,8 @@ contains
        km_a0(molidx), km_a1(molidx), km_a2(molidx), &
        km_a3(molidx), km_a4(molidx), km_als(molidx)
 
-      ! ?doc?
+      ! BLB: S -- spin
+      ! JT: not used, documentation purpose only
       read(myunit,*) km_s(molidx)
 
       nnv = km_nv(molidx)
@@ -7789,7 +7790,7 @@ module filters
   !
   real*8, parameter :: KM_ALARGM = 0.1
   real*8, parameter :: KM_ALARGM_LAMBDA_REF = 5000
-  real*8, parameter :: KM_ALARGM_FACT = 4/KM_ALARGM_LAMBDA_REF
+  real*8, parameter :: KM_ALARGM_FACT = KM_ALARGM/KM_ALARGM_LAMBDA_REF
 
   !=====
   ! km_f_*Variables filled by filter_molecules()
