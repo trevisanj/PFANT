@@ -5717,8 +5717,8 @@ contains
         !  JT:       branch may now come as alphanumeric (P/Q/R/P1...)
         !  JT:                 delta_J = J_sup - J_inf = Jl - J2l = J' - J"
         ! BLB:       P  -  1   -1
-        ! BLB:       Q  -  2   +1
-        ! BLB:       R  -  3    0
+        ! BLB:       Q  -  2    0
+        ! BLB:       R  -  3   +1
         ! BLB:       P1 -  4
         ! BLB:       Q1 -  5
         ! BLB:       R1 -  6
