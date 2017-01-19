@@ -317,7 +317,7 @@ run4.py --fwhm 0.12
 ### 3.3 Where you can find more information
 
 :book: **Description of stellar parameters, running settings, command-line options:** run `x.py`
-and navigate through the fields in Tabs 1 and 3. As you navigate, documentation for
+and navigate through the fields in Tabs 1 and 3. As you navigate, a description for
 the current field will be displayed at the bottom of the window.
 
 :book: Call a program with "--help" option, _e.g._, `pfant --help`.
@@ -333,11 +333,70 @@ the current field will be displayed at the bottom of the window.
 
 # 4 <a name=S4></a>Graphical interface operation
 
-...
+## 4.1 Spectral Synthesis from Scratch
+
+Shell commands:
+```shell
+mkdir mystar
+cd mystar
+copy-star.py
+link.py common
+x.py
+```
+
+The last command will invoke the PFANT Launcher (Figure 5): 
+
+  1. Change parameters in Tab 1/2/3 (Tab 4 is a different story) 
+  2. Click on the "Submit single job" button: a new window named "Runnables Manager" opens
+  3. When the "Status" column shows "nulbad finished", double-click on the table item: "PFANT Explorer" window opens
+  4. Double-click on "flux.norm": turns green (if wasn't so)
+  5. Double-click on "Plot spectrum": spectrum appears
+
+![](doc/x.py-0.png)
+
+![](doc/x.py-1.png)
+
+![](doc/x.py-2.png)
+
+![](doc/x.py-3.png)
+
+Figure 5 -- Screenshots of the `x.py` application
+
+## 4.2 Browsing files with _Astrogear Explorer_
+
+```shell
+explorer.py
+```
+
+This application allows you to navigate through your file system and visualize/edit files,
+depending on their type. A list with all supported file types is available [here](...)
+
+You can select several spectral files and plot them all at once (stacked in different sub-plots,
+or overlapped in a single plot).
+
   
 # 5 <a name=S5>Writing Python scripts with _pyfant_ package
 
-...
+## 5.1 Running innewmarcs, hydro2, pfant, nulbad in sequence & plotting spectra
+
+```python
+import pyfant as pf
+import hypydrive as hpd
+obj = pf.Combo()
+obj.run()
+obj.load_result()
+
+# Plots continuum, spectrum, normalized in three sub-plots
+hpd.plot_spectra([obj.result["cont"], obj.result["spec"], obj.result["norm"]])
+
+# Plots normalized unconvolved, normalized convolved spectra overlapped
+hpd.plot_spectra_overlapped([obj.result["norm"], obj.result["convolved"]])
+
+```
+
+![](doc/pyfant-example-00.png)
+
+
   
 # 6 <a name=S6></a>Reference section
 
@@ -493,7 +552,33 @@ nulbad --fwhm 1.2 --fn_cv another-name
 
 # 7 <a name=S7></a> Miscellanea how-to
 
-## 7.1 Continuous opacities: selecting between PFANT and MARCS coefficients
+## 7.1 <a name=S7_1></a> Converting "VALD3 extended" format atomic lines to PFANT format
+
+The Vienna Atomic Line Database (VALD) is "a 
+collection of atomic and molecular transition parameters of astronomical interest"
+(http://vald.astro.uu.se/).
+
+To convert from the "VALD3 extended" to a "PFANT atomic lines" file:
+
+```shell
+vald3-to-atoms.py <prefix>.vald3x
+tune-zinf atoms-<prefix>-untuned.dat
+```
+
+This is done in two steps. The first step, `vald3-to-atoms.py` does the actual conversion
+(which is quick) and saves a file, _e.g._, `atoms.dat`
+
+The second step (which is time-consuming) is performed by `tune-zinf.py` and aims
+to tune an important parameter used by the `pfant` Fortran binary.
+
+It is recommended to use the tool `cut-atoms.py` to cut the file converted by
+`vald3-to-atoms.py` to a wavelength region of interest before running `tune-zinf.py`.
+
+For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
+`cut-atoms.py` (call these scripts with `--help` option).
+
+
+## 7.2 Continuous opacities: selecting between PFANT and MARCS coefficients
 
 The following is now the default mode of operation:
 
