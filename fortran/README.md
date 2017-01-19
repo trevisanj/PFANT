@@ -15,7 +15,7 @@ fortran
   1. [Compile](#S1)
   2. [Coding style](#S2)
   3. [Coding how-to's](#S3)
-  4. [Appendix -- tools](#A)
+  4. [Appendix -- CodeBlocks Fortran IDE](#A)
 
 # <a name=S1></a> 1 Compile
 
@@ -82,9 +82,9 @@ I tend to [ab]use a **90-column maximum**.
 
 `common` blocks require variables to be declared multiple
 times with different names and shapes. This is high-maintenance and makes the code harder
-to understand, specially for newbies.
+to understand, specially for those who are not familiar with the code.
 
-`module` provides a more clear structure to share variables among subroutines and functions.
+Using `module` is a better way to share variables among subroutines and functions.
 Variables are declared only once at the header section of a module.
 
 ## 2.5 Always `implicit none`
@@ -127,8 +127,10 @@ MAX_PARTIT_NPAR  constant having maximum allowed value of variable partit_npar
 
 ## 2.7 Real numbers
 
-`real*8` is now used throughout, except for reading the binary "*.mod" and "*.moo" files (which have 
+`real*8` (double precision) is now used throughout, except for reading the binary "*.mod" and "*.moo" files (which have 
 floating-point numbers stored as `real*4`, so there is no getting away with this).
+
+Here is a quote:
 
 > If you must use floating point, use double precision unless you have reason
 > to be concerned about memory use (your program uses large arrays) and you do
@@ -144,7 +146,7 @@ It is recommended to document at least this:
 - `module`, `subroutine`, and `function`: at least one description line
 - `subroutine` or `function` arguments: at least one sentence for each argument
 - variables declared in the header section of a module: at least one sentence
-- when the logic becomes tricky, it is a kind gesture to explain what the code is doing
+- when the logic becomes tricky, it is a kind gesture (both for others and for yourself in the future) to explain what the code is doing
 
 For more on software documentation, there is an inspiring treaty available at 
 http://www.agilemodeling.com/essays/agileDocumentation.htm.
@@ -162,7 +164,8 @@ There are different routines that can be used for this:
 
 ## 2.10 Tags
 
-These are search keywords with the following meaning (this list is probably not complete):
+There are some search keywords ("tags") created by convention that help keep track of issues and to-do's in the code:
+
 ```
 todo      ordinary to-do item.
 issue     high-priority to-do item, usually an unsolved issue about the way the code works.
@@ -179,7 +182,7 @@ Tags are case-insensitive.
  
 # <a name="S3"></a> 3 Development how-to's
  
-This section describes how to carry out specific tasks with the source code, such as implementing new features.
+This section [non-exhaustively] describes how to carry out specific tasks with the source code, such as implementing new features.
 
 ## 3.1 How to create a new command-line option
 
@@ -201,59 +204,29 @@ To add a new command-line option to the Fortran code:
          
 **Python code**
 
-Steps 7-8 adds field to `Options` class so that, among other things, the new option becomes accepted by `run4.py`
+Steps 7-12 explain how to perform changes to the _pyfant_ package. The objectives are:
+  - make new option accepted by `run4.py`
+  - make the new option appear in the `x.py` graphical interface
 
-.7. open `PFANT/pyfant/pyfant/conf.py`
+.7. Clone the repository http://github.com/trevisanj/astrogear
 
-.8. Add `self.xxxx = None` inside `Options.__init__()` where `xxxx` is the name of your new
+.8. Find and open file _fileoptions.py_
+
+.9. Add `self.xxxx = None` inside `FileOptions.__init__()` where `xxxx` is the name of your new
    option, without the config_ prefix
 
 Steps 9-10 add the new option to Tab 3 of `x.py`
 
-.9. Open `PFANT/pyfant/pyfant/gui/a_WOptionsEditor.py`
+.10. Find and open file _a_WOptionsEditor.py_
 
-.10. You will need to make a few interventions inside the `__init__()` method,
+.11. You will need to make a few interventions inside the `__init__()` method,
 which should become clear from the existing code
 
+.12. Push your changes to GitHub and create a new pull request
 
-# <a name="A"></a>Appendix - tools
+# <a name="A"></a>Appendix -- CodeBlocks Fortran IDE (CBFortran)
  
-## A.1 Communicating with GitHub _via_ SSH
-
-This will configure automatic authentication and transfer to GitHub _via_ SSH, so `git push` will no longer ask
-for user name and password.
- 
-The steps involved are roughly summarized below. For full details, please follow the
-links provided.
-
-:one: Generate a SSH key
-
-```shell
-ls -al ~/.ssh  # Check existing SSH keys
-ssh-keygen -t rsa -C "your@email.com"
-ssh-add ~/.ssh/id_rsa
-```
-
-(https://help.github.com/articles/generating-ssh-keys/)
-
-:two: Open file _ ~/.ssh/id_rsa.pub_ using any text editor and copy its contents to the clipboard (Ctrl+C)
-
-:three: Go to GitHub, personal settings, look for "SSH and GPG keys", click on "New SSH key", and paste the contents of _~/.ssh/id_rsa.pub_ into the appropriate box.
-
-After you do this, you can test if it works:
-```shell
-ssh -T git@github.com
- ```
- 
-:four: Change the remote URL that git uses
-
-```shell
-git remote set-url origin git@github.com:user-name/repository-name.git
-```
-
-(https://help.github.com/articles/changing-a-remote-s-url/)
-
-## A.2 CodeBlocks Fortran (CBFortran)
+## A.1 Introduction
 
 CBFortran is a customization of the Code Blocks (CB) IDE optimized for working with Fortran projects.
 
@@ -264,7 +237,7 @@ home directory (will create directory _/home/your-user-name/CodeBLocks_Fortran_x
 After extracted, enter the new directory, and
 execute `codeblocks_run.sh`
 
-### A.2.1 Using CBFortran
+### A.2 Using CBFortran
 
 The CBFortran project is the file _PFANT-linux.cbp_ or _PFANT-windows.cbp_
  
@@ -283,3 +256,4 @@ The following procedure is required for the script `make-linux.sh` to continue w
 - Click on menu: Fortran &rarr; Generate Makefile
 - Rename file _Makefile_, _e.g_, to _makefile-linux-innewmarcs_
 - Repeat the previous steps for all four "targets".
+
