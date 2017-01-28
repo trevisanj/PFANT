@@ -307,7 +307,7 @@ Figure 4 -- plot comparing spectra without and after convolution with Gaussian f
 ##### 3.1.2.3.6 Running the four calculation steps at once
 
 The script `run4.py` is provided for convenience. 
-The following is almost equivalent to steps 3.2.1-3.2.4:
+The following is almost equivalent to steps 3.1.2.3.1 - 3.1.2.3.4:
 
 ```shell
 run4.py --fwhm 0.12
