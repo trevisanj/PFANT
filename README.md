@@ -166,7 +166,7 @@ run4.py
 plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120 
 ```
 
-:notes: If you choose star Mu-Leo, run `run4.py --allow true` to bypass the fact that its
+:notes: If you choose star "Mu-Leo", run `run4.py --allow true` to bypass the fact that its
 metallicity if outside the atmospheric model grid provided
 
 ### 3.1.2 Long story
@@ -361,18 +361,164 @@ The last command will invoke the PFANT Launcher (Figure 5):
 
 Figure 5 -- Screenshots of the `x.py` application
 
-## 3.2.2 Browsing files with _Astrogear Explorer_
+## 3.2.2 Browse files with _F311 Explorer_
 
 ```shell
 explorer.py
 ```
+
+![](doc/explorer.png)
 
 This application allows you to navigate through your file system and visualize/edit files,
 depending on their type. A list with all supported file types is available [here](...)
 
 You can select several spectral files and plot them all at once (stacked in different sub-plots,
 or overlapped in a single plot).
+
+## 3.2.3 Edit Atomic Lines file
+
+First make a copy of file "atoms.dat" to leave the current one untouched.
+
+
+```shell
+copy atoms.dat atoms2.dat
+```
   
+Now open the Atomic Lines Editor
+
+```shell
+ated.py atoms2.dat
+```
+
+![](doc/ated.png)
+
+
+## 3.2.3 Edit Molecular Lines file
+
+First make a copy of file "molecules.dat" to leave the current one untouched.
+
+
+```shell
+copy molecules.dat molecules2.dat
+```
+  
+Now open the Molecular Lines Editor
+
+```shell
+mled.py molecules2.dat
+```
+
+![](doc/mled.png)
+
+  
+
+## 3.2.10 List all applications avaiable from the _f311_ Python project
+
+Most of the applications from project _f311_ were created to target needs from PFANT users or 
+people working with spectral synthesis. Here is a list of these applications obtained using 
+```programs.py``` in 16/Feb/2017:
+
+```shell
+
+$ programs.py
+
+Package 'aosss'
+===============
+
+  Graphical applications
+  ----------------------
+
+    wavelength-chart.py ......... Draws chart showing spectral lines of
+                                  interest, spectrograph wavelength ranges, ESO
+                                  atmospheric model, etc.
+
+  Command-line tools
+  ------------------
+
+    create-simulation-reports.py  Creates HTML reports from WebSim-COMPASS
+                                  output files
+    create-spectrum-lists.py .... Create several .splist (spectrum list) files
+                                  from WebSim-COMPASS output files; groups
+                                  spectra that share same wavelength vector
+    get-compass.py .............. Downloads WebSim-COMPASS simulations
+    list-mosaic-modes.py ........ Lists MOSAIC Spectrograph modes
+    organize-directory.py ....... Organizes simulation directory (creates
+                                  folders, moves files, creates 'index.html')
+
+Package 'convmol'
+=================
+
+  Graphical applications
+  ----------------------
+
+    convmol.py ........ Conversion of molecular lines data to PFANT format
+
+  Command-line tools
+  ------------------
+
+    download-hitran.py  Downloads molecular lines from HITRAN database
+    print-nist.py ..... Downloads and prints molecular constants from NIST Web
+                        Book for a particular molecule
+
+Package 'explorer'
+==================
+
+  Graphical applications
+  ----------------------
+
+    abed.py .......... Abundances file editor
+    ated.py .......... Atomic lines file editor
+    cubeed.py ........ Data Cube Editor, import/export WebSim-COMPASS data cubes
+    explorer.py ...... F311 Explorer --  list, visualize, and edit data files
+                       (_à la_ File Manager)
+    mained.py ........ Main configuration file editor.
+    mled.py .......... Molecular lines file editor.
+    splisted.py ...... Spectrum List Editor
+    tune-zinf.py ..... Tunes the "zinf" parameter for each atomic line in atomic
+                       lines file
+
+  Command-line tools
+  ------------------
+
+    create-grid.py ... Merges several atmospheric models into a single file
+                       (_i.e._, the "grid")
+    cut-atoms.py ..... Cuts atomic lines file to wavelength interval specified
+    cut-molecules.py . Cuts molecular lines file to wavelength interval
+                       specified
+    cut-spectrum.py .. Cuts spectrum file to wavelength interval specified
+    plot-spectra.py .. Plots spectra on screen or creates PDF file
+    vald3-to-atoms.py  Converts VALD3 atomic/molecular lines file to PFANT
+                       atomic lines file.
+
+Package 'pyfant'
+================
+
+  Graphical applications
+  ----------------------
+
+    x.py ........ PFANT Launcher -- Graphical Interface for Spectral Synthesis
+
+  Command-line tools
+  ------------------
+
+    copy-star.py  Copies stellar data files (such as main.dat, abonds.dat,
+                  dissoc.dat) to local directory
+    link.py ..... Creates symbolic links to PFANT data files as an alternative
+                  to copying these (sometimes large) files into local directory
+    run4.py ..... Runs the four Fortran binaries in sequence: `innewmarcs`,
+                  `hydro2`, `pfant`, `nulbad`
+    save-pdf.py . Looks for files "*.norm" inside directories session-* and
+                  saves one figure per page in a PDF file
+
+PFANT Fortran binaries
+======================
+
+    innewmarcs  found
+    hydro2 .... found
+    pfant ..... found
+    nulbad .... found
+```
+
 # 3.3 <a name=S5>Writing Python scripts with _pyfant_ package
 
 ## 3.3.1 Running innewmarcs, hydro2, pfant, nulbad in sequence & plotting spectra
