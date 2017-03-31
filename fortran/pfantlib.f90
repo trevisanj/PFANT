@@ -123,7 +123,7 @@ module dimensions
   integer, parameter :: MAX_NUM_MOL=30
 
   ! Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
-  integer, parameter :: MAX_KM_NV_PER_MOL=200
+  integer, parameter :: MAX_KM_NV_PER_MOL=2000
 
   integer, parameter :: &
    MAX_KM_LINES_TOTAL=2000000, & ! Maximum number of spectral lines in *molecules file*
@@ -5461,7 +5461,7 @@ module file_molecules
   integer km_lines_total  ! Total number of spectral line, counting all molecules
 
   character*160 km_titm
-  integer, parameter :: SIZE_TITULO=4096
+  integer, parameter :: SIZE_TITULO=4096*4
   character(SIZE_TITULO) :: km_titulo(MAX_NUM_MOL), &
    km_comments(MAX_NUM_MOL)  ! Stores only first section in km_titulo
 
@@ -7873,7 +7873,7 @@ contains
     do molidx = 1, km_number
       km_f_ln(1, molidx) = i_filtered  ! first row contain number of lines already filtered
 
-      write(lll, *) 'molecule idx', molidx, '; titulo: ',  trim(km_titulo(molidx)), &
+      write(lll, *) 'molecule idx', molidx, '; titulo: ',  trim(km_titulo(molidx)(1:100)), &
        '; number of prospective lambdas: ', km_lines_per_mol(molidx)
       call log_debug(lll)
 
