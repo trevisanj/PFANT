@@ -26,11 +26,11 @@ PFANT
 
 PFANT is a stellar spectral synthesis software written in Fortran.
 
-The development started with F Spite _et al._ in France in the year of 1967 (Figure 1) and keeps going on.
+The development started with M Spite _et al._ in France in the year of 1967 (Figure 1) and keeps going on.
 
 ```
  |
- | 1967 -- FANTÔME -- by F Spite et al.
+ | 1967 -- FANTÔME -- by M Spite et al.
  | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
  |           dissociatipon equilibrium
  | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
@@ -804,8 +804,11 @@ errors during program execution.
 
 # 8 <a name=S8></a>References
 
+**(Barbuy 1982)** Barbuy, B. 1982, PhD Thesis, Université de Paris VII
+**(Barbuy et al. 2003)** Barbuy, B., Perrin, M.-N., Katz, D. et al. 2003, A&A,  404, 661
 **(Coelho et al. 2005)**<a name=R1></a> Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V. 
 (2005). A library of high resolution synthetic stellar spectra from 300 nm to 
 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition. Astronomy & 
 Astrophysics, 443(2), 735-746.
+
 
