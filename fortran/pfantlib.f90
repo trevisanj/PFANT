@@ -5326,6 +5326,9 @@ contains
       call log_and_halt('read_abonds() must be called before read_atoms()')
     end if
 
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_atoms(): reading file '''//trim(filename)//'''...')
+
     open(newunit=myunit,file=filename, status='old')
 
     k = 1
@@ -5530,6 +5533,10 @@ contains
 
     ! # Reading
     !
+
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_molecules(): reading file '''//trim(filename)//'''...')
+
 
     open(newunit=myunit,file=filename, status='old')
 
