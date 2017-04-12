@@ -26,7 +26,7 @@ PFANT
 
 PFANT is a stellar spectral synthesis software written in Fortran.
 
-The development started with M Spite _et al._ in France in 1967 (Figure 1). The code formulation is described in [(Barbuy 1982)](#R_BLB1982), [(Cayrel et al. 1991)(#R_CAYREL1991), [(Barbuy et al. 2003)](#R_BLB2003), and [(Coelho et al. 2005)](#R_PC2005).
+The development started with M Spite _et al._ in France in 1967 (Figure 1). The code formulation is described in [(Barbuy 1982)](#R_BLB1982), [(Cayrel et al. 1991)](#R_CAYREL1991), [(Barbuy et al. 2003)](#R_BLB2003), and [(Coelho et al. 2005)](#R_PC2005).
 
 ```
  |
