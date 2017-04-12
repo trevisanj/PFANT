@@ -183,8 +183,8 @@ copy-star.py
 ```
 
 After running this, the following files will be copied into the _mystar_ directory:
-  - *main.dat*: main configuration
-  - *abonds.dat*: chemical abundances
+  - *main.dat*: main configuration (editable with `mained.py`, `x.py`)
+  - *abonds.dat*: chemical abundances (editable with `abed.py`, `x.py`)
   
 ##### 3.1.2.2.2 Common data
 
@@ -204,7 +204,7 @@ The following links that should appear in your directory now:
   - *partit.dat*
   
  
-### 3.1.2.3 Spectral synthesis pipeline
+#### 3.1.2.3 Spectral synthesis pipeline
 
 Spectral synthesis involves a few steps,
 as shown Figure 2,
@@ -224,8 +224,8 @@ and what they do.
 
 ##### 3.1.2.3.1 Interpolate the stellar atmospheric model
 
-This step takes a 3D grid of atmospheric models and interpolates a new model
-given a certain point (temperature x gravity x metallicity) contained within the
+This step takes a 3D grid of atmospheric models (usually a file named _grid.mod_) and interpolates a new model
+given a certain point (temperature, gravity, metallicity) (specified in the main configuration file) contained within the
 limits of the grid.
 
 ```shell
@@ -233,6 +233,8 @@ innewmarcs
 ```
 
 will create two files: _modeles.mod_ and _modeles.opa_. 
+
+:notes: If the combination of (temperature, gravity, metallicity) is outside the limits of the grid, `innewmarcs` will refuse to interpolate. However, it can be forced to use the nearest points in the grid with command-line option `--allow T`.
 
 ##### 3.1.2.3.2 Create hydrogen lines profiles
 
@@ -314,7 +316,7 @@ the current field will be displayed at the bottom of the window.
  
 :book: The Fortran source code
 
-:book: Also check the pyfant tutorial(s) at http://github.com/trevisanj/pyfant
+TODO :book: Also check the pyfant tutorial(s) at http://github.com/trevisanj/pyfant
 
 
 ## 3.2 <a name=S4></a>Graphical interface operation
