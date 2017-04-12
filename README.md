@@ -49,7 +49,7 @@ To use PFANT, you will need to:
 1. Download files
 2. Compile the Fortran source code
 3. Add `PFANT/fortran/bin` to your PATH
-4. Install _f311_ Python package to use a number of related Python applications (http://github.com/trevisanj/f311) (recommended)
+4. Install the "f311" Python package (http://github.com/trevisanj/f311) (recommended)
 
 This section will take you through these steps.
 
@@ -76,19 +76,6 @@ git clone https://github.com/trevisanj/PFANT
 ```
 
 This will create a directory named PFANT on your disk.
-
-### 2.1.2 Extra file
-
-There is an additional data file that needs to be downloaded from a different
-location, because it is too big to be stored on GitHub (241 MB > 100 MB). To get file, either:
-
-(a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
-  
-(b) download it from [this location](https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
-(or [this location](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
-and save it as _PFANT/data/common/grid.moo_
-
-:notes: File _grid.moo_ contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
 ## 2.2 Compiling the Fortran source code.
 
@@ -723,17 +710,40 @@ For more information, see help for `vald3-to-atoms.py`, `tune-zinf.py`,
 
 ## 5.2 Continuous opacities: selecting between PFANT and MARCS coefficients
 
-The following is now the default mode of operation:
+The PFANT default is to use its internal calculation of the continuum.
+
+**PFANT-calculated continuum** (default)
+
+```shell
+innewmarcs --opa F
+pfant --opa F --absoru T
+```
+
+or
+
+```
+run4.py
+--opa F --absoru T
+```
+
+**MARCS opacities**
 
 ```shell
 innewmarcs --opa T
+pfant --opa T --absoru F
 ```
 
-```shell
-pfant --opa T --abs T --sca T --absoru F
+or
+
+```
+run4.py
+--opa T --absoru F
 ```
 
-Meaning:
+:notes: For `innewmarcs`, "--opa T" causes the creation of an additional file _modeles.opa_
+besides _modeles.mod_.
+
+Related command-line options (also accessible in `x.py`):
 
 ```
 --opa T ...... switches on MARCS opacities
@@ -743,26 +753,14 @@ Meaning:
 --absoru F ... switches off PFANT internal calculation
 ```
 
-For `innewmarcs`, "--opa T" causes the creation of an additional file _modeles.opa_
-besides _modeles.mod_.
 
-Accordingly, `pfant` will require these two files in order to run.
+:notes: In order to use continuum opacities calculated by MARCS code (http://marcs.astro.uu.se/), you will need to create your own atmospheric model grid (using `create-grid.py`) or download file "grid.moo" as explained below (this file is too big to be stored on GitHub (241 MB > 100 MB)). File "grid.moo" contains a 3D grid of MARCS (http://marcs.astro.uu.se/) atmospheric models with opacities included.
 
-**Operating without MARCS opacities**
-
-```shell
-innewmarcs --opa F
-```
-
-```shell
-pfant --opa F --absoru T
-```
-
-**Adding PFANT and MARCS coefficients together**
-
-```shell
-pfant --opa T --absoru T
-```
+(a) go to directory `PFANT/data/common` and run `get-grid.moo.sh`, or
+  
+(b) download it from [this location](https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c)
+(or [this location](https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view))
+and save it as _PFANT/data/common/grid.moo_
 
 
 # <a name=S6></a>6 Links
