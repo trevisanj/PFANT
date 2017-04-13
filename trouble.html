@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>7 Troubleshooting &mdash; f311 17.1.28 documentation</title>
+  <title>Troubleshooting &mdash; PFANT 17.4.13 documentation</title>
   
 
   
@@ -35,8 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="f311 17.1.28 documentation" href="index.html"/>
-        <link rel="prev" title="5 Miscellanea how-to" href="misc.html"/>
+    <link rel="top" title="PFANT 17.4.13 documentation" href="index.html"/>
+        <link rel="next" title="Cheatsheet" href="cheat.html"/>
+        <link rel="prev" title="Miscellanea how-to" href="misc.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 
@@ -57,7 +58,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> f311
+            <a href="index.html" class="icon icon-home"> PFANT
           
 
           
@@ -67,7 +68,7 @@
             
             
               <div class="version">
-                17.1.28
+                17.4.13
               </div>
             
           
@@ -92,15 +93,19 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#references">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">5  Miscellanea how-to</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">7 Troubleshooting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#tracking-down-why-fortran-binaries-fail-to-run">7.1 Tracking down why Fortran binaries fail to run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">7.2 Metallicity/temperature/gravity of star is outside range in the grid of models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html#more-gui">More GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-down-why-fortran-binaries-fail-to-run">Tracking down why Fortran binaries fail to run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">Metallicity/temperature/gravity of star is outside range in the grid of models</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
 </ul>
 
             
@@ -115,7 +120,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">f311</a>
+          <a href="index.html">PFANT</a>
         
       </nav>
 
@@ -145,7 +150,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>7 Troubleshooting</li>
+      <li>Troubleshooting</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,13 +170,11 @@
            <div itemprop="articleBody">
             
   <div class="section" id="troubleshooting">
-<h1>7 Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="tracking-down-why-fortran-binaries-fail-to-run">
-<h2>7.1 Tracking down why Fortran binaries fail to run<a class="headerlink" href="#tracking-down-why-fortran-binaries-fail-to-run" title="Permalink to this headline">¶</a></h2>
-<div class="line-block">
-<div class="line"><em>pyfant</em> creates a &#8220;session directory&#8221; named <code class="docutils literal"><span class="pre">session-xxx</span></code> every</div>
-</div>
-<p>time it attempts
+<h2>Tracking down why Fortran binaries fail to run<a class="headerlink" href="#tracking-down-why-fortran-binaries-fail-to-run" title="Permalink to this headline">¶</a></h2>
+<p><em>pyfant</em> creates a &#8220;session directory&#8221; named <code class="docutils literal"><span class="pre">session-xxx</span></code> every
+time it attempts
 | to run a PFANT binary. Each of these directories will always contain
 at least two files:</p>
 <ul>
@@ -191,31 +194,19 @@ happened.</p>
 </div>
 <p>containing
 | debug/info/warning/error messages from Python.</p>
-<div class="line-block">
-<div class="line">:bulb: <code class="docutils literal"><span class="pre">explorer.py</span></code> has a &#8220;Collect errors&#8221; button, which</div>
-<div class="line">recurses directories in search for error/warning messages in all files</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last"><code class="docutils literal"><span class="pre">explorer.py</span></code> has a &#8220;Collect errors&#8221; button, which
+recurses directories in search for error/warning messages in all files
+named &#8220;fortran.log&#8221;</p>
 </div>
-<p>named <em>fortran.log</em></p>
 </div>
 <div class="section" id="metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">
-<h2>7.2 Metallicity/temperature/gravity of star is outside range in the grid of models<a class="headerlink" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models" title="Permalink to this headline">¶</a></h2>
-<div class="line-block">
-<div class="line">You can activate option &#8220;&#8211;allow True&#8221; to make bypass this check, but</div>
-</div>
-<p>beware that the calculation
-| may be incorrect.</p>
-<div class="line-block">
-<div class="line">This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>,</div>
-</div>
-<p>or check option &#8220;&#8211;alow&#8221;
-| in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.</p>
-<div class="line-block">
-<div class="line">:bulb: <code class="docutils literal"><span class="pre">run4.py</span></code> creates a directory named _session-&lt;n&gt; where it</div>
-</div>
-<p>saves temporary
-| files. It may be useful to check the log files in this directory if
-you encounter any
-| errors during program execution.</p>
+<h2>Metallicity/temperature/gravity of star is outside range in the grid of models<a class="headerlink" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models" title="Permalink to this headline">¶</a></h2>
+<p>You can activate option &#8220;&#8211;allow True&#8221; to make bypass this check, but beware that the calculation
+may be incorrect.</p>
+<p>This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>, or check option &#8220;&#8211;alow&#8221;
+in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.</p>
 </div>
 </div>
 
@@ -229,8 +220,10 @@ you encounter any
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="cheat.html" class="btn btn-neutral float-right" title="Cheatsheet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="misc.html" class="btn btn-neutral" title="5 Miscellanea how-to" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="misc.html" class="btn btn-neutral" title="Miscellanea how-to" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -239,7 +232,7 @@ you encounter any
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, JT.
+        &copy; Copyright 1967-3999.
 
     </p>
   </div>
@@ -261,7 +254,7 @@ you encounter any
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17.1.28',
+            VERSION:'17.4.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

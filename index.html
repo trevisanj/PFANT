@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome &mdash; f311 17.1.28 documentation</title>
+  <title>PFANT Manual &mdash; PFANT 17.4.13 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="f311 17.1.28 documentation" href="#"/>
-        <link rel="next" title="Installation" href="install.html"/>
+    <link rel="top" title="PFANT 17.4.13 documentation" href="#"/>
+        <link rel="next" title="Introduction" href="intro.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 
@@ -57,7 +57,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> f311
+            <a href="#" class="icon icon-home"> PFANT
           
 
           
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                17.1.28
+                17.4.13
               </div>
             
           
@@ -92,11 +92,15 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#references">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">5  Miscellanea how-to</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trouble.html">7 Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html#more-gui">More GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
 </ul>
 
             
@@ -111,7 +115,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">f311</a>
+          <a href="#">PFANT</a>
         
       </nav>
 
@@ -141,7 +145,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome</li>
+      <li>PFANT Manual</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -160,60 +164,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome">
-<h1>Welcome<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="pfant-manual">
+  <div class="section" id="pfant-manual">
 <h1>PFANT Manual<a class="headerlink" href="#pfant-manual" title="Permalink to this headline">¶</a></h1>
+<p>Welcome!</p>
+<p>PFANT is a stellar spectral synthesis software for use in Astronomy.</p>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#references">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">5  Miscellanea how-to</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trouble.html">7 Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html#more-gui">More GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
 </ul>
-</div>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>PFANT is a stellar spectral synthesis software written in Fortran.</p>
-<p>The development started with M Spite <em>et al.</em> in France in 1967 (Figure
-1). The code formulation is described in <a class="reference external" href="#R_BLB1982">(Barbuy 1982)</a>,
-<a class="reference external" href="#R_CAYREL1991">(Cayrel et al. 1991)</a>, <a class="reference external" href="#R_BLB2003">(Barbuy et al.
-2003)</a>, and <a class="reference external" href="#R_PC2005">(Coelho et al. 2005)</a>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span> |
- | 1967 -- FANTÔME -- by M Spite et al.
- | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
- |           dissociatipon equilibrium
- | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
- |           inclusion or hydrogen lines
- | 2015 -- J Trevisan: conversion of source code to Fortran 2003, Python interface,
- !           tools to convert between different file formats
-t|
- V
-</pre></div>
-</div>
-<p>Figure 1 - PFANT timeline <a class="reference external" href="#RPC_2005">(Coelho et al. 2005)</a></p>
-</div>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
-<p><strong>(Barbuy 1982)</strong> Barbuy, B. 1982, PhD Thesis, Université de Paris VII</p>
-<p><strong>Cayrel et al. 1991)</strong> Cayrel, R., Perrin, M. N., Barbuy, B., &amp;
-Buser, R. (1991). A grid of synthetic spectra for the determination of
-effective temperature, gravity and metallicity of F, G, and K stars.
-I-Description of the method. II-Application to 41 stellar spectra taken
-in the Basel field of SA 141. Astronomy and Astrophysics, 247, 108-129.</p>
-<p><strong>(Barbuy et al. 2003)</strong> Barbuy, B., Perrin, M.-N., Katz, D. et al.
-2003, A&amp;A, 404, 661</p>
-<div class="line-block">
-<div class="line"><strong>(Coelho et al. 2005)</strong> Coelho, P., Barbuy, B., Meléndez, J.,</div>
-</div>
-<p>Schiavon, R. P., &amp; Castilho, B. V.
-| (2005). A library of high resolution synthetic stellar spectra from
-300 nm to
-| 1.8${\ rm\ mu} $ m with solar and $\ alpha $-enhanced composition.
-Astronomy &amp;
-| Astrophysics, 443(2), 735-746.</p>
 </div>
 </div>
 
@@ -227,7 +193,7 @@ Astronomy &amp;
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -237,7 +203,7 @@ Astronomy &amp;
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, JT.
+        &copy; Copyright 1967-3999.
 
     </p>
   </div>
@@ -259,7 +225,7 @@ Astronomy &amp;
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17.1.28',
+            VERSION:'17.4.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quickstart &mdash; f311 17.1.28 documentation</title>
+  <title>Quickstart &mdash; PFANT 17.4.13 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="f311 17.1.28 documentation" href="index.html"/>
-        <link rel="next" title="4 Reference section" href="reference.html"/>
+    <link rel="top" title="PFANT 17.4.13 documentation" href="index.html"/>
+        <link rel="next" title="Reference" href="reference.html"/>
         <link rel="prev" title="Installation" href="install.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
@@ -58,7 +58,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> f311
+            <a href="index.html" class="icon icon-home"> PFANT
           
 
           
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                17.1.28
+                17.4.13
               </div>
             
           
@@ -93,9 +93,11 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#references">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-operation">Command-line operation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-from-the-command-line">Spectral synthesis from the command line</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#short-story">Short story</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#long-story">Long story</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-a-new-directory">Create a new directory</a></li>
@@ -106,13 +108,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#graphical-interface-operation">Graphical interface operation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#spectral-synthesis-from-scratch">Spectral Synthesis from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-using-the-graphical-interface">Spectral synthesis using the Graphical interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#more-gui">More GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#editing-input-data-files">Editing input data files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#edit-stellar-parameters-and-abundances">Edit stellar parameters and abundances</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#browse-files-with-f311-explorer">Browse files with <em>F311 Explorer</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#edit-atomic-lines-file">Edit Atomic Lines file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#edit-molecular-lines-file">Edit Molecular Lines file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#list-all-applications-avaiable-from-the-f311-python-project">List all applications avaiable from the <em>f311</em> Python project</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#writing-python-scripts-with-pyfant-package">Writing Python scripts with <em>pyfant</em> package</a><ul>
@@ -121,9 +125,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">5  Miscellanea how-to</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trouble.html">7 Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
 </ul>
 
             
@@ -138,7 +143,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">f311</a>
+          <a href="index.html">PFANT</a>
         
       </nav>
 
@@ -189,8 +194,8 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="command-line-operation">
-<h2>Command-line operation<a class="headerlink" href="#command-line-operation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spectral-synthesis-from-the-command-line">
+<h2>Spectral synthesis from the command line<a class="headerlink" href="#spectral-synthesis-from-the-command-line" title="Permalink to this headline">¶</a></h2>
 <p><strong>Aims for this tutorial:</strong></p>
 <ul class="simple">
 <li>calculate a synthetic spectrum;</li>
@@ -229,10 +234,7 @@ metallicity if outside the atmospheric model grid provided</p>
 <p>Input data consists of:</p>
 <ol class="arabic">
 <li><p class="first">stellar parameters (temperature, chemical abundances etc.) and
-running settings</p>
-<blockquote>
-<div><p>(<em>e.g.</em>, calculation wavelength interval);</p>
-</div></blockquote>
+running settings (<em>e.g.</em>, calculation wavelength interval);</p>
 </li>
 <li><p class="first">star-independent physical data: line lists, atmospheric model grid,
 partition</p>
@@ -346,8 +348,8 @@ continuum spectrum.</p>
 </pre></div>
 </div>
 <p>creates file <em>flux.norm.nulbad.0.120</em></p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
 <p class="last">You can change the FWHM using option <code class="docutils literal"><span class="pre">--fwhm</span></code></p>
 </div>
 </div>
@@ -368,8 +370,8 @@ Gaussian function (FWHM=0.12).</p>
 <div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">run4</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">0.12</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
 <p class="last">The same command-line options available in the Fortran binaries are available in <a href="#id1"><span class="problematic" id="id2">``</span></a>run4.py <a href="#id3"><span class="problematic" id="id4">``</span></a>.</p>
 </div>
 </div>
@@ -390,19 +392,21 @@ As you navigate, a description of the current field will be displayed at the bot
 </div>
 </div>
 </div>
-<div class="section" id="graphical-interface-operation">
-<h2>Graphical interface operation<a class="headerlink" href="#graphical-interface-operation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="spectral-synthesis-from-scratch">
-<h3>Spectral Synthesis from Scratch<a class="headerlink" href="#spectral-synthesis-from-scratch" title="Permalink to this headline">¶</a></h3>
-<p>Shell commands:</p>
+<div class="section" id="spectral-synthesis-using-the-graphical-interface">
+<h2>Spectral synthesis using the Graphical interface<a class="headerlink" href="#spectral-synthesis-using-the-graphical-interface" title="Permalink to this headline">¶</a></h2>
+<p>First it is necessary to create a new directory and gather the input data
+(as in the spectral synthesis from the command line above):</p>
 <div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">mystar</span>
 <span class="n">cd</span> <span class="n">mystar</span>
 <span class="n">copy</span><span class="o">-</span><span class="n">star</span><span class="o">.</span><span class="n">py</span>
 <span class="n">link</span><span class="o">.</span><span class="n">py</span> <span class="n">common</span>
-<span class="n">x</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>The last command will invoke the PFANT Launcher (Figure 5):</p>
+<p>Now you can invoke the &#8220;PFANT Launcher&#8221; application (Figure 5):</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Here is a suggested roadmap:</p>
 <ol class="arabic simple">
 <li>Change parameters in Tab 1/2/3 (Tab 4 is a different story)</li>
 <li>Click on the &#8220;Submit single job&#8221; button: a new window named
@@ -418,6 +422,11 @@ table item: &#8220;PFANT Explorer&#8221; window opens</li>
 <p><img alt="image5" src="_images/x.py-3.png" /></p>
 <p>Figure 5 &#8211; Screenshots of the <code class="docutils literal"><span class="pre">x.py</span></code> application</p>
 </div>
+</div>
+<div class="section" id="more-gui">
+<h1>More GUI<a class="headerlink" href="#more-gui" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="editing-input-data-files">
+<h2>Editing input data files<a class="headerlink" href="#editing-input-data-files" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="edit-stellar-parameters-and-abundances">
 <h3>Edit stellar parameters and abundances<a class="headerlink" href="#edit-stellar-parameters-and-abundances" title="Permalink to this headline">¶</a></h3>
 </div>
@@ -460,111 +469,6 @@ untouched.</p>
 </div>
 <p><img alt="image8" src="_images/mled.png" /></p>
 </div>
-<div class="section" id="list-all-applications-avaiable-from-the-f311-python-project">
-<h3>List all applications avaiable from the <em>f311</em> Python project<a class="headerlink" href="#list-all-applications-avaiable-from-the-f311-python-project" title="Permalink to this headline">¶</a></h3>
-<p>Most of the applications from project <em>f311</em> were created to target needs from PFANT users or
-people working with spectral synthesis. Here is a list of these applications obtained using
-<code class="docutils literal"><span class="pre">programs.py</span></code> in 16/Feb/2017:</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span>$ programs.py
-
-Package &#39;aosss&#39;
-===============
-
-  Graphical applications
-  ----------------------
-
-    wavelength-chart.py ......... Draws chart showing spectral lines of
-                                  interest, spectrograph wavelength ranges, ESO
-                                  atmospheric model, etc.
-
-  Command-line tools
-  ------------------
-
-    create-simulation-reports.py  Creates HTML reports from WebSim-COMPASS
-                                  output files
-    create-spectrum-lists.py .... Create several .splist (spectrum list) files
-                                  from WebSim-COMPASS output files; groups
-                                  spectra that share same wavelength vector
-    get-compass.py .............. Downloads WebSim-COMPASS simulations
-    list-mosaic-modes.py ........ Lists MOSAIC Spectrograph modes
-    organize-directory.py ....... Organizes simulation directory (creates
-                                  folders, moves files, creates &#39;index.html&#39;)
-
-Package &#39;convmol&#39;
-=================
-
-  Graphical applications
-  ----------------------
-
-    convmol.py ........ Conversion of molecular lines data to PFANT format
-
-  Command-line tools
-  ------------------
-
-    download-hitran.py  Downloads molecular lines from HITRAN database
-    print-nist.py ..... Downloads and prints molecular constants from NIST Web
-                        Book for a particular molecule
-
-Package &#39;explorer&#39;
-==================
-
-  Graphical applications
-  ----------------------
-
-    abed.py .......... Abundances file editor
-    ated.py .......... Atomic lines file editor
-    cubeed.py ........ Data Cube Editor, import/export WebSim-COMPASS data cubes
-    explorer.py ...... F311 Explorer --  list, visualize, and edit data files
-                       (_à la_ File Manager)
-    mained.py ........ Main configuration file editor.
-    mled.py .......... Molecular lines file editor.
-    splisted.py ...... Spectrum List Editor
-    tune-zinf.py ..... Tunes the &quot;zinf&quot; parameter for each atomic line in atomic
-                       lines file
-
-  Command-line tools
-  ------------------
-
-    create-grid.py ... Merges several atmospheric models into a single file
-                       (_i.e._, the &quot;grid&quot;)
-    cut-atoms.py ..... Cuts atomic lines file to wavelength interval specified
-    cut-molecules.py . Cuts molecular lines file to wavelength interval
-                       specified
-    cut-spectrum.py .. Cuts spectrum file to wavelength interval specified
-    plot-spectra.py .. Plots spectra on screen or creates PDF file
-    vald3-to-atoms.py  Converts VALD3 atomic/molecular lines file to PFANT
-                       atomic lines file.
-
-Package &#39;pyfant&#39;
-================
-
-  Graphical applications
-  ----------------------
-
-    x.py ........ PFANT Launcher -- Graphical Interface for Spectral Synthesis
-
-  Command-line tools
-  ------------------
-
-    copy-star.py  Copies stellar data files (such as main.dat, abonds.dat,
-                  dissoc.dat) to local directory
-    link.py ..... Creates symbolic links to PFANT data files as an alternative
-                  to copying these (sometimes large) files into local directory
-    run4.py ..... Runs the four Fortran binaries in sequence: `innewmarcs`,
-                  `hydro2`, `pfant`, `nulbad`
-    save-pdf.py . Looks for files &quot;*.norm&quot; inside directories session-* and
-                  saves one figure per page in a PDF file
-
-PFANT Fortran binaries
-======================
-
-    innewmarcs  found
-    hydro2 .... found
-    pfant ..... found
-    nulbad .... found
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="writing-python-scripts-with-pyfant-package">
 <h2>Writing Python scripts with <em>pyfant</em> package<a class="headerlink" href="#writing-python-scripts-with-pyfant-package" title="Permalink to this headline">¶</a></h2>
@@ -584,6 +488,7 @@ PFANT Fortran binaries
 </pre></div>
 </div>
 <p><img alt="image9" src="_images/pyfant-example-00.png" /></p>
+<p><img alt="image10" src="_images/pyfant-example-01.png" /></p>
 <p>TODO for more examples, please visit .........</p>
 </div>
 </div>
@@ -599,7 +504,7 @@ PFANT Fortran binaries
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reference.html" class="btn btn-neutral float-right" title="4 Reference section" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -611,7 +516,7 @@ PFANT Fortran binaries
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, JT.
+        &copy; Copyright 1967-3999.
 
     </p>
   </div>
@@ -633,7 +538,7 @@ PFANT Fortran binaries
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17.1.28',
+            VERSION:'17.4.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
