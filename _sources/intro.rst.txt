@@ -1,5 +1,5 @@
 Introduction
-------------
+============
 
 PFANT is a stellar spectral synthesis software written in Fortran.
 
