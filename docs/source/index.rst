@@ -1,0 +1,67 @@
+::
+
+Welcome
+=======
+
+PFANT Manual
+============
+
+.. toctree::
+   :maxdepth: 1
+
+   install
+   quick
+   reference
+   misc
+   trouble
+   source_overview
+
+
+Introduction
+------------
+
+PFANT is a stellar spectral synthesis software written in Fortran.
+
+The development started with M Spite *et al.* in France in 1967 (Figure
+1). The code formulation is described in `(Barbuy 1982) <#R_BLB1982>`__,
+`(Cayrel et al. 1991) <#R_CAYREL1991>`__, `(Barbuy et al.
+2003) <#R_BLB2003>`__, and `(Coelho et al. 2005) <#R_PC2005>`__.
+
+::
+
+     |
+     | 1967 -- FANTÔME -- by M Spite et al.
+     | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
+     |           dissociatipon equilibrium
+     | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
+     |           inclusion or hydrogen lines
+     | 2015 -- J Trevisan: conversion of source code to Fortran 2003, Python interface, 
+     !           tools to convert between different file formats
+    t|
+     V
+
+Figure 1 - PFANT timeline `(Coelho et al. 2005) <#RPC_2005>`__
+
+
+
+References
+----------
+
+**(Barbuy 1982)**\  Barbuy, B. 1982, PhD Thesis, Université de Paris VII
+
+**Cayrel et al. 1991)**\  Cayrel, R., Perrin, M. N., Barbuy, B., &
+Buser, R. (1991). A grid of synthetic spectra for the determination of
+effective temperature, gravity and metallicity of F, G, and K stars.
+I-Description of the method. II-Application to 41 stellar spectra taken
+in the Basel field of SA 141. Astronomy and Astrophysics, 247, 108-129.
+
+**(Barbuy et al. 2003)**\  Barbuy, B., Perrin, M.-N., Katz, D. et al.
+2003, A&A, 404, 661
+
+| **(Coelho et al. 2005)**\  Coelho, P., Barbuy, B., Meléndez, J.,
+Schiavon, R. P., & Castilho, B. V.
+| (2005). A library of high resolution synthetic stellar spectra from
+300 nm to
+| 1.8${\\ rm\\ mu} $ m with solar and $\\ alpha $-enhanced composition.
+Astronomy &
+| Astrophysics, 443(2), 735-746.

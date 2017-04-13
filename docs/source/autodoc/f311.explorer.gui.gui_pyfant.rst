@@ -1,0 +1,110 @@
+f311.explorer.gui.gui_pyfant package
+====================================
+
+Submodules
+----------
+
+f311.explorer.gui.gui_pyfant.a_WFileAbXFwhm module
+--------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_WFileAbXFwhm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_WFileAbonds module
+-------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_WFileAbonds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_WFileMain module
+-----------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_WFileMain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_WOptionsEditor module
+----------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_WOptionsEditor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XAtomLinesEditor module
+------------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XAtomLinesEditor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XFileAbonds module
+-------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XFileAbonds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XFileAtoms module
+------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XFileAtoms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XFileAtomsHistogram module
+---------------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XFileAtomsHistogram
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XFileMain module
+-----------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XFileMain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XFileMolecules module
+----------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XFileMolecules
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XMainAbonds module
+-------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XMainAbonds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.explorer.gui.gui_pyfant.a_XMolLinesEditor module
+-----------------------------------------------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant.a_XMolLinesEditor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: f311.explorer.gui.gui_pyfant
+    :members:
+    :undoc-members:
+    :show-inheritance:
