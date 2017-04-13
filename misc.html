@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5 Miscellanea how-to &mdash; f311 17.1.28 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="f311 17.1.28 documentation" href="index.html"/>
+        <link rel="next" title="7 Troubleshooting" href="trouble.html"/>
+        <link rel="prev" title="4 Reference section" href="reference.html"/>
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> f311
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                17.1.28
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5  Miscellanea how-to</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#converting-vald3-extended-format-atomic-lines-to-pfant-format">5.1  Converting &#8220;VALD3 extended&#8221; format atomic lines to PFANT format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-opacities-selecting-between-pfant-and-marcs-coefficients">5.2 Continuous opacities: selecting between PFANT and MARCS coefficients</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">7 Troubleshooting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">f311</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>5  Miscellanea how-to</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/misc.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="miscellanea-how-to">
+<h1>5  Miscellanea how-to<a class="headerlink" href="#miscellanea-how-to" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="converting-vald3-extended-format-atomic-lines-to-pfant-format">
+<h2>5.1  Converting &#8220;VALD3 extended&#8221; format atomic lines to PFANT format<a class="headerlink" href="#converting-vald3-extended-format-atomic-lines-to-pfant-format" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">The Vienna Atomic Line Database (VALD) is &#8220;a</div>
+<div class="line">collection of atomic and molecular transition parameters of</div>
+</div>
+<p>astronomical interest&#8221;
+| (<a class="reference external" href="http://vald.astro.uu.se/">http://vald.astro.uu.se/</a>).</p>
+<p>To convert from the &#8220;VALD3 extended&#8221; to a &#8220;PFANT atomic lines&#8221; file:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">vald3</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">atoms</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">prefix</span><span class="o">&gt;.</span><span class="n">vald3x</span>
+<span class="n">tune</span><span class="o">-</span><span class="n">zinf</span> <span class="n">atoms</span><span class="o">-&lt;</span><span class="n">prefix</span><span class="o">&gt;-</span><span class="n">untuned</span><span class="o">.</span><span class="n">dat</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">This is done in two steps. The first step, <code class="docutils literal"><span class="pre">vald3-to-atoms.py</span></code> does</div>
+</div>
+<p>the actual conversion
+| (which is quick) and saves a file, <em>e.g.</em>, <code class="docutils literal"><span class="pre">atoms.dat</span></code></p>
+<div class="line-block">
+<div class="line">The second step (which is time-consuming) is performed by</div>
+</div>
+<p><code class="docutils literal"><span class="pre">tune-zinf.py</span></code> and aims
+| to tune an important parameter used by the <code class="docutils literal"><span class="pre">pfant</span></code> Fortran binary.</p>
+<div class="line-block">
+<div class="line">It is recommended to use the tool <code class="docutils literal"><span class="pre">cut-atoms.py</span></code> to cut the file</div>
+</div>
+<p>converted by
+| <code class="docutils literal"><span class="pre">vald3-to-atoms.py</span></code> to a wavelength region of interest before
+running <code class="docutils literal"><span class="pre">tune-zinf.py</span></code>.</p>
+<div class="line-block">
+<div class="line">For more information, see help for <code class="docutils literal"><span class="pre">vald3-to-atoms.py</span></code>,</div>
+</div>
+<p><code class="docutils literal"><span class="pre">tune-zinf.py</span></code>,
+| <code class="docutils literal"><span class="pre">cut-atoms.py</span></code> (call these scripts with <code class="docutils literal"><span class="pre">--help</span></code> option).</p>
+</div>
+<div class="section" id="continuous-opacities-selecting-between-pfant-and-marcs-coefficients">
+<h2>5.2 Continuous opacities: selecting between PFANT and MARCS coefficients<a class="headerlink" href="#continuous-opacities-selecting-between-pfant-and-marcs-coefficients" title="Permalink to this headline">¶</a></h2>
+<p>The PFANT default is to use its internal calculation of the continuum.</p>
+<p><strong>PFANT-calculated continuum</strong> (default)</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span> <span class="o">--</span><span class="n">opa</span> <span class="n">F</span>
+<span class="n">pfant</span> <span class="o">--</span><span class="n">opa</span> <span class="n">F</span> <span class="o">--</span><span class="n">absoru</span> <span class="n">T</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">run4</span><span class="o">.</span><span class="n">py</span>
+<span class="o">--</span><span class="n">opa</span> <span class="n">F</span> <span class="o">--</span><span class="n">absoru</span> <span class="n">T</span>
+</pre></div>
+</div>
+<p><strong>MARCS opacities</strong></p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span> <span class="o">--</span><span class="n">opa</span> <span class="n">T</span>
+<span class="n">pfant</span> <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> <span class="o">--</span><span class="n">absoru</span> <span class="n">F</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">run4</span><span class="o">.</span><span class="n">py</span>
+<span class="o">--</span><span class="n">opa</span> <span class="n">T</span> <span class="o">--</span><span class="n">absoru</span> <span class="n">F</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">:notes: For <code class="docutils literal"><span class="pre">innewmarcs</span></code>, &#8220;&#8211;opa T&#8221; causes the creation of an</div>
+</div>
+<p>additional file <em>modeles.opa</em>
+| besides <em>modeles.mod</em>.</p>
+<p>Related command-line options (also accessible in <code class="docutils literal"><span class="pre">x.py</span></code>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">opa</span> <span class="n">T</span> <span class="o">......</span> <span class="n">switches</span> <span class="n">on</span> <span class="n">MARCS</span> <span class="n">opacities</span>
+               <span class="p">(</span><span class="n">may</span> <span class="n">be</span> <span class="n">of</span> <span class="n">two</span> <span class="n">types</span><span class="p">:</span> <span class="n">absorption</span> <span class="ow">and</span> <span class="n">scattering</span><span class="p">)</span>
+<span class="o">--</span><span class="nb">abs</span> <span class="n">T</span> <span class="o">......</span> <span class="n">switches</span> <span class="n">on</span> <span class="n">MARCS</span> <span class="n">absorption</span>
+<span class="o">--</span><span class="n">sca</span> <span class="n">T</span> <span class="o">......</span> <span class="n">switches</span> <span class="n">on</span> <span class="n">MARCS</span> <span class="n">scattering</span>
+<span class="o">--</span><span class="n">absoru</span> <span class="n">F</span> <span class="o">...</span> <span class="n">switches</span> <span class="n">off</span> <span class="n">PFANT</span> <span class="n">internal</span> <span class="n">calculation</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">notes:</th><td class="field-body">In order to use continuum opacities calculated by MARCS code</td>
+</tr>
+</tbody>
+</table>
+<p>(<a class="reference external" href="http://marcs.astro.uu.se/">http://marcs.astro.uu.se/</a>), you will need to create your own
+atmospheric model grid (using <code class="docutils literal"><span class="pre">create-grid.py</span></code>) or download file
+&#8220;grid.moo&#8221; as explained below (this file is too big to be stored on
+GitHub (241 MB &gt; 100 MB)). File &#8220;grid.moo&#8221; contains a 3D grid of MARCS
+(<a class="reference external" href="http://marcs.astro.uu.se/">http://marcs.astro.uu.se/</a>) atmospheric models with opacities included.</p>
+<p>(a) go to directory <code class="docutils literal"><span class="pre">PFANT/data/common</span></code> and run <code class="docutils literal"><span class="pre">get-grid.moo.sh</span></code>,
+or</p>
+<div class="line-block">
+<div class="line">(b) download it from <a href="#id1"><span class="problematic" id="id2">`</span></a>this</div>
+</div>
+<p>location &lt;<a class="reference external" href="https://docs.google.com/uc?export=download&amp;confirm=4o6l&amp;id=0B8m8GNLFiaewejd6dmJ6MW1pX2c">https://docs.google.com/uc?export=download&amp;confirm=4o6l&amp;id=0B8m8GNLFiaewejd6dmJ6MW1pX2c</a>&gt;`__
+| (or <a class="reference external" href="https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view">this
+location</a>)
+| and save it as <em>PFANT/data/common/grid.moo</em></p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="trouble.html" class="btn btn-neutral float-right" title="7 Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="reference.html" class="btn btn-neutral" title="4 Reference section" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2017, JT.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'17.1.28',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

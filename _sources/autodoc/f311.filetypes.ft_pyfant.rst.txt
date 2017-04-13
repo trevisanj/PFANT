@@ -1,0 +1,142 @@
+f311.filetypes.ft_pyfant package
+================================
+
+Submodules
+----------
+
+f311.filetypes.ft_pyfant.fileabonds module
+------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.fileabonds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.fileabsoru2 module
+-------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.fileabsoru2
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.fileabxfwhm module
+-------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.fileabxfwhm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.fileatoms module
+-----------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.fileatoms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filedissoc module
+------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filedissoc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filehitrandb module
+--------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filehitrandb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filehmap module
+----------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filehmap
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filekuruczmol module
+---------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filekuruczmol
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filemain module
+----------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filemain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filemod module
+---------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filemod
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filemoldb module
+-----------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filemoldb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filemolecules module
+---------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filemolecules
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.fileoptions module
+-------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.fileoptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filepartit module
+------------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filepartit
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filetoh module
+---------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filetoh
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.filetypes.ft_pyfant.filevald3 module
+-----------------------------------------
+
+.. automodule:: f311.filetypes.ft_pyfant.filevald3
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: f311.filetypes.ft_pyfant
+    :members:
+    :undoc-members:
+    :show-inheritance:

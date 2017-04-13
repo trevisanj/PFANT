@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>7 Troubleshooting &mdash; f311 17.1.28 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="f311 17.1.28 documentation" href="index.html"/>
+        <link rel="prev" title="5 Miscellanea how-to" href="misc.html"/>
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> f311
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                17.1.28
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">4 Reference section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">5  Miscellanea how-to</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7 Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-down-why-fortran-binaries-fail-to-run">7.1 Tracking down why Fortran binaries fail to run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">7.2 Metallicity/temperature/gravity of star is outside range in the grid of models</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">f311</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>7 Troubleshooting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/trouble.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="troubleshooting">
+<h1>7 Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tracking-down-why-fortran-binaries-fail-to-run">
+<h2>7.1 Tracking down why Fortran binaries fail to run<a class="headerlink" href="#tracking-down-why-fortran-binaries-fail-to-run" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><em>pyfant</em> creates a &#8220;session directory&#8221; named <code class="docutils literal"><span class="pre">session-xxx</span></code> every</div>
+</div>
+<p>time it attempts
+| to run a PFANT binary. Each of these directories will always contain
+at least two files:</p>
+<ul>
+<li><p class="first"><em>commands.log</em> &#8211; this is the command lines attempted. You can
+copy-paste this</p>
+<blockquote>
+<div><p>line in your console to see how the Fortran binary goes.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><em>fortran.log</em> &#8211; messages printed by the Fortran binary.</p>
+</li>
+</ul>
+<p>Commonly, inspecting these files will be enough to figure out what
+happened.</p>
+<div class="line-block">
+<div class="line">Your current directory will also have a file named <em>python.log</em>,</div>
+</div>
+<p>containing
+| debug/info/warning/error messages from Python.</p>
+<div class="line-block">
+<div class="line">:bulb: <code class="docutils literal"><span class="pre">explorer.py</span></code> has a &#8220;Collect errors&#8221; button, which</div>
+<div class="line">recurses directories in search for error/warning messages in all files</div>
+</div>
+<p>named <em>fortran.log</em></p>
+</div>
+<div class="section" id="metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">
+<h2>7.2 Metallicity/temperature/gravity of star is outside range in the grid of models<a class="headerlink" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">You can activate option &#8220;&#8211;allow True&#8221; to make bypass this check, but</div>
+</div>
+<p>beware that the calculation
+| may be incorrect.</p>
+<div class="line-block">
+<div class="line">This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>,</div>
+</div>
+<p>or check option &#8220;&#8211;alow&#8221;
+| in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.</p>
+<div class="line-block">
+<div class="line">:bulb: <code class="docutils literal"><span class="pre">run4.py</span></code> creates a directory named _session-&lt;n&gt; where it</div>
+</div>
+<p>saves temporary
+| files. It may be useful to check the log files in this directory if
+you encounter any
+| errors during program execution.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="misc.html" class="btn btn-neutral" title="5 Miscellanea how-to" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2017, JT.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'17.1.28',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
