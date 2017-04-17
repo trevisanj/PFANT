@@ -1111,7 +1111,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = ' v16.9.20-beta'
+    v = 'v17.4.13'
   end
 
   ! Displays welcome message
@@ -1196,11 +1196,10 @@ contains
     !write(unit_,*) '__/\/\/\_________________________|_|___|_|/_/___\_\_|_\_|_|_|_____/\/\__'
 
 
-    write(unit_,*) ''
-    write(unit_,*) ''
+    write(unit_,*) 'Welcome!'
     write(unit_,*) ''
     write(unit_,*) '`   `        `              `                                           '
-    write(unit_,*) '       Welcome to PFANT      `                   `            ``        '
+    write(unit_,*) '                             `                   `            ``        '
     write(unit_,*) '                                                   `    `     ``        '
     write(unit_,*) '             `                   `             `                        '
     write(unit_,*) '                                           ``  ``                       '
@@ -1209,9 +1208,9 @@ contains
     write(unit_,*) '                                               `                        '
     write(unit_,*) '                        @                                               '
     write(unit_,*) '             `      `              `                 `                  '
-    write(unit_,*) '`                     `           ` Bugs/crashes: please report issue at'
+    write(unit_,*) '`                     `           `                                     '
     write(unit_,*) '                  `                                                     '
-    write(unit_,*) '               @`@`@ `          `      http://github.com/trevisanj/pfant'
+    write(unit_,*) '               @`@`@ `          `                                       '
     write(unit_,*) '`              `    `                            `             `        '
     write(unit_,*) '               `                                                        '
     write(unit_,*) '              `                     ____  _____ _    _   _ _____        '
@@ -1219,7 +1218,6 @@ contains
     write(unit_,*) '        @        `  `              | |_) | |_ / _ \ |  \| | | |       ` '
     write(unit_,*) '   _                @              |  __/|  _/ ___ \| |\  | | |         '
     write(unit_,*) '__|o|______________________________|_|___|_|/_/___\_\_|_\_|_|_|_________'
-    write(unit_,*) ''
     write(unit_,*) ''
     write(unit_,*) ''
   end
@@ -2942,7 +2940,8 @@ contains
     if (execonf_name .eq. '?') &
      call log_and_halt('Executable name not set', is_assertion=.true.)
 
-    write(*,*) to_upper(execonf_name)//pfant_version()
+    write(*,*) trim(to_upper(execonf_name))//' '//trim(pfant_version())
+    write(*,*) 'http://github.com/trevisanj/PFANT'
     write(*,*) ''
 
     call init_options()

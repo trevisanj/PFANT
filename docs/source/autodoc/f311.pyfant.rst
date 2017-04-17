@@ -1,0 +1,78 @@
+f311.pyfant package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    f311.pyfant.basic
+    f311.pyfant.gui
+
+Submodules
+----------
+
+f311.pyfant.conf module
+-----------------------
+
+.. automodule:: f311.pyfant.conf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.errors module
+-------------------------
+
+.. automodule:: f311.pyfant.errors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.multirunnable module
+--------------------------------
+
+.. automodule:: f311.pyfant.multirunnable
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.paths module
+------------------------
+
+.. automodule:: f311.pyfant.paths
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.rm module
+---------------------
+
+.. automodule:: f311.pyfant.rm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.runnables module
+----------------------------
+
+.. automodule:: f311.pyfant.runnables
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.pyfant.util module
+-----------------------
+
+.. automodule:: f311.pyfant.util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: f311.pyfant
+    :members:
+    :undoc-members:
+    :show-inheritance:
