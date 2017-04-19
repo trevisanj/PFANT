@@ -1,6 +1,17 @@
 Cheatsheet
 ==========
 
+
+* **Description of stellar parameters, running settings,
+  command-line options:** run ``x.py``  and navigate through the fields in Tabs 1 and 3.
+  As you navigate, a description of the current field will be displayed at the bottom of the window.
+
+* Call a program with "--help" option, *e.g.*, ``pfant --help``.
+
+
+* ``programs.py`` lists all Fortran/Python programs.
+
+
 PFANT Fortran binaries
 ----------------------
 
