@@ -1,8 +1,5 @@
-Quickstart
-==========
-
-Spectral synthesis from the command line
-----------------------------------------
+Quick Start
+===========
 
 **Aims for this tutorial:**
 
@@ -10,6 +7,9 @@ Spectral synthesis from the command line
 -  convolve with Gaussian functions of varying
    full-width-at-half-maximum (FWHM);
 -  visualize results.
+
+Spectral synthesis from the command line
+----------------------------------------
 
 Short story
 ~~~~~~~~~~~
@@ -24,9 +24,6 @@ Here is the full command sequence:
     link.py
     run4.py
     plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
-
-.. note:: If you choose star "Mu-Leo", run ``run4.py --allow true`` to bypass the fact that its
-          metallicity if outside the atmospheric model grid provided
 
 Long story
 ~~~~~~~~~~
@@ -77,7 +74,7 @@ and/or unlikely to change:
 
     link.py
 
-The following links that should appear in your directory now:
+The following links should appear in your directory now:
 
 -  absoru2.dat
 -  atoms.dat
@@ -114,8 +111,11 @@ This step takes a 3D grid of atmospheric models (usually a file named
 will create two files: "modeles.mod" and "modeles.opa".
 
 .. note:: If the combination of (temperature, gravity, metallicity) is outside the limits of the
-          grid, ``innewmarcs`` will refuse to interpolate. However, it can be forced to use the
-          nearest points in the grid with command-line option ``--allow T``.
+          grid (*e.g.*, if you choose star Mu-Leo), ``innewmarcs`` will refuse to interpolate.
+          However, it can be forced to use the
+          nearest points in the grid with::
+
+              innewmarcs --allow T
 
 Create hydrogen lines profiles
 ''''''''''''''''''''''''''''''
@@ -134,8 +134,11 @@ Calculate synthetic spectrum
 
     pfant
 
-creates files "flux.norm", "flux.spec", "flux.cont", respectively: normalized, un-normalized,
-continuum spectrum.
+creates files:
+
+#. "flux.spec": spectrum
+#. "flux.cont": continuum
+#. "flux.norm": normalized spectrum ((1) divided by (2))
 
 To visualize these files:
 
@@ -157,15 +160,13 @@ Convolve synthetic spectrum with Gaussian function
 ''''''''''''''''''''''''''''''''''''''''''''''''''
 
 The following will take the normalized spectrum from the previous step and convolve it
-with a Gaussian function of FWHM=0.12 :
+with a Gaussian function of
+`FWHM <https://en.wikipedia.org/wiki/Full_width_at_half_maximum>`_ = 0.12,
+creating file "flux.norm.nulbad.0.120":
 
 .. code:: shell
 
-    nulbad
-
-creates file "flux.norm.nulbad.0.120"
-
-.. hint:: You can change the FWHM using option ``--fwhm``
+    nulbad --fwhm 0.12
 
 Plot spectra
 ''''''''''''
@@ -183,7 +184,8 @@ after the convolution (:numref:`plotovl`).
     :align: center
     :class: bordered
 
-    -- plot comparing spectra without and after convolution with Gaussian function (FWHM=0.12).
+    -- plot comparing spectra without and after convolution with Gaussian function
+    (`FWHM <https://en.wikipedia.org/wiki/Full_width_at_half_maximum>`_ = 0.12).
 
 Running the four calculation steps at once
 ''''''''''''''''''''''''''''''''''''''''''
@@ -216,6 +218,13 @@ Now you can invoke the "PFANT Launcher" application (Figure :numref:`figx`):
 
     x.py
 
+.. _figx:
+
+.. figure:: img/x.py-0.png
+    :align: center
+
+    -- Screenshot of the ``x.py`` application
+
 Here is a suggested roadmap:
 
 #. Change parameters in Tab 1/2/3 (Tab 4 is a different story)
@@ -227,13 +236,6 @@ Here is a suggested roadmap:
 #. Double-click on "Plot spectrum": spectrum appears
 
 
-.. _figx:
-
-.. figure:: img/x.py-0.png
-    :align: center
-
-    -- Screenshot of the ``x.py`` application
-
 More information
 ~~~~~~~~~~~~~~~~
 
@@ -243,20 +245,14 @@ More information
 
 * :ref:`moregui`
 
-
-
-
 Writing Python scripts with package f311.pyfant
 -----------------------------------------------
 
 Package "f311.pyfant" provides an API that allows one to perform spectral synthesis from Python code.
 
-Here is a simple spectral synthesis example. The following code runs the Fortran binaries (``innewmarcs``,
- ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python coder, and then
- plots resulting synthetic spectra (:numref:`figpyfant`):
-
-Running innewmarcs, hydro2, pfant, nulbad in sequence & plotting spectra
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Here is a simple spectral synthesis example. The following code runs the Fortran binaries
+(``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python coder, and then
+plots resulting synthetic spectra (:numref:`figpyfant`):
 
 .. code:: python
 
