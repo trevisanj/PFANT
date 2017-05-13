@@ -1,8 +1,5 @@
-Quickstart
-==========
-
-Spectral synthesis from the command line
-----------------------------------------
+Quick Start
+===========
 
 **Aims for this tutorial:**
 
@@ -10,6 +7,9 @@ Spectral synthesis from the command line
 -  convolve with Gaussian functions of varying
    full-width-at-half-maximum (FWHM);
 -  visualize results.
+
+Spectral synthesis from the command line
+----------------------------------------
 
 Short story
 ~~~~~~~~~~~
@@ -24,9 +24,6 @@ Here is the full command sequence:
     link.py
     run4.py
     plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
-
-.. note:: If you choose star "Mu-Leo", run ``run4.py --allow true`` to bypass the fact that its
-          metallicity if outside the atmospheric model grid provided
 
 Long story
 ~~~~~~~~~~
@@ -47,9 +44,8 @@ Input data consists of:
 #. stellar parameters (temperature, chemical abundances etc.) and
    running settings (*e.g.*, calculation wavelength interval);
 #. star-independent physical data: line lists, atmospheric model grid,
-   partition
-    functions etc. that are less likely to be modified.
-    We refer to these as "common" data.
+   partition functions etc. that are less likely to be modified.
+   We refer to these as "common" data.
 
 Stellar data and running settings
 '''''''''''''''''''''''''''''''''
@@ -60,70 +56,66 @@ The following displays a menu allowing you to choose among a few stars:
 
     copy-star.py
 
-After running this, the following files will be copied into the *mystar*
+After running this, the following files will be copied into the "mystar"
 directory:
 
--  *main.dat*: main configuration (editable with ``mained.py``,
+-  "main.dat": main configuration (editable with ``mained.py``,
    ``x.py``)
--  *abonds.dat*: chemical abundances (editable with ``abed.py``,
+-  "abonds.dat": chemical abundances (editable with ``abed.py``,
    ``x.py``)
 
 Common data
 '''''''''''
 
-| For these data, we will create links instead of copying the files, as
-the files are big
-| and/or unlikely to change:
+For these data, we will create links instead of copying the files, as the files are big
+and/or unlikely to change:
 
 .. code:: shell
 
     link.py
 
-The following links that should appear in your directory now:
+The following links should appear in your directory now:
 
--  *absoru2.dat*
--  *atoms.dat*
--  *grid.moo*
--  *hmap.dat*
--  *molecules.dat*
--  *partit.dat*
+-  absoru2.dat
+-  atoms.dat
+-  grid.moo
+-  hmap.dat
+-  molecules.dat
+-  partit.dat
 
 Spectral synthesis pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| Spectral synthesis involves a few steps,
-| as shown Figure 2,
-| and described in the next subsections.
+Spectral synthesis involves a few steps, as shown in :numref:`workflow-short`, and described in the next subsections.
 
-::
+.. _workflow-short:
 
-    +-------------------+   +----------------+   +-----------+   +----------+
-    | innewmarcs        |   | hydro2         |   | pfant     |   | nulbad   |
-    | ==========        |   | ======         |   | =====     |   | ======   |
-    |   interpolate the |   |         create |   | calculate |   | convolve |
-    |       atmospheric |-->| hydrogen lines |-->| synthetic |-->|     with |
-    |             model |   |       profiles |   |  spectrum |   | Gaussian |
-    +-------------------+   +----------------+   +-----------+   +----------+
 
-Figure 2 - PFANT spectral synthesis pipeline showing the Fortran
-program names and what they do.
+.. figure:: img/workflow-short.txt.png
+    :align: center
+    :class: bordered
+
+    -- PFANT spectral synthesis pipeline showing the Fortran program names and what they do.
 
 Interpolate the stellar atmospheric model
 '''''''''''''''''''''''''''''''''''''''''
 
 This step takes a 3D grid of atmospheric models (usually a file named
-*grid.mod*) and interpolates a new model given a certain point (temperature, gravity, metallicity)
+"grid.mod") and interpolates a new model given a certain point (temperature, gravity, metallicity)
 (specified in the main configuration file) contained within the limits of the grid.
 
 .. code:: shell
 
     innewmarcs
 
-will create two files: *modeles.mod* and *modeles.opa*.
+will create two files: "modeles.mod" and "modeles.opa".
 
 .. note:: If the combination of (temperature, gravity, metallicity) is outside the limits of the
-          grid, ``innewmarcs`` will refuse to interpolate. However, it can be forced to use the
-          nearest points in the grid with command-line option ``--allow T``.
+          grid (*e.g.*, if you choose star Mu-Leo), ``innewmarcs`` will refuse to interpolate.
+          However, it can be forced to use the
+          nearest points in the grid with::
+
+              innewmarcs --allow T
 
 Create hydrogen lines profiles
 ''''''''''''''''''''''''''''''
@@ -132,7 +124,7 @@ Create hydrogen lines profiles
 
     hydro2
 
-will create files such as: *thalpha* (Figure 8), *thbeta*, *thgamma*
+will create files such as: "thalpha" (:numref:`figalpha`), "thbeta", "thgamma"
 etc.
 
 Calculate synthetic spectrum
@@ -142,8 +134,11 @@ Calculate synthetic spectrum
 
     pfant
 
-creates files *flux.norm*, *flux.spec*, *flux.cont*, respectively: normalized, un-normalized,
-continuum spectrum.
+creates files:
+
+#. "flux.spec": spectrum
+#. "flux.cont": continuum
+#. "flux.norm": normalized spectrum ((1) divided by (2))
 
 To visualize these files:
 
@@ -151,26 +146,27 @@ To visualize these files:
 
     plot-spectra.py flux.spec flux.cont flux.norm
 
-will open a plot window (Figure 3).
+will open a plot window (:numref:`plot3`).
 
-|image0|
+.. _plot3:
 
-Figure 3 -- plots of three files generated by ``pfant``.
+.. figure:: img/spec-cont-norm0.png
+    :align: center
+    :class: bordered
+
+    -- plots of three files generated by ``pfant``.
 
 Convolve synthetic spectrum with Gaussian function
 ''''''''''''''''''''''''''''''''''''''''''''''''''
 
-| The following will take the normalized spectrum from the previous step
-and convolve it
-| with a Gaussian function of FWHM=0.12 :
+The following will take the normalized spectrum from the previous step and convolve it
+with a Gaussian function of
+`FWHM <https://en.wikipedia.org/wiki/Full_width_at_half_maximum>`_ = 0.12,
+creating file "flux.norm.nulbad.0.120":
 
 .. code:: shell
 
-    nulbad
-
-creates file *flux.norm.nulbad.0.120*
-
-.. hint:: You can change the FWHM using option ``--fwhm``
+    nulbad --fwhm 0.12
 
 Plot spectra
 ''''''''''''
@@ -180,12 +176,16 @@ Plot spectra
     plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 
 opens a plot window where one can see how the spectrum looks before and
-after the convolution (Figure 4).
+after the convolution (:numref:`plotovl`).
 
-|image1|
+.. _plotovl:
 
-Figure 4 -- plot comparing spectra without and after convolution with
-Gaussian function (FWHM=0.12).
+.. figure:: img/normfwhm.png
+    :align: center
+    :class: bordered
+
+    -- plot comparing spectra without and after convolution with Gaussian function
+    (`FWHM <https://en.wikipedia.org/wiki/Full_width_at_half_maximum>`_ = 0.12).
 
 Running the four calculation steps at once
 ''''''''''''''''''''''''''''''''''''''''''
@@ -198,23 +198,6 @@ The script ``run4.py`` is provided for convenience and will run all Fortran bina
 
 .. hint:: The same command-line options available in the Fortran binaries are available in ``run4.py ``.
 
-Where you can find more information
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-* **Description of stellar parameters, running settings,
-  command-line options:** run ``x.py``  and navigate through the fields in Tabs 1 and 3.
-  As you navigate, a description of the current field will be displayed at the bottom of the window.
-
-* Call a program with "--help" option, *e.g.*, ``pfant --help``.
-
-* TODO **other *README.md* files** can be found in other PFANT subdirectories.
-
-* ``programs.py`` lists all Fortran/Python programs.
-
-* The Fortran source code
-
-* TODO Also check the pyfant tutorial(s) at
-http://github.com/trevisanj/pyfant
 
 Spectral synthesis using the Graphical interface
 ------------------------------------------------
@@ -229,11 +212,18 @@ First it is necessary to create a new directory and gather the input data
     copy-star.py
     link.py common
 
-Now you can invoke the "PFANT Launcher" application (Figure 5):
+Now you can invoke the "PFANT Launcher" application (Figure :numref:`figx`):
 
 .. code:: shell
 
     x.py
+
+.. _figx:
+
+.. figure:: img/x.py-0.png
+    :align: center
+
+    -- Screenshot of the ``x.py`` application
 
 Here is a suggested roadmap:
 
@@ -245,90 +235,24 @@ Here is a suggested roadmap:
 #. Double-click on "flux.norm": turns green (if wasn't so)
 #. Double-click on "Plot spectrum": spectrum appears
 
-|image2|
 
-|image3|
+More information
+~~~~~~~~~~~~~~~~
 
-|image4|
+.. todo:: Now more towards moving the GUI descriptions to the f311 documentation, given that convmol
+          will be probably over there as well. I can emphasize over there what applies to PFANT and what not.
+          Separate this somehow into subsections and group them to make things appear in more than one place (or not)
 
-|image5|
+* :ref:`moregui`
 
-Figure 5 -- Screenshots of the ``x.py`` application
+Writing Python scripts with package f311.pyfant
+-----------------------------------------------
 
-More GUI
-========
+Package "f311.pyfant" provides an API that allows one to perform spectral synthesis from Python code.
 
-Editing input data files
-------------------------
-
-Edit stellar parameters and abundances
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. TODO:: explain that these files can be edited using mained.py, abed.py or also in x.py
-
-.. TODO:: summarize file types and their editors
-
-Browse files with *F311 Explorer*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: shell
-
-    explorer.py
-
-|image6|
-
-This application allows you to navigate through your file system and
-visualize/edit files of various files, including spectra and most files used by PFANT.
-A list with all supported file types is
-available `here <...>`__
-
-You can select several spectral files and plot them all at once
-(stacked in different sub-plots, or overlapped in a single plot).
-
-Edit Atomic Lines file
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. TODO:: reduce screenshot sizes
-
-First make a copy of file "atoms.dat" to leave the current one
-untouched.
-
-.. code:: shell
-
-    copy atoms.dat atoms2.dat
-
-Now open the Atomic Lines Editor
-
-.. code:: shell
-
-    ated.py atoms2.dat
-
-|image7|
-
-Edit Molecular Lines file
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First make a copy of file "molecules.dat" to leave the current one
-untouched.
-
-.. code:: shell
-
-    copy molecules.dat molecules2.dat
-
-Now open the Molecular Lines Editor
-
-.. code:: shell
-
-    mled.py molecules2.dat
-
-|image8|
-
-
-Writing Python scripts with *pyfant* package
---------------------------------------------
-
-Running innewmarcs, hydro2, pfant, nulbad in sequence & plotting spectra
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Here is a simple spectral synthesis example. The following code runs the Fortran binaries
+(``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python coder, and then
+plots resulting synthetic spectra (:numref:`figpyfant`):
 
 .. code:: python
 
@@ -344,21 +268,16 @@ Running innewmarcs, hydro2, pfant, nulbad in sequence & plotting spectra
     # Plots normalized unconvolved, normalized convolved spectra overlapped
     ex.plot_spectra_overlapped([obj.result["norm"], obj.result["convolved"]])
 
-|image9|
-
-|image10|
 
 TODO for more examples, please visit .........
 
+.. _figpyfant:
 
-.. |image0| image:: img/spec-cont-norm0.png
-.. |image1| image:: img/normfwhm.png
-.. |image2| image:: img/x.py-0.png
-.. |image3| image:: img/x.py-1.png
-.. |image4| image:: img/x.py-2.png
-.. |image5| image:: img/x.py-3.png
-.. |image6| image:: img/explorer.png
-.. |image7| image:: img/ated.png
-.. |image8| image:: img/mled.png
-.. |image9| image:: img/pyfant-example-00.png
-.. |image10| image:: img/pyfant-example-01.png
+.. figure:: img/pyfant-example.png
+    :align: center
+    :class: bordered
+
+    -- Plots generated from code above.
+
+Project f311 contains a large number of resources, most of them related to PFANT or spectral synthesis
+somehow. For more examples and full documentation, visit http://trevisanj.github.io/f311 .
