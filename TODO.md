@@ -1,5 +1,8 @@
 # TODO list
 
+  - ALARGM AGAIN!! Not satisfactory
+  - Auto-dissoc: Abyunadncas in dissoc cannot be less than 99.99 (that thing made in Elvis' computer)
+
   - banner in README.md
   - ~~alargm in molecules ~~
 

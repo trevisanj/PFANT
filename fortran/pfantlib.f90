@@ -5713,8 +5713,6 @@ contains
         ! BLB: Sj -- Honl-London factor calculated such that sum(S_j/(2*j+1)) = 1
         ! BLB: JJ -- rotational quantum number
         ! BLB: IZ -- branch as table:  **not used, but important information**
-        !  JT:       branch may now come as alphanumeric (P/Q/R/P1...)
-        !  JT:                 delta_J = J_sup - J_inf = Jl - J2l = J' - J"
         ! BLB:       P  -  1   -1
         ! BLB:       Q  -  2    0
         ! BLB:       R  -  3   +1
@@ -5727,6 +5725,13 @@ contains
         ! BLB:       P3 - 10
         ! BLB:       Q3 - 11
         ! BLB:       R3 - 12
+        !  JT:       branch may now come as alphanumeric (P/Q/R/P1...) (unambiguous, see below)
+        !  JT:                 delta_J = J_sup - J_inf = Jl - J2l = J' - J"
+        !  JT:
+        !  JT: (20170512) Found out that depending on the molecule, IZ may mean something different
+        !  JT:            For example, for Bruno's OH, IZ is as above (and only values from 4 to 9 are found)
+        !  JT:            But for Bruno's CH, the meaning, respectively, from 1 to 12, is:
+        !  JT:            P1, P12, P21, P2, Q1, Q12, Q21, Q2, R1, R12, R21, R2
         ! BLB: ITRANS -- key to indicate which is the (v',v'') -- only used in isotropic calculations
         !                (JT) I think this column has been discarded because it does not exist in molecules.dat
         ! BLB: NUMLIN -- key as table:
