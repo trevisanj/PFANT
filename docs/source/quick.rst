@@ -268,6 +268,9 @@ plots resulting synthetic spectra (:numref:`figpyfant`):
     # Plots normalized unconvolved, normalized convolved spectra overlapped
     ex.plot_spectra_overlapped([obj.result["norm"], obj.result["convolved"]])
 
+
+TODO for more examples, please visit .........
+
 .. _figpyfant:
 
 .. figure:: img/pyfant-example.png
