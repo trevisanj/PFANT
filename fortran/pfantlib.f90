@@ -177,10 +177,8 @@ module logging
 
 
   ! Signs to be used as you wish
-  character(:), parameter :: &
-   ENTERING = '>>>>>>>>>> ENTERING ', &
-   LEAVING  = '<<<<<<<<<< LEAVING '
-
+  character(20), parameter :: ENTERING = '>>>>>>>>>> ENTERING '
+  character(19), parameter :: LEAVING = '<<<<<<<<<< LEAVING '
 
   !=====
   ! Configurable variables
@@ -1433,7 +1431,7 @@ module misc_math
   ! time they are needed inside a routine
   real*8, parameter :: PI = acos(-1.), & ! 3.14169265...
                        RPI = sqrt(PI), & ! square root of pi, approx 1.772453851
-                       H = 6.6252E-27, & ! Plank constant in erg*s
+                       H = 6.6252E-27, & ! Planck constant in erg*s
                                          ! ISSUE actual value may be 6.6260E-27
                        C = 2.997929E+10,&! speed of light in cm/s
                        KB = 1.38046E-16  ! Boltzmann's constant in erg/K
