@@ -3196,10 +3196,10 @@ contains
     select case(opt%name)
       case ('help')
           call show_help(6)
-          stop('Bye')
+          stop
       case ('play')
           call play()
-          stop('Bye')
+          stop
       case ('logging_level')
         ! Note that logging level change takes effect immediately
         select case (to_lower(o_arg))
