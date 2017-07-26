@@ -177,8 +177,8 @@ module logging
 
 
   ! Signs to be used as you wish
-  character(20), parameter :: ENTERING = '>>>>>>>>>> ENTERING '
-  character(19), parameter :: LEAVING = '<<<<<<<<<< LEAVING '
+  character(*), parameter :: ENTERING = '>>>>>>>>>> ENTERING '
+  character(*), parameter :: LEAVING = '<<<<<<<<<< LEAVING '
 
   !=====
   ! Configurable variables
@@ -2922,7 +2922,7 @@ module config
   ! indentation string to be used in help text at will
   character(3), private, parameter :: IND = '.. '
   ! Message to be used in help text at will.
-  character(:), private, parameter :: FROM_MAIN = ' (read from main configuration file)'
+  character(*), private, parameter :: FROM_MAIN = ' (read from main configuration file)'
 
   private :: validate_options, &
    init_options, parse_args, show_help, exe_wants, handle_option
