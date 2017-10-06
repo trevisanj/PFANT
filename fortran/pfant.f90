@@ -593,10 +593,12 @@ contains
     opa_mass_factor = 0
     ab_h = 10**modele%abund(1)
     do i = 1, 92
+      ! (atomic mass) * (dimensionless abundance relative to hydrogen)
       temp = weights(i)*(10**modele%abund(i)/ab_h)
       opa_mass_factor = opa_mass_factor+temp
       ! print *, 'mass of element ', i, ': ', weights(i), '; coiso: ', temp, '; abund: ', modele%abund(i)
     end do
+    ! the constant is 1/(number of avogadro ~= 6.02e23)
     opa_mass_factor = opa_mass_factor*1.6606e-24
 
     ! print *, 'opa_mass_factor ', opa_mass_factor
