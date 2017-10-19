@@ -157,6 +157,7 @@ contains
        echx_bid,       & ! read and discarded
        echy_bid,       & ! read and discarded
        fwhm_bid          ! read and discarded
+
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
 
       ! allocates rs_ffnu at first iteration
