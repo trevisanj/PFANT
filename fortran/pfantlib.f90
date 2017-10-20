@@ -352,12 +352,12 @@ contains
     perc = 100.*i/n
 
     !#assertion
-    if (n .gt. 9999) then
-      call log_and_halt('Cannot log progress for number of iterations > 9999', &
+    if (n .gt. 999999) then
+      call log_and_halt('Cannot log progress for number of iterations > 999999', &
        is_assertion=.true.)
     end if
 
-    write (lll,'(''$-$-$ progress: '', f5.1, ''% ('', i4, ''/'', i4, '') $-$-$'')') &
+    write (lll,'(''$-$-$ progress: '', f5.1, ''% ('', i6, ''/'', i6, '') $-$-$'')') &
      perc, i, n
     call log_info(lll)
     open(newunit=myunit, file=logging_fn_progress, status='replace', err=10)

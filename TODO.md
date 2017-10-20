@@ -6,6 +6,8 @@
 
 ## Misc
 
+- Auto-fix compatibility between pas and aint, including pas > aint (increase aint then)
+
 - review Sun Grevesse-2015 data: 
 https://www.aanda.org/articles/aa/full_html/2015/01/aa24111-14/aa24111-14.html
 https://www.aanda.org/articles/aa/full_html/2015/01/aa24110-14/aa24110-14.html
