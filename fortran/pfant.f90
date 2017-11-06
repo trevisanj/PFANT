@@ -1220,7 +1220,7 @@ program pfant
   ! x_aint has to be divisible by x_pas
   temp = x_aint/x_pas
   if (abs(temp-nint(temp)) .gt. 1.e-10) then
-    call log_and_halt('pas='//real82str(x_pas, 3)//' (delta-lambda) must be a '//&
+    call log_and_halt('pas='//real82str(x_pas, 5)//' (delta-lambda) must be a '//&
      'sub-multiple of aint='//real82str(x_aint, 1)//' (they are set in '//&
      'main configuration file, or command-line options "--aint" and "--pas").')
   end if
