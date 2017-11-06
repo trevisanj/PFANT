@@ -4944,7 +4944,11 @@ contains
         read(myunit,*) filetoh_jmax(i)
         read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
         read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
-        write(14, '(53e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
+        
+
+        ! todo cleanup
+        ! write(14, '(53e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
+        
         close(myunit)
 
         ! Takes first lambda of file as a reference

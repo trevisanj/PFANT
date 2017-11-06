@@ -617,15 +617,11 @@ contains
       !call   ft2(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
 
-      ! todo cleanup
-
-      ! print *, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
-
-
       if (config_sca) &
        call ftlin3(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
 
+      ! todo cleanup
       ! print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
 
 
@@ -635,9 +631,11 @@ contains
 
 
       !call   ft2(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
-      ! print *, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+
       if (config_abs) &
        call ftlin3(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
+
+      ! todo cleanup
       ! print *, "___B___"
 
 
