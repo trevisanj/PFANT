@@ -176,16 +176,17 @@ Plot spectra
     plot-spectra.py --ovl flux.norm flux.norm.nulbad.0.120
 
 opens a plot window where one can see how the spectrum looks before and
-after the convolution (:numref:`plotovl`).
+after the convolution (:numref:`figovl`).
 
-.. _plotovl:
+.. _figovl:
 
 .. figure:: img/normfwhm.png
     :align: center
     :class: bordered
 
     -- plot comparing spectra without and after convolution with Gaussian function
-    (`FWHM <https://en.wikipedia.org/wiki/Full_width_at_half_maximum>`_ = 0.12).
+    (FWHM = 0.12)
+
 
 Running the four calculation steps at once
 ''''''''''''''''''''''''''''''''''''''''''
@@ -196,7 +197,7 @@ The script ``run4.py`` is provided for convenience and will run all Fortran bina
 
     run4.py --fwhm 0.12
 
-.. hint:: The same command-line options available in the Fortran binaries are available in ``run4.py ``.
+.. hint:: The same command-line options available in the Fortran binaries are available in ``run4.py``.
 
 
 Spectral synthesis using the Graphical interface
@@ -236,19 +237,11 @@ Here is a suggested roadmap:
 #. Double-click on "Plot spectrum": spectrum appears
 
 
-More information
-~~~~~~~~~~~~~~~~
-
-.. todo:: Now more towards moving the GUI descriptions to the f311 documentation, given that convmol
-          will be probably over there as well. I can emphasize over there what applies to PFANT and what not.
-          Separate this somehow into subsections and group them to make things appear in more than one place (or not)
-
-* :ref:`moregui`
-
 Writing Python scripts with package f311.pyfant
 -----------------------------------------------
 
-Package "f311.pyfant" provides an API that allows one to perform spectral synthesis from Python code.
+Package "f311.pyfant" provides an API that allows one to perform spectral synthesis from Python code,
+manipulate PFANT-related data files, and more.
 
 Here is a simple spectral synthesis example. The following code runs the Fortran binaries
 (``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python coder, and then
@@ -269,7 +262,6 @@ plots resulting synthetic spectra (:numref:`figpyfant`):
     ex.plot_spectra_overlapped([obj.result["norm"], obj.result["convolved"]])
 
 
-TODO for more examples, please visit .........
 
 .. _figpyfant:
 
@@ -279,5 +271,6 @@ TODO for more examples, please visit .........
 
     -- Plots generated from code above.
 
-Project f311 contains a large number of resources, most of them related to PFANT or spectral synthesis
-somehow. For more examples and full documentation, visit http://trevisanj.github.io/f311 .
+.. hint::
+
+    More Python examples can be found at https://trevisanj.github.io/f311/pyfant.html

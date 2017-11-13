@@ -16,7 +16,5 @@ PFANT is a stellar spectral synthesis software for use in Astronomy.
    misc
    trouble
    cheat
-   source_overview
    license
-
-.. todo:: convert other README.md files
+   For Fortran developers <https://github.com/trevisanj/PFANT/blob/master/fortran/README.md>

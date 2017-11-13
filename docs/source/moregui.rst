@@ -4,14 +4,8 @@ More GUI
 Editing input data files
 ------------------------
 
-Edit stellar parameters and abundances
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. todo:: explain that these files can be edited using mained.py, abed.py or also in x.py
-
-
 Browse files with F311 Explorer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This application (:numref:`figexplorer`) allows you to navigate through your file system and
 visualize/edit files of various files, including spectra and most files used by PFANT.
@@ -29,9 +23,6 @@ available `here <...>`__
     :align: center
 
     -- ``explorer.py`` screenshot.
-
-
-.. todo:: summarize file types and their editors
 
 
 You can select several spectral files and plot them all at once
