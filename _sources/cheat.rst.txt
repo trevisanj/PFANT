@@ -29,15 +29,11 @@ Graphical applications
 * ``abed.py``: Abundances file editor
 * ``ated.py``: Atomic lines file editor
 * ``convmol.py``: Conversion of molecular lines data to PFANT format
-* ``create-grid.py``: Merges several atmospheric models into a single file (*i.e.*, the "grid")
-* ``cut-atoms.py``: Cuts atomic lines file to wavelength interval specified
-* ``cut-molecules.py``: Cuts molecular lines file to wavelength interval specified
-* ``cut-spectrum.py``: Cuts spectrum file to wavelength interval specified
-* ``download-hitran.py``: Downloads molecular lines from HITRAN database
-* ``explorer.py``: F311 Explorer --  list, visualize, and edit data files (*à la* File Manager)
-* ``print-nist.py``: Downloads and prints molecular constants from NIST Web Book for a particular molecule
-* ``mained.py``: Main configuration file editor.
-* ``mled.py``: Molecular lines file editor.
+* ``explorer.py``: F311 Explorer -- list, visualize, and edit data files (*à la* File Manager)
+* ``mained.py``: Main configuration file editor
+* ``mced.py``: Editor for molecular constants file
+* ``mled.py``: Molecular lines file editor
+* ``moldbed.py``: Editor for molecules SQLite database
 * ``tune-zinf.py``: Tunes the "zinf" parameter for each atomic line in atomic lines file
 * ``x.py``: PFANT Launcher -- Graphical Interface for Spectral Synthesis
 
@@ -45,7 +41,13 @@ Command-line tools
 ~~~~~~~~~~~~~~~~~~
 
 * ``copy-star.py``: Copies stellar data files (such as main.dat, abonds.dat, dissoc.dat) to local directory
+* ``create-grid.py``: Merges several atmospheric models into a single file (*i.e.*, the "grid")
+* ``cut-atoms.py``: Cuts atomic lines file to wavelength interval specified
+* ``cut-molecules.py``: Cuts molecular lines file to wavelength interval specified
+* ``cut-spectrum.py``: Cuts spectrum file to wavelength interval specified
+* ``hitran-scraper.py``: Retrieves molecular lines from the HITRAN database
 * ``link.py``: Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory
+* ``nist-scraper.py``: Retrieves molecular constants from NIST Web Book for a particular molecule
 * ``plot-spectra.py``: Plots spectra on screen or creates PDF file
 * ``run4.py``: Runs the four Fortran binaries in sequence: ``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``
 * ``save-pdf.py``: Looks for files "*.norm" inside directories session-* and saves one figure per page in a PDF file

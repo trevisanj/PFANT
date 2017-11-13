@@ -202,15 +202,11 @@ As you navigate, a description of the current field will be displayed at the bot
 <li><code class="docutils literal"><span class="pre">abed.py</span></code>: Abundances file editor</li>
 <li><code class="docutils literal"><span class="pre">ated.py</span></code>: Atomic lines file editor</li>
 <li><code class="docutils literal"><span class="pre">convmol.py</span></code>: Conversion of molecular lines data to PFANT format</li>
-<li><code class="docutils literal"><span class="pre">create-grid.py</span></code>: Merges several atmospheric models into a single file (<em>i.e.</em>, the “grid”)</li>
-<li><code class="docutils literal"><span class="pre">cut-atoms.py</span></code>: Cuts atomic lines file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">cut-molecules.py</span></code>: Cuts molecular lines file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">cut-spectrum.py</span></code>: Cuts spectrum file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">download-hitran.py</span></code>: Downloads molecular lines from HITRAN database</li>
-<li><code class="docutils literal"><span class="pre">explorer.py</span></code>: F311 Explorer –  list, visualize, and edit data files (<em>à la</em> File Manager)</li>
-<li><code class="docutils literal"><span class="pre">print-nist.py</span></code>: Downloads and prints molecular constants from NIST Web Book for a particular molecule</li>
-<li><code class="docutils literal"><span class="pre">mained.py</span></code>: Main configuration file editor.</li>
-<li><code class="docutils literal"><span class="pre">mled.py</span></code>: Molecular lines file editor.</li>
+<li><code class="docutils literal"><span class="pre">explorer.py</span></code>: F311 Explorer – list, visualize, and edit data files (<em>à la</em> File Manager)</li>
+<li><code class="docutils literal"><span class="pre">mained.py</span></code>: Main configuration file editor</li>
+<li><code class="docutils literal"><span class="pre">mced.py</span></code>: Editor for molecular constants file</li>
+<li><code class="docutils literal"><span class="pre">mled.py</span></code>: Molecular lines file editor</li>
+<li><code class="docutils literal"><span class="pre">moldbed.py</span></code>: Editor for molecules SQLite database</li>
 <li><code class="docutils literal"><span class="pre">tune-zinf.py</span></code>: Tunes the “zinf” parameter for each atomic line in atomic lines file</li>
 <li><code class="docutils literal"><span class="pre">x.py</span></code>: PFANT Launcher – Graphical Interface for Spectral Synthesis</li>
 </ul>
@@ -219,7 +215,13 @@ As you navigate, a description of the current field will be displayed at the bot
 <h3>Command-line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">copy-star.py</span></code>: Copies stellar data files (such as main.dat, abonds.dat, dissoc.dat) to local directory</li>
+<li><code class="docutils literal"><span class="pre">create-grid.py</span></code>: Merges several atmospheric models into a single file (<em>i.e.</em>, the “grid”)</li>
+<li><code class="docutils literal"><span class="pre">cut-atoms.py</span></code>: Cuts atomic lines file to wavelength interval specified</li>
+<li><code class="docutils literal"><span class="pre">cut-molecules.py</span></code>: Cuts molecular lines file to wavelength interval specified</li>
+<li><code class="docutils literal"><span class="pre">cut-spectrum.py</span></code>: Cuts spectrum file to wavelength interval specified</li>
+<li><code class="docutils literal"><span class="pre">hitran-scraper.py</span></code>: Retrieves molecular lines from the HITRAN database</li>
 <li><code class="docutils literal"><span class="pre">link.py</span></code>: Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory</li>
+<li><code class="docutils literal"><span class="pre">nist-scraper.py</span></code>: Retrieves molecular constants from NIST Web Book for a particular molecule</li>
 <li><code class="docutils literal"><span class="pre">plot-spectra.py</span></code>: Plots spectra on screen or creates PDF file</li>
 <li><code class="docutils literal"><span class="pre">run4.py</span></code>: Runs the four Fortran binaries in sequence: <code class="docutils literal"><span class="pre">innewmarcs</span></code>, <code class="docutils literal"><span class="pre">hydro2</span></code>, <code class="docutils literal"><span class="pre">pfant</span></code>, <code class="docutils literal"><span class="pre">nulbad</span></code></li>
 <li><code class="docutils literal"><span class="pre">save-pdf.py</span></code>: Looks for files “<em>.norm” inside directories session-</em> and saves one figure per page in a PDF file</li>
