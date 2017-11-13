@@ -564,7 +564,7 @@ contains
   end subroutine
 
 
-  ! Calculates opa_*: interpolated abs and sca, "mass factor"
+  ! Calculates opa_*: interpolated abs and sca, "mass factor" (see comments melow)
 
   subroutine calc_opa()
     ! Atomic weights of all elements from hydrogen to uranium
@@ -596,9 +596,8 @@ contains
       ! (atomic mass) * (dimensionless abundance relative to hydrogen)
       temp = weights(i)*(10**modele%abund(i)/ab_h)
       opa_mass_factor = opa_mass_factor+temp
-      ! print *, 'mass of element ', i, ': ', weights(i), '; coiso: ', temp, '; abund: ', modele%abund(i)
     end do
-    ! the constant is 1/(number of avogadro ~= 6.02e23)
+    ! the constant is 1/(number of Avogadro ~= 6.02e23)
     opa_mass_factor = opa_mass_factor*1.6606e-24
 
     ! print *, 'opa_mass_factor ', opa_mass_factor
