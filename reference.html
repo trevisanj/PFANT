@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Reference &mdash; PFANT 17.4.13 documentation</title>
+  <title>Reference &mdash; PFANT latest documentation</title>
   
 
   
@@ -30,14 +30,16 @@
   
 
   
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PFANT 17.4.13 documentation" href="index.html"/>
+    <link rel="top" title="PFANT latest documentation" href="index.html"/>
         <link rel="next" title="Miscellanea how-to" href="misc.html"/>
-        <link rel="prev" title="Quickstart" href="quick.html"/>
+        <link rel="prev" title="More GUI" href="moregui.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 
@@ -68,7 +70,7 @@
             
             
               <div class="version">
-                17.4.13
+                latest
               </div>
             
           
@@ -93,8 +95,10 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moregui.html">More GUI</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-pipeline">Spectral synthesis pipeline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#input-output-data-files">Input/output data files</a><ul>
@@ -113,6 +117,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
             
@@ -182,41 +188,10 @@
 and the files and file types involved.</p>
 <div class="section" id="spectral-synthesis-pipeline">
 <h2>Spectral synthesis pipeline<a class="headerlink" href="#spectral-synthesis-pipeline" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>                   <span class="o">+---------------------------+---------------------</span><span class="n">main</span><span class="o">.</span><span class="n">dat</span>
-                   <span class="o">|</span>                           <span class="o">|</span>                        <span class="o">|</span>
-                   <span class="n">v</span>                           <span class="n">v</span>  <span class="p">(</span><span class="n">H</span> <span class="n">lines</span><span class="p">)</span>             <span class="o">|</span>
-<span class="n">grid</span><span class="o">.</span><span class="n">mod</span>     <span class="o">+----------+</span>                  <span class="o">+------+</span>                     <span class="o">|</span>
-     <span class="ow">or</span> <span class="o">----&gt;|</span><span class="n">innewmarcs</span><span class="o">|--&gt;</span><span class="n">modeles</span><span class="o">.</span><span class="n">mod</span><span class="o">---&gt;|</span><span class="n">hydro2</span><span class="o">|&lt;----------+</span>         <span class="o">|</span>
-<span class="n">grid</span><span class="o">.</span><span class="n">moo</span>     <span class="o">+----------+</span>         <span class="o">|</span>        <span class="o">+------+</span>           <span class="o">|</span>         <span class="o">|</span>
-             <span class="p">(</span><span class="n">interpolate</span>         <span class="o">|</span>            <span class="o">|</span>              <span class="o">|</span>         <span class="o">|</span>
-              <span class="n">atm</span><span class="o">.</span> <span class="n">model</span><span class="p">)</span>         <span class="o">|</span>            <span class="n">v</span>              <span class="o">|</span>         <span class="o">|</span>
-                                  <span class="o">|</span>         <span class="n">thalpha</span>           <span class="o">|</span>         <span class="o">|</span>
-                                  <span class="o">|</span>         <span class="n">thbeta</span>        <span class="n">absoru2</span><span class="o">.</span><span class="n">dat</span>   <span class="o">|</span>
-                                  <span class="o">|</span>         <span class="n">thgamma</span>       <span class="n">hmap</span><span class="o">.</span><span class="n">dat</span>      <span class="o">|</span>
-                                  <span class="o">|</span>         <span class="n">thdelta</span>           <span class="o">|</span>         <span class="o">|</span>
-                                  <span class="o">|</span>         <span class="n">thepsilon</span>         <span class="o">|</span>         <span class="o">|</span>
-                                  <span class="o">|</span>            <span class="o">|</span>              <span class="o">|</span>         <span class="o">|</span>
-                   <span class="n">abonds</span><span class="o">.</span><span class="n">dat</span>     <span class="o">|</span>            <span class="n">v</span>              <span class="o">|</span>         <span class="o">|</span>
-                   <span class="n">dissoc</span><span class="o">.</span><span class="n">dat</span>     <span class="o">+--------&gt;+-----+</span>           <span class="o">|</span>         <span class="o">|</span>
-                    <span class="n">atoms</span><span class="o">.</span><span class="n">dat</span>    <span class="p">(</span><span class="n">synthesis</span><span class="p">)</span><span class="o">|</span><span class="n">pfant</span><span class="o">|&lt;----------+</span>         <span class="o">|</span>
-                <span class="n">molecules</span><span class="o">.</span><span class="n">dat</span> <span class="o">-------------&gt;+-----+&lt;--------------------+</span>
-                   <span class="n">partit</span><span class="o">.</span><span class="n">dat</span>                  <span class="o">|</span>                        <span class="o">|</span>
-                                               <span class="n">v</span>                        <span class="o">|</span>
-                                           <span class="n">flux</span><span class="o">.</span><span class="n">norm</span>                    <span class="o">|</span>
-                                           <span class="n">flux</span><span class="o">.</span><span class="n">spec</span>                    <span class="o">|</span>
-                                           <span class="n">flux</span><span class="o">.</span><span class="n">cont</span>                    <span class="o">|</span>
-                                               <span class="o">|</span>                        <span class="o">|</span>
-                                               <span class="n">v</span>                        <span class="o">|</span>
-                                            <span class="o">+------+</span>                    <span class="o">|</span>
-                        <span class="p">(</span><span class="n">convolve</span> <span class="n">spectrum</span><span class="p">)</span> <span class="o">|</span><span class="n">nulbad</span><span class="o">|&lt;-------------------+</span>
-                                            <span class="o">+------+</span>
-                                               <span class="o">|</span>
-                                               <span class="n">v</span>
-                                        <span class="n">flux</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">nulbad</span><span class="o">.&lt;</span><span class="n">fwhm</span><span class="o">&gt;</span>
-</pre></div>
+<div class="figure align-center" id="id1">
+<img alt="_images/workflow-long.txt.png" class="bordered" src="_images/workflow-long.txt.png" />
+<p class="caption"><span class="caption-number">Figure 9 </span><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span></p>
 </div>
-<p>Figure 5 - Spectral synthesis pipeline - Fortran programs (boxes) and
-their input/output files (see Figure 2 for extended description of modules).</p>
 </div>
 <div class="section" id="input-output-data-files">
 <h2>Input/output data files<a class="headerlink" href="#input-output-data-files" title="Permalink to this headline">¶</a></h2>
@@ -224,7 +199,7 @@ their input/output files (see Figure 2 for extended description of modules).</p>
 subsections.</p>
 <div class="section" id="stellar-data-and-running-settings">
 <h3>Stellar data and running settings<a class="headerlink" href="#stellar-data-and-running-settings" title="Permalink to this headline">¶</a></h3>
-<p>Table 2 &#8211; stellar and running settings data files. The &#8220;&#8211;options&#8221; column shows the command-line
+<p>Table 2 – stellar and running settings data files. The “–options” column shows the command-line
 options that can be used to change the name for a particular file, <em>e.g.</em>,
 <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--fn_main</span> <span class="pre">main-other.dat</span></code>.</p>
 <table border="1" class="docutils">
@@ -235,21 +210,21 @@ options that can be used to change the name for a particular file, <em>e.g.</em>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Default name</th>
-<th class="head">&#8211;option</th>
+<th class="head">–option</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><em>main.dat</em></td>
-<td>&#8211;fn_main</td>
+<tr class="row-even"><td>main.dat</td>
+<td>–fn_main</td>
 <td>main configuration file containing all stellar parameters except abundances</td>
 </tr>
-<tr class="row-odd"><td><em>abonds.dat</em></td>
-<td>&#8211;fn_abonds</td>
+<tr class="row-odd"><td>abonds.dat</td>
+<td>–fn_abonds</td>
 <td>chemical abundances</td>
 </tr>
-<tr class="row-even"><td><em>dissoc.dat</em></td>
-<td>&#8211;fn_dissoc</td>
+<tr class="row-even"><td>dissoc.dat</td>
+<td>–fn_dissoc</td>
 <td>dissociation equilibrium data. This file is optional, and can be created using <code class="docutils literal"><span class="pre">abed.py</span></code> if needed</td>
 </tr>
 </tbody>
@@ -257,60 +232,60 @@ options that can be used to change the name for a particular file, <em>e.g.</em>
 </div>
 <div class="section" id="common-data-files">
 <h3>Common data files<a class="headerlink" href="#common-data-files" title="Permalink to this headline">¶</a></h3>
-<p>Table 3 &#8211; Common data files.</p>
+<p>Table 3 – Common data files.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">fix table</p>
+</div>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="16%" />
-<col width="67%" />
+<col width="15%" />
+<col width="15%" />
+<col width="70%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Default name</th>
-<th class="head">&#8211;option</th>
+<th class="head">–option</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>absoru2.dat</td>
-<td>&#8211;fn_absoru2</td>
+<td>–fn_absoru2</td>
 <td>absorption info for continuum calculation.</td>
 </tr>
 <tr class="row-odd"><td>atoms.dat</td>
-<td>&#8211;fn_atoms</td>
+<td>–fn_atoms</td>
 <td>atomic line list</td>
 </tr>
 <tr class="row-even"><td>molecules.dat</td>
-<td>&#8211;fn_molecules</td>
+<td>–fn_molecules</td>
 <td>molecular line list</td>
 </tr>
 <tr class="row-odd"><td>hmap.dat</td>
-<td>&#8211;fn_hmap</td>
+<td>–fn_hmap</td>
 <td>hydrogen line list</td>
 </tr>
 <tr class="row-even"><td>partit.dat</td>
-<td>&#8211;fn_partit</td>
+<td>–fn_partit</td>
 <td>partition functions</td>
 </tr>
 <tr class="row-odd"><td>grid.mod or</td>
-<td>&#8211;fn_modgrid</td>
-<td>MARCS atmospheric model grid (models only).</td>
+<td>–fn_modgrid</td>
+<td>MARCS atmospheric model grid (models only)</td>
 </tr>
 <tr class="row-even"><td>grid.moo</td>
-<td>&#8211;fn_moo</td>
-<td>MARCS atmospheric model grid (models with opacities) (Figure 8).</td>
+<td>–fn_moo</td>
+<td>MARCS atmospheric model grid (models with opacities) (<code class="xref std std-numref docutils literal"><span class="pre">figgrid</span></code>)</td>
 </tr>
 </tbody>
 </table>
-<p><img alt="image11" src="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" /></p>
-<p>Figure 7 &#8211; 3D grid of atmospheric models. The scatterplot in the figure shows the
-(teff, glog, [Fe/H]) values for all existing atmospheric models in the grid (this is the
-file <em>grid.moo</em> provided). The uppermost point are the Sun coordinates.</p>
-</div>
+<span class="target" id="figgrid"></span></div>
 <div class="section" id="files-created-by-the-fortran-programs">
 <h3>Files created by the Fortran programs<a class="headerlink" href="#files-created-by-the-fortran-programs" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="files-created-by-innewmarcs">
 <h4>Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code><a class="headerlink" href="#files-created-by-innewmarcs" title="Permalink to this headline">¶</a></h4>
-<p>Table 4 &#8211; Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code></p>
+<p>Table 4 – Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code></p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="16%" />
@@ -325,30 +300,33 @@ file <em>grid.moo</em> provided). The uppermost point are the Sun coordinates.</
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>modeles.mod</td>
-<td>&#8211;fn_modeles</td>
+<td>–fn_modeles</td>
 <td>atmospheric model (binary file) (Figure 8A)</td>
 </tr>
 <tr class="row-odd"><td>modeles.opa</td>
-<td>&#8211;fn_opa</td>
-<td>atmospheric model: opacities (MARCS &#8221;.opa&#8221; format) (Figure 8B,8C)</td>
+<td>–fn_opa</td>
+<td>atmospheric model: opacities (MARCS “.opa” format) (Figure 8B,8C)</td>
 </tr>
 </tbody>
 </table>
-<p><img alt="image12" src="_images/modeles.png" /></p>
-<p>Figure 8 &#8211; Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod;
-<strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/modeles.png" class="bordered" src="_images/modeles.png" />
+<p class="caption"><span class="caption-number">Figure 10 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span></p>
+</div>
 <p><code class="docutils literal"><span class="pre">innewmarcs</span></code> creates two separate files (Table 4). They are created
-separately for historical reasons. <em>modeles.opa</em> follows the same structure of &#8221;.opa&#8221;
-files downloaded from the MARCS website. <em>modeles.mod</em> does <strong>not</strong> follow the same
-structure of MARCS &#8221;.mod&#8221; files. Figure 8 illustrates the information contained in these files.</p>
+separately for historical reasons. “modeles.opa” follows the same structure of “.opa”
+files downloaded from the MARCS website. “modeles.mod” does <strong>not</strong> follow the same
+structure of MARCS “.mod” files. Figure 8 illustrates the information contained in these files.</p>
 </div>
 <div class="section" id="files-created-by-hydro2">
 <h4>Files created by <code class="docutils literal"><span class="pre">hydro2</span></code><a class="headerlink" href="#files-created-by-hydro2" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal"><span class="pre">hydro2</span></code> creates a series of files named &#8220;thalha&#8221; (Figure 9),
-&#8220;thbeta&#8221;, &#8220;thgamma&#8221;, &#8220;thdelta&#8221;, &#8220;thepsilon&#8221; etc. (the series of hydrogen lines is given in
-file &#8220;hmap.dat&#8221;).</p>
-<p><img alt="image13" src="_images/thalpha.png" /></p>
-<p>Figure 9 &#8211; Example of H-alpha line profile calculated by <code class="docutils literal"><span class="pre">hydro2</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">hydro2</span></code> creates a series of files named “thalha” (<a class="reference internal" href="#figalpha"><span class="std std-numref">Figure 11</span></a>),
+“thbeta”, “thgamma”, “thdelta”, “thepsilon” etc. (the series of hydrogen lines is given in
+file “hmap.dat”).</p>
+<div class="figure align-center" id="id3">
+<span id="figalpha"></span><img alt="_images/thalpha.png" class="bordered" src="_images/thalpha.png" />
+<p class="caption"><span class="caption-number">Figure 11 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal"><span class="pre">hydro2</span></code>.</span></p>
+</div>
 </div>
 <div class="section" id="files-created-by-pfant">
 <h4>Files created by <code class="docutils literal"><span class="pre">pfant</span></code><a class="headerlink" href="#files-created-by-pfant" title="Permalink to this headline">¶</a></h4>
@@ -375,10 +353,12 @@ file &#8220;hmap.dat&#8221;).</p>
 </tr>
 </tbody>
 </table>
-<p><img alt="image14" src="_images/spec-cont-norm.png" /></p>
-<p>Figure 10 - plots showing three <code class="docutils literal"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
-calculated spectrum; continuum; normalized spectrum. The common prefix &#8220;flux&#8221; can be changed
-in file &#8220;main.dat&#8221; to give a set of files with different names.</p>
+<div class="figure align-center" id="id4">
+<img alt="_images/spec-cont-norm.png" class="bordered" src="_images/spec-cont-norm.png" />
+<p class="caption"><span class="caption-number">Figure 12 </span><span class="caption-text">– plots showing three <code class="docutils literal"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
+calculated spectrum; continuum; normalized spectrum. The common prefix “flux” can be changed
+in file “main.dat” to give a set of files with different names.</span></p>
+</div>
 </div>
 <div class="section" id="files-created-by-nulbad">
 <h4>Files created by <code class="docutils literal"><span class="pre">nulbad</span></code><a class="headerlink" href="#files-created-by-nulbad" title="Permalink to this headline">¶</a></h4>
@@ -387,10 +367,14 @@ added with three decimal places. For example,</p>
 <div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">1.2</span>
 </pre></div>
 </div>
-<p>creates a file named &#8220;flux.norm.nulbad.1.200&#8221;.</p>
-<p>To change this, use option &#8220;&#8211;fn_cv&#8221;, for example,</p>
+<p>creates a file named “flux.norm.nulbad.1.200”.</p>
+<p>To change this, use option “–fn_cv”, for example,</p>
 <div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">1.2</span> <span class="o">--</span><span class="n">fn_cv</span> <span class="n">another</span><span class="o">-</span><span class="n">name</span>
 </pre></div>
+</div>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Another page containing the visual maps of the text files, such as main.dat</p>
 </div>
 </div>
 </div>
@@ -410,7 +394,7 @@ added with three decimal places. For example,</p>
         <a href="misc.html" class="btn btn-neutral float-right" title="Miscellanea how-to" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="quick.html" class="btn btn-neutral" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="moregui.html" class="btn btn-neutral" title="More GUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -441,7 +425,7 @@ added with three decimal places. For example,</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17.4.13',
+            VERSION:'latest',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

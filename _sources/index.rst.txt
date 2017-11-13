@@ -1,5 +1,3 @@
-::
-
 PFANT Manual
 ============
 
@@ -13,9 +11,10 @@ PFANT is a stellar spectral synthesis software for use in Astronomy.
    intro
    install
    quick
+   moregui
    reference
    misc
    trouble
    cheat
-   source_overview
-
+   license
+   For Fortran developers <https://github.com/trevisanj/PFANT/blob/master/fortran/README.md>

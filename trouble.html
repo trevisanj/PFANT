@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Troubleshooting &mdash; PFANT 17.4.13 documentation</title>
+  <title>Troubleshooting &mdash; PFANT latest documentation</title>
   
 
   
@@ -30,12 +30,14 @@
   
 
   
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PFANT 17.4.13 documentation" href="index.html"/>
+    <link rel="top" title="PFANT latest documentation" href="index.html"/>
         <link rel="next" title="Cheatsheet" href="cheat.html"/>
         <link rel="prev" title="Miscellanea how-to" href="misc.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
@@ -68,7 +70,7 @@
             
             
               <div class="version">
-                17.4.13
+                latest
               </div>
             
           
@@ -94,10 +96,9 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro.html#references">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick.html#more-gui">More GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moregui.html">More GUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
@@ -106,6 +107,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
             
@@ -173,18 +175,18 @@
 <h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="tracking-down-why-fortran-binaries-fail-to-run">
 <h2>Tracking down why Fortran binaries fail to run<a class="headerlink" href="#tracking-down-why-fortran-binaries-fail-to-run" title="Permalink to this headline">¶</a></h2>
-<p><em>pyfant</em> creates a &#8220;session directory&#8221; named <code class="docutils literal"><span class="pre">session-xxx</span></code> every
+<p><em>pyfant</em> creates a “session directory” named <code class="docutils literal"><span class="pre">session-xxx</span></code> every
 time it attempts
 | to run a PFANT binary. Each of these directories will always contain
 at least two files:</p>
 <ul>
-<li><p class="first"><em>commands.log</em> &#8211; this is the command lines attempted. You can
+<li><p class="first"><em>commands.log</em> – this is the command lines attempted. You can
 copy-paste this</p>
 <blockquote>
 <div><p>line in your console to see how the Fortran binary goes.</p>
 </div></blockquote>
 </li>
-<li><p class="first"><em>fortran.log</em> &#8211; messages printed by the Fortran binary.</p>
+<li><p class="first"><em>fortran.log</em> – messages printed by the Fortran binary.</p>
 </li>
 </ul>
 <p>Commonly, inspecting these files will be enough to figure out what
@@ -196,16 +198,16 @@ happened.</p>
 | debug/info/warning/error messages from Python.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last"><code class="docutils literal"><span class="pre">explorer.py</span></code> has a &#8220;Collect errors&#8221; button, which
+<p class="last"><code class="docutils literal"><span class="pre">explorer.py</span></code> has a “Collect errors” button, which
 recurses directories in search for error/warning messages in all files
-named &#8220;fortran.log&#8221;</p>
+named “fortran.log”</p>
 </div>
 </div>
 <div class="section" id="metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">
 <h2>Metallicity/temperature/gravity of star is outside range in the grid of models<a class="headerlink" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models" title="Permalink to this headline">¶</a></h2>
-<p>You can activate option &#8220;&#8211;allow True&#8221; to make bypass this check, but beware that the calculation
+<p>You can activate option “–allow True” to make bypass this check, but beware that the calculation
 may be incorrect.</p>
-<p>This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>, or check option &#8220;&#8211;alow&#8221;
+<p>This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>, or check option “–alow”
 in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.</p>
 </div>
 </div>
@@ -254,7 +256,7 @@ in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17.4.13',
+            VERSION:'latest',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
