@@ -911,8 +911,6 @@ contains
   !======================================================================================================================
   ! Calculates the flux in the continuum.
   !
-  ! Issue ASK BLB Only two values are calculated for each "ikey" iteration and the intermediate values are filled by
-  !               linear interpolation. The continuum is dependent on aint.
 
   subroutine bk()
     real*8 nu, nu1, nu2, &
