@@ -2787,7 +2787,7 @@ module config
   !---
   ! innewmarcs, pfant
   !---
-  logical :: config_opa = .false.               ! option --opa
+  logical :: config_opa = .true.               ! option --opa
   character*64 :: config_fn_opa = 'modeles.opa' ! option: --fn_opa
 
 
@@ -2858,7 +2858,7 @@ module config
    config_fn_log           = 'log.log',           & ! option: --fn_log
    config_flprefix         = '?'                    ! option: --flprefix
   integer :: config_interp = 1                      ! option: --interp
-  logical :: config_abs = .true., &                 ! option: --abs
+  logical :: config_abs = .false., &                 ! option: --abs
              config_sca = .true., &                 ! option: --sca
              config_absoru = .true.                 ! option: --config_absoru
 
