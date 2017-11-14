@@ -6,7 +6,8 @@ Data files that are independent from the star.
 
 filename       | description
 ---------------|-------------
-atoms.dat      | atomic lines (from 3688.331 to 8194.824 angstrom) (original name was `atomgrade.dat`)
+atoms.dat      | atomic lines (containing lines from 3688.331 to 7711.724 angstrom) (original name was `atom4070g.dat`)
+               | this file has been updated with hyperfine structures for iron peak elements and heavy elements
 molecules.dat  | molecular lines (21 molecules) [1]. This file is currently identical to (2016-12-21)
                | https://github.com/trevisanj/PFANT-data/blob/master/molecular-lines/moleculagrade-paula.dat.newtitulo
                | **there are a few wrong wavelengths** (2016-12-21)
