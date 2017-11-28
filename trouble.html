@@ -8,11 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-<<<<<<< HEAD
   <title>Troubleshooting &mdash; PFANT 0.17.11.28.0 documentation</title>
-=======
-  <title>Troubleshooting &mdash; PFANT latest documentation</title>
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
   
 
   
@@ -41,11 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-<<<<<<< HEAD
     <link rel="top" title="PFANT 0.17.11.28.0 documentation" href="index.html"/>
-=======
-    <link rel="top" title="PFANT latest documentation" href="index.html"/>
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
         <link rel="next" title="Cheatsheet" href="cheat.html"/>
         <link rel="prev" title="Miscellanea how-to" href="misc.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
@@ -78,11 +70,7 @@
             
             
               <div class="version">
-<<<<<<< HEAD
                 0.17.11.28.0
-=======
-                latest
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
               </div>
             
           
@@ -119,11 +107,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
-<<<<<<< HEAD
 <li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/fortran/README.md">For Fortran developers</a></li>
-=======
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 </ul>
 
             
@@ -191,7 +175,6 @@
 <h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="tracking-down-why-fortran-binaries-fail-to-run">
 <h2>Tracking down why Fortran binaries fail to run<a class="headerlink" href="#tracking-down-why-fortran-binaries-fail-to-run" title="Permalink to this headline">¶</a></h2>
-<<<<<<< HEAD
 <ul class="simple">
 <li>If you are running the Fortran binaries directly, error messages are printed on screen.</li>
 <li>If you are running from <code class="docutils literal"><span class="pre">x.py</span></code>, the “Runnables Manager” window has a “Collect errors” button.</li>
@@ -220,42 +203,6 @@ With that option, <code class="docutils literal"><span class="pre">innewmarcs</s
 but will instead “project” your (teff, glog, metallicity) coordinate onto the closest grid wall,
 then interpolate.</p>
 </div>
-=======
-<p><em>pyfant</em> creates a “session directory” named <code class="docutils literal"><span class="pre">session-xxx</span></code> every
-time it attempts
-| to run a PFANT binary. Each of these directories will always contain
-at least two files:</p>
-<ul>
-<li><p class="first"><em>commands.log</em> – this is the command lines attempted. You can
-copy-paste this</p>
-<blockquote>
-<div><p>line in your console to see how the Fortran binary goes.</p>
-</div></blockquote>
-</li>
-<li><p class="first"><em>fortran.log</em> – messages printed by the Fortran binary.</p>
-</li>
-</ul>
-<p>Commonly, inspecting these files will be enough to figure out what
-happened.</p>
-<div class="line-block">
-<div class="line">Your current directory will also have a file named <em>python.log</em>,</div>
-</div>
-<p>containing
-| debug/info/warning/error messages from Python.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last"><code class="docutils literal"><span class="pre">explorer.py</span></code> has a “Collect errors” button, which
-recurses directories in search for error/warning messages in all files
-named “fortran.log”</p>
-</div>
-</div>
-<div class="section" id="metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models">
-<h2>Metallicity/temperature/gravity of star is outside range in the grid of models<a class="headerlink" href="#metallicity-temperature-gravity-of-star-is-outside-range-in-the-grid-of-models" title="Permalink to this headline">¶</a></h2>
-<p>You can activate option “–allow True” to make bypass this check, but beware that the calculation
-may be incorrect.</p>
-<p>This can be done in the command line, <em>e.g.</em>, <code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--allow</span> <span class="pre">T</span></code>, or check option “–alow”
-in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.</p>
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 </div>
 </div>
 
@@ -303,11 +250,7 @@ in Tab 3 of <code class="docutils literal"><span class="pre">x.py</span></code>.
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-<<<<<<< HEAD
             VERSION:'0.17.11.28.0',
-=======
-            VERSION:'latest',
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

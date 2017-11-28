@@ -37,13 +37,8 @@ To convert from the "VALD3 extended" to a "PFANT atomic lines" file:
 
 .. code:: shell
 
-<<<<<<< HEAD
     vald3-to-atoms.py <vald3-extended-filename>
     tune-zinf <output-from-previous-command>
-=======
-    vald3-to-atoms.py <prefix>.vald3x
-    tune-zinf atoms-<prefix>-untuned.dat
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 This is done in two steps. The first step, ``vald3-to-atoms.py`` does
 the actual conversion (which is quick) and saves a file, *e.g.*, "atoms-untuned-xxxxx.dat"
@@ -51,22 +46,12 @@ the actual conversion (which is quick) and saves a file, *e.g.*, "atoms-untuned-
 The second step (which is time-consuming) is performed by ``tune-zinf.py`` and aims
 to tune an important parameter used by the ``pfant`` Fortran binary.
 
-<<<<<<< HEAD
-=======
-.. hint::
-
-    It is recommended either to to use the tool ``cut-atoms.py`` to cut the file
-    converted by ``vald3-to-atoms.py`` to a wavelength region of interest before
-    running ``tune-zinf.py``.
-
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 For more information, see help for ``vald3-to-atoms.py``, ``tune-zinf.py``, ``cut-atoms.py``
 (call these scripts with ``--help`` option).
 
 Continuous opacities: selecting between PFANT and MARCS coefficients
 --------------------------------------------------------------------
 
-<<<<<<< HEAD
 By default, PFANT internally calculates the continuum absorption coefficients, then adds MARCS scattering coefficients.
 
 **PFANT-calculated continuum absorption + MARCS scattering** (default)
@@ -88,22 +73,11 @@ or
 
     innewmarcs --absoru T --opa F
     pfant --absoru T --opa F
-=======
-The PFANT default is to use its internal calculation of the continuum.
-
-**PFANT-calculated continuum** (default)
-
-.. code:: shell
-
-    innewmarcs --opa F
-    pfant --opa F --absoru T
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 or
 
 ::
 
-<<<<<<< HEAD
     run4.py --absoru T --opa F
 
 **MARCS opacities (absorption and scattering) only**
@@ -112,27 +86,12 @@ or
 
     innewmarcs --absoru F --opa T --sca T --abs T
     pfant --absoru F --opa T --sca T --abs T
-=======
-    run4.py --opa F --absoru T
-
-**MARCS opacities**
-
-.. code:: shell
-
-    innewmarcs --opa T
-    pfant --opa T --absoru F
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 or
 
 ::
 
-<<<<<<< HEAD
     run4.py --absoru F --opa T --sca T --abs T
-=======
-    run4.py
-    --opa T --absoru F
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 .. note::
 
@@ -162,12 +121,9 @@ Related command-line options (also accessible in ``x.py``):
        `this location <https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c>`__
        (or `this location <https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view>`__)
        and save it as "PFANT/data/common/grid.moo"
-<<<<<<< HEAD
 
 Conversion of molecular lines from other formats to PFANT format
 ----------------------------------------------------------------
 
 See `<http://trevisanj.github.io/f311/convmol.html>`_.
 
-=======
->>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
