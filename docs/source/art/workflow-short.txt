@@ -1,0 +1,7 @@
++-------------------+   +----------------+   +-----------+   +----------+
+| innewmarcs        |   | hydro2         |   | pfant     |   | nulbad   |
+| ==========        |   | ======         |   | =====     |   | ======   |
+|   interpolate the |   |         create |   | calculate |   | convolve |
+|       atmospheric |-->| hydrogen lines |-->| synthetic |-->|     with |
+|             model |   |       profiles |   |  spectrum |   | Gaussian |
++-------------------+   +----------------+   +-----------+   +----------+
