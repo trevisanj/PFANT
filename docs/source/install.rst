@@ -51,9 +51,8 @@ Enter the following on your console to compile the Fortran source code:
     cd fortran
     ./make-linux.sh
 
-| This should create four executable binaries inside the directory
-*PFANT/fortran/bin*:
-| ``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``.
+This should create four executable binaries inside the directory *PFANT/fortran/bin*:
+``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``.
 
 Setting the paths
 -----------------
@@ -75,14 +74,15 @@ Tcsh shell:
 This will automatically apply the path settings to your *home/.bashrc*
 or *home/.cshrc*.
 
-:notes: If the above does not work for you, manually add
-*PFANT/fortran/bin* to your system path.
+.. note:: If the above does not work for you, manually add
+          *PFANT/fortran/bin* to your system path.
 
-Install f311 Python package
----------------------------
+Install "f311" Python package
+-----------------------------
 
-Spectral synthesis is much easier using the tools provided by project f311. Therefore, it is highly
-recommented to install this Python package. Installation instructions are available at
+Although PFANT contains standalone a set of tools for spectral synthesis, it is recommended
+to install the "f311" Python package to add running, editing, visualization and conversion capabilities
+around the Fortran core. Installation instructions are available at
 http://trevisanj.github.io/f311
 
 Tips for windows users
@@ -102,8 +102,5 @@ the following packages: ``mingw-developer-toolkit``, ``mingw32-base``,
 Compiling the source code on Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-| The source can be compiled using the CodeBlock Fortran IDE. For more
-information,
-| please visit `the Fortran source code README <fortran/README.md>`__.
-The *PFANT/fortran* forder contains a CodeBlocks
-| project named *PFANT-windows.cbp*
+The source can be compiled using the CodeBlock Fortran IDE.
+The *PFANT/fortran* forder contains a CodeBlocks project named *PFANT-windows.cbp*.

@@ -73,3 +73,9 @@ Now open the Molecular Lines Editor (:numref:`figmled`):
     :align: center
 
     -- ``mled.png`` screenshot.
+
+Other editors and tools
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Check :doc:`cheat` for a complete list of applications related to PFANT spectral synthesis.
+

@@ -6,7 +6,7 @@ Cheatsheet
   command-line options:** run ``x.py``  and navigate through the fields in Tabs 1 and 3.
   As you navigate, a description of the current field will be displayed at the bottom of the window.
 
-* Call a program with "--help" option, *e.g.*, ``pfant --help``.
+* Call a program with ``--help`` option, *e.g.*, ``pfant --help``.
 
 
 * ``programs.py`` lists all Fortran programs in the PFANT pack, and Python programs in the `F311 <trevisanj.github.io/f311>`_ project.
@@ -53,5 +53,6 @@ Command-line tools
 * ``save-pdf.py``: Looks for files "*.norm" inside directories session-* and saves one figure per page in a PDF file
 * ``vald3-to-atoms.py``: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.
 
-PFANT homepage: http://github.com/trevisanj/PFANT
-Project f311 homepage: http://github.com/trevisanj/f311
+PFANT at GitHub: http://github.com/trevisanj/PFANT
+
+Project f311 at GitHub: http://github.com/trevisanj/f311

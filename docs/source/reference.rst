@@ -66,13 +66,13 @@ Table 3 -- Common data files.
 
 .. _figgrid:
 
-.. figure: img/grid.moo_--_asalog-teff-glog_scatterplot.png
+.. figure:: img/grid.moo_--_asalog-teff-glog_scatterplot.png
     :align: center
     :class: bordered
 
     -- 3D grid of atmospheric models. The scatterplot in the figure shows the
     (teff, glog, [Fe/H]) values for all existing atmospheric models in the grid (this is the
-    file "grid.moo" provided). The uppermost point are the Sun coordinates.
+    file "grid.moo" provided). The uppermost point represents the Sun.
 
 Files created by the Fortran programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
