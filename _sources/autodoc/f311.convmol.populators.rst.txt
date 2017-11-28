@@ -1,0 +1,30 @@
+f311.convmol.populators package
+===============================
+
+Submodules
+----------
+
+f311.convmol.populators.pophitran module
+----------------------------------------
+
+.. automodule:: f311.convmol.populators.pophitran
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.convmol.populators.popmoldb module
+---------------------------------------
+
+.. automodule:: f311.convmol.populators.popmoldb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: f311.convmol.populators
+    :members:
+    :undoc-members:
+    :show-inheritance:

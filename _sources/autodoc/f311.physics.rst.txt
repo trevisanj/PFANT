@@ -1,0 +1,61 @@
+f311.physics package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    f311.physics.multiplicity
+
+Submodules
+----------
+
+f311.physics.airvacuum module
+-----------------------------
+
+.. automodule:: f311.physics.airvacuum
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.physics.constants module
+-----------------------------
+
+.. automodule:: f311.physics.constants
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.physics.photometry module
+------------------------------
+
+.. automodule:: f311.physics.photometry
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.physics.rainbow module
+---------------------------
+
+.. automodule:: f311.physics.rainbow
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+f311.physics.units module
+-------------------------
+
+.. automodule:: f311.physics.units
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: f311.physics
+    :members:
+    :undoc-members:
+    :show-inheritance:

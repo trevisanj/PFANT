@@ -76,6 +76,7 @@ and/or unlikely to change:
 
 The following links should appear in your directory now:
 
+<<<<<<< HEAD
 - absoru2.dat
 - atoms.dat
 - grid.mod
@@ -83,6 +84,14 @@ The following links should appear in your directory now:
 - hmap.dat
 - molecules.dat
 - partit.dat
+=======
+-  absoru2.dat
+-  atoms.dat
+-  grid.moo
+-  hmap.dat
+-  molecules.dat
+-  partit.dat
+>>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 Spectral synthesis pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,8 +213,11 @@ The script ``run4.py`` is provided for convenience and will run all Fortran bina
 Spectral synthesis using the Graphical interface
 ------------------------------------------------
 
+<<<<<<< HEAD
 Alternatively to the command line, you can use the "PFANT Launcher" (*x.py*) provided by the F311 project.
 
+=======
+>>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 First it is necessary to create a new directory and gather the input data
 (as in the spectral synthesis from the command line above):
 
@@ -214,7 +226,11 @@ First it is necessary to create a new directory and gather the input data
     mkdir mystar
     cd mystar
     copy-star.py
+<<<<<<< HEAD
     link.py
+=======
+    link.py common
+>>>>>>> 81dd60a2459da84485987b0c0cc5903be93226df
 
 Now you can invoke the "PFANT Launcher" application (Figure :numref:`figx`):
 
