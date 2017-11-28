@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quick Start &mdash; PFANT 0.17.11.28.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PFANT 0.17.11.28.0 documentation" href="index.html"/>
+        <link rel="next" title="More GUI" href="moregui.html"/>
+        <link rel="prev" title="Installation" href="install.html"/>
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PFANT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.11.28.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-from-the-command-line">Spectral synthesis from the command line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#short-story">Short story</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#long-story">Long story</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-new-directory">Create a new directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gather-input-data">Gather input data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectral-synthesis-pipeline">Spectral synthesis pipeline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-using-the-graphical-interface">Spectral synthesis using the Graphical interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-python-scripts-with-package-f311-pyfant">Writing Python scripts with package f311.pyfant</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="moregui.html">More GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/fortran/README.md">For Fortran developers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PFANT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Quick Start</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quick.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p><strong>Aims for this tutorial:</strong></p>
+<ul class="simple">
+<li>calculate a synthetic spectrum;</li>
+<li>convolve with Gaussian functions of varying
+full-width-at-half-maximum (FWHM);</li>
+<li>visualize results.</li>
+</ul>
+<div class="section" id="spectral-synthesis-from-the-command-line">
+<h2>Spectral synthesis from the command line<a class="headerlink" href="#spectral-synthesis-from-the-command-line" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="short-story">
+<h3>Short story<a class="headerlink" href="#short-story" title="Permalink to this headline">¶</a></h3>
+<p>Here is the full command sequence:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">mystar</span>
+<span class="n">cd</span> <span class="n">mystar</span>
+<span class="n">copy</span><span class="o">-</span><span class="n">star</span><span class="o">.</span><span class="n">py</span>
+<span class="n">link</span><span class="o">.</span><span class="n">py</span>
+<span class="n">run4</span><span class="o">.</span><span class="n">py</span>
+<span class="n">plot</span><span class="o">-</span><span class="n">spectra</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">ovl</span> <span class="n">flux</span><span class="o">.</span><span class="n">norm</span> <span class="n">flux</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">nulbad</span><span class="o">.</span><span class="mf">0.120</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="long-story">
+<h3>Long story<a class="headerlink" href="#long-story" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="create-a-new-directory">
+<h4>Create a new directory<a class="headerlink" href="#create-a-new-directory" title="Permalink to this headline">¶</a></h4>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">mystar</span>
+<span class="n">cd</span> <span class="n">mystar</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gather-input-data">
+<h4>Gather input data<a class="headerlink" href="#gather-input-data" title="Permalink to this headline">¶</a></h4>
+<p>Input data consists of:</p>
+<ol class="arabic simple">
+<li>stellar parameters (temperature, chemical abundances etc.) and
+running settings (<em>e.g.</em>, calculation wavelength interval);</li>
+<li>star-independent physical data: line lists, atmospheric model grid,
+partition functions etc. that are less likely to be modified.
+We refer to these as “common” data.</li>
+</ol>
+<div class="section" id="stellar-data-and-running-settings">
+<h5>Stellar data and running settings<a class="headerlink" href="#stellar-data-and-running-settings" title="Permalink to this headline">¶</a></h5>
+<p>The following displays a menu allowing you to choose among a few stars:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">copy</span><span class="o">-</span><span class="n">star</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>After running this, the following files will be copied into the “mystar”
+directory:</p>
+<ul class="simple">
+<li>“main.dat”: main configuration (editable with <code class="docutils literal"><span class="pre">mained.py</span></code>,
+<code class="docutils literal"><span class="pre">x.py</span></code>)</li>
+<li>“abonds.dat”: chemical abundances (editable with <code class="docutils literal"><span class="pre">abed.py</span></code>,
+<code class="docutils literal"><span class="pre">x.py</span></code>)</li>
+</ul>
+</div>
+<div class="section" id="common-data">
+<h5>Common data<a class="headerlink" href="#common-data" title="Permalink to this headline">¶</a></h5>
+<p>For these data, we will create links instead of copying the files, as the files are big
+and/or unlikely to change:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">link</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>The following links should appear in your directory now:</p>
+<ul class="simple">
+<li>absoru2.dat</li>
+<li>atoms.dat</li>
+<li>grid.mod</li>
+<li>grid.moo</li>
+<li>hmap.dat</li>
+<li>molecules.dat</li>
+<li>partit.dat</li>
+</ul>
+</div>
+</div>
+<div class="section" id="spectral-synthesis-pipeline">
+<h4>Spectral synthesis pipeline<a class="headerlink" href="#spectral-synthesis-pipeline" title="Permalink to this headline">¶</a></h4>
+<p>Spectral synthesis involves a few steps, as shown in <a class="reference internal" href="#workflow-short"><span class="std std-numref">Figure 1</span></a>, and described in the next subsections.</p>
+<div class="figure align-center" id="id1">
+<span id="workflow-short"></span><img alt="_images/workflow-short.txt.png" class="bordered" src="_images/workflow-short.txt.png" />
+<p class="caption"><span class="caption-number">Figure 1 </span><span class="caption-text">– PFANT spectral synthesis pipeline showing the Fortran program names and what they do.</span></p>
+</div>
+<div class="section" id="interpolate-the-stellar-atmospheric-model">
+<h5>Interpolate the stellar atmospheric model<a class="headerlink" href="#interpolate-the-stellar-atmospheric-model" title="Permalink to this headline">¶</a></h5>
+<p>This step takes a 3D grid of atmospheric models (usually a file named
+“grid.mod”) and interpolates a new model given a certain point (temperature, gravity, metallicity)
+(specified in the main configuration file) contained within the limits of the grid.</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span>
+</pre></div>
+</div>
+<p>will create two files: “modeles.mod” and “modeles.opa”.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If the combination of (temperature, gravity, metallicity) is outside the limits of the
+grid (<em>e.g.</em>, if you choose star Mu-Leo), <code class="docutils literal"><span class="pre">innewmarcs</span></code> will refuse to interpolate.
+However, it can be forced to use the
+nearest points in the grid with:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span> <span class="o">--</span><span class="n">allow</span> <span class="n">T</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="create-hydrogen-lines-profiles">
+<h5>Create hydrogen lines profiles<a class="headerlink" href="#create-hydrogen-lines-profiles" title="Permalink to this headline">¶</a></h5>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">hydro2</span>
+</pre></div>
+</div>
+<p>will create files such as: “thalpha” (<a class="reference internal" href="reference.html#figalpha"><span class="std std-numref">Figure 12</span></a>), “thbeta”, “thgamma”
+etc.</p>
+</div>
+<div class="section" id="calculate-synthetic-spectrum">
+<h5>Calculate synthetic spectrum<a class="headerlink" href="#calculate-synthetic-spectrum" title="Permalink to this headline">¶</a></h5>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">pfant</span>
+</pre></div>
+</div>
+<p>creates files:</p>
+<ol class="arabic simple">
+<li>“flux.spec”: spectrum</li>
+<li>“flux.cont”: continuum</li>
+<li>“flux.norm”: normalized spectrum ((1) divided by (2))</li>
+</ol>
+<p>To visualize these files:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="o">-</span><span class="n">spectra</span><span class="o">.</span><span class="n">py</span> <span class="n">flux</span><span class="o">.</span><span class="n">spec</span> <span class="n">flux</span><span class="o">.</span><span class="n">cont</span> <span class="n">flux</span><span class="o">.</span><span class="n">norm</span>
+</pre></div>
+</div>
+<p>will open a plot window (<a class="reference internal" href="#plot3"><span class="std std-numref">Figure 2</span></a>).</p>
+<div class="figure align-center" id="id2">
+<span id="plot3"></span><img alt="_images/spec-cont-norm0.png" class="bordered" src="_images/spec-cont-norm0.png" />
+<p class="caption"><span class="caption-number">Figure 2 </span><span class="caption-text">– plots of three files generated by <code class="docutils literal"><span class="pre">pfant</span></code>.</span></p>
+</div>
+</div>
+<div class="section" id="convolve-synthetic-spectrum-with-gaussian-function">
+<h5>Convolve synthetic spectrum with Gaussian function<a class="headerlink" href="#convolve-synthetic-spectrum-with-gaussian-function" title="Permalink to this headline">¶</a></h5>
+<p>The following will take the normalized spectrum from the previous step and convolve it
+with a Gaussian function of
+<a class="reference external" href="https://en.wikipedia.org/wiki/Full_width_at_half_maximum">FWHM</a> = 0.12,
+creating file “flux.norm.nulbad.0.120”:</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">0.12</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plot-spectra">
+<h5>Plot spectra<a class="headerlink" href="#plot-spectra" title="Permalink to this headline">¶</a></h5>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="o">-</span><span class="n">spectra</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">ovl</span> <span class="n">flux</span><span class="o">.</span><span class="n">norm</span> <span class="n">flux</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">nulbad</span><span class="o">.</span><span class="mf">0.120</span>
+</pre></div>
+</div>
+<p>opens a plot window where one can see how the spectrum looks before and
+after the convolution (<a class="reference internal" href="#figovl"><span class="std std-numref">Figure 3</span></a>).</p>
+<div class="figure align-center" id="id3">
+<span id="figovl"></span><img alt="_images/normfwhm.png" class="bordered" src="_images/normfwhm.png" />
+<p class="caption"><span class="caption-number">Figure 3 </span><span class="caption-text">– plot comparing spectra without and after convolution with Gaussian function
+(FWHM = 0.12)</span></p>
+</div>
+</div>
+<div class="section" id="running-the-four-calculation-steps-at-once">
+<h5>Running the four calculation steps at once<a class="headerlink" href="#running-the-four-calculation-steps-at-once" title="Permalink to this headline">¶</a></h5>
+<p>The script <code class="docutils literal"><span class="pre">run4.py</span></code> is provided for convenience and will run all Fortran binaries in sequence.</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">run4</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">0.12</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The same command-line options available in the Fortran binaries are available in <code class="docutils literal"><span class="pre">run4.py</span></code>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="spectral-synthesis-using-the-graphical-interface">
+<h2>Spectral synthesis using the Graphical interface<a class="headerlink" href="#spectral-synthesis-using-the-graphical-interface" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively to the command line, you can use the “PFANT Launcher” (<em>x.py</em>) provided by the F311 project.</p>
+<p>First it is necessary to create a new directory and gather the input data
+(as in the spectral synthesis from the command line above):</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">mystar</span>
+<span class="n">cd</span> <span class="n">mystar</span>
+<span class="n">copy</span><span class="o">-</span><span class="n">star</span><span class="o">.</span><span class="n">py</span>
+<span class="n">link</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Now you can invoke the “PFANT Launcher” application (Figure <a class="reference internal" href="#figx"><span class="std std-numref">Figure 4</span></a>):</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id4">
+<span id="figx"></span><img alt="_images/x.py-0.png" src="_images/x.py-0.png" />
+<p class="caption"><span class="caption-number">Figure 4 </span><span class="caption-text">– Screenshot of the <code class="docutils literal"><span class="pre">x.py</span></code> application</span></p>
+</div>
+<p>Here is a suggested roadmap:</p>
+<ol class="arabic simple">
+<li>Change parameters in Tab 1/2/3 (Tab 4 is a different story)</li>
+<li>Click on the “Submit single job” button: a new window named
+“Runnables Manager” opens</li>
+<li>When the “Status” column shows “nulbad finished”, double-click on the
+table item: “PFANT Explorer” window opens</li>
+<li>Double-click on “flux.norm”: turns green (if wasn’t so)</li>
+<li>Double-click on “Plot spectrum”: spectrum appears</li>
+</ol>
+</div>
+<div class="section" id="writing-python-scripts-with-package-f311-pyfant">
+<h2>Writing Python scripts with package f311.pyfant<a class="headerlink" href="#writing-python-scripts-with-package-f311-pyfant" title="Permalink to this headline">¶</a></h2>
+<p>Package “f311.pyfant” provides an API that allows one to perform spectral synthesis from Python code,
+manipulate PFANT-related data files, and more.</p>
+<p>Here is a simple spectral synthesis example. The following code runs the Fortran binaries
+(<code class="docutils literal"><span class="pre">innewmarcs</span></code>, <code class="docutils literal"><span class="pre">hydro2</span></code>, <code class="docutils literal"><span class="pre">pfant</span></code>, <code class="docutils literal"><span class="pre">nulbad</span></code>) in a way that is transparent to the Python coder, and then
+plots resulting synthetic spectra (<a class="reference internal" href="#figpyfant"><span class="std std-numref">Figure 5</span></a>):</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">f311.pyfant</span> <span class="k">as</span> <span class="nn">pf</span>
+<span class="kn">import</span> <span class="nn">f311.explorer</span> <span class="k">as</span> <span class="nn">ex</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">Combo</span><span class="p">()</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">load_result</span><span class="p">()</span>
+
+<span class="c1"># Plots continuum, spectrum, normalized in three sub-plots</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;cont&quot;</span><span class="p">],</span> <span class="n">obj</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;spec&quot;</span><span class="p">],</span> <span class="n">obj</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]])</span>
+
+<span class="c1"># Plots normalized unconvolved, normalized convolved spectra overlapped</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">plot_spectra_overlapped</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">],</span> <span class="n">obj</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;convolved&quot;</span><span class="p">]])</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id5">
+<span id="figpyfant"></span><img alt="_images/pyfant-example.png" class="bordered" src="_images/pyfant-example.png" />
+<p class="caption"><span class="caption-number">Figure 5 </span><span class="caption-text">– Plots generated from code above.</span></p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">More Python examples can be found at <a class="reference external" href="https://trevisanj.github.io/f311/pyfant.html">https://trevisanj.github.io/f311/pyfant.html</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="moregui.html" class="btn btn-neutral float-right" title="More GUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1967-3999.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.17.11.28.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

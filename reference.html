@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Reference &mdash; PFANT 0.17.11.28.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PFANT 0.17.11.28.0 documentation" href="index.html"/>
+        <link rel="next" title="Miscellanea how-to" href="misc.html"/>
+        <link rel="prev" title="More GUI" href="moregui.html"/>
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PFANT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.11.28.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moregui.html">More GUI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spectral-synthesis-pipeline">Spectral synthesis pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-output-data-files">Input/output data files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stellar-data-and-running-settings">Stellar data and running settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-data-files">Common data files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#files-created-by-the-fortran-programs">Files created by the Fortran programs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#files-created-by-innewmarcs">Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#files-created-by-hydro2">Files created by <code class="docutils literal"><span class="pre">hydro2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#files-created-by-pfant">Files created by <code class="docutils literal"><span class="pre">pfant</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#files-created-by-nulbad">Files created by <code class="docutils literal"><span class="pre">nulbad</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellanea how-to</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/fortran/README.md">For Fortran developers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PFANT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+<p>This section contains a more complete description of the PFANT pipeline
+and the files and file types involved.</p>
+<div class="section" id="spectral-synthesis-pipeline">
+<h2>Spectral synthesis pipeline<a class="headerlink" href="#spectral-synthesis-pipeline" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1">
+<img alt="_images/workflow-long.txt.png" class="bordered" src="_images/workflow-long.txt.png" />
+<p class="caption"><span class="caption-number">Figure 9 </span><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span></p>
+</div>
+</div>
+<div class="section" id="input-output-data-files">
+<h2>Input/output data files<a class="headerlink" href="#input-output-data-files" title="Permalink to this headline">¶</a></h2>
+<p>The different file types in the pipeline will be explained in the next
+subsections.</p>
+<div class="section" id="stellar-data-and-running-settings">
+<h3>Stellar data and running settings<a class="headerlink" href="#stellar-data-and-running-settings" title="Permalink to this headline">¶</a></h3>
+<p>Table 2 – stellar and running settings data files. The “–options” column shows the command-line
+options that can be used to change the name for a particular file, <em>e.g.</em>,
+<code class="docutils literal"><span class="pre">run4.py</span> <span class="pre">--fn_main</span> <span class="pre">main-other.dat</span></code>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="11%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Default name</th>
+<th class="head">–option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>main.dat</td>
+<td>–fn_main</td>
+<td>main configuration file containing all stellar parameters except abundances</td>
+</tr>
+<tr class="row-odd"><td>abonds.dat</td>
+<td>–fn_abonds</td>
+<td>chemical abundances</td>
+</tr>
+<tr class="row-even"><td>dissoc.dat</td>
+<td>–fn_dissoc</td>
+<td>dissociation equilibrium data. This file is optional, and can be created using <code class="docutils literal"><span class="pre">abed.py</span></code> if needed</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="common-data-files">
+<h3>Common data files<a class="headerlink" href="#common-data-files" title="Permalink to this headline">¶</a></h3>
+<p>Table 3 – Common data files.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">fix table</p>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="15%" />
+<col width="70%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Default name</th>
+<th class="head">–option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>absoru2.dat</td>
+<td>–fn_absoru2</td>
+<td>absorption info for continuum calculation.</td>
+</tr>
+<tr class="row-odd"><td>atoms.dat</td>
+<td>–fn_atoms</td>
+<td>atomic line list</td>
+</tr>
+<tr class="row-even"><td>molecules.dat</td>
+<td>–fn_molecules</td>
+<td>molecular line list</td>
+</tr>
+<tr class="row-odd"><td>hmap.dat</td>
+<td>–fn_hmap</td>
+<td>hydrogen line list</td>
+</tr>
+<tr class="row-even"><td>partit.dat</td>
+<td>–fn_partit</td>
+<td>partition functions</td>
+</tr>
+<tr class="row-odd"><td>grid.mod or</td>
+<td>–fn_modgrid</td>
+<td>MARCS atmospheric model grid (models only)</td>
+</tr>
+<tr class="row-even"><td>grid.moo</td>
+<td>–fn_moo</td>
+<td>MARCS atmospheric model grid (models with opacities) (<a class="reference internal" href="#figgrid"><span class="std std-numref">Figure 10</span></a>)</td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-center" id="id2">
+<span id="figgrid"></span><img alt="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" class="bordered" src="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" />
+<p class="caption"><span class="caption-number">Figure 10 </span><span class="caption-text">– 3D grid of atmospheric models. The scatterplot in the figure shows the
+(teff, glog, [Fe/H]) values for all existing atmospheric models in the grid (this is the
+file “grid.moo” provided). The uppermost point represents the Sun.</span></p>
+</div>
+</div>
+<div class="section" id="files-created-by-the-fortran-programs">
+<h3>Files created by the Fortran programs<a class="headerlink" href="#files-created-by-the-fortran-programs" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="files-created-by-innewmarcs">
+<h4>Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code><a class="headerlink" href="#files-created-by-innewmarcs" title="Permalink to this headline">¶</a></h4>
+<p>Table 4 – Files created by <code class="docutils literal"><span class="pre">innewmarcs</span></code></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="20%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Default name</th>
+<th class="head">command-line option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>modeles.mod</td>
+<td>–fn_modeles</td>
+<td>atmospheric model (binary file) (Figure 8A)</td>
+</tr>
+<tr class="row-odd"><td>modeles.opa</td>
+<td>–fn_opa</td>
+<td>atmospheric model: opacities (MARCS “.opa” format) (Figure 8B,8C)</td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-center" id="id3">
+<img alt="_images/modeles.png" class="bordered" src="_images/modeles.png" />
+<p class="caption"><span class="caption-number">Figure 11 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span></p>
+</div>
+<p><code class="docutils literal"><span class="pre">innewmarcs</span></code> creates two separate files (Table 4). They are created
+separately for historical reasons. “modeles.opa” follows the same structure of “.opa”
+files downloaded from the MARCS website. “modeles.mod” does <strong>not</strong> follow the same
+structure of MARCS “.mod” files. Figure 8 illustrates the information contained in these files.</p>
+</div>
+<div class="section" id="files-created-by-hydro2">
+<h4>Files created by <code class="docutils literal"><span class="pre">hydro2</span></code><a class="headerlink" href="#files-created-by-hydro2" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal"><span class="pre">hydro2</span></code> creates a series of files named “thalha” (<a class="reference internal" href="#figalpha"><span class="std std-numref">Figure 12</span></a>),
+“thbeta”, “thgamma”, “thdelta”, “thepsilon” etc. (the series of hydrogen lines is given in
+file “hmap.dat”).</p>
+<div class="figure align-center" id="id4">
+<span id="figalpha"></span><img alt="_images/thalpha.png" class="bordered" src="_images/thalpha.png" />
+<p class="caption"><span class="caption-number">Figure 12 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal"><span class="pre">hydro2</span></code>.</span></p>
+</div>
+</div>
+<div class="section" id="files-created-by-pfant">
+<h4>Files created by <code class="docutils literal"><span class="pre">pfant</span></code><a class="headerlink" href="#files-created-by-pfant" title="Permalink to this headline">¶</a></h4>
+<p>Table 5 - Files created by <code class="docutils literal"><span class="pre">pfant</span></code></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Default name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>flux.spec</td>
+<td>un-normalized flux (erg/cm**2/s/Hz multiplied by 10**5)</td>
+</tr>
+<tr class="row-odd"><td>flux.cont</td>
+<td>continuum flux (erg/cm**2/s/Hz multiplied by 10**5)</td>
+</tr>
+<tr class="row-even"><td>flux.norm</td>
+<td>normalized flux (un-normalized flux)/(continuum flux)</td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-center" id="id5">
+<img alt="_images/spec-cont-norm.png" class="bordered" src="_images/spec-cont-norm.png" />
+<p class="caption"><span class="caption-number">Figure 13 </span><span class="caption-text">– plots showing three <code class="docutils literal"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
+calculated spectrum; continuum; normalized spectrum. The common prefix “flux” can be changed
+in file “main.dat” to give a set of files with different names.</span></p>
+</div>
+</div>
+<div class="section" id="files-created-by-nulbad">
+<h4>Files created by <code class="docutils literal"><span class="pre">nulbad</span></code><a class="headerlink" href="#files-created-by-nulbad" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal"><span class="pre">nulbad</span></code> creates a file whose name by default is the full input file name with the FWHM
+added with three decimal places. For example,</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">1.2</span>
+</pre></div>
+</div>
+<p>creates a file named “flux.norm.nulbad.1.200”.</p>
+<p>To change this, use option “–fn_cv”, for example,</p>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> <span class="o">--</span><span class="n">fwhm</span> <span class="mf">1.2</span> <span class="o">--</span><span class="n">fn_cv</span> <span class="n">another</span><span class="o">-</span><span class="n">name</span>
+</pre></div>
+</div>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Another page containing the visual maps of the text files, such as main.dat</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="misc.html" class="btn btn-neutral float-right" title="Miscellanea how-to" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="moregui.html" class="btn btn-neutral" title="More GUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1967-3999.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.17.11.28.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
