@@ -11,18 +11,17 @@ The development started with M Spite *et al.* in France in 1967 (Figure
 ::
 
      |
-     | 1967 -- FANTÔME -- by M Spite et al.
-     | 1982 -- FANTOMOL -- B Barbuy included the computation of molecular lines,
-     |           dissociatipon equilibrium
-     | 2003 -- PFANT -- M-N Perrin: large wavelength coverage,
-     |           inclusion or hydrogen lines
-     | 2015 -- J Trevisan: conversion of source code to Fortran 2003, Python interface,
-     |           tools to convert between different file formats
+     | 1967 -- FANTÔME   -- by M Spite et al.
+     | 1982 -- FANTOMOL  -- B Barbuy included the computation of molecular lines,
+     |                      dissociatipon equilibrium
+     | 2003 -- PFANT     -- M-N Perrin: large wavelength coverage,
+     |                      inclusion or hydrogen lines
+     | 2015 -- PFANT     -- J Trevisan: source code conversion to Fortran 2003 and optimization;
+     |                      Python interface, tools and API
     t|
      V
 
 Figure 1 - Summarized PFANT timeline `(Coelho et al. 2005) <#RPC_2005>`__
-
 
 
 References
