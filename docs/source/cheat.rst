@@ -8,8 +8,7 @@ Cheatsheet
 
 * Call a program with ``--help`` option, *e.g.*, ``pfant --help``.
 
-
-* ``programs.py`` lists all Fortran programs in the PFANT pack, and Python programs in the `F311 <trevisanj.github.io/f311>`_ project.
+* ``programs.py -p pyfant`` lists all Fortran programs in the PFANT pack, and Python programs in the `PyFANT <trevisanj.github.io/pyfant>`_ project.
 
 
 PFANT Fortran binaries
@@ -20,8 +19,8 @@ PFANT Fortran binaries
 * ``pfant``: spectral synthesis
 * ``nulbad``: convolution with Gaussian
 
-Python applications from project f311
--------------------------------------
+Python applications from project PyFANT
+---------------------------------------
 
 Graphical applications
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -53,6 +52,104 @@ Command-line tools
 * ``save-pdf.py``: Looks for files "*.norm" inside directories session-* and saves one figure per page in a PDF file
 * ``vald3-to-atoms.py``: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.
 
-PFANT at GitHub: http://github.com/trevisanj/PFANT
+Command-line options for the Fortran binaries
+---------------------------------------------
 
-Project f311 at GitHub: http://github.com/trevisanj/f311
+Options are accompained by their default values.
+
+Below, ``<main_xxxxx>`` means that option ``xxxxx`` is, by default, read from PFANT main configuration file.
+
+``hydro2``
+~~~~~~~~~~
+
+.. code:: shell
+
+    hydro2 \
+        --logging_console T \
+        --logging_dump F \
+        --logging_fn_dump <executable name>_dump.log \
+        --fn_main main.dat \
+        --fn_modeles modeles.mod \
+        --fn_absoru2 absoru2.dat \
+        --fn_hmap hmap.dat \
+        --interp 1 \
+        --kik 0 \
+        --ptdisk <main_llzero>  \
+        --llfin <main_llfin>  \
+        --amores T \
+        --kq 1 \
+        --zph 12.00
+
+``innewmarcs``
+~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    innewmarcs \
+        --logging_console T \
+        --logging_dump F \
+        --logging_fn_dump <executable name>_dump.log \
+        --fn_main main.dat \
+        --fn_modeles modeles.mod \
+        --fn_modgrid grid.mod \
+        --fn_moo grid.moo \
+        --allow F \
+        --fn_opa modeles.opa \
+        --opa T
+
+``pfant``
+~~~~~~~~~
+
+.. code:: shell
+
+    pfant \
+        --logging_console T \
+        --logging_dump F \
+        --logging_fn_dump <executable name>_dump.log \
+        --fn_main main.dat \
+        --fn_modeles modeles.mod \
+        --fn_absoru2 absoru2.dat \
+        --fn_hmap hmap.dat \
+        --interp 1 \
+        --kik 0 \
+        --ptdisk <main_llzero>  \
+        --llfin <main_llfin>  \
+        --fn_opa modeles.opa \
+        --fn_partit partit.dat \
+        --fn_abonds abonds.dat \
+        --fn_atoms atoms.dat \
+        --no_molecules F \
+        --no_atoms F \
+        --no_h F \
+        --pas <main_pas>  \
+        --aint <main_aint> \
+        --opa T \
+        --abs F \
+        --opa T \
+        --opa T \
+        --fn_dissoc dissoc.dat \
+        --fn_molecules molecules.dat \
+        --flprefix <main_flprefix>
+
+``nulbad``
+~~~~~~~~~~
+
+.. code:: shell
+
+    nulbad \
+        --logging_console T \
+        --logging_dump F \
+        --logging_fn_dump <executable name>_dump.log \
+        --fn_main main.dat \
+        --flprefix <main_flprefix>  \
+        --fn_flux <main_flprefix>.norm  \
+        --flam F \
+        --fn_cv <flux file name>.nulbad.<fwhm> \
+        --pat <main_pas>  \
+        --convol T \
+        --fwhm <main_fwhm>
+
+
+PFANT on GitHub: http://github.com/trevisanj/PFANT
+
+PyFANT on GitHub: http://github.com/trevisanj/pyfant

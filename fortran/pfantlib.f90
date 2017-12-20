@@ -3108,7 +3108,7 @@ contains
      IND//'of dfine:atoms and use the value passed', .false.)  ! option will not appear in --help printout
     call add_option('p', 'pas', ' ', .true., 'real value', '<main_pas> '//FROM_MAIN, &
      'Calculation delta-lambda (angstrom)')
-    call add_option('p', 'aint', ' ', .true., 'integer value', real82str(config_aint, 0), &
+    call add_option('p', 'aint', ' ', .true., 'integer value', '<main_aint>'//FROM_MAIN, &
      'Interval length per iteration (angstrom)')
     call add_option('p', 'fn_progress',      ' ', .true., 'file name', config_fn_progress, &
      'output file name - progress indicator', .false.)
@@ -3634,8 +3634,7 @@ module file_main
    main_afstar, & ! log10 of metallicity. Must match main_asalog
    main_llzero, & ! lower boundary of calculation interval
    main_llfin,  & ! upper boundary of calculation interval
-   main_aint,   & ! length of each calculation sub-interval, *no longer used*
-                           ! (now config_aint (which has a default value) is used instead)
+   main_aint,   & ! length of each calculation sub-interval
    main_teff,   & ! effective temperature of the star
    main_glog,   & ! log10 of gravity
    main_asalog, & ! log10 of metallicity. Must match main_afstar
@@ -4052,6 +4051,9 @@ contains
            trim(config_fn_abonds)//'"')
         end if
         abund = abonds_abol(j)-12
+        if (abund .lt. -99.99) then
+          abund = -99.99
+        end if
       end if
 
       write(buffer(i+1)(31:40), '(f10.5)') abund

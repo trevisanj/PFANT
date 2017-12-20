@@ -2,17 +2,9 @@
 
 # Top priority
 
-- take convmol binary out of make* scripts
-
-- Auto-dissoc: Abyunadncas in dissoc cannot be less than 99.99 (that thing made in Elvis' computer)
-
 ## Documentation
 
-- Cheat sheet: shell command example exposing all the options available
-
 - Release notes: roughly all that has been done since the beginning
-
-## Misc
 
 ## Low priority
 
@@ -28,6 +20,3 @@
 ### Documentation
 
 - banner in README.md
-
-- add file table to cheatsheet
-
