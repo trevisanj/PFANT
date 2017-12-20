@@ -103,9 +103,16 @@
 <li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cheatsheet</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pfant-fortran-binaries">PFANT Fortran binaries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-applications-from-project-f311">Python applications from project f311</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#python-applications-from-project-pyfant">Python applications from project PyFANT</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#graphical-applications">Graphical applications</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#command-line-tools">Command-line tools</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-options-for-the-fortran-binaries">Command-line options for the Fortran binaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hydro2"><code class="docutils literal"><span class="pre">hydro2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#innewmarcs"><code class="docutils literal"><span class="pre">innewmarcs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pfant"><code class="docutils literal"><span class="pre">pfant</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nulbad"><code class="docutils literal"><span class="pre">nulbad</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -181,7 +188,7 @@
 command-line options:</strong> run <code class="docutils literal"><span class="pre">x.py</span></code>  and navigate through the fields in Tabs 1 and 3.
 As you navigate, a description of the current field will be displayed at the bottom of the window.</li>
 <li>Call a program with <code class="docutils literal"><span class="pre">--help</span></code> option, <em>e.g.</em>, <code class="docutils literal"><span class="pre">pfant</span> <span class="pre">--help</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">programs.py</span></code> lists all Fortran programs in the PFANT pack, and Python programs in the <a class="reference external" href="trevisanj.github.io/f311">F311</a> project.</li>
+<li><code class="docutils literal"><span class="pre">programs.py</span> <span class="pre">-p</span> <span class="pre">pyfant</span></code> lists all Fortran programs in the PFANT pack, and Python programs in the <a class="reference external" href="trevisanj.github.io/pyfant">PyFANT</a> project.</li>
 </ul>
 <div class="section" id="pfant-fortran-binaries">
 <h2>PFANT Fortran binaries<a class="headerlink" href="#pfant-fortran-binaries" title="Permalink to this headline">¶</a></h2>
@@ -192,8 +199,8 @@ As you navigate, a description of the current field will be displayed at the bot
 <li><code class="docutils literal"><span class="pre">nulbad</span></code>: convolution with Gaussian</li>
 </ul>
 </div>
-<div class="section" id="python-applications-from-project-f311">
-<h2>Python applications from project f311<a class="headerlink" href="#python-applications-from-project-f311" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-applications-from-project-pyfant">
+<h2>Python applications from project PyFANT<a class="headerlink" href="#python-applications-from-project-pyfant" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="graphical-applications">
 <h3>Graphical applications<a class="headerlink" href="#graphical-applications" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -225,8 +232,99 @@ As you navigate, a description of the current field will be displayed at the bot
 <li><code class="docutils literal"><span class="pre">save-pdf.py</span></code>: Looks for files “<em>.norm” inside directories session-</em> and saves one figure per page in a PDF file</li>
 <li><code class="docutils literal"><span class="pre">vald3-to-atoms.py</span></code>: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.</li>
 </ul>
-<p>PFANT at GitHub: <a class="reference external" href="http://github.com/trevisanj/PFANT">http://github.com/trevisanj/PFANT</a></p>
-<p>Project f311 at GitHub: <a class="reference external" href="http://github.com/trevisanj/f311">http://github.com/trevisanj/f311</a></p>
+</div>
+</div>
+<div class="section" id="command-line-options-for-the-fortran-binaries">
+<h2>Command-line options for the Fortran binaries<a class="headerlink" href="#command-line-options-for-the-fortran-binaries" title="Permalink to this headline">¶</a></h2>
+<p>Options are accompained by their default values.</p>
+<p>Below, <code class="docutils literal"><span class="pre">&lt;main_xxxxx&gt;</span></code> means that option <code class="docutils literal"><span class="pre">xxxxx</span></code> is, by default, read from PFANT main configuration file.</p>
+<div class="section" id="hydro2">
+<h3><code class="docutils literal"><span class="pre">hydro2</span></code><a class="headerlink" href="#hydro2" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">hydro2</span> \
+    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
+    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
+    <span class="o">--</span><span class="n">fn_absoru2</span> <span class="n">absoru2</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_hmap</span> <span class="n">hmap</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">interp</span> <span class="mi">1</span> \
+    <span class="o">--</span><span class="n">kik</span> <span class="mi">0</span> \
+    <span class="o">--</span><span class="n">ptdisk</span> <span class="o">&lt;</span><span class="n">main_llzero</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">llfin</span> <span class="o">&lt;</span><span class="n">main_llfin</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">amores</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">kq</span> <span class="mi">1</span> \
+    <span class="o">--</span><span class="n">zph</span> <span class="mf">12.00</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="innewmarcs">
+<h3><code class="docutils literal"><span class="pre">innewmarcs</span></code><a class="headerlink" href="#innewmarcs" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span> \
+    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
+    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
+    <span class="o">--</span><span class="n">fn_modgrid</span> <span class="n">grid</span><span class="o">.</span><span class="n">mod</span> \
+    <span class="o">--</span><span class="n">fn_moo</span> <span class="n">grid</span><span class="o">.</span><span class="n">moo</span> \
+    <span class="o">--</span><span class="n">allow</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">fn_opa</span> <span class="n">modeles</span><span class="o">.</span><span class="n">opa</span> \
+    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pfant">
+<h3><code class="docutils literal"><span class="pre">pfant</span></code><a class="headerlink" href="#pfant" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">pfant</span> \
+    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
+    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
+    <span class="o">--</span><span class="n">fn_absoru2</span> <span class="n">absoru2</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_hmap</span> <span class="n">hmap</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">interp</span> <span class="mi">1</span> \
+    <span class="o">--</span><span class="n">kik</span> <span class="mi">0</span> \
+    <span class="o">--</span><span class="n">ptdisk</span> <span class="o">&lt;</span><span class="n">main_llzero</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">llfin</span> <span class="o">&lt;</span><span class="n">main_llfin</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">fn_opa</span> <span class="n">modeles</span><span class="o">.</span><span class="n">opa</span> \
+    <span class="o">--</span><span class="n">fn_partit</span> <span class="n">partit</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_abonds</span> <span class="n">abonds</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_atoms</span> <span class="n">atoms</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">no_molecules</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">no_atoms</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">no_h</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">pas</span> <span class="o">&lt;</span><span class="n">main_pas</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">aint</span> <span class="o">&lt;</span><span class="n">main_aint</span><span class="o">&gt;</span> \
+    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="nb">abs</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">fn_dissoc</span> <span class="n">dissoc</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">fn_molecules</span> <span class="n">molecules</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">flprefix</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nulbad">
+<h3><code class="docutils literal"><span class="pre">nulbad</span></code><a class="headerlink" href="#nulbad" title="Permalink to this headline">¶</a></h3>
+<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> \
+    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
+    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
+    <span class="o">--</span><span class="n">flprefix</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">fn_flux</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;.</span><span class="n">norm</span>  \
+    <span class="o">--</span><span class="n">flam</span> <span class="n">F</span> \
+    <span class="o">--</span><span class="n">fn_cv</span> <span class="o">&lt;</span><span class="n">flux</span> <span class="n">file</span> <span class="n">name</span><span class="o">&gt;.</span><span class="n">nulbad</span><span class="o">.&lt;</span><span class="n">fwhm</span><span class="o">&gt;</span> \
+    <span class="o">--</span><span class="n">pat</span> <span class="o">&lt;</span><span class="n">main_pas</span><span class="o">&gt;</span>  \
+    <span class="o">--</span><span class="n">convol</span> <span class="n">T</span> \
+    <span class="o">--</span><span class="n">fwhm</span> <span class="o">&lt;</span><span class="n">main_fwhm</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>PFANT on GitHub: <a class="reference external" href="http://github.com/trevisanj/PFANT">http://github.com/trevisanj/PFANT</a></p>
+<p>PyFANT on GitHub: <a class="reference external" href="http://github.com/trevisanj/pfant">http://github.com/trevisanj/pfant</a></p>
 </div>
 </div>
 </div>
