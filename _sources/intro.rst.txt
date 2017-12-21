@@ -4,7 +4,7 @@ Introduction
 PFANT is a stellar spectral synthesis software written in Fortran.
 
 The development started with M Spite *et al.* in France in 1967 (Figure
-1). The code formulation is described in `(Barbuy 1982) <#R_BLB1982>`__,
+0). The code formulation is described in `(Barbuy 1982) <#R_BLB1982>`__,
 `(Cayrel et al. 1991) <#R_CAYREL1991>`__, `(Barbuy et al.
 2003) <#R_BLB2003>`__, and `(Coelho et al. 2005) <#R_PC2005>`__.
 
@@ -16,12 +16,25 @@ The development started with M Spite *et al.* in France in 1967 (Figure
      |                      dissociatipon equilibrium
      | 2003 -- PFANT     -- M-N Perrin: large wavelength coverage,
      |                      inclusion or hydrogen lines
-     | 2015 -- PFANT     -- J Trevisan: source code conversion to Fortran 2003 and optimization;
-     |                      Python interface, tools and API
+     | 2015 -- PFANT     -- J Trevisan: conversion to Fortran 2003 and optimization;
+     |                      documentation; MARCS opacities; Python interface and tools
     t|
      V
 
-Figure 1 - Summarized PFANT timeline `(Coelho et al. 2005) <#RPC_2005>`__
+Figure 0 - Summarized PFANT timeline `(Coelho et al. 2005) <#RPC_2005>`__
+
+Acknowledgement
+---------------
+
+The source code conversion, the documentation, incorporation of MARCS opacities,
+and Python development was
+funded by FAPESP - Research Support Foundation of the State of São Paulo, Brazil (2015-2017).
+
+Contact
+-------
+
+For bugs reports, questions, suggestions, etc., please open an issue at the project
+site on GitHub: `<http://github.com/trevisanj/PFANT>`_.
 
 
 References
