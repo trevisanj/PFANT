@@ -1,0 +1,1 @@
+cp ../../PFANT-docs/latex/PFANT.pdf source
