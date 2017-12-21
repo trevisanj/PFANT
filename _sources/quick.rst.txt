@@ -91,7 +91,6 @@ Spectral synthesis involves a few steps, as shown in :numref:`workflow-short`, a
 
 .. _workflow-short:
 
-
 .. figure:: img/workflow-short.txt.png
     :align: center
     :class: bordered
@@ -240,31 +239,34 @@ Here is a suggested roadmap:
 #. Double-click on "Plot spectrum": spectrum appears
 
 
-Writing Python scripts with package f311.pyfant
------------------------------------------------
+Writing Python scripts with package ``pyfant``
+----------------------------------------------
 
-Package "f311.pyfant" provides an API that allows one to perform spectral synthesis from Python code,
+Python package ``"pyfant`` provides an API that allows one to perform spectral synthesis from
+Python code,
 manipulate PFANT-related data files, and more.
 
 Here is a simple spectral synthesis example. The following code runs the Fortran binaries
-(``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python coder, and then
+(``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``) in a way that is transparent to the Python
+coder, and then
 plots resulting synthetic spectra (:numref:`figpyfant`):
 
 .. code:: python
 
-    import f311.pyfant as pf
-    import f311.explorer as ex
-    obj = pf.Combo()
+    import pyfant
+    import f311
+    obj = pyfant.Combo()
     obj.run()
     obj.load_result()
 
     # Plots continuum, spectrum, normalized in three sub-plots
-    ex.plot_spectra([obj.result["cont"], obj.result["spec"], obj.result["norm"]])
+    f311.plot_spectra_stacked([obj.result["cont"],
+                               obj.result["spec"],
+                               obj.result["norm"]])
 
     # Plots normalized unconvolved, normalized convolved spectra overlapped
-    ex.plot_spectra_overlapped([obj.result["norm"], obj.result["convolved"]])
-
-
+    f311.plot_spectra_overlapped([obj.result["norm"],
+                                  obj.result["convolved"]])
 
 .. _figpyfant:
 
@@ -274,6 +276,4 @@ plots resulting synthetic spectra (:numref:`figpyfant`):
 
     -- Plots generated from code above.
 
-.. hint::
-
-    More Python examples can be found at https://trevisanj.github.io/f311/pyfant.html
+More Python examples can be found at https://trevisanj.github.io/pyfant

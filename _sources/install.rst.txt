@@ -77,13 +77,13 @@ or *home/.cshrc*.
 .. note:: If the above does not work for you, manually add
           *PFANT/fortran/bin* to your system path.
 
-Install "f311" Python package
+Install ``pyfant`` Python package
 -----------------------------
 
 Although PFANT contains standalone a set of tools for spectral synthesis, it is recommended
-to install the "f311" Python package to add running, editing, visualization and conversion capabilities
+to install the ``pyfant`` Python package to add running, editing, visualization and conversion capabilities
 around the Fortran core. Installation instructions are available at
-http://trevisanj.github.io/f311
+http://trevisanj.github.io/pyfant
 
 Tips for windows users
 ----------------------

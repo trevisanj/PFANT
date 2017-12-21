@@ -125,5 +125,5 @@ Related command-line options (also accessible in ``x.py``):
 Conversion of molecular lines from other formats to PFANT format
 ----------------------------------------------------------------
 
-See `<http://trevisanj.github.io/f311/convmol.html>`_.
+See :doc:`convmol`.
 

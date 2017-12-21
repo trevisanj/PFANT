@@ -152,4 +152,4 @@ Below, ``<main_xxxxx>`` means that option ``xxxxx`` is, by default, read from PF
 
 PFANT on GitHub: http://github.com/trevisanj/PFANT
 
-PyFANT on GitHub: http://github.com/trevisanj/pfant
+PyFANT on GitHub: http://github.com/trevisanj/pyfant
