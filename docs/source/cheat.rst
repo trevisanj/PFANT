@@ -1,16 +1,6 @@
 Cheatsheet
 ==========
 
-
-* **Description of stellar parameters, running settings,
-  command-line options:** run ``x.py``  and navigate through the fields in Tabs 1 and 3.
-  As you navigate, a description of the current field will be displayed at the bottom of the window.
-
-* Call a program with ``--help`` option, *e.g.*, ``pfant --help``.
-
-* ``programs.py -p pyfant`` lists all Fortran programs in the PFANT pack, and Python programs in the `PyFANT <trevisanj.github.io/pyfant>`_ project.
-
-
 PFANT Fortran binaries
 ----------------------
 
@@ -51,6 +41,9 @@ Command-line tools
 * ``run4.py``: Runs the four Fortran binaries in sequence: ``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``
 * ``save-pdf.py``: Looks for files "*.norm" inside directories session-* and saves one figure per page in a PDF file
 * ``vald3-to-atoms.py``: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.
+
+.. hint:: All programs have a ``--help`` argument.
+
 
 Command-line options for the Fortran binaries
 ---------------------------------------------

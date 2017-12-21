@@ -16,8 +16,8 @@ The development started with M Spite *et al.* in France in 1967 (Figure
      |                      dissociatipon equilibrium
      | 2003 -- PFANT     -- M-N Perrin: large wavelength coverage,
      |                      inclusion or hydrogen lines
-     | 2015 -- PFANT     -- J Trevisan: source code conversion to Fortran 2003 and optimization;
-     |                      documentation; incorporation of MARCS opacities; Python interface, tools and API
+     | 2015 -- PFANT     -- J Trevisan: conversion to Fortran 2003 and optimization;
+     |                      documentation; MARCS opacities; Python interface and tools
     t|
      V
 
