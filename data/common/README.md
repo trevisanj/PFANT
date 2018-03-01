@@ -14,7 +14,8 @@ molecules.dat  | molecular lines (21 molecules) [1]. This file is currently iden
                | Note that 'molecules.dat' is the default name for PFANT molecular lines file, therefore this file is
                | likely to change contents over time, reusing the same name
 absoru2.dat    | absoru data
-hmap.dat       | hydrogen lines information
+hmap.dat       | hydrogen lines information. in 2018/03/01, this file was updated to be a 
+               | conversion from TurboSpectrum-available hydrogen lines
 partit.dat     | partition functions 
 grid.mod       | grid of MARCS atmospheric models (see grid specs below)
 grid.moo       | grid of MARCS atmospheric models with opacities included (see grid specs below)
