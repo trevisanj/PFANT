@@ -189,12 +189,6 @@ contains
       rs_lambd(k) = rs_l0+(k-1)*rs_dpas
     end do
 
-    goto 1930
-
-    1929 write(*,*) 'BIRIBICAMCA CABAMCA'
-
-    1930 continue
-
     ! print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
 
     close(unit=UNIT_)
