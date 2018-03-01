@@ -45,7 +45,7 @@ module dimensions
   !=====
 
   ! Maximum number of "filetoh" files
-  integer, parameter :: MAX_FILETOH_NUM_FILES=13
+  integer, parameter :: MAX_FILETOH_NUM_FILES=200
   ! maximum number of points of each hydrogen line calculated (half of the line, from peak to either bottom)
   integer, parameter :: MAX_FILETOH_JMAX=100
   ! Tied with other constant by relation: MAX_FILETOH_JJMAX = MAX_FILETOH_JMAX*2-1
