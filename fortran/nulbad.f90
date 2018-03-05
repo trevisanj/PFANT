@@ -18,7 +18,7 @@
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !
 ! Prefixes:
-!   - rs_* -- calculated by read_spectrum()
+!   - rs_* -- "calculated" by read_spectrum()
 !   - p_*  -- Gaussian function variables, calculated by cafconvh()
 module nulbad_calc
   use pfantlib
@@ -128,70 +128,7 @@ contains
   !=======================================================================================
   ! Reads spectrum file
 
-  subroutine read_spectrum_xy()
-    open(unit=UNIT_,file=x_fn_flux, status='unknown')
-
-    icle = 1
-    rs_ktot = 0
-
-    do while (.true.)
-      read(UNIT_, 1130) &
-       ikeytot,        & ! used locally
-       rs_titc,    & ! written back in output file
-       rs_tetaeff, & ! written back
-       rs_glog,    & ! written back
-       rs_asalog,  & ! written back
-       rs_nhe_bid,        & ! read and used in logging only
-       rs_amg,     & ! written back
-       rs_l0,      & ! used by nulbad_calc() & written back
-       rs_lf,      & ! written back
-       lzero_bid,      & ! read and discarded
-       lfin_bid,       & ! read and discarded
-       itot,           & ! used locally
-       rs_dpas,    & ! used by nulbad_calc()
-       echx_bid,       & ! read and discarded
-       echy_bid,       & ! read and discarded
-       fwhm_bid          ! read and discarded
-
-      1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
-
-      ! allocates rs_ffnu at first iteration
-      if (icle .eq. 1) then
-        size_ffnu = ikeytot*itot
-        allocate(rs_ffnu(size_ffnu), rs_lambd(size_ffnu)) ! This is probably a slight overallocation
-      end if
-
-      read(UNIT_, *)(fnu(d),d=1,itot)
-
-      ! write(lll,*) ikeytot,itot
-      ! call log_debug(lll)
-
-      ! pfant writes redundant data: last value of iteration ikey equals first value of
-      ! iteration ikey+1. So the following tweak on itot is to account for this.
-      ! In the last iteration, the last point is not discarded.
-      if (icle .eq. ikeytot) itot = itot+1
-      do d = 1,itot-1
-        k = rs_ktot+d
-        rs_ffnu(k) = fnu(d)
-      end do
-      rs_ktot = k
-
-      icle = icle+1
-      if(icle .gt. ikeytot) exit
-    end do
-
-    do k = 1, rs_ktot
-      rs_lambd(k) = rs_l0+(k-1)*rs_dpas
-    end do
-
-
-    ! print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
-
-    close(unit=UNIT_)
-  end
-
-
-  subroutine read_spectrum_pfant()
+  subroutine read_spectrum()
     ! variables with suffix "_bid" are read from file, but used for nothing
     real*8 echx_bid, echy_bid, fwhm_bid, lzero_bid, lfin_bid
     integer :: itot, ikeytot, icle, d, k, size_ffnu
@@ -251,7 +188,6 @@ contains
     do k = 1, rs_ktot
       rs_lambd(k) = rs_l0+(k-1)*rs_dpas
     end do
-
 
     ! print *, 'AAAAAAA rs_ktot', rs_ktot,' size_ffnu', size_ffnu
 
