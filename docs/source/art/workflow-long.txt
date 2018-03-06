@@ -3,14 +3,14 @@
                    v                           v  (H lines)             |
 grid.mod     +----------+                  +------+                     |
      or ---->|innewmarcs|-->modeles.mod--->|hydro2|<----------+         |
-grid.moo     +----------+         |        +------+           |         |
+grid.moo     +----------+   modeles.opa    +------+           |         |
              (interpolate         |            |              |         |
               atm. model)         |            v              |         |
-                                  |         thalpha           |         |
-                                  |         thbeta        absoru2.dat   |
-                                  |         thgamma       hmap.dat      |
-                                  |         thdelta           |         |
-                                  |         thepsilon         |         |
+                                  |          Halpha           |         |
+                                  |          Hbeta        absoru2.dat   |
+                                  |          Hgamma       hmap.dat      |
+                                  |          ...              |         |
+                                  |            |              |         |
                                   |            |              |         |
                    abonds.dat     |            v              |         |
                    dissoc.dat     +-------->+-----+           |         |
