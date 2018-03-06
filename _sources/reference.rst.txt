@@ -9,7 +9,7 @@ Spectral synthesis pipeline
 
 .. workflow-long:
 
-.. figure:: img/workflow-long.txt.png
+.. figure:: img/workflow-long.png
     :align: center
     :class: bordered
 
