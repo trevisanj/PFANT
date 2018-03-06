@@ -1109,7 +1109,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v18.3.1'
+    v = 'v18.3.6.0'
   end
 
   ! Displays welcome message
