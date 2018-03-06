@@ -37,6 +37,7 @@ Command-line tools
 * ``hitran-scraper.py``: Retrieves molecular lines from the HITRAN database
 * ``link.py``: Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory
 * ``nist-scraper.py``: Retrieves molecular constants from NIST Web Book for a particular molecule
+* ``nulbad.py``: Convolve spectrum with Gaussian profile (similar, but not equivalent, to Fortran ``nulbad``)
 * ``plot-spectra.py``: Plots spectra on screen or creates PDF file
 * ``run4.py``: Runs the four Fortran binaries in sequence: ``innewmarcs``, ``hydro2``, ``pfant``, ``nulbad``
 * ``save-pdf.py``: Looks for files "*.norm" inside directories session-* and saves one figure per page in a PDF file
