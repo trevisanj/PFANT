@@ -112,7 +112,7 @@ module dimensions
   !=====
 
   integer, parameter :: &
-   MAX_ATOMS_NBLEND=100000, & ! Half of the maximum the number of rows in *atoms file*
+   MAX_ATOMS_NBLEND=300000, & ! Half of the maximum the number of rows in *atoms file*
    MAX_ATOMS_F_NBLEND=20000      ! Maximum number of spectral lines possible within the interval LZERO, LFIN
 
   !=====
@@ -1109,7 +1109,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v18.3.1'
+    v = 'v18.3.6.0'
   end
 
   ! Displays welcome message
