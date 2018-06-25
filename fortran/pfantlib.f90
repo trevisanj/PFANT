@@ -8020,7 +8020,7 @@ contains
     real*8 t5040, psi
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
-    real*8 qv, gv, bv, dv, facto
+    real*8 qv, gv, bv, dv, facto, j2l
     integer j_set, l, l_ini, l_fin, n, nnv, molidx, iz0, iz1
 
     real*8, parameter :: C2 = 8.8525E-13
@@ -8074,8 +8074,12 @@ contains
             ! PC2003: default value for CSC does not exist physically
 
             ! TODO re-arrange this because CSC independs of n (atmospheric layer)
-            csc = exp(-H*C/KB*t5040*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*   &
-                  (2.-cro)*(2.*km_f_jj(l)+1.)*                                             &
+            
+            
+            ! (2*km_f_jj(l)+1)*
+            
+            csc = exp(-H*C/KB*t5040*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*       &
+                  (2.-cro)*(2.*km_f_jj(l)+1.)*                                   &
                   exp(H*C/KB*t5040*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))
 
             km_c_pnvj(l,n) = csc*psi*ppa(n)*pb(n)/sat4_pph(n)
