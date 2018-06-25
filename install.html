@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; PFANT 18.03.06 documentation</title>
+  <title>Installation &mdash; PFANT 18.06.25 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PFANT 18.03.06 documentation" href="index.html"/>
+    <link rel="top" title="PFANT 18.06.25 documentation" href="index.html"/>
         <link rel="next" title="Quick Start" href="quick.html"/>
         <link rel="prev" title="Introduction" href="intro.html"/>
     <link href="_static/style.css" rel="stylesheet" type="text/css">
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                18.03.06
+                18.06.25
               </div>
             
           
@@ -97,16 +97,14 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-required-software">Installing required software</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#standalone-applications">Standalone applications</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#install-required-software">Install required software</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#download-files">Download files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#clone-the-github-repository">Clone the GitHub repository:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-the-fortran-source-code">Compiling the Fortran source code.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compile-the-fortran-source-code">Compile the Fortran source code.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-the-paths">Setting the paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-file-grid-moo">Get file <code class="docutils literal"><span class="pre">grid.moo</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#install-pyfant-python-package">Install <code class="docutils literal"><span class="pre">pyfant</span></code> Python package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tips-for-windows-users">Tips for windows users</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gfortran-and-make-on-windows">gfortran and make on Windows</a></li>
@@ -193,7 +191,8 @@
 <li>Download files</li>
 <li>Compile the Fortran source code</li>
 <li>Add <code class="docutils literal"><span class="pre">PFANT/fortran/bin</span></code> to your PATH</li>
-<li>Install the “f311” Python package (<a class="reference external" href="http://github.com/trevisanj/f311">http://github.com/trevisanj/f311</a>)
+<li>Get file <code class="docutils literal"><span class="pre">grid.moo</span></code></li>
+<li>Install the “pyfant” Python package (<a class="reference external" href="http://trevisanj.github.io/pyfant">http://trevisanj.github.io/pyfant</a>)
 (recommended)</li>
 </ol>
 <p>This section will take you through these steps.</p>
@@ -203,18 +202,14 @@
 Fortran Compiler), however only Debian-based Linux system is “supported” in the following
 instructions. Windows users will find some tips in a specific section below.</p>
 </div>
-<div class="section" id="installing-required-software">
-<h2>Installing required software<a class="headerlink" href="#installing-required-software" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="standalone-applications">
-<h3>Standalone applications<a class="headerlink" href="#standalone-applications" title="Permalink to this headline">¶</a></h3>
-<p>Please install the following standalone applications on your system (no
-pain except for gfortran and make on Windows (see below)):</p>
+<div class="section" id="install-required-software">
+<h2>Install required software<a class="headerlink" href="#install-required-software" title="Permalink to this headline">¶</a></h2>
+<p>Please make sure the following software is installed on your system:</p>
 <ul class="simple">
 <li>gfortran (version 4.8 recommended; does <strong>not</strong> compile with version
 4.4)</li>
 <li>make</li>
 </ul>
-</div>
 </div>
 <div class="section" id="download-files">
 <h2>Download files<a class="headerlink" href="#download-files" title="Permalink to this headline">¶</a></h2>
@@ -226,8 +221,8 @@ pain except for gfortran and make on Windows (see below)):</p>
 <p>This will create a directory named PFANT on your disk.</p>
 </div>
 </div>
-<div class="section" id="compiling-the-fortran-source-code">
-<h2>Compiling the Fortran source code.<a class="headerlink" href="#compiling-the-fortran-source-code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="compile-the-fortran-source-code">
+<h2>Compile the Fortran source code.<a class="headerlink" href="#compile-the-fortran-source-code" title="Permalink to this headline">¶</a></h2>
 <p>Enter the following on your console to compile the Fortran source code:</p>
 <div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">PFANT</span>
 <span class="n">cd</span> <span class="n">fortran</span>
@@ -254,6 +249,23 @@ or <em>home/.cshrc</em>.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">If the above does not work for you, manually add
 <em>PFANT/fortran/bin</em> to your system path.</p>
+</div>
+</div>
+<div class="section" id="get-file-grid-moo">
+<h2>Get file <code class="docutils literal"><span class="pre">grid.moo</span></code><a class="headerlink" href="#get-file-grid-moo" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>go to directory <code class="docutils literal"><span class="pre">PFANT/data/common</span></code> and run <code class="docutils literal"><span class="pre">get-grid.moo.sh</span></code>, or</li>
+<li>download it from
+<a class="reference external" href="https://docs.google.com/uc?export=download&amp;confirm=4o6l&amp;id=0B8m8GNLFiaewejd6dmJ6MW1pX2c">this location</a>
+(or <a class="reference external" href="https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view">this location</a>)
+and save it as “PFANT/data/common/grid.moo”</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This file contains a grid of atmospheric models with MARCS (<a class="reference external" href="http://marcs.astro.uu.se/">http://marcs.astro.uu.se/</a>) opacities included.
+It is required include these opacities in the continuum, which is currently the PFANT default.</p>
 </div>
 </div>
 <div class="section" id="install-pyfant-python-package">
@@ -326,7 +338,7 @@ The <em>PFANT/fortran</em> forder contains a CodeBlocks project named <em>PFANT-
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'18.03.06',
+            VERSION:'18.06.25',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
