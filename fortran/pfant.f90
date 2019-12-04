@@ -1188,19 +1188,21 @@ end module
 !
 
 program pfant
-!@  use pfantlib
-!@  use synthesis
-!@  use pfant_x
-!@  implicit none
-!@  integer i
-!@  logical dissoc_exists
-!@  real*8 temp
+  use pfantlib
+  use synthesis
+  use pfant_x
+  implicit none
+  integer i
+  logical dissoc_exists
+  real*8 temp
+
+  print *, 'Hiiiiiiiiiiiiiiiiiiiiiii'
 
   !=====
   ! Startup
   !=====
-!@  execonf_name = 'pfant'
-!@  call config_init()
+  execonf_name = 'pfant'
+  call config_init()
 
   !=====
   ! File reading
@@ -1264,3 +1266,4 @@ program pfant
   ! Does the calculus
 !@  call synthesis_()
 end program pfant
+
