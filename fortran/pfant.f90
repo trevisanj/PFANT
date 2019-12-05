@@ -98,8 +98,8 @@ program pfant
   !=====
   ! Startup
   !=====
-!@  execonf_name = 'pfant'
-!@  call config_init()
+  execonf_name = 'pfant'
+  call config_init()
 
   !=====
   ! File reading
