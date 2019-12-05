@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Adds lines to ~/.bashrc file or other specified + appends paths to environment variables
 
@@ -12,12 +12,12 @@ import sys
 
 def print2(s):
   """function to standarde message lines."""
-  print '--> %s' % s
+  print('--> %s' % s)
 
 
 if __name__ == "__main__":
   if os.name != "posix":
-    print "OS is '"+os.name+"', this script is only for 'posix' OS's, sorry."
+    print("OS is '"+os.name+"', this script is only for 'posix' OS's, sorry.")
     sys.exit()
 
   home = os.getenv("HOME")
@@ -81,10 +81,10 @@ if __name__ == "__main__":
       f.write(s)
 
     print2("Adding the following lines to file '%s')" % t)
-    print "***BEGIN***"
+    print("***BEGIN***")
     for x in to_add:
-      print x
-    print "***END***"
+      print(x)
+    print( "***END***")
 
 
 
