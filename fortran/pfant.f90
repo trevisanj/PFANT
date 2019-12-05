@@ -25,51 +25,51 @@
 ! Prefixes:
 !   - x_ -- these variable values may come either from *main file* or command-line options.
 
-!@ module pfant_x
-!@   use pfantlib
-!@   implicit none
-!@ 
-!@   character*128 :: x_flprefix
-!@   real*8 :: x_llzero, x_llfin, x_pas, x_aint
-!@ contains
-!@ 
-!@   ! Initializes x_* variables
-!@   !
-!@   ! Note: to be called after read_main()
-!@ 
-!@   subroutine pfant_init_x()
-!@     if (config_flprefix .eq. '?') then
-!@       x_flprefix = main_flprefix
-!@       call parse_aux_log_assignment('x_flprefix', x_flprefix)
-!@     else
-!@       x_flprefix = config_flprefix
-!@     end if
-!@     if (config_llzero .eq. -1) then
-!@       x_llzero = main_llzero
-!@       call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
-!@     else
-!@       x_llzero = config_llzero
-!@     end if
-!@     if (config_llfin .eq. -1) then
-!@       x_llfin = main_llfin
-!@       call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
-!@     else
-!@       x_llfin = config_llfin
-!@     end if
-!@     if (config_pas .eq. -1) then
-!@       x_pas = main_pas
-!@       call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
-!@     else
-!@       x_pas = config_pas
-!@     end if
-!@     if (config_aint .eq. -1) then
-!@       x_aint = main_aint
-!@       call parse_aux_log_assignment('x_aint', real82str(x_aint, 0))
-!@     else
-!@       x_aint = config_aint
-!@     end if
-!@   end
-!@ end
+module pfant_x
+  use pfantlib
+  implicit none
+
+  character*128 :: x_flprefix
+  real*8 :: x_llzero, x_llfin, x_pas, x_aint
+contains
+
+  ! Initializes x_* variables
+  !
+  ! Note: to be called after read_main()
+
+  subroutine pfant_init_x()
+    if (config_flprefix .eq. '?') then
+      x_flprefix = main_flprefix
+      call parse_aux_log_assignment('x_flprefix', x_flprefix)
+    else
+      x_flprefix = config_flprefix
+    end if
+    if (config_llzero .eq. -1) then
+      x_llzero = main_llzero
+      call parse_aux_log_assignment('x_llzero', real82str(x_llzero, 2))
+    else
+      x_llzero = config_llzero
+    end if
+    if (config_llfin .eq. -1) then
+      x_llfin = main_llfin
+      call parse_aux_log_assignment('x_llfin', real82str(x_llfin, 2))
+    else
+      x_llfin = config_llfin
+    end if
+    if (config_pas .eq. -1) then
+      x_pas = main_pas
+      call parse_aux_log_assignment('x_pas', real82str(x_pas, 2))
+    else
+      x_pas = config_pas
+    end if
+    if (config_aint .eq. -1) then
+      x_aint = main_aint
+      call parse_aux_log_assignment('x_aint', real82str(x_aint, 0))
+    else
+      x_aint = config_aint
+    end if
+  end
+end
 
 
 
@@ -87,7 +87,7 @@
 program pfant
   use pfantlib
 !@  use synthesis
-!@  use pfant_x
+  use pfant_x
 !@  implicit none
 !@  integer i
 !@  logical dissoc_exists
