@@ -93,7 +93,7 @@ program pfant
 !@  logical dissoc_exists
 !@  real*8 temp
 
-  print *, 'Hiiiiiiiiiiiiiiiiiiiiiiieeeeeeeeeeeeeeeee'
+  print *, 'Hiiiiiiiiiiiiiiiiiiiiiiieeeeeeeeeeeeeeeeei'
 
   !=====
   ! Startup
