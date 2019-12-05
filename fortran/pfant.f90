@@ -85,7 +85,7 @@
 !
 
 program pfant
-!@  use pfantlib
+  use pfantlib
 !@  use synthesis
 !@  use pfant_x
 !@  implicit none
