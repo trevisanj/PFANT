@@ -34,3 +34,4 @@ Coelho, P., Barbuy, B., Meléndez, J., Schiavon, R. P., & Castilho, B. V.
 1.8 μm with solar and α-enhanced composition_. Astronomy & 
 Astrophysics, 443(2), 735-746.
 
+Barbuy, B., Trevisan, J., & de Almeida, A. (2018). Calculation of molecular line intensity in stellar atmospheres. arXiv preprint arXiv:1812.02414.
