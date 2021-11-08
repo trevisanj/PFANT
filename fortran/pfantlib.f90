@@ -5540,7 +5540,6 @@ contains
     ! this logging message is important in case of errors to know which file it was
     call log_info('read_molecules(): reading file '''//trim(filename)//'''...')
 
-
     open(newunit=myunit,file=filename, status='old')
 
     ! row 01:
@@ -5554,7 +5553,6 @@ contains
       call log_and_halt("Number of molecules ("//int2str(km_number)// &
        ") exceeds maximum allowed ("//int2str(MAX_NUM_MOL)//")")
     end if
-
 
     ! row 02: string containing list of names of all molecules
     read(myunit,'(a)') km_titm
@@ -5605,6 +5603,7 @@ contains
 
       km_comments(molidx) = sections(1)
 
+
       if (len(trim(sections(2))) .eq. 0) then
         ! If atomic symbols not present in section 2, will try to find the formula in the comments
         call log_info('Looking for formula in comments '''//trim(sections(1))//'''...')
@@ -5638,7 +5637,6 @@ contains
 
         km_has_transitions(molidx) = .true.
       end if
-
 
       !write(lll,*) 'molecule index ', molidx
       !call log_debug(lll)
@@ -5793,6 +5791,7 @@ contains
     ! integer, intent(out) :: sizes(3)
     integer i_pos, start, n
     character, parameter :: DELI='#'
+    logical flag_section
 
     sections = ' '  ! very important
     start = 1
@@ -5803,7 +5802,14 @@ contains
     ! print *, '-------------'
 
     do i_pos = 1, SIZE_TITULO+1
-      if (titulo(i_pos:i_pos) .eq. '#' .or. i_pos .eq. SIZE_TITULO+1) then
+      flag_section = .false.
+      if (i_pos .eq. SIZE_TITULO+1) then
+          flag_section = .true.
+      elseif (titulo(i_pos:i_pos) .eq. '#') then
+          flag_section = .true.
+      end if
+
+      if (flag_section) then
         n = n+1
         if (n .gt. 3) then
           call log_and_halt('split_titulo(): number of sections in separated by ''#'' in '''//&
