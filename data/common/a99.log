@@ -1,0 +1,52 @@
+[INFO    ] *********************************************************
+[INFO    ] *** a99 logging session started @ 2023-04-03 15:32:01 ***
+[INFO    ] *********************************************************
+[INFO    ] $ Logging to console $
+[INFO    ] $ Logging to file 'a99.log' $
+[INFO    ] Loading 'molecules.dat': [+........................] 1/21 - 4.8%
+[INFO    ] Loading 'molecules.dat': [++.......................] 2/21 - 9.5%
+[INFO    ] Loading 'molecules.dat': [++++.....................] 3/21 - 14.3%
+[INFO    ] Loading 'molecules.dat': [+++++....................] 4/21 - 19.0%
+[INFO    ] Loading 'molecules.dat': [++++++...................] 5/21 - 23.8%
+[INFO    ] Loading 'molecules.dat': [+++++++..................] 6/21 - 28.6%
+[INFO    ] Loading 'molecules.dat': [++++++++.................] 7/21 - 33.3%
+[INFO    ] Loading 'molecules.dat': [++++++++++...............] 8/21 - 38.1%
+[INFO    ] Loading 'molecules.dat': [+++++++++++..............] 9/21 - 42.9%
+[INFO    ] Loading 'molecules.dat': [++++++++++++.............] 10/21 - 47.6%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++............] 11/21 - 52.4%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++...........] 12/21 - 57.1%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++..........] 13/21 - 61.9%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++........] 14/21 - 66.7%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++.......] 15/21 - 71.4%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++......] 16/21 - 76.2%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++++.....] 17/21 - 81.0%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++....] 18/21 - 85.7%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++++..] 19/21 - 90.5%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++++++++.] 20/21 - 95.2%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++++++] 21/21 - 100.0%
+[INFO    ] *********************************************************
+[INFO    ] *** a99 logging session started @ 2023-04-03 15:47:22 ***
+[INFO    ] *********************************************************
+[INFO    ] $ Logging to console $
+[INFO    ] $ Logging to file 'a99.log' $
+[INFO    ] Loading 'molecules.dat': [+........................] 1/21 - 4.8%
+[INFO    ] Loading 'molecules.dat': [++.......................] 2/21 - 9.5%
+[INFO    ] Loading 'molecules.dat': [++++.....................] 3/21 - 14.3%
+[INFO    ] Loading 'molecules.dat': [+++++....................] 4/21 - 19.0%
+[INFO    ] Loading 'molecules.dat': [++++++...................] 5/21 - 23.8%
+[INFO    ] Loading 'molecules.dat': [+++++++..................] 6/21 - 28.6%
+[INFO    ] Loading 'molecules.dat': [++++++++.................] 7/21 - 33.3%
+[INFO    ] Loading 'molecules.dat': [++++++++++...............] 8/21 - 38.1%
+[INFO    ] Loading 'molecules.dat': [+++++++++++..............] 9/21 - 42.9%
+[INFO    ] Loading 'molecules.dat': [++++++++++++.............] 10/21 - 47.6%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++............] 11/21 - 52.4%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++...........] 12/21 - 57.1%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++..........] 13/21 - 61.9%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++........] 14/21 - 66.7%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++.......] 15/21 - 71.4%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++......] 16/21 - 76.2%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++++.....] 17/21 - 81.0%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++....] 18/21 - 85.7%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++++..] 19/21 - 90.5%
+[INFO    ] Loading 'molecules.dat': [++++++++++++++++++++++++.] 20/21 - 95.2%
+[INFO    ] Loading 'molecules.dat': [+++++++++++++++++++++++++] 21/21 - 100.0%

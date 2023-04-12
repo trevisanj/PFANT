@@ -1193,7 +1193,7 @@ program pfant
   use pfant_x
   implicit none
   integer i
-  logical dissoc_exists
+  logical dissoc_exists, mollist_exists
   real*8 temp
 
   !=====
@@ -1250,7 +1250,24 @@ program pfant
     call read_hmap(config_fn_hmap)
     call read_filetoh(x_llzero, x_llfin)
   end if
-  if (.not. config_no_molecules) call read_molecules(config_fn_molecules)
+  if (.not. config_no_molecules) then
+    inquire(file=config_fn_mollist, exist=mollist_exists)
+    if (mollist_exists) then
+      call read_mollist(config_fn_mollist)
+      do i = 1, mollist_n
+        call read_molecules(mollist_filenames(i))
+      end do
+    else  
+      call read_molecules(config_fn_molecules)
+    end if
+
+    call log_info('*** MOLECULES READ ('//int2str(km_number)//'): ***')
+    call log_info("#; titulo; number of sets; number of lines")
+    do i = 1, km_number
+      call log_info(int2str(i)//'; '//trim(km_comments(i))//'; '//int2str(km_nv(i))//'; '//int2str(km_lines_per_mol(i)))
+    end do
+    call log_info("Total number of molecular lines read: "//int2str(km_lines_total))
+  end if
 
   if (abs(modele%asalog-main_afstar) > 0.01) then
     call log_and_halt('asalog from model ('//real82str(modele%asalog, 2)//&

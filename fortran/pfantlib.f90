@@ -28,6 +28,9 @@
 module dimensions
   implicit none
 
+  ! Maximum filename size
+  integer, parameter :: MAX_FILENAMESIZE  = 256
+
 
   !=====
   ! "delta lambda" parameters
@@ -119,8 +122,14 @@ module dimensions
   ! Dimensions related to *molecules file*
   !=====
 
+  !=====
+  ! Dimensions related to *mollist file*
+  !=====
+  ! Maximum number of molecular lines files
+  integer, parameter :: MAX_NUM_MOLFILES = 10
+
   ! Maximum Number of molecules in *molecules file*
-  integer, parameter :: MAX_NUM_MOL=30
+  integer, parameter :: MAX_NUM_MOL=80
 
   ! Maximum number of transitions ("Set-Of-Lines") for each molecule (Old "NTR")
   integer, parameter :: MAX_KM_NV_PER_MOL=2000
@@ -409,8 +418,11 @@ contains
     integer level
     logical, save :: flag_first_call = .true.
     logical :: flag_dress_
+    logical :: flag_color_  ! 2023-04-11 level-sensitive color for console only (unit 6)
 
     flag_dress_ = .true.
+    flag_color_ = .true.
+
     if (present(flag_dress)) flag_dress_ = flag_dress
 
     if (flag_dress_) then
@@ -448,11 +460,34 @@ contains
     ! Writes (dressed or undressed) to unit of choice
 
     subroutine do_writing(unit_)
+      character(len=4), parameter :: RESET = char(27)//'[0m'
       integer :: unit_
-      if (flag_dress_) then
-        write(unit_, '(4a)') '(', t, ') :: ', trim(s)
+      character(len=5) :: color
+      logical :: flag_color__  ! really color?
+
+      flag_color__ = .false.
+
+      if ((unit_ .eq. 6) .and. flag_color_) then
+        select case (level)
+          case (logging_halt)
+            flag_color__ = .true.
+            color = char(27)//'[31m'
+        end select
+      end if
+
+
+      if (flag_color__) then
+        if (flag_dress_) then
+          write(unit_, '(6a)') color, '(', t, ') :: ', trim(s), RESET
+        else
+          write(unit_, '(3a)') color, trim(s), RESET
+        end if
       else
-        write(unit_, '(a)') trim(s)
+        if (flag_dress_) then
+          write(unit_, '(4a)') '(', t, ') :: ', trim(s)
+        else
+          write(unit_, '(a)') trim(s)
+        end if
       end if
     end
   end
@@ -2867,7 +2902,8 @@ module config
   !---
   character*64 :: &
    config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
-   config_fn_molecules     = 'molecules.dat'        ! option: --fn_molecules
+   config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
+   config_fn_mollist       = 'mollist.dat'          ! option: --fn_mollist
 
   !---
   ! nulbad-only
@@ -3134,6 +3170,9 @@ contains
      'input file name - dissociative equilibrium')
     call add_option('pc', 'fn_molecules', ' ', .true., 'file name', config_fn_molecules, &
      'input file name - molecular lines')
+    call add_option('pc', 'fn_mollist', ' ', .true., 'file name', config_fn_mollist, &
+     'input file name - list of molecular lines files')
+
 
     !
     ! pfant, nulbad
@@ -3295,6 +3334,8 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_atoms, 'config_fn_atoms')
       case ('fn_molecules')
         call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
+      case ('fn_mollist')
+        call parse_aux_assign_fn(o_arg, config_fn_mollist, 'config_fn_mollist')
       case ('fn_out')
         call parse_aux_assign_fn(o_arg, config_fn_out, 'config_fn_out')
       case ('fn_opa')
@@ -5421,6 +5462,75 @@ end
 
 
 
+
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+! Reading routine and variable declarations for *mollist file*
+!
+
+module file_mollist
+  use logging
+  use dimensions
+  use config
+  implicit none
+
+  ! Flag indicating whether read_mollist() has already been called.
+  logical :: flag_read_mollist   = .false.
+
+  ! Will store molecular-linelist filenames
+  character(MAX_FILENAMESIZE) :: mollist_filenames(MAX_NUM_MOLFILES)
+
+  integer :: mollist_n
+contains
+
+  !=======================================================================================
+  ! Reads *mollist file* to fill variables mollist_*
+
+  subroutine read_mollist(path_to_file)
+    character(len=*), intent(in) :: path_to_file
+    integer myunit
+    logical :: skip_row(MAX_FILE_ROWS)
+    integer :: num_rows, i
+    character(len=MAX_FILENAMESIZE) temp
+
+    ! this logging message is important in case of errors to know which file it was
+    call log_info('read_mollist(): reading file '''//trim(path_to_file)//'''...')
+
+    call map_file_comments(path_to_file, skip_row, num_rows)
+
+    open(newunit=myunit,file=path_to_file, status='old')
+
+    mollist_n = 0
+    do i = 1, num_rows
+      if (skip_row(i)) then
+        read(myunit,*)   ! skips comment row
+      else
+        read(myunit, *) temp
+
+        if (len(trim(adjustl(temp))) .gt. 0) then
+          mollist_n = mollist_n+1
+          mollist_filenames(mollist_n) = trim(adjustl(temp))
+        end if
+      end if
+    end do
+    close(unit=myunit)
+
+    ! spill check
+    if (mollist_n .gt. MAX_NUM_MOLFILES) then
+      call log_and_halt("Number of molecular lines files ("//int2str(mollist_n)// &
+       ") exceeds maximum allowed ("//int2str(MAX_NUM_MOLFILES)//")")
+    end if
+
+
+    flag_read_mollist = .true.
+  end
+end
+
+
+
+
+
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !||| MODULE ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -5433,6 +5543,10 @@ module file_molecules
   use misc
   use file_dissoc
   implicit none
+
+  ! Numer of times read_molecules() has been called already
+  integer :: num_calls_to_read_molecules = 0
+
 
   ! Number of different "chemical molecules" that the system supports. Differs from number of
   ! molecules listes in *molecules file* because in the latter the same molecule is
@@ -5461,10 +5575,12 @@ module file_molecules
 
 
 
-  ! Specifies how many molecules to read
+  ! Specifies how many molecules has read already
   integer km_number
-
-  integer km_lines_total  ! Total number of spectral line, counting all molecules
+  ! Total number of spectral line, counting all molecules
+  integer km_lines_total
+  ! Global counting of sets-of-lines
+  integer km_j_set 
 
   character*160 km_titm
   integer, parameter :: SIZE_TITULO=4096*4
@@ -5500,6 +5616,8 @@ module file_molecules
    km_sj,     &
    km_jj
 
+  integer :: km_i_line
+
   private split_titulo
 contains
   !=======================================================================================
@@ -5517,28 +5635,44 @@ contains
     character(len=*) :: filename
     integer myunit, i, &
      molidx,   &  ! Old "NMOL", index/ID of molecule, ranges from 1 to MAX_NUM_MOL
-     i_line,  &  ! Counts lines within each molecule (reset at each new molecule)
+     i_line,  &  ! Filewise lines counting
+     ilt, & ! km_lines_total+i_line
      nnv, &
      numlin , &  ! Temporary variable
      j_set,   &
-     j_line, &
+     j_line, &  ! Molecule-wise lines counting
      nv_in_titulo, &
-     temp
+     temp 
+
     character(len=SIZE_TITULO) :: sections(3)
     character(len=2) :: iz  ! branch (ignored here for all effects)
-    ! integer :: sizes(3)
+    ! number of molecules in file being considered
+    integer :: my_number
+    ! file title, not used for anything, so discarded
+    character*160 :: my_titm
+    ! holds the value of km_number for code cleaniness
+    integer :: n
+
 
 
     ! # Initialization
     !
-    km_has_transitions = .false.
-    km_titulo = ' '
+    if (num_calls_to_read_molecules .eq. 0) then
+      km_has_transitions = .false.
+      km_titulo = ' '
+      km_number = 0
+      km_lines_total = 0
+      km_j_set = 0
+    end if
+
+    ! For shortness
+    n = km_number
 
     ! # Reading
     !
 
     ! this logging message is important in case of errors to know which file it was
-    call log_info('read_molecules(): reading file '''//trim(filename)//'''...')
+    call log_info('read_molecules() call #'//int2str(num_calls_to_read_molecules+1)//': reading file '''//trim(filename)//'''...')
 
     open(newunit=myunit,file=filename, status='old')
 
@@ -5546,16 +5680,16 @@ contains
     ! BLB: NUMBER -- number of molecules do be considered
     ! Note: This is no longer used for anything, now the molecules to be switched on/off are configured
 
-    read(myunit,*) km_number
+    read(myunit,*) my_number
 
     ! spill check
-    if (km_number .gt. MAX_NUM_MOL) then
-      call log_and_halt("Number of molecules ("//int2str(km_number)// &
+    if (n+my_number .gt. MAX_NUM_MOL) then
+      call log_and_halt("Number of molecules ("//int2str(n+my_number)// &
        ") exceeds maximum allowed ("//int2str(MAX_NUM_MOL)//")")
     end if
 
     ! row 02: string containing list of names of all molecules
-    read(myunit,'(a)') km_titm
+    read(myunit,'(a)') my_titm
     !~READ(myunit,'(20A4)') km_TITM
 
     !write(lll, *) 'titm--------------', km_titm
@@ -5566,19 +5700,22 @@ contains
     ! BLB: Example: if (0,0)(1,1)(2,2) are considered for CH
     ! BLB:             (1,1)(2,2) are considered for CN
     ! BLB:             NV(J) = 3 2
-    read(myunit,*) (km_nv(molidx), molidx=1,km_number)
+    read(myunit,*) (km_nv(molidx), molidx=n+1,n+my_number)
 
     ! spill check
-    do molidx = 1, km_number
+    do molidx = n+1, n+my_number
       if (km_nv(molidx) .gt. MAX_KM_NV_PER_MOL) then
-          call log_and_halt('read_molecules(): molecule id '//int2str(molidx)//&
+          ! TODO testar com um NV absurdo OK? ***********************************************************************************************************************************************
+          ! eu quero ver que ID aparece e se não seria mais legal mostrar outra coisa como o ID, não esse número OK
+          call log_and_halt('read_molecules(): molecule #'//int2str(molidx)//&
            ' has nv = '//int2str(km_nv(molidx))//' (maximum is MAX_KM_NV_PER_MOL='//&
            int2str(MAX_KM_NV_PER_MOL)//')')
         end if
     end do
 
+    ! "reading molecules" loop
     i_line = 0
-    do molidx = 1, km_number
+    do molidx = n+1, n+my_number
       ! 20160920
       ! 'titulo' was historically only a string, but now was made *big* and has a
       ! structure like this:
@@ -5620,7 +5757,6 @@ contains
         end if
       end if
 
-
       if (len(trim(sections(3))) .gt. 0) then
         ! print *, 'SECTIONS(3) has len', len(trim(sections(3)))
         ! print *, '$$$', trim(sections(3)), '$$$'
@@ -5630,7 +5766,8 @@ contains
          km_titulo(molidx))
 
         if (nv_in_titulo .ne. km_nv(molidx)) then
-          call log_and_halt('read_molecules(): Wrong (vsup, vinf) information in '''//trim(sections(3))//''''//&
+          call log_and_halt('read_molecules()'//', in molecule #'//int2str(molidx-n)//'/'//int2str(my_number)//': '//&
+           'Wrong (vsup, vinf) information in '''//trim(sections(3))//''''//&
            int2str(molidx)//': number of transitions specified should be '//&
            int2str(km_nv(molidx))//' but was '//int2str(nv_in_titulo))
         end if
@@ -5698,8 +5835,12 @@ contains
       read(myunit,*) (km_ddv(i, molidx), i=1,nnv)
       read(myunit,*) (km_fact(i, molidx),i=1,nnv)
 
+      ! 2023-04-06 The following got me confused, so I decided to comment
+      ! This is weird but makes sense, since the formula above does not match 
+      ! dv = (D_e + beta_e * v_lo5) * 1.0e+06 (pyfant and PASA paper)
+      ! (the difference is precisely this 1e6 factor)
       do i = 1,nnv
-        km_ddv(i, molidx)=1.e-6*km_ddv(i, molidx)
+        km_ddv(i, molidx) = 1.e-6*km_ddv(i, molidx)
       end do
 
 
@@ -5709,12 +5850,13 @@ contains
       do while (.true.)
         i_line = i_line+1
 
-        ! spill check: checks if exceeds maximum number of elements allowed
-        if (i_line .gt. MAX_KM_LINES_TOTAL) then
-          call log_and_halt('read_molecules(): exceeded maximum number of total '//&
-            'spectral lines  MAX_KM_LINES_TOTAL= '//int2str(MAX_KM_LINES_TOTAL)//&
-            ' (at molecule id '//int2str(molidx)//')')
+        ! spill check: checks if exceeds maximum number of lines allowed
+        if (km_lines_total+i_line .gt. MAX_KM_LINES_TOTAL) then
+          call log_and_halt('read_molecules()'//', in molecule #'//int2str(molidx-n)//'/'//int2str(my_number)//': '//&
+            'exceeded maximum number of total spectral lines MAX_KM_LINES_TOTAL='//int2str(MAX_KM_LINES_TOTAL))
         end if
+
+        ilt = km_lines_total+i_line
 
         ! BLB: LMBDAM(L), SJ(L), JJ(L), IZ, ITRANS(L), NUMLIN
         ! BLB:
@@ -5746,14 +5888,14 @@ contains
         ! BLB: NUMLIN -- key as table:
         ! BLB:           = 1 for the last line of a given (v',v'') set of lines of a given molecule
         ! BLB:           = 9 for the last line of the last (v', v'') set of lines of a given molecule
-        read(myunit,*) km_lmbdam(i_line), km_sj(i_line), km_jj(i_line), iz, numlin
+        read(myunit,*) km_lmbdam(ilt), km_sj(ilt), km_jj(ilt), iz, numlin
 
 
         !~km_NUMLIN(J_LAMBDA, MOLID) = NUMLIN
 
         if (numlin .ne. 0) then
           j_set = j_set+1
-          km_ln(j_set, molidx) = i_line
+          km_ln(km_j_set+j_set, molidx) = ilt
         end if
 
         j_line = j_line+1
@@ -5763,9 +5905,8 @@ contains
 
       ! consistency check: J_SET must match NNV
       if(j_set .ne. nnv) then
-        call log_and_halt('read_molecules():  incorrect number of set-of-lines: '//&
-         int2str(j_set)//' (should be '//int2str(nnv)//') (in molecule number '//&
-         int2str(molidx)//')')
+        call log_and_halt('read_molecules()'//', in molecule #'//int2str(molidx-n)//'/'//int2str(my_number)//': '//&
+         'incorrect number of set-of-lines: '//int2str(j_set)//' (should be '//int2str(nnv)//')')
       end if
 
       km_lines_per_mol(molidx) = j_line
@@ -5775,9 +5916,14 @@ contains
       call log_debug(lll)
     end do
 
-    km_lines_total = i_line
+    km_lines_total = km_lines_total+i_line
+    km_j_set = km_j_set+j_set
+    km_number = km_number+my_number
 
     close(myunit)
+
+    num_calls_to_read_molecules = num_calls_to_read_molecules+1
+
   end
 
 
@@ -8148,6 +8294,7 @@ module pfantlib
   use file_abonds
   use file_partit
   use file_atoms
+  use file_mollist
   use file_molecules
 
   use absoru
