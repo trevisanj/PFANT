@@ -1258,6 +1258,9 @@ program pfant
         call read_molecules(mollist_filenames(i))
       end do
     else  
+      if (config_set_fn_mollist .and. len(trim(config_fn_mollist)) .gt. 0) then
+        call log_and_halt('Explicitly informed --fn_mollist file '''//trim(config_fn_mollist)//''' does not exist!')
+      end if
       call read_molecules(config_fn_molecules)
     end if
 

@@ -469,9 +469,15 @@ contains
 
       if ((unit_ .eq. 6) .and. flag_color_) then
         select case (level)
-          case (logging_halt)
+          case (LOGGING_HALT)
             flag_color__ = .true.
             color = char(27)//'[31m'
+          case (LOGGING_ERROR)
+            flag_color__ = .true.
+            color = char(27)//'[31m'
+          case (LOGGING_WARNING)
+            flag_color__ = .true.
+            color = char(27)//'[33m'
         end select
       end if
 
@@ -1144,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v23.4.14.0'
+    v = 'v23.4.25.0'
   end
 
   ! Displays welcome message
@@ -2904,6 +2910,8 @@ module config
    config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
    config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
    config_fn_mollist       = 'mollist.dat'          ! option: --fn_mollist
+  ! gotta know when fn_mollist has been explicitly set in order to give error if it does not exist
+  logical :: config_set_fn_mollist = .false. 
 
   !---
   ! nulbad-only
@@ -3336,6 +3344,7 @@ contains
         call parse_aux_assign_fn(o_arg, config_fn_molecules, 'config_fn_molecules')
       case ('fn_mollist')
         call parse_aux_assign_fn(o_arg, config_fn_mollist, 'config_fn_mollist')
+        config_set_fn_mollist = .true.
       case ('fn_out')
         call parse_aux_assign_fn(o_arg, config_fn_out, 'config_fn_out')
       case ('fn_opa')
