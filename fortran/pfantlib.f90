@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v23.4.25.0'
+    v = 'v23.4.28.0'
   end
 
   ! Displays welcome message
@@ -5904,7 +5904,7 @@ contains
 
         if (numlin .ne. 0) then
           j_set = j_set+1
-          km_ln(km_j_set+j_set, molidx) = ilt
+          km_ln(j_set, molidx) = ilt
         end if
 
         j_line = j_line+1
