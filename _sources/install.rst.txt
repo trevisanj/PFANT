@@ -6,8 +6,7 @@ To use PFANT, you will need to:
 #. Download files
 #. Compile the Fortran source code
 #. Add ``PFANT/fortran/bin`` to your PATH
-#. Get file ``grid.moo``
-#. Install the "pyfant" Python package (http://trevisanj.github.io/pyfant)
+#. Install the "f311" Python package (http://github.com/trevisanj/f311)
    (recommended)
 
 This section will take you through these steps.
@@ -16,10 +15,14 @@ This section will take you through these steps.
           Fortran Compiler), however only Debian-based Linux system is "supported" in the following
           instructions. Windows users will find some tips in a specific section below.
 
-Install required software
+Installing required software
 ----------------------------
 
-Please make sure the following software is installed on your system:
+Standalone applications
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Please install the following standalone applications on your system (no
+pain except for gfortran and make on Windows (see below)):
 
 -  gfortran (version 4.8 recommended; does **not** compile with version
    4.4)
@@ -37,7 +40,7 @@ Clone the GitHub repository:
 
 This will create a directory named PFANT on your disk.
 
-Compile the Fortran source code.
+Compiling the Fortran source code.
 ----------------------------------
 
 Enter the following on your console to compile the Fortran source code:
@@ -73,21 +76,6 @@ or *home/.cshrc*.
 
 .. note:: If the above does not work for you, manually add
           *PFANT/fortran/bin* to your system path.
-
-Get file ``grid.moo``
----------------------
-
-    a. go to directory ``PFANT/data/common`` and run ``get-grid.moo.sh``, or
-
-    b. download it from
-       `this location <https://docs.google.com/uc?export=download&confirm=4o6l&id=0B8m8GNLFiaewejd6dmJ6MW1pX2c>`__
-       (or `this location <https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view>`__)
-       and save it as "PFANT/data/common/grid.moo"
-
-.. note::
-
-	This file contains a grid of atmospheric models with MARCS (http://marcs.astro.uu.se/) opacities included.
-	It is required include these opacities in the continuum, which is currently the PFANT default. 
 
 Install ``pyfant`` Python package
 -----------------------------

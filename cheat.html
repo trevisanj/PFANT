@@ -1,98 +1,50 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Cheatsheet &mdash; PFANT 18.06.25 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cheatsheet &mdash; PFANT 23.05.09 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PFANT 18.06.25 documentation" href="index.html"/>
-        <link rel="prev" title="Troubleshooting" href="trouble.html"/>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Troubleshooting" href="trouble.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
-
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+        <div class="wy-side-nav-search" >
 
           
-            <a href="index.html" class="icon icon-home"> PFANT
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            PFANT
           </a>
-
-          
-            
-            
               <div class="version">
-                18.06.25
+                23.05.09
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
@@ -110,292 +62,216 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-options-for-the-fortran-binaries">Command-line options for the Fortran binaries</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#hydro2"><code class="docutils literal"><span class="pre">hydro2</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#innewmarcs"><code class="docutils literal"><span class="pre">innewmarcs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pfant"><code class="docutils literal"><span class="pre">pfant</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nulbad"><code class="docutils literal"><span class="pre">nulbad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hydro2"><code class="docutils literal notranslate"><span class="pre">hydro2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#innewmarcs"><code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pfant"><code class="docutils literal notranslate"><span class="pre">pfant</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nulbad"><code class="docutils literal notranslate"><span class="pre">nulbad</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/fortran/README.md">For Fortran developers</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/docs/README.md">How to build this documentation</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">PFANT</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Cheatsheet</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Cheatsheet</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/cheat.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="cheatsheet">
-<h1>Cheatsheet<a class="headerlink" href="#cheatsheet" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="pfant-fortran-binaries">
-<h2>PFANT Fortran binaries<a class="headerlink" href="#pfant-fortran-binaries" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="cheatsheet">
+<h1>Cheatsheet<a class="headerlink" href="#cheatsheet" title="Permalink to this heading">¶</a></h1>
+<section id="pfant-fortran-binaries">
+<h2>PFANT Fortran binaries<a class="headerlink" href="#pfant-fortran-binaries" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">innewmarcs</span></code>: interpolate atmospheric model</li>
-<li><code class="docutils literal"><span class="pre">hydro2</span></code>: calculate hydrogen lines</li>
-<li><code class="docutils literal"><span class="pre">pfant</span></code>: spectral synthesis</li>
-<li><code class="docutils literal"><span class="pre">nulbad</span></code>: convolution with Gaussian</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code>: interpolate atmospheric model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hydro2</span></code>: calculate hydrogen lines</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pfant</span></code>: spectral synthesis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nulbad</span></code>: convolution with Gaussian</p></li>
 </ul>
-</div>
-<div class="section" id="python-applications-from-project-pyfant">
-<h2>Python applications from project PyFANT<a class="headerlink" href="#python-applications-from-project-pyfant" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="graphical-applications">
-<h3>Graphical applications<a class="headerlink" href="#graphical-applications" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="python-applications-from-project-pyfant">
+<h2>Python applications from project PyFANT<a class="headerlink" href="#python-applications-from-project-pyfant" title="Permalink to this heading">¶</a></h2>
+<section id="graphical-applications">
+<h3>Graphical applications<a class="headerlink" href="#graphical-applications" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">abed.py</span></code>: Abundances file editor</li>
-<li><code class="docutils literal"><span class="pre">ated.py</span></code>: Atomic lines file editor</li>
-<li><code class="docutils literal"><span class="pre">convmol.py</span></code>: Conversion of molecular lines data to PFANT format</li>
-<li><code class="docutils literal"><span class="pre">explorer.py</span></code>: F311 Explorer – list, visualize, and edit data files (<em>à la</em> File Manager)</li>
-<li><code class="docutils literal"><span class="pre">mained.py</span></code>: Main configuration file editor</li>
-<li><code class="docutils literal"><span class="pre">mced.py</span></code>: Editor for molecular constants file</li>
-<li><code class="docutils literal"><span class="pre">mled.py</span></code>: Molecular lines file editor</li>
-<li><code class="docutils literal"><span class="pre">moldbed.py</span></code>: Editor for molecules SQLite database</li>
-<li><code class="docutils literal"><span class="pre">tune-zinf.py</span></code>: Tunes the “zinf” parameter for each atomic line in atomic lines file</li>
-<li><code class="docutils literal"><span class="pre">x.py</span></code>: PFANT Launcher – Graphical Interface for Spectral Synthesis</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">abed.py</span></code>: Abundances file editor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ated.py</span></code>: Atomic lines file editor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convmol.py</span></code>: Conversion of molecular lines data to PFANT format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">explorer.py</span></code>: F311 Explorer – list, visualize, and edit data files (<em>à la</em> File Manager)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mained.py</span></code>: Main configuration file editor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mced.py</span></code>: Editor for molecular constants file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mled.py</span></code>: Molecular lines file editor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moldbed.py</span></code>: Editor for molecules SQLite database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tune-zinf.py</span></code>: Tunes the “zinf” parameter for each atomic line in atomic lines file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x.py</span></code>: PFANT Launcher – Graphical Interface for Spectral Synthesis</p></li>
 </ul>
-</div>
-<div class="section" id="command-line-tools">
-<h3>Command-line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="command-line-tools">
+<h3>Command-line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">copy-star.py</span></code>: Copies stellar data files (such as main.dat, abonds.dat, dissoc.dat) to local directory</li>
-<li><code class="docutils literal"><span class="pre">create-grid.py</span></code>: Merges several atmospheric models into a single file (<em>i.e.</em>, the “grid”)</li>
-<li><code class="docutils literal"><span class="pre">cut-atoms.py</span></code>: Cuts atomic lines file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">cut-molecules.py</span></code>: Cuts molecular lines file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">cut-spectrum.py</span></code>: Cuts spectrum file to wavelength interval specified</li>
-<li><code class="docutils literal"><span class="pre">hitran-scraper.py</span></code>: Retrieves molecular lines from the HITRAN database</li>
-<li><code class="docutils literal"><span class="pre">link.py</span></code>: Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory</li>
-<li><code class="docutils literal"><span class="pre">nist-scraper.py</span></code>: Retrieves molecular constants from NIST Web Book for a particular molecule</li>
-<li><code class="docutils literal"><span class="pre">nulbad.py</span></code>: Convolve spectrum with Gaussian profile (similar, but not equivalent, to Fortran <code class="docutils literal"><span class="pre">nulbad</span></code>)</li>
-<li><code class="docutils literal"><span class="pre">plot-spectra.py</span></code>: Plots spectra on screen or creates PDF file</li>
-<li><code class="docutils literal"><span class="pre">run4.py</span></code>: Runs the four Fortran binaries in sequence: <code class="docutils literal"><span class="pre">innewmarcs</span></code>, <code class="docutils literal"><span class="pre">hydro2</span></code>, <code class="docutils literal"><span class="pre">pfant</span></code>, <code class="docutils literal"><span class="pre">nulbad</span></code></li>
-<li><code class="docutils literal"><span class="pre">save-pdf.py</span></code>: Looks for files “<em>.norm” inside directories session-</em> and saves one figure per page in a PDF file</li>
-<li><code class="docutils literal"><span class="pre">vald3-to-atoms.py</span></code>: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy-star.py</span></code>: Copies stellar data files (such as main.dat, abonds.dat, dissoc.dat) to local directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create-grid.py</span></code>: Merges several atmospheric models into a single file (<em>i.e.</em>, the “grid”)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut-atoms.py</span></code>: Cuts atomic lines file to wavelength interval specified</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut-molecules.py</span></code>: Cuts molecular lines file to wavelength interval specified</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut-spectrum.py</span></code>: Cuts spectrum file to wavelength interval specified</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hitran-scraper.py</span></code>: Retrieves molecular lines from the HITRAN database</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link.py</span></code>: Creates symbolic links to PFANT data files as an alternative to copying these (sometimes large) files into local directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nist-scraper.py</span></code>: Retrieves molecular constants from NIST Web Book for a particular molecule</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nulbad.py</span></code>: Convolve spectrum with Gaussian profile (similar, but not equivalent, to Fortran <code class="docutils literal notranslate"><span class="pre">nulbad</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot-spectra.py</span></code>: Plots spectra on screen or creates PDF file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run4.py</span></code>: Runs the four Fortran binaries in sequence: <code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code>, <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>, <code class="docutils literal notranslate"><span class="pre">pfant</span></code>, <code class="docutils literal notranslate"><span class="pre">nulbad</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save-pdf.py</span></code>: Looks for files “<em>.norm” inside directories session-</em> and saves one figure per page in a PDF file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vald3-to-atoms.py</span></code>: Converts VALD3 atomic/molecular lines file to PFANT atomic lines file.</p></li>
 </ul>
 <div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">All programs have a <code class="docutils literal"><span class="pre">--help</span></code> argument.</p>
+<p class="admonition-title">Hint</p>
+<p>All programs have a <code class="docutils literal notranslate"><span class="pre">--help</span></code> argument.</p>
 </div>
-</div>
-</div>
-<div class="section" id="command-line-options-for-the-fortran-binaries">
-<h2>Command-line options for the Fortran binaries<a class="headerlink" href="#command-line-options-for-the-fortran-binaries" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="command-line-options-for-the-fortran-binaries">
+<h2>Command-line options for the Fortran binaries<a class="headerlink" href="#command-line-options-for-the-fortran-binaries" title="Permalink to this heading">¶</a></h2>
 <p>Options are accompained by their default values.</p>
-<p>Below, <code class="docutils literal"><span class="pre">&lt;main_xxxxx&gt;</span></code> means that option <code class="docutils literal"><span class="pre">xxxxx</span></code> is, by default, read from PFANT main configuration file.</p>
-<div class="section" id="hydro2">
-<h3><code class="docutils literal"><span class="pre">hydro2</span></code><a class="headerlink" href="#hydro2" title="Permalink to this headline">¶</a></h3>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">hydro2</span> \
-    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
-    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
-    <span class="o">--</span><span class="n">fn_absoru2</span> <span class="n">absoru2</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_hmap</span> <span class="n">hmap</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">interp</span> <span class="mi">1</span> \
-    <span class="o">--</span><span class="n">kik</span> <span class="mi">0</span> \
-    <span class="o">--</span><span class="n">ptdisk</span> <span class="o">&lt;</span><span class="n">main_llzero</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">llfin</span> <span class="o">&lt;</span><span class="n">main_llfin</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">amores</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">kq</span> <span class="mi">1</span> \
-    <span class="o">--</span><span class="n">zph</span> <span class="mf">12.00</span>
+<p>Below, <code class="docutils literal notranslate"><span class="pre">&lt;main_xxxxx&gt;</span></code> means that option <code class="docutils literal notranslate"><span class="pre">xxxxx</span></code> is, by default, read from PFANT main configuration file.</p>
+<section id="hydro2">
+<h3><code class="docutils literal notranslate"><span class="pre">hydro2</span></code><a class="headerlink" href="#hydro2" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>hydro2<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_console<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_dump<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_fn_dump<span class="w"> </span>&lt;executable<span class="w"> </span>name&gt;_dump.log<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_main<span class="w"> </span>main.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_modeles<span class="w"> </span>modeles.mod<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_absoru2<span class="w"> </span>absoru2.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_hmap<span class="w"> </span>hmap.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--interp<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--kik<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--ptdisk<span class="w"> </span>&lt;main_llzero&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--llfin<span class="w"> </span>&lt;main_llfin&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--amores<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--kq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--zph<span class="w"> </span><span class="m">12</span>.00
 </pre></div>
 </div>
-</div>
-<div class="section" id="innewmarcs">
-<h3><code class="docutils literal"><span class="pre">innewmarcs</span></code><a class="headerlink" href="#innewmarcs" title="Permalink to this headline">¶</a></h3>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">innewmarcs</span> \
-    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
-    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
-    <span class="o">--</span><span class="n">fn_modgrid</span> <span class="n">grid</span><span class="o">.</span><span class="n">mod</span> \
-    <span class="o">--</span><span class="n">fn_moo</span> <span class="n">grid</span><span class="o">.</span><span class="n">moo</span> \
-    <span class="o">--</span><span class="n">allow</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">fn_opa</span> <span class="n">modeles</span><span class="o">.</span><span class="n">opa</span> \
-    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span>
+</section>
+<section id="innewmarcs">
+<h3><code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code><a class="headerlink" href="#innewmarcs" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>innewmarcs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_console<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_dump<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_fn_dump<span class="w"> </span>&lt;executable<span class="w"> </span>name&gt;_dump.log<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_main<span class="w"> </span>main.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_modeles<span class="w"> </span>modeles.mod<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_modgrid<span class="w"> </span>grid.mod<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_moo<span class="w"> </span>grid.moo<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--allow<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_opa<span class="w"> </span>modeles.opa<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--opa<span class="w"> </span>T
 </pre></div>
 </div>
-</div>
-<div class="section" id="pfant">
-<h3><code class="docutils literal"><span class="pre">pfant</span></code><a class="headerlink" href="#pfant" title="Permalink to this headline">¶</a></h3>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">pfant</span> \
-    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
-    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_modeles</span> <span class="n">modeles</span><span class="o">.</span><span class="n">mod</span> \
-    <span class="o">--</span><span class="n">fn_absoru2</span> <span class="n">absoru2</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_hmap</span> <span class="n">hmap</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">interp</span> <span class="mi">1</span> \
-    <span class="o">--</span><span class="n">kik</span> <span class="mi">0</span> \
-    <span class="o">--</span><span class="n">ptdisk</span> <span class="o">&lt;</span><span class="n">main_llzero</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">llfin</span> <span class="o">&lt;</span><span class="n">main_llfin</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">fn_opa</span> <span class="n">modeles</span><span class="o">.</span><span class="n">opa</span> \
-    <span class="o">--</span><span class="n">fn_partit</span> <span class="n">partit</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_abonds</span> <span class="n">abonds</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_atoms</span> <span class="n">atoms</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">no_molecules</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">no_atoms</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">no_h</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">pas</span> <span class="o">&lt;</span><span class="n">main_pas</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">aint</span> <span class="o">&lt;</span><span class="n">main_aint</span><span class="o">&gt;</span> \
-    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="nb">abs</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">opa</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">fn_dissoc</span> <span class="n">dissoc</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">fn_molecules</span> <span class="n">molecules</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">flprefix</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;</span>
+</section>
+<section id="pfant">
+<h3><code class="docutils literal notranslate"><span class="pre">pfant</span></code><a class="headerlink" href="#pfant" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pfant<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_console<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_dump<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_fn_dump<span class="w"> </span>&lt;executable<span class="w"> </span>name&gt;_dump.log<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_main<span class="w"> </span>main.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_modeles<span class="w"> </span>modeles.mod<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_absoru2<span class="w"> </span>absoru2.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_hmap<span class="w"> </span>hmap.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--interp<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--kik<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--ptdisk<span class="w"> </span>&lt;main_llzero&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--llfin<span class="w"> </span>&lt;main_llfin&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--fn_opa<span class="w"> </span>modeles.opa<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_partit<span class="w"> </span>partit.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_abonds<span class="w"> </span>abonds.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_atoms<span class="w"> </span>atoms.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--no_molecules<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--no_atoms<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--no_h<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pas<span class="w"> </span>&lt;main_pas&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--aint<span class="w"> </span>&lt;main_aint&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--opa<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--abs<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--opa<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--opa<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_dissoc<span class="w"> </span>dissoc.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_molecules<span class="w"> </span>molecules.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--flprefix<span class="w"> </span>&lt;main_flprefix&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="nulbad">
-<h3><code class="docutils literal"><span class="pre">nulbad</span></code><a class="headerlink" href="#nulbad" title="Permalink to this headline">¶</a></h3>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">nulbad</span> \
-    <span class="o">--</span><span class="n">logging_console</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">logging_dump</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">logging_fn_dump</span> <span class="o">&lt;</span><span class="n">executable</span> <span class="n">name</span><span class="o">&gt;</span><span class="n">_dump</span><span class="o">.</span><span class="n">log</span> \
-    <span class="o">--</span><span class="n">fn_main</span> <span class="n">main</span><span class="o">.</span><span class="n">dat</span> \
-    <span class="o">--</span><span class="n">flprefix</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">fn_flux</span> <span class="o">&lt;</span><span class="n">main_flprefix</span><span class="o">&gt;.</span><span class="n">norm</span>  \
-    <span class="o">--</span><span class="n">flam</span> <span class="n">F</span> \
-    <span class="o">--</span><span class="n">fn_cv</span> <span class="o">&lt;</span><span class="n">flux</span> <span class="n">file</span> <span class="n">name</span><span class="o">&gt;.</span><span class="n">nulbad</span><span class="o">.&lt;</span><span class="n">fwhm</span><span class="o">&gt;</span> \
-    <span class="o">--</span><span class="n">pat</span> <span class="o">&lt;</span><span class="n">main_pas</span><span class="o">&gt;</span>  \
-    <span class="o">--</span><span class="n">convol</span> <span class="n">T</span> \
-    <span class="o">--</span><span class="n">fwhm</span> <span class="o">&lt;</span><span class="n">main_fwhm</span><span class="o">&gt;</span>
+</section>
+<section id="nulbad">
+<h3><code class="docutils literal notranslate"><span class="pre">nulbad</span></code><a class="headerlink" href="#nulbad" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nulbad<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_console<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_dump<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--logging_fn_dump<span class="w"> </span>&lt;executable<span class="w"> </span>name&gt;_dump.log<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_main<span class="w"> </span>main.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--flprefix<span class="w"> </span>&lt;main_flprefix&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--fn_flux<span class="w"> </span>&lt;main_flprefix&gt;.norm<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--flam<span class="w"> </span>F<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fn_cv<span class="w"> </span>&lt;flux<span class="w"> </span>file<span class="w"> </span>name&gt;.nulbad.&lt;fwhm&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--pat<span class="w"> </span>&lt;main_pas&gt;<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>--convol<span class="w"> </span>T<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--fwhm<span class="w"> </span>&lt;main_fwhm&gt;
 </pre></div>
 </div>
 <p>PFANT on GitHub: <a class="reference external" href="http://github.com/trevisanj/PFANT">http://github.com/trevisanj/PFANT</a></p>
 <p>PyFANT on GitHub: <a class="reference external" href="http://github.com/trevisanj/pyfant">http://github.com/trevisanj/pyfant</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
-           </div>
-           <div class="articleComments">
-            
            </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="trouble.html" class="btn btn-neutral" title="Troubleshooting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="trouble.html" class="btn btn-neutral float-left" title="Troubleshooting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 1967-3999.
-
-    </p>
+    <p>&#169; Copyright 1967-3999.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'18.06.25',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

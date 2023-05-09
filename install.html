@@ -1,111 +1,65 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Installation &mdash; PFANT 18.06.25 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; PFANT 23.05.09 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="PFANT 18.06.25 documentation" href="index.html"/>
-        <link rel="next" title="Quick Start" href="quick.html"/>
-        <link rel="prev" title="Introduction" href="intro.html"/>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start" href="quick.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
-
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+        <div class="wy-side-nav-search" >
 
           
-            <a href="index.html" class="icon icon-home"> PFANT
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            PFANT
           </a>
-
-          
-            
-            
               <div class="version">
-                18.06.25
+                23.05.09
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-required-software">Install required software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-required-software">Installing required software</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#standalone-applications">Standalone applications</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#download-files">Download files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#clone-the-github-repository">Clone the GitHub repository:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#compile-the-fortran-source-code">Compile the Fortran source code.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-the-fortran-source-code">Compiling the Fortran source code.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-the-paths">Setting the paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#get-file-grid-moo">Get file <code class="docutils literal"><span class="pre">grid.moo</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-pyfant-python-package">Install <code class="docutils literal"><span class="pre">pyfant</span></code> Python package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-pyfant-python-package">Install <code class="docutils literal notranslate"><span class="pre">pyfant</span></code> Python package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tips-for-windows-users">Tips for windows users</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gfortran-and-make-on-windows">gfortran and make on Windows</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compiling-the-source-code-on-windows">Compiling the source code on Windows</a></li>
@@ -121,249 +75,158 @@
 <li class="toctree-l1"><a class="reference internal" href="trouble.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cheat.html">Cheatsheet</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/fortran/README.md">For Fortran developers</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/trevisanj/PFANT/blob/master/docs/README.md">How to build this documentation</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">PFANT</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Installation</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>To use PFANT, you will need to:</p>
 <ol class="arabic simple">
-<li>Download files</li>
-<li>Compile the Fortran source code</li>
-<li>Add <code class="docutils literal"><span class="pre">PFANT/fortran/bin</span></code> to your PATH</li>
-<li>Get file <code class="docutils literal"><span class="pre">grid.moo</span></code></li>
-<li>Install the “pyfant” Python package (<a class="reference external" href="http://trevisanj.github.io/pyfant">http://trevisanj.github.io/pyfant</a>)
-(recommended)</li>
+<li><p>Download files</p></li>
+<li><p>Compile the Fortran source code</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">PFANT/fortran/bin</span></code> to your PATH</p></li>
+<li><p>Install the “f311” Python package (<a class="reference external" href="http://github.com/trevisanj/f311">http://github.com/trevisanj/f311</a>)
+(recommended)</p></li>
 </ol>
 <p>This section will take you through these steps.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">PFANT is platform-independent (it should work no any system if you can install the GNU
+<p class="admonition-title">Note</p>
+<p>PFANT is platform-independent (it should work no any system if you can install the GNU
 Fortran Compiler), however only Debian-based Linux system is “supported” in the following
 instructions. Windows users will find some tips in a specific section below.</p>
 </div>
-<div class="section" id="install-required-software">
-<h2>Install required software<a class="headerlink" href="#install-required-software" title="Permalink to this headline">¶</a></h2>
-<p>Please make sure the following software is installed on your system:</p>
+<section id="installing-required-software">
+<h2>Installing required software<a class="headerlink" href="#installing-required-software" title="Permalink to this heading">¶</a></h2>
+<section id="standalone-applications">
+<h3>Standalone applications<a class="headerlink" href="#standalone-applications" title="Permalink to this heading">¶</a></h3>
+<p>Please install the following standalone applications on your system (no
+pain except for gfortran and make on Windows (see below)):</p>
 <ul class="simple">
-<li>gfortran (version 4.8 recommended; does <strong>not</strong> compile with version
-4.4)</li>
-<li>make</li>
+<li><p>gfortran (version 4.8 recommended; does <strong>not</strong> compile with version
+4.4)</p></li>
+<li><p>make</p></li>
 </ul>
-</div>
-<div class="section" id="download-files">
-<h2>Download files<a class="headerlink" href="#download-files" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="clone-the-github-repository">
-<h3>Clone the GitHub repository:<a class="headerlink" href="#clone-the-github-repository" title="Permalink to this headline">¶</a></h3>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">trevisanj</span><span class="o">/</span><span class="n">PFANT</span>
+</section>
+</section>
+<section id="download-files">
+<h2>Download files<a class="headerlink" href="#download-files" title="Permalink to this heading">¶</a></h2>
+<section id="clone-the-github-repository">
+<h3>Clone the GitHub repository:<a class="headerlink" href="#clone-the-github-repository" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/trevisanj/PFANT
 </pre></div>
 </div>
 <p>This will create a directory named PFANT on your disk.</p>
-</div>
-</div>
-<div class="section" id="compile-the-fortran-source-code">
-<h2>Compile the Fortran source code.<a class="headerlink" href="#compile-the-fortran-source-code" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="compiling-the-fortran-source-code">
+<h2>Compiling the Fortran source code.<a class="headerlink" href="#compiling-the-fortran-source-code" title="Permalink to this heading">¶</a></h2>
 <p>Enter the following on your console to compile the Fortran source code:</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">PFANT</span>
-<span class="n">cd</span> <span class="n">fortran</span>
-<span class="o">./</span><span class="n">make</span><span class="o">-</span><span class="n">linux</span><span class="o">.</span><span class="n">sh</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>PFANT
+<span class="nb">cd</span><span class="w"> </span>fortran
+./make-linux.sh
 </pre></div>
 </div>
 <p>This should create four executable binaries inside the directory <em>PFANT/fortran/bin</em>:
-<code class="docutils literal"><span class="pre">innewmarcs</span></code>, <code class="docutils literal"><span class="pre">hydro2</span></code>, <code class="docutils literal"><span class="pre">pfant</span></code>, <code class="docutils literal"><span class="pre">nulbad</span></code>.</p>
-</div>
-<div class="section" id="setting-the-paths">
-<h2>Setting the paths<a class="headerlink" href="#setting-the-paths" title="Permalink to this headline">¶</a></h2>
+<code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code>, <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>, <code class="docutils literal notranslate"><span class="pre">pfant</span></code>, <code class="docutils literal notranslate"><span class="pre">nulbad</span></code>.</p>
+</section>
+<section id="setting-the-paths">
+<h2>Setting the paths<a class="headerlink" href="#setting-the-paths" title="Permalink to this heading">¶</a></h2>
 <p>Depending on which shell your system uses, try one of the following:</p>
 <p>Bash shell:</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">add</span><span class="o">-</span><span class="n">path</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">bash</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./add-path.py<span class="w"> </span>--bash
 </pre></div>
 </div>
 <p>Tcsh shell:</p>
-<div class="code shell highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">add</span><span class="o">-</span><span class="n">path</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">tcsh</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./add-path.py<span class="w"> </span>--tcsh
 </pre></div>
 </div>
 <p>This will automatically apply the path settings to your <em>home/.bashrc</em>
 or <em>home/.cshrc</em>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If the above does not work for you, manually add
+<p class="admonition-title">Note</p>
+<p>If the above does not work for you, manually add
 <em>PFANT/fortran/bin</em> to your system path.</p>
 </div>
-</div>
-<div class="section" id="get-file-grid-moo">
-<h2>Get file <code class="docutils literal"><span class="pre">grid.moo</span></code><a class="headerlink" href="#get-file-grid-moo" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ol class="loweralpha simple">
-<li>go to directory <code class="docutils literal"><span class="pre">PFANT/data/common</span></code> and run <code class="docutils literal"><span class="pre">get-grid.moo.sh</span></code>, or</li>
-<li>download it from
-<a class="reference external" href="https://docs.google.com/uc?export=download&amp;confirm=4o6l&amp;id=0B8m8GNLFiaewejd6dmJ6MW1pX2c">this location</a>
-(or <a class="reference external" href="https://drive.google.com/file/d/0B8m8GNLFiaewejd6dmJ6MW1pX2c/view">this location</a>)
-and save it as “PFANT/data/common/grid.moo”</li>
-</ol>
-</div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This file contains a grid of atmospheric models with MARCS (<a class="reference external" href="http://marcs.astro.uu.se/">http://marcs.astro.uu.se/</a>) opacities included.
-It is required include these opacities in the continuum, which is currently the PFANT default.</p>
-</div>
-</div>
-<div class="section" id="install-pyfant-python-package">
-<h2>Install <code class="docutils literal"><span class="pre">pyfant</span></code> Python package<a class="headerlink" href="#install-pyfant-python-package" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="install-pyfant-python-package">
+<h2>Install <code class="docutils literal notranslate"><span class="pre">pyfant</span></code> Python package<a class="headerlink" href="#install-pyfant-python-package" title="Permalink to this heading">¶</a></h2>
 <p>Although PFANT contains standalone a set of tools for spectral synthesis, it is recommended
-to install the <code class="docutils literal"><span class="pre">pyfant</span></code> Python package to add running, editing, visualization and conversion capabilities
+to install the <code class="docutils literal notranslate"><span class="pre">pyfant</span></code> Python package to add running, editing, visualization and conversion capabilities
 around the Fortran core. Installation instructions are available at
 <a class="reference external" href="http://trevisanj.github.io/pyfant">http://trevisanj.github.io/pyfant</a></p>
-</div>
-<div class="section" id="tips-for-windows-users">
-<h2>Tips for windows users<a class="headerlink" href="#tips-for-windows-users" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="gfortran-and-make-on-windows">
-<h3>gfortran and make on Windows<a class="headerlink" href="#gfortran-and-make-on-windows" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tips-for-windows-users">
+<h2>Tips for windows users<a class="headerlink" href="#tips-for-windows-users" title="Permalink to this heading">¶</a></h2>
+<section id="gfortran-and-make-on-windows">
+<h3>gfortran and make on Windows<a class="headerlink" href="#gfortran-and-make-on-windows" title="Permalink to this heading">¶</a></h3>
 <p>MinGW (<a class="reference external" href="http://sourceforge.net/projects/mingw/files/">http://sourceforge.net/projects/mingw/files/</a>) is a convenient way
 to install the GNU Fortran compiler on Windows.</p>
 <p>After installed, MinGW has its own package manager, named
 “MinGW Installation Manager”. There, you will need to install at least
-the following packages: <code class="docutils literal"><span class="pre">mingw-developer-toolkit</span></code>, <code class="docutils literal"><span class="pre">mingw32-base</span></code>,
-<code class="docutils literal"><span class="pre">mingw32-gcc-fortran</span></code>, <code class="docutils literal"><span class="pre">msys-base</span></code>.</p>
-</div>
-<div class="section" id="compiling-the-source-code-on-windows">
-<h3>Compiling the source code on Windows<a class="headerlink" href="#compiling-the-source-code-on-windows" title="Permalink to this headline">¶</a></h3>
+the following packages: <code class="docutils literal notranslate"><span class="pre">mingw-developer-toolkit</span></code>, <code class="docutils literal notranslate"><span class="pre">mingw32-base</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mingw32-gcc-fortran</span></code>, <code class="docutils literal notranslate"><span class="pre">msys-base</span></code>.</p>
+</section>
+<section id="compiling-the-source-code-on-windows">
+<h3>Compiling the source code on Windows<a class="headerlink" href="#compiling-the-source-code-on-windows" title="Permalink to this heading">¶</a></h3>
 <p>The source can be compiled using the CodeBlock Fortran IDE.
 The <em>PFANT/fortran</em> forder contains a CodeBlocks project named <em>PFANT-windows.cbp</em>.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
-           </div>
-           <div class="articleComments">
-            
            </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="quick.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quick.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 1967-3999.
-
-    </p>
+    <p>&#169; Copyright 1967-3999.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'18.06.25',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
