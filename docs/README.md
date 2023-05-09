@@ -50,5 +50,7 @@ make html
 
 ```
 cd ../../PFANT-docs
+git add . --all
+git commit -m "new version ..."
 git push
 ```
