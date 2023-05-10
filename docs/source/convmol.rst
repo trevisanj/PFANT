@@ -4,85 +4,29 @@ Conversion of molecular lines lists
 Introduction
 ------------
 
-This section describes the algorithm for conversion of molecular lines lists.
+This section describes specific implementation details for conversion of molecular lines lists according to [Barbuy2018]_.
 
-Source formats.
+Source formats:
 
-- Robert Kurucz molecular line lists [Kurucz]_ (functional)
-- HITRAN Online database [Gordon2016]_ (partially implemented)
+- Robert Kurucz molecular line lists [Kurucz]_
+- TurboSpectrum [Plez]_
+- HITRAN/HITEMP 160-character format [Gordon2016]_
 - VALD3 [VALD3]_ (to do)
-- TurboSpectrum [Plez]_ (to do)
 
 Conversion output:
 
 - PFANT molecular lines file (such as "molecules.dat")
 
-.. note:: This is work in progress and the conversion is still in experimental development stage.
-
-How to convert molecular lines
-------------------------------
-
-This section is a short tutorial on converting molecular linelists.
-
-#. Create a "project" directory
-#. Run ``moldbed.py`` (:numref:`moldbed0`) and press "Ctrl+D" to
-   spawn a new *molecular constants database* in your local directory.
-   The name of such file defaults to "moldb.sqlite".
-   This operation only needs to be carried out once for each "project" directory
-#. Download linelist file, e.g., from [Kurucz]_
-#. Run ``convmol.py``
-#. In the first tab (:numref:`convmol0`)
-
-   * Press "Ctrl+D" (only if the form is disabled)
-   * Fill in the form as desired
-   * Press "Ctrl+S" to save configuration file for this tab
-
-#. In the second tab (:numref:`convmol1`):
-
-   * press "Ctrl+D" (only if the form is disabled)
-   * select "Kurucz" as data source on the left
-   * locate linelist file
-   * select isotope
-   * most probably, check flags as in (:numref:`convmol1`)
-   * specify output filename, or click on the plant button to make it up
-   * Press "Ctrl+S" to save configuration file for this tab
-   * **Click on "Run conversion" button**. Wait for conversion to complete
-
-#. In the third tab (:numref:`convmol2`), see details about the conversion session.
-
-.. _moldbed0:
-
-.. figure:: img/moldbed0.png
-    :align: center
-
-    -- First tab of ``convmol.py``
-
-.. _convmol0:
-
-.. figure:: img/convmol0.png
-    :align: center
-
-    -- First tab of ``convmol.py``
-
-.. _convmol1:
-
-.. figure:: img/convmol1.png
-    :align: center
-
-    -- Second tab of ``convmol.py``
-
-.. _convmol1:
-
-.. figure:: img/convmol1.png
-    :align: center
-
-    -- Third tab of ``convmol.py``
-
-
 How the conversion is made
 --------------------------
 
-This section describes the conversion algorithm itself.
+Quoting [Barbuy2018]_:
+
+
+    *Line lists of molecular bands come however in different formats, and as well the different
+    codes use these lists adapted in different ways. The main difference in using molecular line lists is the use of either
+    the Einstein A coefficients, [...] which are a sum of all ingredients, or when this is not available, the different constituents that produce
+    the line.*
 
 List of symbols
 ~~~~~~~~~~~~~~~
@@ -122,15 +66,15 @@ The following values are calculated using application ``convmol.py`` and stored 
 *Jl*/*J2l*-independent
 ++++++++++++++++++++++
 
-* *qv*: Franck-Condon factor
+* *qv*: Franck-Condon factor (FCF) [TRAPRB1970]_
 * *Bv*: rotational constant
 * *Dv*: rotational constant
 * *Gv*: rotational constant
 
 These terms are calculated as follows::
 
-    qv = qv(molecule, system, vl, v2l) is calculated using the TRAPRB code [TRAPRB1970]
-                                       The Franck-Condon factors were already calculate for several
+    qv = qv(molecule, system, vl, v2l) is calculted using the TRAPRB code [TRAPRB1970]
+                                       The FCFs were already calculate for several
                                        different molecules and are tabulated inside file "moldb.sqlite"
 
     Bv = B_e - alpha_e * (v2l + 0.5)
@@ -140,6 +84,9 @@ These terms are calculated as follows::
     Gv = omega_e * (v2l + 0.5) - omega_ex_e * (v2l + 0.5) ** 2 + omega_ey_e * (v2l + 0.5) ** 3 -
          omega_e / 2.0 - omega_ex_e / 4.0 + omega_ey_e / 8.0
 
+
+To calculate FCFs, we used the `TRAPRB code <https://github.com/trevisanj/traprb>`_ [TRAPRB1970]_. After compiled and in
+the system path, the ``traprb`` command can be invoked from inside ``moldbed.py`` to calculate new FCFs, when needed.
 
 *Jl*/*J2l*-dependent (*i.e.*, for each spectral line)
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -200,8 +147,8 @@ The branch letter is determined as follows::
     if Jl == J2l: "Q"
     if Jl > J2l:  "R"
 
-Where the conversion code is located
-------------------------------------
+Where the conversion library is located
+---------------------------------------
 
 - The line strength formulas from [Kovacs1969]_ are in module ``pyfant.kovacs``
   (source code directly available for inspection at
@@ -209,8 +156,137 @@ Where the conversion code is located
 - The conversion routines are in subpackage ``pyfant.convmol`` (source code at
   `<https://github.com/trevisanj/pyfant/tree/master/pyfant/convmol>`_)
 
+
+The convmol.py GUI for conversion of linelists
+----------------------------------------------
+
+This section is a short tutorial on converting molecular linelists using the ``convmol.py`` GUI.
+
+.. note:: Tool ``convmol.py`` only works safely for Kurucz format conversion. For other linelist format, in 2023 we
+          decided in favour of script building instead of maintaing the ``convmol.py`` GUI. See end of this section for more details.
+
+#. Create a "project" directory
+#. Run ``moldbed.py`` (:numref:`moldbed0`) and press "Ctrl+D" to
+   spawn a new *molecular constants database* in your local directory.
+   The name of such file defaults to "moldb.sqlite".
+   This operation only needs to be carried out once in your local directory
+#. Download linelist file, e.g., from [Kurucz]_
+#. Run ``convmol.py``
+#. In the first tab (:numref:`convmol0`)
+
+   * Press "Ctrl+D" (only if the form is disabled)
+   * Fill in the form as desired
+   * Press "Ctrl+S" to save configuration file for this tab
+
+#. In the second tab (:numref:`convmol1`):
+
+   * press "Ctrl+D" (only if the form is disabled)
+   * select "Kurucz" as data source on the left
+   * locate linelist file
+   * select isotope
+   * most probably, check flags as in (:numref:`convmol1`)
+   * specify output filename, or click on the plant button to make it up
+   * Press "Ctrl+S" to save configuration file for this tab
+   * **Click on "Run conversion" button**. Wait for conversion to complete
+
+#. In the third tab (:numref:`convmol2`), see details about the conversion session.
+
+.. _moldbed0:
+
+.. figure:: img/moldbed0.png
+    :align: center
+
+    -- First tab of ``convmol.py``
+
+.. _convmol0:
+
+.. figure:: img/convmol0.png
+    :align: center
+
+    -- First tab of ``convmol.py``
+
+.. _convmol1:
+
+.. figure:: img/convmol1.png
+    :align: center
+
+    -- Second tab of ``convmol.py``
+
+.. _convmol1:
+
+.. figure:: img/convmol1.png
+    :align: center
+
+    -- Third tab of ``convmol.py``
+
+
+Conversion of HITRAN 160-character format
+-----------------------------------------
+
+The following generates a PFANT molecular linelist from a HITRAN-like ".par" linelist.
+
+A version of this code can also be found in the ``examples/convmol`` directory of the `pyfant project <https://github.com/trevisanj/pyfant>`_
+
+A *molecular constants database* (``moldb.sqlite``), and the following code creates one if not present. Such database
+can be later edited using ``moldbed.py`` to adjust molecular constants (*omega_e*, *omega_ex_e*, *omega_ey_e* etc.)
+if necessary.
+
+In order to read the HITRAN-format linelist, we use the *hapi* library provided by HITRAN.
+
+HITRAN-format conversion uses the Einstein coefficient *A* instead of the [Kovacs1969]_ line strength calculation. For
+more details, see file ``conv_hitran.py`` in `pyfant project <https://github.com/trevisanj/pyfant>`_.
+
+.. code-block:: python
+
+    # Example script of how to convert HITRAN molecular linelist to PFANT format
+
+    from f311 import hapi
+    import pyfant, a99, os
+
+    #=== BEGIN SETUP ===
+
+    DATADIR = "."  # where hapi will look for ".par" files
+    DATANAME = "CO_dV11_stable-sample"  # filename minus ".par" extension
+    ISOWANT = 1  # see ConvHitran class
+    STRENGTHFACTOR = 2.  # see ConvHitran class
+    SYSTEMID = "CO [X 1 Sigma - X 1 Sigma]"  # Use moldbed.py to find out
+
+    #=== END SETUP
+
+    #=== BEGIN CONVERSION ===
+
+    fmoldb = pyfant.FileMolDB()
+    try:
+        fmoldb.load(os.path.join(DATADIR, fmoldb.default_filename))
+    except FileNotFoundError:
+        fmoldb.init_default()
+
+    molconsts = fmoldb.get_molconsts(SYSTEMID)
+    molconsts.None_to_zero()
+
+    hapi.VARIABLES['BACKEND_DATABASE_NAME'] = DATADIR
+    hapi.loadCache()
+
+    hapidata = hapi.LOCAL_TABLE_CACHE[DATANAME]
+
+    converter = pyfant.ConvHITRAN(comment=f"from {DATANAME}, iso={ISOWANT}",
+                                  molconsts=molconsts,
+                                  flag_quiet=True,
+                                  isowant=ISOWANT,
+                                  strengthfactor=STRENGTHFACTOR)
+    fmol, log = converter.make_file_molecules(hapidata)
+    for line in str(log).split("\n"):
+        a99.get_python_logger().info(line)
+    fmol.save_as(f"{DATANAME}.PFANT.dat")
+
+    #=== END CONVERSION ===
+
 Bibliography
 ------------
+
+.. [Barbuy2018] Barbuy, B., Julio Trevisan, and A. de Almeida. "Calculation of molecular line intensity in stellar
+   atmospheres." Publications of the Astronomical Society of Australia 35 (2018): e046.
+
 .. [Kovacs1969] Istvan Kovacs, Rotational Structure in the spectra of diatomic molecules. American Elsevier, 1969
 
 .. [TRAPRB1970] Jarmain, W. R., and J. C. McCallum. "TRAPRB: a computer program for molecular
