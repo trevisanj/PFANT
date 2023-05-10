@@ -43,8 +43,6 @@ Common data files
 
 Table 3 -- Common data files.
 
-.. todo:: fix table
-
 
 +----------------+----------------+----------------------------------------------------------------------------+
 | Default name   | --option       | Description                                                                |
@@ -55,6 +53,8 @@ Table 3 -- Common data files.
 +----------------+----------------+----------------------------------------------------------------------------+
 | molecules.dat  | --fn_molecules | molecular line list                                                        |
 +----------------+----------------+----------------------------------------------------------------------------+
+| mollist.dat    | --fn_mollist   | list of molecular line list files                                          |
++----------------+----------------+----------------------------------------------------------------------------+
 | hmap.dat       | --fn_hmap      | hydrogen line list                                                         |
 +----------------+----------------+----------------------------------------------------------------------------+
 | partit.dat     | --fn_partit    | partition functions                                                        |
@@ -63,6 +63,10 @@ Table 3 -- Common data files.
 +----------------+----------------+----------------------------------------------------------------------------+
 |  grid.moo      | --fn_moo       | MARCS atmospheric model grid (models with opacities) (:numref:`figgrid`)   |
 +----------------+----------------+----------------------------------------------------------------------------+
+
+**Molecular line lists** can be provided as a single file (default ``molecules.dat``) or
+through a "list of molecular line lists files" (LOMLLF) (default ``mollist.dat``). If the latter is found, single linelist file
+will be ignored and all files listed in the LOMLLF file will be loaded instead.
 
 .. _figgrid:
 

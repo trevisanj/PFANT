@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reference &mdash; PFANT 23.05.09 documentation</title>
+  <title>Reference &mdash; PFANT 23.05.10 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -36,7 +36,7 @@
             PFANT
           </a>
               <div class="version">
-                23.05.09
+                23.05.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -105,10 +105,10 @@
 and the files and file types involved.</p>
 <section id="spectral-synthesis-pipeline">
 <h2>Spectral synthesis pipeline<a class="headerlink" href="#spectral-synthesis-pipeline" title="Permalink to this heading">¶</a></h2>
-<figure class="align-center" id="id3">
+<figure class="align-center" id="id2">
 <img alt="_images/workflow-long.png" class="bordered" src="_images/workflow-long.png" />
 <figcaption>
-<p><span class="caption-number">Figure 9 </span><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -147,10 +147,6 @@ options that can be used to change the name for a particular file, <em>e.g.</em>
 <section id="common-data-files">
 <h3>Common data files<a class="headerlink" href="#common-data-files" title="Permalink to this heading">¶</a></h3>
 <p>Table 3 – Common data files.</p>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>fix table</p>
-</div>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Default name</p></th>
@@ -171,30 +167,37 @@ options that can be used to change the name for a particular file, <em>e.g.</em>
 <td><p>–fn_molecules</p></td>
 <td><p>molecular line list</p></td>
 </tr>
-<tr class="row-odd"><td><p>hmap.dat</p></td>
+<tr class="row-odd"><td><p>mollist.dat</p></td>
+<td><p>–fn_mollist</p></td>
+<td><p>list of molecular line list files</p></td>
+</tr>
+<tr class="row-even"><td><p>hmap.dat</p></td>
 <td><p>–fn_hmap</p></td>
 <td><p>hydrogen line list</p></td>
 </tr>
-<tr class="row-even"><td><p>partit.dat</p></td>
+<tr class="row-odd"><td><p>partit.dat</p></td>
 <td><p>–fn_partit</p></td>
 <td><p>partition functions</p></td>
 </tr>
-<tr class="row-odd"><td><p>grid.mod or</p></td>
+<tr class="row-even"><td><p>grid.mod or</p></td>
 <td><p>–fn_modgrid</p></td>
 <td><p>MARCS atmospheric model grid (models only)</p></td>
 </tr>
-<tr class="row-even"><td><p>grid.moo</p></td>
+<tr class="row-odd"><td><p>grid.moo</p></td>
 <td><p>–fn_moo</p></td>
 <td><p>MARCS atmospheric model grid (models with opacities) (<a class="reference internal" href="#figgrid"><span class="std std-numref">Figure 10</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
-<figure class="align-center" id="id4">
+<p><strong>Molecular line lists</strong> can be provided as a single file (default <code class="docutils literal notranslate"><span class="pre">molecules.dat</span></code>) or
+through a “list of molecular line lists files” (LOMLLF) (default <code class="docutils literal notranslate"><span class="pre">mollist.dat</span></code>). If the latter is found, single linelist file
+will be ignored and all files listed in the LOMLLF file will be loaded instead.</p>
+<figure class="align-center" id="id3">
 <span id="figgrid"></span><img alt="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" class="bordered" src="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" />
 <figcaption>
-<p><span class="caption-number">Figure 10 </span><span class="caption-text">– 3D grid of atmospheric models. The scatterplot in the figure shows the
+<p><span class="caption-number">Figure 9 </span><span class="caption-text">– 3D grid of atmospheric models. The scatterplot in the figure shows the
 (teff, glog, [Fe/H]) values for all existing atmospheric models in the grid (this is the
-file “grid.moo” provided). The uppermost point represents the Sun.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+file “grid.moo” provided). The uppermost point represents the Sun.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -221,10 +224,10 @@ file “grid.moo” provided). The uppermost point represents the Sun.</span><a 
 </tr>
 </tbody>
 </table>
-<figure class="align-center" id="id5">
+<figure class="align-center" id="id4">
 <img alt="_images/modeles.png" class="bordered" src="_images/modeles.png" />
 <figcaption>
-<p><span class="caption-number">Figure 11 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 10 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p><code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code> creates two separate files (Table 4). They are created
@@ -237,10 +240,10 @@ structure of MARCS “.mod” files. Figure 8 illustrates the information contai
 <p><code class="docutils literal notranslate"><span class="pre">hydro2</span></code> creates a series of files named “thalha” (<a class="reference internal" href="#figalpha"><span class="std std-numref">Figure 12</span></a>),
 “thbeta”, “thgamma”, “thdelta”, “thepsilon” etc. (the series of hydrogen lines is given in
 file “hmap.dat”).</p>
-<figure class="align-center" id="id6">
+<figure class="align-center" id="id5">
 <span id="figalpha"></span><img alt="_images/thalpha.png" class="bordered" src="_images/thalpha.png" />
 <figcaption>
-<p><span class="caption-number">Figure 12 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 11 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -265,12 +268,12 @@ file “hmap.dat”).</p>
 </tr>
 </tbody>
 </table>
-<figure class="align-center" id="id7">
+<figure class="align-center" id="id6">
 <img alt="_images/spec-cont-norm.png" class="bordered" src="_images/spec-cont-norm.png" />
 <figcaption>
-<p><span class="caption-number">Figure 13 </span><span class="caption-text">– plots showing three <code class="docutils literal notranslate"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
+<p><span class="caption-number">Figure 12 </span><span class="caption-text">– plots showing three <code class="docutils literal notranslate"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
 calculated spectrum; continuum; normalized spectrum. The common prefix “flux” can be changed
-in file “main.dat” to give a set of files with different names.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+in file “main.dat” to give a set of files with different names.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -286,7 +289,7 @@ added with three decimal places. For example,</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nulbad<span class="w"> </span>--fwhm<span class="w"> </span><span class="m">1</span>.2<span class="w"> </span>--fn_cv<span class="w"> </span>another-name
 </pre></div>
 </div>
-<div class="admonition-todo admonition" id="id2">
+<div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Another page containing the visual maps of the text files, such as main.dat</p>
 </div>

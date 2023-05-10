@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conversion of molecular lines lists &mdash; PFANT 23.05.09 documentation</title>
+  <title>Conversion of molecular lines lists &mdash; PFANT 23.05.10 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -36,7 +36,7 @@
             PFANT
           </a>
               <div class="version">
-                23.05.09
+                23.05.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,7 +54,6 @@
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Conversion of molecular lines lists</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-to-convert-molecular-lines">How to convert molecular lines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-the-conversion-is-made">How the conversion is made</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#list-of-symbols">List of symbols</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#input-molecular-constants-obtained-from-nist-database-all-given-in-unit-cm-1">Input molecular constants obtained from NIST database (all given in unit: cm**-1)</a></li>
@@ -66,7 +65,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-to-determine-the-branch">How to determine the branch</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#where-the-conversion-code-is-located">Where the conversion code is located</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#where-the-conversion-library-is-located">Where the conversion library is located</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-convmol-py-gui-for-conversion-of-linelists">The convmol.py GUI for conversion of linelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-of-hitran-160-character-format">Conversion of HITRAN 160-character format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bibliography">Bibliography</a></li>
 </ul>
 </li>
@@ -105,83 +106,28 @@
 <h1>Conversion of molecular lines lists<a class="headerlink" href="#conversion-of-molecular-lines-lists" title="Permalink to this heading">¶</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
-<p>This section describes the algorithm for conversion of molecular lines lists.</p>
-<p>Source formats.</p>
+<p>This section describes specific implementation details for conversion of molecular lines lists according to <a class="reference internal" href="#barbuy2018" id="id1"><span>[Barbuy2018]</span></a>.</p>
+<p>Source formats:</p>
 <ul class="simple">
-<li><p>Robert Kurucz molecular line lists <a class="reference internal" href="#kurucz" id="id1"><span>[Kurucz]</span></a> (functional)</p></li>
-<li><p>HITRAN Online database <a class="reference internal" href="#gordon2016" id="id2"><span>[Gordon2016]</span></a> (partially implemented)</p></li>
-<li><p>VALD3 <a class="reference internal" href="#vald3" id="id3"><span>[VALD3]</span></a> (to do)</p></li>
-<li><p>TurboSpectrum <a class="reference internal" href="#plez" id="id4"><span>[Plez]</span></a> (to do)</p></li>
+<li><p>Robert Kurucz molecular line lists <a class="reference internal" href="#kurucz" id="id2"><span>[Kurucz]</span></a></p></li>
+<li><p>TurboSpectrum <a class="reference internal" href="#plez" id="id3"><span>[Plez]</span></a></p></li>
+<li><p>HITRAN/HITEMP 160-character format <a class="reference internal" href="#gordon2016" id="id4"><span>[Gordon2016]</span></a></p></li>
+<li><p>VALD3 <a class="reference internal" href="#vald3" id="id5"><span>[VALD3]</span></a> (to do)</p></li>
 </ul>
 <p>Conversion output:</p>
 <ul class="simple">
 <li><p>PFANT molecular lines file (such as “molecules.dat”)</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is work in progress and the conversion is still in experimental development stage.</p>
-</div>
-</section>
-<section id="how-to-convert-molecular-lines">
-<h2>How to convert molecular lines<a class="headerlink" href="#how-to-convert-molecular-lines" title="Permalink to this heading">¶</a></h2>
-<p>This section is a short tutorial on converting molecular linelists.</p>
-<ol class="arabic simple">
-<li><p>Create a “project” directory</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">moldbed.py</span></code> (<a class="reference internal" href="#moldbed0"><span class="std std-numref">Figure 14</span></a>) and press “Ctrl+D” to
-spawn a new <em>molecular constants database</em> in your local directory.
-The name of such file defaults to “moldb.sqlite”.
-This operation only needs to be carried out once for each “project” directory</p></li>
-<li><p>Download linelist file, e.g., from <a class="reference internal" href="#kurucz" id="id5"><span>[Kurucz]</span></a></p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></p></li>
-<li><p>In the first tab (<a class="reference internal" href="#convmol0"><span class="std std-numref">Figure 15</span></a>)</p>
-<ul class="simple">
-<li><p>Press “Ctrl+D” (only if the form is disabled)</p></li>
-<li><p>Fill in the form as desired</p></li>
-<li><p>Press “Ctrl+S” to save configuration file for this tab</p></li>
-</ul>
-</li>
-<li><p>In the second tab (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol1</span></code>):</p>
-<ul class="simple">
-<li><p>press “Ctrl+D” (only if the form is disabled)</p></li>
-<li><p>select “Kurucz” as data source on the left</p></li>
-<li><p>locate linelist file</p></li>
-<li><p>select isotope</p></li>
-<li><p>most probably, check flags as in (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol1</span></code>)</p></li>
-<li><p>specify output filename, or click on the plant button to make it up</p></li>
-<li><p>Press “Ctrl+S” to save configuration file for this tab</p></li>
-<li><p><strong>Click on “Run conversion” button</strong>. Wait for conversion to complete</p></li>
-</ul>
-</li>
-<li><p>In the third tab (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol2</span></code>), see details about the conversion session.</p></li>
-</ol>
-<figure class="align-center" id="id10">
-<span id="moldbed0"></span><img alt="_images/moldbed0.png" src="_images/moldbed0.png" />
-<figcaption>
-<p><span class="caption-number">Figure 14 </span><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<figure class="align-center" id="id11">
-<span id="convmol0"></span><img alt="_images/convmol0.png" src="_images/convmol0.png" />
-<figcaption>
-<p><span class="caption-number">Figure 15 </span><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<figure class="align-center" id="id12">
-<span id="convmol1"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
-<figcaption>
-<p><span class="caption-number">Figure 16 </span><span class="caption-text">– Second tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<figure class="align-center" id="id13">
-<span id="id6"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
-<figcaption>
-<p><span class="caption-number">Figure 17 </span><span class="caption-text">– Third tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
 </section>
 <section id="how-the-conversion-is-made">
 <h2>How the conversion is made<a class="headerlink" href="#how-the-conversion-is-made" title="Permalink to this heading">¶</a></h2>
-<p>This section describes the conversion algorithm itself.</p>
+<p>Quoting <a class="reference internal" href="#barbuy2018" id="id6"><span>[Barbuy2018]</span></a>:</p>
+<blockquote>
+<div><p><em>Line lists of molecular bands come however in different formats, and as well the different
+codes use these lists adapted in different ways. The main difference in using molecular line lists is the use of either
+the Einstein A coefficients, […] which are a sum of all ingredients, or when this is not available, the different constituents that produce
+the line.</em></p>
+</div></blockquote>
 <section id="list-of-symbols">
 <h3>List of symbols<a class="headerlink" href="#list-of-symbols" title="Permalink to this heading">¶</a></h3>
 <section id="input-molecular-constants-obtained-from-nist-database-all-given-in-unit-cm-1">
@@ -219,14 +165,14 @@ This operation only needs to be carried out once for each “project” director
 <section id="jl-j2l-independent">
 <h5><em>Jl</em>/<em>J2l</em>-independent<a class="headerlink" href="#jl-j2l-independent" title="Permalink to this heading">¶</a></h5>
 <ul class="simple">
-<li><p><em>qv</em>: Franck-Condon factor</p></li>
+<li><p><em>qv</em>: Franck-Condon factor (FCF) <a class="reference internal" href="#traprb1970" id="id7"><span>[TRAPRB1970]</span></a></p></li>
 <li><p><em>Bv</em>: rotational constant</p></li>
 <li><p><em>Dv</em>: rotational constant</p></li>
 <li><p><em>Gv</em>: rotational constant</p></li>
 </ul>
 <p>These terms are calculated as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qv</span> <span class="o">=</span> <span class="n">qv</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">vl</span><span class="p">,</span> <span class="n">v2l</span><span class="p">)</span> <span class="ow">is</span> <span class="n">calculated</span> <span class="n">using</span> <span class="n">the</span> <span class="n">TRAPRB</span> <span class="n">code</span> <span class="p">[</span><span class="n">TRAPRB1970</span><span class="p">]</span>
-                                   <span class="n">The</span> <span class="n">Franck</span><span class="o">-</span><span class="n">Condon</span> <span class="n">factors</span> <span class="n">were</span> <span class="n">already</span> <span class="n">calculate</span> <span class="k">for</span> <span class="n">several</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qv</span> <span class="o">=</span> <span class="n">qv</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">vl</span><span class="p">,</span> <span class="n">v2l</span><span class="p">)</span> <span class="ow">is</span> <span class="n">calculted</span> <span class="n">using</span> <span class="n">the</span> <span class="n">TRAPRB</span> <span class="n">code</span> <span class="p">[</span><span class="n">TRAPRB1970</span><span class="p">]</span>
+                                   <span class="n">The</span> <span class="n">FCFs</span> <span class="n">were</span> <span class="n">already</span> <span class="n">calculate</span> <span class="k">for</span> <span class="n">several</span>
                                    <span class="n">different</span> <span class="n">molecules</span> <span class="ow">and</span> <span class="n">are</span> <span class="n">tabulated</span> <span class="n">inside</span> <span class="n">file</span> <span class="s2">&quot;moldb.sqlite&quot;</span>
 
 <span class="n">Bv</span> <span class="o">=</span> <span class="n">B_e</span> <span class="o">-</span> <span class="n">alpha_e</span> <span class="o">*</span> <span class="p">(</span><span class="n">v2l</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
@@ -237,11 +183,13 @@ This operation only needs to be carried out once for each “project” director
      <span class="n">omega_e</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">omega_ex_e</span> <span class="o">/</span> <span class="mf">4.0</span> <span class="o">+</span> <span class="n">omega_ey_e</span> <span class="o">/</span> <span class="mf">8.0</span>
 </pre></div>
 </div>
+<p>To calculate FCFs, we used the <a class="reference external" href="https://github.com/trevisanj/traprb">TRAPRB code</a> <a class="reference internal" href="#traprb1970" id="id8"><span>[TRAPRB1970]</span></a>. After compiled and in
+the system path, the <code class="docutils literal notranslate"><span class="pre">traprb</span></code> command can be invoked from inside <code class="docutils literal notranslate"><span class="pre">moldbed.py</span></code> to calculate new FCFs, when needed.</p>
 </section>
 <section id="jl-j2l-dependent-i-e-for-each-spectral-line">
 <h5><em>Jl</em>/<em>J2l</em>-dependent (<em>i.e.</em>, for each spectral line)<a class="headerlink" href="#jl-j2l-dependent-i-e-for-each-spectral-line" title="Permalink to this heading">¶</a></h5>
 <ul class="simple">
-<li><p><em>LS</em>: line strength for given by formulas in <a class="reference internal" href="#kovacs1969" id="id7"><span>[Kovacs1969]</span></a>, Chapter 3; Hönl-London factor</p></li>
+<li><p><em>LS</em>: line strength for given by formulas in <a class="reference internal" href="#kovacs1969" id="id9"><span>[Kovacs1969]</span></a>, Chapter 3; Hönl-London factor</p></li>
 <li><p><em>S</em>: normalized line strength</p></li>
 </ul>
 <p><em>LS</em> is calculated using a different formula depending on:</p>
@@ -258,7 +206,7 @@ final state have same multiplicity)</p></li>
 <span class="n">LS</span> <span class="o">=</span> <span class="n">formula</span><span class="p">(</span><span class="n">almost</span> <span class="n">every</span> <span class="nb">input</span> <span class="n">variable</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="admonition-todo admonition" id="id8">
+<div class="admonition-todo admonition" id="id10">
 <p class="admonition-title">Todo</p>
 <p>Explain term formulas “u+/-”, “c+/-”</p>
 </div>
@@ -300,26 +248,150 @@ final state have same multiplicity)</p></li>
 </div>
 </section>
 </section>
-<section id="where-the-conversion-code-is-located">
-<h2>Where the conversion code is located<a class="headerlink" href="#where-the-conversion-code-is-located" title="Permalink to this heading">¶</a></h2>
+<section id="where-the-conversion-library-is-located">
+<h2>Where the conversion library is located<a class="headerlink" href="#where-the-conversion-library-is-located" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The line strength formulas from <a class="reference internal" href="#kovacs1969" id="id9"><span>[Kovacs1969]</span></a> are in module <code class="docutils literal notranslate"><span class="pre">pyfant.kovacs</span></code>
+<li><p>The line strength formulas from <a class="reference internal" href="#kovacs1969" id="id11"><span>[Kovacs1969]</span></a> are in module <code class="docutils literal notranslate"><span class="pre">pyfant.kovacs</span></code>
 (source code directly available for inspection at
 <a class="reference external" href="https://github.com/trevisanj/pyfant/blob/master/pyfant/kovacs.py">https://github.com/trevisanj/pyfant/blob/master/pyfant/kovacs.py</a>)</p></li>
 <li><p>The conversion routines are in subpackage <code class="docutils literal notranslate"><span class="pre">pyfant.convmol</span></code> (source code at
 <a class="reference external" href="https://github.com/trevisanj/pyfant/tree/master/pyfant/convmol">https://github.com/trevisanj/pyfant/tree/master/pyfant/convmol</a>)</p></li>
 </ul>
 </section>
+<section id="the-convmol-py-gui-for-conversion-of-linelists">
+<h2>The convmol.py GUI for conversion of linelists<a class="headerlink" href="#the-convmol-py-gui-for-conversion-of-linelists" title="Permalink to this heading">¶</a></h2>
+<p>This section is a short tutorial on converting molecular linelists using the <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code> GUI.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Tool <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code> only works safely for Kurucz format conversion. For other linelist format, in 2023 we
+decided in favour of script building instead of maintaing the <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code> GUI. See end of this section for more details.</p>
+</div>
+<ol class="arabic simple">
+<li><p>Create a “project” directory</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">moldbed.py</span></code> (<a class="reference internal" href="#moldbed0"><span class="std std-numref">Figure 14</span></a>) and press “Ctrl+D” to
+spawn a new <em>molecular constants database</em> in your local directory.
+The name of such file defaults to “moldb.sqlite”.
+This operation only needs to be carried out once in your local directory</p></li>
+<li><p>Download linelist file, e.g., from <a class="reference internal" href="#kurucz" id="id12"><span>[Kurucz]</span></a></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></p></li>
+<li><p>In the first tab (<a class="reference internal" href="#convmol0"><span class="std std-numref">Figure 15</span></a>)</p>
+<ul class="simple">
+<li><p>Press “Ctrl+D” (only if the form is disabled)</p></li>
+<li><p>Fill in the form as desired</p></li>
+<li><p>Press “Ctrl+S” to save configuration file for this tab</p></li>
+</ul>
+</li>
+<li><p>In the second tab (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol1</span></code>):</p>
+<ul class="simple">
+<li><p>press “Ctrl+D” (only if the form is disabled)</p></li>
+<li><p>select “Kurucz” as data source on the left</p></li>
+<li><p>locate linelist file</p></li>
+<li><p>select isotope</p></li>
+<li><p>most probably, check flags as in (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol1</span></code>)</p></li>
+<li><p>specify output filename, or click on the plant button to make it up</p></li>
+<li><p>Press “Ctrl+S” to save configuration file for this tab</p></li>
+<li><p><strong>Click on “Run conversion” button</strong>. Wait for conversion to complete</p></li>
+</ul>
+</li>
+<li><p>In the third tab (<code class="xref std std-numref docutils literal notranslate"><span class="pre">convmol2</span></code>), see details about the conversion session.</p></li>
+</ol>
+<figure class="align-center" id="id16">
+<span id="moldbed0"></span><img alt="_images/moldbed0.png" src="_images/moldbed0.png" />
+<figcaption>
+<p><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id17">
+<span id="convmol0"></span><img alt="_images/convmol0.png" src="_images/convmol0.png" />
+<figcaption>
+<p><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id18">
+<span id="convmol1"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
+<figcaption>
+<p><span class="caption-text">– Second tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id19">
+<span id="id13"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
+<figcaption>
+<p><span class="caption-text">– Third tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="conversion-of-hitran-160-character-format">
+<h2>Conversion of HITRAN 160-character format<a class="headerlink" href="#conversion-of-hitran-160-character-format" title="Permalink to this heading">¶</a></h2>
+<p>The following generates a PFANT molecular linelist from a HITRAN-like “.par” linelist.</p>
+<p>A version of this code can also be found in the <code class="docutils literal notranslate"><span class="pre">examples/convmol</span></code> directory of the <a class="reference external" href="https://github.com/trevisanj/pyfant">pyfant project</a></p>
+<p>A <em>molecular constants database</em> (<code class="docutils literal notranslate"><span class="pre">moldb.sqlite</span></code>), and the following code creates one if not present. Such database
+can be later edited using <code class="docutils literal notranslate"><span class="pre">moldbed.py</span></code> to adjust molecular constants (<em>omega_e</em>, <em>omega_ex_e</em>, <em>omega_ey_e</em> etc.)
+if necessary.</p>
+<p>In order to read the HITRAN-format linelist, we use the <em>hapi</em> library provided by HITRAN.</p>
+<p>HITRAN-format conversion uses the Einstein coefficient <em>A</em> instead of the <a class="reference internal" href="#kovacs1969" id="id14"><span>[Kovacs1969]</span></a> line strength calculation. For
+more details, see file <code class="docutils literal notranslate"><span class="pre">conv_hitran.py</span></code> in <a class="reference external" href="https://github.com/trevisanj/pyfant">pyfant project</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example script of how to convert HITRAN molecular linelist to PFANT format</span>
+
+<span class="kn">from</span> <span class="nn">f311</span> <span class="kn">import</span> <span class="n">hapi</span>
+<span class="kn">import</span> <span class="nn">pyfant</span><span class="o">,</span> <span class="nn">a99</span><span class="o">,</span> <span class="nn">os</span>
+
+<span class="c1">#=== BEGIN SETUP ===</span>
+
+<span class="n">DATADIR</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>  <span class="c1"># where hapi will look for &quot;.par&quot; files</span>
+<span class="n">DATANAME</span> <span class="o">=</span> <span class="s2">&quot;CO_dV11_stable-sample&quot;</span>  <span class="c1"># filename minus &quot;.par&quot; extension</span>
+<span class="n">ISOWANT</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># see ConvHitran class</span>
+<span class="n">STRENGTHFACTOR</span> <span class="o">=</span> <span class="mf">2.</span>  <span class="c1"># see ConvHitran class</span>
+<span class="n">SYSTEMID</span> <span class="o">=</span> <span class="s2">&quot;CO [X 1 Sigma - X 1 Sigma]&quot;</span>  <span class="c1"># Use moldbed.py to find out</span>
+
+<span class="c1">#=== END SETUP</span>
+
+<span class="c1">#=== BEGIN CONVERSION ===</span>
+
+<span class="n">fmoldb</span> <span class="o">=</span> <span class="n">pyfant</span><span class="o">.</span><span class="n">FileMolDB</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">fmoldb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATADIR</span><span class="p">,</span> <span class="n">fmoldb</span><span class="o">.</span><span class="n">default_filename</span><span class="p">))</span>
+<span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+    <span class="n">fmoldb</span><span class="o">.</span><span class="n">init_default</span><span class="p">()</span>
+
+<span class="n">molconsts</span> <span class="o">=</span> <span class="n">fmoldb</span><span class="o">.</span><span class="n">get_molconsts</span><span class="p">(</span><span class="n">SYSTEMID</span><span class="p">)</span>
+<span class="n">molconsts</span><span class="o">.</span><span class="n">None_to_zero</span><span class="p">()</span>
+
+<span class="n">hapi</span><span class="o">.</span><span class="n">VARIABLES</span><span class="p">[</span><span class="s1">&#39;BACKEND_DATABASE_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DATADIR</span>
+<span class="n">hapi</span><span class="o">.</span><span class="n">loadCache</span><span class="p">()</span>
+
+<span class="n">hapidata</span> <span class="o">=</span> <span class="n">hapi</span><span class="o">.</span><span class="n">LOCAL_TABLE_CACHE</span><span class="p">[</span><span class="n">DATANAME</span><span class="p">]</span>
+
+<span class="n">converter</span> <span class="o">=</span> <span class="n">pyfant</span><span class="o">.</span><span class="n">ConvHITRAN</span><span class="p">(</span><span class="n">comment</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="n">DATANAME</span><span class="si">}</span><span class="s2">, iso=</span><span class="si">{</span><span class="n">ISOWANT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                              <span class="n">molconsts</span><span class="o">=</span><span class="n">molconsts</span><span class="p">,</span>
+                              <span class="n">flag_quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">isowant</span><span class="o">=</span><span class="n">ISOWANT</span><span class="p">,</span>
+                              <span class="n">strengthfactor</span><span class="o">=</span><span class="n">STRENGTHFACTOR</span><span class="p">)</span>
+<span class="n">fmol</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">make_file_molecules</span><span class="p">(</span><span class="n">hapidata</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="n">a99</span><span class="o">.</span><span class="n">get_python_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">fmol</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DATANAME</span><span class="si">}</span><span class="s2">.PFANT.dat&quot;</span><span class="p">)</span>
+
+<span class="c1">#=== END CONVERSION ===</span>
+</pre></div>
+</div>
+</section>
 <section id="bibliography">
 <h2>Bibliography<a class="headerlink" href="#bibliography" title="Permalink to this heading">¶</a></h2>
 <div role="list" class="citation-list">
+<div class="citation" id="barbuy2018" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Barbuy2018<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<p>Barbuy, B., Julio Trevisan, and A. de Almeida. “Calculation of molecular line intensity in stellar
+atmospheres.” Publications of the Astronomical Society of Australia 35 (2018): e046.</p>
+</div>
 <div class="citation" id="kovacs1969" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>Kovacs1969<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id11">2</a>,<a role="doc-backlink" href="#id14">3</a>)</span>
 <p>Istvan Kovacs, Rotational Structure in the spectra of diatomic molecules. American Elsevier, 1969</p>
 </div>
 <div class="citation" id="traprb1970" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>TRAPRB1970<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
 <p>Jarmain, W. R., and J. C. McCallum. “TRAPRB: a computer program for molecular
 transitions.” University of Western Ontario (1970)</p>
 </div>
@@ -329,19 +401,19 @@ transitions.” University of Western Ontario (1970)</p>
 </div>
 <div class="citation" id="kurucz" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>Kurucz<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id12">2</a>)</span>
 <p><a class="reference external" href="http://kurucz.harvard.edu/molecules.html">http://kurucz.harvard.edu/molecules.html</a></p>
 </div>
 <div class="citation" id="vald3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">VALD3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">VALD3</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="http://vald.astro.univie.ac.at/~vald3/php/vald.php">http://vald.astro.univie.ac.at/~vald3/php/vald.php</a></p>
 </div>
 <div class="citation" id="plez" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Plez</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Plez</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="http://www.pages-perso-bertrand-plez.univ-montp2.fr/">http://www.pages-perso-bertrand-plez.univ-montp2.fr/</a></p>
 </div>
 <div class="citation" id="gordon2016" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Gordon2016</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Gordon2016</a><span class="fn-bracket">]</span></span>
 <p>I.E. Gordon, L.S. Rothman, C. Hill, R.V. Kochanov, Y. Tan, P.F. Bernath, M. Birk,
 V. Boudon, A. Campargue, K.V. Chance, B.J. Drouin, J.-M. Flaud, R.R. Gamache, J.T. Hodges,
 D. Jacquemart, V.I. Perevalov, A. Perrin, K.P. Shine, M.-A.H. Smith, J. Tennyson, G.C. Toon,
