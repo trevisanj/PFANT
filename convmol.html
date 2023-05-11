@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conversion of molecular lines lists &mdash; PFANT 23.05.10 documentation</title>
+  <title>Conversion of molecular lines lists &mdash; PFANT 23.05.11 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -36,7 +36,7 @@
             PFANT
           </a>
               <div class="version">
-                23.05.10
+                23.05.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -340,7 +340,7 @@ more details, see file <code class="docutils literal notranslate"><span class="p
 <span class="n">DATADIR</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>  <span class="c1"># where hapi will look for &quot;.par&quot; files</span>
 <span class="n">DATANAME</span> <span class="o">=</span> <span class="s2">&quot;CO_dV11_stable-sample&quot;</span>  <span class="c1"># filename minus &quot;.par&quot; extension</span>
 <span class="n">ISOWANT</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># see ConvHitran class</span>
-<span class="n">STRENGTHFACTOR</span> <span class="o">=</span> <span class="mf">2.</span>  <span class="c1"># see ConvHitran class</span>
+<span class="n">FE</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Line strength scaling factor for the whole molecule</span>
 <span class="n">SYSTEMID</span> <span class="o">=</span> <span class="s2">&quot;CO [X 1 Sigma - X 1 Sigma]&quot;</span>  <span class="c1"># Use moldbed.py to find out</span>
 
 <span class="c1">#=== END SETUP</span>
@@ -365,7 +365,7 @@ more details, see file <code class="docutils literal notranslate"><span class="p
                               <span class="n">molconsts</span><span class="o">=</span><span class="n">molconsts</span><span class="p">,</span>
                               <span class="n">flag_quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                               <span class="n">isowant</span><span class="o">=</span><span class="n">ISOWANT</span><span class="p">,</span>
-                              <span class="n">strengthfactor</span><span class="o">=</span><span class="n">STRENGTHFACTOR</span><span class="p">)</span>
+                              <span class="n">fe</span><span class="o">=</span><span class="n">FE</span><span class="p">)</span>
 <span class="n">fmol</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">make_file_molecules</span><span class="p">(</span><span class="n">hapidata</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
     <span class="n">a99</span><span class="o">.</span><span class="n">get_python_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
