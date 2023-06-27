@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v23.4.28.0'
+    v = 'v23.6.27.0'
   end
 
   ! Displays welcome message
@@ -5322,6 +5322,13 @@ module file_atoms
   use file_abonds
   implicit none
 
+
+  ! (20230627) Way to determine atomic line computing interval in the same way as molecules
+  real*8, parameter :: ATOMS_ALARGM = 0.25
+  real*8, parameter :: ATOMS_ALARGM_LAMBDA_REF = 5000
+  real*8, parameter :: ATOMS_ALARGM_FACT = ATOMS_ALARGM/ATOMS_ALARGM_LAMBDA_REF
+
+
   !=====
   ! Variables filled by read_atoms() (file *atoms file*)
   !=====
@@ -5352,21 +5359,25 @@ contains
   ! This file has 2 types of alternating rows:
   !
   !   odd row
-  !     col 1 -- 2-letter atoms_elem atomic symbol
-  !     col 2 -- atoms_ioni
-  !     col 3 -- atoms_lambda
+  !     col 1 -- atoms_elem: 2-letter atomic symbol
+  !     col 2 -- atoms_ioni: ionization
+  !     col 3 -- atoms_lambda: wavelength
   !   even row
-  !     col 1 --
-  !     col 2 --
-  !     col 3 --
-  !     col 4 --
-  !     col 5 --
-  !     col 6 --
-  !     col 7 --
-  !     col 8 -- signals end-of-file. If "1", reading stops
+  !     col 1 -- atoms_kiex
+  !     col 2 -- atoms_algf
+  !     col 3 -- atoms_ch
+  !     col 4 -- atoms_gr
+  !     col 5 -- atoms_ge
+  !     col 6 -- atoms_gr
+  !     col 7 -- atoms_abondr_dummy
+  !     col 8 -- finrai: signals end-of-file. If "1", reading stops
   !
   !
-  !  *Note* The line that has the end-of-file flag set is also taken into account.
+  !  *Note* The line that has the end-of-file flag (finrai==1) is also taken into account.
+
+!  FE1  15000.045
+!6.454  -0.778 1.0E-30 0 0 0.1 1 0
+
 
   subroutine read_atoms(filename)
     implicit none
@@ -5374,6 +5385,7 @@ contains
     character(len=*) :: filename
     integer finrai, k, j
     logical flag_found
+    real*8 min_zinf
 
     if (.not. flag_read_abonds) then
       call log_and_halt('read_abonds() must be called before read_atoms()')
@@ -5410,6 +5422,13 @@ contains
        atoms_ge(k), &
        atoms_zinf(k), &
        atoms_abondr_dummy(k), finrai
+
+      ! (20230627) atoms_zinf still works, but will be increased if lower when internal calculated value
+      if (.true.) then
+        min_zinf = atoms_lambda(k)*ATOMS_ALARGM_FACT
+        if (atoms_zinf(k) .lt. min_zinf) atoms_zinf(k) = min_zinf
+      end if
+
 
       ! (MT) If the "radiative broadening" is zero,
       ! it is calculated as a function of lambda; otherwise, it is assumed that it has been inputted manually.
@@ -5805,6 +5824,8 @@ contains
       ! BLB: CRO - delta Kronecker (2-delta_{Sigma, 0})
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
+      ! JT: According to the PASA paper, it is actually: 0 for non-Sigma and 
+      ! JT:                                              1 for Sigma transitions
 
       read(myunit,*) km_fe(molidx), km_do(molidx), km_mm(molidx), &
        km_am(molidx), km_bm(molidx), km_ua(molidx), &
@@ -7964,9 +7985,10 @@ module filters
   !
   ! **Note** Analogue to atoms_zinf
   !
-  real*8, parameter :: KM_ALARGM = 0.1
+  real*8, parameter :: KM_ALARGM = 0.15
   real*8, parameter :: KM_ALARGM_LAMBDA_REF = 5000
   real*8, parameter :: KM_ALARGM_FACT = KM_ALARGM/KM_ALARGM_LAMBDA_REF
+
 
   !=====
   ! km_f_*Variables filled by filter_molecules()

@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # To make sure no old executables/object files remain, we explicitly delete them.
-rm bin/*
+rm bin/innewmarcs
+rm bin/hydro2
+rm bin/pfant
+rm bin/nulbad
 rm -rf obj-linux/*
 
 
