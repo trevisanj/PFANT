@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = 'v23.6.27.0'
+    v = '23.6.28.0'
   end
 
   ! Displays welcome message
@@ -2979,16 +2979,32 @@ contains
   ! *Note* Must be called *after* module-specific initialization
 
   subroutine config_init()
+    character(len=4), parameter :: RESET = char(27)//'[0m'
+    character(len=4), parameter :: BOLD = char(27)//'[1m'
+
     if (execonf_name .eq. '?') &
      call log_and_halt('Executable name not set', is_assertion=.true.)
 
-    write(*,*) trim(to_upper(execonf_name))//' '//trim(pfant_version())
-    write(*,*) 'http://github.com/trevisanj/PFANT'
-    write(*,*) ''
+    if (.false.) then
+      write(*,*) ''
+      write(*,*) BOLD//trim(execonf_name)//RESET//' utility'
+      write(*,*) 'PFANT version: '//BOLD//trim(pfant_version())//RESET
+      write(*,*) 'http://github.com/trevisanj/PFANT'
+      write(*,*) ''
+    else
+      write(*,*) ''
+      write(*,*) '  '//BOLD//trim(execonf_name)//RESET//' utility  --  '// &
+                 'PFANT version: '//BOLD//trim(pfant_version())//RESET
+      write(*,*) ''
+      write(*,*) '  http://github.com/trevisanj/PFANT'
+      write(*,*) ''
+    end if
+
 
     call init_options()
     call validate_options()
     call parse_args()
+
 
     ! logging module...
     logging_fn_progress = config_fn_progress
@@ -3049,7 +3065,9 @@ contains
     ! All executables
     !
     call add_option('ihpnc', 'help', 'h', .false., '', '', &
-      'Displays this help text.')
+      'Displays this help text and exits.')
+    call add_option('ihpnc', 'version', 'v', .false., '', '', &
+      'Displays version number and exits.')
     call add_option('ihpnc', 'logging_level', 'l', .true., 'level', 'debug', &
      'logging level<br>'//&
      IND//'debug<br>'//&
@@ -3243,6 +3261,9 @@ contains
     select case(opt%name)
       case ('help')
           call show_help(6)
+          stop
+      case ('version')
+          ! if version was asked, just stops because version is always printed as soon as the program starts
           stop
       case ('play')
           call play()
