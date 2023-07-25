@@ -4,12 +4,10 @@
 
 SRCS_f90d1 = \
 innewmarcs.f90 \
-readers.f90 \
 pfantlib.f90 
 
 OBJS_f90d1 = \
 innewmarcs.o \
-readers.o \
 pfantlib.o 
 
 SRC_DIR_f90d1 = 
@@ -44,8 +42,6 @@ clean :
 innewmarcs.o: \
     innewmarcs.f90 \
     pfantlib.o
-readers.o: \
-    readers.f90
 pfantlib.o: \
     pfantlib.f90
 

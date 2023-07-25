@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '23.7.25.0'
+    v = '23.7.25.1'
   end
 
   ! Displays welcome message
