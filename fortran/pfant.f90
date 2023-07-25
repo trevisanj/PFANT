@@ -658,7 +658,7 @@ contains
     character*1 isi, iss
     integer j, k, ioo, iopi, n
     real*8 kies,kii,nul, ahnul, alphl(MAX_MODELES_NTOT), gamma, gh, t, tap, top, vrel, &
-     a, delta
+     a, delta, pop
     data isi/' '/, iss/' '/
 
     do k = 1, atoms_f_nblend
@@ -730,12 +730,21 @@ contains
         tap = 1.-alphl(n)
         top = 10.**(-atoms_f_kiex(k)*modele%teta(n))
 
+
+
+        ! -- Calculates popadelh_pop
+        pop = top*tap*popul_p(ioo,j,n)
+
+        ! #NOXIG: oxygen and carbon are treated differently
         if(atoms_f_elem(k) .eq. ' O') then
-          ! #NOXIG: oxygen is treated differently
-          popadelh_pop(k,n) = top*tap*popul_p(ioo,j,n)*sat4_po(n)/sat4_pph(n)
-        else
-          popadelh_pop(k,n) = popul_p(ioo,j,n)*top*tap
+          pop = pop*sat4_po(n)/sat4_pph(n)
+        else if (atoms_f_elem(k) .eq. ' C') then
+          pop = pop*sat4_p12c(n)/sat4_pph(n)
         end if
+
+        popadelh_pop(k,n) = pop
+
+
 
         delta = (1.e-8*atoms_f_lambda(k))/C*sqrt(turbul_vt(n)**2+DEUXR*t/partit_m(j))
         popadelh_delta(k,n) = delta
@@ -846,13 +855,14 @@ contains
             if(atoms_f_elem(k) .eq. ' O') then
               ! #NOXIG: oxygen is a particular case here
               kak = phi * popadelh_pop(k,n) * m_gfal(k)
+            else if(atoms_f_elem(k) .eq. ' C') then
+              kak = phi * popadelh_pop(k,n) * m_gfal(k)
             else
               kak = phi * popadelh_pop(k,n) * m_gfal(k) * atoms_f_abonds_abo(k)
             end if
           end if
           kappa = kappa + kak
         end do   !  fin bcle sur k
-
 
 
         260 continue
@@ -1265,11 +1275,15 @@ program pfant
     end if
 
     call log_info('*** MOLECULES READ ('//int2str(km_number)//'): ***')
-    call log_info("#; titulo; number of sets; number of lines")
+    call log_info("      # titulo                                            number_of_sets number_of_lines")
+    call log_info("    ....................................................................................")
     do i = 1, km_number
-      call log_info(int2str(i)//'; '//trim(km_comments(i))//'; '//int2str(km_nv(i))//'; '//int2str(km_lines_per_mol(i)))
+      write(lll,'(4x,i3,1x,a50,1x,i13,1x,i15)') i, km_comments(i), km_nv(i), km_lines_per_mol(i)
+      call log_info(lll)
     end do
-    call log_info("Total number of molecular lines read: "//int2str(km_lines_total))
+    call log_info("    ....................................................................................")
+    write(lll,'(4x,69x,i15)') km_lines_total
+    call log_info(lll)
   end if
 
   if (abs(modele%asalog-main_afstar) > 0.01) then

@@ -126,7 +126,7 @@ module dimensions
   ! Dimensions related to *mollist file*
   !=====
   ! Maximum number of molecular lines files
-  integer, parameter :: MAX_NUM_MOLFILES = 10
+  integer, parameter :: MAX_NUM_MOLFILES = 80
 
   ! Maximum Number of molecules in *molecules file*
   integer, parameter :: MAX_NUM_MOL=80
@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '23.6.28.0'
+    v = '23.7.25.0'
   end
 
   ! Displays welcome message
@@ -2807,12 +2807,15 @@ module config
   ! *Note* to add a new command-line option, follow the steps in "../README.md"
   !        (those also cover how to update the Python code)
 
+  ! Maximum size for a file name
+  integer, parameter :: FN_SIZE = 255
+
   !---
   ! all executables
   !---
-  character*64 :: config_fn_main     = 'main.dat'      ! option: --fn_main
-  character*64 :: config_fn_progress = 'progress.txt'  ! option: --fn_progress
-  character*64 :: config_fn_logging = '?'         ! option: --logging_fn_dump
+  character(FN_SIZE) :: config_fn_main     = 'main.dat'      ! option: --fn_main
+  character(FN_SIZE) :: config_fn_progress = 'progress.txt'  ! option: --fn_progress
+  character(FN_SIZE) :: config_fn_logging = '?'         ! option: --logging_fn_dump
   logical :: config_logging_console = .true., &  ! option --logging_console
              config_logging_dump   = .false., & ! option --logging_dump
              config_explain        = .false., & ! option --explain
@@ -2823,19 +2826,19 @@ module config
   !---
   ! innewmarcs, hydro2, pfant
   !---
-  character*64 :: config_fn_modeles = 'modeles.mod' ! option: --fn_modeles
+  character(FN_SIZE) :: config_fn_modeles = 'modeles.mod' ! option: --fn_modeles
 
   !---
   ! innewmarcs, pfant
   !---
   logical :: config_opa = .true.               ! option --opa
-  character*64 :: config_fn_opa = 'modeles.opa' ! option: --fn_opa
+  character(FN_SIZE) :: config_fn_opa = 'modeles.opa' ! option: --fn_opa
 
 
   !
   ! hydro2, pfant
   !
-  character*64 :: &
+  character(FN_SIZE) :: &
    config_fn_hmap    = 'hmap.dat', &  ! option: --fn_hmap
    config_fn_absoru2 = 'absoru2.dat'  ! option: --fn_absoru2
   real*8 :: config_llzero = -1 ! option: --llzero
@@ -2865,7 +2868,7 @@ module config
   !---
   ! innewmarcs-only
   !---
-  character*64 :: &
+  character(FN_SIZE) :: &
    config_fn_modgrid = 'grid.mod', &        ! option: --fn_modgrid
    config_fn_moo = 'grid.moo'               ! option: --fn_moo
   logical :: config_allow = .false.         ! option: --allow
@@ -2890,7 +2893,7 @@ module config
   !---
   ! pfant-only
   !---
-  character*64 :: &
+  character(FN_SIZE) :: &
    config_fn_partit        = 'partit.dat',        & ! option: --fn_partit
    config_fn_abonds        = 'abonds.dat',        & ! option: --fn_abonds
    config_fn_atoms         = 'atoms.dat',         & ! option: --fn_atoms
@@ -2906,7 +2909,7 @@ module config
   !---
   ! pfant and convmol
   !---
-  character*64 :: &
+  character(FN_SIZE) :: &
    config_fn_dissoc        = 'dissoc.dat',        & ! option: --fn_dissoc
    config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
    config_fn_mollist       = 'mollist.dat'          ! option: --fn_mollist
@@ -2924,7 +2927,7 @@ module config
   real*8 :: &
    config_fwhm = -1, &               ! option: --fwhm
    config_pat = -1                   ! option: --pat
-  character*64 :: &
+  character(FN_SIZE) :: &
     config_fn_flux = '?', &          ! option: --fn_flux
     config_fn_cv = '?'               ! option: --fn_cv
 
@@ -5555,8 +5558,9 @@ contains
       if (skip_row(i)) then
         read(myunit,*)   ! skips comment row
       else
-        read(myunit, *) temp
+        read(myunit, '(a)') temp
 
+        ! blank rows are also ignored
         if (len(trim(adjustl(temp))) .gt. 0) then
           mollist_n = mollist_n+1
           mollist_filenames(mollist_n) = trim(adjustl(temp))
@@ -7474,19 +7478,22 @@ module dissoc
   real*8, target, dimension(MAX_MODELES_NTOT, MAX_DISSOC_NMETAL) :: dissoc_xp
 
 
+  !#NOXIG Leave this hashtag, as it marks special case treatment that started with oxygen
   ! They will be pointer targets at molecules::point_ppa_pb()
   real*8, public, dimension(MAX_MODELES_NTOT) ::  &
-   sat4_pph, &  ! pressure: hydrogen (used in kapmol_())
-   sat4_po      ! pressure: oxygen (used in popadelh())
+   sat4_pph, &  ! pressure: hydrogen
+   sat4_po,  &  ! pressure: oxygen
+   sat4_p12c    ! pressure: 12carbon
 
+
+   !#NOXIG
 !  ! They will be pointer targets at molecules::point_ppa_pb()
 !  real*8, public, target, dimension(MAX_MODELES_NTOT) ::  &
 !   sat4_pph,  & ! pressure: hydrogen
-!   sat4_ppc2, & ! pressure: 12carbon
+!   sat4_p12c, & ! pressure: 12carbon
 !   sat4_pn,   & ! pressure: nytrogen
-!   sat4_pc13, & ! pressure: 13carbon
+!   sat4_p13c, & ! pressure: 13carbon
 !   sat4_pmg,  & ! pressure: magnesium
-!   sat4_po,   & ! pressure: oxygen
 !   sat4_pti,  & ! pressure: titanium
 !   sat4_pfe     ! pressure: iron
 
@@ -7691,15 +7698,17 @@ contains
     !  write(*,'(7e11.4)') (dissoc_xp(itx,i),itx=1,modele%ntot)
     !end do
 
+
     ! These pressure vectors are used explicitly in calculations special cases
+    ! #NOXIG This hashtag identifies a solution that is spread around the code
     iz = find_atomic_symbol_dissoc('H ')
     sat4_pph = dissoc_xp(:, iz)
     iz = find_atomic_symbol_dissoc('O ')
     sat4_po = dissoc_xp(:, iz)
+    iz = find_atomic_symbol_dissoc('C ')
+    sat4_p12c = dissoc_xp(:, iz)
 
 
-!20160920-    iz = find_atomic_symbol_dissoc('C ')
-!20160920-    sat4_ppc2 = dissoc_xp(:, iz)
 !20160920-    iz = find_atomic_symbol_dissoc('N ')
 !20160920-    sat4_pn = dissoc_xp(:, iz)
 !20160920-    iz = find_atomic_symbol_dissoc('O ')
@@ -7856,7 +7865,7 @@ contains
 
     ! Update: kept as-was
     ! *Note* m_p was being divided by 100 over and over at each j (molecule).
-    ! This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being done.
+    ! This division has been taken out of loop, but is still an issue, since it is unclear *why* this division is being made.
     ! ISSUE ask blb being divided by 100 is still an issue
     ! do m =1,MAX_DISSOC_Z
     !   m_p(m)=1.0e-2*m_p(m)
@@ -7875,6 +7884,18 @@ contains
 
     spnion = 0.0
     do 1041 j=1,dissoc_nmol
+
+      ! 20230630 Gotta check something:
+      ! For each molecule here, what happens with this m_p?
+      ! Result: Actually, code 1047 is apparently being skipped, so although it looks suspicious, for the moment there is
+      !         no influence ... but I will print a warning there and keep it for a while
+
+      ! TODO cleanup
+      ! write(*,*) 'die(): Molecule: ', dissoc_mol(j)
+      ! write(*,*) 'die(): m_p(1:10) = '
+      ! write(*, '(10e10.5)') (m_p(i),i=1,10)
+
+
       mmaxj  = dissoc_mmax(j)
       pmoljl = -m_apmlog(j)
       do 1042 m =1,mmaxj
@@ -7886,7 +7907,13 @@ contains
       if(pmoljl - (pglog+1.0) ) 1046,1046,1047
 
       1047 continue
+
+      ! 20230630 Installing this warning here for a while to see if this code ever gets executed
+      ! TODO cleanup
+      call log_warning("Dividing m_p by 100")
+
       do 1048 m =1,mmaxj
+
         nelemj = dissoc_nelem(m,j)
         natomj = dissoc_natom(m,j)
         pmoljl = pmoljl + float(natomj)*(-2.0)
@@ -7894,6 +7921,7 @@ contains
         ! For each j, divides all used elements in m_p by 100.
         ! This is necessary for convergence of the molecular equilibrium.
         m_p(nelemj) = 1.0e-2*m_p(nelemj)
+
 
       1048 continue
 

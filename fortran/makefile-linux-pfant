@@ -3,12 +3,10 @@
 #
 
 SRCS_f90d1 = \
-readers.f90 \
 pfant.f90 \
 pfantlib.f90 
 
 OBJS_f90d1 = \
-readers.o \
 pfant.o \
 pfantlib.o 
 
@@ -41,8 +39,6 @@ clean :
 	rm -f $(EXE_DIR)$(EXE)
 
 # Dependencies of files
-readers.o: \
-    readers.f90
 pfant.o: \
     pfant.f90 \
     pfantlib.o
