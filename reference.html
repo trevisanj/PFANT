@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reference &mdash; PFANT 23.05.11 documentation</title>
+  <title>Reference &mdash; PFANT 23.07.27 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -13,8 +13,10 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,18 +31,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            PFANT
+            <a href="index.html" class="icon icon-home"> PFANT
           </a>
               <div class="version">
-                23.05.11
+                23.07.27
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -88,7 +86,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
       <li class="breadcrumb-item active">Reference</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
@@ -108,7 +106,7 @@ and the files and file types involved.</p>
 <figure class="align-center" id="id2">
 <img alt="_images/workflow-long.png" class="bordered" src="_images/workflow-long.png" />
 <figcaption>
-<p><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 9 </span><span class="caption-text">– Spectral synthesis pipeline - Fortran programs (boxes) and their input/output files.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -195,7 +193,7 @@ will be ignored and all files listed in the LOMLLF file will be loaded instead.<
 <figure class="align-center" id="id3">
 <span id="figgrid"></span><img alt="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" class="bordered" src="_images/grid.moo_--_asalog-teff-glog_scatterplot.png" />
 <figcaption>
-<p><span class="caption-number">Figure 9 </span><span class="caption-text">– 3D grid of atmospheric models. The scatterplot in the figure shows the
+<p><span class="caption-number">Figure 10 </span><span class="caption-text">– 3D grid of atmospheric models. The scatterplot in the figure shows the
 (teff, glog, [Fe/H]) values for all existing atmospheric models in the grid (this is the
 file “grid.moo” provided). The uppermost point represents the Sun.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
@@ -227,7 +225,7 @@ file “grid.moo” provided). The uppermost point represents the Sun.</span><a 
 <figure class="align-center" id="id4">
 <img alt="_images/modeles.png" class="bordered" src="_images/modeles.png" />
 <figcaption>
-<p><span class="caption-number">Figure 10 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 11 </span><span class="caption-text">– Atmospheric model information (Sun). <strong>(A)</strong> data in file modeles.mod; <strong>(B)</strong>, <strong>(C)</strong> data in modeles.opa</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p><code class="docutils literal notranslate"><span class="pre">innewmarcs</span></code> creates two separate files (Table 4). They are created
@@ -243,7 +241,7 @@ file “hmap.dat”).</p>
 <figure class="align-center" id="id5">
 <span id="figalpha"></span><img alt="_images/thalpha.png" class="bordered" src="_images/thalpha.png" />
 <figcaption>
-<p><span class="caption-number">Figure 11 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 12 </span><span class="caption-text">– Example of H-alpha line profile calculated by <code class="docutils literal notranslate"><span class="pre">hydro2</span></code>.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -271,7 +269,7 @@ file “hmap.dat”).</p>
 <figure class="align-center" id="id6">
 <img alt="_images/spec-cont-norm.png" class="bordered" src="_images/spec-cont-norm.png" />
 <figcaption>
-<p><span class="caption-number">Figure 12 </span><span class="caption-text">– plots showing three <code class="docutils literal notranslate"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
+<p><span class="caption-number">Figure 13 </span><span class="caption-text">– plots showing three <code class="docutils literal notranslate"><span class="pre">pfant</span></code> output files for the [4000, 7000] angstrom region:
 calculated spectrum; continuum; normalized spectrum. The common prefix “flux” can be changed
 in file “main.dat” to give a set of files with different names.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </figcaption>

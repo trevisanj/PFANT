@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conversion of molecular lines lists &mdash; PFANT 23.05.11 documentation</title>
+  <title>Conversion of molecular lines lists &mdash; PFANT 23.07.27 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -13,8 +13,10 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,18 +31,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            PFANT
+            <a href="index.html" class="icon icon-home"> PFANT
           </a>
               <div class="version">
-                23.05.11
+                23.07.27
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -91,7 +89,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
       <li class="breadcrumb-item active">Conversion of molecular lines lists</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/convmol.rst.txt" rel="nofollow"> View page source</a>
@@ -298,25 +296,25 @@ This operation only needs to be carried out once in your local directory</p></li
 <figure class="align-center" id="id16">
 <span id="moldbed0"></span><img alt="_images/moldbed0.png" src="_images/moldbed0.png" />
 <figcaption>
-<p><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 14 </span><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id17">
 <span id="convmol0"></span><img alt="_images/convmol0.png" src="_images/convmol0.png" />
 <figcaption>
-<p><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 15 </span><span class="caption-text">– First tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id18">
 <span id="convmol1"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
 <figcaption>
-<p><span class="caption-text">– Second tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 16 </span><span class="caption-text">– Second tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id19">
 <span id="id13"></span><img alt="_images/convmol1.png" src="_images/convmol1.png" />
 <figcaption>
-<p><span class="caption-text">– Third tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 17 </span><span class="caption-text">– Third tab of <code class="docutils literal notranslate"><span class="pre">convmol.py</span></code></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -426,6 +424,127 @@ The HITRAN2016 Molecular Spectroscopic Database, J. Quant. Spectrosc. Radiat. Tr
 doi:10.1016/j.jqsrt.2017.06.038.</p>
 </div>
 </div>
+<p>Horas - Descrição
+10,5 - Análise preliminar
+4,5 - Implementação da leitura separada de linelists moleculares no PFANT
+6,0 - Conversão de linelist .bsyn –&gt; PFANT
+10,5 - Conversão de linelist HITRAN –&gt; PFANT
+4,0 - Comparações entre linelists convertidos e anterior (Melendez 1998)
+19,0 - Testes e relatórios
+4,0 - Correção de problemas em códigos relacionados ao Turbospectrum (B. Plez)
+4,0 - Atualização de documentacao (<a class="reference external" href="https://trevisanj.github.io/PFANT">https://trevisanj.github.io/PFANT</a>)</p>
+<p>ISSN
+Título
+Área de Avaliação
+Classificação
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ADMINISTRAÇÃO PÚBLICA E DE EMPRESAS, CIÊNCIAS CONTÁBEIS E TURISMO
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ARTES
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+BIODIVERSIDADE
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+BIOTECNOLOGIA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+CIÊNCIAS AMBIENTAIS
+B2
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+CIÊNCIAS BIOLÓGICAS I
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+CIÊNCIAS BIOLÓGICAS II
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+CIÊNCIAS DA RELIGIÃO E TEOLOGIA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+DIREITO
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+EDUCAÇÃO
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+EDUCAÇÃO FÍSICA
+B5
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ENGENHARIAS I
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ENGENHARIAS II
+B5
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ENGENHARIAS III
+B5
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ENSINO
+B1
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+FARMÁCIA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+GEOCIÊNCIAS
+B5
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+GEOGRAFIA
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+HISTÓRIA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+INTERDISCIPLINAR
+B3
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+MEDICINA II
+B5
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+NUTRIÇÃO
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+PLANEJAMENTO URBANO E REGIONAL / DEMOGRAFIA
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+PSICOLOGIA
+B4
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+QUÍMICA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+SOCIOLOGIA
+C
+1678-0701
+EDUCAÇÃO AMBIENTAL EM AÇÃO
+ZOOTECNIA / RECURSOS PESQUEIROS
+C</p>
 </section>
 </section>
 
