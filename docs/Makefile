@@ -18,3 +18,11 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+
+
+
+
+
+DHAMMA GIRI, MAHARASHTRA, ÍNDIA
+PRIMEIRO CENTRO DE MEDITAÇÃO VIPASSANA 1976
