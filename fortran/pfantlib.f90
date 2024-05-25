@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '23.7.25.1'
+    v = '24.5.25.m'
   end
 
   ! Displays welcome message
@@ -4657,8 +4657,9 @@ contains
 
   integer function get_moo_num_records(path_to_file)
     character(len=*), intent(in) :: path_to_file
-    integer :: size
+    integer*8 :: size
     inquire(FILE=path_to_file, SIZE=size)
+    write(*,*) 'WTFFFFFFFFFFFFFFFFFFFFFF ', size
     get_moo_num_records = size/MOO_RECL
   end
 
@@ -4679,12 +4680,14 @@ contains
     ! Variable used to skip a few characters
     character bid(MOD_RECL)
 
-
-    num_rec = get_moo_num_records(path_to_file)
-    allocate(recs(num_rec))
-
     ! this logging message is important in case of errors to know which file it was
     call log_info('read_moo(): reading file '''//trim(path_to_file)//'''...')
+
+    num_rec = get_moo_num_records(path_to_file)
+
+    call log_info('read_moo(): number of records: '//int2str(num_rec))
+    allocate(recs(num_rec))
+
 
     open(newunit=myunit, form='unformatted', access='stream',status='old', file=path_to_file)
     do iid = 1, num_rec
