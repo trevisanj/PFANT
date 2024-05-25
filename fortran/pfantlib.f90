@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.5.25.m'
+    v = '24.5.25.n'
   end
 
   ! Displays welcome message
@@ -4659,7 +4659,6 @@ contains
     character(len=*), intent(in) :: path_to_file
     integer*8 :: size
     inquire(FILE=path_to_file, SIZE=size)
-    write(*,*) 'WTFFFFFFFFFFFFFFFFFFFFFF ', size
     get_moo_num_records = size/MOO_RECL
   end
 

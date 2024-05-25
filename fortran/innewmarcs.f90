@@ -155,7 +155,7 @@ contains
     ! 1D sequential indexes, i.e., valid indexes of glogs/teffs/asalogs
     integer, intent(out) :: indexes(8)
     ! # These variables will be first filled in, then used in calculations
-    integer, parameter :: MAX_NG = 20, MAX_NT = 20, MAX_NA = 20
+    integer, parameter :: MAX_NG = 200, MAX_NT = 200, MAX_NA = 200
     ! Number of different asalog's
     integer n_asalogs
     ! Number of different teffs for each asalog
@@ -183,6 +183,11 @@ contains
     do iid = 1, num_rec
       if (last_asalog .ne. asalogs(iid)) then
         ia = ia+1
+
+        if (ia > MAX_NA) then
+            call log_and_halt('Number of different asalogs is greater than MAX_NA='//int2str(MAX_NA))
+        end if
+
         it = 1
         ig = 1
         last_asalog = asalogs(iid)
@@ -192,12 +197,22 @@ contains
         n_teffs(ia) = it
       elseif (last_teff .ne. teffs(iid)) then
         it = it+1
+
+        if (it > MAX_NT) then
+            call log_and_halt('Number of different teffs is greater than MAX_NT='//int2str(MAX_NT))
+        end if
+
+
         ig = 1
         last_teff = teffs(iid)
         v_teffs(it, ia) = teffs(iid)
         n_teffs(ia) = it
       else
         ig = ig+1
+
+        if (ig > MAX_NG) then
+            call log_and_halt('Number of different glogs is greater than MAX_NG='//int2str(MAX_NG))
+        end if        
       end if
       v_glogs(ig, it, ia) = glogs(iid)
       v_indexes(ig, it, ia) = iid
