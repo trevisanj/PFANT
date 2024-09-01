@@ -82,14 +82,33 @@ program innewmarcs
 
   ! # Finds and prepares records to use
   call locatab(main_glog, main_teff, main_asalog, glogs, teffs, asalogs, xs, ys, zs, ii)
+
+  call log_info('Interpolation map:')
+  call log_info('------------------')
+
+  call log_info('    rr1  \_  aa  \')
+  call log_info('    rr2  /        |- ee')
+  call log_info('    rr3  \_  bb  /        \')
+  call log_info('    rr4  /                 |-  output model')
+  call log_info('    rr5  \_  cc  \        /')
+  call log_info('    rr6  /        |- ff')
+  call log_info('    rr7  \_  dd  /')   
+  call log_info('    rr8  /')
+  
+
+  call log_info('Models chosen (rr1 to rr8): ['//int2str(ii(1))//', '//int2str(ii(2))//', '&
+    //int2str(ii(3))//', '//int2str(ii(4))//', '//int2str(ii(5))//', '&
+    //int2str(ii(6))//', '//int2str(ii(7))//', '//int2str(ii(8))//']')
+
   ! Separates 8 records
   do i = 1, 8
     rr(i) = recs(ii(i))
-! todo cleanup    print *, 'ntot', rr(i)%ntot
+    ! todo cleanup print *, 'ntot +++ ', rr(i)%ntot
   end do
   call align_log_tau_ross(rr)
   ! Converts nh, pe, pg to log
   ntot = rr(1)%ntot
+    ! todo cleanup print *, 'ntottttttttttt +++ ', ntot
   do i = 1, 8
     rr(i)%nh(1:ntot) = log10(rr(i)%nh(1:ntot))
     rr(i)%pe(1:ntot) = log10(rr(i)%pe(1:ntot))
@@ -103,11 +122,21 @@ program innewmarcs
   call interpol_two_models(glogs(ii(7)), glogs(ii(8)), main_glog, rr(7), rr(8), dd)
   call interpol_two_models(teffs(ii(1)), teffs(ii(3)), main_teff, aa, bb, ee)
   call interpol_two_models(teffs(ii(5)), teffs(ii(7)), main_teff, cc, dd, ff)
+
+
+  ! todo cleanup print *, 'zz ntot 0', zz%ntot
+
   zz = rr(1)  ! copies scalar information such as ntot, asalalf, nhe, tit, tiabs to result
-  ! todo cleanup print *, 'zz ntot', zz%ntot
+
+  ! todo cleanup print *, 'zz ntot 1', zz%ntot
+
   call interpol_two_models(asalogs(ii(1)), asalogs(ii(5)), main_asalog, ee, ff, zz)
 
+  ! todo cleanup
+  ! print *, 'zz ntot 2', zz%ntot
+
   ! # Final adjustments
+  zz%ntot = ntot  ! for some reason, ntot is not reaching here with optimization -O2
   zz%glog = main_glog
   zz%teff = main_teff
   zz%asalog = main_asalog
@@ -155,7 +184,7 @@ contains
     ! 1D sequential indexes, i.e., valid indexes of glogs/teffs/asalogs
     integer, intent(out) :: indexes(8)
     ! # These variables will be first filled in, then used in calculations
-    integer, parameter :: MAX_NG = 200, MAX_NT = 200, MAX_NA = 200
+    integer, parameter :: MAX_NG = 100, MAX_NT = 100, MAX_NA = 100
     ! Number of different asalog's
     integer n_asalogs
     ! Number of different teffs for each asalog
@@ -171,7 +200,7 @@ contains
     ! 1D sequential index of each point in the grid
     integer v_indexes(MAX_NG, MAX_NT, MAX_NA)
     ! # Other variables
-    integer num_rec, iid, it, ia, ig, i1, i2, n, i
+    integer num_rec, iid, it, ia, ig, i1, i2, i
     real*8 last_teff, last_asalog
 
     num_rec = size(glogs)

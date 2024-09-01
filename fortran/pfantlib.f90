@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.5.25.n'
+    v = '24.09.01.a'
   end
 
   ! Displays welcome message
@@ -1895,6 +1895,7 @@ contains
      f(:)    ! f(x)-values
     real*8 t0, t1, t2, u0, u1, u2, a, b, c, d, e
     integer i, j
+    i = 0
 
     call assert_le(n, size(x), 'ft()', 'n', 'size(x)')
     call assert_le(n, size(f), 'ft()', 'n', 'size(f)')
@@ -3747,7 +3748,6 @@ contains
     integer myunit
     integer i, inum_obsolete
     logical ecrit_obsolete
-    real*8 temp
 
     ! this logging message is important in case of errors to know which file it was
     call log_info('read_main(): reading file '''//trim(path_to_file)//'''...')
@@ -4006,7 +4006,7 @@ contains
     ! The default behaviour is to halt the program.
     logical, intent(in), optional :: flag_ignore
     character(:), allocatable :: symbol_ ! formatted symbol
-    integer :: i, j
+    integer :: i
     logical :: flag_ignore_
 
     flag_ignore_ = .false.
@@ -4528,8 +4528,7 @@ contains
   subroutine read_modele(path_to_file)
     character(len=*) :: path_to_file
     real*8 ddt, ddg, ddab
-    integer i, &
-            id_
+    integer i
     type(moo_record) :: r
 
     ! this logging message is important in case of errors to know which file it was
@@ -4589,8 +4588,10 @@ contains
   subroutine write_modele(path_to_file, r)
     character(len=*), intent(in) :: path_to_file
     type(moo_record), intent(in) :: r
-    integer k
     call open_mod_file(path_to_file, 'replace')
+
+    ! todo cleanup write(*,*) 'write_modele() ntot', r%ntot
+
     call write_mod_record(unit_mod, 1, r)
     write(unit_mod, rec=2) 9999
     call close_mod_file()
@@ -4608,11 +4609,11 @@ contains
 
     k = 1
     do n = 1,r%ntot
-      a(k)   = r%nh(n)
-      a(k+1) = r%teta(n)
-      a(k+2) = r%pe(n)
-      a(k+3) = r%pg(n)
-      a(k+4) = r%log_tau_ross(n)
+      a(k)   = sngl(r%nh(n))
+      a(k+1) = sngl(r%teta(n))
+      a(k+2) = sngl(r%pe(n))
+      a(k+3) = sngl(r%pg(n))
+      a(k+4) = sngl(r%log_tau_ross(n))
       k = k+5
     end do
 
@@ -4655,7 +4656,7 @@ contains
   !=======================================================================================
   ! Returns number of records in file
 
-  integer function get_moo_num_records(path_to_file)
+  integer*8 function get_moo_num_records(path_to_file)
     character(len=*), intent(in) :: path_to_file
     integer*8 :: size
     inquire(FILE=path_to_file, SIZE=size)
@@ -4668,7 +4669,7 @@ contains
   subroutine read_moo(path_to_file, recs)
     character(len=*), intent(in) :: path_to_file
     type(moo_record), allocatable :: recs(:)
-    integer myunit, num_rec,  iid, i, j, nwav
+    integer myunit, num_rec,  iid, i
     real*4 teff, glog, asalog, asalalf, nhe
     real*4, dimension(MAX_MODELES_NTOT) :: nh, teta, pe, pg, log_tau_ross
     real*4 swave
@@ -4699,6 +4700,8 @@ contains
        nhe,     &
        recs(iid)%tit,     &
        recs(iid)%tiabs
+
+      ! todo cleanup write(*,*) 'iiiiiiii', iid, 'ntot', recs(iid)%ntot
 
       if (recs(iid)%ntot .ne. MOO_NTOT) &
         call log_and_halt('read_moo(): (record #'//int2str(iid)//') Number of depth layers must be '//&
@@ -4809,7 +4812,6 @@ contains
     character(len=*), intent(in) :: path_to_file
     type(moo_record), intent(in) :: r
     integer myunit, i, k
-    character mcode*4
     real*8, dimension(MOO_NWAV) :: abs, sca
 
     open(newunit=myunit,file=path_to_file, status='replace')
@@ -5008,7 +5010,7 @@ contains
       if (flag_inside) then
       ! this logging message is important in case of errors to know which file it was
       call log_info('read_filetoh(): reading file '''//trim(fn_now)//'''...')
-      open(err=111, unit=myunit,file=fn_now,status='old')
+      open(err=111, newunit=myunit, file=fn_now, status='old')
 
         i = i+1
 
@@ -6304,9 +6306,6 @@ module absoru
 
   real*8, dimension(MAX_ABSORU2_NM) :: au_znu  ! ?doc?
 
-
-  real*8 :: at_zzk(11,2) ! Calculated by athyhe()
-
 contains
 
   !-------------------------------------------------------------------------------
@@ -6342,6 +6341,13 @@ contains
     integer i, ilt, ith, m, min, mm, mmm, nset, kkk
 
     data dif /5.799e-13,8.14e-13,1.422e-6,1.28e-6,2.784,1.61/
+
+    scath(1) = 0
+    scath(2) = 0
+
+    ! prevent maybe-uninitialized
+    ith = 0  
+    unit = 0
 
     !call log_debug(ENTERING//'absoru_()')
 
@@ -6391,6 +6397,7 @@ contains
     ! SCATH(1)=DIFFUSION DE H
     ! SCATH(2)=DIFFUSION DE H2
     9002 continue
+
     do 9023 i=1,2
       if (i.eq.2) go to 9020
       if (wl.gt.1026.0) go to 9021
@@ -6670,6 +6677,8 @@ contains
     integer, intent(in) :: callam, & ! ?doc?
      calth  ! ?doc?
 
+    hcbktm = 0.  ! prevent maybe-uninitialized warning
+
     if (calth.eq.2) go to 1001
 
     hcbktm  = 0.2854306e-3*th*1.0e8
@@ -6870,6 +6879,10 @@ contains
     jhe  = 0
     jhep = 0
     jhem = 0
+    bhe = 0
+    bhem = 0
+    g3 = 0
+    zlamin = 0
 
     if (callam.eq.1) indth = 0
     jhyt = 1
@@ -8254,7 +8267,7 @@ contains
     real*8 t5040, psi
     real*8 csc
     real*8 fe, do_, mm, am, bm, ua, ub, te, cro, rm
-    real*8 qv, gv, bv, dv, facto, j2l
+    real*8 qv, gv, bv, dv, facto
     integer j_set, l, l_ini, l_fin, n, nnv, molidx, iz0, iz1
 
     real*8, parameter :: C2 = 8.8525E-13

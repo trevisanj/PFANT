@@ -56,7 +56,7 @@ module nulbad_calc
 
   ! x_* values may come either from command line or *main file*
   real*8 :: x_fwhm, x_pat
-  character*128 :: x_fn_flux, x_fn_cv, x_flprefix
+  character*255 :: x_fn_flux, x_fn_cv, x_flprefix
 contains
 
   !=======================================================================================

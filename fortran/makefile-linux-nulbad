@@ -17,7 +17,7 @@ EXE_DIR = bin/
 EXE = nulbad
 FC = gfortran
 IDIR = 
-CFLAGS = -Wall -O2  -J$(OBJS_DIR) $(IDIR)
+CFLAGS = -Wall -O2 -J$(OBJS_DIR) $(IDIR)
 LFLAGS = -s 
 LIBS = 
 

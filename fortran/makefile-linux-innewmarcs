@@ -17,8 +17,8 @@ EXE_DIR = bin/
 EXE = innewmarcs
 FC = gfortran
 IDIR = 
-CFLAGS = -Wall -O2  -J$(OBJS_DIR) $(IDIR)
-LFLAGS = -s 
+CFLAGS = -Wall -O2 -J$(OBJS_DIR) $(IDIR)
+LFLAGS = -s
 LIBS = 
 
 VPATH = $(SRC_DIR_f90d1):$(OBJS_DIR)

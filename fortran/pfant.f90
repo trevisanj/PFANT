@@ -208,7 +208,7 @@ contains
 
   subroutine synthesis_()
     ! Units for output files
-    integer unit_spec, unit_cont, unit_norm, unit_lines, unit_log
+    integer unit_spec, unit_cont, unit_norm  ! todo cleanup , unit_lines, unit_log
     real*8 fn(MAX_DTOT)
     integer i, i1, i2, k, d, &
      ikey,    & ! ikey-th aint-large calculation interval
