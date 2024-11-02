@@ -4549,17 +4549,19 @@ contains
     !  call log_and_halt(lll)
     ! end if
 
+    ! 20241101 I changed these following halt conditions to warnings only
+
     if(ddt .gt. 1.0) then
       write(lll,*) 'read_modele(): abs(main_teff-(model teff)) = ', ddt, ' > 1.0'
-      call log_and_halt(lll)
+      call log_warning(lll)
     end if
     if(ddg .gt. 0.01) then
       write(lll,*) 'read_modele(): abs(main_glog-(model glog)) = ', ddg, ' > 0.01'
-      call log_and_halt(lll)
+      call log_warning(lll)
     end if
     if(ddab .gt. 0.01) then
       write(lll,*) 'read_modele(): abs(main_asalog-(model asalog)) = ', ddab, ' > 0.01'
-      call log_and_halt(lll)
+      call log_warning(lll)
     end if
 
     ! ready to copy (& convert) variables to their counterparts

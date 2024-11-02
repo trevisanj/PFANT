@@ -1287,7 +1287,9 @@ program pfant
   end if
 
   if (abs(modele%asalog-main_afstar) > 0.01) then
-    call log_and_halt('asalog from model ('//real82str(modele%asalog, 2)//&
+    ! 20241101 changed the following halt condition to warning only
+
+    call log_warning('asalog from model ('//real82str(modele%asalog, 2)//&
      ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
   end if
 
