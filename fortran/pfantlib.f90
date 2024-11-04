@@ -2703,7 +2703,7 @@ contains
           end do
         end if
         write (unit, '(4x,a)') descr_till_end(c1:c2)
-        c1 = c2+2
+        c1 = c2+1
       end do
 
       ! Discards part of descr_till_end
@@ -2915,7 +2915,7 @@ module config
    config_fn_molecules     = 'molecules.dat',     & ! option: --fn_molecules
    config_fn_mollist       = 'mollist.dat'          ! option: --fn_mollist
   ! gotta know when fn_mollist has been explicitly set in order to give error if it does not exist
-  logical :: config_set_fn_mollist = .false. 
+  logical :: config_set_fn_mollist = .false.
 
   !---
   ! nulbad-only
@@ -3181,8 +3181,8 @@ contains
 
     ! better to group the opacity-related options
     call add_option('ip', 'opa',' ', .true., 'T/F', logical2str(config_opa), &
-     'Whether or not to include MARCS opacity coefficients (absorption and scattering)<br>'//&
-     IND//'in the continuum')
+     'Whether or not to include MARCS opacity coefficients (absorption and scattering) '//&
+     'in the continuum')
     call add_option('p', 'abs',' ', .true., 'T/F', logical2str(config_abs), &
      'Whether or not to include MARCS *absorption* coefficients in the continuum.<br>'//&
      'This option only has effect if --opa is True.')
@@ -3191,7 +3191,7 @@ contains
      'This option only has effect if --opa is True.')
     call add_option('p', 'absoru',' ', .true., 'T/F', logical2str(config_absoru), &
      'Whether or not to include coefficients calculated by subroutine absoru()<br>'//&
-     IND//'in the continuum.')
+     'in the continuum.')
 
     !
     ! pfant, convmol
@@ -4592,8 +4592,6 @@ contains
     type(moo_record), intent(in) :: r
     call open_mod_file(path_to_file, 'replace')
 
-    ! todo cleanup write(*,*) 'write_modele() ntot', r%ntot
-
     call write_mod_record(unit_mod, 1, r)
     write(unit_mod, rec=2) 9999
     call close_mod_file()
@@ -4772,7 +4770,7 @@ contains
 
   subroutine read_opa(path_to_file)
     character(len=*), intent(in) :: path_to_file
-    integer myunit, i, k
+    integer myunit, i, k, opa_ntot
     character mcode*4
 
     ! this logging message is important in case of errors to know which file it was
@@ -4780,10 +4778,16 @@ contains
 
     open(newunit=myunit,file=path_to_file, status='old')
 
-    read(myunit, '(1x,a4,i5,f10.0)') mcode, modele%ntot, modele%swave
+    read(myunit, '(1x,a4,i5,f10.0)') mcode, opa_ntot, modele%swave
     ! Validates "magic characters"
     if (mcode .ne. OPA_MAGIC_CHARS) &
       call log_and_halt('Invalid opacities file: "'//trim(path_to_file)//'"')
+
+    if (modele%ntot .NE. opa_ntot) then
+        call log_and_halt("Number of layers in opacity file ("//int2str(opa_ntot)//&
+          ") does not match that of model ("//int2str(modele%ntot)//")")
+    end if
+
     call assert_le(modele%ntot, MAX_MODELES_NTOT, 'read_opa()', 'ndp', 'MDP')
 
     read(myunit, *) modele%nwav
@@ -5026,11 +5030,11 @@ contains
         read(myunit,*) filetoh_jmax(i)
         read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
         read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
-        
+
 
         ! todo cleanup
         ! write(14, '(53e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
-        
+
         close(myunit)
 
         ! Takes first lambda of file as a reference
@@ -5639,7 +5643,7 @@ module file_molecules
   ! Total number of spectral line, counting all molecules
   integer km_lines_total
   ! Global counting of sets-of-lines
-  integer km_j_set 
+  integer km_j_set
 
   character*160 km_titm
   integer, parameter :: SIZE_TITULO=4096*4
@@ -5701,7 +5705,7 @@ contains
      j_set,   &
      j_line, &  ! Molecule-wise lines counting
      nv_in_titulo, &
-     temp 
+     temp
 
     character(len=SIZE_TITULO) :: sections(3)
     character(len=2) :: iz  ! branch (ignored here for all effects)
@@ -5855,7 +5859,7 @@ contains
       ! BLB: CRO - delta Kronecker (2-delta_{Sigma, 0})
       ! BLB:       delta_{Sigma, 0} = 0 for Sigma transitions
       ! BLB:                          1 for non-Sigma transitions
-      ! JT: According to the PASA paper, it is actually: 0 for non-Sigma and 
+      ! JT: According to the PASA paper, it is actually: 0 for non-Sigma and
       ! JT:                                              1 for Sigma transitions
 
       read(myunit,*) km_fe(molidx), km_do(molidx), km_mm(molidx), &
@@ -5897,7 +5901,7 @@ contains
       read(myunit,*) (km_fact(i, molidx),i=1,nnv)
 
       ! 2023-04-06 The following got me confused, so I decided to comment
-      ! This is weird but makes sense, since the formula above does not match 
+      ! This is weird but makes sense, since the formula above does not match
       ! dv = (D_e + beta_e * v_lo5) * 1.0e+06 (pyfant and PASA paper)
       ! (the difference is precisely this 1e6 factor)
       do i = 1,nnv
@@ -6348,7 +6352,7 @@ contains
     scath(2) = 0
 
     ! prevent maybe-uninitialized
-    ith = 0  
+    ith = 0
     unit = 0
 
     !call log_debug(ENTERING//'absoru_()')
@@ -8039,7 +8043,7 @@ module filters
   implicit none
 
 
-  ! To limit calculations, all molecular lines will be calculated between 
+  ! To limit calculations, all molecular lines will be calculated between
   ! lc +- lc*KM_ALARGM_FACT, where lc is the center of the molecular line (Angstrom)
   !
   ! Example: line calculation interfal for:
@@ -8095,7 +8099,7 @@ module filters
   ! - single underscore
   ! - additional variable "gf", which equals 10**algf
   integer atoms_f_nblend ! ?doc?
-  character*2 atoms_f_elem(MAX_ATOMS_F_NBLEND) ! atomic symbol (right-alignes, uppercase)
+  character*2 atoms_f_elem(MAX_ATOMS_F_NBLEND) ! atomic symbol (right-aligned, uppercase)
   integer, dimension(MAX_ATOMS_F_NBLEND) :: &
    atoms_f_ioni ! ?doc?
   real*8, dimension(MAX_ATOMS_NBLEND) :: &
@@ -8323,10 +8327,10 @@ contains
             ! PC2003: default value for CSC does not exist physically
 
             ! TODO re-arrange this because CSC independs of n (atmospheric layer)
-            
-            
+
+
             ! (2*km_f_jj(l)+1)*
-            
+
             csc = exp(-H*C/KB*t5040*(te+gv+bv*(km_f_jj(l)+1)*km_f_jj(l)))*       &
                   (2.-cro)*(2.*km_f_jj(l)+1.)*                                   &
                   exp(H*C/KB*t5040*(dv*(km_f_jj(l)*(km_f_jj(l)+1))**2+2.*bv))

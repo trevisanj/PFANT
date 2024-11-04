@@ -802,6 +802,11 @@ contains
      kappa_opa, &    ! continuum absorption coefficient, origin MARCS website
      kappa_absoru    ! continuum absorption coefficient
 
+    ! todo cleanup (debugging)
+    integer :: local_atoms_f_nblend, local_modele_ntot
+    local_atoms_f_nblend = atoms_f_nblend
+    local_modele_ntot = modele%ntot
+
 
     kappa_opa = 0
     kappa_absoru = 0
@@ -850,6 +855,7 @@ contains
             kak = 0.
           else
             v = abs(ecar(k)*1.e-8/popadelh_delta(k,n))
+
             phi = hjenor(popadelh_a(k,n), v, popadelh_delta(k,n))
 
             if(atoms_f_elem(k) .eq. ' O') then
@@ -1212,6 +1218,18 @@ program pfant
   execonf_name = 'pfant'
   call config_init()
 
+  ! todo cleanup
+
+  ! debugging, dont forget to remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ! call log_warning('Dont forget to remove stuff in main pfant routine!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+  ! config_fn_molecules = "mghc2cnr_cn3ch13chtiog3tio.dat"
+  ! config_fn_atoms = "atom4070g.dat"
+  ! config_flprefix = "flbwb5-novo"
+  ! config_fn_modeles = "modele15.mod"
+  ! config_opa = .FALSE.
+
+!  config_no_atoms = .TRUE.
+
   !=====
   ! File reading
   !=====
@@ -1267,7 +1285,7 @@ program pfant
       do i = 1, mollist_n
         call read_molecules(mollist_filenames(i))
       end do
-    else  
+    else
       if (config_set_fn_mollist .and. len(trim(config_fn_mollist)) .gt. 0) then
         call log_and_halt('Explicitly informed --fn_mollist file '''//trim(config_fn_mollist)//''' does not exist!')
       end if
