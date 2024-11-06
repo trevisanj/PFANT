@@ -1,0 +1,11 @@
+[INFO    ] *********************************************************
+[INFO    ] *** a99 logging session started @ 2024-11-06 15:24:29 ***
+[INFO    ] *********************************************************
+[INFO    ] $ Logging to console $
+[INFO    ] $ Logging to file 'a99.log' $
+[INFO    ] AUTO LOAD: max file size: 277840
+[INFO    ] Imported collaborator package 'f311'
+[INFO    ] Imported collaborator package 'pyfant'
+[WARNING ] Failed to import package 'aosss
+[WARNING ] Failed to import package 'convmolworks
+[WARNING ] Failed to import package 'ariastro

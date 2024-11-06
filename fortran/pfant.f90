@@ -586,7 +586,7 @@ contains
     ! MARCS values are given in the former unit but we need the values in the latter unit,
     ! because absoru_() calculates kappa in unit cm^2/(hydrogen nucleus).
     !
-    ! This is calculates according to Gray 1st ed. formula (8-17)
+    ! This is calculated according to Gray 1st ed. formula (8-17)
     !
     ! We use the abundances given as part of the MARCS model because they were the ones
     ! used by the MARCS code to calculate the model.
@@ -891,18 +891,22 @@ contains
 
         ! opacities
 
-        if (config_abs .or. config_sca) then
-            kappa_opa = 0
-
+        kappa_opa = 0
+        if (config_opa .and. (config_abs .or. config_sca)) then
             if (config_abs) kappa_opa = kappa_opa+opa_abs(d, n)
             if (config_sca) kappa_opa = kappa_opa+opa_sca(d, n)
 
             kappa_opa = kappa_opa*opa_mass_factor
         end if
 
-        if (config_absoru) kappa_absoru = bk_kcd(d, n)
+        if (config_absoru) then
+            kappa_absoru = bk_kcd(d, n)
+        else
+            kappa_absoru = 0
+        end if
 
         kci(n) = kappa_absoru+kappa_opa  ! kappa for the continuous
+
         kap(n) = kappa+kappam+kci(n)     ! continuous + lines
       end do
 

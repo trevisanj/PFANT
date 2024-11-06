@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.11.04.a'
+    v = '24.11.06.a'
   end
 
   ! Displays welcome message
@@ -4792,6 +4792,10 @@ contains
 
     read(myunit, *) modele%nwav
     call assert_le(modele%nwav, MOO_NWAV, 'read_opa()', 'nwav', 'MWAV')
+    ! Checks agains invalid opacity file
+    if (modele%nwav .eq. 0) &
+      call log_and_halt('read_moo(): number of wavelengths (nwav) is 0 in opacity file')
+
 
     read(myunit, *) (modele%wav(i), i=1, modele%nwav)
 
@@ -4809,6 +4813,11 @@ contains
 
     ! Reads abundances
     read(myunit,*) modele%abund
+
+    ! Checks agains invalid opacity file
+    if (modele%abund(1) .eq. 0) &
+      call log_and_halt('read_moo(): abundance of hydrogen is 0 in opacity file')
+
   end
 
   !---------------------------------------------------------------------------------------
@@ -4821,6 +4830,11 @@ contains
     real*8, dimension(MOO_NWAV) :: abs, sca
 
     open(newunit=myunit,file=path_to_file, status='replace')
+
+
+
+    write(*,*) 'r%nwav=', r%nwav
+    write(*,*) 'Escrevendo OPAAAAAAAAAAAAAAAAAAAAAAAAA'
 
     write(myunit, '(1x,a4,i5,f10.2)') OPA_MAGIC_CHARS, r%ntot, r%swave
     write(myunit, '(i6)') r%nwav

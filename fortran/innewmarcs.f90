@@ -92,9 +92,9 @@ program innewmarcs
   call log_info('    rr4  /                 |-  output model')
   call log_info('    rr5  \_  cc  \        /')
   call log_info('    rr6  /        |- ff')
-  call log_info('    rr7  \_  dd  /')   
+  call log_info('    rr7  \_  dd  /')
   call log_info('    rr8  /')
-  
+
 
   call log_info('Models chosen (rr1 to rr8): ['//int2str(ii(1))//', '//int2str(ii(2))//', '&
     //int2str(ii(3))//', '//int2str(ii(4))//', '//int2str(ii(5))//', '&
@@ -241,7 +241,7 @@ contains
 
         if (ig > MAX_NG) then
             call log_and_halt('Number of different glogs is greater than MAX_NG='//int2str(MAX_NG))
-        end if        
+        end if
       end if
       v_glogs(ig, it, ia) = glogs(iid)
       v_indexes(ig, it, ia) = iid
@@ -370,7 +370,7 @@ contains
     do i = 1, num_rec
       tos(i) = recs(i)%log_tau_ross(1)
     end do
-! todo cleanup   
+! todo cleanup
 !    print *, 'TOSSSSSSSSSSSS', tos
     isup_ = isup(tos, num_rec, 1, num_rec)
     to0 = tos(isup_)
@@ -468,6 +468,13 @@ contains
     ! call interpol(ka, kb, reca%log_tau_ross, recb%log_tau_ross, recx%log_tau_ross)
 
     if (config_opa) then
+      ! copies "header" from first record
+      ! #todo check whether both records have same "header"
+      recx%nwav = reca%nwav
+      recx%swave = reca%swave
+      recx%wav = reca%wav
+      recx%abund = reca%abund
+
       call interpol(ka, kb, reca%rad, recb%rad, recx%rad)
       call interpol(ka, kb, reca%tau, recb%tau, recx%tau)
       call interpol(ka, kb, reca%t, recb%t, recx%t)
@@ -476,6 +483,9 @@ contains
       call interpol(ka, kb, reca%rho, recb%rho, recx%rho)
       call interpol(ka, kb, reca%xi, recb%xi, recx%xi)
       call interpol(ka, kb, reca%ops, recb%ops, recx%ops)
+
+      write(*,*) 'reca%nwav=', reca%nwav
+      write(*,*) '1111111111111111111111111111111111111111111111111111111'
 
       do j = 1, reca%nwav
         call interpol(ka, kb, reca%abs(j,:), recb%abs(j,:), recx%abs(j,:))
