@@ -103,12 +103,10 @@ program innewmarcs
   ! Separates 8 records
   do i = 1, 8
     rr(i) = recs(ii(i))
-    ! todo cleanup print *, 'ntot +++ ', rr(i)%ntot
   end do
   call align_log_tau_ross(rr)
   ! Converts nh, pe, pg to log
   ntot = rr(1)%ntot
-    ! todo cleanup print *, 'ntottttttttttt +++ ', ntot
   do i = 1, 8
     rr(i)%nh(1:ntot) = log10(rr(i)%nh(1:ntot))
     rr(i)%pe(1:ntot) = log10(rr(i)%pe(1:ntot))
@@ -123,17 +121,9 @@ program innewmarcs
   call interpol_two_models(teffs(ii(1)), teffs(ii(3)), main_teff, aa, bb, ee)
   call interpol_two_models(teffs(ii(5)), teffs(ii(7)), main_teff, cc, dd, ff)
 
-
-  ! todo cleanup print *, 'zz ntot 0', zz%ntot
-
   zz = rr(1)  ! copies scalar information such as ntot, asalalf, nhe, tit, tiabs to result
 
-  ! todo cleanup print *, 'zz ntot 1', zz%ntot
-
   call interpol_two_models(asalogs(ii(1)), asalogs(ii(5)), main_asalog, ee, ff, zz)
-
-  ! todo cleanup
-  ! print *, 'zz ntot 2', zz%ntot
 
   ! # Final adjustments
   zz%ntot = ntot  ! for some reason, ntot is not reaching here with optimization -O2
@@ -370,24 +360,14 @@ contains
     do i = 1, num_rec
       tos(i) = recs(i)%log_tau_ross(1)
     end do
-! todo cleanup
-!    print *, 'TOSSSSSSSSSSSS', tos
+
     isup_ = isup(tos, num_rec, 1, num_rec)
     to0 = tos(isup_)
-!    print *, 'TO000000000000000', to0, isup_
 
     ntot_min = 9999
     do i = 1, num_rec
       ishift = int((to0-recs(i)%log_tau_ross(1))*10+0.1)
       if(ishift .gt. 0) then
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH ', ishift
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH '
-!        print *, ' O SHIFT EH '
         call shift_left(ishift, recs(i)%nh)
         call shift_left(ishift, recs(i)%teta)
         call shift_left(ishift, recs(i)%pe)
@@ -456,10 +436,6 @@ contains
       ! ka = (x-a)/div
       ! kb = (b-x)/div
     end if
-
-    ! todo cleanup print *, "----------------- a=",a,"; b=", b, "; x=", x
-    ! print *, "----------------- ka=",ka,"; kb=", kb
-
 
     call interpol(ka, kb, reca%nh, recb%nh, recx%nh)
     call interpol(ka, kb, reca%teta, recb%teta, recx%teta)

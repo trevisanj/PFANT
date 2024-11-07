@@ -4701,8 +4701,6 @@ contains
        recs(iid)%tit,     &
        recs(iid)%tiabs
 
-      ! todo cleanup write(*,*) 'iiiiiiii', iid, 'ntot', recs(iid)%ntot
-
       if (recs(iid)%ntot .ne. MOO_NTOT) &
         call log_and_halt('read_moo(): (record #'//int2str(iid)//') Number of depth layers must be '//&
          int2str(MOO_NTOT)//', not '//int2str(recs(iid)%ntot))
@@ -5044,10 +5042,6 @@ contains
         read(myunit,*) filetoh_jmax(i)
         read(myunit,'(5f14.3)') (filetoh_lambdh(i,j), j=1,filetoh_jmax(i))
         read(myunit,'(5e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
-
-
-        ! todo cleanup
-        ! write(14, '(53e12.4)') ((filetoh_th(i,j,n),j=1,filetoh_jmax(i)), n=1,modele%ntot)
 
         close(myunit)
 
@@ -7924,12 +7918,6 @@ contains
       ! For each molecule here, what happens with this m_p?
       ! Result: Actually, code 1047 is apparently being skipped, so although it looks suspicious, for the moment there is
       !         no influence ... but I will print a warning there and keep it for a while
-
-      ! TODO cleanup
-      ! write(*,*) 'die(): Molecule: ', dissoc_mol(j)
-      ! write(*,*) 'die(): m_p(1:10) = '
-      ! write(*, '(10e10.5)') (m_p(i),i=1,10)
-
 
       mmaxj  = dissoc_mmax(j)
       pmoljl = -m_apmlog(j)

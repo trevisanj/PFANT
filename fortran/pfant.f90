@@ -208,7 +208,7 @@ contains
 
   subroutine synthesis_()
     ! Units for output files
-    integer unit_spec, unit_cont, unit_norm  ! todo cleanup , unit_lines, unit_log
+    integer unit_spec, unit_cont, unit_norm  
     real*8 fn(MAX_DTOT)
     integer i, i1, i2, k, d, &
      ikey,    & ! ikey-th aint-large calculation interval
@@ -600,47 +600,14 @@ contains
     ! the constant is 1/(number of Avogadro ~= 6.02e23)
     opa_mass_factor = opa_mass_factor*1.6606e-24
 
-    ! print *, 'opa_mass_factor ', opa_mass_factor
-
-    ! write(10,*) (m_lambda(i), i=1,modele%nwav)
-    ! write(10,*) (modele%wav(i), i=1,modele%nwav)
-    ! do n = 1, modele%ntot  ! modele%ntot
-    ! ! todo cleanup
-    !  write(11, *) (modele%sca(i,n),i=1,modele%nwav)
-    !  write(12, *) (modele%abs(i,n),i=1,modele%nwav)
-    ! end do
-    !write(13,*) (m_lambda(i), i=1,m_dtot)
-
     do n = 1, modele%ntot  ! modele%ntot
-    ! ft2 does not perform well here, ftlin3 is ok
-      !call   ft2(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
-
+      ! I tried to interpolate using ft2() first, didn't not perform well here. ftlin3() went ok
 
       if (config_sca) &
        call ftlin3(modele%nwav, modele%wav, modele%sca(:, n), m_dtot, m_lambda, opa_sca(:, n))
 
-
-      ! todo cleanup
-      ! print *, "___A___", n, m_lambda(1), m_lambda(m_dtot)
-
-
-      ! todo cleanup
-      !  write(14, *) (opa_sca(i,n),i=1,m_dtot)
-
-
-
-      !call   ft2(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
-
       if (config_abs) &
        call ftlin3(modele%nwav, modele%wav, modele%abs(:, n), m_dtot, m_lambda, opa_abs(:, n))
-
-      ! todo cleanup
-      ! print *, "___B___"
-
-
-      ! todo cleanup
-      !  write(15, *) (opa_abs(i,n),i=1,m_dtot)
-
     end do
 
 
@@ -801,12 +768,6 @@ contains
      kam, kappam, kappa, kak, &
      kappa_opa, &    ! continuum absorption coefficient, origin MARCS website
      kappa_absoru    ! continuum absorption coefficient
-
-    ! todo cleanup (debugging)
-    integer :: local_atoms_f_nblend, local_modele_ntot
-    local_atoms_f_nblend = atoms_f_nblend
-    local_modele_ntot = modele%ntot
-
 
     kappa_opa = 0
     kappa_absoru = 0
@@ -1221,18 +1182,6 @@ program pfant
   !=====
   execonf_name = 'pfant'
   call config_init()
-
-  ! todo cleanup
-
-  ! debugging, dont forget to remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! call log_warning('Dont forget to remove stuff in main pfant routine!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-  ! config_fn_molecules = "mghc2cnr_cn3ch13chtiog3tio.dat"
-  ! config_fn_atoms = "atom4070g.dat"
-  ! config_flprefix = "flbwb5-novo"
-  ! config_fn_modeles = "modele15.mod"
-  ! config_opa = .FALSE.
-
-!  config_no_atoms = .TRUE.
 
   !=====
   ! File reading
