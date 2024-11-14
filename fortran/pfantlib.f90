@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.11.06.a'
+    v = '24.11.14.a'
   end
 
   ! Displays welcome message
@@ -2873,6 +2873,9 @@ module config
    config_fn_modgrid = 'grid.mod', &        ! option: --fn_modgrid
    config_fn_moo = 'grid.moo'               ! option: --fn_moo
   logical :: config_allow = .false.         ! option: --allow
+  character(FN_SIZE) :: config_fn_asc = 'modeles.asc' ! option: --fn_asc
+  logical :: config_asc = .false.               ! option --asc
+
 
   !---
   ! hydro2-only
@@ -3133,6 +3136,11 @@ contains
      'input file name - complete atmospheric model grid with opacities included')
     call add_option('i', 'allow', ' ', .true., 'T/F', logical2str(config_allow), &
      'allow (teff, glog, asalog) point out of model grid?')
+    call add_option('i', 'fn_asc',' ', .true., 'file name', config_fn_asc, &
+     'ASCII file containing information about atmospheric model<br>'//&
+     '(Turbospectrum ".interpol" file; created by innewmarcs)')
+    call add_option('i', 'asc',' ', .true., 'T/F', logical2str(config_asc), &
+     'Whether or not to create ASCII model (whose name is specified by option --fn_asc)')
 
     !
     ! innewmarcs, pfant
@@ -3427,6 +3435,11 @@ contains
       case ('allow')
         config_allow = parse_aux_str2logical(opt, o_arg)
         call parse_aux_log_assignment('config_allow', logical2str(config_allow))
+      case ('fn_asc')
+        call parse_aux_assign_fn(o_arg, config_fn_asc, 'config_fn_asc')
+      case ('asc')
+        config_asc = parse_aux_str2logical(opt, o_arg)
+        call parse_aux_log_assignment('config_asc', logical2str(config_asc))
       case ('out_type')
         config_out_type = parse_aux_str2int(opt, o_arg)
         if (config_out_type .ge. CONVMOL_TYPE_VALD3 .and. config_out_type .le. CONVMOL_TYPE_LOGGFS) then !#validation
@@ -4598,6 +4611,52 @@ contains
   end
 
   !---------------------------------------------------------------------------------------
+  ! Creates single-model ASCII file such as "modeles.asc" (Turbospectrum "interpol" format)
+
+  subroutine write_modele_asc(path_to_file, r)
+    character(len=*), intent(in) :: path_to_file
+    type(moo_record), intent(in) :: r
+    integer myunit, n
+
+
+    real(8) :: tau, tttt, log_pe, log_pg, vvt
+    character(len=20) :: tit
+
+    ! INTRYC GT O IF PRESSURE INTEGRATION IS WANTED (comment from basma.f)
+    integer, parameter :: intryc = 0
+    ! ? (see basma.f)
+    real(8), parameter :: scale = 0.
+    ! standard wavelength
+    real(8), parameter :: tostand = 5000.
+
+    vvt = 2.0E+5  ! todo read from main.dat or command-line argument
+
+    open(newunit=myunit,file=path_to_file, status='replace')
+
+    tit = r%tit
+    call replace_char(tit, char(0), ' ')
+
+    write(myunit, 104) trim(tit), r%ntot, tostand, r%glog, intryc, scale
+    104 format("'", a20, "'", i8, 1x, f10.0, 1x, f8.2, 1x, i1, 1x, f5.0)
+ 
+    do n = 1, r%ntot
+      ! tau = 10**ZZR(n)
+      ! tttt = 5040/ZZT(n)
+      ! write(myunit, 105) ZZR(n), TTTT, ZLE(n), ZLP(n), vvt
+ 
+      tau = 10**r%log_tau_ross(n)
+      tttt = 5040/r%teta(n)
+      log_pe = log10(r%pe(n))
+      log_pg = log10(r%pg(n))
+
+      write(myunit, 105) r%log_tau_ross(n), tttt, log_pe, log_pg, vvt
+      105 format(e15.5, f10.0, 3e15.6)
+    end do 
+
+    close(unit=myunit)
+  end
+
+  !---------------------------------------------------------------------------------------
   ! Writes record to an open ".mod" binary file
 
   subroutine write_mod_record(unit_, inum, r)
@@ -4829,11 +4888,6 @@ contains
 
     open(newunit=myunit,file=path_to_file, status='replace')
 
-
-
-    write(*,*) 'r%nwav=', r%nwav
-    write(*,*) 'Escrevendo OPAAAAAAAAAAAAAAAAAAAAAAAAA'
-
     write(myunit, '(1x,a4,i5,f10.2)') OPA_MAGIC_CHARS, r%ntot, r%swave
     write(myunit, '(i6)') r%nwav
     write(myunit, '(1x,10f11.2)') (r%wav(i), i=1, r%nwav)
@@ -4848,6 +4902,8 @@ contains
     enddo
 
     write (myunit, '(10f8.3)') r%abund
+
+    close(unit=myunit)
   end
 
 end

@@ -86,9 +86,9 @@ program innewmarcs
   call log_info('Interpolation map:')
   call log_info('------------------')
 
-  call log_info('    rr1  \_  aa  \')
+  call log_info('    rr1  \_  aa  \ ')
   call log_info('    rr2  /        |- ee')
-  call log_info('    rr3  \_  bb  /        \')
+  call log_info('    rr3  \_  bb  /        \ ')
   call log_info('    rr4  /                 |-  output model')
   call log_info('    rr5  \_  cc  \        /')
   call log_info('    rr6  /        |- ff')
@@ -96,7 +96,7 @@ program innewmarcs
   call log_info('    rr8  /')
 
 
-  call log_info('Models chosen (rr1 to rr8): ['//int2str(ii(1))//', '//int2str(ii(2))//', '&
+  call log_info('Models chosen (rr1 to rr8): ['//int2str(ii(1))//', &'//int2str(ii(2))//', '&
     //int2str(ii(3))//', '//int2str(ii(4))//', '//int2str(ii(5))//', '&
     //int2str(ii(6))//', '//int2str(ii(7))//', '//int2str(ii(8))//']')
 
@@ -138,6 +138,13 @@ program innewmarcs
   ! Writes ".mod" mod, e.g., "modeles.mod"
   call write_modele(config_fn_modeles, zz)
   call log_info('File '''//trim(config_fn_modeles)//''' was successfully created.')
+
+  ! Writes ".asc", e.g., "modeles.asc"
+  if (config_asc) then
+    call write_modele_asc(config_fn_asc, zz)
+    call log_info('File '''//trim(config_fn_asc)//''' was successfully created.')
+  end if
+
   ! Writes ".opa" file, e.g., "opacities.opa"
   if (config_opa) then
     call write_opa(config_fn_opa, zz)
@@ -441,7 +448,7 @@ contains
     call interpol(ka, kb, reca%teta, recb%teta, recx%teta)
     call interpol(ka, kb, reca%pe, recb%pe, recx%pe)
     call interpol(ka, kb, reca%pg, recb%pg, recx%pg)
-    ! call interpol(ka, kb, reca%log_tau_ross, recb%log_tau_ross, recx%log_tau_ross)
+    call interpol(ka, kb, reca%log_tau_ross, recb%log_tau_ross, recx%log_tau_ross)
 
     if (config_opa) then
       ! copies "header" from first record
@@ -460,8 +467,8 @@ contains
       call interpol(ka, kb, reca%xi, recb%xi, recx%xi)
       call interpol(ka, kb, reca%ops, recb%ops, recx%ops)
 
-      write(*,*) 'reca%nwav=', reca%nwav
-      write(*,*) '1111111111111111111111111111111111111111111111111111111'
+      ! write(*,*) 'reca%nwav=', reca%nwav
+      ! write(*,*) '1111111111111111111111111111111111111111111111111111111'
 
       do j = 1, reca%nwav
         call interpol(ka, kb, reca%abs(j,:), recb%abs(j,:), recx%abs(j,:))
