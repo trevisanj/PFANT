@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.11.14.a'
+    v = '24.11.16.b'
   end
 
   ! Displays welcome message
@@ -2874,7 +2874,7 @@ module config
    config_fn_moo = 'grid.moo'               ! option: --fn_moo
   logical :: config_allow = .false.         ! option: --allow
   character(FN_SIZE) :: config_fn_asc = 'modeles.asc' ! option: --fn_asc
-  logical :: config_asc = .false.               ! option --asc
+  logical :: config_asc = .true.               ! option --asc
 
 
   !---
@@ -4619,37 +4619,37 @@ contains
     integer myunit, n
 
 
-    real(8) :: tau, tttt, log_pe, log_pg, vvt
+    real(8) :: tau, tttt, log_pe, log_pg
     character(len=20) :: tit
 
-    ! INTRYC GT O IF PRESSURE INTEGRATION IS WANTED (comment from basma.f)
-    integer, parameter :: intryc = 0
+    ! INTRYC gt 0 if pressure integration is wanted (comment from basma.f)
+    integer, parameter :: INTRYC = 0
     ! ? (see basma.f)
-    real(8), parameter :: scale = 0.
+    real(8), parameter :: SCALE = 0.
     ! standard wavelength
-    real(8), parameter :: tostand = 5000.
-
-    vvt = 2.0E+5  ! todo read from main.dat or command-line argument
+    real(8), parameter :: TOSTAND = 5000.
+    ! on prend vt constant; BLB says 2.0 or 2.5 is OK
+    real(8), parameter :: VVT = 2.
 
     open(newunit=myunit,file=path_to_file, status='replace')
 
     tit = r%tit
     call replace_char(tit, char(0), ' ')
 
-    write(myunit, 104) trim(tit), r%ntot, tostand, r%glog, intryc, scale
+    write(myunit, 104) trim(tit), r%ntot, TOSTAND, r%glog, INTRYC, SCALE
     104 format("'", a20, "'", i8, 1x, f10.0, 1x, f8.2, 1x, i1, 1x, f5.0)
  
     do n = 1, r%ntot
       ! tau = 10**ZZR(n)
       ! tttt = 5040/ZZT(n)
-      ! write(myunit, 105) ZZR(n), TTTT, ZLE(n), ZLP(n), vvt
+      ! write(myunit, 105) ZZR(n), TTTT, ZLE(n), ZLP(n), VVT
  
       tau = 10**r%log_tau_ross(n)
       tttt = 5040/r%teta(n)
       log_pe = log10(r%pe(n))
       log_pg = log10(r%pg(n))
 
-      write(myunit, 105) r%log_tau_ross(n), tttt, log_pe, log_pg, vvt
+      write(myunit, 105) r%log_tau_ross(n), tttt, log_pe, log_pg, VVT
       105 format(e15.5, f10.0, 3e15.6)
     end do 
 
