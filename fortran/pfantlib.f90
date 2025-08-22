@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '24.11.16.b'
+    v = '25.08.22.a'
   end
 
   ! Displays welcome message
@@ -4337,6 +4337,8 @@ module file_models
   type moo_record
     ! # "Standard model" information
     ! Size of variables nh, teta, pe, pg, log_tau_ross
+    !
+    ! record size: 4+8*5+8*56*5+20+8+4+1071*8+8*6+8*56*1071+8*92 = 491476 bytes
     integer*4 :: ntot
 
     real*8 :: teff,    & ! Teff (Kelvin)
@@ -4384,6 +4386,8 @@ module file_models
     real*8 :: abund(92)  ! Abundances of atomic elements from 1 to 92
 
   end type
+
+  integer, parameter :: MOO_SIZE = 491476
 
   ! Public variable that will contain the model loaded by read_modele()
   type(moo_record) modele
@@ -4696,12 +4700,19 @@ contains
   subroutine read_mod_grid(path_to_file, recs)
     character(len=*), intent(in) :: path_to_file
     type(moo_record), allocatable, intent(out) :: recs(:)
+    type(moo_record) :: rec_test
     integer num_rec, iid
+    real*8 num_rec_
 
     ! this logging message is important in case of errors to know which file it was
     call log_info('read_mod_grid(): reading file '''//trim(path_to_file)//'''...')
 
     num_rec = get_mod_num_records(path_to_file)
+
+    num_rec_ = num_rec
+    call log_info('read_mod_grid(): number of records: '//int2str(num_rec))
+    call log_info('read_mod_grid(): about to allocate '//int2str(int(num_rec_/1024/1024*MOO_SIZE))//' MB')
+
     allocate(recs(num_rec))
     call open_mod_file(path_to_file)
     do iid = 1, num_rec
@@ -4736,6 +4747,8 @@ contains
     real*4, dimension(MAX_MODELES_NTOT) :: ops
     real*4, dimension(92) :: abund
     real*4, dimension(MOO_NWAV, MAX_MODELES_NTOT) :: abs_, sca
+    real*8 num_rec_
+
     ! Variable used to skip a few characters
     character bid(MOD_RECL)
 
@@ -4744,7 +4757,10 @@ contains
 
     num_rec = get_moo_num_records(path_to_file)
 
+
+    num_rec_ = num_rec
     call log_info('read_moo(): number of records: '//int2str(num_rec))
+    call log_info('read_moo(): about to allocate '//int2str(int(num_rec_/1024/1024*MOO_SIZE))//' MB')
     allocate(recs(num_rec))
 
 
