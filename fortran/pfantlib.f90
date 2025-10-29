@@ -4714,10 +4714,12 @@ contains
     call log_info('read_mod_grid(): about to allocate '//int2str(int(num_rec_/1024/1024*MOO_SIZE))//' MB')
 
     allocate(recs(num_rec))
+
     call open_mod_file(path_to_file)
     do iid = 1, num_rec
       call read_mod_record(iid, recs(iid))
     end do
+
     call close_mod_file()
   end
 
