@@ -330,8 +330,8 @@ contains
         m_lambda(d) = m_lzero+incr ! lambda for each point
       end do
 
-      call log_info('/\/\/\ Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
-        ' /\/\/\')
+      call log_info('////// Calculation step '//int2str(ikey)//'/'//int2str(ikeytot)//&
+        ' //////')
       501 format(2x,2x,'m_lzero=',f10.3,2x,'m_lfin=',&
        f10.3,2x,'m_dtot=',i7,2x,'m_lambd 1/2=',f10.3, 2x, 'm_ilzero=',i6)
       write(lll,501) m_lzero, m_lfin, m_dtot, m_lambd, m_ilzero
@@ -491,7 +491,7 @@ contains
        modele%tit,            &  ! fixed
        5040/main_teff,         &  ! fixed
        main_glog,              &  ! fixed
-       main_asalog,            &  ! fixed
+       main_afstar,            &  ! fixed; 20260620: was writing main_asalog before
        modele%nhe,            &  ! fixed
        amg,                    &  ! fixed
        l0,                     &  ! fixed

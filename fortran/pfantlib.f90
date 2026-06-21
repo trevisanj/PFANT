@@ -3810,9 +3810,14 @@ contains
 
     ! ISSUE decide whether to use asalog of afstar throughout the source code
     !       For the time, in order to avoid mistakes I am forcing them to match
+    !
+    ! 20260620 BLB decided to let it pass, as the model may have been generated with different 
+    !          metallicity. main.dat::asalog will be used only by innewmarcs
     if (abs(main_asalog-main_afstar) .gt. 0.001) then
-      call log_and_halt('asalog ('//real82str(main_asalog, 2)//&
-       ') does not match afstar ('//real82str(main_afstar, 2)//') in file '''//trim(path_to_file)//'''')
+      write(lll,*) 'asalog ('//real82str(main_asalog, 2)//&
+       ') does not match afstar ('//real82str(main_afstar, 2)//') in file '''//trim(path_to_file)//''''
+      call log_warning(lll)
+      ! call log_and_halt(lll)
     end if
 
 
