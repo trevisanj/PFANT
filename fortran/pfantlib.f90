@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '25.08.22.a'
+    v = '26.06.21.a'
   end
 
   ! Displays welcome message
@@ -1174,66 +1174,6 @@ contains
     integer, intent(in) :: unit_
 
     if (logging_level .gt. LOGGING_INFO) return
-
-
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-  ! Shadow
-  !  write(unit_,*) '   _ \   ____|  \      \  | __ __| '
-  !  write(unit_,*) '  |   |  |     _ \      \ |    |   '
-  !  write(unit_,*) '  ___/   __|  ___ \   |\  |    |   '
-  !  write(unit_,*) ' _|     _|  _/    _\ _| \_|   _|   '
-  !  write(unit_,*) '                                   '
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-  ! Italic
-  !  write(unit_,*) '     ____  _________    _   ________'
-  !  write(unit_,*) '    / __ \/ ____/   |  / | / /_  __/'
-  !  write(unit_,*) '   / /_/ / /_  / /| | /  |/ / / /   '
-  !  write(unit_,*) '  / ____/ __/ / ___ |/ /|  / / /    '
-  !  write(unit_,*) ' /_/   /_/   /_/  |_/_/ |_/ /_/     '
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-  ! Glenyn
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' ____ ____ ___  __   ____ '
-  !  write(unit_,*) ' | . \|  _\|  \ | \|\|_ _\'
-  !  write(unit_,*) ' | __/| _\ | . \|  \|  || '
-  !  write(unit_,*) ' |/   |/   |/\_/|/\_/  |/'
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-  !  write(unit_,*) '  ____  _____ _    _   _ _____ '
-  !  write(unit_,*) ' |  _ \|  ___/ \  | \ | |_   _|'
-  !  write(unit_,*) ' | |_) | |_ / _ \ |  \| | | |  '
-  !  write(unit_,*) ' |  __/|  _/ ___ \| |\  | | |  '
-  !  write(unit_,*) ' |_|   |_|/_/   \_\_| \_| |_|  '
-  !  write(unit_,*) ' '
-  !  write(unit_,*) ' '
-
-
-
-    !write(unit_,*) '________________________________________________________________________'
-    !write(unit_,*) '          `                  `                   `            ``        '
-    !write(unit_,*) '                                                   `    `     ``        '
-    !write(unit_,*) '             `                   `             `                        '
-    !write(unit_,*) '                                           ``  ``                       '
-    !write(unit_,*) '   `          @.     ``             `        ``                         '
-    !write(unit_,*) '                                                `                       '
-    !write(unit_,*) '                                               `                        '
-    !write(unit_,*) '                        @                                               '
-    !write(unit_,*) '             `      `              `                 `                  '
-    !write(unit_,*) '`                     `           `                                     '
-    !write(unit_,*) '                  `                                                     '
-    !write(unit_,*) '               @`@`@ `          `                                       '
-    !write(unit_,*) '`              `    `                            `             `        '
-    !write(unit_,*) '               `                                                        '
-    !write(unit_,*) '              `                   ____  _____ _    _   _ _____          '
-    !write(unit_,*) '               `        `        |  _ \|  ___/ \  | \ | |_   _|         '
-    !write(unit_,*) '        @        `  `            | |_) | |_ / _ \ |  \| | | |         ` '
-    !write(unit_,*) '                    @            |  __/|  _/ ___ \| |\  | | |           '
-    !write(unit_,*) '__/\/\/\_________________________|_|___|_|/_/___\_\_|_\_|_|_|_____/\/\__'
-
 
     write(unit_,*) 'Welcome!'
     write(unit_,*) ''
@@ -3814,7 +3754,7 @@ contains
     ! 20260620 BLB decided to let it pass, as the model may have been generated with different 
     !          metallicity. main.dat::asalog will be used only by innewmarcs
     if (abs(main_asalog-main_afstar) .gt. 0.001) then
-      write(lll,*) 'asalog ('//real82str(main_asalog, 2)//&
+      write(lll,*) 'read_main(): asalog ('//real82str(main_asalog, 2)//&
        ') does not match afstar ('//real82str(main_afstar, 2)//') in file '''//trim(path_to_file)//''''
       call log_warning(lll)
       ! call log_and_halt(lll)
@@ -3970,6 +3910,8 @@ module file_dissoc
   implicit none
 
   logical :: flag_read_dissoc = .false.    ! Whether read_dissoc() has already been called
+  logical :: flag_audit_dissoc_created = .false. ! Whether an audit file was created
+  character(FN_SIZE) :: audit_dissoc_path          ! Path to the created audit file
 
 
   ! dissoc.dat, metals part
@@ -4051,7 +3993,9 @@ contains
   ! read from the *abonds file* .
   !
 
-  subroutine auto_dissoc()
+  subroutine auto_dissoc(audit_path)
+    ! If present, writes the generated *dissoc file* to this path for auditing.
+    character(*), intent(in), optional :: audit_path
     integer myunit, i, j, num_el
     character(2) :: el
     logical :: found
@@ -4119,6 +4063,8 @@ contains
 '                                                                          ' &
 /)
 
+    flag_audit_dissoc_created = .false.
+
     if (.not. flag_read_abonds) &
      call log_and_halt('auto_dissoc(): must call read_abonds() first', is_assertion=.true.)
 
@@ -4168,6 +4114,35 @@ contains
     ! Finally calls the reading subroutine
     call internal_read_dissoc(myunit)
     close(myunit)
+
+    if (present(audit_path)) call write_audit_dissoc(audit_path)
+
+  contains
+
+    ! Writes the same buffer consumed above.
+    subroutine write_audit_dissoc(path_to_file)
+      character(*), intent(in) :: path_to_file
+      integer unit_, i_
+
+      open(newunit=unit_, file=path_to_file, status='replace')
+      do i_ = 1, NUM_LINES
+        write(unit_, '(a'//int2str(NUM_COLS)//')') buffer(i_)
+      end do
+      close(unit_)
+
+      audit_dissoc_path = path_to_file
+      flag_audit_dissoc_created = .true.
+      call log_audit_dissoc_created()
+    end
+  end
+
+  !=======================================================================================
+  ! Logs creation of the automatically generated *dissoc audit file*.
+
+  subroutine log_audit_dissoc_created()
+    if (.not. flag_audit_dissoc_created) return
+    call log_info('auto_dissoc(): audit file "'//trim(audit_dissoc_path)//&
+     '" successfully created.')
   end
 
   !=======================================================================================

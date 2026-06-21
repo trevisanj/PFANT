@@ -1212,7 +1212,7 @@ program pfant
   else
     call log_warning('File "'//trim(config_fn_dissoc)//'" not found: will take '//&
      'internally stored template and replace abundances with those in "'//trim(config_fn_abonds)//'" -12')
-    call auto_dissoc()
+    call auto_dissoc('auto-dissoc.dat')
   end if
 
   call read_partit(config_fn_partit)  ! LECTURE DES FCTS DE PARTITION
@@ -1260,7 +1260,7 @@ program pfant
   if (abs(modele%asalog-main_afstar) > 0.01) then
     ! 20241101 changed the following halt condition to warning only
 
-    call log_warning('asalog from model ('//real82str(modele%asalog, 2)//&
+    call log_warning('pfant: asalog from model ('//real82str(modele%asalog, 2)//&
      ') does not match afstar in main configuration file ('//real82str(main_afstar, 2)//')')
   end if
 
@@ -1270,4 +1270,6 @@ program pfant
   !=====
   ! Does the calculus
   call synthesis_()
+
+  if (flag_audit_dissoc_created) call log_audit_dissoc_created()
 end program pfant
