@@ -1150,7 +1150,7 @@ contains
 
   function pfant_version() result(v)
     character(:), allocatable :: v
-    v = '26.06.21.a'
+    v = '26.06.23.a'
   end
 
   ! Displays welcome message

@@ -160,6 +160,9 @@ contains
 
       1130 format(i5, a20, 5f15.5, 4f10.1, i10, 4f15.5)
 
+      ! Legacy spectrum files may pad the title with NUL bytes instead of spaces.
+      call replace_char(rs_titc, char(0), ' ')
+
       ! allocates rs_ffnu at first iteration
       if (icle .eq. 1) then
         size_ffnu = ikeytot*itot
